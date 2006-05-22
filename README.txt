@@ -1,9 +1,11 @@
 
+
     Y A N E L (Yet Another Lenya)
     =============================
 
-    Getting started:
-    ----------------
+
+    Getting Started
+    ---------------
 
     1) configure
     2) build
