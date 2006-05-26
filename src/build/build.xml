@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+
+<project name="yanel" default="deploy">
+<!--
+<project name="yanel" default="war">
+-->
+
+  <target name="init" description="Initialize all parameters and other settings">
+    <property file="local.build.properties"/>
+    <property file="build.properties"/>
+
+    <dirname property="build.src.dir" file="${ant.file}"/>
+    <dirname property="src.dir" file="${build.src.dir}"/>
+    <dirname property="yanel.home.dir" file="${src.dir}"/>
+
+    <property name="build.dir" value="${yanel.home.dir}/build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+
+    <path id="classpath">
+      <fileset dir="${yanel.home.dir}/lib">
+        <include name="*.jar"/>
+      </fileset>
+    </path>
+  </target>
+
+  <target name="compile-core" description="Compile Java classes of Yanel core" depends="init">
+<!--
+    <echo>${classes.dir}</echo>
+-->
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="${yanel.home.dir}/src/java/org/wyona/yanel/core" destdir="${classes.dir}"
+      debug="true"
+    />
+  </target>
+
+  <target name="compile-webapp" description="Compile Java classes of Yanel webapp" depends="init, compile-core">
+<!--
+    <echo>${classes.dir}</echo>
+-->
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="${yanel.home.dir}/src/java/org/wyona/yanel/servlet" destdir="${classes.dir}"
+      debug="true"
+      classpathref="classpath"
+    />
+  </target>
+
+  <target name="webapp" description="Build webapp" depends="init, compile-webapp">
+    <mkdir dir="${build.dir}/webapps/yanel"/>
+    <copy todir="${build.dir}/webapps/yanel">
+      <fileset dir="${yanel.home.dir}/src/webapp"/>
+    </copy>
+    <copy todir="${build.dir}/webapps/yanel/WEB-INF/classes">
+      <fileset dir="${yanel.home.dir}/build/classes"/>
+    </copy>
+  </target>
+
+  <target name="war" description="Build war file" depends="init, webapp">
+    <jar jarfile="${yanel.home.dir}/build/webapps/yanel.war" basedir="${yanel.home.dir}/build/webapps/yanel"/>
+  </target>
+
+  <target name="deploy" description="Deploy war file" depends="init, war">
+    <condition property="deploy-to-tomcat-cluster-node1">
+      <isset property="tomcat1.webapps.dir"/>
+    </condition>
+    <antcall target="deploy-to-tomcat-cluster-node1"/>
+
+    <condition property="deploy-to-tomcat-cluster-node2">
+      <isset property="tomcat2.webapps.dir"/>
+    </condition>
+    <antcall target="deploy-to-tomcat-cluster-node2"/>
+  </target>
+
+  <target name="deploy-to-tomcat-cluster-node1" if="deploy-to-tomcat-cluster-node1" description="Deploy webapp to Tomcat cluster node 1">
+    <echo>Copy webapp (${tomcat1.webapps.dir}):</echo>
+    <copy todir="${tomcat1.webapps.dir}/yanel">
+      <fileset dir="${yanel.home.dir}/build/webapps/yanel"/>
+    </copy>
+  </target>
+
+  <target name="deploy-to-tomcat-cluster-node2" if="deploy-to-tomcat-cluster-node2" description="Deploy webapp to Tomcat cluster node 2">
+    <echo>Copy webapp (${tomcat2.webapps.dir}):</echo>
+    <copy todir="${tomcat2.webapps.dir}/yanel">
+      <fileset dir="${yanel.home.dir}/build/webapps/yanel"/>
+    </copy>
+  </target>
+
+  <target name="clean" description="Clean build" depends="init">
+    <delete dir="${build.dir}"/>
+  </target>
+</project>
