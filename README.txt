@@ -4,6 +4,12 @@
     =============================
 
 
+    Prerequisites
+    -------------
+
+    Java Development Kit version 1.4.2 or higher
+
+
     Getting Started
     ---------------
 
