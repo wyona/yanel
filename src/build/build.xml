@@ -72,6 +72,11 @@
 
   <target name="deploy-to-tomcat-cluster-node1" if="deploy-to-tomcat-cluster-node1" description="Deploy webapp to Tomcat cluster node 1">
     <echo>Copy webapp (${tomcat1.webapps.dir}):</echo>
+
+    <fail message="No such directory: ${tomcat1.webapps.dir}">
+    <condition><not><available file="${tomcat1.webapps.dir}"/></not></condition>
+    </fail>
+
     <copy todir="${tomcat1.webapps.dir}/yanel">
       <fileset dir="${yanel.home.dir}/build/webapps/yanel"/>
     </copy>
@@ -79,6 +84,11 @@
 
   <target name="deploy-to-tomcat-cluster-node2" if="deploy-to-tomcat-cluster-node2" description="Deploy webapp to Tomcat cluster node 2">
     <echo>Copy webapp (${tomcat2.webapps.dir}):</echo>
+
+    <fail message="No such directory: ${tomcat2.webapps.dir}">
+    <condition><not><available file="${tomcat2.webapps.dir}"/></not></condition>
+    </fail>
+
     <copy todir="${tomcat2.webapps.dir}/yanel">
       <fileset dir="${yanel.home.dir}/build/webapps/yanel"/>
     </copy>
