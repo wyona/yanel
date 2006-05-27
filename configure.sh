@@ -22,11 +22,12 @@ ANT_HOME=$PWD/tools/apache-ant-1.6.2
 #echo $ANT_HOME
 
 ORIGINAL_PATH=$PATH
-PATH=$ANT_HOME/bin:$PATH
+PATH=$PWD/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 #echo $PATH
 
 # ----- Do something ;-)
-#ant -version
+ant -version
+mvn --version
 
 # ----- Reset Environment Variables
 ANT_HOME=$ORIGINAL_ANT_HOME

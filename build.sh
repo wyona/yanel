@@ -22,10 +22,12 @@ ANT_HOME=$PWD/tools/apache-ant-1.6.2
 #echo $ANT_HOME
 
 ORIGINAL_PATH=$PATH
-PATH=$ANT_HOME/bin:$PATH
+PATH=$PWD/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 #echo $PATH
 
 # ----- Build Yanel ...
+mvn --version
+ant -version
 ant -f src/build/build.xml $@
 
 # ----- Reset Environment Variables
