@@ -37,3 +37,9 @@
     - Rapid prototyping/development
     - Component based/Modularity
     - Release Planning/Roadmap
+
+
+    Acknowledgements
+    ----------------
+
+    - Michael Wechner
