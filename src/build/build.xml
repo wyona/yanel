@@ -57,9 +57,15 @@
     <copy todir="${build.dir}/webapps/yanel">
       <fileset dir="${yanel.home.dir}/src/webapp"/>
     </copy>
+
+    <copy todir="${build.dir}/webapps/yanel/WEB-INF/lib">
+      <fileset dir="${yanel.home.dir}/build/lib"/>
+    </copy>
+<!--
     <copy todir="${build.dir}/webapps/yanel/WEB-INF/classes">
       <fileset dir="${yanel.home.dir}/build/classes"/>
     </copy>
+-->
   </target>
 
   <target name="war" description="Build war file" depends="init, webapp">
