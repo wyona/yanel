@@ -26,5 +26,17 @@ public class YanelCommandLine {
      */
     static public void main(String[] args) {
         System.out.println("Hello Yanel!");
+
+/*
+<system-property javax.xml.parsers.DocumentBuilderFactory=
+             "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl"/>
+<system-property javax.xml.parsers.DocumentBuilderFactory=
+             "org.apache.crimson.jaxp.DocumentBuilderFactoryImpl"/>
+*/
+/*
+        YanelMapFactory ymf = YanelMapFactory.newInstance();
+        YanelMap ym = ymf.newYanelMap();
+        ym.getResourceTypeIdentifier(path);
+*/
     }
 }
