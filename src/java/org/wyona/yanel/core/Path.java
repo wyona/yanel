@@ -14,22 +14,16 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.core.map;
-
-import org.wyona.yanel.core.Path;
+package org.wyona.yanel.core;
 
 /**
  *
  */
-public interface Map {
+public class Path {
 
     /**
      *
      */
-    public String getUUID();
-
-    /**
-     *
-     */
-    public String getResourceTypeIdentifier(Path path);
+    public Path() {
+    }
 }
