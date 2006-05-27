@@ -37,7 +37,7 @@ public class YanelServlet extends HttpServlet {
 
 
         String servletContextRealPath = config.getServletContext().getRealPath("/");
-        writer.println("<yanel servlet-context-real-path=\""+servletContextRealPath+"\">");
+        writer.println("<yanel servlet-context-real-path=\""+servletContextRealPath+"\" xmlns=\"http://www.wyona.org/yanel/1.0\">");
 
 	HttpSession session = request.getSession(true);
         writer.println("<session id=\""+session.getId()+"\">");
@@ -58,6 +58,7 @@ public class YanelServlet extends HttpServlet {
     /**
      *
      */
+/*
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter writer = response.getWriter();
         response.setContentType("text/html");
@@ -79,4 +80,5 @@ public class YanelServlet extends HttpServlet {
         writer.println("</body>");
         writer.println("</html>");
     }
+*/
 }
