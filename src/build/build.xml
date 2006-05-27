@@ -31,6 +31,10 @@
     <javac srcdir="${yanel.home.dir}/src/java/org/wyona/yanel/core" destdir="${classes.dir}"
       debug="true"
     />
+    <mkdir dir="${yanel.home.dir}/build/lib"/>
+    <jar destfile="${yanel.home.dir}/build/lib/yanel-core-0.0.1-dev-r${yanel.revision}.jar"
+      basedir="${classes.dir}"
+      includes="org/wyona/yanel/core/**"/>
   </target>
 
   <target name="compile-webapp" description="Compile Java classes of Yanel webapp" depends="init, compile-core">
@@ -42,6 +46,10 @@
       debug="true"
       classpathref="classpath"
     />
+    <mkdir dir="${yanel.home.dir}/build/lib"/>
+    <jar destfile="${yanel.home.dir}/build/lib/yanel-webapp-0.0.1-dev-r${yanel.revision}.jar"
+      basedir="${classes.dir}"
+      includes="org/wyona/yanel/servlet/**"/>
   </target>
 
   <target name="webapp" description="Build webapp" depends="init, compile-webapp">
