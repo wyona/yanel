@@ -35,11 +35,14 @@ public class YanelCommandLine {
 
         MapFactory mf = MapFactory.newInstance();
         Map map = mf.newMap();
-        String rti = map.getResourceTypeIdentifier(new Path("/hello/world.html"));
+        Path path = new Path("/hello/world.html");
+        String rti = map.getResourceTypeIdentifier(path);
         System.out.println("Resource Type Identifier: " + rti);
 
         ResourceType rt = ResourceTypeRegistry.getResourceType(rti);
         System.out.println("Local name: " + rt.getLocalName());
         System.out.println("Namespace: " + rt.getNamespace());
+
+        //Resource res = new Resource(rt, path);
     }
 }
