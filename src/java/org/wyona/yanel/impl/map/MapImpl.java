@@ -32,9 +32,9 @@ public class MapImpl implements Map {
     }
 
     /**
-     *
+     * See James Clark's explanation on namespaces: http://www.jclark.com/xml/xmlns.htm
      */
     public String getResourceTypeIdentifier(Path path) {
-        return "hugo";
+        return "<{http://www.wyona.org/yanel/1.0}invoice/>";
     }
 }
