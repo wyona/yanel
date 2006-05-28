@@ -14,26 +14,20 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.cmdl;
+package org.wyona.yanel.impl.map;
 
-import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
 
 /**
  *
  */
-public class YanelCommandLine {
+public class MapFactoryImpl extends MapFactory {
 
     /**
      *
      */
-    static public void main(String[] args) {
-        System.out.println("Hello Yanel!");
-
-        MapFactory mf = MapFactory.newInstance();
-        Map map = mf.newMap();
-        String rti = map.getResourceTypeIdentifier(new Path("/hello/world.html"));
-        System.out.println("Resource Type Identifier: " + rti);
+    public Map newMap() {
+        return new MapImpl();
     }
 }

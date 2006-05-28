@@ -26,4 +26,10 @@ public class Path {
      */
     public Path() {
     }
+
+    /**
+     *
+     */
+    public Path(String path) {
+    }
 }
