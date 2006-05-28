@@ -21,17 +21,33 @@ package org.wyona.yanel.core;
  */
 public abstract class ResourceType {
 
+    private String uname;
+
     /**
      *
      */
-    public String getName() {
-        return null;
+    public ResourceType(String universalName) {
+        this.uname = universalName;
+    }
+
+    /**
+     *
+     */
+    public String getUniversalName() {
+        return uname;
+    }
+
+    /**
+     *
+     */
+    public String getLocalName() {
+        return uname.substring(uname.indexOf("}") + 1, uname.length() -2);
     }
 
     /**
      *
      */
     public String getNamespace() {
-        return null;
+        return uname.substring(uname.indexOf("{") + 1, uname.indexOf("}"));
     }
 }

@@ -14,27 +14,17 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.impl.map;
-
-import org.wyona.yanel.core.Path;
-import org.wyona.yanel.core.map.Map;
+package org.wyona.yanel.core;
 
 /**
  *
  */
-public class MapImpl implements Map {
+public class ResourceTypeDefaultImpl extends ResourceType {
 
     /**
      *
      */
-    public String getUUID() {
-        return "sugus";
-    }
-
-    /**
-     * See James Clark's explanation on namespaces: http://www.jclark.com/xml/xmlns.htm
-     */
-    public String getResourceTypeIdentifier(Path path) {
-        return "<{http://www.wyona.org/yanel/resource/1.0}invoice/>";
+    public ResourceTypeDefaultImpl(String universalName) {
+        super(universalName);
     }
 }

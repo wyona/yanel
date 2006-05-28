@@ -20,4 +20,11 @@ package org.wyona.yanel.core;
  *
  */
 public class ResourceTypeRegistry {
+
+    /**
+     *
+     */
+    public static ResourceType getResourceType(String universalName) {
+        return new ResourceTypeDefaultImpl(universalName);
+    }
 }
