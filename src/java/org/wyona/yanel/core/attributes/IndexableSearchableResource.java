@@ -14,19 +14,15 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.core;
+package org.wyona.yanel.core.attributes;
 
 /**
  *
  */
-public class ResourceTypeRegistry {
+public interface IndexableSearchableResource {
 
     /**
      *
      */
-/*
-    public static ResourceTypeDefinition getResourceTypeDefinition(String universalName) {
-        return new ResourceTypeDefinition(universalName);
-    }
-*/
+    public String getSearchFields();
 }

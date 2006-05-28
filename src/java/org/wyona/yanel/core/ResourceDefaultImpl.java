@@ -19,12 +19,12 @@ package org.wyona.yanel.core;
 /**
  *
  */
-public class ResourceTypeDefaultImpl extends ResourceType {
+public class ResourceDefaultImpl extends Resource {
 
     /**
      *
      */
-    public ResourceTypeDefaultImpl(String universalName) {
+    public ResourceDefaultImpl(String universalName) {
         super(universalName);
     }
 }

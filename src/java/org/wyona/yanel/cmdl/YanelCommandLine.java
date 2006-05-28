@@ -17,7 +17,7 @@
 package org.wyona.yanel.cmdl;
 
 import org.wyona.yanel.core.Path;
-import org.wyona.yanel.core.ResourceType;
+import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
@@ -39,9 +39,11 @@ public class YanelCommandLine {
         String rti = map.getResourceTypeIdentifier(path);
         System.out.println("Resource Type Identifier: " + rti);
 
-        ResourceType rt = ResourceTypeRegistry.getResourceType(rti);
+/*
+        ResourceTypeDefinition rtd = ResourceTypeRegistry.getResourceTypeDefinition(rti);
         System.out.println("Local name: " + rt.getLocalName());
         System.out.println("Namespace: " + rt.getNamespace());
+*/
 
         //Resource res = new Resource(rt, path);
     }
