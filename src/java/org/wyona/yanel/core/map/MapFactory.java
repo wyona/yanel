@@ -39,6 +39,7 @@ public abstract class MapFactory {
      * use the factory to configure and obtain maps instances.
      */
     public static MapFactory newInstance() {
+        // TODO: See for implementation http://java.sun.com/j2se/1.4.2/docs/api/javax/xml/parsers/SAXParserFactory.html#newInstance()
         try {
             return (MapFactory) Class.forName("org.wyona.yanel.impl.map.MapFactoryImpl").newInstance();
         } catch (Exception e) {
