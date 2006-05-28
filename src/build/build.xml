@@ -37,6 +37,17 @@
       includes="org/wyona/yanel/core/**"/>
   </target>
 
+  <target name="compile-impl" description="Compile Java classes of Yanel implementation" depends="init">
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="${yanel.home.dir}/src/java/org/wyona/yanel/impl" destdir="${classes.dir}"
+      debug="true"
+    />
+    <mkdir dir="${yanel.home.dir}/build/lib"/>
+    <jar destfile="${yanel.home.dir}/build/lib/yanel-impl-0.0.1-dev-r${yanel.revision}.jar"
+      basedir="${classes.dir}"
+      includes="org/wyona/yanel/impl/**"/>
+  </target>
+
   <target name="compile-cmdl" description="Compile Java classes of Yanel command line" depends="init">
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${yanel.home.dir}/src/java/org/wyona/yanel/cmdl" destdir="${classes.dir}"
@@ -63,7 +74,7 @@
       includes="org/wyona/yanel/servlet/**"/>
   </target>
 
-  <target name="webapp" description="Build webapp" depends="init, compile-webapp, compile-cmdl">
+  <target name="webapp" description="Build webapp" depends="init, compile-webapp, compile-cmdl, compile-impl">
 <!--
   <target name="webapp" description="Build webapp" depends="init, compile-webapp">
 -->
