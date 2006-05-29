@@ -48,14 +48,19 @@ public class YanelCommandLine {
         System.out.println("Namespace: " + rtd.getResourceTypeNamespace());
 
         Resource res = new ResourceDefaultImpl(rtd);
+
+        boolean isCreatable = false;
         Class[] interfaces = res.getClass().getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
             System.out.println(interfaces[i].getName());
-            //if (interfaces[i].isInstance(CreatableResource.class)) {
-            if (1 > 0) {
-                System.out.println(((CreatableResource) res).getPropertyNames());
-            }
+            if (interfaces[i].getName().equals("org.wyona.yanel.core.attributes.CreatableResource")) isCreatable = true;
+            // TODO: Why does this not work?
+            //if (interfaces[i].isInstance(CreatableResource.class)) isCreatable = true;
         }
-        //System.out.println(res.getClass().getName() + " does not implement creatable interface!");
+        if (isCreatable) {
+            System.out.println(((CreatableResource) res).getPropertyNames());
+        } else {
+            System.out.println(res.getClass().getName() + " does not implement creatable interface!");
+        }
     }
 }
