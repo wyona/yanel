@@ -23,8 +23,10 @@ import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.ResourceDefaultImpl;
 import org.wyona.yanel.core.attributes.CreatableResource;
+import org.wyona.yanel.core.attributes.ViewableResource;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
+import org.wyona.yanel.util.ResourceAttributeHelper;
 
 /**
  *
@@ -49,18 +51,16 @@ public class YanelCommandLine {
 
         Resource res = new ResourceDefaultImpl(rtd);
 
-        boolean isCreatable = false;
-        Class[] interfaces = res.getClass().getInterfaces();
-        for (int i = 0; i < interfaces.length; i++) {
-            System.out.println(interfaces[i].getName());
-            if (interfaces[i].getName().equals("org.wyona.yanel.core.attributes.CreatableResource")) isCreatable = true;
-            // TODO: Why does this not work?
-            //if (interfaces[i].isInstance(CreatableResource.class)) isCreatable = true;
-        }
-        if (isCreatable) {
+        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Creatable")) {
             System.out.println(((CreatableResource) res).getPropertyNames());
         } else {
             System.out.println(res.getClass().getName() + " does not implement creatable interface!");
+        }
+
+        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable")) {
+            System.out.println(((ViewableResource) res).getViewDescriptors());
+        } else {
+            System.out.println(res.getClass().getName() + " does not implement viewable interface!");
         }
     }
 }
