@@ -16,15 +16,24 @@
 
 package org.wyona.yanel.core;
 
+import org.wyona.yanel.core.attributes.CreatableResource;
+
 /**
  *
  */
-public class ResourceDefaultImpl extends Resource {
+public class ResourceDefaultImpl extends Resource implements CreatableResource {
 
     /**
      *
      */
-    public ResourceDefaultImpl(String universalName) {
-        super(universalName);
+    public ResourceDefaultImpl(ResourceTypeDefinition rtd) {
+        super(rtd);
+    }
+
+    /**
+     *
+     */
+    public String[] getPropertyNames() {
+        return null;
     }
 }

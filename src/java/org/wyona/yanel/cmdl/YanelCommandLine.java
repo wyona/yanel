@@ -18,7 +18,11 @@ package org.wyona.yanel.cmdl;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.ResourceDefaultImpl;
+import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
+import org.wyona.yanel.core.ResourceDefaultImpl;
+import org.wyona.yanel.core.attributes.CreatableResource;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
 
@@ -39,12 +43,15 @@ public class YanelCommandLine {
         String rti = map.getResourceTypeIdentifier(path);
         System.out.println("Resource Type Identifier: " + rti);
 
-/*
         ResourceTypeDefinition rtd = ResourceTypeRegistry.getResourceTypeDefinition(rti);
-        System.out.println("Local name: " + rt.getLocalName());
-        System.out.println("Namespace: " + rt.getNamespace());
-*/
+        System.out.println("Local name: " + rtd.getResourceTypeLocalName());
+        System.out.println("Namespace: " + rtd.getResourceTypeNamespace());
 
-        //Resource res = new Resource(rt, path);
+        Resource res = new ResourceDefaultImpl(rtd);
+        if (res.getClass().isInstance(CreatableResource.class)) {
+            System.out.println(((CreatableResource) res).getPropertyNames());
+        } else {
+            System.out.println(res.getClass().getName() + " does not implement creatable interface!");
+        }
     }
 }

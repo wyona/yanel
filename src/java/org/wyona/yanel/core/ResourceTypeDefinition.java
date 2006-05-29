@@ -19,35 +19,35 @@ package org.wyona.yanel.core;
 /**
  *
  */
-public abstract class Resource {
+public class ResourceTypeDefinition {
 
-    private ResourceTypeDefinition rtd;
+    private String uname;
 
     /**
      *
      */
-    public Resource(ResourceTypeDefinition rtd) {
-        this.rtd = rtd;
+    public ResourceTypeDefinition(String universalName) {
+        this.uname = universalName;
     }
 
     /**
      *
      */
     public String getResourceTypeUniversalName() {
-        return rtd.getResourceTypeUniversalName();
+        return uname;
     }
 
     /**
      *
      */
     public String getResourceTypeLocalName() {
-        return rtd.getResourceTypeLocalName();
+        return uname.substring(uname.indexOf("}") + 1, uname.length() -2);
     }
 
     /**
      *
      */
     public String getResourceTypeNamespace() {
-        return rtd.getResourceTypeNamespace();
+        return uname.substring(uname.indexOf("{") + 1, uname.indexOf("}"));
     }
 }

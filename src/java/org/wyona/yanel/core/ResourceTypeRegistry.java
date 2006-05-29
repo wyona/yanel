@@ -24,9 +24,7 @@ public class ResourceTypeRegistry {
     /**
      *
      */
-/*
     public static ResourceTypeDefinition getResourceTypeDefinition(String universalName) {
         return new ResourceTypeDefinition(universalName);
     }
-*/
 }

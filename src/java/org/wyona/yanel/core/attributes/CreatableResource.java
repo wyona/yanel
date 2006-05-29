@@ -20,4 +20,9 @@ package org.wyona.yanel.core.attributes;
  *
  */
 public interface CreatableResource {
+
+    /**
+     *
+     */
+    public String[] getPropertyNames();
 }
