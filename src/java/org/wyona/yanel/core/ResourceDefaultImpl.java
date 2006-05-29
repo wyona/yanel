@@ -34,6 +34,7 @@ public class ResourceDefaultImpl extends Resource implements CreatableResource {
      *
      */
     public String[] getPropertyNames() {
-        return null;
+        String[] pn = {"name", "content"};
+        return pn;
     }
 }

@@ -48,10 +48,14 @@ public class YanelCommandLine {
         System.out.println("Namespace: " + rtd.getResourceTypeNamespace());
 
         Resource res = new ResourceDefaultImpl(rtd);
-        if (res.getClass().isInstance(CreatableResource.class)) {
-            System.out.println(((CreatableResource) res).getPropertyNames());
-        } else {
-            System.out.println(res.getClass().getName() + " does not implement creatable interface!");
+        Class[] interfaces = res.getClass().getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            System.out.println(interfaces[i].getName());
+            //if (interfaces[i].isInstance(CreatableResource.class)) {
+            if (1 > 0) {
+                System.out.println(((CreatableResource) res).getPropertyNames());
+            }
         }
+        //System.out.println(res.getClass().getName() + " does not implement creatable interface!");
     }
 }
