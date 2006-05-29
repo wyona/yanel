@@ -14,36 +14,15 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.core;
-
-import org.wyona.yanel.core.attributes.CreatableResource;
-import org.wyona.yanel.core.attributes.ViewableResource;
-import org.wyona.yanel.core.attributes.ViewDescriptor;
+package org.wyona.yanel.core.attributes;
 
 /**
  *
  */
-public class ResourceDefaultImpl extends Resource implements CreatableResource, ViewableResource {
+public abstract class ViewDescriptor {
 
     /**
      *
      */
-    public ResourceDefaultImpl(ResourceTypeDefinition rtd) {
-        super(rtd);
-    }
-
-    /**
-     *
-     */
-    public String[] getPropertyNames() {
-        String[] pn = {"name", "content"};
-        return pn;
-    }
-
-    /**
-     *
-     */
-    public ViewDescriptor[] getViewDescriptors() {
-        return null;
-    }
+    public abstract String getMimeType();
 }
