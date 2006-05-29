@@ -24,6 +24,7 @@ import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.ResourceDefaultImpl;
 import org.wyona.yanel.core.attributes.CreatableResource;
 import org.wyona.yanel.core.attributes.ViewableResource;
+import org.wyona.yanel.core.attributes.WritableResource;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
 import org.wyona.yanel.util.ResourceAttributeHelper;
@@ -61,6 +62,12 @@ public class YanelCommandLine {
             System.out.println(((ViewableResource) res).getViewDescriptors());
         } else {
             System.out.println(res.getClass().getName() + " does not implement viewable interface!");
+        }
+
+        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Writable")) {
+            ((WritableResource) res).write(path);
+        } else {
+            System.out.println(res.getClass().getName() + " does not implement writable interface!");
         }
     }
 }
