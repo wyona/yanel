@@ -29,6 +29,8 @@ import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
+import com.wyonapictures.yanel.impl.resources.TapeResource;
+
 /**
  *
  */
@@ -50,6 +52,7 @@ public class YanelCommandLine {
         System.out.println("Local name: " + rtd.getResourceTypeLocalName());
         System.out.println("Namespace: " + rtd.getResourceTypeNamespace());
 
+
         Resource res = new ResourceDefaultImpl(rtd);
 
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Creatable")) {
@@ -68,6 +71,14 @@ public class YanelCommandLine {
             ((WritableResource) res).write(path);
         } else {
             System.out.println(res.getClass().getName() + " does not implement writable interface!");
+        }
+
+
+        Resource tapeRes = new TapeResource(rtd);
+        if (ResourceAttributeHelper.hasAttributeImplemented(tapeRes, "Creatable")) {
+            System.out.println(((CreatableResource) tapeRes).getPropertyNames());
+        } else {
+            System.out.println(tapeRes.getClass().getName() + " does not implement creatable interface!");
         }
     }
 }

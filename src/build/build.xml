@@ -21,6 +21,18 @@
         <include name="*.jar"/>
       </fileset>
     </path>
+
+    <path id="classpath.yanel">
+      <fileset dir="${yanel.home.dir}/build/lib">
+        <include name="*.jar"/>
+      </fileset>
+    </path>
+
+    <path id="classpath.tape">
+      <fileset dir="${yanel.home.dir}/src/resources/tape/build/lib">
+        <include name="*.jar"/>
+      </fileset>
+    </path>
   </target>
 
   <target name="compile-core" description="Compile Java classes of Yanel core" depends="init">
@@ -48,6 +60,19 @@
       includes="org/wyona/yanel/impl/**"/>
   </target>
 
+  <target name="compile-tape-resource" description="Compile Java classes of Tape resource" depends="init">
+    <property name="tape-resource.classes.dir" value="${yanel.home.dir}/src/resources/tape/build/classes"/>
+    <mkdir dir="${tape-resource.classes.dir}"/>
+    <javac srcdir="${yanel.home.dir}/src/resources/tape/src/java" destdir="${tape-resource.classes.dir}"
+      classpathref="classpath.yanel"
+      debug="true"
+    />
+    <mkdir dir="${yanel.home.dir}/src/resources/tape/build/lib"/>
+    <jar destfile="${yanel.home.dir}/src/resources/tape/build/lib/yanel-resource-tape-0.0.1-dev-r${yanel.revision}.jar"
+      basedir="${tape-resource.classes.dir}"
+    />
+  </target>
+
   <target name="compile-cmdl" description="Compile Java classes of Yanel command line" depends="init">
     <mkdir dir="${classes.dir}"/>
     <!-- TODO: Make util classes available also for webapp, etc. -->
@@ -56,6 +81,7 @@
     />
     <javac srcdir="${yanel.home.dir}/src/java/org/wyona/yanel/cmdl" destdir="${classes.dir}"
       debug="true"
+      classpathref="classpath.tape"
     />
     <mkdir dir="${yanel.home.dir}/build/lib"/>
     <jar destfile="${yanel.home.dir}/build/lib/yanel-cmdl-0.0.1-dev-r${yanel.revision}.jar"
@@ -64,9 +90,6 @@
   </target>
 
   <target name="compile-webapp" description="Compile Java classes of Yanel webapp" depends="init, compile-core">
-<!--
-    <echo>${classes.dir}</echo>
--->
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${yanel.home.dir}/src/java/org/wyona/yanel/servlet" destdir="${classes.dir}"
       debug="true"
@@ -78,7 +101,7 @@
       includes="org/wyona/yanel/servlet/**"/>
   </target>
 
-  <target name="webapp" description="Build webapp" depends="init, compile-webapp, compile-cmdl, compile-impl">
+  <target name="webapp" description="Build webapp" depends="init, compile-webapp, compile-tape-resource, compile-cmdl, compile-impl">
 <!--
   <target name="webapp" description="Build webapp" depends="init, compile-webapp">
 -->
