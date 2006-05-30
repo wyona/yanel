@@ -28,8 +28,11 @@
       </fileset>
     </path>
 
-    <path id="classpath.tape">
+    <path id="classpath.resources">
       <fileset dir="${yanel.home.dir}/src/resources/tape/build/lib">
+        <include name="*.jar"/>
+      </fileset>
+      <fileset dir="${yanel.home.dir}/src/resources/invoice/build/lib">
         <include name="*.jar"/>
       </fileset>
     </path>
@@ -72,6 +75,18 @@
       basedir="${tape-resource.classes.dir}"
     />
   </target>
+  <target name="compile-invoice-resource" description="Compile Java classes of Invoice resource" depends="init">
+    <property name="invoice-resource.classes.dir" value="${yanel.home.dir}/src/resources/invoice/build/classes"/>
+    <mkdir dir="${invoice-resource.classes.dir}"/>
+    <javac srcdir="${yanel.home.dir}/src/resources/invoice/src/java" destdir="${invoice-resource.classes.dir}"
+      classpathref="classpath.yanel"
+      debug="true"
+    />
+    <mkdir dir="${yanel.home.dir}/src/resources/invoice/build/lib"/>
+    <jar destfile="${yanel.home.dir}/src/resources/invoice/build/lib/yanel-resource-invoice-0.0.1-dev-r${yanel.revision}.jar"
+      basedir="${invoice-resource.classes.dir}"
+    />
+  </target>
 
   <target name="compile-cmdl" description="Compile Java classes of Yanel command line" depends="init">
     <mkdir dir="${classes.dir}"/>
@@ -81,7 +96,7 @@
     />
     <javac srcdir="${yanel.home.dir}/src/java/org/wyona/yanel/cmdl" destdir="${classes.dir}"
       debug="true"
-      classpathref="classpath.tape"
+      classpathref="classpath.resources"
     />
     <mkdir dir="${yanel.home.dir}/build/lib"/>
     <jar destfile="${yanel.home.dir}/build/lib/yanel-cmdl-0.0.1-dev-r${yanel.revision}.jar"
@@ -101,7 +116,7 @@
       includes="org/wyona/yanel/servlet/**"/>
   </target>
 
-  <target name="webapp" description="Build webapp" depends="init, compile-webapp, compile-tape-resource, compile-cmdl, compile-impl">
+  <target name="webapp" description="Build webapp" depends="init, compile-webapp, compile-invoice-resource, compile-tape-resource, compile-cmdl, compile-impl">
 <!--
   <target name="webapp" description="Build webapp" depends="init, compile-webapp">
 -->

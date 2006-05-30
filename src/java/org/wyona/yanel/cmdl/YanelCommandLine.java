@@ -30,6 +30,7 @@ import org.wyona.yanel.core.map.MapFactory;
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
 import com.wyonapictures.yanel.impl.resources.TapeResource;
+import com.wyona.yanel.impl.resources.InvoiceResource;
 
 /**
  *
@@ -88,6 +89,22 @@ public class YanelCommandLine {
             System.out.println("Property Names: " + propNames);
         } else {
             System.out.println(tapeRes.getClass().getName() + " does not implement creatable interface!");
+        }
+
+        Resource invoiceRes = new InvoiceResource(rtd);
+        if (ResourceAttributeHelper.hasAttributeImplemented(invoiceRes, "Creatable")) {
+            String[] names = ((CreatableResource) invoiceRes).getPropertyNames();
+            String propNames = "";
+            for (int i = 0; i < names.length; i++) {
+                if (i == names.length -1) {
+                    propNames = propNames + names[i];
+                } else {
+                    propNames = propNames + names[i] + ", ";
+                }
+            }
+            System.out.println("Property Names: " + propNames);
+        } else {
+            System.out.println(invoiceRes.getClass().getName() + " does not implement creatable interface!");
         }
     }
 }
