@@ -38,7 +38,7 @@ public class TapeResource extends Resource implements CreatableResource, Viewabl
      *
      */
     public String[] getPropertyNames() {
-        String[] pn = {"name", "content"};
+        String[] pn = {"name", "description", "video-format", "audio-format", "content"};
         return pn;
     }
 

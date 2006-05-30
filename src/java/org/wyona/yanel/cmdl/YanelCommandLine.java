@@ -76,7 +76,16 @@ public class YanelCommandLine {
 
         Resource tapeRes = new TapeResource(rtd);
         if (ResourceAttributeHelper.hasAttributeImplemented(tapeRes, "Creatable")) {
-            System.out.println(((CreatableResource) tapeRes).getPropertyNames());
+            String[] names = ((CreatableResource) tapeRes).getPropertyNames();
+            String propNames = "";
+            for (int i = 0; i < names.length; i++) {
+                if (i == names.length -1) {
+                    propNames = propNames + names[i];
+                } else {
+                    propNames = propNames + names[i] + ", ";
+                }
+            }
+            System.out.println("Property Names: " + propNames);
         } else {
             System.out.println(tapeRes.getClass().getName() + " does not implement creatable interface!");
         }
