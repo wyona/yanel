@@ -106,5 +106,10 @@ public class YanelCommandLine {
         } else {
             System.out.println(invoiceRes.getClass().getName() + " does not implement creatable interface!");
         }
+        if (ResourceAttributeHelper.hasAttributeImplemented(invoiceRes, "Versionable")) {
+            System.out.println(invoiceRes.getClass().getName() + " does implement versionable interface!");
+        } else {
+            System.out.println(invoiceRes.getClass().getName() + " does not implement versionable interface!");
+        }
     }
 }

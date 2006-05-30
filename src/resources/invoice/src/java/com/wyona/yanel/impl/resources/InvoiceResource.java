@@ -19,13 +19,14 @@ package com.wyona.yanel.impl.resources;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.attributes.CreatableResource;
+import org.wyona.yanel.core.attributes.VersionableResource;
 import org.wyona.yanel.core.attributes.ViewableResource;
 import org.wyona.yanel.core.attributes.ViewDescriptor;
 
 /**
  *
  */
-public class InvoiceResource extends Resource implements CreatableResource, ViewableResource {
+public class InvoiceResource extends Resource implements CreatableResource, ViewableResource, VersionableResource {
 
     /**
      *
@@ -46,6 +47,13 @@ public class InvoiceResource extends Resource implements CreatableResource, View
      *
      */
     public ViewDescriptor[] getViewDescriptors() {
+        return null;
+    }
+
+    /**
+     *
+     */
+    public String[] getRevisions() {
         return null;
     }
 }
