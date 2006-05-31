@@ -192,5 +192,9 @@
 
   <target name="clean" description="Clean build" depends="init">
     <delete dir="${build.dir}"/>
+    <delete dir="${yanel.home.dir}/src/resources/invoice/build"/>
+    <delete dir="${yanel.home.dir}/src/resources/websearch/build"/>
+    <delete dir="${yanel.home.dir}/src/resources/tape/build"/>
+    <delete dir="${yanel.home.dir}/src/resources/calendar/build"/>
   </target>
 </project>
