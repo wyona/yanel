@@ -16,7 +16,7 @@
 
 package com.wyonapictures.yanel.impl.resources;
 
-import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.ResourceDefaultImpl;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.attributes.CreatableResource;
 import org.wyona.yanel.core.attributes.ViewableResource;
@@ -25,7 +25,7 @@ import org.wyona.yanel.core.attributes.ViewDescriptor;
 /**
  *
  */
-public class TapeResource extends Resource implements CreatableResource, ViewableResource {
+public class TapeResource extends ResourceDefaultImpl implements CreatableResource, ViewableResource {
 
     /**
      *
