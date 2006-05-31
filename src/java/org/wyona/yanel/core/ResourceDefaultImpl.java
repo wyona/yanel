@@ -43,6 +43,19 @@ public class ResourceDefaultImpl extends Resource implements CreatableResource, 
     /**
      *
      */
+    public Object getProperty(String name) {
+        return null;
+    }
+
+    /**
+     *
+     */
+    public void setProperty(String name, Object value) {
+    }
+
+    /**
+     *
+     */
     public ViewDescriptor[] getViewDescriptors() {
         return null;
     }
