@@ -35,6 +35,9 @@
       <fileset dir="${yanel.home.dir}/src/resources/invoice/build/lib">
         <include name="*.jar"/>
       </fileset>
+      <fileset dir="${yanel.home.dir}/src/resources/websearch/build/lib">
+        <include name="*.jar"/>
+      </fileset>
     </path>
   </target>
 
@@ -87,6 +90,18 @@
       basedir="${invoice-resource.classes.dir}"
     />
   </target>
+  <target name="compile-websearch-resource" description="Compile Java classes of WebSearch resource" depends="init">
+    <property name="websearch-resource.classes.dir" value="${yanel.home.dir}/src/resources/websearch/build/classes"/>
+    <mkdir dir="${websearch-resource.classes.dir}"/>
+    <javac srcdir="${yanel.home.dir}/src/resources/websearch/src/java" destdir="${websearch-resource.classes.dir}"
+      classpathref="classpath.yanel"
+      debug="true"
+    />
+    <mkdir dir="${yanel.home.dir}/src/resources/websearch/build/lib"/>
+    <jar destfile="${yanel.home.dir}/src/resources/websearch/build/lib/yanel-resource-websearch-0.0.1-dev-r${yanel.revision}.jar"
+      basedir="${websearch-resource.classes.dir}"
+    />
+  </target>
 
   <target name="compile-cmdl" description="Compile Java classes of Yanel command line" depends="init">
     <mkdir dir="${classes.dir}"/>
@@ -116,7 +131,7 @@
       includes="org/wyona/yanel/servlet/**"/>
   </target>
 
-  <target name="webapp" description="Build webapp" depends="init, compile-webapp, compile-invoice-resource, compile-tape-resource, compile-cmdl, compile-impl">
+  <target name="webapp" description="Build webapp" depends="init, compile-webapp, compile-websearch-resource, compile-invoice-resource, compile-tape-resource, compile-cmdl, compile-impl">
 <!--
   <target name="webapp" description="Build webapp" depends="init, compile-webapp">
 -->

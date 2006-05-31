@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<resource xmlns="http://www.wyona.org/yanel/1.0" name="tape" namespace="http://www.wyona.org/yanel/resource/1.0">
+<resource xmlns="http://www.wyona.org/yanel/1.0" name="tape" namespace="http://www.wyonapictures.com/yanel/resource/1.0">
 <description>
 Tape (e.g. MiniDV Tape) with movie sequences and descriptions for each sequence
 </description>

@@ -31,6 +31,7 @@ import org.wyona.yanel.util.ResourceAttributeHelper;
 
 import com.wyonapictures.yanel.impl.resources.TapeResource;
 import com.wyona.yanel.impl.resources.InvoiceResource;
+import org.wyona.yanel.impl.resources.WebSearchResource;
 
 /**
  *
@@ -95,7 +96,15 @@ public class YanelCommandLine {
         if (ResourceAttributeHelper.hasAttributeImplemented(invoiceRes, "Creatable")) {
             String[] names = ((CreatableResource) invoiceRes).getPropertyNames();
             String propNames = "";
+            java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
             for (int i = 0; i < names.length; i++) {
+                System.out.println("Please enter a value for property \"" + names[i] + "\":");
+                try {
+                    String value = br.readLine();
+                    System.out.println("The following value has been entered: " + value);
+                } catch (Exception e) {
+                    System.err.println(e);
+                }
                 if (i == names.length -1) {
                     propNames = propNames + names[i];
                 } else {
@@ -111,5 +120,8 @@ public class YanelCommandLine {
         } else {
             System.out.println(invoiceRes.getClass().getName() + " does not implement versionable interface!");
         }
+
+        Resource websearchRes = new WebSearchResource(rtd);
+        if (ResourceAttributeHelper.hasAttributeImplemented(websearchRes, "Continuable")) System.out.println("yeah");
     }
 }
