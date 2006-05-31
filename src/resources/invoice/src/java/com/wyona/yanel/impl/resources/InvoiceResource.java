@@ -16,7 +16,7 @@
 
 package com.wyona.yanel.impl.resources;
 
-import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.ResourceDefaultImpl;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.attributes.CreatableResource;
 import org.wyona.yanel.core.attributes.VersionableResource;
@@ -26,7 +26,7 @@ import org.wyona.yanel.core.attributes.ViewDescriptor;
 /**
  *
  */
-public class InvoiceResource extends Resource implements CreatableResource, ViewableResource, VersionableResource {
+public class InvoiceResource extends ResourceDefaultImpl implements CreatableResource, ViewableResource, VersionableResource {
 
     /**
      *
@@ -42,6 +42,23 @@ public class InvoiceResource extends Resource implements CreatableResource, View
         String[] pn = {"name", "customer", "content"};
         return pn;
     }
+
+    /**
+     *
+     */
+/*
+    public Object getProperty(String name) {
+        return null;
+    }
+*/
+
+    /**
+     *
+     */
+/*
+    public void setProperty(String name, Object value) {
+    }
+*/
 
     /**
      *
