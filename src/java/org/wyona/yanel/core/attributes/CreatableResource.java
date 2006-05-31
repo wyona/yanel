@@ -22,7 +22,17 @@ package org.wyona.yanel.core.attributes;
 public interface CreatableResource {
 
     /**
-     *
+     * TODO: Wouldn't it be better to implement this with introspection?
      */
     public String[] getPropertyNames();
+
+    /**
+     * TODO: Wouldn't it be better to implement this with a Setter interface?
+     */
+    public void setProperty(String name, Object value);
+
+    /**
+     * TODO: Wouldn't it be better to implement this with a Getter interface?
+     */
+    public Object getProperty(String name);
 }
