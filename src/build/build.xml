@@ -17,13 +17,19 @@
     <artifact:remoteRepository id="wyona.remote.repository" url="http://www.wyona.org/maven2/"/>
     <artifact:dependencies pathId="maven2.classpath">
       <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="javax.servlet" artifactId="servlet-api" 
+                  version="2.3" scope="provided" />
       <dependency groupId="log4j" artifactId="log4j"
                   version="1.2.8"/>
       <!-- TODO: Add checksum file to server -->
       <dependency groupId="yarep" artifactId="yarep"
                   version="0.0.1-dev-r13790"/>
-      <dependency groupId="javax.servlet" artifactId="servlet-api" 
-                  version="2.3" scope="provided" />
+
+      <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
+      <dependency groupId="avalon-framework" artifactId="avalon-framework-api"
+                  version="4.1.5"/>
+      <dependency groupId="avalon-framework" artifactId="avalon-framework-impl"
+                  version="4.1.5"/>
     </artifact:dependencies>
 
     <property name="maven.repo.local" value="${user.home}/.m2/repository"/>
