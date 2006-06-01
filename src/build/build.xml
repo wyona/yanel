@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="yanel" default="deploy">
-<!--
-<project name="yanel" default="war">
--->
+<project name="yanel" default="deploy" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
   <target name="init" description="Initialize all parameters and other settings">
     <property file="local.build.properties"/>
@@ -16,10 +13,14 @@
     <property name="build.dir" value="${yanel.home.dir}/build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
 
+    <property name="maven.repo.local" value="${user.home}/.m2/repository"/>
+
     <path id="classpath">
       <fileset dir="${yanel.home.dir}/lib">
         <include name="*.jar"/>
       </fileset>
+
+      <pathelement path="${maven.repo.local}/log4j/log4j/1.2.8/log4j-1.2.8.jar"/>
     </path>
 
     <path id="classpath.yanel">
@@ -39,6 +40,18 @@
         <include name="*.jar"/>
       </fileset>
     </path>
+
+    <artifact:remoteRepository id="wyona.remote.repository" url="http://www.wyona.org/maven2/"/>
+    <artifact:dependencies pathId="dependency.classpath">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="log4j" artifactId="log4j"
+                  version="1.2.8"/>
+      <!-- TODO: Add checksum file to server -->
+      <dependency groupId="yarep" artifactId="yarep"
+                  version="0.0.1-dev-r13790"/>
+      <dependency groupId="javax.servlet" artifactId="servlet-api" 
+                  version="2.3" scope="provided" />
+    </artifact:dependencies>
   </target>
 
   <target name="compile-core" description="Compile Java classes of Yanel core" depends="init">

@@ -2,4 +2,6 @@
 
 echo "Start/Stop Yanel ..."
 
-java -classpath build/classes:src/resources/tape/build/classes:src/resources/invoice/build/classes:src/resources/websearch/build/classes:lib/yarep-0.0.1-dev-r13790.jar org.wyona.yanel.cmdl.YanelCommandLine
+MAVEN_REPO_LOCAL=/home/michi/.m2/repository
+
+java -classpath build/classes:src/resources/tape/build/classes:src/resources/invoice/build/classes:src/resources/websearch/build/classes:lib/yarep-0.0.1-dev-r13790.jar:$MAVEN_REPO_LOCAL/log4j/log4j/1.2.8/log4j-1.2.8.jar org.wyona.yanel.cmdl.YanelCommandLine
