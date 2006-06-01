@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<repository>
+  <name>Yanel</name>
+
+  <paths src="../paths"/>
+
+  <storage class="org.wyona.yarep.core.impl.fs.FileSystemStorage">
+    <content src="../content"/>
+  </storage>
+</repository>
