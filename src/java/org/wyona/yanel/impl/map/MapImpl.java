@@ -34,7 +34,7 @@ public class MapImpl implements Map {
         try {
             Repository repo = new RepositoryFactory().newRepository("yanel");
         } catch(Exception e) {
-            System.err.println(e);
+            System.err.println("ERROR 2432423: " + e);
         }
     }
 
