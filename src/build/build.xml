@@ -197,4 +197,13 @@
     <delete dir="${yanel.home.dir}/src/resources/tape/build"/>
     <delete dir="${yanel.home.dir}/src/resources/calendar/build"/>
   </target>
+
+  <target name="javadoc" description="Generate Javadoc" depends="init">
+    <javadoc
+      packagenames="org.*"
+      sourcepath="${yanel.home.dir}/src/java"
+      destdir="${yanel.home.dir}/build/javadoc"
+    >
+    </javadoc>
+  </target>
 </project>
