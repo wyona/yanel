@@ -19,10 +19,24 @@ package org.wyona.yanel.impl.map;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.map.Map;
 
+import org.wyona.yarep.core.Repository;
+import org.wyona.yarep.core.RepositoryFactory;
+
 /**
  *
  */
 public class MapImpl implements Map {
+
+    /**
+     *
+     */
+    public MapImpl() {
+        try {
+            Repository repo = new RepositoryFactory().newRepository("yanel");
+        } catch(Exception e) {
+            System.err.println(e);
+        }
+    }
 
     /**
      *

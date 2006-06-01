@@ -59,6 +59,7 @@
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${yanel.home.dir}/src/java/org/wyona/yanel/impl" destdir="${classes.dir}"
       debug="true"
+      classpathref="classpath"
     />
     <mkdir dir="${yanel.home.dir}/build/lib"/>
     <jar destfile="${yanel.home.dir}/build/lib/yanel-impl-0.0.1-dev-r${yanel.revision}.jar"
