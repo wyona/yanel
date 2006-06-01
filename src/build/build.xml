@@ -23,7 +23,7 @@
                   version="1.2.8"/>
       <!-- TODO: Add checksum file to server -->
       <dependency groupId="yarep" artifactId="yarep"
-                  version="0.0.1-dev-r13790"/>
+                  version="0.0.1-dev-r13828"/>
 
       <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api"
@@ -43,7 +43,7 @@
 
       <pathelement path="${maven.repo.local}/log4j/log4j/1.2.8/log4j-1.2.8.jar"/>
       <pathelement path="${maven.repo.local}/javax/servlet/servlet-api/2.3/servlet-api-2.3.jar"/>
-      <pathelement path="${maven.repo.local}/yarep/yarep/0.0.1-dev-r13790/yarep-0.0.1-dev-r13790.jar"/>
+      <pathelement path="${maven.repo.local}/yarep/yarep/0.0.1-dev-r13828/yarep-0.0.1-dev-r13828.jar"/>
     </path>
 
     <path id="classpath.yanel">
