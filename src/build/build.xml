@@ -13,6 +13,7 @@
     <property name="build.dir" value="${yanel.home.dir}/build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
 
+    <!-- INFO: http://maven.apache.org/ant-tasks.html -->
     <artifact:remoteRepository id="wyona.remote.repository" url="http://www.wyona.org/maven2/"/>
     <artifact:dependencies pathId="maven2.classpath">
       <remoteRepository refid="wyona.remote.repository"/>
