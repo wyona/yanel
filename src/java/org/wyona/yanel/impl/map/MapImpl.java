@@ -22,19 +22,25 @@ import org.wyona.yanel.core.map.Map;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 
+import org.apache.log4j.Category;
+
 /**
  *
  */
 public class MapImpl implements Map {
+
+    private static Category log = Category.getInstance(MapImpl.class);
+
+    Repository repo;
 
     /**
      *
      */
     public MapImpl() {
         try {
-            Repository repo = new RepositoryFactory().newRepository("yanel");
+            repo = new RepositoryFactory().newRepository("yanel");
         } catch(Exception e) {
-            System.err.println("ERROR 2432423: " + e);
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -49,6 +55,13 @@ public class MapImpl implements Map {
      * See James Clark's explanation on namespaces: http://www.jclark.com/xml/xmlns.htm
      */
     public String getResourceTypeIdentifier(Path path) {
-        return "<{http://www.wyona.org/yanel/resource/1.0}invoice/>";
+        try {
+            java.io.BufferedReader br = new java.io.BufferedReader(repo.getReader(new org.wyona.yarep.core.Path(path.toString())));
+            return br.readLine();
+        } catch(Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        log.warn("No resource type identifier for path: " + path);
+        return null;
     }
 }

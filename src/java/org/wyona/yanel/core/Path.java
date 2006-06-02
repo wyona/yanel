@@ -21,6 +21,8 @@ package org.wyona.yanel.core;
  */
 public class Path {
 
+    private String path;
+
     /**
      *
      */
@@ -31,5 +33,13 @@ public class Path {
      *
      */
     public Path(String path) {
+        this.path = path;
+    }
+
+    /**
+     *
+     */
+    public String toString() {
+        return path;
     }
 }
