@@ -33,6 +33,9 @@ import com.wyonapictures.yanel.impl.resources.TapeResource;
 import com.wyona.yanel.impl.resources.InvoiceResource;
 import org.wyona.yanel.impl.resources.WebSearchResource;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 /**
  *
  */
@@ -42,11 +45,27 @@ public class YanelCommandLine {
      *
      */
     static public void main(String[] args) {
-        System.out.println("Hello Yanel!");
+        System.out.println("Welcome to the Yanel command line interface!\n");
 
         MapFactory mf = MapFactory.newInstance();
         Map map = mf.newMap();
-        Path path = new Path("/hello/world.html");
+
+        System.out.println("Please enter a path (e.g. /hello/world.html):");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        Path path = null;
+        try {
+            String value = br.readLine();
+            System.out.println("The following value has been entered: " + value);
+            path = new Path(value);
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+
+        // TODO: See YarepSource!
+        //Path path = new Path("/hello/world.html");
+        //Path path = new Path("/index.html");
+        //Path path = new Path("/wyonapictures/index.html");
+
         String rti = map.getResourceTypeIdentifier(path);
         System.out.println("Resource Type Identifier: " + rti);
 
@@ -96,7 +115,6 @@ public class YanelCommandLine {
         if (ResourceAttributeHelper.hasAttributeImplemented(invoiceRes, "Creatable")) {
             String[] names = ((CreatableResource) invoiceRes).getPropertyNames();
             String propNames = "";
-            java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
             for (int i = 0; i < names.length; i++) {
                 System.out.println("Please enter a value for property \"" + names[i] + "\":");
                 try {
