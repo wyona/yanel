@@ -56,6 +56,7 @@ public class MapImpl implements Map {
      */
     public String getResourceTypeIdentifier(Path path) {
         try {
+            // TODO: See YarepSource re using more than one repository!
             java.io.BufferedReader br = new java.io.BufferedReader(repo.getReader(new org.wyona.yarep.core.Path(path.toString())));
             return br.readLine();
         } catch(Exception e) {
