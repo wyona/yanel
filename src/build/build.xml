@@ -30,6 +30,12 @@
                   version="4.1.5"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-impl"
                   version="4.1.5"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-discovery"
+                  version="0.2"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-id"
+                  version="0.1-dev-lcr357257"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-logging"
+                  version="1.0.4"/>
     </artifact:dependencies>
 
     <property name="maven.repo.local" value="${user.home}/.m2/repository"/>
