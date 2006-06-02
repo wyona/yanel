@@ -39,6 +39,8 @@ public class YanelServlet extends HttpServlet {
         String servletContextRealPath = config.getServletContext().getRealPath("/");
         writer.println("<yanel servlet-context-real-path=\""+servletContextRealPath+"\" xmlns=\"http://www.wyona.org/yanel/1.0\">");
 
+        writer.println("<request uri=\""+request.getRequestURI()+"\"/>");
+
 	HttpSession session = request.getSession(true);
         writer.println("<session id=\""+session.getId()+"\">");
 	Enumeration e = session.getAttributeNames();
