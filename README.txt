@@ -26,7 +26,10 @@
     - Performance
     - Scalability
     - Redundancy/Clusterable
-    - Backwards Compatibility
+    - Forward and Backwards Compatibility
+      - See http://davidbau.com/archives/2003/12/01/theory_of_compatibility_part_1.html
+      - See http://www-128.ibm.com/developerworks/webservices/library/ws-soa-backcomp/
+      - See http://cocoon.apache.org/versioning.html
     - Upgradeability
     - Out-of-box usage (minimal setup)
     - Package manager
