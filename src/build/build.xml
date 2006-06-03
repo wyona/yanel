@@ -15,7 +15,8 @@
 
     <!-- INFO: http://maven.apache.org/ant-tasks.html -->
     <artifact:remoteRepository id="wyona.remote.repository" url="http://www.wyona.org/maven2/"/>
-    <artifact:dependencies pathId="maven2.classpath">
+
+    <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
       <dependency groupId="javax.servlet" artifactId="servlet-api" 
                   version="2.3" scope="provided" />
@@ -37,6 +38,22 @@
       <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-logging"
                   version="1.0.4"/>
     </artifact:dependencies>
+
+<!--
+    <property name="hugo" refid="maven2.classpath"/>
+    <echo>Maven2 classpath: ${hugo}</echo>
+-->
+
+<!--
+    <copy todir="${tomcat1.webapps.dir}/yanel/WEB-INF/lib">
+      <fileset refid="maven2.fileset"/>
+      <mapper type="flatten"/>
+    </copy>
+    <copy todir="${tomcat2.webapps.dir}/yanel/WEB-INF/lib">
+      <fileset refid="maven2.fileset"/>
+      <mapper type="flatten"/>
+    </copy>
+-->
 
     <property name="maven.repo.local" value="${user.home}/.m2/repository"/>
 
@@ -177,9 +194,24 @@
     <copy todir="${build.dir}/webapps/yanel/WEB-INF/lib">
       <fileset dir="${yanel.home.dir}/build/lib"/>
     </copy>
+
+    <copy todir="${build.dir}/webapps/yanel/WEB-INF/classes">
+      <fileset dir="${yanel.home.dir}/lib">
+        <include name="*.properties"/>
+      </fileset>
+    </copy>
 <!--
     <copy todir="${build.dir}/webapps/yanel/WEB-INF/classes">
       <fileset dir="${yanel.home.dir}/build/classes"/>
+    </copy>
+-->
+
+<!-- TODO: Copy maven dependencies -->
+<!-- TODO: This seems to work when used within the init target! -->
+<!--
+    <copy todir="${build.dir}/webapps/yanel/WEB-INF/lib">
+      <fileset refid="maven2.fileset"/>
+      <mapper type="flatten"/>
     </copy>
 -->
   </target>
