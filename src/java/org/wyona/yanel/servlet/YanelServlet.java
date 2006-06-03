@@ -11,6 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.wyona.yanel.core.Path;
+import org.wyona.yanel.core.ResourceTypeDefinition;
+import org.wyona.yanel.core.ResourceTypeRegistry;
+import org.wyona.yanel.core.map.Map;
+import org.wyona.yanel.core.map.MapFactory;
+
 /**
  *
  */
@@ -39,7 +45,7 @@ public class YanelServlet extends HttpServlet {
         String servletContextRealPath = config.getServletContext().getRealPath("/");
         writer.println("<yanel servlet-context-real-path=\""+servletContextRealPath+"\" xmlns=\"http://www.wyona.org/yanel/1.0\">");
 
-        writer.println("<request uri=\""+request.getRequestURI()+"\"/>");
+        writer.println("<request uri=\""+request.getRequestURI()+"\" servlet-path=\""+request.getServletPath()+"\"/>");
 
 	HttpSession session = request.getSession(true);
         writer.println("<session id=\""+session.getId()+"\">");
@@ -53,6 +59,12 @@ public class YanelServlet extends HttpServlet {
             writer.println("<attribute name=\"" + name + "\">" + value + "</attribute>");
         }
         writer.println("</session>");
+
+        MapFactory mf = MapFactory.newInstance();
+        Map map = mf.newMap();
+        String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
+        ResourceTypeDefinition rtd = ResourceTypeRegistry.getResourceTypeDefinition(rti);
+        writer.println("<resource-type-identifier namespace=\"" + rtd.getResourceTypeNamespace() + "\" local-name=\"" + rtd.getResourceTypeLocalName() + "\"/>");
 
         writer.println("</yanel>");
     }
