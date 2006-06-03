@@ -63,8 +63,12 @@ public class YanelServlet extends HttpServlet {
         MapFactory mf = MapFactory.newInstance();
         Map map = mf.newMap();
         String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
-        ResourceTypeDefinition rtd = ResourceTypeRegistry.getResourceTypeDefinition(rti);
-        writer.println("<resource-type-identifier namespace=\"" + rtd.getResourceTypeNamespace() + "\" local-name=\"" + rtd.getResourceTypeLocalName() + "\"/>");
+        if (rti != null) {
+            ResourceTypeDefinition rtd = ResourceTypeRegistry.getResourceTypeDefinition(rti);
+            writer.println("<resource-type-identifier namespace=\"" + rtd.getResourceTypeNamespace() + "\" local-name=\"" + rtd.getResourceTypeLocalName() + "\"/>");
+        } else {
+            writer.println("<no-resource-type-identifier-found servlet-path=\""+request.getServletPath()+"\"/>");
+        }
 
         writer.println("</yanel>");
     }
