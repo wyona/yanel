@@ -182,7 +182,7 @@
       includes="org/wyona/yanel/servlet/**"/>
   </target>
 
-  <target name="webapp" description="Build webapp" depends="init, compile-webapp, compile-websearch-resource, compile-invoice-resource, compile-tape-resource, compile-cmdl, compile-impl">
+  <target name="webapp" description="Build webapp" depends="init, compile-webapp, compile-websearch-resource, compile-impl, compile-invoice-resource, compile-tape-resource, compile-cmdl">
 <!--
   <target name="webapp" description="Build webapp" depends="init, compile-webapp">
 -->

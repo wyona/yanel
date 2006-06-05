@@ -18,15 +18,15 @@ package org.wyona.yanel.cmdl;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.ResourceDefaultImpl;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
-import org.wyona.yanel.core.ResourceDefaultImpl;
 import org.wyona.yanel.core.attributes.CreatableResource;
 import org.wyona.yanel.core.attributes.ViewableResource;
 import org.wyona.yanel.core.attributes.WritableResource;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
+
+import org.wyona.yanel.impl.ResourceDefaultImpl;
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
 import com.wyonapictures.yanel.impl.resources.TapeResource;
