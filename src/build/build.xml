@@ -191,6 +191,7 @@
       <fileset dir="${yanel.home.dir}/src/webapp"/>
     </copy>
 
+    <!-- TODO: Copy onle core, impl, webapp, but NOT cmdl, etc. -->
     <copy todir="${build.dir}/webapps/yanel/WEB-INF/lib">
       <fileset dir="${yanel.home.dir}/build/lib"/>
     </copy>
