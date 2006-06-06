@@ -39,34 +39,24 @@
                   version="1.0.4"/>
     </artifact:dependencies>
 
-<!--
-    <property name="hugo" refid="maven2.classpath"/>
-    <echo>Maven2 classpath: ${hugo}</echo>
--->
-
-<!--
-    <copy todir="${tomcat1.webapps.dir}/yanel/WEB-INF/lib">
-      <fileset refid="maven2.fileset"/>
-      <mapper type="flatten"/>
-    </copy>
-    <copy todir="${tomcat2.webapps.dir}/yanel/WEB-INF/lib">
-      <fileset refid="maven2.fileset"/>
-      <mapper type="flatten"/>
-    </copy>
--->
-
+    <!--
     <property name="maven.repo.local" value="${user.home}/.m2/repository"/>
-
+    -->
+    <property name="maven2.cp" refid="maven2.classpath"/>
+    <!--<echo>Maven2 classpath: ${maven2.cp}</echo>-->
     <path id="classpath">
-<!--
+      <!--
       <fileset dir="${yanel.home.dir}/lib">
         <include name="*.jar"/>
       </fileset>
--->
+       -->
 
+      <pathelement path="${maven2.cp}"/>
+      <!--
       <pathelement path="${maven.repo.local}/log4j/log4j/1.2.8/log4j-1.2.8.jar"/>
       <pathelement path="${maven.repo.local}/javax/servlet/servlet-api/2.3/servlet-api-2.3.jar"/>
       <pathelement path="${maven.repo.local}/yarep/yarep/0.0.1-dev-r13843/yarep-0.0.1-dev-r13843.jar"/>
+      -->
     </path>
 
     <path id="classpath.yanel">
@@ -106,9 +96,6 @@
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${yanel.home.dir}/src/java/org/wyona/yanel/impl" destdir="${classes.dir}" debug="true">
       <classpath refid="classpath"/>
-<!--
-      <classpath refid="maven2.classpath"/>
--->
     </javac>
 
     <mkdir dir="${yanel.home.dir}/build/lib"/>
@@ -207,14 +194,10 @@
     </copy>
 -->
 
-<!-- TODO: Copy maven dependencies -->
-<!-- TODO: This seems to work when used within the init target! -->
-<!--
     <copy todir="${build.dir}/webapps/yanel/WEB-INF/lib">
       <fileset refid="maven2.fileset"/>
       <mapper type="flatten"/>
     </copy>
--->
   </target>
 
   <target name="war" description="Build war file" depends="init, webapp">
