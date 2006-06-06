@@ -1,0 +1,3 @@
+
+- grep -rl TODO *
+- Add yanel version (such that for instance the webapp can display the version, e.g. 0.0.1-dev-r13812)
