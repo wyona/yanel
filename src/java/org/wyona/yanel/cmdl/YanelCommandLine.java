@@ -21,6 +21,7 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.attributes.CreatableV1;
+import org.wyona.yanel.core.attributes.CreatableV2;
 import org.wyona.yanel.core.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.WritableV1;
 import org.wyona.yanel.core.map.Map;
@@ -83,6 +84,8 @@ public class YanelCommandLine {
 
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Creatable", "1")) {
             System.out.println(((CreatableV1) res).getPropertyNames());
+        } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Creatable", "2")) {
+            System.out.println(((CreatableV2) res).getPropertyType("name"));
         } else {
             System.out.println(res.getClass().getName() + " does not implement creatable interface!");
         }
