@@ -19,6 +19,7 @@ package org.wyona.yanel.impl;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.attributes.CreatableResource;
+import org.wyona.yanel.core.attributes.View;
 import org.wyona.yanel.core.attributes.ViewableResource;
 import org.wyona.yanel.core.attributes.ViewDescriptor;
 
@@ -59,6 +60,13 @@ public class ResourceDefaultImpl extends Resource implements CreatableResource, 
      *
      */
     public ViewDescriptor[] getViewDescriptors() {
+        return null;
+    }
+
+    /**
+     *
+     */
+    public View getView(String suffix, String viewId) {
         return null;
     }
 }

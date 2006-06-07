@@ -16,18 +16,20 @@
 
 package org.wyona.yanel.core.attributes;
 
+import java.io.InputStream;
+
 /**
  *
  */
-public interface ViewableResource {
+public abstract class View {
 
     /**
      *
      */
-    public ViewDescriptor[] getViewDescriptors();
+    public abstract String getMimeType();
 
     /**
      *
      */
-    public View getView(String suffix, String viewId);
+    public abstract InputStream getInputStream();
 }
