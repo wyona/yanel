@@ -32,8 +32,7 @@ public class InvoiceResource extends ResourceDefaultImpl implements CreatableRes
     /**
      *
      */
-    public InvoiceResource(ResourceTypeDefinition rtd) {
-        super(rtd);
+    public InvoiceResource() {
     }
 
     /**

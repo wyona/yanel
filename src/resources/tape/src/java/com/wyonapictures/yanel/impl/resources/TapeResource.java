@@ -31,8 +31,7 @@ public class TapeResource extends ResourceDefaultImpl implements CreatableResour
     /**
      *
      */
-    public TapeResource(ResourceTypeDefinition rtd) {
-        super(rtd);
+    public TapeResource() {
     }
 
     /**

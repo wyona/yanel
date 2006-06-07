@@ -28,7 +28,6 @@ public class WebSearchResource extends Resource implements ContinuableResource {
     /**
      *
      */
-    public WebSearchResource(ResourceTypeDefinition rtd) {
-        super(rtd);
+    public WebSearchResource() {
     }
 }
