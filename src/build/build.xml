@@ -182,17 +182,20 @@
     <copy todir="${build.dir}/webapps/yanel/WEB-INF/lib">
       <fileset dir="${yanel.home.dir}/build/lib"/>
     </copy>
+    <!--
+    <copy todir="${build.dir}/webapps/yanel/WEB-INF/classes">
+      <fileset dir="${yanel.home.dir}/build/classes"/>
+    </copy>
+    -->
 
     <copy todir="${build.dir}/webapps/yanel/WEB-INF/classes">
       <fileset dir="${yanel.home.dir}/lib">
         <include name="*.properties"/>
       </fileset>
     </copy>
-<!--
-    <copy todir="${build.dir}/webapps/yanel/WEB-INF/classes">
-      <fileset dir="${yanel.home.dir}/build/classes"/>
-    </copy>
--->
+    <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/yarep.properties" value="yanel,${yanel.home.dir}/src/yarep-repository/config/repository.xml">
+      <replacetoken>yanel,../src/yarep-repository/config/repository.xml</replacetoken>
+    </replace>
 
     <copy todir="${build.dir}/webapps/yanel/WEB-INF/lib">
       <fileset refid="maven2.fileset"/>
