@@ -26,7 +26,13 @@ public abstract class Resource {
     /**
      *
      */
-    public Resource(ResourceTypeDefinition rtd) {
+    public Resource() {
+    }
+
+    /**
+     *
+     */
+    public void setRTD(ResourceTypeDefinition rtd) {
         this.rtd = rtd;
     }
 

@@ -26,7 +26,6 @@ import org.wyona.yanel.core.attributes.WritableResource;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
 
-import org.wyona.yanel.impl.ResourceDefaultImpl;
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
 import com.wyonapictures.yanel.impl.resources.TapeResource;
@@ -74,7 +73,13 @@ public class YanelCommandLine {
         System.out.println("Namespace: " + rtd.getResourceTypeNamespace());
 
 
-        Resource res = new ResourceDefaultImpl(rtd);
+        Resource res = null;
+        try {
+            res = ResourceTypeRegistry.newResource(rti);
+        } catch(Exception e) {
+            System.err.println(e);
+            return;
+        }
 
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Creatable")) {
             System.out.println(((CreatableResource) res).getPropertyNames());
@@ -83,7 +88,7 @@ public class YanelCommandLine {
         }
 
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable")) {
-            System.out.println(((ViewableResource) res).getViewDescriptors());
+            System.out.println("View Descriptors: " + ((ViewableResource) res).getViewDescriptors());
         } else {
             System.out.println(res.getClass().getName() + " does not implement viewable interface!");
         }
@@ -95,7 +100,8 @@ public class YanelCommandLine {
         }
 
 
-        Resource tapeRes = new TapeResource(rtd);
+        Resource tapeRes = new TapeResource();
+        tapeRes.setRTD(rtd);
         if (ResourceAttributeHelper.hasAttributeImplemented(tapeRes, "Creatable")) {
             String[] names = ((CreatableResource) tapeRes).getPropertyNames();
             String propNames = "";
@@ -111,7 +117,8 @@ public class YanelCommandLine {
             System.out.println(tapeRes.getClass().getName() + " does not implement creatable interface!");
         }
 
-        Resource invoiceRes = new InvoiceResource(rtd);
+        Resource invoiceRes = new InvoiceResource();
+        invoiceRes.setRTD(rtd);
         if (ResourceAttributeHelper.hasAttributeImplemented(invoiceRes, "Creatable")) {
             String[] names = ((CreatableResource) invoiceRes).getPropertyNames();
             String propNames = "";
@@ -139,7 +146,8 @@ public class YanelCommandLine {
             System.out.println(invoiceRes.getClass().getName() + " does not implement versionable interface!");
         }
 
-        Resource websearchRes = new WebSearchResource(rtd);
+        Resource websearchRes = new WebSearchResource();
+        websearchRes.setRTD(rtd);
         if (ResourceAttributeHelper.hasAttributeImplemented(websearchRes, "Continuable")) System.out.println("yeah");
     }
 }

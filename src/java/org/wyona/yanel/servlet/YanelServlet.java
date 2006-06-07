@@ -12,15 +12,23 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.wyona.yanel.core.Path;
+import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
+import org.wyona.yanel.core.attributes.ViewableResource;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
+
+import org.wyona.yanel.util.ResourceAttributeHelper;
+
+import org.apache.log4j.Category;
 
 /**
  *
  */
 public class YanelServlet extends HttpServlet {
+
+    private static Category log = Category.getInstance(YanelServlet.class);
 
     private ServletConfig config;
 
@@ -35,42 +43,58 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        PrintWriter writer = response.getWriter();
-        response.setContentType("application/xml");
 
+        StringBuffer sb = new StringBuffer("");
 
-        writer.println("<?xml version=\"1.0\"?>");
-
+        sb.append("<?xml version=\"1.0\"?>");
 
         String servletContextRealPath = config.getServletContext().getRealPath("/");
-        writer.println("<yanel servlet-context-real-path=\""+servletContextRealPath+"\" xmlns=\"http://www.wyona.org/yanel/1.0\">");
+        sb.append("<yanel servlet-context-real-path=\""+servletContextRealPath+"\" xmlns=\"http://www.wyona.org/yanel/1.0\">");
 
-        writer.println("<request uri=\""+request.getRequestURI()+"\" servlet-path=\""+request.getServletPath()+"\"/>");
+        sb.append("<request uri=\""+request.getRequestURI()+"\" servlet-path=\""+request.getServletPath()+"\"/>");
 
 	HttpSession session = request.getSession(true);
-        writer.println("<session id=\""+session.getId()+"\">");
-	Enumeration e = session.getAttributeNames();
-        if (!e.hasMoreElements()) {
-            writer.println("<no-attributes/>");
+        sb.append("<session id=\""+session.getId()+"\">");
+	Enumeration enum = session.getAttributeNames();
+        if (!enum.hasMoreElements()) {
+            sb.append("<no-attributes/>");
         }
-        while (e.hasMoreElements()) {
-            String name = (String)e.nextElement();
+        while (enum.hasMoreElements()) {
+            String name = (String)enum.nextElement();
             String value = session.getAttribute(name).toString();
-            writer.println("<attribute name=\"" + name + "\">" + value + "</attribute>");
+            sb.append("<attribute name=\"" + name + "\">" + value + "</attribute>");
         }
-        writer.println("</session>");
+        sb.append("</session>");
 
         MapFactory mf = MapFactory.newInstance();
         Map map = mf.newMap();
         String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
         if (rti != null) {
             ResourceTypeDefinition rtd = ResourceTypeRegistry.getResourceTypeDefinition(rti);
-            writer.println("<resource-type-identifier namespace=\"" + rtd.getResourceTypeNamespace() + "\" local-name=\"" + rtd.getResourceTypeLocalName() + "\"/>");
+            sb.append("<resource-type-identifier namespace=\"" + rtd.getResourceTypeNamespace() + "\" local-name=\"" + rtd.getResourceTypeLocalName() + "\"/>");
+
+            try {
+                Resource res = ResourceTypeRegistry.newResource(rti);
+                res.setRTD(rtd);
+                if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable")) {
+                    sb.append("<resource>View Descriptors: " + ((ViewableResource) res).getViewDescriptors() + "</resource>");
+                } else {
+                    sb.append("<resource>" + res.getClass().getName() + " is not viewable!</resource>");
+                }
+            } catch(Exception e) {
+                sb.append("<exception>" + e + "</exception>");
+                log.error(e.getMessage(), e);
+            }
         } else {
-            writer.println("<no-resource-type-identifier-found servlet-path=\""+request.getServletPath()+"\"/>");
+            sb.append("<no-resource-type-identifier-found servlet-path=\""+request.getServletPath()+"\"/>");
         }
 
-        writer.println("</yanel>");
+        sb.append("</yanel>");
+
+
+        PrintWriter writer = response.getWriter();
+        response.setContentType("application/xml");
+        writer.print(sb);
     }
 
     /**

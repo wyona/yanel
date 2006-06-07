@@ -30,8 +30,8 @@ public class ResourceDefaultImpl extends Resource implements CreatableResource, 
     /**
      *
      */
-    public ResourceDefaultImpl(ResourceTypeDefinition rtd) {
-        super(rtd);
+    public ResourceDefaultImpl() {
+        super();
     }
 
     /**

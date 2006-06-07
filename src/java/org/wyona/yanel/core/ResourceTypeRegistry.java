@@ -16,6 +16,10 @@
 
 package org.wyona.yanel.core;
 
+import java.lang.ClassNotFoundException;
+import java.lang.IllegalAccessException;
+import java.lang.InstantiationException;
+
 /**
  *
  */
@@ -26,5 +30,12 @@ public class ResourceTypeRegistry {
      */
     public static ResourceTypeDefinition getResourceTypeDefinition(String universalName) {
         return new ResourceTypeDefinition(universalName);
+    }
+
+    /**
+     *
+     */
+    public static Resource newResource(String universalName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        return (Resource) Class.forName("org.wyona.yanel.impl.ResourceDefaultImpl").newInstance();
     }
 }
