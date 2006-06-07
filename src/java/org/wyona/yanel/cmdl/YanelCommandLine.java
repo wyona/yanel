@@ -20,9 +20,9 @@ import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
-import org.wyona.yanel.core.attributes.CreatableResource;
-import org.wyona.yanel.core.attributes.ViewableResource;
-import org.wyona.yanel.core.attributes.WritableResource;
+import org.wyona.yanel.core.attributes.CreatableV1;
+import org.wyona.yanel.core.attributes.ViewableV1;
+import org.wyona.yanel.core.attributes.WritableV1;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
 
@@ -81,20 +81,20 @@ public class YanelCommandLine {
             return;
         }
 
-        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Creatable")) {
-            System.out.println(((CreatableResource) res).getPropertyNames());
+        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Creatable", "1")) {
+            System.out.println(((CreatableV1) res).getPropertyNames());
         } else {
             System.out.println(res.getClass().getName() + " does not implement creatable interface!");
         }
 
-        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable")) {
-            System.out.println("View Descriptors: " + ((ViewableResource) res).getViewDescriptors());
+        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
+            System.out.println("View Descriptors: " + ((ViewableV1) res).getViewDescriptors());
         } else {
             System.out.println(res.getClass().getName() + " does not implement viewable interface!");
         }
 
-        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Writable")) {
-            ((WritableResource) res).write(path);
+        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Writable", "1")) {
+            ((WritableV1) res).write(path);
         } else {
             System.out.println(res.getClass().getName() + " does not implement writable interface!");
         }
@@ -102,8 +102,8 @@ public class YanelCommandLine {
 
         Resource tapeRes = new TapeResource();
         tapeRes.setRTD(rtd);
-        if (ResourceAttributeHelper.hasAttributeImplemented(tapeRes, "Creatable")) {
-            String[] names = ((CreatableResource) tapeRes).getPropertyNames();
+        if (ResourceAttributeHelper.hasAttributeImplemented(tapeRes, "Creatable", "1")) {
+            String[] names = ((CreatableV1) tapeRes).getPropertyNames();
             String propNames = "";
             for (int i = 0; i < names.length; i++) {
                 if (i == names.length -1) {
@@ -119,8 +119,8 @@ public class YanelCommandLine {
 
         Resource invoiceRes = new InvoiceResource();
         invoiceRes.setRTD(rtd);
-        if (ResourceAttributeHelper.hasAttributeImplemented(invoiceRes, "Creatable")) {
-            String[] names = ((CreatableResource) invoiceRes).getPropertyNames();
+        if (ResourceAttributeHelper.hasAttributeImplemented(invoiceRes, "Creatable", "1")) {
+            String[] names = ((CreatableV1) invoiceRes).getPropertyNames();
             String propNames = "";
             for (int i = 0; i < names.length; i++) {
                 System.out.println("Please enter a value for property \"" + names[i] + "\":");
@@ -140,7 +140,7 @@ public class YanelCommandLine {
         } else {
             System.out.println(invoiceRes.getClass().getName() + " does not implement creatable interface!");
         }
-        if (ResourceAttributeHelper.hasAttributeImplemented(invoiceRes, "Versionable")) {
+        if (ResourceAttributeHelper.hasAttributeImplemented(invoiceRes, "Versionable", "1")) {
             System.out.println(invoiceRes.getClass().getName() + " does implement versionable interface!");
         } else {
             System.out.println(invoiceRes.getClass().getName() + " does not implement versionable interface!");
@@ -148,6 +148,6 @@ public class YanelCommandLine {
 
         Resource websearchRes = new WebSearchResource();
         websearchRes.setRTD(rtd);
-        if (ResourceAttributeHelper.hasAttributeImplemented(websearchRes, "Continuable")) System.out.println("yeah");
+        if (ResourceAttributeHelper.hasAttributeImplemented(websearchRes, "Continuable", "1")) System.out.println("yeah");
     }
 }

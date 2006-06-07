@@ -15,7 +15,7 @@ import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
-import org.wyona.yanel.core.attributes.ViewableResource;
+import org.wyona.yanel.core.attributes.ViewableV1;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
 
@@ -76,8 +76,8 @@ public class YanelServlet extends HttpServlet {
             try {
                 Resource res = ResourceTypeRegistry.newResource(rti);
                 res.setRTD(rtd);
-                if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable")) {
-                    sb.append("<resource>View Descriptors: " + ((ViewableResource) res).getViewDescriptors() + "</resource>");
+                if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
+                    sb.append("<resource>View Descriptors: " + ((ViewableV1) res).getViewDescriptors() + "</resource>");
                 } else {
                     sb.append("<resource>" + res.getClass().getName() + " is not viewable!</resource>");
                 }

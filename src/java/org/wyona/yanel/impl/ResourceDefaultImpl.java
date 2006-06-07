@@ -18,15 +18,15 @@ package org.wyona.yanel.impl;
 
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
-import org.wyona.yanel.core.attributes.CreatableResource;
+import org.wyona.yanel.core.attributes.CreatableV1;
 import org.wyona.yanel.core.attributes.View;
-import org.wyona.yanel.core.attributes.ViewableResource;
+import org.wyona.yanel.core.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.ViewDescriptor;
 
 /**
  *
  */
-public class ResourceDefaultImpl extends Resource implements CreatableResource, ViewableResource {
+public class ResourceDefaultImpl extends Resource implements CreatableV1, ViewableV1 {
 
     /**
      *

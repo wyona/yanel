@@ -23,7 +23,7 @@ import org.wyona.yanel.core.Topic;
  * TODO: Shouldn't it be the other way around, that the Resource is passed to a Repository instead the Repository to the Resource?!
  * TODO: Shouldn't we use java.io.Serializable (writeObject, readObject)?!
  */
-public interface WritableResource {
+public interface WritableV1 {
 
     /**
      *

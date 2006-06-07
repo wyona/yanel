@@ -19,15 +19,20 @@ package org.wyona.yanel.core.attributes;
 /**
  *
  */
-public interface ViewableResource {
+public interface CreatableV1 {
 
     /**
-     *
+     * TODO: Wouldn't it be better to implement this with introspection?
      */
-    public ViewDescriptor[] getViewDescriptors();
+    public String[] getPropertyNames();
 
     /**
-     *
+     * TODO: Wouldn't it be better to implement this with a Setter interface?
      */
-    public View getView(String suffix, String viewId);
+    public void setProperty(String name, Object value);
+
+    /**
+     * TODO: Wouldn't it be better to implement this with a Getter interface?
+     */
+    public Object getProperty(String name);
 }

@@ -18,12 +18,12 @@ package org.wyona.yanel.impl.resources;
 
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
-import org.wyona.yanel.core.attributes.ContinuableResource;
+import org.wyona.yanel.core.attributes.ContinuableV1;
 
 /**
  *
  */
-public class WebSearchResource extends Resource implements ContinuableResource {
+public class WebSearchResource extends Resource implements ContinuableV1 {
 
     /**
      *

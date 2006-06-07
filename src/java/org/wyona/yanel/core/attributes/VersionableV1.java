@@ -19,10 +19,10 @@ package org.wyona.yanel.core.attributes;
 /**
  *
  */
-public interface IndexableSearchableResource {
+public interface VersionableV1 {
 
     /**
      *
      */
-    public String getSearchFields();
+    public String[] getRevisions();
 }

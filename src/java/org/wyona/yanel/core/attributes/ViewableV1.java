@@ -17,9 +17,17 @@
 package org.wyona.yanel.core.attributes;
 
 /**
- * http://jakarta.apache.org/commons/sandbox/javaflow/
- * http://rifers.org/wiki/display/RIFECNT/Home
- * ...
+ *
  */
-public interface ContinuableResource {
+public interface ViewableV1 {
+
+    /**
+     *
+     */
+    public ViewDescriptor[] getViewDescriptors();
+
+    /**
+     *
+     */
+    public View getView(String suffix, String viewId);
 }
