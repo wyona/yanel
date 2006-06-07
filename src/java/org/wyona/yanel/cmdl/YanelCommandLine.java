@@ -69,6 +69,11 @@ public class YanelCommandLine {
         String rti = map.getResourceTypeIdentifier(path);
         System.out.println("Resource Type Identifier: " + rti);
 
+        if (rti == null) {
+            System.err.println("Abort, because resource type identifier is null!");
+            return;
+        }
+
         ResourceTypeDefinition rtd = ResourceTypeRegistry.getResourceTypeDefinition(rti);
         System.out.println("Local name: " + rtd.getResourceTypeLocalName());
         System.out.println("Namespace: " + rtd.getResourceTypeNamespace());
