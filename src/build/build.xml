@@ -217,6 +217,14 @@
       <isset property="tomcat2.webapps.dir"/>
     </condition>
     <antcall target="deploy-to-tomcat-cluster-node2"/>
+
+    <antcall target="final-message"/>
+  </target>
+
+  <target name="final-message">
+    <echo>INFO: Build has been completed successfully :-)</echo>
+    <echo></echo>
+    <echo>INFO: Start using Yanel by executing yanel.sh</echo>
   </target>
 
   <target name="deploy-to-tomcat-cluster-node1" if="deploy-to-tomcat-cluster-node1" description="Deploy webapp to Tomcat cluster node 1">
