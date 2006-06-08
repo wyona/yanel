@@ -68,11 +68,6 @@ public class YanelCommandLine {
             System.err.println(e);
         }
 
-        // TODO: See YarepSource!
-        //Path path = new Path("/hello/world.html");
-        //Path path = new Path("/index.html");
-        //Path path = new Path("/wyonapictures/index.html");
-
         String rti = map.getResourceTypeIdentifier(path);
         System.out.println("Resource Type Identifier: " + rti);
 
@@ -104,9 +99,8 @@ public class YanelCommandLine {
 
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
             System.out.println("View Descriptors: " + ((ViewableV1) res).getViewDescriptors());
-            String suffix = null;
             String viewId = null;
-            View view = ((ViewableV1) res).getView(suffix, viewId);
+            View view = ((ViewableV1) res).getView(path, viewId);
             System.out.println("mime-type: " + view.getMimeType());
             try {
                 BufferedReader bReader = new BufferedReader(new java.io.InputStreamReader(view.getInputStream()));

@@ -77,17 +77,15 @@
       <fileset dir="${yanel.home.dir}/src/resources/directory/build/lib">
         <include name="*.jar"/>
       </fileset>
+      <pathelement path="${maven2.cp}"/>
     </path>
   </target>
 
   <target name="compile-core" description="Compile Java classes of Yanel core" depends="init">
-<!--
-    <echo>${classes.dir}</echo>
--->
     <mkdir dir="${classes.dir}"/>
-    <javac srcdir="${yanel.home.dir}/src/java/org/wyona/yanel/core" destdir="${classes.dir}"
-      debug="true"
-    />
+    <javac srcdir="${yanel.home.dir}/src/java/org/wyona/yanel/core" destdir="${classes.dir}" debug="true">
+      <classpath refid="classpath"/>
+    </javac>
     <mkdir dir="${yanel.home.dir}/build/lib"/>
     <jar destfile="${yanel.home.dir}/build/lib/yanel-core-0.0.1-dev-r${yanel.revision}.jar"
       basedir="${classes.dir}"
@@ -170,9 +168,9 @@
   <target name="compile-cmdl" description="Compile Java classes of Yanel command line" depends="init">
     <mkdir dir="${classes.dir}"/>
     <!-- TODO: Make util classes available also for webapp, etc. -->
-    <javac srcdir="${yanel.home.dir}/src/java/org/wyona/yanel/util" destdir="${classes.dir}"
-      debug="true"
-    />
+    <javac srcdir="${yanel.home.dir}/src/java/org/wyona/yanel/util" destdir="${classes.dir}" debug="true">
+      <classpath refid="classpath"/>
+    </javac>
     <javac srcdir="${yanel.home.dir}/src/java/org/wyona/yanel/cmdl" destdir="${classes.dir}"
       debug="true"
       classpathref="classpath.resources"

@@ -16,6 +16,7 @@
 
 package org.wyona.yanel.impl.resources;
 
+import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.attributes.View;
 import org.wyona.yanel.core.attributes.ViewableV1;
@@ -23,6 +24,8 @@ import org.wyona.yanel.core.attributes.ViewDescriptor;
 
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -45,7 +48,7 @@ public class FileResource extends Resource implements ViewableV1 {
     /**
      *
      */
-    public View getView(String suffix, String viewId) {
+    public View getView(Path path, String viewId) {
         View defaultView = new View();
         defaultView.setMimeType("application/octet-stream");
         try {
@@ -56,5 +59,12 @@ public class FileResource extends Resource implements ViewableV1 {
             System.err.println(e);
         }
         return defaultView;
+    }
+
+    /**
+     *
+     */
+    public View getView(HttpServletRequest request, String viewId) {
+        return getView(new Path(request.getServletPath()), viewId);
     }
 }

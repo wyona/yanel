@@ -16,10 +16,13 @@
 
 package org.wyona.yanel.impl.resources;
 
+import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.attributes.View;
 import org.wyona.yanel.core.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.ViewDescriptor;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -42,7 +45,14 @@ public class DirectoryResource extends Resource implements ViewableV1 {
     /**
      *
      */
-    public View getView(String suffix, String viewId) {
+    public View getView(Path path, String viewId) {
         return null;
+    }
+
+    /**
+     *
+     */
+    public View getView(HttpServletRequest request, String viewId) {
+        return getView(new Path(request.getServletPath()), viewId);
     }
 }

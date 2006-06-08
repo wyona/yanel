@@ -16,6 +16,10 @@
 
 package org.wyona.yanel.core.attributes;
 
+import org.wyona.yanel.core.Path;
+
+import javax.servlet.http.HttpServletRequest;
+
 /**
  *
  */
@@ -29,5 +33,10 @@ public interface ViewableV1 {
     /**
      *
      */
-    public View getView(String suffix, String viewId);
+    public View getView(Path path, String viewId);
+
+    /**
+     *
+     */
+    public View getView(HttpServletRequest request, String viewId);
 }

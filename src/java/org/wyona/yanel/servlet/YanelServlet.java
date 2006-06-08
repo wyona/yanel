@@ -80,9 +80,8 @@ public class YanelServlet extends HttpServlet {
                 res.setRTD(rtd);
                 if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                     sb.append("<resource>View Descriptors: " + ((ViewableV1) res).getViewDescriptors() + "</resource>");
-                    String suffix = null;
                     String viewId = null;
-                    view = ((ViewableV1) res).getView(suffix, viewId);
+                    view = ((ViewableV1) res).getView(request, viewId);
                 } else {
                     sb.append("<resource>" + res.getClass().getName() + " is not viewable!</resource>");
                 }

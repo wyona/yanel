@@ -16,12 +16,15 @@
 
 package org.wyona.yanel.impl;
 
+import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.attributes.CreatableV1;
 import org.wyona.yanel.core.attributes.View;
 import org.wyona.yanel.core.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.ViewDescriptor;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -66,10 +69,17 @@ public class ResourceDefaultImpl extends Resource implements CreatableV1, Viewab
     /**
      *
      */
-    public View getView(String suffix, String viewId) {
+    public View getView(Path path, String viewId) {
         View defaultView = new View();
         defaultView.setMimeType("text/plain");
         defaultView.setInputStream(new java.io.StringBufferInputStream("Welcome to the default view of the ResourceDefaultImpl!"));
         return defaultView;
+    }
+
+    /**
+     *
+     */
+    public View getView(HttpServletRequest request, String viewId) {
+        return getView(new Path(request.getServletPath()), viewId);
     }
 }
