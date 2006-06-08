@@ -30,9 +30,11 @@ import org.wyona.yanel.core.map.MapFactory;
 
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
+/*
 import com.wyonapictures.yanel.impl.resources.TapeResource;
 import com.wyona.yanel.impl.resources.InvoiceResource;
 import org.wyona.yanel.impl.resources.WebSearchResource;
+*/
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -119,7 +121,13 @@ public class YanelCommandLine {
         }
 
 
-        Resource tapeRes = new TapeResource();
+        Resource tapeRes = null;
+        try {
+            tapeRes = ResourceTypeRegistry.newResource("<{http://www.wyonapictures.com/yanel/resource/1.0}tape/>");
+        } catch(Exception e) {
+            System.err.println(e);
+            return;
+        }
         tapeRes.setRTD(rtd);
         if (ResourceAttributeHelper.hasAttributeImplemented(tapeRes, "Creatable", "1")) {
             String[] names = ((CreatableV1) tapeRes).getPropertyNames();
@@ -136,7 +144,13 @@ public class YanelCommandLine {
             System.out.println(tapeRes.getClass().getName() + " does not implement creatable interface!");
         }
 
-        Resource invoiceRes = new InvoiceResource();
+        Resource invoiceRes = null;
+        try {
+            invoiceRes = ResourceTypeRegistry.newResource("<{http://www.wyona.com/yanel/resource/1.0}invoice/>");
+        } catch(Exception e) {
+            System.err.println(e);
+            return;
+        }
         invoiceRes.setRTD(rtd);
         if (ResourceAttributeHelper.hasAttributeImplemented(invoiceRes, "Creatable", "1")) {
             String[] names = ((CreatableV1) invoiceRes).getPropertyNames();
@@ -165,8 +179,13 @@ public class YanelCommandLine {
             System.out.println(invoiceRes.getClass().getName() + " does not implement versionable interface!");
         }
 
-        Resource websearchRes = new WebSearchResource();
-        websearchRes.setRTD(rtd);
-        if (ResourceAttributeHelper.hasAttributeImplemented(websearchRes, "Continuable", "1")) System.out.println("yeah");
+	try {
+            Resource websearchRes = ResourceTypeRegistry.newResource("<{http://www.wyona.org/yanel/resource/1.0}websearch/>");
+            websearchRes.setRTD(rtd);
+            if (ResourceAttributeHelper.hasAttributeImplemented(websearchRes, "Continuable", "1")) System.out.println("yeah");
+        } catch(Exception e) {
+            System.err.println(e);
+            return;
+        }
     }
 }
