@@ -15,6 +15,7 @@ import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
+import org.wyona.yanel.core.attributes.View;
 import org.wyona.yanel.core.attributes.ViewableV1;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
@@ -43,6 +44,7 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        View view = null;
 
         StringBuffer sb = new StringBuffer("");
 
@@ -78,6 +80,9 @@ public class YanelServlet extends HttpServlet {
                 res.setRTD(rtd);
                 if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                     sb.append("<resource>View Descriptors: " + ((ViewableV1) res).getViewDescriptors() + "</resource>");
+                    String suffix = null;
+                    String viewId = null;
+                    view = ((ViewableV1) res).getView(suffix, viewId);
                 } else {
                     sb.append("<resource>" + res.getClass().getName() + " is not viewable!</resource>");
                 }
@@ -93,8 +98,27 @@ public class YanelServlet extends HttpServlet {
 
 
         PrintWriter writer = response.getWriter();
-        response.setContentType("application/xml");
-        writer.print(sb);
+
+        if (view != null) {
+            response.setContentType(view.getMimeType());
+            java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(view.getInputStream()));
+            boolean empty = true;
+            String line = br.readLine();
+            if (line != null) {
+                empty = false;
+                writer.print(line);
+            }
+            while ((line = br.readLine()) != null) {
+                writer.print(line);
+            }
+            if (empty) {
+                response.setContentType("text/plain");
+                writer.print("No content!");
+            }
+        } else {
+            response.setContentType("application/xml");
+            writer.print(sb);
+        }
     }
 
     /**
