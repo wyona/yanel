@@ -36,8 +36,11 @@ public class ResourceTypeRegistry {
      *
      */
     public static Resource newResource(String universalName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+
+        // TODO: Read from configuration
         java.util.HashMap hm = new java.util.HashMap(); 
-        hm.put("<{http://www.wyona.org/yanel/resource/1.0}file/>", "org.wyona.yanel.impl.ResourceDefaultImpl");
+        hm.put("<{http://www.wyona.org/yanel/resource/1.0}file/>", "org.wyona.yanel.impl.resources.FileResource");
+        hm.put("<{http://www.wyona.org/yanel/resource/1.0}default/>", "org.wyona.yanel.impl.ResourceDefaultImpl");
         hm.put("<{http://www.wyonapictures.com/yanel/resource/1.0}tape/>", "com.wyonapictures.yanel.impl.resources.TapeResource");
         hm.put("<{http://www.wyona.com/yanel/resource/1.0}invoice/>", "com.wyona.yanel.impl.resources.InvoiceResource");
         hm.put("<{http://www.wyona.org/yanel/resource/1.0}websearch/>", "org.wyona.yanel.impl.resources.WebSearchResource");
