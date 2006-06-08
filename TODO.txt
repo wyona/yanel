@@ -5,3 +5,5 @@
 - Make Tomcat targets configurable during configure.sh
 - Patch log.properties and yarep.properties during deploy
 - Introduce chain of responsibility for MapImpl
+- Move published interfaces into dedicated directory
+- Specify versions of implementations explicitely and make them downloadable dynamically based on the registered resource types
