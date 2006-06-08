@@ -58,6 +58,10 @@ public class YanelCommandLine {
         Path path = null;
         try {
             String value = br.readLine();
+            if (value.equals("")) {
+                System.out.println("No path has been specified!");
+                return;
+            }
             System.out.println("The following value has been entered: " + value);
             path = new Path(value);
         } catch (Exception e) {
