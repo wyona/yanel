@@ -10,3 +10,5 @@
 - Introduce chain of responsibility for MapImpl
 - Move published interfaces into dedicated directory
 - Specify versions of implementations explicitely and make them downloadable dynamically based on the registered resource types
+- Implement local.yarep.properties and local.log4j.properties
+- Add Windows bat files
