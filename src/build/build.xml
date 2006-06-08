@@ -217,8 +217,11 @@
         <include name="*.properties"/>
       </fileset>
     </copy>
-    <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/yarep.properties" value="yanel,${yanel.home.dir}/src/yarep-repository/config/repository.xml">
-      <replacetoken>yanel,../src/yarep-repository/config/repository.xml</replacetoken>
+    <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/yarep.properties" value="yanel-rti,${yanel.home.dir}/src/resource-type-id-repository/config/repository.xml">
+      <replacetoken>yanel-rti,../src/resource-type-id-repository/config/repository.xml</replacetoken>
+    </replace>
+    <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/yarep.properties" value="yanel-content,${yanel.home.dir}/src/content-repository/config/repository.xml">
+      <replacetoken>yanel-content,../src/content-repository/config/repository.xml</replacetoken>
     </replace>
 
     <copy todir="${build.dir}/webapps/yanel/WEB-INF/lib">
