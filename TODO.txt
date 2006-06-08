@@ -1,5 +1,8 @@
 
 - grep -rl TODO *
+- Copy resources into webapp lib
+- Finish DirectoryResource
+- Finish FileResource re path (remove hardcoded path)
 - Add yanel version (such that for instance the webapp can display the version, e.g. 0.0.1-dev-r13812)
 - Use ant for yanel.sh (e.g. src/build/yanel.xml)
 - Make Tomcat targets configurable during configure.sh
