@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0" name="file" namespace="http://www.wyona.org/yanel/resource/1.0">
+<description>
+File
+</description>
+</resource>
