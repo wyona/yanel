@@ -22,6 +22,7 @@ import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.attributes.CreatableV1;
 import org.wyona.yanel.core.attributes.CreatableV2;
+import org.wyona.yanel.core.attributes.View;
 import org.wyona.yanel.core.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.WritableV1;
 import org.wyona.yanel.core.map.Map;
@@ -97,6 +98,16 @@ public class YanelCommandLine {
 
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
             System.out.println("View Descriptors: " + ((ViewableV1) res).getViewDescriptors());
+            String suffix = null;
+            String viewId = null;
+            View view = ((ViewableV1) res).getView(suffix, viewId);
+            System.out.println("mime-type: " + view.getMimeType());
+            try {
+                BufferedReader bReader = new BufferedReader(new java.io.InputStreamReader(view.getInputStream()));
+                System.out.println("First Line: " + bReader.readLine());
+            } catch(Exception e) {
+                System.err.println(e);
+            }
         } else {
             System.out.println(res.getClass().getName() + " does not implement viewable interface!");
         }

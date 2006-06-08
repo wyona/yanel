@@ -67,6 +67,9 @@ public class ResourceDefaultImpl extends Resource implements CreatableV1, Viewab
      *
      */
     public View getView(String suffix, String viewId) {
-        return null;
+        View defaultView = new View();
+        defaultView.setMimeType("text/plain");
+        defaultView.setInputStream(new java.io.StringBufferInputStream("Hello World!"));
+        return defaultView;
     }
 }

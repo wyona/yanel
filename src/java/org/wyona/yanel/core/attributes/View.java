@@ -21,15 +21,36 @@ import java.io.InputStream;
 /**
  *
  */
-public abstract class View {
+public class View {
+
+    private String mt;
+    private InputStream is;
 
     /**
      *
      */
-    public abstract String getMimeType();
+    public void setMimeType(String mt) {
+        this.mt = mt;
+    }
 
     /**
      *
      */
-    public abstract InputStream getInputStream();
+    public String getMimeType() {
+        return mt;
+    }
+
+    /**
+     *
+     */
+    public void setInputStream(InputStream is) {
+        this.is = is;
+    }
+
+    /**
+     *
+     */
+    public InputStream getInputStream() {
+        return is;
+    }
 }
