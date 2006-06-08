@@ -38,7 +38,7 @@ public class MapImpl implements Map {
      */
     public MapImpl() {
         try {
-            repo = new RepositoryFactory().newRepository("yanel");
+            repo = new RepositoryFactory().newRepository("yanel-rti");
         } catch(Exception e) {
             log.error(e.getMessage(), e);
         }
