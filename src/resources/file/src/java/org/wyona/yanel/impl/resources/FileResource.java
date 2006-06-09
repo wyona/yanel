@@ -55,9 +55,16 @@ public class FileResource extends Resource implements ViewableV1 {
     public View getView(Path path, String viewId) {
         View defaultView = new View();
         // TODO: Try to guess the mime-type from the suffix or content (see Apache httpd)
-        log.debug("SUFFIX: " + path.getSuffix());
-        if (path.getSuffix().equals("html")) {
+        String suffix = path.getSuffix();
+        log.debug("SUFFIX: " + suffix);
+        if (suffix.equals("html")) {
             defaultView.setMimeType("text/html");
+	} else if (suffix.equals("css")) {
+            defaultView.setMimeType("text/css");
+	} else if (suffix.equals("png")) {
+            defaultView.setMimeType("image/png");
+	} else if (suffix.equals("jpg")) {
+            defaultView.setMimeType("image/jpeg");
         } else {
             defaultView.setMimeType("application/octet-stream");
         }
