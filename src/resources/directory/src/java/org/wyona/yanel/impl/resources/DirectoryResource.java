@@ -58,7 +58,9 @@ public class DirectoryResource extends Resource implements ViewableV1 {
 	StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
 
         org.wyona.yarep.core.Path p = new org.wyona.yarep.core.Path(path.toString());
-	sb.append("<dir:directory path=\"" + path + "\" name=\"" + p.getName() + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\">");
+
+        // NOTE: The schema is according to http://cocoon.apache.org/2.1/userdocs/directory-generator.html
+	sb.append("<dir:directory yanel:path=\"" + path + "\" name=\"" + p.getName() + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
 
         try {
             Repository repo = new RepositoryFactory().newRepository("yanel-content");
@@ -69,7 +71,7 @@ public class DirectoryResource extends Resource implements ViewableV1 {
                 } else if (repo.isCollection(children[i])) {
 	            sb.append("<dir:directory path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
                 } else {
-	            sb.append("<dir:exception path=\"" + children[i] + "\"/>");
+	            sb.append("<yanel:exception yanel:path=\"" + children[i] + "\"/>");
                 }
             }
         } catch(Exception e) {
