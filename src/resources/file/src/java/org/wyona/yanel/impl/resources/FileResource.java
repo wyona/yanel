@@ -52,6 +52,7 @@ public class FileResource extends Resource implements ViewableV1 {
         View defaultView = new View();
         defaultView.setMimeType("application/octet-stream");
         try {
+            // TODO: Try to guess the mime-type from the suffix (see Apache httpd)
             Repository repo = new RepositoryFactory().newRepository("yanel-content");
             defaultView.setInputStream(repo.getInputStream(new org.wyona.yarep.core.Path(path.toString())));
 
