@@ -1,15 +1,14 @@
 
 - grep -rl TODO *
-- Copy resources into webapp lib
-- Finish DirectoryResource
+- Build resource implementations dynamically (based on configuration)
 - Add yanel version (such that for instance the webapp can display the version, e.g. 0.0.1-dev-r13812)
 - Use ant for yanel.sh (e.g. src/build/yanel.xml)
 - Make Tomcat targets configurable during configure.sh
 - Patch log.properties and yarep.properties during deploy
+- Implement local.yarep.properties and local.log4j.properties
 - Introduce chain of responsibility for MapImpl
 - Move published interfaces into dedicated directory
 - Specify versions of implementations explicitely and make them downloadable dynamically based on the registered resource types
-- Implement local.yarep.properties and local.log4j.properties
 - Add Windows bat files
 - Add servlet engine, e.g. Jetty
 - Replace most System.err/out by log4j
