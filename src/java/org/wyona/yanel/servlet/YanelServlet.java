@@ -107,7 +107,6 @@ public class YanelServlet extends HttpServlet {
                 response.setContentType("text/plain");
                 PrintWriter writer = response.getWriter();
                 writer.print("No content!");
-                writer.close();
                 return;
             }
             java.io.OutputStream os = response.getOutputStream();
@@ -115,14 +114,11 @@ public class YanelServlet extends HttpServlet {
             while ((bytesRead = is.read(buffer)) != -1) {
                 os.write(buffer, 0, bytesRead);
             }
-            os.flush();
-            os.close();
             return;
         } else {
             response.setContentType("application/xml");
             PrintWriter writer = response.getWriter();
             writer.print(sb);
-            writer.close();
             return;
         }
     }
