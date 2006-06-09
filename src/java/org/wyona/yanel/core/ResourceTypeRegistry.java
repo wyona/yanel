@@ -20,10 +20,14 @@ import java.lang.ClassNotFoundException;
 import java.lang.IllegalAccessException;
 import java.lang.InstantiationException;
 
+import org.apache.log4j.Category;
+
 /**
  *
  */
 public class ResourceTypeRegistry {
+
+    private static Category log = Category.getInstance(ResourceTypeRegistry.class);
 
     /**
      *
@@ -40,11 +44,18 @@ public class ResourceTypeRegistry {
         // TODO: Read from configuration
         java.util.HashMap hm = new java.util.HashMap(); 
         hm.put("<{http://www.wyona.org/yanel/resource/1.0}file/>", "org.wyona.yanel.impl.resources.FileResource");
+        hm.put("<{http://www.wyona.org/yanel/resource/1.0}directory/>", "org.wyona.yanel.impl.resources.DirectoryResource");
         hm.put("<{http://www.wyona.org/yanel/resource/1.0}default/>", "org.wyona.yanel.impl.ResourceDefaultImpl");
         hm.put("<{http://www.wyonapictures.com/yanel/resource/1.0}tape/>", "com.wyonapictures.yanel.impl.resources.TapeResource");
         hm.put("<{http://www.wyona.com/yanel/resource/1.0}invoice/>", "com.wyona.yanel.impl.resources.InvoiceResource");
         hm.put("<{http://www.wyona.org/yanel/resource/1.0}websearch/>", "org.wyona.yanel.impl.resources.WebSearchResource");
 
-        return (Resource) Class.forName((String) hm.get(universalName)).newInstance();
+	String className = (String) hm.get(universalName);
+        if (className != null) {
+            return (Resource) Class.forName(className).newInstance();
+        } else {
+            log.error("No resource registered for rti: " + universalName);
+            return null;
+        }
     }
 }

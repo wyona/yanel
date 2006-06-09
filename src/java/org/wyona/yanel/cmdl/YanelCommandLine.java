@@ -85,7 +85,7 @@ public class YanelCommandLine {
         try {
             res = ResourceTypeRegistry.newResource(rti);
         } catch(Exception e) {
-            System.err.println(e);
+            System.err.println("Exception 435435: " + e);
             return;
         }
 
