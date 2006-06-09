@@ -24,10 +24,17 @@ import org.wyona.yanel.core.attributes.ViewDescriptor;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.wyona.yarep.core.Repository;
+import org.wyona.yarep.core.RepositoryFactory;
+
+import org.apache.log4j.Category;
+
 /**
  *
  */
 public class DirectoryResource extends Resource implements ViewableV1 {
+
+    private static Category log = Category.getInstance(DirectoryResource.class);
 
     /**
      *
@@ -48,7 +55,27 @@ public class DirectoryResource extends Resource implements ViewableV1 {
     public View getView(Path path, String viewId) {
         View defaultView = new View();
         defaultView.setMimeType("application/xml");
-	StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?><directory/>");
+	StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+
+        org.wyona.yarep.core.Path p = new org.wyona.yarep.core.Path(path.toString());
+	sb.append("<dir:directory path=\"" + path + "\" name=\"" + p.getName() + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\">");
+
+        try {
+            Repository repo = new RepositoryFactory().newRepository("yanel-content");
+            org.wyona.yarep.core.Path[] children = repo.getChildren(p);
+            for (int i = 0; i < children.length; i++) {
+                if (repo.isResource(children[i])) {
+	            sb.append("<dir:file path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
+                } else if (repo.isCollection(children[i])) {
+	            sb.append("<dir:directory path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
+                } else {
+	            sb.append("<dir:exception path=\"" + children[i] + "\"/>");
+                }
+            }
+        } catch(Exception e) {
+            log.error(e);
+        }
+	sb.append("</dir:directory>");
 	defaultView.setInputStream(new java.io.StringBufferInputStream(sb.toString()));
         return defaultView;
     }
