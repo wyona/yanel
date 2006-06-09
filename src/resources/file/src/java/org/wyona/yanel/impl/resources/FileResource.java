@@ -54,29 +54,49 @@ public class FileResource extends Resource implements ViewableV1 {
      */
     public View getView(Path path, String viewId) {
         View defaultView = new View();
-        // TODO: Try to guess the mime-type from the suffix or content (see Apache httpd)
-        String suffix = path.getSuffix();
-        log.debug("SUFFIX: " + suffix);
-        if (suffix.equals("html")) {
-            defaultView.setMimeType("text/html");
-	} else if (suffix.equals("css")) {
-            defaultView.setMimeType("text/css");
-	} else if (suffix.equals("png")) {
-            defaultView.setMimeType("image/png");
-	} else if (suffix.equals("jpg")) {
-            defaultView.setMimeType("image/jpeg");
-        } else {
-            defaultView.setMimeType("application/octet-stream");
-        }
         try {
             Repository repo = new RepositoryFactory().newRepository("yanel-content");
             defaultView.setInputStream(repo.getInputStream(new org.wyona.yarep.core.Path(path.toString())));
 
-            // NOTE: Reading directly from the filesystem instead using yarep or some other data abstraction layer.
-            //defaultView.setInputStream(new java.io.FileInputStream("/home/USER/content/test.txt"));
+            // TODO: Get repo name from framework ... (also see MapImpl)
+            Repository rtiRepo = new RepositoryFactory().newRepository("yanel-rti");
+            java.io.BufferedReader br = new java.io.BufferedReader(rtiRepo.getReader(new org.wyona.yarep.core.Path(path.toString())));
+            br.readLine();
+            String mimeType = br.readLine();
+            if (mimeType != null) {
+                if (mimeType.indexOf("mime-type:") == 0) {
+                    mimeType = mimeType.substring(11);
+                    log.info("*" + mimeType + "*");
+                    // TODO: Maybe validate mime-type based on mime.types config ...
+                    defaultView.setMimeType(mimeType);
+                    return defaultView;
+                }
+            }
+
+            // TODO: Load config mime.types ...
+            String suffix = path.getSuffix();
+            if (suffix != null) {
+                log.debug("SUFFIX: " + suffix);
+                if (suffix.equals("html")) {
+                    defaultView.setMimeType("text/html");
+	        } else if (suffix.equals("css")) {
+                    defaultView.setMimeType("text/css");
+	        } else if (suffix.equals("png")) {
+                    defaultView.setMimeType("image/png");
+	        } else if (suffix.equals("jpg")) {
+                    defaultView.setMimeType("image/jpeg");
+                } else {
+                    defaultView.setMimeType("application/octet-stream");
+                }
+            } else {
+                log.warn("mime-type will be set to application/octet-stream, because no suffix for " + path);
+                defaultView.setMimeType("application/octet-stream");
+            }
+
         } catch(Exception e) {
-            System.err.println(e);
+            log.error(e);
         }
+
         return defaultView;
     }
 

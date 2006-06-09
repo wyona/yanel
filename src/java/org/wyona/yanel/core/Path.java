@@ -16,10 +16,14 @@
 
 package org.wyona.yanel.core;
 
+import org.apache.log4j.Category;
+
 /**
  *
  */
 public class Path {
+
+    private static Category log = Category.getInstance(Path.class);
 
     private String path;
 
@@ -37,10 +41,13 @@ public class Path {
     }
 
     /**
-     *
+     * Return null if no suffix exists
      */
     public String getSuffix() {
-        return path.substring(path.lastIndexOf(".") + 1);
+        int lio = path.lastIndexOf(".");
+        log.debug(new Integer(lio));
+        if (lio < 0) return null;
+        return path.substring(lio + 1);
     }
 
     /**
