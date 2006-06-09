@@ -46,7 +46,11 @@ public class DirectoryResource extends Resource implements ViewableV1 {
      *
      */
     public View getView(Path path, String viewId) {
-        return null;
+        View defaultView = new View();
+        defaultView.setMimeType("application/xml");
+	StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?><directory/>");
+	defaultView.setInputStream(new java.io.StringBufferInputStream(sb.toString()));
+        return defaultView;
     }
 
     /**

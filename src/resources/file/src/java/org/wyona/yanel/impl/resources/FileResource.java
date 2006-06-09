@@ -53,7 +53,9 @@ public class FileResource extends Resource implements ViewableV1 {
         defaultView.setMimeType("application/octet-stream");
         try {
             Repository repo = new RepositoryFactory().newRepository("yanel-content");
-            defaultView.setInputStream(repo.getInputStream(new org.wyona.yarep.core.Path("/hello/world.html")));
+            defaultView.setInputStream(repo.getInputStream(new org.wyona.yarep.core.Path(path.toString())));
+
+            // NOTE: Reading directly from the filesystem instead using yarep or some other data abstraction layer.
             //defaultView.setInputStream(new java.io.FileInputStream("/home/USER/content/test.txt"));
         } catch(Exception e) {
             System.err.println(e);
