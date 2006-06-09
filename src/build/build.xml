@@ -212,6 +212,17 @@
     </copy>
     -->
 
+    <!-- TODO: Copy these libs dynamically -->
+    <copy todir="${build.dir}/webapps/yanel/WEB-INF/lib">
+      <fileset dir="${yanel.home.dir}/src/resources/file/build/lib"/>
+      <fileset dir="${yanel.home.dir}/src/resources/directory/build/lib"/>
+      <fileset dir="${yanel.home.dir}/src/resources/websearch/build/lib"/>
+<!--
+      <fileset dir="${yanel.home.dir}/src/resources/calendar/build/lib"/>
+-->
+      <fileset dir="${yanel.home.dir}/src/resources/tape/build/lib"/>
+    </copy>
+
     <copy todir="${build.dir}/webapps/yanel/WEB-INF/classes">
       <fileset dir="${yanel.home.dir}/lib">
         <include name="*.properties"/>
