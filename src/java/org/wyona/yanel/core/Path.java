@@ -39,6 +39,13 @@ public class Path {
     /**
      *
      */
+    public String getSuffix() {
+        return path.substring(path.lastIndexOf(".") + 1);
+    }
+
+    /**
+     *
+     */
     public String toString() {
         return path;
     }

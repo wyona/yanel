@@ -27,10 +27,14 @@ import org.wyona.yarep.core.RepositoryFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Category;
+
 /**
  *
  */
 public class FileResource extends Resource implements ViewableV1 {
+
+    private static Category log = Category.getInstance(FileResource.class);
 
     /**
      *
@@ -50,9 +54,14 @@ public class FileResource extends Resource implements ViewableV1 {
      */
     public View getView(Path path, String viewId) {
         View defaultView = new View();
-        defaultView.setMimeType("application/octet-stream");
+        // TODO: Try to guess the mime-type from the suffix or content (see Apache httpd)
+        log.debug("SUFFIX: " + path.getSuffix());
+        if (path.getSuffix().equals("html")) {
+            defaultView.setMimeType("text/html");
+        } else {
+            defaultView.setMimeType("application/octet-stream");
+        }
         try {
-            // TODO: Try to guess the mime-type from the suffix (see Apache httpd)
             Repository repo = new RepositoryFactory().newRepository("yanel-content");
             defaultView.setInputStream(repo.getInputStream(new org.wyona.yarep.core.Path(path.toString())));
 
