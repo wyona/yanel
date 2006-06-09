@@ -96,27 +96,34 @@ public class YanelServlet extends HttpServlet {
         sb.append("</yanel>");
 
 
-        PrintWriter writer = response.getWriter();
-
         if (view != null) {
             response.setContentType(view.getMimeType());
-            java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(view.getInputStream()));
-            boolean empty = true;
-            String line = br.readLine();
-            if (line != null) {
-                empty = false;
-                writer.print(line);
-            }
-            while ((line = br.readLine()) != null) {
-                writer.print(line);
-            }
-            if (empty) {
+            java.io.InputStream is = view.getInputStream();
+
+            byte buffer[] = new byte[8192];
+            int bytesRead;
+            bytesRead = is.read(buffer);
+	    if (bytesRead == -1) {
                 response.setContentType("text/plain");
+                PrintWriter writer = response.getWriter();
                 writer.print("No content!");
+                writer.close();
+                return;
             }
+            java.io.OutputStream os = response.getOutputStream();
+            os.write(buffer, 0, bytesRead);
+            while ((bytesRead = is.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+            os.flush();
+            os.close();
+            return;
         } else {
             response.setContentType("application/xml");
+            PrintWriter writer = response.getWriter();
             writer.print(sb);
+            writer.close();
+            return;
         }
     }
 
