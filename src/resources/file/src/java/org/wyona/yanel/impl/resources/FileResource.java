@@ -79,6 +79,8 @@ public class FileResource extends Resource implements ViewableV1 {
                 log.debug("SUFFIX: " + suffix);
                 if (suffix.equals("html")) {
                     defaultView.setMimeType("text/html");
+	        } else if (suffix.equals("xhtml")) {
+                    defaultView.setMimeType("application/xhtml+xml");
 	        } else if (suffix.equals("css")) {
                     defaultView.setMimeType("text/css");
 	        } else if (suffix.equals("png")) {
