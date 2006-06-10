@@ -1,15 +1,16 @@
 
 - grep -rl TODO *
 - Change rti map to XML with the possibility of resource specific path config
+- Introduce chain of responsibility for MapImpl
 - Build resource implementations dynamically (based on configuration)
 - Add yanel version (such that for instance the webapp can display the version, e.g. 0.0.1-dev-r13812)
 - Use ant for yanel.sh (e.g. src/build/yanel.xml)
 - Make Tomcat targets configurable during configure.sh
 - Patch log.properties and yarep.properties during deploy
 - Implement local.yarep.properties and local.log4j.properties
-- Introduce chain of responsibility for MapImpl
 - Move published interfaces into dedicated directory
 - Specify versions of implementations explicitely and make them downloadable dynamically based on the registered resource types
 - Add Windows bat files
 - Add servlet engine, e.g. Jetty
 - Replace most System.err/out by log4j
+- Import any website with Nutch Crawler and rti map creator
