@@ -14,3 +14,4 @@
 - Add servlet engine, e.g. Jetty
 - Replace most System.err/out by log4j
 - Import any website with Nutch Crawler and rti map creator
+- Implement Distribution target (zip and tar.gz)
