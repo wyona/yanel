@@ -8,7 +8,10 @@ echo "INFO: Configure Yanel ..."
 JAVA_HOME="$JAVA_HOME"
 if [ "$JAVA_HOME" = "" ];then
   echo "ERROR: No JAVA_HOME set!"
-  echo "       Have you installed JDK (Java Development Kit)?"
+  echo "       Have you installed JDK (Java Development Kit)? If so, then set JAVA_HOME ..."
+  echo "       MacOS X : setenv JAVA_HOME /usr"
+  echo "       Linux   : export JAVA_HOME=/usr/local/j2sdk-..."
+  echo "       Windows : Click Start ..."
   exit 1
 fi
 
