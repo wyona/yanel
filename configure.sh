@@ -30,7 +30,7 @@ PATH=$PWD/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 
 # ----- Do something ;-)
 ant -version
-mvn --version
+#mvn --version
 
 # ----- Reset Environment Variables
 ANT_HOME=$ORIGINAL_ANT_HOME
