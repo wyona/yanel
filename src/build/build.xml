@@ -3,6 +3,8 @@
 <project name="yanel" default="deploy" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
   <target name="init" description="Initialize all parameters and other settings">
+    <echo>Building with ${ant.version} and Java version ${ant.java.version}</echo>
+
     <property file="local.build.properties"/>
     <property file="build.properties"/>
 
