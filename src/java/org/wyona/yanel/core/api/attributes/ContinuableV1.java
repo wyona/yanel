@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.core.attributes;
+package org.wyona.yanel.core.api.attributes;
 
 /**
  * http://jakarta.apache.org/commons/sandbox/javaflow/

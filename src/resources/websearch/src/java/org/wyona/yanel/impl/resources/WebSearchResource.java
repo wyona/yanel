@@ -18,7 +18,7 @@ package org.wyona.yanel.impl.resources;
 
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
-import org.wyona.yanel.core.attributes.ContinuableV1;
+import org.wyona.yanel.core.api.attributes.ContinuableV1;
 
 /**
  *

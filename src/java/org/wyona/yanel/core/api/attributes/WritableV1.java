@@ -14,15 +14,24 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.core.attributes;
+package org.wyona.yanel.core.api.attributes;
+
+import org.wyona.yanel.core.Path;
+import org.wyona.yanel.core.Topic;
 
 /**
- *
+ * TODO: Shouldn't it be the other way around, that the Resource is passed to a Repository instead the Repository to the Resource?!
+ * TODO: Shouldn't we use java.io.Serializable (writeObject, readObject)?!
  */
-public interface VersionableV1 {
+public interface WritableV1 {
 
     /**
      *
      */
-    public String[] getRevisions();
+    public void write(Path path);
+
+    /**
+     *
+     */
+    public void write(Topic topic);
 }

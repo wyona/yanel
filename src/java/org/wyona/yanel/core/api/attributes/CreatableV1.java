@@ -14,29 +14,25 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.core.attributes;
-
-import org.wyona.yanel.core.Path;
-
-import javax.servlet.http.HttpServletRequest;
+package org.wyona.yanel.core.api.attributes;
 
 /**
  *
  */
-public interface ViewableV1 {
+public interface CreatableV1 {
 
     /**
-     *
+     * TODO: Wouldn't it be better to implement this with introspection?
      */
-    public ViewDescriptor[] getViewDescriptors();
+    public String[] getPropertyNames();
 
     /**
-     *
+     * TODO: Wouldn't it be better to implement this with a Setter interface?
      */
-    public View getView(Path path, String viewId);
+    public void setProperty(String name, Object value);
 
     /**
-     *
+     * TODO: Wouldn't it be better to implement this with a Getter interface?
      */
-    public View getView(HttpServletRequest request, String viewId);
+    public Object getProperty(String name);
 }

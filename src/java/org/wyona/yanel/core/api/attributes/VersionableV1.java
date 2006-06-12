@@ -14,15 +14,15 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.core.attributes;
+package org.wyona.yanel.core.api.attributes;
 
 /**
  *
  */
-public abstract class ViewDescriptor {
+public interface VersionableV1 {
 
     /**
      *
      */
-    public abstract String getMimeType();
+    public String[] getRevisions();
 }

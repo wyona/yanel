@@ -14,17 +14,29 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.core.attributes;
+package org.wyona.yanel.core.api.attributes;
 
-import org.wyona.yanel.core.attributes.CreatableV1;
+import org.wyona.yanel.core.Path;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
  */
-public interface CreatableV2 extends CreatableV1 {
+public interface ViewableV1 {
 
     /**
      *
      */
-    public String getPropertyType(String propertyName);
+    public ViewDescriptor[] getViewDescriptors();
+
+    /**
+     *
+     */
+    public View getView(Path path, String viewId);
+
+    /**
+     *
+     */
+    public View getView(HttpServletRequest request, String viewId);
 }

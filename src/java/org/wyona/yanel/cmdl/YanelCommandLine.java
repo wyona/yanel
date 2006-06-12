@@ -20,11 +20,11 @@ import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
-import org.wyona.yanel.core.attributes.CreatableV1;
-import org.wyona.yanel.core.attributes.CreatableV2;
-import org.wyona.yanel.core.attributes.View;
-import org.wyona.yanel.core.attributes.ViewableV1;
-import org.wyona.yanel.core.attributes.WritableV1;
+import org.wyona.yanel.core.api.attributes.CreatableV1;
+import org.wyona.yanel.core.api.attributes.CreatableV2;
+import org.wyona.yanel.core.api.attributes.View;
+import org.wyona.yanel.core.api.attributes.ViewableV1;
+import org.wyona.yanel.core.api.attributes.WritableV1;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
 

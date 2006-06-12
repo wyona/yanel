@@ -14,15 +14,43 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.core.attributes;
+package org.wyona.yanel.core.api.attributes;
+
+import java.io.InputStream;
 
 /**
  *
  */
-public interface IndexableSearchableV1 {
+public class View {
+
+    private String mt;
+    private InputStream is;
 
     /**
      *
      */
-    public String getSearchFields();
+    public void setMimeType(String mt) {
+        this.mt = mt;
+    }
+
+    /**
+     *
+     */
+    public String getMimeType() {
+        return mt;
+    }
+
+    /**
+     *
+     */
+    public void setInputStream(InputStream is) {
+        this.is = is;
+    }
+
+    /**
+     *
+     */
+    public InputStream getInputStream() {
+        return is;
+    }
 }

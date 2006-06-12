@@ -14,25 +14,17 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.core.attributes;
+package org.wyona.yanel.core.api.attributes;
+
+import org.wyona.yanel.core.api.attributes.CreatableV1;
 
 /**
  *
  */
-public interface CreatableV1 {
+public interface CreatableV2 extends CreatableV1 {
 
     /**
-     * TODO: Wouldn't it be better to implement this with introspection?
+     *
      */
-    public String[] getPropertyNames();
-
-    /**
-     * TODO: Wouldn't it be better to implement this with a Setter interface?
-     */
-    public void setProperty(String name, Object value);
-
-    /**
-     * TODO: Wouldn't it be better to implement this with a Getter interface?
-     */
-    public Object getProperty(String name);
+    public String getPropertyType(String propertyName);
 }
