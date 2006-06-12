@@ -81,12 +81,24 @@ public class FileResource extends Resource implements ViewableV1 {
                     defaultView.setMimeType("text/html");
 	        } else if (suffix.equals("xhtml")) {
                     defaultView.setMimeType("application/xhtml+xml");
+	        } else if (suffix.equals("xml")) {
+                    defaultView.setMimeType("application/xml");
 	        } else if (suffix.equals("css")) {
                     defaultView.setMimeType("text/css");
 	        } else if (suffix.equals("png")) {
                     defaultView.setMimeType("image/png");
 	        } else if (suffix.equals("jpg")) {
                     defaultView.setMimeType("image/jpeg");
+	        } else if (suffix.equals("gif")) {
+                    defaultView.setMimeType("image/gif");
+	        } else if (suffix.equals("pdf")) {
+                    defaultView.setMimeType("application/pdf");
+	        } else if (suffix.equals("doc")) {
+                    defaultView.setMimeType("application/msword");
+	        } else if (suffix.equals("odt")) {
+                    defaultView.setMimeType("application/vnd.oasis.opendocument.text");
+	        } else if (suffix.equals("sxc")) {
+                    defaultView.setMimeType("application/vnd.sun.xml.calc");
                 } else {
                     defaultView.setMimeType("application/octet-stream");
                 }
