@@ -57,6 +57,8 @@ public class DirectoryResource extends Resource implements ViewableV1 {
         defaultView.setMimeType("application/xml");
 	StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
 
+	//sb.append("<?xml-stylesheet type=\"text/xsl\" href=\"yanel/resources/directory/dir2xhtml.xsl\"?>");
+
         org.wyona.yarep.core.Path p = new org.wyona.yarep.core.Path(path.toString());
 
         // NOTE: The schema is according to http://cocoon.apache.org/2.1/userdocs/directory-generator.html
