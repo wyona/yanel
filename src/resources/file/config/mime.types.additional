@@ -1,5 +1,7 @@
 # Additional Yanel MIME types
 
+# http://framework.openoffice.org/documentation/mimetypes/mimetypes.html
+
 # MIME type                                   Extensions
 application/vnd.oasis.opendocument.text       odt
 application/vnd.sun.xml.calc                  sxc
