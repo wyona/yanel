@@ -18,9 +18,9 @@ package org.wyona.yanel.impl.resources;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.api.attributes.View;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
-import org.wyona.yanel.core.api.attributes.ViewDescriptor;
+import org.wyona.yanel.core.attributes.viewable.View;
+import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;

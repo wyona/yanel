@@ -19,7 +19,7 @@ package com.wyonapictures.yanel.impl.resources;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.api.attributes.CreatableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
-import org.wyona.yanel.core.api.attributes.ViewDescriptor;
+import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.wyona.yanel.impl.ResourceDefaultImpl;
 

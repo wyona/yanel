@@ -14,17 +14,14 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.core.api.attributes;
-
-import java.io.InputStream;
+package org.wyona.yanel.core.attributes.viewable;
 
 /**
  *
  */
-public class View {
+public class ViewDescriptor {
 
     private String mt;
-    private InputStream is;
 
     /**
      *
@@ -38,19 +35,5 @@ public class View {
      */
     public String getMimeType() {
         return mt;
-    }
-
-    /**
-     *
-     */
-    public void setInputStream(InputStream is) {
-        this.is = is;
-    }
-
-    /**
-     *
-     */
-    public InputStream getInputStream() {
-        return is;
     }
 }

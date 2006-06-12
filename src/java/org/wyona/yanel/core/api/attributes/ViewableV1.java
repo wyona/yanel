@@ -17,6 +17,8 @@
 package org.wyona.yanel.core.api.attributes;
 
 import org.wyona.yanel.core.Path;
+import org.wyona.yanel.core.attributes.viewable.View;
+import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import javax.servlet.http.HttpServletRequest;
 
