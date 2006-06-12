@@ -1,0 +1,5 @@
+# Additional Yanel MIME types
+
+# MIME type                                   Extensions
+application/vnd.oasis.opendocument.text       odt
+application/vnd.sun.xml.calc                  sxc
