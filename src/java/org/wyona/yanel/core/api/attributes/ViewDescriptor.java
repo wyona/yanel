@@ -19,10 +19,21 @@ package org.wyona.yanel.core.api.attributes;
 /**
  *
  */
-public abstract class ViewDescriptor {
+public class ViewDescriptor {
+
+    private String mt;
 
     /**
      *
      */
-    public abstract String getMimeType();
+    public void setMimeType(String mt) {
+        this.mt = mt;
+    }
+
+    /**
+     *
+     */
+    public String getMimeType() {
+        return mt;
+    }
 }
