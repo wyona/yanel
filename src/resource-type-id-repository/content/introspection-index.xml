@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<introspection xmlns="http://www.wyona.org/osr-101/1.0">
+<edit mime-type="application/xhtml+xml">
+  <open url="developers.xhtml" method="GET"/>
+<!-- TODO: With checkout enabled!
+  <open url="developers.xhtml?yanel.resource.usecase=checkout" method="GET"/>
+-->
+  <save url="developers.xhtml?yanel.resource.usecase=checkin" method="PUT"/>
+</edit>
+</introspection>
