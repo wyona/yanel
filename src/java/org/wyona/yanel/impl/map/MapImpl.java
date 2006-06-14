@@ -31,14 +31,14 @@ public class MapImpl implements Map {
 
     private static Category log = Category.getInstance(MapImpl.class);
 
-    Repository repo;
+    RepositoryFactory repoFactory;
 
     /**
      *
      */
     public MapImpl() {
         try {
-            repo = new RepositoryFactory().newRepository("yanel-rti");
+            repoFactory = new RepositoryFactory();
         } catch(Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -56,8 +56,10 @@ public class MapImpl implements Map {
      */
     public String getResourceTypeIdentifier(Path path) {
         try {
-            // TODO: See YarepSource re using more than one repository!
-            java.io.BufferedReader br = new java.io.BufferedReader(repo.getReader(new org.wyona.yarep.core.Path(path.toString())));
+            Repository repo = org.wyona.yarep.util.YarepUtil.getRepositoryId(new org.wyona.yarep.core.Path(path.toString()),repoFactory);
+            log.debug("Repo Name: " + repo.getName());
+
+            java.io.BufferedReader br = new java.io.BufferedReader(repo.getReader(new org.wyona.yarep.core.Path(path.toString() + ".yanel-rti")));
             return br.readLine();
         } catch(Exception e) {
             log.error(e.getMessage(), e);
