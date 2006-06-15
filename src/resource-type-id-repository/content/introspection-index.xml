@@ -2,7 +2,10 @@
 
 <introspection xmlns="http://www.wyona.org/osr-101/1.0">
 <edit mime-type="application/xhtml+xml">
+<!--
   <open url="index.xhtml" method="GET"/>
+-->
+  <open url="http://127.0.0.1:8888/yanel/index.xhtml" method="GET"/>
 <!-- TODO: With checkout enabled!
   <open url="index.xhtml?yanel.resource.usecase=checkout" method="GET"/>
 -->
