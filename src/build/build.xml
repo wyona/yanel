@@ -14,6 +14,7 @@
 
     <property name="build.dir" value="${yanel.home.dir}/build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="log4j.path" value="${build.dir}/logs"/>
 
     <!-- INFO: http://maven.apache.org/ant-tasks.html -->
     <artifact:remoteRepository id="wyona.remote.repository" url="http://www.wyona.org/maven2/"/>
@@ -232,6 +233,9 @@
     </copy>
     <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
+    </replace>
+    <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/log4j.properties" value="${log4j.path}">
+      <replacetoken>@LOG4J_PATH@</replacetoken>
     </replace>
 
     <copy todir="${build.dir}/webapps/yanel/WEB-INF/lib">
