@@ -54,7 +54,6 @@ public class Path {
      * Return null if no suffix exists
      */
     public Path getRTIPath() {
-        log.error("*" + path + "*");
         // Remove trailing slash except for ROOT ...
         if (path.length() > 1 && path.charAt(path.length() - 1) == '/') {
             return new Path(path.substring(0, path.length() - 1) + ".yanel-rti");
