@@ -68,6 +68,7 @@ public class DirectoryResource extends Resource implements ViewableV1 {
             // NOTE: The schema is according to http://cocoon.apache.org/2.1/userdocs/directory-generator.html
 	    sb.append("<dir:directory yanel:path=\"" + path + "\" name=\"" + p.getName() + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
             // TODO: Do not show the children with suffix .yanel-rti resp. make this configurable!
+	    // NOTE: Do not hardcode the .yanel-rti, but rather use Path.getRTIPath ...
             org.wyona.yarep.core.Path[] children = repo.getChildren(p);
             for (int i = 0; i < children.length; i++) {
                 if (repo.isResource(children[i])) {

@@ -51,6 +51,13 @@ public class Path {
     }
 
     /**
+     * Return null if no suffix exists
+     */
+    public Path getRTIPath() {
+        return new Path(path + ".yanel-rti");
+    }
+
+    /**
      *
      */
     public String toString() {

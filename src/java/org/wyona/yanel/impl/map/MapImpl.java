@@ -62,7 +62,7 @@ public class MapImpl implements Map {
             log.debug("Repo Name: " + repo.getName());
             log.debug("New path: " + rp.getPath());
 
-            java.io.BufferedReader br = new java.io.BufferedReader(repo.getReader(new org.wyona.yarep.core.Path(rp.getPath().toString() + ".yanel-rti")));
+            java.io.BufferedReader br = new java.io.BufferedReader(repo.getReader(new org.wyona.yarep.core.Path(new Path(rp.getPath().toString()).getRTIPath().toString())));
             return br.readLine();
         } catch(Exception e) {
             log.error(e.getMessage(), e);
