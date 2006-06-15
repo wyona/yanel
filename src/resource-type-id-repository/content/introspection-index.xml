@@ -9,6 +9,9 @@
 <!-- TODO: With checkout enabled!
   <open url="index.xhtml?yanel.resource.usecase=checkout" method="GET"/>
 -->
+<!--
   <save url="index.xhtml?yanel.resource.usecase=checkin" method="PUT"/>
+-->
+  <save url="http://127.0.0.1:8888/yanel/index.xhtml?yanel.resource.usecase=checkin" method="PUT"/>
 </edit>
 </introspection>
