@@ -55,11 +55,14 @@ public class MapImpl implements Map {
      * See James Clark's explanation on namespaces: http://www.jclark.com/xml/xmlns.htm
      */
     public String getResourceTypeIdentifier(Path path) {
+        log.debug("Original path: " + path);
         try {
-            Repository repo = org.wyona.yarep.util.YarepUtil.getRepositoryId(new org.wyona.yarep.core.Path(path.toString()),repoFactory);
+            org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),repoFactory);
+            Repository repo = rp.getRepo();
             log.debug("Repo Name: " + repo.getName());
+            log.debug("New path: " + rp.getPath());
 
-            java.io.BufferedReader br = new java.io.BufferedReader(repo.getReader(new org.wyona.yarep.core.Path(path.toString() + ".yanel-rti")));
+            java.io.BufferedReader br = new java.io.BufferedReader(repo.getReader(new org.wyona.yarep.core.Path(rp.getPath().toString() + ".yanel-rti")));
             return br.readLine();
         } catch(Exception e) {
             log.error(e.getMessage(), e);

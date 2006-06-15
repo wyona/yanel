@@ -59,13 +59,14 @@ public class DirectoryResource extends Resource implements ViewableV1 {
 
 	//sb.append("<?xml-stylesheet type=\"text/xsl\" href=\"yanel/resources/directory/dir2xhtml.xsl\"?>");
 
-        org.wyona.yarep.core.Path p = new org.wyona.yarep.core.Path(path.toString());
-
-        // NOTE: The schema is according to http://cocoon.apache.org/2.1/userdocs/directory-generator.html
-	sb.append("<dir:directory yanel:path=\"" + path + "\" name=\"" + p.getName() + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
 
         try {
-            Repository repo = org.wyona.yarep.util.YarepUtil.getRepositoryId(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            Repository repo = rp.getRepo();
+            org.wyona.yarep.core.Path p = rp.getPath();
+
+            // NOTE: The schema is according to http://cocoon.apache.org/2.1/userdocs/directory-generator.html
+	    sb.append("<dir:directory yanel:path=\"" + path + "\" name=\"" + p.getName() + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
             // TODO: Do not show the children with suffix .yanel-rti resp. make this configurable!
             org.wyona.yarep.core.Path[] children = repo.getChildren(p);
             for (int i = 0; i < children.length; i++) {

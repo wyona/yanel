@@ -55,11 +55,11 @@ public class FileResource extends Resource implements ViewableV1 {
     public View getView(Path path, String viewId) {
         View defaultView = new View();
         try {
-            Repository repo = org.wyona.yarep.util.YarepUtil.getRepositoryId(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
-            defaultView.setInputStream(repo.getInputStream(new org.wyona.yarep.core.Path(path.toString())));
+            org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            defaultView.setInputStream(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
 
             // TODO: Get repo suffix of RTIs from framework ... (also see MapImpl)
-            java.io.BufferedReader br = new java.io.BufferedReader(repo.getReader(new org.wyona.yarep.core.Path(path.toString() + ".yanel-rti")));
+            java.io.BufferedReader br = new java.io.BufferedReader(rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString() + ".yanel-rti")));
             br.readLine();
             String mimeType = br.readLine();
             if (mimeType != null) {
