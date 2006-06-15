@@ -1,5 +1,6 @@
 
 - grep -rl TODO *
+- ResourceTypeRegistry class loading needs to be improved (see Yarep how it should be done ...)
 - Change rti map to XML with the possibility of resource specific path config
 - Introduce Map mounting
 - Introduce chain of responsibility for MapImpl
