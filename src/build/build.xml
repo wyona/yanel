@@ -82,6 +82,38 @@
       </fileset>
       <pathelement path="${maven2.cp}"/>
     </path>
+
+    <path id="classpath.run">
+      <pathelement path="${yanel.home.dir}/build/classes"/>
+<!--
+      <fileset dir="${yanel.home.dir}/build/lib">
+        <include name="*.jar"/>
+      </fileset>
+-->
+      <pathelement path="${yanel.home.dir}/lib"/>
+<!--
+      <fileset dir="${yanel.home.dir}/src/resources/tape/build/lib">
+        <include name="*.jar"/>
+      </fileset>
+      <fileset dir="${yanel.home.dir}/src/resources/invoice/build/lib">
+        <include name="*.jar"/>
+      </fileset>
+      <fileset dir="${yanel.home.dir}/src/resources/websearch/build/lib">
+        <include name="*.jar"/>
+      </fileset>
+      <fileset dir="${yanel.home.dir}/src/resources/file/build/lib">
+        <include name="*.jar"/>
+      </fileset>
+      <fileset dir="${yanel.home.dir}/src/resources/directory/build/lib">
+        <include name="*.jar"/>
+      </fileset>
+-->
+      <pathelement path="${maven2.cp}"/>
+    </path>
+    <property name="run.cp" refid="classpath.run"/>
+<!--
+    <echo>Classpath to run yanel: ${run.cp}</echo>
+-->
   </target>
 
   <target name="compile-core" description="Compile Java classes of Yanel core" depends="init">
@@ -310,4 +342,19 @@
     >
     </javadoc>
   </target>
+
+  <target name="run-yanel-cmdl" description="Run command line tool" depends="init">
+    <exec executable="/usr/lib/j2sdk1.4/bin/java">
+    <!--
+    <exec executable="java">
+    -->
+      <arg line="-classpath ${run.cp} org.wyona.yanel.cmdl.YanelCommandLine"/>
+    </exec>
+<!--
+    <java classname="org.wyona.yanel.cmdl.YanelCommandLine">
+      <classpath refid="classpath.run"/>
+    </java>
+-->
+  </target>
+
 </project>
