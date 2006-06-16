@@ -87,7 +87,12 @@
       </fileset>
       <pathelement path="${maven2.cp}"/>
     </path>
+  </target>
 
+  <target name="init-runtime" description="Initialize all parameters and other settings for runtime" depends="init">
+<!--
+  <target name="init-runtime" description="Initialize all parameters and other settings for runtime" depends="webapp">
+-->
     <path id="classpath.run">
       <pathelement path="${yanel.home.dir}/build/classes"/>
 <!--
@@ -346,7 +351,7 @@
     </javadoc>
   </target>
 
-  <target name="run-yanel-cmdl" description="Run command line tool" depends="init">
+  <target name="run-yanel-cmdl" description="Run command line tool" depends="init-runtime">
     <!--
     <exec executable="java">
       <arg line="-classpath ${run.cp} org.wyona.yanel.cmdl.YanelCommandLine"/>
