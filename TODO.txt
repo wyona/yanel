@@ -6,7 +6,6 @@
 - Introduce chain of responsibility for MapImpl
 - Build resource implementations dynamically (based on configuration): ResourceRegistry ...
 - Add yanel version (such that for instance the webapp can display the version, e.g. 0.0.1-dev-r13812)
-- Use ant for yanel.sh (e.g. src/build/yanel.xml)
 - Make Tomcat targets configurable during configure.sh
 - Patch log.properties and yarep.properties during deploy
 - Implement local.yarep.properties and local.log4j.properties
@@ -16,3 +15,4 @@
 - Replace most System.err/out by log4j
 - Import any website with Nutch Crawler and rti map creator
 - Implement Distribution target (zip and tar.gz)
+- Move runtime lib dependencies into init-runtime target
