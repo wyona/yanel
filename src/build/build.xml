@@ -40,6 +40,11 @@
                   version="0.1-dev-lcr357257"/>
       <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-logging"
                   version="1.0.4"/>
+      <!-- IMPORT: xerces 2.7.1 is dependent on xml-apis 1.3.02 -->
+      <dependency groupId="xerces" artifactId="xercesImpl"
+                  version="2.7.1"/>
+      <dependency groupId="xml-apis" artifactId="xml-apis"
+                  version="1.3.02"/>
     </artifact:dependencies>
 
     <!--
@@ -91,7 +96,6 @@
       </fileset>
 -->
       <pathelement path="${yanel.home.dir}/lib"/>
-<!--
       <fileset dir="${yanel.home.dir}/src/resources/tape/build/lib">
         <include name="*.jar"/>
       </fileset>
@@ -107,7 +111,6 @@
       <fileset dir="${yanel.home.dir}/src/resources/directory/build/lib">
         <include name="*.jar"/>
       </fileset>
--->
       <pathelement path="${maven2.cp}"/>
     </path>
     <property name="run.cp" refid="classpath.run"/>
@@ -344,17 +347,14 @@
   </target>
 
   <target name="run-yanel-cmdl" description="Run command line tool" depends="init">
-    <exec executable="/usr/lib/j2sdk1.4/bin/java">
     <!--
     <exec executable="java">
-    -->
       <arg line="-classpath ${run.cp} org.wyona.yanel.cmdl.YanelCommandLine"/>
     </exec>
-<!--
+    -->
     <java classname="org.wyona.yanel.cmdl.YanelCommandLine">
       <classpath refid="classpath.run"/>
     </java>
--->
   </target>
 
 </project>
