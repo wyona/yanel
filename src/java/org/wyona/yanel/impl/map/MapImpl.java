@@ -38,7 +38,9 @@ public class MapImpl implements Map {
      */
     public MapImpl() {
         try {
+            // TODO: Separate RTI mapping from whatever else is using yarep ...
             repoFactory = new RepositoryFactory();
+            //repoFactory = new RepositoryFactory("yanel-rti-yarep.properties");
         } catch(Exception e) {
             log.error(e.getMessage(), e);
         }
