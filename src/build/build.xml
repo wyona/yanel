@@ -274,8 +274,14 @@
     <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/yanel-rti-yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
     </replace>
+    <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/yanel-rti-yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/repository.xml">
+      <replacetoken>javadoc,../src/javadoc-repository/repository.xml</replacetoken>
+    </replace>
     <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
+    </replace>
+    <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/repository.xml">
+      <replacetoken>javadoc,../src/javadoc-repository/repository.xml</replacetoken>
     </replace>
     <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/log4j.properties" value="${log4j.path}">
       <replacetoken>@LOG4J_PATH@</replacetoken>
