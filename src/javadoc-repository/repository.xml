@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<repository>
+  <name>Yanel Javadoc Repository</name>
+
+  <paths src="../../build/javadoc"/>
+
+  <storage class="org.wyona.yarep.core.impl.vfs.VFileSystemStorage">
+    <content src="../../build/javadoc"/>
+  </storage>
+</repository>
