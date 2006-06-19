@@ -19,6 +19,7 @@ package org.wyona.yanel.impl.map;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.map.Map;
 
+import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 
@@ -66,9 +67,15 @@ public class MapImpl implements Map {
 
             java.io.BufferedReader br = new java.io.BufferedReader(repo.getReader(new org.wyona.yarep.core.Path(new Path(rp.getPath().toString()).getRTIPath().toString())));
             return br.readLine();
+        } catch(NoSuchNodeException e) {
+            log.warn(e.getMessage());
         } catch(Exception e) {
             log.error(e.getMessage(), e);
         }
+
+        // TODO: Implement chain of responsibility ...
+        //return "<{http://www.wyona.org/yanel/resource/1.0}file/>";
+
         log.warn("No resource type identifier for path: " + path);
         return null;
     }
