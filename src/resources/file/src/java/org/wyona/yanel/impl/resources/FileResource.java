@@ -58,60 +58,71 @@ public class FileResource extends Resource implements ViewableV1 {
             org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
             defaultView.setInputStream(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
 
-            // TODO: Get yanel RTI yarep properties file name from framework (see MapImpl ...)!
-            org.wyona.yarep.util.RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
-            br.readLine();
-            String mimeType = br.readLine();
-            if (mimeType != null) {
-                if (mimeType.indexOf("mime-type:") == 0) {
-                    mimeType = mimeType.substring(11);
-                    log.info("*" + mimeType + "*");
-                    // TODO: Maybe validate mime-type based on mime.types config ...
-                    defaultView.setMimeType(mimeType);
-                    return defaultView;
-                }
-            }
-
-            // TODO: Load config mime.types ...
-            String suffix = path.getSuffix();
-            if (suffix != null) {
-                log.debug("SUFFIX: " + suffix);
-                if (suffix.equals("html")) {
-                    defaultView.setMimeType("text/html");
-	        } else if (suffix.equals("xhtml")) {
-                    defaultView.setMimeType("application/xhtml+xml");
-	        } else if (suffix.equals("xml")) {
-                    defaultView.setMimeType("application/xml");
-	        } else if (suffix.equals("css")) {
-                    defaultView.setMimeType("text/css");
-	        } else if (suffix.equals("png")) {
-                    defaultView.setMimeType("image/png");
-	        } else if (suffix.equals("jpg")) {
-                    defaultView.setMimeType("image/jpeg");
-	        } else if (suffix.equals("gif")) {
-                    defaultView.setMimeType("image/gif");
-	        } else if (suffix.equals("pdf")) {
-                    defaultView.setMimeType("application/pdf");
-	        } else if (suffix.equals("doc")) {
-                    defaultView.setMimeType("application/msword");
-	        } else if (suffix.equals("odt")) {
-                    defaultView.setMimeType("application/vnd.oasis.opendocument.text");
-	        } else if (suffix.equals("sxc")) {
-                    defaultView.setMimeType("application/vnd.sun.xml.calc");
-                } else {
-                    defaultView.setMimeType("application/octet-stream");
-                }
-            } else {
-                log.warn("mime-type will be set to application/octet-stream, because no suffix for " + path);
-                defaultView.setMimeType("application/octet-stream");
-            }
-
+            defaultView.setMimeType(getMimeType(path, viewId));
         } catch(Exception e) {
             log.error(e);
         }
 
         return defaultView;
+    }
+
+    /**
+     *
+     */
+    private String getMimeType(Path path, String viewId) {
+        String mimeType = null;
+        try {
+            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
+            org.wyona.yarep.util.RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
+            br.readLine();
+            mimeType = br.readLine();
+            if (mimeType != null) {
+                if (mimeType.indexOf("mime-type:") == 0) {
+                    mimeType = mimeType.substring(11);
+                    log.info("*" + mimeType + "*");
+                    // TODO: Maybe validate mime-type based on mime.types config ...
+                    return mimeType;
+                }
+            }
+        } catch(Exception e) {
+            log.warn(e);
+        }
+
+        // TODO: Load config mime.types ...
+        String suffix = path.getSuffix();
+        if (suffix != null) {
+            log.debug("SUFFIX: " + suffix);
+            if (suffix.equals("html")) {
+                mimeType = "text/html";
+            } else if (suffix.equals("xhtml")) {
+                mimeType = "application/xhtml+xml";
+            } else if (suffix.equals("xml")) {
+                mimeType = "application/xml";
+            } else if (suffix.equals("css")) {
+                mimeType = "text/css";
+            } else if (suffix.equals("png")) {
+                mimeType = "image/png";
+            } else if (suffix.equals("jpg")) {
+                mimeType = "image/jpeg";
+	    } else if (suffix.equals("gif")) {
+                mimeType = "image/gif";
+	    } else if (suffix.equals("pdf")) {
+                mimeType = "application/pdf";
+	    } else if (suffix.equals("doc")) {
+                mimeType = "application/msword";
+	    } else if (suffix.equals("odt")) {
+                mimeType = "application/vnd.oasis.opendocument.text";
+	    } else if (suffix.equals("sxc")) {
+                mimeType = "application/vnd.sun.xml.calc";
+            } else {
+                mimeType = "application/octet-stream";
+            }
+        } else {
+            log.warn("mime-type will be set to application/octet-stream, because no suffix for " + path);
+            mimeType = "application/octet-stream";
+        }
+        return mimeType;
     }
 
     /**
