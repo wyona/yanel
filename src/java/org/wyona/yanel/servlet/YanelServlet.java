@@ -126,27 +126,46 @@ public class YanelServlet extends HttpServlet {
     /**
      *
      */
-/*
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter writer = response.getWriter();
-        response.setContentType("text/html");
+        response.setContentType("application/xhtml+xml");
 
         writer.println("<html>");
         writer.println("<body>");
 
-        String name = request.getParameter("name");
-        if (name != null && name.length() > 0) {
-           String value = request.getParameter("value");
-	   HttpSession session = request.getSession(true);
-           session.setAttribute(name, value);
-
-           writer.println("Session attribute has been set: " + name + " = " + value);
+        String value = request.getParameter("yanel.resource.usecase");
+        if (value != null && value.equals("save")) {
+           writer.println("Save data ...");
+           log.error("Save data ...");
         } else {
-           writer.println("No session attribute has been set!");
+           writer.println("No parameter yanel.resource.usecase!");
+           log.error("No parameter yanel.resource.usecase!");
         }
 
         writer.println("</body>");
         writer.println("</html>");
     }
-*/
+
+    /**
+     * TODO: Reuse code doPost resp. share code with doPut
+     */
+    public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        PrintWriter writer = response.getWriter();
+        response.setContentType("application/xhtml+xml");
+
+        writer.println("<html>");
+        writer.println("<body>");
+
+        String value = request.getParameter("yanel.resource.usecase");
+        if (value != null && value.equals("save")) {
+           writer.println("Save data ...");
+           log.error("Save data ...");
+        } else {
+           writer.println("No parameter yanel.resource.usecase!");
+           log.error("No parameter yanel.resource.usecase!");
+        }
+
+        writer.println("</body>");
+        writer.println("</html>");
+    }
 }
