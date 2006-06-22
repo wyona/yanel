@@ -3,7 +3,10 @@
 <introspection xmlns="http://www.wyona.org/neutron/1.0">
 <edit mime-type="application/xhtml+xml" name="Content Body">
   <open url="index.xhtml" method="GET"/>
-  <save url="index.xhtml?yanel.resource.usecase=checkin" method="PUT"/>
+<!--
+  <save url="index.xhtml?yanel.resource.usecase=save" method="POST"/>
+-->
+  <save url="index.xhtml?yanel.resource.usecase=save" method="PUT"/>
   <checkout url="index.xhtml?yanel.resource.usecase=checkout" method="GET"/>
   <checkin  url="index.xhtml?yanel.resource.usecase=checkin"  method="PUT"/>
 </edit>
