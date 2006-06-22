@@ -29,6 +29,7 @@ import org.wyona.yarep.core.RepositoryFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 
@@ -170,6 +171,14 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV1 {
      *
      */
     public Writer getWriter(Topic topic) {
+        log.error("Not implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public OutputStream getOutputStream(Path path) {
         log.error("Not implemented yet!");
         return null;
     }

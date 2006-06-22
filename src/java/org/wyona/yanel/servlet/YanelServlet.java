@@ -15,6 +15,7 @@ import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
+import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.map.Map;
@@ -165,6 +166,7 @@ public class YanelServlet extends HttpServlet {
             byte buffer[] = new byte[8192];
             int bytesRead;
             bytesRead = in.read(buffer);
+
 /*
 	     if (bytesRead == -1) {
                  response.setContentType("text/plain");
@@ -173,12 +175,26 @@ public class YanelServlet extends HttpServlet {
                  return;
              }
 */
+
+/*
             java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
             out.write(buffer, 0, bytesRead);
             while ((bytesRead = in.read(buffer)) != -1) {
                 out.write(buffer, 0, bytesRead);
             }
             log.error("Received Data: " + out.toString());
+*/
+
+            Resource res = getResource(request);
+            if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
+                java.io.OutputStream out = ((ModifiableV1) res).getOutputStream(new Path(request.getServletPath()));
+                out.write(buffer, 0, bytesRead);
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
+            } else {
+                log.error("<resource>" + res.getClass().getName() + " is not modifiable!</resource>");
+            }
         } else {
             writer.println("No parameter yanel.resource.usecase!");
             log.error("No parameter yanel.resource.usecase!");
@@ -186,5 +202,29 @@ public class YanelServlet extends HttpServlet {
 
         writer.println("</body>");
         writer.println("</html>");
+    }
+
+    /**
+     *
+     */
+    private Resource getResource(HttpServletRequest request) {
+        MapFactory mf = MapFactory.newInstance();
+        Map map = mf.newMap();
+        String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
+        if (rti != null) {
+            ResourceTypeDefinition rtd = ResourceTypeRegistry.getResourceTypeDefinition(rti);
+
+            try {
+                Resource res = ResourceTypeRegistry.newResource(rti);
+                res.setRTD(rtd);
+                return res;
+            } catch(Exception e) {
+                log.error(e.getMessage(), e);
+                return null;
+            }
+        } else {
+            log.error("<no-resource-type-identifier-found servlet-path=\""+request.getServletPath()+"\"/>");
+            return null;
+        }
     }
 }
