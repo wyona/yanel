@@ -158,11 +158,30 @@ public class YanelServlet extends HttpServlet {
 
         String value = request.getParameter("yanel.resource.usecase");
         if (value != null && value.equals("save")) {
-           writer.println("Save data ...");
-           log.error("Save data ...");
+            writer.println("Save data ...");
+            log.error("Save data ...");
+            java.io.InputStream in = request.getInputStream();
+
+            byte buffer[] = new byte[8192];
+            int bytesRead;
+            bytesRead = in.read(buffer);
+/*
+	     if (bytesRead == -1) {
+                 response.setContentType("text/plain");
+                 PrintWriter writer = response.getWriter();
+                 writer.print("No content!");
+                 return;
+             }
+*/
+            java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+            out.write(buffer, 0, bytesRead);
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+            log.error("Received Data: " + out.toString());
         } else {
-           writer.println("No parameter yanel.resource.usecase!");
-           log.error("No parameter yanel.resource.usecase!");
+            writer.println("No parameter yanel.resource.usecase!");
+            log.error("No parameter yanel.resource.usecase!");
         }
 
         writer.println("</body>");
