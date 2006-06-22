@@ -32,6 +32,10 @@ PATH=$PWD/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 ant -version
 #mvn --version
 
+echo ""
+echo "NOTE: Copy lib/yanel-rti-yarep.properties to lib/local.yanel-rti-yarep.properties and copy lib/yarep.properties to lib/local.yarep.properties. Customize the local.*.properties files and run build.sh! Or run build.sh first and then customize the *.properties files within build/webapps/yanel/WEB-INF/classes"
+echo ""
+
 # ----- Reset Environment Variables
 ANT_HOME=$ORIGINAL_ANT_HOME
 #echo $ANT_HOME
