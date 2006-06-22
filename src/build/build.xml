@@ -298,6 +298,7 @@
     <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/log4j.properties" value="${log4j.path}">
       <replacetoken>@LOG4J_PATH@</replacetoken>
     </replace>
+    <mkdir dir="${log4j.path}"/>
 
     <copy todir="${build.dir}/webapps/yanel/WEB-INF/lib">
       <fileset refid="maven2.fileset"/>
