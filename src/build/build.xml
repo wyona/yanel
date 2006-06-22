@@ -276,10 +276,10 @@
       </fileset>
     </copy>
 -->
-    <copy file="${yanel.home.dir}/lib/log4j.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes" overwrite="true"/>
-    <copy file="${yanel.home.dir}/lib/yanel-rti-yarep.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes" overwrite="true"/>
+    <copy file="${yanel.home.dir}/lib/log4j.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.home.dir}/lib/yanel-rti-yarep.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/lib/local.yanel-rti-yarep.properties" tofile="${build.dir}/webapps/yanel/WEB-INF/classes/yanel-rti-yarep.properties" overwrite="true" failonerror="false"/>
-    <copy file="${yanel.home.dir}/lib/yarep.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes" overwrite="true"/>
+    <copy file="${yanel.home.dir}/lib/yarep.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/lib/local.yarep.properties" tofile="${build.dir}/webapps/yanel/WEB-INF/classes/yarep.properties" overwrite="true" failonerror="false"/>
     <copy file="${yanel.home.dir}/lib/yanel.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes" overwrite="true"/>
 
