@@ -19,6 +19,8 @@ package org.wyona.yanel.core;
 import java.lang.ClassNotFoundException;
 import java.lang.IllegalAccessException;
 import java.lang.InstantiationException;
+import java.net.URL;
+import java.util.Properties;
 
 import org.apache.log4j.Category;
 
@@ -28,6 +30,43 @@ import org.apache.log4j.Category;
 public class ResourceTypeRegistry {
 
     private static Category log = Category.getInstance(ResourceTypeRegistry.class);
+
+    public static final String DEFAULT_CONFIGURATION_FILE = "yanel.properties";
+    public static String CONFIGURATION_FILE = DEFAULT_CONFIGURATION_FILE;
+
+    private URL propertiesURL;
+
+    /**
+     *
+     */
+    public ResourceTypeRegistry() {
+        this(DEFAULT_CONFIGURATION_FILE);
+    }
+
+    /**
+     *
+     */
+    public ResourceTypeRegistry(String configurationFile) {
+        CONFIGURATION_FILE = configurationFile;
+
+        propertiesURL = ResourceTypeRegistry.class.getClassLoader().getResource(CONFIGURATION_FILE);
+        if (propertiesURL == null) {
+            log.error("No such resource: " + CONFIGURATION_FILE);
+            return;
+        }
+
+        Properties props = new Properties();
+        try {
+            props.load(propertiesURL.openStream());
+            String separator = ",";
+            String[] tokens = props.getProperty("resources").split(separator);
+            for (int i = 0; i < tokens.length; i++) {
+                log.debug("Resource descriptor: " + tokens[i]);
+            }
+        } catch (Exception e) {
+            log.error(e);
+        }
+    }
 
     /**
      *

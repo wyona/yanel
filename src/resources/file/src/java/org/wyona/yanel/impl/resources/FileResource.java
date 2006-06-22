@@ -18,6 +18,8 @@ package org.wyona.yanel.impl.resources;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.Topic;
+import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
@@ -27,12 +29,15 @@ import org.wyona.yarep.core.RepositoryFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.io.Reader;
+import java.io.Writer;
+
 import org.apache.log4j.Category;
 
 /**
  *
  */
-public class FileResource extends Resource implements ViewableV1 {
+public class FileResource extends Resource implements ViewableV1, ModifiableV1 {
 
     private static Category log = Category.getInstance(FileResource.class);
 
@@ -130,5 +135,42 @@ public class FileResource extends Resource implements ViewableV1 {
      */
     public View getView(HttpServletRequest request, String viewId) {
         return getView(new Path(request.getServletPath()), viewId);
+    }
+
+    /**
+     *
+     */
+    public Reader getReader(Path path) {
+        try {
+            org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            return rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+        } catch(Exception e) {
+            log.error(e);
+        }
+        return null;
+    }
+
+    /**
+     *
+     */
+    public Reader getReader(Topic topic) {
+        log.error("Not implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public Writer getWriter(Path path) {
+        log.error("Not implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public Writer getWriter(Topic topic) {
+        log.error("Not implemented yet!");
+        return null;
     }
 }

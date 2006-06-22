@@ -76,14 +76,15 @@ public class YanelCommandLine {
             return;
         }
 
-        ResourceTypeDefinition rtd = ResourceTypeRegistry.getResourceTypeDefinition(rti);
+        ResourceTypeRegistry rtr = new ResourceTypeRegistry();
+        ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
         System.out.println("Local name: " + rtd.getResourceTypeLocalName());
         System.out.println("Namespace: " + rtd.getResourceTypeNamespace());
 
 
         Resource res = null;
         try {
-            res = ResourceTypeRegistry.newResource(rti);
+            res = rtr.newResource(rti);
         } catch(Exception e) {
             System.err.println("Exception 435435: " + e);
             return;
@@ -121,7 +122,7 @@ public class YanelCommandLine {
 
         Resource tapeRes = null;
         try {
-            tapeRes = ResourceTypeRegistry.newResource("<{http://www.wyonapictures.com/yanel/resource/1.0}tape/>");
+            tapeRes = rtr.newResource("<{http://www.wyonapictures.com/yanel/resource/1.0}tape/>");
         } catch(Exception e) {
             System.err.println(e);
             return;
@@ -144,7 +145,7 @@ public class YanelCommandLine {
 
         Resource invoiceRes = null;
         try {
-            invoiceRes = ResourceTypeRegistry.newResource("<{http://www.wyona.com/yanel/resource/1.0}invoice/>");
+            invoiceRes = rtr.newResource("<{http://www.wyona.com/yanel/resource/1.0}invoice/>");
         } catch(Exception e) {
             System.err.println(e);
             return;
@@ -178,7 +179,7 @@ public class YanelCommandLine {
         }
 
 	try {
-            Resource websearchRes = ResourceTypeRegistry.newResource("<{http://www.wyona.org/yanel/resource/1.0}websearch/>");
+            Resource websearchRes = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}websearch/>");
             websearchRes.setRTD(rtd);
             if (ResourceAttributeHelper.hasAttributeImplemented(websearchRes, "Continuable", "1")) System.out.println("yeah");
         } catch(Exception e) {
