@@ -100,7 +100,8 @@
         <include name="*.jar"/>
       </fileset>
 -->
-      <pathelement path="${yanel.home.dir}/lib"/>
+      <!-- Properties files -->
+      <pathelement path="${yanel.home.dir}/build/webapps/yanel/WEB-INF/classes"/>
       <fileset dir="${yanel.home.dir}/src/resources/tape/build/lib">
         <include name="*.jar"/>
       </fileset>
@@ -266,11 +267,22 @@
       <fileset dir="${yanel.home.dir}/src/resources/tape/build/lib"/>
     </copy>
 
+
+<!--
     <copy todir="${build.dir}/webapps/yanel/WEB-INF/classes">
       <fileset dir="${yanel.home.dir}/lib">
         <include name="*.properties"/>
+        <exclude name="local.*.properties"/>
       </fileset>
     </copy>
+-->
+    <copy file="${yanel.home.dir}/lib/log4j.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes" overwrite="true"/>
+    <copy file="${yanel.home.dir}/lib/yanel-rti-yarep.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes" overwrite="true"/>
+    <copy file="${yanel.home.dir}/lib/local.yanel-rti-yarep.properties" tofile="${build.dir}/webapps/yanel/WEB-INF/classes/yanel-rti-yarep.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/lib/yarep.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes" overwrite="true"/>
+    <copy file="${yanel.home.dir}/lib/local.yarep.properties" tofile="${build.dir}/webapps/yanel/WEB-INF/classes/yarep.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/lib/yanel.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes" overwrite="true"/>
+
     <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/yanel-rti-yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
     </replace>
@@ -321,7 +333,7 @@
     <echo>Copy webapp (${tomcat1.webapps.dir}):</echo>
 
     <fail message="No such directory: ${tomcat1.webapps.dir}">
-    <condition><not><available file="${tomcat1.webapps.dir}"/></not></condition>
+      <condition><not><available file="${tomcat1.webapps.dir}"/></not></condition>
     </fail>
 
     <copy todir="${tomcat1.webapps.dir}/yanel">
@@ -333,7 +345,7 @@
     <echo>Copy webapp (${tomcat2.webapps.dir}):</echo>
 
     <fail message="No such directory: ${tomcat2.webapps.dir}">
-    <condition><not><available file="${tomcat2.webapps.dir}"/></not></condition>
+      <condition><not><available file="${tomcat2.webapps.dir}"/></not></condition>
     </fail>
 
     <copy todir="${tomcat2.webapps.dir}/yanel">
