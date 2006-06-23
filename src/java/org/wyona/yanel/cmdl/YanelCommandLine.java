@@ -22,8 +22,8 @@ import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.api.attributes.CreatableV1;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
+import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
-import org.wyona.yanel.core.api.attributes.WritableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
@@ -113,8 +113,8 @@ public class YanelCommandLine {
             System.out.println(res.getClass().getName() + " does not implement viewable interface!");
         }
 
-        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Writable", "1")) {
-            ((WritableV1) res).write(path);
+        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
+            java.io.Reader reader = ((ModifiableV1) res).getReader(path);
         } else {
             System.out.println(res.getClass().getName() + " does not implement writable interface!");
         }
