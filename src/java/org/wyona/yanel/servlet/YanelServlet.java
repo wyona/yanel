@@ -195,6 +195,10 @@ public class YanelServlet extends HttpServlet {
             } else {
                 log.error("<resource>" + res.getClass().getName() + " is not modifiable!</resource>");
             }
+	} else if (value != null && value.equals("checkin")) {
+            writer.println("Checkin data ...");
+            log.error("Checkin data ...");
+            // TODO: Implement checkin ...
         } else {
             writer.println("No parameter yanel.resource.usecase!");
             log.error("No parameter yanel.resource.usecase!");
