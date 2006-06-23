@@ -182,8 +182,20 @@ public class YanelServlet extends HttpServlet {
 
             Resource res = getResource(request);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
+
                 String contentType = request.getContentType();
                 log.error("Content-Type: " + contentType);
+                if (contentType.equals("text/xml")) {
+                    sb.append("<?xml version=\"1.0\"?>");
+                    sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"data-not-well-formed\">");
+                    sb.append("<message>Data is not well-formed ...</message>");
+                    sb.append("</exception>");
+                    response.setContentType("application/xml");
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    PrintWriter w = response.getWriter();
+                    w.print(sb);
+                    return;
+                }
 
                 java.io.OutputStream out = ((ModifiableV1) res).getOutputStream(new Path(request.getServletPath()));
                 out.write(buffer, 0, bytesRead);
