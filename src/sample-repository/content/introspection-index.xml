@@ -7,7 +7,9 @@
   <save url="index.xhtml?yanel.resource.usecase=save" method="POST"/>
 -->
   <save url="index.xhtml?yanel.resource.usecase=save" method="PUT"/>
+<!--
   <checkout url="index.xhtml?yanel.resource.usecase=checkout" method="GET"/>
   <checkin  url="index.xhtml?yanel.resource.usecase=checkin"  method="PUT"/>
+-->
 </edit>
 </introspection>
