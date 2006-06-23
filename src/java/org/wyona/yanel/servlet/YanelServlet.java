@@ -151,15 +151,10 @@ public class YanelServlet extends HttpServlet {
      * TODO: Reuse code doPost resp. share code with doPut
      */
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        PrintWriter writer = response.getWriter();
-        response.setContentType("application/xhtml+xml");
-
-        writer.println("<html>");
-        writer.println("<body>");
+        StringBuffer sb = new StringBuffer("");
 
         String value = request.getParameter("yanel.resource.usecase");
         if (value != null && value.equals("save")) {
-            writer.println("Save data ...");
             log.error("Save data ...");
             java.io.InputStream in = request.getInputStream();
 
@@ -187,25 +182,58 @@ public class YanelServlet extends HttpServlet {
 
             Resource res = getResource(request);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
+                String contentType = request.getContentType();
+                log.error("Content-Type: " + contentType);
+
                 java.io.OutputStream out = ((ModifiableV1) res).getOutputStream(new Path(request.getServletPath()));
                 out.write(buffer, 0, bytesRead);
                 while ((bytesRead = in.read(buffer)) != -1) {
                     out.write(buffer, 0, bytesRead);
                 }
+
+                sb.append("<?xml version=\"1.0\"?>");
+                sb.append("<html>");
+                sb.append("<body>");
+                sb.append("<p>Data has been saved ...</p>");
+                sb.append("</body>");
+                sb.append("</html>");
+                response.setContentType("application/xhtml+xml");
             } else {
                 log.error("<resource>" + res.getClass().getName() + " is not modifiable!</resource>");
+                sb.append("<?xml version=\"1.0\"?>");
+                sb.append("<html>");
+                sb.append("<body>");
+                sb.append("<resource>" + res.getClass().getName() + " is not modifiable!</resource>");
+                sb.append("</body>");
+                sb.append("</html>");
+                response.setContentType("application/xhtml+xml");
             }
 	} else if (value != null && value.equals("checkin")) {
-            writer.println("Checkin data ...");
+            sb.append("<?xml version=\"1.0\"?>");
+            sb.append("<html>");
+            sb.append("<body>");
+            sb.append("<p>Checkin data ...</p>");
+            sb.append("</body>");
+            sb.append("</html>");
+            response.setContentType("application/xhtml+xml");
+
             log.error("Checkin data ...");
             // TODO: Implement checkin ...
         } else {
-            writer.println("No parameter yanel.resource.usecase!");
             log.error("No parameter yanel.resource.usecase!");
+
+            sb.append("<?xml version=\"1.0\"?>");
+            sb.append("<html>");
+            sb.append("<body>");
+            sb.append("<p>No parameter yanel.resource.usecase!</p>");
+            sb.append("</body>");
+            sb.append("</html>");
+            response.setContentType("application/xhtml+xml");
         }
 
-        writer.println("</body>");
-        writer.println("</html>");
+
+        PrintWriter writer = response.getWriter();
+        writer.print(sb);
     }
 
     /**
