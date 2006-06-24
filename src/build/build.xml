@@ -101,7 +101,7 @@
       </fileset>
 -->
       <!-- Properties files -->
-      <pathelement path="${yanel.home.dir}/build/webapps/yanel/WEB-INF/classes"/>
+      <pathelement path="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
       <fileset dir="${yanel.home.dir}/src/resources/tape/build/lib">
         <include name="*.jar"/>
       </fileset>
@@ -241,23 +241,23 @@
 <!--
   <target name="webapp" description="Build webapp" depends="init, compile-webapp">
 -->
-    <mkdir dir="${build.dir}/webapps/yanel"/>
-    <copy todir="${build.dir}/webapps/yanel">
+    <mkdir dir="${build.dir}/webapps/${servlet.context.prefix}"/>
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}">
       <fileset dir="${yanel.home.dir}/src/webapp"/>
     </copy>
 
     <!-- TODO: Copy onle core, impl, webapp, but NOT cmdl, etc. -->
-    <copy todir="${build.dir}/webapps/yanel/WEB-INF/lib">
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
       <fileset dir="${yanel.home.dir}/build/lib"/>
     </copy>
     <!--
-    <copy todir="${build.dir}/webapps/yanel/WEB-INF/classes">
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes">
       <fileset dir="${yanel.home.dir}/build/classes"/>
     </copy>
     -->
 
     <!-- TODO: Copy these libs dynamically -->
-    <copy todir="${build.dir}/webapps/yanel/WEB-INF/lib">
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
       <fileset dir="${yanel.home.dir}/src/resources/file/build/lib"/>
       <fileset dir="${yanel.home.dir}/src/resources/directory/build/lib"/>
       <fileset dir="${yanel.home.dir}/src/resources/websearch/build/lib"/>
@@ -269,45 +269,45 @@
 
 
 <!--
-    <copy todir="${build.dir}/webapps/yanel/WEB-INF/classes">
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes">
       <fileset dir="${yanel.home.dir}/lib">
         <include name="*.properties"/>
         <exclude name="local.*.properties"/>
       </fileset>
     </copy>
 -->
-    <copy file="${yanel.home.dir}/lib/log4j.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/lib/yanel-rti-yarep.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/lib/local.yanel-rti-yarep.properties" tofile="${build.dir}/webapps/yanel/WEB-INF/classes/yanel-rti-yarep.properties" overwrite="true" failonerror="false"/>
-    <copy file="${yanel.home.dir}/lib/yarep.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/lib/local.yarep.properties" tofile="${build.dir}/webapps/yanel/WEB-INF/classes/yarep.properties" overwrite="true" failonerror="false"/>
-    <copy file="${yanel.home.dir}/lib/yanel.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes" overwrite="true"/>
+    <copy file="${yanel.home.dir}/lib/log4j.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.home.dir}/lib/yanel-rti-yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.home.dir}/lib/local.yanel-rti-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/lib/yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.home.dir}/lib/local.yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/lib/yanel.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
 
-    <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/yanel-rti-yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
     </replace>
-    <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/yanel-rti-yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/repository.xml">
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/repository.xml">
       <replacetoken>javadoc,../src/javadoc-repository/repository.xml</replacetoken>
     </replace>
-    <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
     </replace>
-    <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/repository.xml">
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/repository.xml">
       <replacetoken>javadoc,../src/javadoc-repository/repository.xml</replacetoken>
     </replace>
-    <replace file="${build.dir}/webapps/yanel/WEB-INF/classes/log4j.properties" value="${log4j.path}">
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.path}">
       <replacetoken>@LOG4J_PATH@</replacetoken>
     </replace>
     <mkdir dir="${log4j.path}"/>
 
-    <copy todir="${build.dir}/webapps/yanel/WEB-INF/lib">
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
       <fileset refid="maven2.fileset"/>
       <mapper type="flatten"/>
     </copy>
   </target>
 
   <target name="war" description="Build war file" depends="init, webapp">
-    <jar jarfile="${yanel.home.dir}/build/webapps/yanel.war" basedir="${yanel.home.dir}/build/webapps/yanel"/>
+    <jar jarfile="${yanel.home.dir}/build/webapps/${servlet.context.prefix}.war" basedir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
   </target>
 
   <target name="deploy" description="Deploy war file" depends="init, war">
@@ -337,8 +337,8 @@
       <condition><not><available file="${tomcat1.webapps.dir}"/></not></condition>
     </fail>
 
-    <copy todir="${tomcat1.webapps.dir}/yanel">
-      <fileset dir="${yanel.home.dir}/build/webapps/yanel"/>
+    <copy todir="${tomcat1.webapps.dir}/${servlet.context.prefix}">
+      <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
     </copy>
   </target>
 
@@ -349,8 +349,8 @@
       <condition><not><available file="${tomcat2.webapps.dir}"/></not></condition>
     </fail>
 
-    <copy todir="${tomcat2.webapps.dir}/yanel">
-      <fileset dir="${yanel.home.dir}/build/webapps/yanel"/>
+    <copy todir="${tomcat2.webapps.dir}/${servlet.context.prefix}">
+      <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
     </copy>
   </target>
 
