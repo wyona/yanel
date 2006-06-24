@@ -165,6 +165,7 @@ public class YanelServlet extends HttpServlet {
             }
 
             // Buffer within memory (TODO: Maybe replace with File-buffering ...)
+            // http://www-128.ibm.com/developerworks/java/library/j-io1/
             byte[] memBuffer = baos.toByteArray();
 
                 // TODO: Check on well-formedness ...
