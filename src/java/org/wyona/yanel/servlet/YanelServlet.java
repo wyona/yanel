@@ -157,10 +157,47 @@ public class YanelServlet extends HttpServlet {
         if (value != null && value.equals("save")) {
             log.error("Save data ...");
             java.io.InputStream in = request.getInputStream();
+            java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
+            byte[] buf = new byte[8192];
+            int bytesR;
+            while ((bytesR = in.read(buf)) != -1) {
+                baos.write(buf, 0, bytesR);
+            }
 
-            byte buffer[] = new byte[8192];
-            int bytesRead;
-            bytesRead = in.read(buffer);
+            // Buffer within memory (TODO: Maybe replace with File-buffering ...)
+            byte[] memBuffer = baos.toByteArray();
+
+                // TODO: Check on well-formedness ...
+                javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
+                try {
+                    javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
+                    parser.parse(new java.io.ByteArrayInputStream(memBuffer));
+                    //org.w3c.dom.Document document = parser.parse(new ByteArrayInputStream(memBuffer));
+                } catch (org.xml.sax.SAXException e) {
+                    log.error("<message>Data is not well-formed: "+e.getMessage()+"</message>");
+                    sb.append("<?xml version=\"1.0\"?>");
+                    sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"data-not-well-formed\">");
+                    sb.append("<message>Data is not well-formed: "+e.getMessage()+"</message>");
+                    sb.append("</exception>");
+                    response.setContentType("application/xml");
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    PrintWriter w = response.getWriter();
+                    w.print(sb);
+                    return;
+                } catch (Exception e) {
+                    log.error("<message>"+e.getMessage()+"</message>");
+                    sb.append("<?xml version=\"1.0\"?>");
+                    sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"neutron\">");
+                    sb.append("<message>"+e.getMessage()+"</message>");
+                    sb.append("</exception>");
+                    response.setContentType("application/xml");
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    PrintWriter w = response.getWriter();
+                    w.print(sb);
+                    return;
+                }
+
+             log.error("INFO: Data seems to be well-formed :-)");
 
 /*
 	     if (bytesRead == -1) {
@@ -185,21 +222,14 @@ public class YanelServlet extends HttpServlet {
 
                 String contentType = request.getContentType();
                 log.error("Content-Type: " + contentType);
-                if (contentType.equals("text/xml")) {
-                    sb.append("<?xml version=\"1.0\"?>");
-                    sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"data-not-well-formed\">");
-                    sb.append("<message>Data is not well-formed ...</message>");
-                    sb.append("</exception>");
-                    response.setContentType("application/xml");
-                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    PrintWriter w = response.getWriter();
-                    w.print(sb);
-                    return;
-                }
+                // TODO: Compare mime-type from response with mime-type of resource
+                //if (contentType.equals("text/xml")) { ... }
 
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                java.io.ByteArrayInputStream memIn = new java.io.ByteArrayInputStream(memBuffer);
                 java.io.OutputStream out = ((ModifiableV1) res).getOutputStream(new Path(request.getServletPath()));
-                out.write(buffer, 0, bytesRead);
-                while ((bytesRead = in.read(buffer)) != -1) {
+                while ((bytesRead = memIn.read(buffer)) != -1) {
                     out.write(buffer, 0, bytesRead);
                 }
 
@@ -209,7 +239,10 @@ public class YanelServlet extends HttpServlet {
                 sb.append("<p>Data has been saved ...</p>");
                 sb.append("</body>");
                 sb.append("</html>");
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
                 response.setContentType("application/xhtml+xml");
+
+                log.error("INFO: Data has been saved ...");
             } else {
                 log.error("<resource>" + res.getClass().getName() + " is not modifiable!</resource>");
                 sb.append("<?xml version=\"1.0\"?>");
