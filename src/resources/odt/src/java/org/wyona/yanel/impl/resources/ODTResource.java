@@ -114,7 +114,7 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
             } else if (suffix.equals("xml")) {
                 mimeType = "application/xml";
             } else {
-                mimeType = "application/octet-stream";
+                mimeType = "application/vnd.oasis.opendocument.text";
             }
         } else {
             mimeType = "application/vnd.oasis.opendocument.text";
