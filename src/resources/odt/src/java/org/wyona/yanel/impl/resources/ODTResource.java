@@ -65,6 +65,7 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
         if (mimeType.equals("application/xml")) {
             log.error("DEBUG: " + mimeType);
             log.error("DEBUG: Unzip ODT and return content.xml");
+            // TODO: Use JarInputStream ...
         } else {
             log.error("DEBUG: " + mimeType);
         }
@@ -96,7 +97,7 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
                 if (mimeType.indexOf("mime-type:") == 0) {
                     mimeType = mimeType.substring(11);
                     log.info("*" + mimeType + "*");
-                    // TODO: Maybe validate mime-type based on mime.types config ...
+                    // TODO: Maybe validate mime-type ...
                     return mimeType;
                 }
             }
