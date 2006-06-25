@@ -88,6 +88,7 @@ public class ResourceTypeRegistry {
         hm.put("<{http://www.wyonapictures.com/yanel/resource/1.0}tape/>", "com.wyonapictures.yanel.impl.resources.TapeResource");
         hm.put("<{http://www.wyona.com/yanel/resource/1.0}invoice/>", "com.wyona.yanel.impl.resources.InvoiceResource");
         hm.put("<{http://www.wyona.org/yanel/resource/1.0}websearch/>", "org.wyona.yanel.impl.resources.WebSearchResource");
+        hm.put("<{http://www.wyona.org/yanel/resource/1.0}odt/>", "org.wyona.yanel.impl.resources.ODTResource");
 
 	String className = (String) hm.get(universalName);
         if (className != null) {
