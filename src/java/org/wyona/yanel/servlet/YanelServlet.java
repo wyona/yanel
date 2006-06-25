@@ -96,6 +96,14 @@ public class YanelServlet extends HttpServlet {
 
         sb.append("</yanel>");
 
+        String value = request.getParameter("yanel.resource.usecase");
+
+        if (value != null && value.equals("checkout")) {
+            log.error("DEBUG: Checkout data ...");
+            // TODO: Implement checkout ...
+            // acquireLock();
+        }
+
 
         if (view != null) {
             response.setContentType(view.getMimeType());
@@ -128,34 +136,95 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        PrintWriter writer = response.getWriter();
-        response.setContentType("application/xhtml+xml");
-
-        writer.println("<html>");
-        writer.println("<body>");
-
         String value = request.getParameter("yanel.resource.usecase");
-        if (value != null && value.equals("save")) {
-           writer.println("Save data ...");
-           log.error("Save data ...");
-        } else {
-           writer.println("No parameter yanel.resource.usecase!");
-           log.error("No parameter yanel.resource.usecase!");
-        }
 
-        writer.println("</body>");
-        writer.println("</html>");
+        if (value != null && value.equals("save")) {
+            log.error("DEBUG: Save data ...");
+            save(request, response);
+            return;
+	} else if (value != null && value.equals("checkin")) {
+            log.error("DEBUG: Checkin data ...");
+            save(request, response);
+            // TODO: Implement checkin ...
+            // releaseLock();
+            return;
+        } else {
+            log.warn("No parameter yanel.resource.usecase!");
+
+            PrintWriter writer = response.getWriter();
+            response.setContentType("application/xhtml+xml");
+
+            writer.println("<html>");
+            writer.println("<body>");
+            writer.println("No parameter yanel.resource.usecase!");
+            writer.println("</body>");
+            writer.println("</html>");
+        }
     }
 
     /**
      * TODO: Reuse code doPost resp. share code with doPut
      */
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        StringBuffer sb = new StringBuffer("");
-
         String value = request.getParameter("yanel.resource.usecase");
+
         if (value != null && value.equals("save")) {
-            log.error("Save data ...");
+            log.error("DEBUG: Save data ...");
+            save(request, response);
+            return;
+	} else if (value != null && value.equals("checkin")) {
+            log.error("DEBUG: Checkin data ...");
+            save(request, response);
+            // TODO: Implement checkin ...
+            // releaseLock();
+            return;
+        } else {
+            log.warn("No parameter yanel.resource.usecase!");
+
+            StringBuffer sb = new StringBuffer("");
+            sb.append("<?xml version=\"1.0\"?>");
+            sb.append("<html>");
+            sb.append("<body>");
+            sb.append("<p>No parameter yanel.resource.usecase!</p>");
+            sb.append("</body>");
+            sb.append("</html>");
+            response.setContentType("application/xhtml+xml");
+            PrintWriter writer = response.getWriter();
+            writer.print(sb);
+        }
+    }
+
+    /**
+     *
+     */
+    private Resource getResource(HttpServletRequest request) {
+        MapFactory mf = MapFactory.newInstance();
+        Map map = mf.newMap();
+        String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
+        if (rti != null) {
+            ResourceTypeDefinition rtd = ResourceTypeRegistry.getResourceTypeDefinition(rti);
+
+            try {
+                Resource res = ResourceTypeRegistry.newResource(rti);
+                res.setRTD(rtd);
+                return res;
+            } catch(Exception e) {
+                log.error(e.getMessage(), e);
+                return null;
+            }
+        } else {
+            log.error("<no-resource-type-identifier-found servlet-path=\""+request.getServletPath()+"\"/>");
+            return null;
+        }
+    }
+
+    /**
+     *
+     */
+    private void save(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        StringBuffer sb = new StringBuffer();
+        log.error("DEBUG: Save data ...");
+
             java.io.InputStream in = request.getInputStream();
             java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
             byte[] buf = new byte[8192];
@@ -175,7 +244,8 @@ public class YanelServlet extends HttpServlet {
                     parser.parse(new java.io.ByteArrayInputStream(memBuffer));
                     //org.w3c.dom.Document document = parser.parse(new ByteArrayInputStream(memBuffer));
                 } catch (org.xml.sax.SAXException e) {
-                    log.error("<message>Data is not well-formed: "+e.getMessage()+"</message>");
+                    log.warn("Data is not well-formed: "+e.getMessage());
+
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"data-not-well-formed\">");
                     sb.append("<message>Data is not well-formed: "+e.getMessage()+"</message>");
@@ -186,7 +256,8 @@ public class YanelServlet extends HttpServlet {
                     w.print(sb);
                     return;
                 } catch (Exception e) {
-                    log.error("<message>"+e.getMessage()+"</message>");
+                    log.error(e.getMessage());
+
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"neutron\">");
                     sb.append("<message>"+e.getMessage()+"</message>");
@@ -215,14 +286,14 @@ public class YanelServlet extends HttpServlet {
             while ((bytesRead = in.read(buffer)) != -1) {
                 out.write(buffer, 0, bytesRead);
             }
-            log.error("Received Data: " + out.toString());
+            log.error("DEBUG: Received Data: " + out.toString());
 */
 
             Resource res = getResource(request);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
 
                 String contentType = request.getContentType();
-                log.error("Content-Type: " + contentType);
+                log.error("DEBUG: Content-Type: " + contentType);
                 // TODO: Compare mime-type from response with mime-type of resource
                 //if (contentType.equals("text/xml")) { ... }
 
@@ -245,7 +316,8 @@ public class YanelServlet extends HttpServlet {
 
                 log.error("INFO: Data has been saved ...");
             } else {
-                log.error("<resource>" + res.getClass().getName() + " is not modifiable!</resource>");
+                log.warn(res.getClass().getName() + " is not modifiable!");
+
                 sb.append("<?xml version=\"1.0\"?>");
                 sb.append("<html>");
                 sb.append("<body>");
@@ -254,55 +326,5 @@ public class YanelServlet extends HttpServlet {
                 sb.append("</html>");
                 response.setContentType("application/xhtml+xml");
             }
-	} else if (value != null && value.equals("checkin")) {
-            sb.append("<?xml version=\"1.0\"?>");
-            sb.append("<html>");
-            sb.append("<body>");
-            sb.append("<p>Checkin data ...</p>");
-            sb.append("</body>");
-            sb.append("</html>");
-            response.setContentType("application/xhtml+xml");
-
-            log.error("Checkin data ...");
-            // TODO: Implement checkin ...
-        } else {
-            log.error("No parameter yanel.resource.usecase!");
-
-            sb.append("<?xml version=\"1.0\"?>");
-            sb.append("<html>");
-            sb.append("<body>");
-            sb.append("<p>No parameter yanel.resource.usecase!</p>");
-            sb.append("</body>");
-            sb.append("</html>");
-            response.setContentType("application/xhtml+xml");
-        }
-
-
-        PrintWriter writer = response.getWriter();
-        writer.print(sb);
-    }
-
-    /**
-     *
-     */
-    private Resource getResource(HttpServletRequest request) {
-        MapFactory mf = MapFactory.newInstance();
-        Map map = mf.newMap();
-        String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
-        if (rti != null) {
-            ResourceTypeDefinition rtd = ResourceTypeRegistry.getResourceTypeDefinition(rti);
-
-            try {
-                Resource res = ResourceTypeRegistry.newResource(rti);
-                res.setRTD(rtd);
-                return res;
-            } catch(Exception e) {
-                log.error(e.getMessage(), e);
-                return null;
-            }
-        } else {
-            log.error("<no-resource-type-identifier-found servlet-path=\""+request.getServletPath()+"\"/>");
-            return null;
-        }
     }
 }
