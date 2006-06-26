@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 
 import org.apache.log4j.Category;
 
@@ -61,20 +63,28 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
     public View getView(Path path, String viewId) {
         View defaultView = new View();
         String mimeType = getMimeType(path, viewId);
-
-        if (mimeType.equals("application/xml")) {
-            log.error("DEBUG: " + mimeType);
-            log.error("DEBUG: Unzip ODT and return content.xml");
-            // TODO: Use JarInputStream ...
-        } else {
-            log.error("DEBUG: " + mimeType);
-        }
+        defaultView.setMimeType(mimeType);
 
         try {
             org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
-            defaultView.setInputStream(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
 
-            defaultView.setMimeType(mimeType);
+            if (mimeType.equals("application/xml")) {
+                log.error("DEBUG: " + mimeType);
+                log.error("DEBUG: Unzip ODT and return content.xml");
+                JarInputStream jarStream = new JarInputStream((rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()))));
+                JarEntry jarEntry;
+                while ((jarEntry = jarStream.getNextJarEntry()) != null) {
+                    log.error("DEBUG: Jar Entry Name: " + jarEntry.getName());
+                    if (jarEntry.getName().equals("content.xml")) {
+                        defaultView.setInputStream(jarStream);
+                        return defaultView;
+                    }
+                // TODO: What if zip does not contain a "content.xml"?!
+                }
+            } else {
+                log.error("DEBUG: " + mimeType);
+                defaultView.setInputStream(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
+            }
         } catch(Exception e) {
             log.error(e);
         }
