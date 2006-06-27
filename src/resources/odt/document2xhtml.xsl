@@ -73,6 +73,7 @@
 <xsl:template match="/office:document|/office:document-content">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<link rel="neutron-introspection" type="application/neutron+xml" href="introspection-TODO.xml"/>
 <title><xsl:value-of select="$title"></xsl:value-of></title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <xsl:apply-templates select="office:automatic-styles"/>
