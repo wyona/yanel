@@ -16,6 +16,7 @@
 
 package org.wyona.yanel.core;
 
+import java.io.File;
 import java.lang.ClassNotFoundException;
 import java.lang.IllegalAccessException;
 import java.lang.InstantiationException;
@@ -23,6 +24,8 @@ import java.net.URL;
 import java.util.Properties;
 
 import org.apache.log4j.Category;
+
+import org.wyona.util.FileUtil;
 
 /**
  *
@@ -35,6 +38,8 @@ public class ResourceTypeRegistry {
     public static String CONFIGURATION_FILE = DEFAULT_CONFIGURATION_FILE;
 
     private URL propertiesURL;
+
+    java.util.HashMap hm = new java.util.HashMap();
 
     /**
      *
@@ -58,10 +63,23 @@ public class ResourceTypeRegistry {
         Properties props = new Properties();
         try {
             props.load(propertiesURL.openStream());
+            File propsFile = new File(propertiesURL.getFile());
             String separator = ",";
             String[] tokens = props.getProperty("resources").split(separator);
             for (int i = 0; i < tokens.length; i++) {
-                log.debug("Resource descriptor: " + tokens[i]);
+                File resConfigFile = new File(tokens[i]);
+                if (!resConfigFile.isAbsolute()) {
+                    resConfigFile = FileUtil.file(propsFile.getParentFile().getAbsolutePath(), new File(tokens[i]).toString());
+                }
+
+                if (resConfigFile.exists()) {
+                    ResourceTypeDefinition rtd = new ResourceTypeDefinition(resConfigFile);
+                    log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
+                    log.debug("Classname: " + rtd.getResourceTypeClassname());
+                    hm.put(rtd.getResourceTypeUniversalName(), rtd.getResourceTypeClassname());
+                } else {
+                    log.warn("No such file or directory: " + resConfigFile);
+                }
             }
         } catch (Exception e) {
             log.error(e);
@@ -78,18 +96,7 @@ public class ResourceTypeRegistry {
     /**
      *
      */
-    public static Resource newResource(String universalName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-
-        // TODO: Read from configuration
-        java.util.HashMap hm = new java.util.HashMap(); 
-        hm.put("<{http://www.wyona.org/yanel/resource/1.0}file/>", "org.wyona.yanel.impl.resources.FileResource");
-        hm.put("<{http://www.wyona.org/yanel/resource/1.0}directory/>", "org.wyona.yanel.impl.resources.DirectoryResource");
-        hm.put("<{http://www.wyona.org/yanel/resource/1.0}default/>", "org.wyona.yanel.impl.ResourceDefaultImpl");
-        hm.put("<{http://www.wyonapictures.com/yanel/resource/1.0}tape/>", "com.wyonapictures.yanel.impl.resources.TapeResource");
-        hm.put("<{http://www.wyona.com/yanel/resource/1.0}invoice/>", "com.wyona.yanel.impl.resources.InvoiceResource");
-        hm.put("<{http://www.wyona.org/yanel/resource/1.0}websearch/>", "org.wyona.yanel.impl.resources.WebSearchResource");
-        hm.put("<{http://www.wyona.org/yanel/resource/1.0}odt/>", "org.wyona.yanel.impl.resources.ODTResource");
-
+    public Resource newResource(String universalName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 	String className = (String) hm.get(universalName);
         if (className != null) {
             return (Resource) Class.forName(className).newInstance();

@@ -16,12 +16,42 @@
 
 package org.wyona.yanel.core;
 
+import java.io.File;
+
+import org.apache.log4j.Category;
+
+import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
+
 /**
  *
  */
 public class ResourceTypeDefinition {
 
+    private Category log = Category.getInstance(ResourceTypeDefinition.class);
+
     private String uname;
+    private String classname;
+
+    /**
+     *
+     */
+    public ResourceTypeDefinition(File file) {
+        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+        Configuration config;
+        try {
+            config = builder.buildFromFile(file);
+            String localName = config.getAttribute("name", null);
+            String namespace= config.getAttribute("namespace", null);
+            uname = "<{" + namespace + "}" + localName + "/>";
+            classname = config.getAttribute("class", null);
+
+            Configuration descConfig = config.getChild("description", false);
+            // TODO: Set description ...
+        } catch(Exception e) {
+            log.error(e);
+        }
+    }
 
     /**
      *
@@ -49,5 +79,19 @@ public class ResourceTypeDefinition {
      */
     public String getResourceTypeNamespace() {
         return uname.substring(uname.indexOf("{") + 1, uname.indexOf("}"));
+    }
+
+    /**
+     *
+     */
+    public String getResourceTypeClassname() {
+        return classname;
+    }
+
+    /**
+     *
+     */
+    public String getResourceTypeDescription() {
+        return "DEBUG:description";
     }
 }

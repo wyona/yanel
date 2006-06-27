@@ -34,11 +34,14 @@ public class YanelServlet extends HttpServlet {
 
     private ServletConfig config;
 
+    ResourceTypeRegistry rtr;
+
     /**
      *
      */
     public void init(ServletConfig config) {
         this.config = config;
+        rtr = new ResourceTypeRegistry();
     }
 
     /**
@@ -73,11 +76,11 @@ public class YanelServlet extends HttpServlet {
         Map map = mf.newMap();
         String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
         if (rti != null) {
-            ResourceTypeDefinition rtd = ResourceTypeRegistry.getResourceTypeDefinition(rti);
+            ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
             sb.append("<resource-type-identifier namespace=\"" + rtd.getResourceTypeNamespace() + "\" local-name=\"" + rtd.getResourceTypeLocalName() + "\"/>");
 
             try {
-                Resource res = ResourceTypeRegistry.newResource(rti);
+                Resource res = rtr.newResource(rti);
                 res.setRTD(rtd);
                 if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                     sb.append("<resource>View Descriptors: " + ((ViewableV1) res).getViewDescriptors() + "</resource>");
@@ -202,10 +205,10 @@ public class YanelServlet extends HttpServlet {
         Map map = mf.newMap();
         String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
         if (rti != null) {
-            ResourceTypeDefinition rtd = ResourceTypeRegistry.getResourceTypeDefinition(rti);
+            ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
 
             try {
-                Resource res = ResourceTypeRegistry.newResource(rti);
+                Resource res = rtr.newResource(rti);
                 res.setRTD(rtd);
                 return res;
             } catch(Exception e) {
