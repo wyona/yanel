@@ -105,7 +105,11 @@ public class YanelCommandLine {
             System.out.println("mime-type: " + view.getMimeType());
             try {
                 BufferedReader bReader = new BufferedReader(new java.io.InputStreamReader(view.getInputStream()));
-                System.out.println("First Line: " + bReader.readLine());
+                System.out.println("1. Line: " + bReader.readLine());
+                System.out.println("2. Line: " + bReader.readLine());
+                System.out.println("3. Line: " + bReader.readLine());
+                System.out.println("4. Line: " + bReader.readLine());
+                System.out.println("5. Line: " + bReader.readLine());
             } catch(Exception e) {
                 System.err.println(e);
             }

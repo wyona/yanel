@@ -26,9 +26,17 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
+import org.wyona.yarep.util.RepoPath;
 
 import javax.servlet.http.HttpServletRequest;
 
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
+
+import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
@@ -66,22 +74,20 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
         defaultView.setMimeType(mimeType);
 
         try {
-            org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
 
             if (mimeType.equals("application/xml")) {
-                // Unzip ODT and return content of content.xml
-                JarInputStream jarStream = new JarInputStream((rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()))));
-                JarEntry jarEntry;
-                while ((jarEntry = jarStream.getNextJarEntry()) != null) {
-                    log.debug("Jar Entry Name: " + jarEntry.getName());
-                    if (jarEntry.getName().equals("content.xml")) {
-                        defaultView.setInputStream(jarStream);
-                        return defaultView;
-                    }
-                // TODO: What if zip does not contain a "content.xml"?!
-
-                log.error("DEBUG: Config file: " + rtd.getConfigFile());
-                }
+                defaultView.setInputStream(getContentXML(rp));
+                return defaultView;
+	    } else if (mimeType.equals("application/xhtml+xml")) {
+                File xsltFile = org.wyona.util.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "document2xhtml.xsl");
+                log.error("DEBUG: XSLT file: " + xsltFile);
+                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
+                 // TODO: Is this the best way to generate an InputStream from an OutputStream?
+                java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+                transformer.transform(new StreamSource(getContentXML(rp)), new StreamResult(baos));
+                defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+                return defaultView;
             } else {
                 log.debug("Mime-Type: " + mimeType);
                 defaultView.setInputStream(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
@@ -96,11 +102,27 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
     /**
      *
      */
+    private InputStream getContentXML(RepoPath rp) throws Exception {
+                JarInputStream jarStream = new JarInputStream((rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()))));
+                JarEntry jarEntry;
+                while ((jarEntry = jarStream.getNextJarEntry()) != null) {
+                    log.debug("Jar Entry Name: " + jarEntry.getName());
+                    if (jarEntry.getName().equals("content.xml")) {
+                        return jarStream;
+                    }
+                // TODO: What if zip does not contain a "content.xml"?!
+                }
+        return null;
+    }
+
+    /**
+     *
+     */
     private String getMimeType(Path path, String viewId) {
         String mimeType = null;
         try {
             // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            org.wyona.yarep.util.RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
             br.readLine();
             mimeType = br.readLine();
@@ -120,7 +142,8 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
         if (suffix != null) {
             log.debug("SUFFIX: " + suffix);
             if (suffix.equals("html")) {
-                mimeType = "text/html";
+                //mimeType = "text/html";
+                mimeType = "application/xhtml+xml";
             } else if (suffix.equals("xhtml")) {
                 mimeType = "application/xhtml+xml";
             } else if (suffix.equals("xml")) {
@@ -146,7 +169,7 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
      */
     public Reader getReader(Path path) {
         try {
-            org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
             return rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString()));
         } catch(Exception e) {
             log.error(e);
@@ -183,7 +206,7 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
      */
     public OutputStream getOutputStream(Path path) {
         try {
-            org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
             return rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
         } catch(Exception e) {
             log.error(e);

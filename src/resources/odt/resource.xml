@@ -8,4 +8,7 @@
 <description>
 Open Document Text
 </description>
+
+<!-- TODO: Make XSLT configurable ... -->
+<xslt src="document2xhtml.xsl" xmlns="http://www.wyona.org/yanel/resources/odt/1.0"/>
 </resource>

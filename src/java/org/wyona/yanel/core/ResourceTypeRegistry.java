@@ -69,7 +69,7 @@ public class ResourceTypeRegistry {
             for (int i = 0; i < tokens.length; i++) {
                 File resConfigFile = new File(tokens[i]);
                 if (!resConfigFile.isAbsolute()) {
-                    resConfigFile = FileUtil.file(propsFile.getParentFile().getAbsolutePath(), new File(tokens[i]).toString());
+                    resConfigFile = FileUtil.file(propsFile.getParentFile().getAbsolutePath(), tokens[i]);
                 }
 
                 if (resConfigFile.exists()) {
