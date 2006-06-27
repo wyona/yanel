@@ -314,6 +314,9 @@
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/repository.xml">
       <replacetoken>javadoc,../src/javadoc-repository/repository.xml</replacetoken>
     </replace>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="${yanel.home.dir}">
+      <replacetoken>../../../../..</replacetoken>
+    </replace>
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.path}">
       <replacetoken>@LOG4J_PATH@</replacetoken>
     </replace>
