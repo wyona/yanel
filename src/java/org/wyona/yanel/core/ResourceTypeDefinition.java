@@ -33,10 +33,13 @@ public class ResourceTypeDefinition {
     private String uname;
     private String classname;
 
+    private File configFile;
+
     /**
      *
      */
     public ResourceTypeDefinition(File file) {
+        this.configFile = file;
         DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
         Configuration config;
         try {
@@ -52,15 +55,6 @@ public class ResourceTypeDefinition {
             log.error(e);
         }
     }
-
-    /**
-     *
-     */
-/*
-    public ResourceTypeDefinition(String universalName) {
-        this.uname = universalName;
-    }
-*/
 
     /**
      *
@@ -95,5 +89,12 @@ public class ResourceTypeDefinition {
      */
     public String getResourceTypeDescription() {
         return "DEBUG:description";
+    }
+
+    /**
+     *
+     */
+    public File getConfigFile() {
+        return configFile;
     }
 }

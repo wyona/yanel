@@ -69,20 +69,21 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
             org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
 
             if (mimeType.equals("application/xml")) {
-                log.error("DEBUG: " + mimeType);
-                log.error("DEBUG: Unzip ODT and return content.xml");
+                // Unzip ODT and return content of content.xml
                 JarInputStream jarStream = new JarInputStream((rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()))));
                 JarEntry jarEntry;
                 while ((jarEntry = jarStream.getNextJarEntry()) != null) {
-                    log.error("DEBUG: Jar Entry Name: " + jarEntry.getName());
+                    log.debug("Jar Entry Name: " + jarEntry.getName());
                     if (jarEntry.getName().equals("content.xml")) {
                         defaultView.setInputStream(jarStream);
                         return defaultView;
                     }
                 // TODO: What if zip does not contain a "content.xml"?!
+
+                log.error("DEBUG: Config file: " + rtd.getConfigFile());
                 }
             } else {
-                log.error("DEBUG: " + mimeType);
+                log.debug("Mime-Type: " + mimeType);
                 defaultView.setInputStream(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
             }
         } catch(Exception e) {
