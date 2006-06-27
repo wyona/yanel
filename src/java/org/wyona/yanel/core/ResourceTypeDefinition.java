@@ -56,9 +56,11 @@ public class ResourceTypeDefinition {
     /**
      *
      */
+/*
     public ResourceTypeDefinition(String universalName) {
         this.uname = universalName;
     }
+*/
 
     /**
      *

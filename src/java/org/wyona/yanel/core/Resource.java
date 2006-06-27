@@ -21,12 +21,13 @@ package org.wyona.yanel.core;
  */
 public abstract class Resource {
 
-    private ResourceTypeDefinition rtd;
+    protected ResourceTypeDefinition rtd;
 
     /**
      *
      */
     public Resource() {
+        rtd = null;
     }
 
     /**
@@ -34,6 +35,13 @@ public abstract class Resource {
      */
     public void setRTD(ResourceTypeDefinition rtd) {
         this.rtd = rtd;
+    }
+
+    /**
+     *
+     */
+    public ResourceTypeDefinition getRTD() {
+        return rtd;
     }
 
     /**

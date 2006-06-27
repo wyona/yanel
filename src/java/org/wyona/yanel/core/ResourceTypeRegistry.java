@@ -76,7 +76,7 @@ public class ResourceTypeRegistry {
                     ResourceTypeDefinition rtd = new ResourceTypeDefinition(resConfigFile);
                     log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
                     log.debug("Classname: " + rtd.getResourceTypeClassname());
-                    hm.put(rtd.getResourceTypeUniversalName(), rtd.getResourceTypeClassname());
+                    hm.put(rtd.getResourceTypeUniversalName(), rtd);
                 } else {
                     log.warn("No such file or directory: " + resConfigFile);
                 }
@@ -89,17 +89,19 @@ public class ResourceTypeRegistry {
     /**
      *
      */
-    public static ResourceTypeDefinition getResourceTypeDefinition(String universalName) {
-        return new ResourceTypeDefinition(universalName);
+    public ResourceTypeDefinition getResourceTypeDefinition(String universalName) {
+        return (ResourceTypeDefinition) hm.get(universalName);
     }
 
     /**
      *
      */
     public Resource newResource(String universalName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-	String className = (String) hm.get(universalName);
-        if (className != null) {
-            return (Resource) Class.forName(className).newInstance();
+	ResourceTypeDefinition rtd = (ResourceTypeDefinition) hm.get(universalName);
+        if (rtd != null) {
+            Resource resource = (Resource) Class.forName(rtd.getResourceTypeClassname()).newInstance();
+            resource.setRTD(rtd);
+            return resource;
         } else {
             log.error("No resource registered for rti: " + universalName);
             return null;
