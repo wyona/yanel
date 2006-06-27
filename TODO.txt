@@ -7,11 +7,11 @@
 - Build resource implementations dynamically (based on configuration): ResourceRegistry ...
 - Add yanel version (such that for instance the webapp can display the version, e.g. 0.0.1-dev-r13812)
 - Make Tomcat targets configurable during configure.sh
-- Patch log.properties and yarep.properties during deploy
-- Implement local.yarep.properties and local.log4j.properties
+- Patch log.properties during deploy
+- Implement and local.log4j.properties
 - Specify versions of implementations explicitely and make them downloadable dynamically based on the registered resource types
 - Add Windows bat files
-- Add servlet engine, e.g. Jetty
+- Add servlet engine, e.g. Jetty or Tomcat
 - Replace most System.err/out by log4j
 - Import any website with Nutch Crawler and rti map creator
 - Implement Distribution target (zip and tar.gz)
