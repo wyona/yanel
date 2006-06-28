@@ -48,6 +48,14 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // TODO: Implement Authorization and Authentication: http://www.goldfish.org/books/O'Reilly%20Java%20Enterprise%20CD%20Bookshelf/servlet/ch08_01.htm
+        // HTTP Authorization/Authentication
+        log.error("DEBUG: " + request.getAuthType());
+        log.error("DEBUG: " + request.getRemoteUser());
+        log.error("DEBUG: " + request.getHeader("Authorization"));
+        // Custom Authorization/Authentication
+        // ...
+
         View view = null;
 
         StringBuffer sb = new StringBuffer("");
