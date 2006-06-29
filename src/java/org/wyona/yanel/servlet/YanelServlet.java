@@ -60,22 +60,33 @@ public class YanelServlet extends HttpServlet {
             // Custom Authorization/Authentication
             // ...
 
+            // TODO: Check if this is a neutron request or just a common GET request
             StringBuffer sb = new StringBuffer("");
-            sb.append("<?xml version=\"1.0\"?>");
-            sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
-            sb.append("<message>Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString() + "</message>");
-            sb.append("<authentication>");
-            sb.append("<login url=\"http://...?action=logout\">");
-            sb.append("<form>");
-            sb.append("<param description=\"Username\" name=\"username\"/>");
-            sb.append("<param description=\"Password\" name=\"password\"/>");
-            sb.append("</form>");
-            sb.append("</login>");
-            sb.append("<logout url=\"http://...?action=login\"/>");
-            sb.append("</authentication>");
-            sb.append("</exception>");
-            response.setContentType("application/xml");
-            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            String neutronVersions = request.getHeader("Neutron");
+            if (neutronVersions != null) {
+                sb.append("<?xml version=\"1.0\"?>");
+                sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
+                sb.append("<message>Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString() + "</message>");
+                sb.append("<authentication>");
+                sb.append("<login url=\"http://...?action=logout\">");
+                sb.append("<form>");
+                sb.append("<param description=\"Username\" name=\"username\"/>");
+                sb.append("<param description=\"Password\" name=\"password\"/>");
+                sb.append("</form>");
+                sb.append("</login>");
+                sb.append("<logout url=\"http://...?action=login\"/>");
+                sb.append("</authentication>");
+                sb.append("</exception>");
+                response.setContentType("application/xml");
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+            } else {
+                sb.append("<?xml version=\"1.0\"?>");
+                sb.append("<html>");
+                sb.append("<body>");
+                sb.append("<p>Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString() + "</p>");
+                sb.append("</body>");
+                sb.append("</html>");
+            }
             PrintWriter w = response.getWriter();
             w.print(sb);
             return;
