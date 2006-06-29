@@ -48,13 +48,29 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
         // TODO: Implement Authorization and Authentication: http://www.goldfish.org/books/O'Reilly%20Java%20Enterprise%20CD%20Bookshelf/servlet/ch08_01.htm
-        // HTTP Authorization/Authentication
-        log.error("DEBUG: " + request.getAuthType());
-        log.error("DEBUG: " + request.getRemoteUser());
-        log.error("DEBUG: " + request.getHeader("Authorization"));
-        // Custom Authorization/Authentication
-        // ...
+        if(!authorize(request, response)) {
+            // HTTP Authorization/Authentication
+/*
+            response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
+	    response.sendError(response.SC_UNAUTHORIZED);
+*/
+            // Custom Authorization/Authentication
+            // ...
+
+
+            StringBuffer sb = new StringBuffer("");
+            sb.append("<?xml version=\"1.0\"?>");
+            sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"data-not-well-formed\">");
+            sb.append("<message>Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString() + "</message>");
+            sb.append("</exception>");
+            response.setContentType("application/xml");
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            PrintWriter w = response.getWriter();
+            w.print(sb);
+            return;
+        }
 
         View view = null;
 
@@ -147,6 +163,15 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if(!authorize(request, response)) {
+            // HTTP Authorization/Authentication
+            response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
+	    response.sendError(response.SC_UNAUTHORIZED);
+            // Custom Authorization/Authentication
+            // ...
+            return;
+        }
+
         String value = request.getParameter("yanel.resource.usecase");
 
         if (value != null && value.equals("save")) {
@@ -177,6 +202,16 @@ public class YanelServlet extends HttpServlet {
      * TODO: Reuse code doPost resp. share code with doPut
      */
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        if(!authorize(request, response)) {
+            // HTTP Authorization/Authentication
+            response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
+	    response.sendError(response.SC_UNAUTHORIZED);
+            // Custom Authorization/Authentication
+            // ...
+            return;
+        }
+
         String value = request.getParameter("yanel.resource.usecase");
 
         if (value != null && value.equals("save")) {
@@ -337,5 +372,47 @@ public class YanelServlet extends HttpServlet {
                 sb.append("</html>");
                 response.setContentType("application/xhtml+xml");
             }
+    }
+
+    /**
+     * Authorize request
+     * TODO: Replace hardcoded policies ...
+     */
+    private boolean authorize(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        String value = request.getParameter("yanel.resource.usecase");
+        if (value != null && value.equals("save")) {
+            log.error("DEBUG: Save data ...");
+            return true;
+	} else if (value != null && value.equals("checkin")) {
+            log.error("DEBUG: Checkin data ...");
+	} else if (value != null && value.equals("checkout")) {
+            log.error("DEBUG: Checkout data ...");
+        } else {
+            log.debug("No parameter yanel.resource.usecase!");
+            return true;
+        }
+
+        // HTTP Authorization
+        String authorization = request.getHeader("Authorization");
+        log.error("DEBUG: Authorization Header: " + authorization);
+        if (authorization != null &&  authorization.toUpperCase().startsWith("BASIC")) {
+            // Get encoded user and password, comes after "BASIC "
+            String userpassEncoded = authorization.substring(6);
+            // Decode it, using any base 64 decoder
+            sun.misc.BASE64Decoder dec = new sun.misc.BASE64Decoder();
+            String userpassDecoded = new String(dec.decodeBuffer(userpassEncoded));
+            log.error("DEBUG: userpassDecoded: " + userpassDecoded);
+            if (userpassDecoded.equals("lenya:levi")) {
+                return true;
+            }
+            log.warn("Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString());
+            return false;
+        }
+
+        // Custom Authorization
+        // ...
+        log.warn("Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString());
+        return false;
     }
 }
