@@ -52,6 +52,7 @@ public class YanelServlet extends HttpServlet {
         // TODO: Implement Authorization and Authentication: http://www.goldfish.org/books/O'Reilly%20Java%20Enterprise%20CD%20Bookshelf/servlet/ch08_01.htm
         if(!authorize(request, response)) {
             // HTTP Authorization/Authentication
+            // TODO: Phoenix has not HTTP BASIC or DIGEST implemented yet!
 /*
             response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
 	    response.sendError(response.SC_UNAUTHORIZED);
@@ -59,11 +60,19 @@ public class YanelServlet extends HttpServlet {
             // Custom Authorization/Authentication
             // ...
 
-
             StringBuffer sb = new StringBuffer("");
             sb.append("<?xml version=\"1.0\"?>");
-            sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"data-not-well-formed\">");
+            sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
             sb.append("<message>Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString() + "</message>");
+            sb.append("<authentication>");
+            sb.append("<login url=\"http://...?action=logout\">");
+            sb.append("<form>");
+            sb.append("<param description=\"Username\" name=\"username\"/>");
+            sb.append("<param description=\"Password\" name=\"password\"/>");
+            sb.append("</form>");
+            sb.append("</login>");
+            sb.append("<logout url=\"http://...?action=login\"/>");
+            sb.append("</authentication>");
             sb.append("</exception>");
             response.setContentType("application/xml");
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
