@@ -64,6 +64,7 @@ public class YanelServlet extends HttpServlet {
             StringBuffer sb = new StringBuffer("");
             String neutronVersions = request.getHeader("Neutron");
             if (neutronVersions != null) {
+                log.error("DEBUG: Neutron Versions supported by client: " + neutronVersions);
                 sb.append("<?xml version=\"1.0\"?>");
                 sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
                 sb.append("<message>Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString() + "</message>");
