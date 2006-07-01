@@ -30,6 +30,9 @@ import org.wyona.yanel.core.map.MapFactory;
 
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
+import org.wyona.security.core.PolicyManagerFactory;
+import org.wyona.security.core.api.PolicyManager;
+
 /*
 import com.wyonapictures.yanel.impl.resources.TapeResource;
 import com.wyona.yanel.impl.resources.InvoiceResource;
@@ -66,6 +69,15 @@ public class YanelCommandLine {
             path = new Path(value);
         } catch (Exception e) {
             System.err.println(e);
+        }
+
+        PolicyManagerFactory pmf = PolicyManagerFactory.newInstance();
+        PolicyManager pm = pmf.newPolicyManager();
+
+        if (pm.authorize(new org.wyona.commons.io.Path(path.toString()), null, null)) {
+            System.out.println("Access granted: " + path);
+        } else {
+            System.out.println("Access denied: " + path);
         }
 
         String rti = map.getResourceTypeIdentifier(path);
