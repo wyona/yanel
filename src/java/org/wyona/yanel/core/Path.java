@@ -21,37 +21,19 @@ import org.apache.log4j.Category;
 /**
  *
  */
-public class Path {
+public class Path extends org.wyona.commons.io.Path {
 
     private static Category log = Category.getInstance(Path.class);
-
-    private String path;
-
-    /**
-     *
-     */
-    public Path() {
-    }
 
     /**
      *
      */
     public Path(String path) {
-        this.path = path;
+        super(path);
     }
 
     /**
-     * Return null if no suffix exists
-     */
-    public String getSuffix() {
-        int lio = path.lastIndexOf(".");
-        log.debug(new Integer(lio));
-        if (lio < 0) return null;
-        return path.substring(lio + 1);
-    }
-
-    /**
-     * Return null if no suffix exists
+     *
      */
     public Path getRTIPath() {
         // Remove trailing slash except for ROOT ...
@@ -59,12 +41,5 @@ public class Path {
             return new Path(path.substring(0, path.length() - 1) + ".yanel-rti");
         }
         return new Path(path + ".yanel-rti");
-    }
-
-    /**
-     *
-     */
-    public String toString() {
-        return path;
     }
 }
