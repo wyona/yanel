@@ -28,6 +28,8 @@
       <!-- TODO: Add checksum file to server -->
       <dependency groupId="yarep" artifactId="yarep"
                   version="0.0.1-dev-r14296"/>
+      <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
+                  version="0.0.1-dev-r14827"/>
 
       <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api"
