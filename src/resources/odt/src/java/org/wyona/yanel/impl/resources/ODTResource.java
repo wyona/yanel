@@ -80,7 +80,7 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
                 defaultView.setInputStream(getContentXML(rp));
                 return defaultView;
 	    } else if (mimeType.equals("application/xhtml+xml")) {
-                File xsltFile = org.wyona.util.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "document2xhtml.xsl");
+                File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "document2xhtml.xsl");
                 log.error("DEBUG: XSLT file: " + xsltFile);
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
                  // TODO: Is this the best way to generate an InputStream from an OutputStream?
