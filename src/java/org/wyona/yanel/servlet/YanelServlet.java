@@ -23,6 +23,9 @@ import org.wyona.yanel.core.map.MapFactory;
 
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
+import org.wyona.security.core.PolicyManagerFactory;
+import org.wyona.security.core.api.PolicyManager;
+
 import org.apache.log4j.Category;
 
 /**
@@ -36,12 +39,17 @@ public class YanelServlet extends HttpServlet {
 
     ResourceTypeRegistry rtr;
 
+    PolicyManager pm;
+
     /**
      *
      */
     public void init(ServletConfig config) {
         this.config = config;
         rtr = new ResourceTypeRegistry();
+
+        PolicyManagerFactory pmf = PolicyManagerFactory.newInstance();
+        pm = pmf.newPolicyManager();
     }
 
     /**
@@ -404,13 +412,17 @@ public class YanelServlet extends HttpServlet {
         String value = request.getParameter("yanel.resource.usecase");
         if (value != null && value.equals("save")) {
             log.error("DEBUG: Save data ...");
-            return true;
+            return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), null, null);
+            //return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), "lenya", "write");
 	} else if (value != null && value.equals("checkin")) {
             log.error("DEBUG: Checkin data ...");
+            //return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), "lenya", "write");
 	} else if (value != null && value.equals("checkout")) {
             log.error("DEBUG: Checkout data ...");
+            //return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), "lenya", "open");
         } else {
             log.debug("No parameter yanel.resource.usecase!");
+            //return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), "lenya", "view");
             return true;
         }
 
