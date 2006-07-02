@@ -24,7 +24,9 @@ import org.wyona.yanel.core.map.MapFactory;
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
 import org.wyona.security.core.PolicyManagerFactory;
+import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.PolicyManager;
+import org.wyona.security.core.api.Role;
 
 import org.apache.log4j.Category;
 
@@ -90,11 +92,19 @@ public class YanelServlet extends HttpServlet {
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
             } else {
                 sb.append("<?xml version=\"1.0\"?>");
-                sb.append("<html>");
+                sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
                 sb.append("<body>");
                 sb.append("<p>Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString() + "</p>");
+                sb.append("<form method=\"POST\">");
+                sb.append("<p>");
+                sb.append("Username: <input type=\"text\" name=\"username\"/><br/>");
+                sb.append("Password: <input type=\"password\" name=\"password\"/><br/>");
+                sb.append("<input type=\"submit\" value=\"Login\"/>");
+                sb.append("</p>");
+                sb.append("</form>");
                 sb.append("</body>");
                 sb.append("</html>");
+                response.setContentType("application/xhtml+xml");
             }
             PrintWriter w = response.getWriter();
             w.print(sb);
@@ -409,21 +419,21 @@ public class YanelServlet extends HttpServlet {
      */
     private boolean authorize(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+        String[] groupnames = {"null", "null"};
+        Identity identity = new Identity("null", groupnames);
+
         String value = request.getParameter("yanel.resource.usecase");
         if (value != null && value.equals("save")) {
             log.error("DEBUG: Save data ...");
-            return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), null, null);
-            //return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), "lenya", "write");
+            return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, new Role("write"));
 	} else if (value != null && value.equals("checkin")) {
             log.error("DEBUG: Checkin data ...");
-            //return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), "lenya", "write");
+            return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, new Role("write"));
 	} else if (value != null && value.equals("checkout")) {
             log.error("DEBUG: Checkout data ...");
-            //return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), "lenya", "open");
+            return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, new Role("open"));
         } else {
             log.debug("No parameter yanel.resource.usecase!");
-            //return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), "lenya", "view");
-            return true;
         }
 
         // HTTP Authorization
@@ -445,7 +455,6 @@ public class YanelServlet extends HttpServlet {
 
         // Custom Authorization
         // ...
-        log.warn("Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString());
-        return false;
+        return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, new Role("view"));
     }
 }
