@@ -31,7 +31,7 @@
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
                   version="0.0.1-dev-r14847"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core"
-                  version="0.0.1-dev-r14859"/>
+                  version="0.0.1-dev-r14883"/>
 
       <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api"
@@ -50,7 +50,7 @@
       <dependency groupId="xml-apis" artifactId="xml-apis"
                   version="1.3.02"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl"
-                  version="0.0.1-dev-r14859"/>
+                  version="0.0.1-dev-r14883"/>
     </artifact:dependencies>
 
     <!--
@@ -302,14 +302,22 @@
     </copy>
 -->
     <copy file="${yanel.home.dir}/lib/log4j.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+
     <copy file="${yanel.home.dir}/lib/yanel-rti-yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/lib/local.yanel-rti-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" overwrite="true" failonerror="false"/>
+
+    <copy file="${yanel.home.dir}/lib/ac-policies-yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.home.dir}/lib/local.ac-policies-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" overwrite="true" failonerror="false"/>
+
     <copy file="${yanel.home.dir}/lib/yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/lib/local.yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" overwrite="true" failonerror="false"/>
     <copy file="${yanel.home.dir}/lib/yanel.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
+    </replace>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" value="security-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
+      <replacetoken>security-sample,../src/sample-repository/config/repository.xml</replacetoken>
     </replace>
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/repository.xml">
       <replacetoken>javadoc,../src/javadoc-repository/repository.xml</replacetoken>
