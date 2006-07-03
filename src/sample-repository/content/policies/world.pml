@@ -6,4 +6,12 @@
     <world permission="true"/>
   </role>
 
+  <role id="open">
+    <world permission="true"/>
+  </role>
+
+  <role id="write">
+    <world permission="true"/>
+  </role>
+
 </policy>
