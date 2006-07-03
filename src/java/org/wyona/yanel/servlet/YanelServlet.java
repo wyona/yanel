@@ -73,8 +73,10 @@ public class YanelServlet extends HttpServlet {
             // TODO: Check if this is a neutron request or just a common GET request
             StringBuffer sb = new StringBuffer("");
             String neutronVersions = request.getHeader("Neutron");
-            if (neutronVersions != null) {
+            String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
+            if (clientSupportedAuthScheme != null) {
                 log.error("DEBUG: Neutron Versions supported by client: " + neutronVersions);
+                log.error("DEBUG: Authentication Scheme supported by client: " + clientSupportedAuthScheme);
                 sb.append("<?xml version=\"1.0\"?>");
                 sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
                 sb.append("<message>Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString() + "</message>");
@@ -97,8 +99,8 @@ public class YanelServlet extends HttpServlet {
                 sb.append("<p>Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString() + "</p>");
                 sb.append("<form method=\"POST\">");
                 sb.append("<p>");
-                sb.append("Username: <input type=\"text\" name=\"username\"/><br/>");
-                sb.append("Password: <input type=\"password\" name=\"password\"/><br/>");
+                sb.append("Username: <input type=\"text\" name=\"yanel.login.username\"/><br/>");
+                sb.append("Password: <input type=\"password\" name=\"yanel.login.password\"/><br/>");
                 sb.append("<input type=\"submit\" value=\"Login\"/>");
                 sb.append("</p>");
                 sb.append("</form>");
@@ -202,6 +204,11 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String loginUsername = request.getParameter("yanel.login.username");
+        if(loginUsername != null) {
+            log.error("DEBUG: Trying to login with " + loginUsername);
+        }
+
         if(!authorize(request, response)) {
             // HTTP Authorization/Authentication
             response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
