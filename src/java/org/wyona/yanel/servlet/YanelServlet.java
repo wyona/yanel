@@ -43,6 +43,8 @@ public class YanelServlet extends HttpServlet {
 
     PolicyManager pm;
 
+    private static String IDENTITY_KEY = "identity";
+
     /**
      *
      */
@@ -97,12 +99,18 @@ public class YanelServlet extends HttpServlet {
                 sb.append("<?xml version=\"1.0\"?>");
                 sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
                 sb.append("<body>");
-                sb.append("<p>Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString() + "</p>");
+                if (request.getQueryString() != null) {
+                    sb.append("<p>Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString() + "</p>");
+                } else {
+                    sb.append("<p>Authorization denied: " + request.getRequestURL() + "</p>");
+                }
                 sb.append("<form method=\"POST\">");
                 sb.append("<p>");
-                sb.append("Username: <input type=\"text\" name=\"yanel.login.username\"/><br/>");
-                sb.append("Password: <input type=\"password\" name=\"yanel.login.password\"/><br/>");
-                sb.append("<input type=\"submit\" value=\"Login\"/>");
+                sb.append("<table>");
+                sb.append("<tr><td>Username:</td><td>&#160;</td><td><input type=\"text\" name=\"yanel.login.username\"/></td></tr>");
+                sb.append("<tr><td>Password:</td><td>&#160;</td><td><input type=\"password\" name=\"yanel.login.password\"/></td></tr>");
+                sb.append("<tr><td colspan=\"2\">&#160;</td><td align=\"right\"><input type=\"submit\" value=\"Login\"/></td></tr>");
+                sb.append("</table>");
                 sb.append("</p>");
                 sb.append("</form>");
                 sb.append("</body>");
@@ -114,6 +122,13 @@ public class YanelServlet extends HttpServlet {
             return;
         }
 
+        getContent(request, response);
+    }
+
+    /**
+     *
+     */
+    private void getContent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         View view = null;
 
         StringBuffer sb = new StringBuffer("");
@@ -208,6 +223,9 @@ public class YanelServlet extends HttpServlet {
         String loginUsername = request.getParameter("yanel.login.username");
         if(loginUsername != null) {
             log.error("DEBUG: Trying to login with " + loginUsername);
+            HttpSession session = request.getSession(true);
+            // TODO: Implement Authentication
+            session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
         }
 
         if(!authorize(request, response)) {
@@ -215,7 +233,7 @@ public class YanelServlet extends HttpServlet {
             response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
 	    response.sendError(response.SC_UNAUTHORIZED);
             // Custom Authorization/Authentication
-            // ...
+            // TODO: Reuse stuff from doGet ...
             return;
         }
 
@@ -234,6 +252,8 @@ public class YanelServlet extends HttpServlet {
         } else {
             log.warn("No parameter yanel.resource.usecase!");
 
+            getContent(request, response);
+/*
             PrintWriter writer = response.getWriter();
             response.setContentType("application/xhtml+xml");
 
@@ -242,6 +262,7 @@ public class YanelServlet extends HttpServlet {
             writer.println("No parameter yanel.resource.usecase!");
             writer.println("</body>");
             writer.println("</html>");
+*/
         }
     }
 
@@ -274,6 +295,9 @@ public class YanelServlet extends HttpServlet {
         } else {
             log.warn("No parameter yanel.resource.usecase!");
 
+            getContent(request, response);
+
+/*
             StringBuffer sb = new StringBuffer("");
             sb.append("<?xml version=\"1.0\"?>");
             sb.append("<html>");
@@ -284,6 +308,7 @@ public class YanelServlet extends HttpServlet {
             response.setContentType("application/xhtml+xml");
             PrintWriter writer = response.getWriter();
             writer.print(sb);
+*/
         }
     }
 
@@ -423,12 +448,17 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Authorize request
-     * TODO: Replace hardcoded policies ...
+     * TODO: Replace hardcoded roles by mapping between roles amd query strings ...
      */
     private boolean authorize(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        String[] groupnames = {"null", "null"};
-        Identity identity = new Identity("null", groupnames);
+        //String[] groupnames = {"null", "null"};
+        HttpSession session = request.getSession(true);
+        Identity identity = (Identity) session.getAttribute(IDENTITY_KEY);
+        if (identity == null) {
+            log.error("DEBUG: identity is WORLD");
+            identity = new Identity();
+        }
 
         String value = request.getParameter("yanel.resource.usecase");
         if (value != null && value.equals("save")) {
