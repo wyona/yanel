@@ -73,6 +73,7 @@ public class YanelServlet extends HttpServlet {
             // TODO: Check if this is a neutron request or just a common GET request
             StringBuffer sb = new StringBuffer("");
             String neutronVersions = request.getHeader("Neutron");
+            // http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
             String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
             if (clientSupportedAuthScheme != null) {
                 log.error("DEBUG: Neutron Versions supported by client: " + neutronVersions);
