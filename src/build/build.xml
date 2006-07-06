@@ -31,7 +31,7 @@
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
                   version="0.0.1-dev-r15004"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core"
-                  version="0.0.1-dev-r14942"/>
+                  version="0.0.1-dev-r15044"/>
 
       <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api"
@@ -50,7 +50,7 @@
       <dependency groupId="xml-apis" artifactId="xml-apis"
                   version="1.3.02"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl"
-                  version="0.0.1-dev-r14942"/>
+                  version="0.0.1-dev-r15044"/>
     </artifact:dependencies>
 
     <!--
@@ -401,9 +401,14 @@
     <delete dir="${yanel.home.dir}/src/resources/calendar/build"/>
 
     <condition property="property-tomcat-cluster-node1-is-set">
-      <isset property="tomcat1.webapps.dir"/>
+      <isset property="tomcat1.home.dir"/>
     </condition>
     <antcall target="clean-tomcat-cluster-node1"/>
+
+    <condition property="property-tomcat-cluster-node2-is-set">
+      <isset property="tomcat2.home.dir"/>
+    </condition>
+    <antcall target="clean-tomcat-cluster-node2"/>
   </target>
 
   <target name="clean-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Clean Tomcat cluster node 1">
@@ -415,6 +420,17 @@
 
     <delete dir="${tomcat1.webapps.dir}/${servlet.context.prefix}"/>
     <delete dir="${tomcat1.work.dir}/${servlet.context.prefix}"/>
+  </target>
+
+  <target name="clean-tomcat-cluster-node2" if="property-tomcat-cluster-node2-is-set" description="Clean Tomcat cluster node 2">
+    <echo>Clean Tomcat cluster node 2:</echo>
+
+    <fail message="No such directory: ${tomcat2.webapps.dir}">
+      <condition><not><available file="${tomcat2.webapps.dir}"/></not></condition>
+    </fail>
+
+    <delete dir="${tomcat2.webapps.dir}/${servlet.context.prefix}"/>
+    <delete dir="${tomcat2.work.dir}/${servlet.context.prefix}"/>
   </target>
 
   <target name="javadoc" description="Generate Javadoc" depends="init">
