@@ -29,7 +29,7 @@
       <dependency groupId="yarep" artifactId="yarep"
                   version="0.0.1-dev-r14296"/>
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
-                  version="0.0.1-dev-r14847"/>
+                  version="0.0.1-dev-r15004"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core"
                   version="0.0.1-dev-r14942"/>
 
@@ -347,13 +347,13 @@
   </target>
 
   <target name="deploy" description="Deploy war file" depends="init, war">
-    <condition property="deploy-to-tomcat-cluster-node1">
-      <isset property="tomcat1.webapps.dir"/>
+    <condition property="property-tomcat-cluster-node1-is-set">
+      <isset property="tomcat1.home.dir"/>
     </condition>
     <antcall target="deploy-to-tomcat-cluster-node1"/>
 
-    <condition property="deploy-to-tomcat-cluster-node2">
-      <isset property="tomcat2.webapps.dir"/>
+    <condition property="property-tomcat-cluster-node2-is-set">
+      <isset property="tomcat2.home.dir"/>
     </condition>
     <antcall target="deploy-to-tomcat-cluster-node2"/>
 
@@ -366,7 +366,7 @@
     <echo>INFO: Start using Yanel by executing yanel.sh</echo>
   </target>
 
-  <target name="deploy-to-tomcat-cluster-node1" if="deploy-to-tomcat-cluster-node1" description="Deploy webapp to Tomcat cluster node 1">
+  <target name="deploy-to-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Deploy webapp to Tomcat cluster node 1">
     <echo>Copy webapp (${tomcat1.webapps.dir}):</echo>
 
     <fail message="No such directory: ${tomcat1.webapps.dir}">
@@ -378,7 +378,7 @@
     </copy>
   </target>
 
-  <target name="deploy-to-tomcat-cluster-node2" if="deploy-to-tomcat-cluster-node2" description="Deploy webapp to Tomcat cluster node 2">
+  <target name="deploy-to-tomcat-cluster-node2" if="property-tomcat-cluster-node2-is-set" description="Deploy webapp to Tomcat cluster node 2">
     <echo>Copy webapp (${tomcat2.webapps.dir}):</echo>
 
     <fail message="No such directory: ${tomcat2.webapps.dir}">
@@ -399,6 +399,22 @@
     <delete dir="${yanel.home.dir}/src/resources/directory/build"/>
     <delete dir="${yanel.home.dir}/src/resources/tape/build"/>
     <delete dir="${yanel.home.dir}/src/resources/calendar/build"/>
+
+    <condition property="property-tomcat-cluster-node1-is-set">
+      <isset property="tomcat1.webapps.dir"/>
+    </condition>
+    <antcall target="clean-tomcat-cluster-node1"/>
+  </target>
+
+  <target name="clean-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Clean Tomcat cluster node 1">
+    <echo>Clean Tomcat cluster node 1:</echo>
+
+    <fail message="No such directory: ${tomcat1.webapps.dir}">
+      <condition><not><available file="${tomcat1.webapps.dir}"/></not></condition>
+    </fail>
+
+    <delete dir="${tomcat1.webapps.dir}/${servlet.context.prefix}"/>
+    <delete dir="${tomcat1.work.dir}/${servlet.context.prefix}"/>
   </target>
 
   <target name="javadoc" description="Generate Javadoc" depends="init">
