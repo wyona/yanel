@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<repository>
+  <name>Javadoc RTI Map</name>
+
+  <paths src="yanel-content"/>
+
+  <storage class="org.wyona.yarep.core.impl.vfs.VFileSystemStorage">
+    <content src="yanel-content"/>
+  </storage>
+</repository>
