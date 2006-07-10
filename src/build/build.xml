@@ -403,21 +403,23 @@
     <condition property="property-tomcat-cluster-node1-is-set">
       <isset property="tomcat1.home.dir"/>
     </condition>
-    <antcall target="clean-tomcat-cluster-node1"/>
+    <antcall target="ask-to-clean-tomcat-cluster-node1"/>
 
     <condition property="property-tomcat-cluster-node2-is-set">
       <isset property="tomcat2.home.dir"/>
     </condition>
-    <antcall target="clean-tomcat-cluster-node2"/>
+    <antcall target="ask-to-clean-tomcat-cluster-node2"/>
   </target>
 
-  <target name="clean-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Clean Tomcat cluster node 1">
+  <target name="ask-to-clean-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Clean Tomcat cluster node 1">
     <input message="Do you really want to delete your deployed (maybe productive) Yanel version at '${tomcat1.webapps.dir}/${servlet.context.prefix}'? (yes/NO):" addproperty="answer"/>
-    <condition property="yes.delete">
+    <condition property="yes-delete-tomcat-cluster-node1">
       <equals arg1="yes" arg2="${answer}"/>
     </condition>
-    <fail unless="yes.delete">Deployed version will NOT be deleted!</fail>
+    <antcall target="do-clean-tomcat-cluster-node1"/>
+  </target>
 
+  <target name="do-clean-tomcat-cluster-node1" if="yes-delete-tomcat-cluster-node1" description="Clean Tomcat cluster node 1">
     <echo>Clean Tomcat cluster node 1:</echo>
 
     <fail message="No such directory: ${tomcat1.webapps.dir}">
@@ -428,7 +430,15 @@
     <delete dir="${tomcat1.work.dir}/${servlet.context.prefix}"/>
   </target>
 
-  <target name="clean-tomcat-cluster-node2" if="property-tomcat-cluster-node2-is-set" description="Clean Tomcat cluster node 2">
+  <target name="ask-to-clean-tomcat-cluster-node2" if="property-tomcat-cluster-node2-is-set" description="Clean Tomcat cluster node 2">
+    <input message="Do you really want to delete your deployed (maybe productive) Yanel version at '${tomcat2.webapps.dir}/${servlet.context.prefix}'? (yes/NO):" addproperty="answer"/>
+    <condition property="yes-delete-tomcat-cluster-node2">
+      <equals arg1="yes" arg2="${answer}"/>
+    </condition>
+    <antcall target="do-clean-tomcat-cluster-node2"/>
+  </target>
+
+  <target name="do-clean-tomcat-cluster-node2" if="yes-delete-tomcat-cluster-node2" description="Clean Tomcat cluster node 2">
     <echo>Clean Tomcat cluster node 2:</echo>
 
     <fail message="No such directory: ${tomcat2.webapps.dir}">
