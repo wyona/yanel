@@ -1,5 +1,6 @@
 
 - grep -rl TODO *
+- Implement Admin interface with listing of repositories and mountpoints
 - Implement Locking
 - YanelServlet: Unify authentication scheme
 - Implement authentication
