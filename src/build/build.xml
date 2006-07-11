@@ -319,8 +319,8 @@
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" value="security-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
       <replacetoken>security-sample,../src/sample-repository/config/repository.xml</replacetoken>
     </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/repository.xml">
-      <replacetoken>javadoc,../src/javadoc-repository/repository.xml</replacetoken>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/yanel-rti-repository.xml">
+      <replacetoken>javadoc,../src/javadoc-repository/yanel-rti-repository.xml</replacetoken>
     </replace>
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
@@ -346,7 +346,7 @@
     <jar jarfile="${yanel.home.dir}/build/webapps/${servlet.context.prefix}.war" basedir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
   </target>
 
-  <target name="deploy" description="Deploy war file" depends="init, war">
+  <target name="deploy" description="Deploy war file" depends="init, war, javadoc">
     <condition property="property-tomcat-cluster-node1-is-set">
       <isset property="tomcat1.home.dir"/>
     </condition>
