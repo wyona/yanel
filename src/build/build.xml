@@ -454,6 +454,7 @@
       packagenames="org.*"
       sourcepath="${yanel.home.dir}/src/java"
       destdir="${yanel.home.dir}/build/javadoc"
+      classpathref="classpath.run"
     >
     </javadoc>
   </target>

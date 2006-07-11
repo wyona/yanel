@@ -267,10 +267,11 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * TODO: Reuse code doPost resp. share code with doPut
+     * HTTP PUT implementation
      */
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+        // TODO: Reuse code doPost resp. share code with doPut
         if(!authorize(request, response)) {
             // HTTP Authorization/Authentication
             response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
