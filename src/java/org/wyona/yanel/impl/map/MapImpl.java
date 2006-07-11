@@ -69,14 +69,12 @@ public class MapImpl implements Map {
             return br.readLine();
         } catch(NoSuchNodeException e) {
             log.warn(e.getMessage());
+            log.warn("TODO: Implement chain of responsibility ...");
+            return "<{http://www.wyona.org/yanel/resource/1.0}file/>";
         } catch(Exception e) {
             log.error(e.getMessage(), e);
+            log.warn("No resource type identifier for path: " + path);
+            return null;
         }
-
-        // TODO: Implement chain of responsibility ...
-        //return "<{http://www.wyona.org/yanel/resource/1.0}file/>";
-
-        log.warn("No resource type identifier for path: " + path);
-        return null;
     }
 }
