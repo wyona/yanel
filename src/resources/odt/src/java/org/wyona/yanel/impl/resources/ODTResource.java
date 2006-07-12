@@ -103,15 +103,15 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
      *
      */
     private InputStream getContentXML(RepoPath rp) throws Exception {
-                JarInputStream jarStream = new JarInputStream((rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()))));
-                JarEntry jarEntry;
-                while ((jarEntry = jarStream.getNextJarEntry()) != null) {
-                    log.debug("Jar Entry Name: " + jarEntry.getName());
-                    if (jarEntry.getName().equals("content.xml")) {
-                        return jarStream;
-                    }
-                // TODO: What if zip does not contain a "content.xml"?!
-                }
+        JarInputStream jarStream = new JarInputStream((rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()))));
+        JarEntry jarEntry;
+        while ((jarEntry = jarStream.getNextJarEntry()) != null) {
+            log.debug("Jar Entry Name: " + jarEntry.getName());
+            if (jarEntry.getName().equals("content.xml")) {
+                return jarStream;
+            }
+        // TODO: What if zip does not contain a "content.xml"?!
+        }
         return null;
     }
 
