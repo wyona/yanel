@@ -88,6 +88,9 @@
       <fileset dir="${yanel.home.dir}/src/resources/odt/build/lib">
         <include name="*.jar"/>
       </fileset>
+      <fileset dir="${yanel.home.dir}/src/resources/xml/build/lib">
+        <include name="*.jar"/>
+      </fileset>
       <fileset dir="${yanel.home.dir}/src/resources/file/build/lib">
         <include name="*.jar"/>
       </fileset>
@@ -121,6 +124,9 @@
         <include name="*.jar"/>
       </fileset>
       <fileset dir="${yanel.home.dir}/src/resources/odt/build/lib">
+        <include name="*.jar"/>
+      </fileset>
+      <fileset dir="${yanel.home.dir}/src/resources/xml/build/lib">
         <include name="*.jar"/>
       </fileset>
       <fileset dir="${yanel.home.dir}/src/resources/file/build/lib">
@@ -232,6 +238,18 @@
       basedir="${odt-resource.classes.dir}"
     />
   </target>
+  <target name="compile-xml-resource" description="Compile Java classes of XML resource" depends="init">
+    <property name="xml-resource.classes.dir" value="${yanel.home.dir}/src/resources/xml/build/classes"/>
+    <mkdir dir="${xml-resource.classes.dir}"/>
+    <javac srcdir="${yanel.home.dir}/src/resources/xml/src/java" destdir="${xml-resource.classes.dir}"
+      classpathref="classpath.yanel"
+      debug="true"
+    />
+    <mkdir dir="${yanel.home.dir}/src/resources/xml/build/lib"/>
+    <jar destfile="${yanel.home.dir}/src/resources/xml/build/lib/yanel-resource-xml-0.0.1-dev-r${yanel.revision}.jar"
+      basedir="${xml-resource.classes.dir}"
+    />
+  </target>
 
   <target name="compile-cmdl" description="Compile Java classes of Yanel command line" depends="init">
     <mkdir dir="${classes.dir}"/>
@@ -261,7 +279,7 @@
       includes="org/wyona/yanel/servlet/**"/>
   </target>
 
-  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-websearch-resource, compile-odt-resource, compile-file-resource, compile-directory-resource, compile-impl, compile-invoice-resource, compile-tape-resource, compile-webapp">
+  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-websearch-resource, compile-odt-resource, compile-xml-resource, compile-file-resource, compile-directory-resource, compile-impl, compile-invoice-resource, compile-tape-resource, compile-webapp">
 <!--
   <target name="webapp" description="Build webapp" depends="init, compile-webapp">
 -->
@@ -286,6 +304,7 @@
       <fileset dir="${yanel.home.dir}/src/resources/directory/build/lib"/>
       <fileset dir="${yanel.home.dir}/src/resources/websearch/build/lib"/>
       <fileset dir="${yanel.home.dir}/src/resources/odt/build/lib"/>
+      <fileset dir="${yanel.home.dir}/src/resources/xml/build/lib"/>
 <!--
       <fileset dir="${yanel.home.dir}/src/resources/calendar/build/lib"/>
 -->
@@ -395,6 +414,7 @@
     <delete dir="${yanel.home.dir}/src/resources/invoice/build"/>
     <delete dir="${yanel.home.dir}/src/resources/websearch/build"/>
     <delete dir="${yanel.home.dir}/src/resources/odt/build"/>
+    <delete dir="${yanel.home.dir}/src/resources/xml/build"/>
     <delete dir="${yanel.home.dir}/src/resources/file/build"/>
     <delete dir="${yanel.home.dir}/src/resources/directory/build"/>
     <delete dir="${yanel.home.dir}/src/resources/tape/build"/>
