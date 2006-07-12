@@ -82,15 +82,21 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
 	    } else if (mimeType.equals("application/xhtml+xml")) {
                 File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "document2xhtml.xsl");
                 log.error("DEBUG: XSLT file: " + xsltFile);
+
+/*
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
                  // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
                 transformer.transform(new StreamSource(getContentXML(rp)), new StreamResult(baos));
                 defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+*/
+
+                defaultView.setInputStream(getContentXML(rp));
                 return defaultView;
             } else {
                 log.debug("Mime-Type: " + mimeType);
-                defaultView.setInputStream(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
+                defaultView.setInputStream(getContentXML(rp));
+                //defaultView.setInputStream(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
             }
         } catch(Exception e) {
             log.error(e);
@@ -140,10 +146,10 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
             } else if (suffix.equals("xml")) {
                 mimeType = "application/xml";
             } else {
-                mimeType = "application/vnd.oasis.opendocument.text";
+                mimeType = "application/xml";
             }
         } else {
-            mimeType = "application/vnd.oasis.opendocument.text";
+            mimeType = "application/xml";
         }
         return mimeType;
     }
