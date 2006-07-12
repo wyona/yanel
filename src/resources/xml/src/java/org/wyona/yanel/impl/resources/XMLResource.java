@@ -80,18 +80,14 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
                 defaultView.setInputStream(getContentXML(rp));
                 return defaultView;
 	    } else if (mimeType.equals("application/xhtml+xml")) {
-                File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "document2xhtml.xsl");
-                log.error("DEBUG: XSLT file: " + xsltFile);
-
-/*
-                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
+                // TODO: Remove hardcoded xslt name and get it from yanel-rti of the appropriate resource
+                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path("/calendar.xsl"))));
                  // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
                 transformer.transform(new StreamSource(getContentXML(rp)), new StreamResult(baos));
                 defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
-*/
 
-                defaultView.setInputStream(getContentXML(rp));
+                //defaultView.setInputStream(getContentXML(rp));
                 return defaultView;
             } else {
                 log.debug("Mime-Type: " + mimeType);
