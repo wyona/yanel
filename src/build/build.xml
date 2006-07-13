@@ -421,12 +421,18 @@
     <delete dir="${yanel.home.dir}/src/resources/calendar/build"/>
 
     <condition property="property-tomcat-cluster-node1-is-set">
-      <isset property="tomcat1.home.dir"/>
+      <and>
+        <isset property="tomcat1.home.dir"/>
+        <available file="${tomcat1.webapps.dir}/${servlet.context.prefix}" type="dir"/>
+      </and>
     </condition>
     <antcall target="ask-to-clean-tomcat-cluster-node1"/>
 
     <condition property="property-tomcat-cluster-node2-is-set">
-      <isset property="tomcat2.home.dir"/>
+      <and>
+        <isset property="tomcat2.home.dir"/>
+        <available file="${tomcat2.webapps.dir}/${servlet.context.prefix}" type="dir"/>
+      </and>
     </condition>
     <antcall target="ask-to-clean-tomcat-cluster-node2"/>
   </target>
