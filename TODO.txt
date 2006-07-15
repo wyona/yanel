@@ -1,18 +1,20 @@
 
 - grep -rl TODO *
-- Implement Admin interface with listing of repositories and mountpoints
+- Make authorization and authentication implementation configurable per realm
+- Implement Admin interface with listing of repositories/realms and mountpoints
 - Implement Locking
+- YanelServlet: if realm has no authorization specified then the ROOT one is being taken instead that access is being denied: Makes this configurable
+- YanelServlet: Declare Realm for authorization on authentication screen
 - YanelServlet: Unify authentication scheme
 - Implement authentication
 - ResourceTypeRegistry class loading needs to be improved (see Yarep how it should be done ...)
 - Change rti map to XML with the possibility of resource specific path config
-- Introduce Map mounting
+- Introduce Map/Realm mounting
 - Introduce chain of responsibility for MapImpl (e.g. javadoc)
 -- Would it make sense to put this also into the repository layer?
 - Build resource implementations dynamically (based on configuration): ResourceRegistry ...
 - Add yanel version (such that for instance the webapp can display the version, e.g. 0.0.1-dev-r13812)
 - Make Tomcat targets configurable during configure.sh
-- Patch log.properties during deploy
 - Implement and local.log4j.properties
 - Specify versions of implementations explicitely and make them downloadable dynamically based on the registered resource types
 - Add Windows bat files
