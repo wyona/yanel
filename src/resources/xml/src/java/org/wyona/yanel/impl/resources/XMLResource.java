@@ -80,8 +80,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
                 defaultView.setInputStream(getContentXML(rp));
                 return defaultView;
 	    } else if (mimeType.equals("application/xhtml+xml")) {
-                // TODO: Remove hardcoded xslt name and get it from yanel-rti of the appropriate resource
-                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path("/calendar.xsl"))));
+                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString()))));
                  // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
                 transformer.transform(new StreamSource(getContentXML(rp)), new StreamResult(baos));
@@ -117,6 +116,8 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
             // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
             RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
+
+            // TODO: Remove hardcoded line reading ... (also check other classes for hardcoded line reading)
             br.readLine();
             mimeType = br.readLine();
             if (mimeType != null) {
@@ -204,6 +205,38 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
         } catch(Exception e) {
             log.error(e);
         }
+        return null;
+    }
+
+    /**
+     *
+     */
+    private Path getXSLTPath(Path path) {
+        String xsltPath = null;
+        try {
+            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
+
+            // TODO: Remove hardcoded line reading ...
+            br.readLine();
+            br.readLine();
+            xsltPath = br.readLine();
+
+            log.error("DEBUG: XSLT Path: " + xsltPath);
+            if (xsltPath != null) {
+                if (xsltPath.indexOf("xslt:") == 0) {
+                    xsltPath = xsltPath.substring(6);
+                    log.info("*" + xsltPath + "*");
+                    return new Path(xsltPath);
+                }
+            } else {
+                log.error("No XSLT Path within: " +rpRTI.getPath());
+            }
+        } catch(Exception e) {
+            log.warn(e);
+        }
+
         return null;
     }
 }
