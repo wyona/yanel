@@ -79,7 +79,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
             if (mimeType.equals("application/xml")) {
                 defaultView.setInputStream(getContentXML(rp));
                 return defaultView;
-	    } else if (mimeType.equals("application/xhtml+xml")) {
+	    } else if (mimeType.equals("application/xhtml+xml") || mimeType.equals("text/html")) {
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString()))));
                  // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
@@ -117,10 +117,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
             RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
 
-            // TODO: Remove hardcoded line reading ... (also check other classes for hardcoded line reading)
-            br.readLine();
-            mimeType = br.readLine();
-            if (mimeType != null) {
+            while ((mimeType = br.readLine()) != null) {
                 if (mimeType.indexOf("mime-type:") == 0) {
                     mimeType = mimeType.substring(11);
                     log.info("*" + mimeType + "*");
@@ -218,21 +215,15 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
             RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
 
-            // TODO: Remove hardcoded line reading ...
-            br.readLine();
-            br.readLine();
-            xsltPath = br.readLine();
-
-            log.error("DEBUG: XSLT Path: " + xsltPath);
-            if (xsltPath != null) {
+            while((xsltPath = br.readLine()) != null) {
                 if (xsltPath.indexOf("xslt:") == 0) {
                     xsltPath = xsltPath.substring(6);
                     log.info("*" + xsltPath + "*");
+                    log.error("DEBUG: XSLT Path: " + xsltPath);
                     return new Path(xsltPath);
                 }
-            } else {
-                log.error("No XSLT Path within: " +rpRTI.getPath());
             }
+            log.error("No XSLT Path within: " +rpRTI.getPath());
         } catch(Exception e) {
             log.warn(e);
         }
