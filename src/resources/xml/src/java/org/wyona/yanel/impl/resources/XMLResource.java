@@ -81,7 +81,9 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
                 return defaultView;
 	    } else if (mimeType.equals("application/xhtml+xml") || mimeType.equals("text/html")) {
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString()))));
-                 // TODO: Is this the best way to generate an InputStream from an OutputStream?
+                transformer.setParameter("yanel.path.name", path.getName());
+                transformer.setParameter("yanel.path", path.toString());
+                // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
                 transformer.transform(new StreamSource(getContentXML(rp)), new StreamResult(baos));
                 defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
