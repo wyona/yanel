@@ -3,6 +3,8 @@
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
+  xmlns:dir="http://apache.org/cocoon/directory/2.0"
+  xmlns:yanel="http://www.wyona.org/yanel/resource/directory/1.0"
 >
 
 <xsl:output method="xhtml"/>
@@ -20,7 +22,17 @@
 
 <body>
 Hello World!
+Path: <xsl:value-of select="/dir:directory/@yanel:path"/>
+<xsl:apply-templates/>
 </body>
 </html>
+</xsl:template>
+
+<xsl:template match="dir:directory">
+Collection: <xsl:value-of select="@path"/><br/>
+</xsl:template>
+
+<xsl:template match="dir:file">
+Resource: <xsl:value-of select="@path"/><br/>
 </xsl:template>
 </xsl:stylesheet>
