@@ -29,6 +29,13 @@ import org.wyona.yarep.core.RepositoryFactory;
 
 import org.apache.log4j.Category;
 
+import java.io.File;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
+
 /**
  *
  */
@@ -54,10 +61,9 @@ public class DirectoryResource extends Resource implements ViewableV1 {
      */
     public View getView(Path path, String viewId) {
         View defaultView = new View();
-        defaultView.setMimeType("application/xml");
 	StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
 
-	//sb.append("<?xml-stylesheet type=\"text/xsl\" href=\"yanel/resources/directory/dir2xhtml.xsl\"?>");
+	//sb.append("<?xml-stylesheet type=\"text/xsl\" href=\"yanel/resources/directory/xslt/dir2xhtml.xsl\"?>");
 
 
         try {
@@ -83,7 +89,27 @@ public class DirectoryResource extends Resource implements ViewableV1 {
             log.error(e);
         }
 	sb.append("</dir:directory>");
-	defaultView.setInputStream(new java.io.StringBufferInputStream(sb.toString()));
+
+        if (viewId != null && viewId.equals("source")) {
+            defaultView.setMimeType("application/xml");
+	    defaultView.setInputStream(new java.io.StringBufferInputStream(sb.toString()));
+            return defaultView;
+        }
+
+        File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "dir2xhtml.xsl");
+        log.debug("XSLT file: " + xsltFile);
+        try {
+        Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
+        // TODO: Is this the best way to generate an InputStream from an OutputStream?
+        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+        transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
+        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+        defaultView.setMimeType("application/xhtml+xml");
+	defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+        } catch (Exception e) {
+            log.error(e);
+        }
+
         return defaultView;
     }
 
