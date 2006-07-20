@@ -27,6 +27,7 @@ import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
+import org.wyona.yanel.core.map.Realm;
 
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
@@ -58,7 +59,21 @@ public class YanelCommandLine {
         MapFactory mf = MapFactory.newInstance();
         Map map = mf.newMap();
 
-        System.out.println("Please enter a path (e.g. /hello/world.html):");
+        ResourceTypeRegistry rtr = new ResourceTypeRegistry();
+
+        System.out.println("The following realms have been configured:");
+        Realm[] realms = map.getRealms();
+        for (int i = 0; i < realms.length; i++) {
+            System.out.println("Realm: " + realms[i]);
+        }
+
+        System.out.println("\nThe following resource types have been configured:");
+        ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
+        for (int i = 0; i < rtds.length; i++) {
+            System.out.println("Resource Type: " + rtds[i]);
+        }
+
+        System.out.println("\nPlease enter a path (e.g. /hello/world.html):");
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         Path path = null;
         try {
@@ -92,7 +107,6 @@ public class YanelCommandLine {
             return;
         }
 
-        ResourceTypeRegistry rtr = new ResourceTypeRegistry();
         ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
         System.out.println("Local name: " + rtd.getResourceTypeLocalName());
         System.out.println("Namespace: " + rtd.getResourceTypeNamespace());

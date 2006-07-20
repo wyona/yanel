@@ -18,10 +18,14 @@ package org.wyona.yanel.util;
 
 import org.wyona.yanel.core.Resource;
 
+import org.apache.log4j.Category;
+
 /**
  *
  */
 public class ResourceAttributeHelper {
+
+    private static Category log = Category.getInstance(ResourceAttributeHelper.class);
 
     /**
      *
@@ -36,7 +40,7 @@ public class ResourceAttributeHelper {
             //if (interfaces[i].isInstance(iface)) implemented = true;
         }
         if (implemented) {
-            System.out.println(res.getClass().getName() + " does implement " + attribute + " interface!");
+            log.info(res.getClass().getName() + " does implement " + attribute + " interface!");
         } else {
             System.out.println(res.getClass().getName() + " does NOT implement " + attribute + " interface!");
         }

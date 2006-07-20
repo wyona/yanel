@@ -166,6 +166,26 @@
       includes="org/wyona/yanel/impl/**"/>
   </target>
 
+  <!-- Generic compile target for a specific resource -->
+  <target name="compile-resource" description="Compile Java classes of a specified resource" depends="init, compile-core">
+    <property name="resource.home.dir" value="${yanel.home.dir}/src/resources/NULL"/>
+    <property name="resource.name" value="NULL"/>
+
+    <property name="resource.classes.dir" value="${resource.home.dir}/build/classes"/>
+    <property name="resource.lib.dir" value="${resource.home.dir}/build/lib"/>
+    <property name="resource.java.dir" value="${resource.home.dir}/src/java"/>
+
+    <mkdir dir="${resource.classes.dir}"/>
+    <javac srcdir="${resource.java.dir}" destdir="${resource.classes.dir}"
+      classpathref="classpath.yanel"
+      debug="true"
+    />
+    <mkdir dir="${resource.lib.dir}"/>
+    <jar destfile="${resource.lib.dir}/yanel-resource-${resource.name}-0.0.1-dev-r${yanel.revision}.jar"
+      basedir="${resource.classes.dir}"
+    />
+  </target>
+
   <target name="compile-tape-resource" description="Compile Java classes of Tape resource" depends="init">
     <property name="tape-resource.classes.dir" value="${yanel.home.dir}/src/resources/tape/build/classes"/>
     <mkdir dir="${tape-resource.classes.dir}"/>
@@ -202,18 +222,14 @@
       basedir="${websearch-resource.classes.dir}"
     />
   </target>
+
   <target name="compile-file-resource" description="Compile Java classes of File resource" depends="init">
-    <property name="file-resource.classes.dir" value="${yanel.home.dir}/src/resources/file/build/classes"/>
-    <mkdir dir="${file-resource.classes.dir}"/>
-    <javac srcdir="${yanel.home.dir}/src/resources/file/src/java" destdir="${file-resource.classes.dir}"
-      classpathref="classpath.yanel"
-      debug="true"
-    />
-    <mkdir dir="${yanel.home.dir}/src/resources/file/build/lib"/>
-    <jar destfile="${yanel.home.dir}/src/resources/file/build/lib/yanel-resource-file-0.0.1-dev-r${yanel.revision}.jar"
-      basedir="${file-resource.classes.dir}"
-    />
+    <antcall target="compile-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/file"/>
+      <param name="resource.name" value="file"/>
+    </antcall>
   </target>
+
   <target name="compile-directory-resource" description="Compile Java classes of Directory resource" depends="init">
     <property name="directory-resource.classes.dir" value="${yanel.home.dir}/src/resources/directory/build/classes"/>
     <mkdir dir="${directory-resource.classes.dir}"/>

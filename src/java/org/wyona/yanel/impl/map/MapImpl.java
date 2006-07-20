@@ -18,10 +18,13 @@ package org.wyona.yanel.impl.map;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.map.Map;
+import org.wyona.yanel.core.map.Realm;
 
 import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
+import org.wyona.yarep.util.RepoPath;
+import org.wyona.yarep.util.YarepUtil;
 
 import org.apache.log4j.Category;
 
@@ -60,7 +63,7 @@ public class MapImpl implements Map {
     public String getResourceTypeIdentifier(Path path) {
         log.debug("Original path: " + path);
         try {
-            org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),repoFactory);
+            RepoPath rp = new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),repoFactory);
             Repository repo = rp.getRepo();
             log.debug("Repo Name: " + repo.getName());
             log.debug("New path: " + rp.getPath());
@@ -75,6 +78,37 @@ public class MapImpl implements Map {
             log.error(e.getMessage(), e);
             log.warn("No resource type identifier for path: " + path);
             return null;
+        }
+    }
+
+    /**
+     *
+     */
+    public Realm[] getRealms() {
+        String[] repoIds = repoFactory.getRepositoryIDs();
+        Repository root = repoFactory.firstRepository();
+        Realm[] realms = new Realm[repoIds.length];
+        for (int i = 0;i < realms.length; i++) {
+            if (repoIds[i].equals(root.getID())) {
+                // ROOT realm
+                realms[i] = new Realm(repoFactory.newRepository(repoIds[i]).getName(), new Path("/"));
+            } else {
+                realms[i] = new Realm(repoFactory.newRepository(repoIds[i]).getName(), new Path("/" + repoIds[i] + "/"));
+            }
+        }
+        return realms;
+    }
+
+    /**
+     *
+     */
+    public Realm getRealm(Path path) {
+        RepoPath rp = new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), repoFactory);
+        Repository root = repoFactory.firstRepository();
+        if (rp.getRepo().getID().equals(root.getID())) {
+            return new Realm(rp.getRepo().getName(), new Path("/"));
+        } else {
+            return new Realm(rp.getRepo().getName(), new Path("/" + rp.getRepo().getID() + "/"));
         }
     }
 }

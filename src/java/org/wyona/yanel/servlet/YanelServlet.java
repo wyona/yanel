@@ -42,6 +42,7 @@ public class YanelServlet extends HttpServlet {
     ResourceTypeRegistry rtr;
 
     PolicyManager pm;
+    Map map;
 
     private static String IDENTITY_KEY = "identity";
 
@@ -54,6 +55,9 @@ public class YanelServlet extends HttpServlet {
 
         PolicyManagerFactory pmf = PolicyManagerFactory.newInstance();
         pm = pmf.newPolicyManager();
+
+        MapFactory mf = MapFactory.newInstance();
+        map = mf.newMap();
     }
 
     /**
@@ -96,6 +100,9 @@ public class YanelServlet extends HttpServlet {
                 response.setContentType("application/xml");
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
             } else {
+                // Custom HTML Form authentication
+
+                // TODO: Use configurable XSLT for layout, whereas each realm should be able to overwrite ...
                 sb.append("<?xml version=\"1.0\"?>");
                 sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
                 sb.append("<body>");
@@ -104,6 +111,8 @@ public class YanelServlet extends HttpServlet {
                 } else {
                     sb.append("<p>Authorization denied: " + request.getRequestURL() + "</p>");
                 }
+                org.wyona.yanel.core.map.Realm realm = map.getRealm(new Path(request.getServletPath()));
+                sb.append("<p>Enter username and password for realm \"" +  realm.getName()  + "\" at \"" + realm.getMountPoint() + "\"</p>");
                 sb.append("<form method=\"POST\">");
                 sb.append("<p>");
                 sb.append("<table>");
@@ -153,8 +162,6 @@ public class YanelServlet extends HttpServlet {
         }
         sb.append("</session>");
 
-        MapFactory mf = MapFactory.newInstance();
-        Map map = mf.newMap();
         String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
         if (rti != null) {
             ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
@@ -178,7 +185,6 @@ public class YanelServlet extends HttpServlet {
             sb.append("<no-resource-type-identifier-found servlet-path=\""+request.getServletPath()+"\"/>");
         }
 
-        sb.append("</yanel>");
 
         String value = request.getParameter("yanel.resource.usecase");
 
@@ -195,25 +201,36 @@ public class YanelServlet extends HttpServlet {
 
             byte buffer[] = new byte[8192];
             int bytesRead;
-            bytesRead = is.read(buffer);
-	    if (bytesRead == -1) {
-                response.setContentType("text/plain");
-                PrintWriter writer = response.getWriter();
-                writer.print("No content!");
-                return;
-            }
-            java.io.OutputStream os = response.getOutputStream();
-            os.write(buffer, 0, bytesRead);
-            while ((bytesRead = is.read(buffer)) != -1) {
+           
+            if (is != null) {
+                // TODO: Yarep does not set returned Stream to null resp. is missing Exception Handling for the constructor. Exceptions should be handled here, but rather within Yarep or whatever repositary layer is being used ...
+                bytesRead = is.read(buffer);
+	        if (bytesRead == -1) {
+                    sb.append("<exception>InputStream of view does not seem to contain any data!</exception>");
+                    sb.append("</yanel>");
+                    response.setContentType("application/xml");
+                    PrintWriter writer = response.getWriter();
+                    writer.print(sb);
+                    return;
+                }
+                java.io.OutputStream os = response.getOutputStream();
                 os.write(buffer, 0, bytesRead);
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+                return;
+            } else {
+                sb.append("<exception>InputStream of view is null!</exception>");
             }
-            return;
         } else {
-            response.setContentType("application/xml");
-            PrintWriter writer = response.getWriter();
-            writer.print(sb);
-            return;
+            sb.append("<exception>View is null!</exception>");
         }
+
+        sb.append("</yanel>");
+        response.setContentType("application/xml");
+        PrintWriter writer = response.getWriter();
+        writer.print(sb);
+        return;
     }
 
     /**
@@ -253,16 +270,6 @@ public class YanelServlet extends HttpServlet {
             log.warn("No parameter yanel.resource.usecase!");
 
             getContent(request, response);
-/*
-            PrintWriter writer = response.getWriter();
-            response.setContentType("application/xhtml+xml");
-
-            writer.println("<html>");
-            writer.println("<body>");
-            writer.println("No parameter yanel.resource.usecase!");
-            writer.println("</body>");
-            writer.println("</html>");
-*/
         }
     }
 
@@ -297,19 +304,6 @@ public class YanelServlet extends HttpServlet {
             log.warn("No parameter yanel.resource.usecase!");
 
             getContent(request, response);
-
-/*
-            StringBuffer sb = new StringBuffer("");
-            sb.append("<?xml version=\"1.0\"?>");
-            sb.append("<html>");
-            sb.append("<body>");
-            sb.append("<p>No parameter yanel.resource.usecase!</p>");
-            sb.append("</body>");
-            sb.append("</html>");
-            response.setContentType("application/xhtml+xml");
-            PrintWriter writer = response.getWriter();
-            writer.print(sb);
-*/
         }
     }
 
@@ -317,8 +311,6 @@ public class YanelServlet extends HttpServlet {
      *
      */
     private Resource getResource(HttpServletRequest request) {
-        MapFactory mf = MapFactory.newInstance();
-        Map map = mf.newMap();
         String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
         if (rti != null) {
             ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
@@ -356,7 +348,10 @@ public class YanelServlet extends HttpServlet {
             // http://www-128.ibm.com/developerworks/java/library/j-io1/
             byte[] memBuffer = baos.toByteArray();
 
-                // TODO: Check on well-formedness ...
+            // TODO: This should NOT be checked necessarily ...
+            // Check on well-formedness ...
+            if (false) {
+                // TODO: Does not work when offline, because tries to resolve www.w3.org ...
                 javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
                 try {
                     javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
@@ -375,11 +370,13 @@ public class YanelServlet extends HttpServlet {
                     w.print(sb);
                     return;
                 } catch (Exception e) {
-                    log.error(e.getMessage());
+                    log.error(e.getMessage(), e);
 
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"neutron\">");
-                    sb.append("<message>"+e.getMessage()+"</message>");
+                    //sb.append("<message>" + e.getStackTrace() + "</message>");
+                    //sb.append("<message>" + e.getMessage() + "</message>");
+                    sb.append("<message>" + e + "</message>");
                     sb.append("</exception>");
                     response.setContentType("application/xml");
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -388,15 +385,18 @@ public class YanelServlet extends HttpServlet {
                     return;
                 }
 
-             log.error("INFO: Data seems to be well-formed :-)");
+            log.error("INFO: Data seems to be well-formed :-)");
+            }
+
+
 
 /*
-	     if (bytesRead == -1) {
-                 response.setContentType("text/plain");
-                 PrintWriter writer = response.getWriter();
-                 writer.print("No content!");
-                 return;
-             }
+	    if (bytesRead == -1) {
+                response.setContentType("text/plain");
+                PrintWriter writer = response.getWriter();
+                writer.print("No content!");
+                return;
+            }
 */
 
 /*

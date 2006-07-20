@@ -16,30 +16,42 @@
 
 package org.wyona.yanel.core.map;
 
-import org.wyona.yanel.core.Path;
+import org.wyona.commons.io.Path;
 
 /**
  *
  */
-public interface Map {
+public class Realm {
+
+    private String name;
+    private Path mountPoint;
 
     /**
      *
      */
-    public String getUUID();
+    public Realm(String name, Path mountPoint) {
+        this.name = name;
+        this.mountPoint = mountPoint;
+    }
 
     /**
      *
      */
-    public String getResourceTypeIdentifier(Path path);
+    public String getName() {
+        return name;
+    }
 
     /**
      *
      */
-    public Realm[] getRealms();
+    public Path getMountPoint() {
+        return mountPoint;
+    }
 
     /**
      *
      */
-    public Realm getRealm(Path path);
+    public String toString() {
+        return "Name: " + name + ", Mount-Point: " + mountPoint;
+    }
 }

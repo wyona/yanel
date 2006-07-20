@@ -83,6 +83,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString()))));
                 transformer.setParameter("yanel.path.name", path.getName());
                 transformer.setParameter("yanel.path", path.toString());
+                transformer.setParameter("yarep.back2root", backToRoot(path, ""));
                 // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
                 transformer.transform(new StreamSource(getContentXML(rp)), new StreamResult(baos));
@@ -231,5 +232,16 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
         }
 
         return null;
+    }
+
+    /**
+     *
+     */
+    private String backToRoot(Path path, String backToRoot) {
+        org.wyona.commons.io.Path parent = path.getParent();
+        if (parent != null) {
+            return backToRoot(new Path(parent.toString()), backToRoot + "../");
+        }
+        return backToRoot;
     }
 }

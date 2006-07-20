@@ -96,6 +96,14 @@ public class ResourceTypeRegistry {
     /**
      *
      */
+    public ResourceTypeDefinition[] getResourceTypeDefinitions() {
+        // TODO: iterate through hash-map ...
+        return new ResourceTypeDefinition[0];
+    }
+
+    /**
+     *
+     */
     public Resource newResource(String universalName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 	ResourceTypeDefinition rtd = (ResourceTypeDefinition) hm.get(universalName);
         if (rtd != null) {

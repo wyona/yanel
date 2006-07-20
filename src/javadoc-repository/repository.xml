@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <repository>
-  <name>Yanel Javadoc Repository</name>
+  <name>Yanel Javadoc Repository Content</name>
 
   <paths src="../../build/javadoc"/>
 
