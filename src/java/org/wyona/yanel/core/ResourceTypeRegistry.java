@@ -97,8 +97,16 @@ public class ResourceTypeRegistry {
      *
      */
     public ResourceTypeDefinition[] getResourceTypeDefinitions() {
-        // TODO: iterate through hash-map ...
-        return new ResourceTypeDefinition[0];
+        java.util.Set keys = hm.keySet();
+        java.util.Iterator keysIterator = keys.iterator();
+        ResourceTypeDefinition[] rtds = new ResourceTypeDefinition[keys.size()];
+        int i = 0;
+        while (keysIterator.hasNext()) {
+            String universalName = (String) keysIterator.next();
+            rtds[i] = getResourceTypeDefinition(universalName);
+            i++;
+        }
+        return rtds;
     }
 
     /**

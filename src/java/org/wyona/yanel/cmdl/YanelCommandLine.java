@@ -70,7 +70,7 @@ public class YanelCommandLine {
         System.out.println("\nThe following resource types have been configured:");
         ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
         for (int i = 0; i < rtds.length; i++) {
-            System.out.println("Resource Type: " + rtds[i]);
+            System.out.println("Resource Type: " + rtds[i].getResourceTypeUniversalName());
         }
 
         System.out.println("\nPlease enter a path (e.g. /hello/world.html):");
