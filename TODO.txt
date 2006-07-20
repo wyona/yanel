@@ -1,11 +1,14 @@
 
 - grep -rl TODO *
+- Checking of well-formedness during saving does not work if being offline
+-- This seems to be because of the DOCTYPE specified within the XML documents ... (try to resolve local)
 - Make authorization and authentication implementation configurable per realm
 - Implement Admin interface with listing of repositories/realms and mountpoints
 - Implement Locking
 - YanelServlet: if realm has no authorization specified then the ROOT one is being taken instead that access is being denied: Makes this configurable
 - YanelServlet: Declare Realm for authorization on authentication screen
 - YanelServlet: Unify authentication scheme
+- YanelServlet: Improve exception handling (also handle <yanel ... as an XML object)
 - Implement authentication
 - ResourceTypeRegistry class loading needs to be improved (see Yarep how it should be done ...)
 - Change rti map to XML with the possibility of resource specific path config
