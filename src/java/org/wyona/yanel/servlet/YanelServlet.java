@@ -86,9 +86,9 @@ public class YanelServlet extends HttpServlet {
                 log.error("DEBUG: Authentication Scheme supported by client: " + clientSupportedAuthScheme);
                 sb.append("<?xml version=\"1.0\"?>");
                 sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
-                sb.append("<message>Authorization denied: " + getRequestURLQS(request, null) + "</message>");
+                sb.append("<message>Authorization denied: " + getRequestURLQS(request, null, true) + "</message>");
                 sb.append("<authentication>");
-                sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth") + "\" method=\"POST\">");
+                sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
                 sb.append("<form>");
                 sb.append("<param description=\"Username\" name=\"username\"/>");
                 sb.append("<param description=\"Password\" name=\"password\"/>");
@@ -106,7 +106,7 @@ public class YanelServlet extends HttpServlet {
                 sb.append("<?xml version=\"1.0\"?>");
                 sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
                 sb.append("<body>");
-                sb.append("<p>Authorization denied: " + getRequestURLQS(request, null) + "</p>");
+                sb.append("<p>Authorization denied: " + getRequestURLQS(request, null, true) + "</p>");
                 org.wyona.yanel.core.map.Realm realm = map.getRealm(new Path(request.getServletPath()));
                 sb.append("<p>Enter username and password for realm \"" +  realm.getName()  + "\" at \"" + realm.getMountPoint() + "\" (Context Path: " + request.getContextPath() + ")</p>");
                 sb.append("<form method=\"POST\">");
@@ -511,12 +511,13 @@ public class YanelServlet extends HttpServlet {
     /**
      *
      */
-    private String getRequestURLQS(HttpServletRequest request, String addQS) {
+    private String getRequestURLQS(HttpServletRequest request, String addQS, boolean xml) {
         String urlQS = request.getRequestURL().toString();
 
         if (request.getQueryString() != null) {
             urlQS = urlQS + "?" + request.getQueryString();
-            if (addQS != null) urlQS = urlQS + "&" + addQS;
+            if (addQS != null && !xml) urlQS = urlQS + "&" + addQS;
+            if (addQS != null && xml) urlQS = urlQS + "&amp;" + addQS;
         } else {
             if (addQS != null) urlQS = urlQS + "?" + addQS;
         }
