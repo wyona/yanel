@@ -88,7 +88,7 @@ public class YanelServlet extends HttpServlet {
                 sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
                 sb.append("<message>Authorization denied: " + getRequestURLQS(request, null) + "</message>");
                 sb.append("<authentication>");
-                sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=login") + "\" method=\"POST\">");
+                sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth") + "\" method=\"POST\">");
                 sb.append("<form>");
                 sb.append("<param description=\"Username\" name=\"username\"/>");
                 sb.append("<param description=\"Password\" name=\"password\"/>");
@@ -233,12 +233,21 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // HTML Form based authentication
         String loginUsername = request.getParameter("yanel.login.username");
         if(loginUsername != null) {
             log.error("DEBUG: Trying to login with " + loginUsername);
             HttpSession session = request.getSession(true);
             // TODO: Implement Authentication
             session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
+        }
+
+        String yanelUsecase = request.getParameter("yanel.usecase");
+        if(yanelUsecase != null && yanelUsecase.equals("neutron-auth")) {
+            log.error("DEBUG: Neutron Authentication ...");
+            HttpSession session = request.getSession(true);
+            // TODO: Implement Authentication
+            session.setAttribute(IDENTITY_KEY, new Identity("ezra", null));
         }
 
         if(!authorize(request, response)) {
