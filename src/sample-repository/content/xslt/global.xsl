@@ -13,7 +13,8 @@
 
 <xsl:param name="yanel.path.name" select="'NAME_IS_NULL'"/>
 <xsl:param name="yanel.path" select="'PATH_IS_NULL'"/>
-<xsl:param name="yarep.back2root" select="'BACK2ROOT_IS_NULL'"/>
+<xsl:param name="yanel.back2context" select="'BACK2CONTEXT_IS_NULL'"/>
+<xsl:param name="yarep.back2realm" select="'BACK2REALM_IS_NULL'"/>
 
 <xsl:variable name="name-without-suffix" select="substring-before($yanel.path.name, '.')"/>
 
@@ -28,7 +29,7 @@ WARNING: This file has been generated automatically. All changes will be lost.
 
 <head>
   <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-{$name-without-suffix}.xml"/>
-<xsl:comment>Name: <xsl:value-of select="$yanel.path.name"/> (without suffix: <xsl:value-of select="$name-without-suffix"/>), Path: <xsl:value-of select="$yanel.path"/>, Back 2 Root: <xsl:value-of select="$yarep.back2root"/></xsl:comment>
+<xsl:comment>Name: <xsl:value-of select="$yanel.path.name"/> (without suffix: <xsl:value-of select="$name-without-suffix"/>), Path: <xsl:value-of select="$yanel.path"/>, Back 2 Realm: <xsl:value-of select="$yarep.back2realm"/>, Back 2 Context: <xsl:value-of select="$yanel.back2context"/></xsl:comment>
 
   <title><xsl:value-of select="/xhtml:html/xhtml:head/xhtml:title"/> - Yanel</title>
 </head>
@@ -40,14 +41,14 @@ WARNING: This file has been generated automatically. All changes will be lost.
 <tr>
 <td valign="top">
 <b>All You Need</b><br/>
-&#160;<a href="about.html">About</a><br/>
-&#160;<a href="download.html">Download</a><br/>
+&#160;<a href="{$yarep.back2realm}about.html">About</a><br/>
+&#160;<a href="{$yarep.back2realm}download.html">Download</a><br/>
 &#160;Features<br/>
 &#160;News<br/>
-&#160;<a href="documentation/index.html">Documentation</a><br/>
+&#160;<a href="{$yarep.back2realm}documentation/index.html">Documentation</a><br/>
 <br/>
 <b>Community/Developers</b><br/>
-&#160;<a href="download/source-repository.html">Get the Source</a><br/>
+&#160;<a href="{$yarep.back2realm}download/source-repository.html">Get the Source</a><br/>
 &#160;Mailing Lists<br/>
 &#160;Task/Bug Tracker<br/>
 &#160;Testing/Continuous Integration<br/>
