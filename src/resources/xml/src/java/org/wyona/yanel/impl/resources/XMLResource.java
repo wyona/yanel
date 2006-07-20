@@ -239,9 +239,17 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
      */
     private String backToRoot(Path path, String backToRoot) {
         org.wyona.commons.io.Path parent = path.getParent();
-        if (parent != null) {
+        if (parent != null && !isRoot(parent)) {
             return backToRoot(new Path(parent.toString()), backToRoot + "../");
         }
         return backToRoot;
+    }
+
+    /**
+     *
+     */
+    private boolean isRoot(org.wyona.commons.io.Path path) {
+        if (path.toString().equals("/")) return true;
+        return false;
     }
 }
