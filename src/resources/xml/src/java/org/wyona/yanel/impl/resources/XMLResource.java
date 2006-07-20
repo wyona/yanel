@@ -83,7 +83,8 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString()))));
                 transformer.setParameter("yanel.path.name", path.getName());
                 transformer.setParameter("yanel.path", path.toString());
-                transformer.setParameter("yarep.back2root", backToRoot(path, ""));
+                transformer.setParameter("yanel.back2context", backToRoot(path, ""));
+                transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
                 // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
                 transformer.transform(new StreamSource(getContentXML(rp)), new StreamResult(baos));
@@ -221,8 +222,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
             while((xsltPath = br.readLine()) != null) {
                 if (xsltPath.indexOf("xslt:") == 0) {
                     xsltPath = xsltPath.substring(6);
-                    log.info("*" + xsltPath + "*");
-                    log.error("DEBUG: XSLT Path: " + xsltPath);
+                    log.debug("XSLT Path: " + xsltPath);
                     return new Path(xsltPath);
                 }
             }
