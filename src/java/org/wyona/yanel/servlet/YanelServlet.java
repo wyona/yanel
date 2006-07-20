@@ -248,6 +248,12 @@ public class YanelServlet extends HttpServlet {
             HttpSession session = request.getSession(true);
             // TODO: Implement Authentication
             session.setAttribute(IDENTITY_KEY, new Identity("ezra", null));
+            // TODO: send some XML content, e.g. <authentication-successful/>
+            response.setContentType("text/plain");
+            PrintWriter writer = response.getWriter();
+            writer.print("Neutron Authentication Successful!");
+	    response.setStatus(response.SC_OK);
+            return;
         }
 
         if(!authorize(request, response)) {
