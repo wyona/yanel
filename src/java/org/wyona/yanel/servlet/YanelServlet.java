@@ -86,15 +86,15 @@ public class YanelServlet extends HttpServlet {
                 log.error("DEBUG: Authentication Scheme supported by client: " + clientSupportedAuthScheme);
                 sb.append("<?xml version=\"1.0\"?>");
                 sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
-                sb.append("<message>Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString() + "</message>");
+                sb.append("<message>Authorization denied: " + getRequestURLQS(request, null) + "</message>");
                 sb.append("<authentication>");
-                sb.append("<login url=\"http://...?action=logout\">");
+                sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=login") + "\" method=\"POST\">");
                 sb.append("<form>");
                 sb.append("<param description=\"Username\" name=\"username\"/>");
                 sb.append("<param description=\"Password\" name=\"password\"/>");
                 sb.append("</form>");
                 sb.append("</login>");
-                sb.append("<logout url=\"http://...?action=login\"/>");
+                sb.append("<logout url=\"" + request.getContextPath() + "/?yanel.usecase=logout\"/>");
                 sb.append("</authentication>");
                 sb.append("</exception>");
                 response.setContentType("application/xml");
@@ -106,13 +106,9 @@ public class YanelServlet extends HttpServlet {
                 sb.append("<?xml version=\"1.0\"?>");
                 sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
                 sb.append("<body>");
-                if (request.getQueryString() != null) {
-                    sb.append("<p>Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString() + "</p>");
-                } else {
-                    sb.append("<p>Authorization denied: " + request.getRequestURL() + "</p>");
-                }
+                sb.append("<p>Authorization denied: " + getRequestURLQS(request, null) + "</p>");
                 org.wyona.yanel.core.map.Realm realm = map.getRealm(new Path(request.getServletPath()));
-                sb.append("<p>Enter username and password for realm \"" +  realm.getName()  + "\" at \"" + realm.getMountPoint() + "\"</p>");
+                sb.append("<p>Enter username and password for realm \"" +  realm.getName()  + "\" at \"" + realm.getMountPoint() + "\" (Context Path: " + request.getContextPath() + ")</p>");
                 sb.append("<form method=\"POST\">");
                 sb.append("<p>");
                 sb.append("<table>");
@@ -495,5 +491,21 @@ public class YanelServlet extends HttpServlet {
         // Custom Authorization
         // ...
         return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, new Role("view"));
+    }
+
+    /**
+     *
+     */
+    private String getRequestURLQS(HttpServletRequest request, String addQS) {
+        String urlQS = request.getRequestURL().toString();
+
+        if (request.getQueryString() != null) {
+            urlQS = urlQS + "?" + request.getQueryString();
+            if (addQS != null) urlQS = urlQS + "&" + addQS;
+        } else {
+            if (addQS != null) urlQS = urlQS + "?" + addQS;
+        }
+
+        return urlQS;
     }
 }
