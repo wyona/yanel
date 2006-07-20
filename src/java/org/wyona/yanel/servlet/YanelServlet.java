@@ -516,12 +516,12 @@ public class YanelServlet extends HttpServlet {
 
         if (request.getQueryString() != null) {
             urlQS = urlQS + "?" + request.getQueryString();
-            if (addQS != null && !xml) urlQS = urlQS + "&" + addQS;
-            if (addQS != null && xml) urlQS = urlQS + "&amp;" + addQS;
+            if (addQS != null) urlQS = urlQS + "&" + addQS;
         } else {
             if (addQS != null) urlQS = urlQS + "?" + addQS;
         }
 
+        if (xml) return urlQS.replaceAll("&", "&amp;");
         return urlQS;
     }
 }
