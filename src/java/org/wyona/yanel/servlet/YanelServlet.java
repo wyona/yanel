@@ -49,6 +49,10 @@ public class YanelServlet extends HttpServlet {
 
     private static String IDENTITY_KEY = "identity";
 
+    String proxyServerName = null;
+    String proxyPort = null;
+    String proxyPrefix = null;
+
     /**
      *
      */
@@ -61,6 +65,12 @@ public class YanelServlet extends HttpServlet {
 
         MapFactory mf = MapFactory.newInstance();
         map = mf.newMap();
+
+/*
+        proxyServerName = "demo.phoenix.wyona.org";
+        proxyPort = "";
+        proxyPrefix = "";
+*/
     }
 
     /**
@@ -100,6 +110,7 @@ public class YanelServlet extends HttpServlet {
                 sb.append("<message>Authorization denied: " + getRequestURLQS(request, null, true) + "</message>");
                 sb.append("<authentication>");
                 sb.append("<original-request url=\"" + getRequestURLQS(request, null, true) + "\"/>");
+                //TODO: Also support https ...
                 sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
                 sb.append("<form>");
                 sb.append("<message>Enter username and password for REALM at URL</message>");
@@ -107,7 +118,7 @@ public class YanelServlet extends HttpServlet {
                 sb.append("<param description=\"Password\" name=\"password\"/>");
                 sb.append("</form>");
                 sb.append("</login>");
-                sb.append("<logout url=\"" + request.getContextPath() + "/?yanel.usecase=logout\"/>");
+                sb.append("<logout url=\"" + request.getContextPath() + "/?yanel.usecase=logout\" realm=\"REALM\"/>");
                 sb.append("</authentication>");
                 sb.append("</exception>");
                 response.setContentType("application/xml");
@@ -295,6 +306,7 @@ public class YanelServlet extends HttpServlet {
 	        response.setStatus(response.SC_OK);
                 return;
             } else {
+                // TODO: Resend login information ...
                 log.warn("Authentication failed ...");
                 response.setContentType("text/plain");
                 PrintWriter writer = response.getWriter();
@@ -561,6 +573,12 @@ public class YanelServlet extends HttpServlet {
      */
     private String getRequestURLQS(HttpServletRequest request, String addQS, boolean xml) {
         String urlQS = request.getRequestURL().toString();
+
+        if (proxyServerName != null) {
+            log.error("DEBUG: Replace " + request.getServerName() + " with proxy server name " + proxyServerName);
+            urlQS.replaceAll(request.getServerName(), proxyServerName);
+            log.error("DEBUG: Proxy enabled request: " + urlQS);
+        }
 
         if (request.getQueryString() != null) {
             urlQS = urlQS + "?" + request.getQueryString();
