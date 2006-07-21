@@ -64,6 +64,14 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String yanelUsecase = request.getParameter("yanel.usecase");
+
+        // Logout from Yanel
+        if(yanelUsecase != null && yanelUsecase.equals("logout")) {
+            log.error("DEBUG: Logout from Yanel ...");
+            HttpSession session = request.getSession(true);
+            session.setAttribute(IDENTITY_KEY, null);
+        }
 
         // TODO: Implement Authorization and Authentication: http://www.goldfish.org/books/O'Reilly%20Java%20Enterprise%20CD%20Bookshelf/servlet/ch08_01.htm
         if(!authorize(request, response)) {
@@ -90,6 +98,7 @@ public class YanelServlet extends HttpServlet {
                 sb.append("<authentication>");
                 sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
                 sb.append("<form>");
+                sb.append("<message>Enter username and password for REALM at URL</message>");
                 sb.append("<param description=\"Username\" name=\"username\"/>");
                 sb.append("<param description=\"Password\" name=\"password\"/>");
                 sb.append("</form>");
@@ -126,6 +135,7 @@ public class YanelServlet extends HttpServlet {
             w.print(sb);
             return;
         }
+
 
         getContent(request, response);
     }
