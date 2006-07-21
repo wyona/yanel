@@ -96,6 +96,7 @@ public class YanelServlet extends HttpServlet {
                 sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
                 sb.append("<message>Authorization denied: " + getRequestURLQS(request, null, true) + "</message>");
                 sb.append("<authentication>");
+                sb.append("<original-request url=\"" + getRequestURLQS(request, null, true) + "\"/>");
                 sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
                 sb.append("<form>");
                 sb.append("<message>Enter username and password for REALM at URL</message>");
