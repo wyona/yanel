@@ -287,7 +287,7 @@ public class YanelServlet extends HttpServlet {
             if (username != null) {
                 HttpSession session = request.getSession(true);
                 // TODO: Implement Authentication
-                session.setAttribute(IDENTITY_KEY, new Identity("ezra", null));
+                session.setAttribute(IDENTITY_KEY, new Identity(username, null));
                 // TODO: send some XML content, e.g. <authentication-successful/>
                 response.setContentType("text/plain");
                 PrintWriter writer = response.getWriter();
