@@ -30,6 +30,9 @@ import org.wyona.security.core.api.Role;
 
 import org.apache.log4j.Category;
 
+import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
+
 /**
  *
  */
@@ -244,6 +247,8 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String yanelUsecase = request.getParameter("yanel.usecase");
+
         // HTML Form based authentication
         String loginUsername = request.getParameter("yanel.login.username");
         if(loginUsername != null) {
@@ -253,18 +258,50 @@ public class YanelServlet extends HttpServlet {
             session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
         }
 
-        String yanelUsecase = request.getParameter("yanel.usecase");
+        // Neutron-Auth based authentication
         if(yanelUsecase != null && yanelUsecase.equals("neutron-auth")) {
-            log.error("DEBUG: Neutron Authentication ...");
-            HttpSession session = request.getSession(true);
-            // TODO: Implement Authentication
-            session.setAttribute(IDENTITY_KEY, new Identity("ezra", null));
-            // TODO: send some XML content, e.g. <authentication-successful/>
-            response.setContentType("text/plain");
-            PrintWriter writer = response.getWriter();
-            writer.print("Neutron Authentication Successful!");
-	    response.setStatus(response.SC_OK);
-            return;
+            log.debug("Neutron Authentication ...");
+
+            String username = null;
+            String password = null;
+	    DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+            try {
+                Configuration config = builder.build(request.getInputStream());
+                Configuration[] paramConfig = config.getChildren("param");
+                for (int i = 0; i < paramConfig.length; i++) {
+                    String paramName = paramConfig[i].getAttribute("name", null);
+                    if (paramName != null) {
+                        if (paramName.equals("username")) {
+                            username = paramConfig[i].getValue();
+                        } else if (paramName.equals("password")) {
+                            password = paramConfig[i].getValue();
+                        }
+                    }
+                }
+            } catch(Exception e) {
+                log.error(e);
+            }
+
+            log.debug("Username: " + username);
+
+            if (username != null) {
+                HttpSession session = request.getSession(true);
+                // TODO: Implement Authentication
+                session.setAttribute(IDENTITY_KEY, new Identity("ezra", null));
+                // TODO: send some XML content, e.g. <authentication-successful/>
+                response.setContentType("text/plain");
+                PrintWriter writer = response.getWriter();
+                writer.print("Neutron Authentication Successful!");
+	        response.setStatus(response.SC_OK);
+                return;
+            } else {
+                log.warn("Authentication failed ...");
+                response.setContentType("text/plain");
+                PrintWriter writer = response.getWriter();
+                writer.print("Authentication Failed!");
+	        response.sendError(response.SC_UNAUTHORIZED);
+                return;
+            }
         }
 
         if(!authorize(request, response)) {
