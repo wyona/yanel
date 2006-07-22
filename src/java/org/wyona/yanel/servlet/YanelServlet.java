@@ -2,6 +2,7 @@ package org.wyona.yanel.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.Enumeration;
 
 import javax.servlet.ServletConfig;
@@ -66,11 +67,9 @@ public class YanelServlet extends HttpServlet {
         MapFactory mf = MapFactory.newInstance();
         map = mf.newMap();
 
-/*
         proxyServerName = "demo.phoenix.wyona.org";
         proxyPort = "";
         proxyPrefix = "";
-*/
     }
 
     /**
@@ -572,14 +571,22 @@ public class YanelServlet extends HttpServlet {
      *
      */
     private String getRequestURLQS(HttpServletRequest request, String addQS, boolean xml) {
-        String urlQS = request.getRequestURL().toString();
 
-        if (proxyServerName != null) {
-            log.error("DEBUG: Replace " + request.getServerName() + " with proxy server name " + proxyServerName);
-            urlQS.replaceAll(request.getServerName(), proxyServerName);
-            log.error("DEBUG: Proxy enabled request: " + urlQS);
+        URL url = null;
+	
+        try {
+	    url = new URL(request.getRequestURL().toString());
+            if (proxyServerName != null) {
+                log.error("DEBUG: Replace " + request.getServerName() + " with proxy server name " + proxyServerName);
+                url = new URL(url.getProtocol(), proxyServerName, url.getPort(), url.getFile());
+                //urlQS.replaceAll(request.getServerName(), proxyServerName);
+                log.error("DEBUG: Proxy enabled request: " + url);
+            }
+        } catch (Exception e) {
+            log.error(e);
         }
 
+        String urlQS = request.getRequestURL().toString();
         if (request.getQueryString() != null) {
             urlQS = urlQS + "?" + request.getQueryString();
             if (addQS != null) urlQS = urlQS + "&" + addQS;
