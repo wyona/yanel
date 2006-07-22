@@ -1,5 +1,6 @@
 
 - grep -rl TODO *
+- Downgrading/Upgrading, automatic updates, history, Maven dependency ...
 - Checking of well-formedness during saving does not work if being offline
 -- This seems to be because of the DOCTYPE specified within the XML documents ... (try to resolve local)
 - Make authorization and authentication implementation configurable per realm
