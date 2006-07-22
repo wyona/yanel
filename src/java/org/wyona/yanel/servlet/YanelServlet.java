@@ -83,6 +83,15 @@ public class YanelServlet extends HttpServlet {
             log.error("DEBUG: Logout from Yanel ...");
             HttpSession session = request.getSession(true);
             session.setAttribute(IDENTITY_KEY, null);
+            String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
+            if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
+                // TODO: send some XML content, e.g. <logout-successful/>
+                response.setContentType("text/plain");
+                PrintWriter writer = response.getWriter();
+                writer.print("Neutron Logout Successful!");
+	        response.setStatus(response.SC_OK);
+                return;
+            }
         }
 
         // TODO: Implement Authorization and Authentication: http://www.goldfish.org/books/O'Reilly%20Java%20Enterprise%20CD%20Bookshelf/servlet/ch08_01.htm
@@ -102,7 +111,7 @@ public class YanelServlet extends HttpServlet {
             // http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
             String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
             org.wyona.yanel.core.map.Realm realm = map.getRealm(new Path(request.getServletPath()));
-            if (clientSupportedAuthScheme != null) {
+            if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
                 log.error("DEBUG: Neutron Versions supported by client: " + neutronVersions);
                 log.error("DEBUG: Authentication Scheme supported by client: " + clientSupportedAuthScheme);
                 sb.append("<?xml version=\"1.0\"?>");
