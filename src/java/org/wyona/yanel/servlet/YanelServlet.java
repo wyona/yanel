@@ -67,9 +67,13 @@ public class YanelServlet extends HttpServlet {
         MapFactory mf = MapFactory.newInstance();
         map = mf.newMap();
 
-        proxyServerName = "demo.phoenix.wyona.org";
-        proxyPort = "";
-        proxyPrefix = "";
+        //proxyServerName = "demo.phoenix.wyona.org";
+
+        //proxyPort = "";
+        //proxyPort = "3333";
+
+        //proxyPrefix = "";
+        //proxyPrefix = "/yanel";
     }
 
     /**
@@ -576,17 +580,32 @@ public class YanelServlet extends HttpServlet {
 	
         try {
 	    url = new URL(request.getRequestURL().toString());
+
             if (proxyServerName != null) {
-                log.error("DEBUG: Replace " + request.getServerName() + " with proxy server name " + proxyServerName);
                 url = new URL(url.getProtocol(), proxyServerName, url.getPort(), url.getFile());
-                //urlQS.replaceAll(request.getServerName(), proxyServerName);
-                log.error("DEBUG: Proxy enabled request: " + url);
+            }
+
+            if (proxyPort != null) {
+                if (proxyPort.length() > 0) {
+                    url = new URL(url.getProtocol(), url.getHost(), new Integer(proxyPort).intValue(), url.getFile());
+                } else {
+                    url = new URL(url.getProtocol(), url.getHost(), url.getDefaultPort(), url.getFile());
+                }
+            }
+
+            if (proxyPrefix != null) {
+                url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile().substring(proxyPrefix.length()));
+            }
+
+            if(proxyServerName != null || proxyPort != null || proxyPrefix != null) {
+                log.debug("Proxy enabled request: " + url);
             }
         } catch (Exception e) {
             log.error(e);
         }
 
-        String urlQS = request.getRequestURL().toString();
+        String urlQS = url.toString();
+        //String urlQS = request.getRequestURL().toString();
         if (request.getQueryString() != null) {
             urlQS = urlQS + "?" + request.getQueryString();
             if (addQS != null) urlQS = urlQS + "&" + addQS;
