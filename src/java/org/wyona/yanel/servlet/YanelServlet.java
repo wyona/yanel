@@ -67,13 +67,9 @@ public class YanelServlet extends HttpServlet {
         MapFactory mf = MapFactory.newInstance();
         map = mf.newMap();
 
-        //proxyServerName = "demo.phoenix.wyona.org";
-
-        //proxyPort = "";
-        //proxyPort = "3333";
-
-        //proxyPrefix = "";
-        //proxyPrefix = "/yanel";
+        proxyServerName = rtr.proxyHostName;
+        proxyPort = rtr.proxyPort;
+        proxyPrefix = rtr.proxyPrefix;
     }
 
     /**
