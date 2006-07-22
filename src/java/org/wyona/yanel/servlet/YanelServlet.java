@@ -101,6 +101,7 @@ public class YanelServlet extends HttpServlet {
             String neutronVersions = request.getHeader("Neutron");
             // http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
             String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
+            org.wyona.yanel.core.map.Realm realm = map.getRealm(new Path(request.getServletPath()));
             if (clientSupportedAuthScheme != null) {
                 log.error("DEBUG: Neutron Versions supported by client: " + neutronVersions);
                 log.error("DEBUG: Authentication Scheme supported by client: " + clientSupportedAuthScheme);
@@ -112,12 +113,12 @@ public class YanelServlet extends HttpServlet {
                 //TODO: Also support https ...
                 sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
                 sb.append("<form>");
-                sb.append("<message>Enter username and password for REALM at URL</message>");
+                sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
                 sb.append("<param description=\"Username\" name=\"username\"/>");
                 sb.append("<param description=\"Password\" name=\"password\"/>");
                 sb.append("</form>");
                 sb.append("</login>");
-                sb.append("<logout url=\"" + request.getContextPath() + "/?yanel.usecase=logout\" realm=\"REALM\"/>");
+                sb.append("<logout url=\"" + request.getContextPath() + "/?yanel.usecase=logout\" realm=\"" + realm.getName() + "\"/>");
                 sb.append("</authentication>");
                 sb.append("</exception>");
                 response.setContentType("application/xml");
@@ -130,7 +131,6 @@ public class YanelServlet extends HttpServlet {
                 sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
                 sb.append("<body>");
                 sb.append("<p>Authorization denied: " + getRequestURLQS(request, null, true) + "</p>");
-                org.wyona.yanel.core.map.Realm realm = map.getRealm(new Path(request.getServletPath()));
                 sb.append("<p>Enter username and password for realm \"" +  realm.getName()  + "\" at \"" + realm.getMountPoint() + "\" (Context Path: " + request.getContextPath() + ")</p>");
                 sb.append("<form method=\"POST\">");
                 sb.append("<p>");
@@ -594,7 +594,7 @@ public class YanelServlet extends HttpServlet {
             }
 
             if(proxyServerName != null || proxyPort != null || proxyPrefix != null) {
-                log.debug("Proxy enabled request: " + url);
+                log.error("DEBUG: Proxy enabled request: " + url);
             }
         } catch (Exception e) {
             log.error(e);
