@@ -89,7 +89,8 @@ public class ResourceTypeRegistry {
             // TODO: This is actually a servlet thing and should be moved there ...
             proxyHostName = props.getProperty("proxy-host-name");
             proxyPort = props.getProperty("proxy-port");
-            proxyHostName = props.getProperty("proxy-prefix");
+            proxyPrefix = props.getProperty("proxy-prefix");
+            log.debug("Proxy Settings: " + proxyHostName + ", " + proxyPort + ", " + proxyPrefix);
         } catch (Exception e) {
             log.error(e);
         }
