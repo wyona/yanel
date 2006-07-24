@@ -24,8 +24,10 @@ import org.wyona.yanel.core.map.MapFactory;
 
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
+import org.wyona.security.core.IdentityManagerFactory;
 import org.wyona.security.core.PolicyManagerFactory;
 import org.wyona.security.core.api.Identity;
+import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.Role;
 
@@ -46,6 +48,7 @@ public class YanelServlet extends HttpServlet {
     ResourceTypeRegistry rtr;
 
     PolicyManager pm;
+    IdentityManager im;
     Map map;
 
     private static String IDENTITY_KEY = "identity";
@@ -63,6 +66,9 @@ public class YanelServlet extends HttpServlet {
 
         PolicyManagerFactory pmf = PolicyManagerFactory.newInstance();
         pm = pmf.newPolicyManager();
+
+        IdentityManagerFactory imf = IdentityManagerFactory.newInstance();
+        im = imf.newIdentityManager();
 
         MapFactory mf = MapFactory.newInstance();
         map = mf.newMap();
@@ -274,7 +280,11 @@ public class YanelServlet extends HttpServlet {
             log.error("DEBUG: Trying to login with " + loginUsername);
             HttpSession session = request.getSession(true);
             // TODO: Implement Authentication
-            session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
+            if (im.authenticate(loginUsername, request.getParameter("yanel.login.password"), null)) {
+                session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
+            } else {
+                log.warn("Login failed: " + loginUsername);
+            }
         }
 
         // Neutron-Auth based authentication
