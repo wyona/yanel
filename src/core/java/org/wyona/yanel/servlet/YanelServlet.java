@@ -277,13 +277,12 @@ public class YanelServlet extends HttpServlet {
         // HTML Form based authentication
         String loginUsername = request.getParameter("yanel.login.username");
         if(loginUsername != null) {
-            log.error("DEBUG: Trying to login with " + loginUsername);
             HttpSession session = request.getSession(true);
-            // TODO: Implement Authentication
             if (im.authenticate(loginUsername, request.getParameter("yanel.login.password"), null)) {
                 session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
             } else {
                 log.warn("Login failed: " + loginUsername);
+                // TODO: Implement response ...
             }
         }
 
@@ -316,13 +315,23 @@ public class YanelServlet extends HttpServlet {
             if (username != null) {
                 HttpSession session = request.getSession(true);
                 // TODO: Implement Authentication
-                session.setAttribute(IDENTITY_KEY, new Identity(username, null));
-                // TODO: send some XML content, e.g. <authentication-successful/>
-                response.setContentType("text/plain");
-                PrintWriter writer = response.getWriter();
-                writer.print("Neutron Authentication Successful!");
-	        response.setStatus(response.SC_OK);
-                return;
+                if (im.authenticate(username, password, null)) {
+                    session.setAttribute(IDENTITY_KEY, new Identity(username, null));
+                    // TODO: send some XML content, e.g. <authentication-successful/>
+                    response.setContentType("text/plain");
+                    PrintWriter writer = response.getWriter();
+                    writer.print("Neutron Authentication Successful!");
+	            response.setStatus(response.SC_OK);
+                    return;
+                } else {
+                    log.warn("Login failed: " + username);
+                    log.warn("Authentication failed ...");
+                    response.setContentType("text/plain");
+                    PrintWriter writer = response.getWriter();
+                    writer.print("Authentication Failed!");
+	            response.sendError(response.SC_UNAUTHORIZED);
+                    return;
+                }
             } else {
                 // TODO: Resend login information ...
                 log.warn("Authentication failed ...");
