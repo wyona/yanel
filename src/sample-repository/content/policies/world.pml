@@ -7,11 +7,17 @@
   </role>
 
   <role id="open">
+<!--
     <world permission="true"/>
+-->
+    <user id="lenya" permission="true"/>
   </role>
 
   <role id="write">
+<!--
     <world permission="true"/>
+-->
+    <user id="lenya" permission="true"/>
   </role>
 
 </policy>
