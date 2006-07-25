@@ -5,4 +5,9 @@
   <checkout url="about.xhtml?yanel.resource.usecase=checkout" method="GET"/>
   <checkin  url="about.xhtml?yanel.resource.usecase=checkin"  method="PUT"/>
 </edit>
+
+<edit mime-type="application/xml" name="Layout XSLT">
+  <checkout url="xslt/global.xsl?yanel.resource.usecase=checkout" method="GET"/>
+  <checkin  url="xslt/global.xsl?yanel.resource.usecase=checkin"  method="PUT"/>
+</edit>
 </introspection>
