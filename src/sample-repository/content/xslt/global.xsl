@@ -43,6 +43,7 @@ WARNING: This file has been generated automatically. All changes will be lost.
 <b>All You Need</b><br/>
 &#160;<a href="{$yarep.back2realm}about.html">About</a><br/>
 &#160;<a href="{$yarep.back2realm}download.html">Download</a><br/>
+&#160;Getting Started<br/>
 &#160;Features<br/>
 &#160;News<br/>
 &#160;<a href="{$yarep.back2realm}documentation/index.html">Documentation</a><br/>
