@@ -21,6 +21,7 @@ import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
+import org.wyona.yanel.core.map.Realm;
 
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
@@ -116,7 +117,7 @@ public class YanelServlet extends HttpServlet {
             String neutronVersions = request.getHeader("Neutron");
             // http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
             String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
-            org.wyona.yanel.core.map.Realm realm = map.getRealm(new Path(request.getServletPath()));
+            Realm realm = map.getRealm(new Path(request.getServletPath()));
             if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
                 log.error("DEBUG: Neutron Versions supported by client: " + neutronVersions);
                 log.error("DEBUG: Authentication Scheme supported by client: " + clientSupportedAuthScheme);
@@ -274,11 +275,14 @@ public class YanelServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String yanelUsecase = request.getParameter("yanel.usecase");
 
+        Realm realm = map.getRealm(new Path(request.getServletPath()));
+
         // HTML Form based authentication
         String loginUsername = request.getParameter("yanel.login.username");
         if(loginUsername != null) {
             HttpSession session = request.getSession(true);
             if (im.authenticate(loginUsername, request.getParameter("yanel.login.password"), null)) {
+                log.error("DEBUG: Realm: " + realm);
                 session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
             } else {
                 log.warn("Login failed: " + loginUsername);
@@ -551,48 +555,73 @@ public class YanelServlet extends HttpServlet {
      */
     private boolean authorize(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        //String[] groupnames = {"null", "null"};
-        HttpSession session = request.getSession(true);
-        Identity identity = (Identity) session.getAttribute(IDENTITY_KEY);
-        if (identity == null) {
-            log.error("DEBUG: identity is WORLD");
-            identity = new Identity();
-        }
+	Role role = null;
 
         String value = request.getParameter("yanel.resource.usecase");
         if (value != null && value.equals("save")) {
             log.error("DEBUG: Save data ...");
-            return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, new Role("write"));
+            role = new Role("write");
 	} else if (value != null && value.equals("checkin")) {
             log.error("DEBUG: Checkin data ...");
-            return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, new Role("write"));
+            role = new Role("write");
 	} else if (value != null && value.equals("checkout")) {
             log.error("DEBUG: Checkout data ...");
-            return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, new Role("open"));
+            role = new Role("open");
         } else {
             log.debug("No parameter yanel.resource.usecase!");
+            role = new Role("view");
         }
 
-        // HTTP Authorization
+        boolean authorized = false;
+
+        // HTTP BASIC Authorization (For clients without session handling, e.g. OpenOffice/WebDAV)
         String authorization = request.getHeader("Authorization");
-        log.error("DEBUG: Authorization Header: " + authorization);
-        if (authorization != null &&  authorization.toUpperCase().startsWith("BASIC")) {
-            // Get encoded user and password, comes after "BASIC "
-            String userpassEncoded = authorization.substring(6);
-            // Decode it, using any base 64 decoder
-            sun.misc.BASE64Decoder dec = new sun.misc.BASE64Decoder();
-            String userpassDecoded = new String(dec.decodeBuffer(userpassEncoded));
-            log.error("DEBUG: userpassDecoded: " + userpassDecoded);
-            if (userpassDecoded.equals("lenya:levi")) {
-                return true;
+        log.error("DEBUG: Checking for Authorization Header: " + authorization);
+        if (authorization != null) {
+            if (authorization.toUpperCase().startsWith("BASIC")) {
+                log.error("DEBUG: Using BASIC authorization ...");
+                // Get encoded user and password, comes after "BASIC "
+                String userpassEncoded = authorization.substring(6);
+                // Decode it, using any base 64 decoder
+                sun.misc.BASE64Decoder dec = new sun.misc.BASE64Decoder();
+                String userpassDecoded = new String(dec.decodeBuffer(userpassEncoded));
+                log.error("DEBUG: userpassDecoded: " + userpassDecoded);
+                // TODO: Use security package and remove hardcoded ...
+		// Authenticate every request ...
+                //if (im.authenticate(...)) {
+                if (userpassDecoded.equals("lenya:levi")) {
+                    //return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), new Identity(...), new Role("view"));
+                    return true;
+                }
+                return false;
+	    } else if (authorization.toUpperCase().startsWith("DIGEST")) {
+                log.error("DIGEST is not implemented");
+                return false;
+            } else {
+                log.error("No such authorization implemented resp. handled by session based authorization: " + authorization);
+                authorized = false;
             }
-            log.warn("Authorization denied: " + request.getRequestURL() + "?" + request.getQueryString());
-            return false;
         }
+
 
         // Custom Authorization
-        // ...
-        return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, new Role("view"));
+        log.error("DEBUG: Do session based custom authorization");
+        //String[] groupnames = {"null", "null"};
+        HttpSession session = request.getSession(true);
+        Identity identity = (Identity) session.getAttribute(IDENTITY_KEY);
+        if (identity == null) {
+            log.debug("Identity is WORLD");
+            identity = new Identity();
+        }
+        authorized = pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, role);
+
+        if (authorized) {
+            log.error("DEBUG: Access granted: " + getRequestURLQS(request, null, false));
+        } else {
+            log.warn("Access denied: " + getRequestURLQS(request, null, false));
+        }
+
+        return authorized;
     }
 
     /**
