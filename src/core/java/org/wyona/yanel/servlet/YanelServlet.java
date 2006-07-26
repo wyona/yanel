@@ -305,7 +305,7 @@ public class YanelServlet extends HttpServlet {
         String loginUsername = request.getParameter("yanel.login.username");
         if(loginUsername != null) {
             HttpSession session = request.getSession(true);
-            if (im.authenticate(loginUsername, request.getParameter("yanel.login.password"), null)) {
+            if (im.authenticate(loginUsername, request.getParameter("yanel.login.password"), realm.getID())) {
                 log.error("DEBUG: Realm: " + realm);
                 session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
             } else {
@@ -343,7 +343,7 @@ public class YanelServlet extends HttpServlet {
             if (username != null) {
                 HttpSession session = request.getSession(true);
                 // TODO: Implement Authentication
-                if (im.authenticate(username, password, null)) {
+                if (im.authenticate(username, password, realm.getID())) {
                     session.setAttribute(IDENTITY_KEY, new Identity(username, null));
                     // TODO: send some XML content, e.g. <authentication-successful/>
                     response.setContentType("text/plain");

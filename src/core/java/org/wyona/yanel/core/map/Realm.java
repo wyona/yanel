@@ -24,13 +24,15 @@ import org.wyona.commons.io.Path;
 public class Realm {
 
     private String name;
+    private String id;
     private Path mountPoint;
 
     /**
      *
      */
-    public Realm(String name, Path mountPoint) {
+    public Realm(String name, String id, Path mountPoint) {
         this.name = name;
+        this.id = id;
         this.mountPoint = mountPoint;
     }
 
@@ -44,6 +46,13 @@ public class Realm {
     /**
      *
      */
+    public String getID() {
+        return id;
+    }
+
+    /**
+     *
+     */
     public Path getMountPoint() {
         return mountPoint;
     }
@@ -52,6 +61,6 @@ public class Realm {
      *
      */
     public String toString() {
-        return "Name: " + name + ", Mount-Point: " + mountPoint;
+        return "Name: " + name + ", ID: " + id + ", Mount-Point: " + mountPoint;
     }
 }

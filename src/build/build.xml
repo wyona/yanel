@@ -358,8 +358,8 @@
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" value="security-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
       <replacetoken>security-sample,../src/sample-repository/config/repository.xml</replacetoken>
     </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" value="security-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
-      <replacetoken>security-sample,../src/sample-repository/config/repository.xml</replacetoken>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
+      <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
     </replace>
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/yanel-rti-repository.xml">
       <replacetoken>javadoc,../src/javadoc-repository/yanel-rti-repository.xml</replacetoken>

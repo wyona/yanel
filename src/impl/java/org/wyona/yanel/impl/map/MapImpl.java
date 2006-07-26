@@ -89,11 +89,12 @@ public class MapImpl implements Map {
         Repository root = repoFactory.firstRepository();
         Realm[] realms = new Realm[repoIds.length];
         for (int i = 0;i < realms.length; i++) {
+            Repository repo = repoFactory.newRepository(repoIds[i]);
             if (repoIds[i].equals(root.getID())) {
                 // ROOT realm
-                realms[i] = new Realm(repoFactory.newRepository(repoIds[i]).getName(), new Path("/"));
+                realms[i] = new Realm(repo.getName(), repo.getID(), new Path("/"));
             } else {
-                realms[i] = new Realm(repoFactory.newRepository(repoIds[i]).getName(), new Path("/" + repoIds[i] + "/"));
+                realms[i] = new Realm(repo.getName(), repo.getID(), new Path("/" + repoIds[i] + "/"));
             }
         }
         return realms;
@@ -106,9 +107,9 @@ public class MapImpl implements Map {
         RepoPath rp = new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), repoFactory);
         Repository root = repoFactory.firstRepository();
         if (rp.getRepo().getID().equals(root.getID())) {
-            return new Realm(rp.getRepo().getName(), new Path("/"));
+            return new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/"));
         } else {
-            return new Realm(rp.getRepo().getName(), new Path("/" + rp.getRepo().getID() + "/"));
+            return new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/" + rp.getRepo().getID() + "/"));
         }
     }
 }
