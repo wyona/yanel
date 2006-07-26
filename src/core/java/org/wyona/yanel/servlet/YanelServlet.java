@@ -95,9 +95,9 @@ public class YanelServlet extends HttpServlet {
 	} else if (method.equals(METHOD_GET)) {
             doGet(request, response);
 	} else if (method.equals(METHOD_POST)) {
-            doGet(request, response);
+            doPost(request, response);
 	} else if (method.equals(METHOD_PUT)) {
-            doGet(request, response);
+            doPut(request, response);
         } else {
             log.error("No such method implemented: " + method);
         }
