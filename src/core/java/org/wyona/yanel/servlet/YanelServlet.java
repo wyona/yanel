@@ -58,6 +58,11 @@ public class YanelServlet extends HttpServlet {
     String proxyPort = null;
     String proxyPrefix = null;
 
+    private static final String METHOD_PROPFIND = "PROPFIND";
+    private static final String METHOD_GET = "GET";
+    private static final String METHOD_POST = "POST";
+    private static final String METHOD_PUT = "PUT";
+
     /**
      *
      */
@@ -77,6 +82,25 @@ public class YanelServlet extends HttpServlet {
         proxyServerName = rtr.proxyHostName;
         proxyPort = rtr.proxyPort;
         proxyPrefix = rtr.proxyPrefix;
+    }
+
+    /**
+     *
+     */
+    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String method = request.getMethod();
+
+        if (method.equals(METHOD_PROPFIND)) {
+            doPropfind(request, response);
+	} else if (method.equals(METHOD_GET)) {
+            doGet(request, response);
+	} else if (method.equals(METHOD_POST)) {
+            doGet(request, response);
+	} else if (method.equals(METHOD_PUT)) {
+            doGet(request, response);
+        } else {
+            log.error("No such method implemented: " + method);
+        }
     }
 
     /**
@@ -574,7 +598,7 @@ public class YanelServlet extends HttpServlet {
 
         boolean authorized = false;
 
-        // HTTP BASIC Authorization (For clients without session handling, e.g. OpenOffice/WebDAV)
+        // HTTP BASIC Authorization (For clients without session handling, e.g. OpenOffice or cadaver)
         String authorization = request.getHeader("Authorization");
         log.error("DEBUG: Checking for Authorization Header: " + authorization);
         if (authorization != null) {
@@ -668,5 +692,11 @@ public class YanelServlet extends HttpServlet {
 
         if (xml) return urlQS.replaceAll("&", "&amp;");
         return urlQS;
+    }
+
+    /**
+     * Also see https://svn.apache.org/repos/asf/tomcat/container/branches/tc5.0.x/catalina/src/share/org/apache/catalina/servlets/WebdavServlet.java
+     */
+    public void doPropfind(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     }
 }
