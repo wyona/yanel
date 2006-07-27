@@ -27,7 +27,7 @@
                   version="1.2.8"/>
       <!-- TODO: Add checksum file to server -->
       <dependency groupId="yarep" artifactId="yarep"
-                  version="0.0.1-dev-r15617"/>
+                  version="0.0.1-dev-r15695"/>
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
                   version="0.0.1-dev-r15048"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core"
@@ -50,7 +50,7 @@
       <dependency groupId="xml-apis" artifactId="xml-apis"
                   version="1.3.02"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl"
-                  version="0.0.1-dev-r15584"/>
+                  version="0.0.1-dev-r15698"/>
     </artifact:dependencies>
 
     <!--
