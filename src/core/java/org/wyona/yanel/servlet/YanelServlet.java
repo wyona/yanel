@@ -691,7 +691,10 @@ public class YanelServlet extends HttpServlet {
             if (addQS != null) urlQS = urlQS + "?" + addQS;
         }
 
-        if (xml) return urlQS.replaceAll("&", "&amp;");
+        if (xml) urlQS = urlQS.replaceAll("&", "&amp;");
+
+        log.error("DEBUG: Request: " + urlQS);
+
         return urlQS;
     }
 
