@@ -158,7 +158,8 @@ public class YanelServlet extends HttpServlet {
                 sb.append("<param description=\"Password\" name=\"password\"/>");
                 sb.append("</form>");
                 sb.append("</login>");
-                sb.append("<logout url=\"" + request.getContextPath() + "/?yanel.usecase=logout\" realm=\"" + realm.getName() + "\"/>");
+                // NOTE: Needs to be a full URL, because user might switch the server ...
+                sb.append("<logout url=\"" + getRequestURLQS(request, "yanel.usecase=logout", true) + "\" realm=\"" + realm.getName() + "\"/>");
                 sb.append("</authentication>");
                 sb.append("</exception>");
                 response.setContentType("application/xml");
