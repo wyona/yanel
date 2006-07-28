@@ -515,7 +515,7 @@ public class YanelServlet extends HttpServlet {
                     return;
                 }
 
-            log.error("INFO: Data seems to be well-formed :-)");
+            log.info("Data seems to be well-formed :-)");
             }
 
 
@@ -563,7 +563,7 @@ public class YanelServlet extends HttpServlet {
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
                 response.setContentType("application/xhtml+xml");
 
-                log.error("INFO: Data has been saved ...");
+                log.info("Data has been saved ...");
             } else {
                 log.warn(res.getClass().getName() + " is not modifiable!");
 
