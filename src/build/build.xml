@@ -337,6 +337,7 @@
     </copy>
 -->
     <copy file="${yanel.home.dir}/lib/log4j.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.home.dir}/lib/local.log4j.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" overwrite="true" failonerror="false"/>
 
     <copy file="${yanel.home.dir}/lib/yanel-rti-yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/lib/local.yanel-rti-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" overwrite="true" failonerror="false"/>
