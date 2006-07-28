@@ -111,7 +111,7 @@ public class YanelServlet extends HttpServlet {
 
         // Logout from Yanel
         if(yanelUsecase != null && yanelUsecase.equals("logout")) {
-            log.error("DEBUG: Logout from Yanel ...");
+            log.info("Logout from Yanel ...");
             HttpSession session = request.getSession(true);
             session.setAttribute(IDENTITY_KEY, null);
             String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
@@ -250,8 +250,9 @@ public class YanelServlet extends HttpServlet {
         String value = request.getParameter("yanel.resource.usecase");
 
         if (value != null && value.equals("checkout")) {
-            log.error("DEBUG: Checkout data ...");
+            log.debug("Checkout data ...");
             // TODO: Implement checkout ...
+            log.warn("Acquire lock has not been implemented yet ...!");
             // acquireLock();
         }
 
@@ -307,7 +308,7 @@ public class YanelServlet extends HttpServlet {
         if(loginUsername != null) {
             HttpSession session = request.getSession(true);
             if (im.authenticate(loginUsername, request.getParameter("yanel.login.password"), realm.getID())) {
-                log.error("DEBUG: Realm: " + realm);
+                log.debug("Realm: " + realm);
                 session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
             } else {
                 log.warn("Login failed: " + loginUsername);
@@ -384,13 +385,14 @@ public class YanelServlet extends HttpServlet {
         String value = request.getParameter("yanel.resource.usecase");
 
         if (value != null && value.equals("save")) {
-            log.error("DEBUG: Save data ...");
+            log.debug("Save data ...");
             save(request, response);
             return;
 	} else if (value != null && value.equals("checkin")) {
-            log.error("DEBUG: Checkin data ...");
+            log.debug("Checkin data ...");
             save(request, response);
             // TODO: Implement checkin ...
+            log.warn("Release lock has not been implemented yet ...");
             // releaseLock();
             return;
         } else {
@@ -418,13 +420,14 @@ public class YanelServlet extends HttpServlet {
         String value = request.getParameter("yanel.resource.usecase");
 
         if (value != null && value.equals("save")) {
-            log.error("DEBUG: Save data ...");
+            log.debug("Save data ...");
             save(request, response);
             return;
 	} else if (value != null && value.equals("checkin")) {
-            log.error("DEBUG: Checkin data ...");
+            log.debug("Checkin data ...");
             save(request, response);
             // TODO: Implement checkin ...
+            log.warn("Release lock has not been implemented yet ...!");
             // releaseLock();
             return;
         } else {
@@ -461,7 +464,7 @@ public class YanelServlet extends HttpServlet {
      */
     private void save(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         StringBuffer sb = new StringBuffer();
-        log.error("DEBUG: Save data ...");
+        log.debug("Save data ...");
 
             java.io.InputStream in = request.getInputStream();
             java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
@@ -539,7 +542,7 @@ public class YanelServlet extends HttpServlet {
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
 
                 String contentType = request.getContentType();
-                log.error("DEBUG: Content-Type: " + contentType);
+                log.debug("Content-Type: " + contentType);
                 // TODO: Compare mime-type from response with mime-type of resource
                 //if (contentType.equals("text/xml")) { ... }
 
@@ -584,13 +587,13 @@ public class YanelServlet extends HttpServlet {
 
         String value = request.getParameter("yanel.resource.usecase");
         if (value != null && value.equals("save")) {
-            log.error("DEBUG: Save data ...");
+            log.debug("Save data ...");
             role = new Role("write");
 	} else if (value != null && value.equals("checkin")) {
-            log.error("DEBUG: Checkin data ...");
+            log.debug("Checkin data ...");
             role = new Role("write");
 	} else if (value != null && value.equals("checkout")) {
-            log.error("DEBUG: Checkout data ...");
+            log.debug("Checkout data ...");
             role = new Role("open");
         } else {
             log.debug("No parameter yanel.resource.usecase!");
@@ -601,10 +604,10 @@ public class YanelServlet extends HttpServlet {
 
         // HTTP BASIC Authorization (For clients without session handling, e.g. OpenOffice or cadaver)
         String authorization = request.getHeader("Authorization");
-        log.error("DEBUG: Checking for Authorization Header: " + authorization);
+        log.debug("Checking for Authorization Header: " + authorization);
         if (authorization != null) {
             if (authorization.toUpperCase().startsWith("BASIC")) {
-                log.error("DEBUG: Using BASIC authorization ...");
+                log.debug("Using BASIC authorization ...");
                 // Get encoded user and password, comes after "BASIC "
                 String userpassEncoded = authorization.substring(6);
                 // Decode it, using any base 64 decoder
@@ -630,7 +633,7 @@ public class YanelServlet extends HttpServlet {
 
 
         // Custom Authorization
-        log.error("DEBUG: Do session based custom authorization");
+        log.debug("Do session based custom authorization");
         //String[] groupnames = {"null", "null"};
         HttpSession session = request.getSession(true);
         Identity identity = (Identity) session.getAttribute(IDENTITY_KEY);
@@ -641,7 +644,7 @@ public class YanelServlet extends HttpServlet {
         authorized = pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, role);
 
         if (authorized) {
-            log.error("DEBUG: Access granted: " + getRequestURLQS(request, null, false));
+            log.info("Access granted: " + getRequestURLQS(request, null, false));
         } else {
             log.warn("Access denied: " + getRequestURLQS(request, null, false));
         }
