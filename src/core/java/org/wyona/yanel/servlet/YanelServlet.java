@@ -343,7 +343,7 @@ public class YanelServlet extends HttpServlet {
 
             if (username != null) {
                 HttpSession session = request.getSession(true);
-                // TODO: Implement Authentication
+                log.debug("Realm ID: " + realm.getID());
                 if (im.authenticate(username, password, realm.getID())) {
                     session.setAttribute(IDENTITY_KEY, new Identity(username, null));
                     // TODO: send some XML content, e.g. <authentication-successful/>
@@ -676,14 +676,13 @@ public class YanelServlet extends HttpServlet {
             }
 
             if(proxyServerName != null || proxyPort != null || proxyPrefix != null) {
-                log.error("DEBUG: Proxy enabled request: " + url);
+                log.debug("Proxy enabled request: " + url);
             }
         } catch (Exception e) {
             log.error(e);
         }
 
         String urlQS = url.toString();
-        //String urlQS = request.getRequestURL().toString();
         if (request.getQueryString() != null) {
             urlQS = urlQS + "?" + request.getQueryString();
             if (addQS != null) urlQS = urlQS + "&" + addQS;
@@ -693,7 +692,7 @@ public class YanelServlet extends HttpServlet {
 
         if (xml) urlQS = urlQS.replaceAll("&", "&amp;");
 
-        log.error("DEBUG: Request: " + urlQS);
+        log.debug("Request: " + urlQS);
 
         return urlQS;
     }
