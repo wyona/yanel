@@ -27,7 +27,7 @@
                   version="1.2.8"/>
       <!-- TODO: Add checksum file to server -->
       <dependency groupId="yarep" artifactId="yarep"
-                  version="0.0.1-dev-r15774"/>
+                  version="0.0.1-dev-r15817"/>
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
                   version="0.0.1-dev-r15048"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core"
