@@ -33,12 +33,12 @@ public interface ViewableV1 {
     public ViewDescriptor[] getViewDescriptors();
 
     /**
-     *
+     * NOTE: A resource does not necessarily have a path
      */
-    public View getView(Path path, String viewId);
+    public View getView(Path path, String viewId) throws Exception;
 
     /**
      *
      */
-    public View getView(HttpServletRequest request, String viewId);
+    public View getView(HttpServletRequest request, String viewId) throws Exception;
 }

@@ -33,12 +33,12 @@ public interface ModifiableV1 {
     /**
      *
      */
-    public Reader getReader(Path path);
+    public Reader getReader(Path path) throws Exception;
 
     /**
      *
      */
-    public Reader getReader(Topic topic);
+    public Reader getReader(Topic topic) throws Exception;
 
     /**
      *

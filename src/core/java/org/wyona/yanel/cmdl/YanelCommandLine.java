@@ -131,9 +131,10 @@ public class YanelCommandLine {
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
             System.out.println("View Descriptors: " + ((ViewableV1) res).getViewDescriptors());
             String viewId = null;
-            View view = ((ViewableV1) res).getView(path, viewId);
-            System.out.println("mime-type: " + view.getMimeType());
             try {
+                View view = ((ViewableV1) res).getView(path, viewId);
+                System.out.println("mime-type: " + view.getMimeType());
+
                 BufferedReader bReader = new BufferedReader(new java.io.InputStreamReader(view.getInputStream()));
                 System.out.println(" 1. Line: " + bReader.readLine());
                 System.out.println(" 2. Line: " + bReader.readLine());
@@ -153,7 +154,11 @@ public class YanelCommandLine {
         }
 
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
-            java.io.Reader reader = ((ModifiableV1) res).getReader(path);
+            try {
+                java.io.Reader reader = ((ModifiableV1) res).getReader(path);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
         } else {
             System.out.println(res.getClass().getName() + " does not implement writable interface!");
         }

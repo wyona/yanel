@@ -58,16 +58,12 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV1 {
     /**
      *
      */
-    public View getView(Path path, String viewId) {
+    public View getView(Path path, String viewId) throws Exception {
         View defaultView = new View();
-        try {
             org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
             defaultView.setInputStream(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
 
             defaultView.setMimeType(getMimeType(path, viewId));
-        } catch(Exception e) {
-            log.error(e);
-        }
 
         return defaultView;
     }
@@ -134,21 +130,16 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV1 {
     /**
      *
      */
-    public View getView(HttpServletRequest request, String viewId) {
+    public View getView(HttpServletRequest request, String viewId) throws Exception {
         return getView(new Path(request.getServletPath()), viewId);
     }
 
     /**
      *
      */
-    public Reader getReader(Path path) {
-        try {
+    public Reader getReader(Path path) throws Exception {
             org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
             return rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString()));
-        } catch(Exception e) {
-            log.error(e);
-        }
-        return null;
     }
 
     /**
