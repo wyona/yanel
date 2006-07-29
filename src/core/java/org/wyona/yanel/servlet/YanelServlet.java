@@ -143,8 +143,8 @@ public class YanelServlet extends HttpServlet {
             String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
             Realm realm = map.getRealm(new Path(request.getServletPath()));
             if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
-                log.error("DEBUG: Neutron Versions supported by client: " + neutronVersions);
-                log.error("DEBUG: Authentication Scheme supported by client: " + clientSupportedAuthScheme);
+                log.debug("Neutron Versions supported by client: " + neutronVersions);
+                log.debug("Authentication Scheme supported by client: " + clientSupportedAuthScheme);
                 sb.append("<?xml version=\"1.0\"?>");
                 sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
                 sb.append("<message>Authorization denied: " + getRequestURLQS(request, null, true) + "</message>");
@@ -162,6 +162,8 @@ public class YanelServlet extends HttpServlet {
                 sb.append("<logout url=\"" + getRequestURLQS(request, "yanel.usecase=logout", true) + "\" realm=\"" + realm.getName() + "\"/>");
                 sb.append("</authentication>");
                 sb.append("</exception>");
+
+                log.debug("Neutron-Auth response: " + sb);
                 response.setContentType("application/xml");
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
             } else {
@@ -346,6 +348,7 @@ public class YanelServlet extends HttpServlet {
                 HttpSession session = request.getSession(true);
                 log.debug("Realm ID: " + realm.getID());
                 if (im.authenticate(username, password, realm.getID())) {
+                    log.info("Authentication successful: " + username);
                     session.setAttribute(IDENTITY_KEY, new Identity(username, null));
                     // TODO: send some XML content, e.g. <authentication-successful/>
                     response.setContentType("text/plain");
@@ -354,8 +357,7 @@ public class YanelServlet extends HttpServlet {
 	            response.setStatus(response.SC_OK);
                     return;
                 } else {
-                    log.warn("Login failed: " + username);
-                    log.warn("Authentication failed ...");
+                    log.warn("Authentication failed: " + username);
                     response.setContentType("text/plain");
                     PrintWriter writer = response.getWriter();
                     writer.print("Authentication Failed!");
