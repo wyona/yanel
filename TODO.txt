@@ -1,5 +1,6 @@
 
 - grep -rl TODO *
+- Bug: If Yanel is behind a proxy and the yanel prefix is being used instead ROOT, then something is wrong with session handling ...
 - Add WebDAV and APP
 - Downgrading/Upgrading, automatic updates, history, Maven dependency ...
 - Security: Policies of Realms should NOT be inherited resp. configurable
