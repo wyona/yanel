@@ -362,9 +362,13 @@
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
     </replace>
+
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/yanel-rti-repository.xml">
       <replacetoken>javadoc,../src/javadoc-repository/yanel-rti-repository.xml</replacetoken>
     </replace>
+    <!-- NOTE: No exception shall be thrown even if one does not build the javadocs -->
+    <mkdir dir="${build.dir}/javadoc"/>
+
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
     </replace>
