@@ -16,6 +16,16 @@
 <li>Debugging Client-Server Communication (java -classpath axis-1_4/lib/axis.jar org.apache.axis.utils.tcpmon)</li>
 <li>Versioned API</li>
 <li><a href="../javadoc/index.html">Javadoc</a> (To generate the Javadoc run <i>./build.sh javadoc</i> resp. <i>build javadoc</i>)</li>
+<li>Deployment
+<ul>
+  <li>Download Apache httpd 2.2.x (e.g. httpd-2.2.3)</li>
+  <li>Install as proxy: ./configure --prefix=/usr/local/httpd-2.2.3 --enable-proxy --enable-proxy-http</li>
+  <li>make</li>
+  <li>make install</li>
+  <li>Configure virtual hosts within /usr/local/httpd-2.2.3/conf/extra/httpd-vhosts.conf</li>
+  <li>Activate vhosts config within /usr/local/httpd-2.2.3/conf/httpd.conf (Include ...)</li>
+</ul>
+</li>
 </ul>
 </p>
 </body>
