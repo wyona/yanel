@@ -1,8 +1,6 @@
 
 - grep -rl TODO *
-- Bug: If Yanel is behind a proxy and the yanel prefix is being used instead ROOT, then something is wrong with session handling ...
--- See http://issues.apache.org/bugzilla/show_bug.cgi?id=10722
--- See http://lenya.apache.org/1_2_x/components/deployment/proxying.html
+- "Bug": Check if Access is being denied if no policiy configuration is being specified ...
 - Add WebDAV and APP
 - Downgrading/Upgrading, automatic updates, history, Maven dependency ...
 - Security: Policies of Realms should NOT be inherited resp. configurable
