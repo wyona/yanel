@@ -480,13 +480,22 @@ public class YanelServlet extends HttpServlet {
             // http://www-128.ibm.com/developerworks/java/library/j-io1/
             byte[] memBuffer = baos.toByteArray();
 
-            // TODO: This should NOT be checked necessarily ...
+            // TODO: Well-formedness should NOT be checked necessarily, but only if POST/PUT is supposed to be XML ...
             // Check on well-formedness ...
-            if (false) {
-                // TODO: Does not work when offline, because tries to resolve www.w3.org ...
+            if (true) {
                 javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
                 try {
                     javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
+                    //parser.setErrorHandler(...);
+
+                    // NOTE: DOCTYPE is being resolved/retrieved (e.g. xhtml schema from w3.org) also
+                    //       if isValidating is set to false.
+                    //       Hence, for performance and network reasons we use a local catalog ...
+                    //       Also see http://www.xml.com/pub/a/2004/03/03/catalogs.html
+                    //       resp. http://xml.apache.org/commons/components/resolver/
+                    // TODO: What about a resolver factory?
+                    parser.setEntityResolver(new org.apache.xerces.util.XMLCatalogResolver());
+
                     parser.parse(new java.io.ByteArrayInputStream(memBuffer));
                     //org.w3c.dom.Document document = parser.parse(new ByteArrayInputStream(memBuffer));
                 } catch (org.xml.sax.SAXException e) {
