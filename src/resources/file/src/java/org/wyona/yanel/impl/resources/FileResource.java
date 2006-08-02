@@ -118,6 +118,7 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV1 {
 	    } else if (suffix.equals("sxc")) {
                 mimeType = "application/vnd.sun.xml.calc";
             } else {
+                log.warn("Could not determine mime-type from suffix ...!");
                 mimeType = "application/octet-stream";
             }
         } else {
