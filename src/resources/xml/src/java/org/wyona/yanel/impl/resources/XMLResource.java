@@ -80,7 +80,9 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
                 defaultView.setInputStream(getContentXML(rp));
                 return defaultView;
 	    } else if (mimeType.equals("application/xhtml+xml") || mimeType.equals("text/html")) {
-                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString()))));
+                TransformerFactory tf = TransformerFactory.newInstance();
+                //tf.setURIResolver(null);
+                Transformer transformer = tf.newTransformer(new StreamSource(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString()))));
                 transformer.setParameter("yanel.path.name", path.getName());
                 transformer.setParameter("yanel.path", path.toString());
                 transformer.setParameter("yanel.back2context", backToRoot(path, ""));
