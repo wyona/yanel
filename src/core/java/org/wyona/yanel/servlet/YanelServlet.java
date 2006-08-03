@@ -486,6 +486,8 @@ public class YanelServlet extends HttpServlet {
                 javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
                 try {
                     javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
+
+                    // TODO: Get log messages into log4j ...
                     //parser.setErrorHandler(...);
 
                     // NOTE: DOCTYPE is being resolved/retrieved (e.g. xhtml schema from w3.org) also
@@ -494,7 +496,7 @@ public class YanelServlet extends HttpServlet {
                     //       Also see http://www.xml.com/pub/a/2004/03/03/catalogs.html
                     //       resp. http://xml.apache.org/commons/components/resolver/
                     // TODO: What about a resolver factory?
-                    parser.setEntityResolver(new org.apache.xerces.util.XMLCatalogResolver());
+                    parser.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
 
                     parser.parse(new java.io.ByteArrayInputStream(memBuffer));
                     //org.w3c.dom.Document document = parser.parse(new ByteArrayInputStream(memBuffer));
