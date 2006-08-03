@@ -83,6 +83,7 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
                 File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "document2xhtml.xsl");
                 log.debug("XSLT file: " + xsltFile);
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
+                transformer.setParameter("yanel.path.name", path.getName());
                  // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
                 transformer.transform(new StreamSource(getContentXML(rp)), new StreamResult(baos));

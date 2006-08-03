@@ -63,7 +63,8 @@
             doctype-system       = "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
             omit-xml-declaration = "no" />
 
-<xsl:param name="title"></xsl:param>
+<xsl:param name="yanel.path.name" select="'NAME_IS_NULL'"/>
+<xsl:param name="title" select="'TITLE_IS_NULL'"/>
 
 <xsl:variable name="lineBreak"><xsl:text>
 </xsl:text></xsl:variable>
@@ -73,6 +74,7 @@
 <xsl:template match="/office:document|/office:document-content">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<xsl:comment>Name: <xsl:value-of select="$yanel.path.name"/></xsl:comment>
 <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-TODO.xml"/>
 <title><xsl:value-of select="$title"></xsl:value-of></title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
