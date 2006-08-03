@@ -49,6 +49,8 @@
                   version="2.7.1"/>
       <dependency groupId="xml-apis" artifactId="xml-apis"
                   version="1.3.02"/>
+      <dependency groupId="xml-resolver" artifactId="xml-resolver"
+                  version="1.1"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl"
                   version="0.0.1-dev-r15775"/>
     </artifact:dependencies>
