@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -89,10 +90,13 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
                 transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
                 // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-                transformer.transform(new StreamSource(getContentXML(rp)), new StreamResult(baos));
+
+
+                org.xml.sax.XMLReader xmlReader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
+                xmlReader.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
+                transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML(rp))), new StreamResult(baos));
                 defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
 
-                //defaultView.setInputStream(getContentXML(rp));
                 return defaultView;
             } else {
                 log.debug("Mime-Type: " + mimeType);
