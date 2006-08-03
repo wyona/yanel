@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<!--
+See http://xml.apache.org/commons/components/resolver/resolver-article.html
+-->
+
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+
+<public publicId="-//W3C//DTD XHTML 1.0 Strict//EN"
+        uri="entities/w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
+
+</catalog>
