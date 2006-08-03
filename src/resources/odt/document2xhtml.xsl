@@ -66,6 +66,8 @@
 <xsl:param name="yanel.path.name" select="'NAME_IS_NULL'"/>
 <xsl:param name="title" select="'TITLE_IS_NULL'"/>
 
+<xsl:variable name="name-without-suffix" select="substring-before($yanel.path.name, '.')"/>
+
 <xsl:variable name="lineBreak"><xsl:text>
 </xsl:text></xsl:variable>
 
@@ -75,7 +77,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <xsl:comment>Name: <xsl:value-of select="$yanel.path.name"/></xsl:comment>
-<link rel="neutron-introspection" type="application/neutron+xml" href="introspection-TODO.xml"/>
+<link rel="neutron-introspection" type="application/neutron+xml" href="introspection-{$name-without-suffix}.xml"/>
 <title><xsl:value-of select="$title"></xsl:value-of></title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <xsl:apply-templates select="office:automatic-styles"/>
