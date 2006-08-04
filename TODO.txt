@@ -1,5 +1,6 @@
 
 - grep -rl TODO *
+- Rename lib to conf
 - deploy xml-apis, xerces and xalan as endorsed libs
 - "Bug": Check if Access is being denied if no policiy configuration is being specified ...
 - Add WebDAV and APP
