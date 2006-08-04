@@ -22,9 +22,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <xsl:comment>
-WARNING: This file has been generated automatically. All changes will be lost.
-         Please edit only *.xhtml" files and re-generate the "*.html" pages by
-         using global.xsl
+WARNING: This content has been generated dynamically. All changes will be lost.
 </xsl:comment>
 
 <head>
@@ -43,6 +41,7 @@ WARNING: This file has been generated automatically. All changes will be lost.
 <b>All You Need</b><br/>
 &#160;<a href="{$yarep.back2realm}about.html">About</a><br/>
 &#160;<a href="{$yarep.back2realm}download.html">Download</a><br/>
+&#160;<a href="{$yarep.back2realm}license.html">License</a><br/>
 &#160;Getting Started<br/>
 &#160;Features<br/>
 &#160;News<br/>
@@ -70,7 +69,7 @@ WARNING: This file has been generated automatically. All changes will be lost.
 </tr>
 </table>
   <p>
-    Copyright &#169; 2006 Wyona
+    Copyright &#169; 2006 <a href="http://www.wyona.com">Wyona</a> - Powered by <a href="http://yanel.wyona.org">Wyona Yanel</a>, <a href="https://svn.wyona.org/repos/public/tomcat-cluster/">Wyona Balancer</a>, <a href="http://tomcat.apache.org">Apache Tomcat</a>, <a href="http://httpd.apache.org">Apache HTTP Server</a>
   </p>
 </body>
 </html>
