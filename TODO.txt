@@ -8,6 +8,7 @@
 - Make authorization and authentication implementation configurable per realm
 - Implement Admin interface with listing of repositories/realms and mountpoints
 - Implement Locking
+- YanelServlet: Move authentication into authorization
 - YanelServlet: if realm has no authorization specified then the ROOT one is being taken instead that access is being denied: Makes this configurable
 - YanelServlet: Declare Realm for authorization on authentication screen
 - YanelServlet: Unify authentication scheme
