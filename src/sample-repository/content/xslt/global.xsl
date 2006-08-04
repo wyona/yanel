@@ -50,7 +50,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <b>Community/Developers</b><br/>
 &#160;<a href="{$yarep.back2realm}download/source-repository.html">Get the Source</a><br/>
 &#160;<a href="{$yarep.back2realm}mailing-lists.html">Mailing Lists</a><br/>
-&#160;Task/Bug Tracker<br/>
+&#160;<a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/buglist.cgi?short_desc_type=allwordssubstr&amp;short_desc=&amp;product=Yanel&amp;long_desc_type=allwordssubstr&amp;long_desc=&amp;bug_file_loc_type=allwordssubstr&amp;bug_file_loc=&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;emailassigned_to1=1&amp;emailtype1=substring&amp;email1=&amp;emailassigned_to2=1&amp;emailreporter2=1&amp;emailcc2=1&amp;emailtype2=substring&amp;email2=&amp;bugidtype=include&amp;bug_id=&amp;votes=&amp;changedin=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;cmdtype=doit&amp;namedcmd=Mobi&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=" target="_blank">Task/Bug Tracker</a><br/>
 &#160;<a href="{$yarep.back2realm}testing.html">Testing/Continuous Integration</a><br/>
 &#160;Acknowledgements<br/>
 <br/>
