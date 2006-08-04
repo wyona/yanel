@@ -28,4 +28,5 @@
 - Replace most System.err/out by log4j
 - Import any website with Nutch Crawler and rti map creator
 - Implement Distribution target (zip and tar.gz)
+- Make Yanel binary available through package manager
 - Move runtime lib dependencies into init-runtime target
