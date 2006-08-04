@@ -357,6 +357,7 @@ public class YanelServlet extends HttpServlet {
 	            response.setStatus(response.SC_OK);
                     return;
                 } else {
+                    // TODO: Resend login information ...
                     log.warn("Authentication failed: " + username);
                     response.setContentType("text/plain");
                     PrintWriter writer = response.getWriter();
