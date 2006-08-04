@@ -518,7 +518,7 @@
   <target name="javadoc" description="Generate Javadoc" depends="init">
     <javadoc
       packagenames="org.*"
-      sourcepath="${yanel.home.dir}/src/java"
+      sourcepath="${yanel.home.dir}/src/core/java"
       destdir="${yanel.home.dir}/build/javadoc"
       classpathref="classpath.run"
     >
