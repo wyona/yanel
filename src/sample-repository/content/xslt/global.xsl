@@ -50,7 +50,7 @@ WARNING: This file has been generated automatically. All changes will be lost.
 <br/>
 <b>Community/Developers</b><br/>
 &#160;<a href="{$yarep.back2realm}download/source-repository.html">Get the Source</a><br/>
-&#160;Mailing Lists<br/>
+&#160;<a href="{$yarep.back2realm}mailing-lists.html">Mailing Lists</a><br/>
 &#160;Task/Bug Tracker<br/>
 &#160;<a href="{$yarep.back2realm}testing.html">Testing/Continuous Integration</a><br/>
 &#160;Acknowledgements<br/>
