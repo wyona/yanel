@@ -2,10 +2,8 @@
 Also see http://bugzilla.wyona.com resp. http://yanel.wyona.org
 
 - grep -rl TODO *
-- Rename lib to conf
 - deploy xml-apis, xerces and xalan as endorsed libs
 - "Bug": Check if Access is being denied if no policiy configuration is being specified ...
-- Add WebDAV and APP
 - Downgrading/Upgrading, automatic updates, history, Maven dependency ...
 - Security: Policies of Realms should NOT be inherited resp. configurable
 - Make authorization and authentication implementation configurable per realm
