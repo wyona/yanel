@@ -16,6 +16,8 @@
 <xsl:param name="yanel.back2context" select="'BACK2CONTEXT_IS_NULL'"/>
 <xsl:param name="yarep.back2realm" select="'BACK2REALM_IS_NULL'"/>
 
+<xsl:param name="language" select="'en'"/>
+
 <xsl:variable name="name-without-suffix" select="substring-before($yanel.path.name, '.')"/>
 
 <xsl:template match="/">
@@ -39,7 +41,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <tr>
 <td valign="top">
 <b>All You Need</b><br/>
-&#160;<a href="{$yarep.back2realm}about.html">About</a><br/>
+&#160;<a href="{$yarep.back2realm}{$language}/about.html">About</a><br/>
 &#160;<a href="{$yarep.back2realm}download.html">Download</a><br/>
 &#160;<a href="{$yarep.back2realm}license.html">License</a><br/>
 &#160;Getting Started<br/>
