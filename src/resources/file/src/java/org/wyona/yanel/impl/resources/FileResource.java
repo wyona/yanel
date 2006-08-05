@@ -120,7 +120,7 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV1 {
 	    } else if (suffix.equals("xpi")) {
                 mimeType = "application/x-xpinstall";
             } else {
-                log.warn("Could not determine mime-type from suffix ...!");
+                log.warn("Could not determine mime-type from suffix (suffix: " + suffix + ")!");
                 mimeType = "application/octet-stream";
             }
         } else {
