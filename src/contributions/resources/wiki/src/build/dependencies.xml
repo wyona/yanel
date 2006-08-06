@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<project name="wiki-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <target name="dependencies" description="Dependencies">
+    <!-- INFO: http://maven.apache.org/ant-tasks.html -->
+    <artifact:remoteRepository id="wyona.remote.repository" url="http://www.wyona.org/maven2/"/>
+
+    <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="javax.servlet" artifactId="servlet-api" 
+                  version="2.3" scope="provided" />
+      <dependency groupId="log4j" artifactId="log4j"
+                  version="1.2.8"/>
+      <dependency groupId="wyona-parser" artifactId="wyona-parser-wiki"
+                  version="r16174"/>
+      <dependency groupId="wyona-yanel" artifactId="wyona-yanel-core"
+                  version="0.0.1-dev-r16191"/>
+    </artifact:dependencies>
+
+    <property name="maven2.cp" refid="maven2.classpath"/>
+    <!--<echo>Maven2 classpath: ${maven2.cp}</echo>-->
+  </target>
+
+</project>
