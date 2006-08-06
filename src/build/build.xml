@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 
-<project name="yanel" default="deploy" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="yanel-main" default="deploy">
 
-  <target name="init" description="Initialize all parameters and other settings">
+  <import file="dependencies.xml"/>
+
+  <target name="init" description="Initialize all parameters and other settings" depends="dependencies">
     <echo>Building with ${ant.version} and Java version ${ant.java.version}</echo>
 
     <property file="local.build.properties"/>
@@ -16,63 +18,16 @@
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="log4j.path" value="${build.dir}/logs"/>
 
-    <!-- INFO: http://maven.apache.org/ant-tasks.html -->
-    <artifact:remoteRepository id="wyona.remote.repository" url="http://www.wyona.org/maven2/"/>
 
-    <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
-      <remoteRepository refid="wyona.remote.repository"/>
-      <dependency groupId="javax.servlet" artifactId="servlet-api" 
-                  version="2.3" scope="provided" />
-      <dependency groupId="log4j" artifactId="log4j"
-                  version="1.2.8"/>
-      <!-- TODO: Add checksum file to server -->
-      <dependency groupId="yarep" artifactId="yarep"
-                  version="0.0.1-dev-r15817"/>
-      <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
-                  version="0.0.1-dev-r15048"/>
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core"
-                  version="0.0.1-dev-r15584"/>
-
-      <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
-      <dependency groupId="avalon-framework" artifactId="avalon-framework-api"
-                  version="4.1.5"/>
-      <dependency groupId="avalon-framework" artifactId="avalon-framework-impl"
-                  version="4.1.5"/>
-      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-discovery"
-                  version="0.2"/>
-      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-id"
-                  version="0.1-dev-lcr357257"/>
-      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-logging"
-                  version="1.0.4"/>
-      <!-- IMPORT: xerces 2.7.1 is dependent on xml-apis 1.3.02 -->
-      <dependency groupId="xerces" artifactId="xercesImpl"
-                  version="2.7.1"/>
-      <dependency groupId="xml-apis" artifactId="xml-apis"
-                  version="1.3.02"/>
-      <dependency groupId="xml-resolver" artifactId="xml-resolver"
-                  version="1.1"/>
-<!--
-      <dependency groupId="xalan" artifactId="xalan"
-                  version="2.7.0"/>
--->
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl"
-                  version="0.0.1-dev-r15775"/>
-    </artifact:dependencies>
-
-    <!--
-    <property name="maven.repo.local" value="${user.home}/.m2/repository"/>
-    -->
-    <property name="maven2.cp" refid="maven2.classpath"/>
-    <!--<echo>Maven2 classpath: ${maven2.cp}</echo>-->
     <path id="classpath">
       <!--
       <fileset dir="${yanel.home.dir}/lib">
         <include name="*.jar"/>
       </fileset>
-       -->
-
+      -->
       <pathelement path="${maven2.cp}"/>
     </path>
+
 
     <path id="classpath.yanel">
       <fileset dir="${yanel.home.dir}/build/lib">
@@ -80,6 +35,7 @@
       </fileset>
       <pathelement path="${maven2.cp}"/>
     </path>
+
 
     <path id="classpath.resources">
       <fileset dir="${yanel.home.dir}/src/resources/tape/build/lib">
