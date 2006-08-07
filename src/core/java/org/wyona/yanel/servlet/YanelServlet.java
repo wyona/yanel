@@ -733,7 +733,7 @@ public class YanelServlet extends HttpServlet {
                     response.setContentType("text/plain");
                     PrintWriter writer = response.getWriter();
                     writer.print("Neutron Authentication Successful!");
-	            response.setStatus(response.SC_OK);
+                    response.setStatus(response.SC_OK);
                     return response;
                 } else {
                     // TODO: Resend login information ...
@@ -741,7 +741,7 @@ public class YanelServlet extends HttpServlet {
                     response.setContentType("text/plain");
                     PrintWriter writer = response.getWriter();
                     writer.print("Authentication Failed!");
-	            response.sendError(response.SC_UNAUTHORIZED);
+                    response.sendError(response.SC_UNAUTHORIZED);
                     return response;
                 }
             } else {
@@ -750,7 +750,7 @@ public class YanelServlet extends HttpServlet {
                 response.setContentType("text/plain");
                 PrintWriter writer = response.getWriter();
                 writer.print("Authentication Failed!");
-	        response.sendError(response.SC_UNAUTHORIZED);
+                response.sendError(response.SC_UNAUTHORIZED);
                 return response;
             }
         }
