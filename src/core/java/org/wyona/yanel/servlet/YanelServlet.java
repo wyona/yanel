@@ -301,79 +301,8 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String yanelUsecase = request.getParameter("yanel.usecase");
-
-        Realm realm = map.getRealm(new Path(request.getServletPath()));
-
-        // HTML Form based authentication
-        String loginUsername = request.getParameter("yanel.login.username");
-        if(loginUsername != null) {
-            HttpSession session = request.getSession(true);
-            if (im.authenticate(loginUsername, request.getParameter("yanel.login.password"), realm.getID())) {
-                log.debug("Realm: " + realm);
-                session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
-            } else {
-                log.warn("Login failed: " + loginUsername);
-                // TODO: Implement response ...
-            }
-        }
-
-        // Neutron-Auth based authentication
-        if(yanelUsecase != null && yanelUsecase.equals("neutron-auth")) {
-            log.debug("Neutron Authentication ...");
-
-            String username = null;
-            String password = null;
-	    DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
-            try {
-                Configuration config = builder.build(request.getInputStream());
-                Configuration[] paramConfig = config.getChildren("param");
-                for (int i = 0; i < paramConfig.length; i++) {
-                    String paramName = paramConfig[i].getAttribute("name", null);
-                    if (paramName != null) {
-                        if (paramName.equals("username")) {
-                            username = paramConfig[i].getValue();
-                        } else if (paramName.equals("password")) {
-                            password = paramConfig[i].getValue();
-                        }
-                    }
-                }
-            } catch(Exception e) {
-                log.error(e);
-            }
-
-            log.debug("Username: " + username);
-
-            if (username != null) {
-                HttpSession session = request.getSession(true);
-                log.debug("Realm ID: " + realm.getID());
-                if (im.authenticate(username, password, realm.getID())) {
-                    log.info("Authentication successful: " + username);
-                    session.setAttribute(IDENTITY_KEY, new Identity(username, null));
-                    // TODO: send some XML content, e.g. <authentication-successful/>
-                    response.setContentType("text/plain");
-                    PrintWriter writer = response.getWriter();
-                    writer.print("Neutron Authentication Successful!");
-	            response.setStatus(response.SC_OK);
-                    return;
-                } else {
-                    // TODO: Resend login information ...
-                    log.warn("Authentication failed: " + username);
-                    response.setContentType("text/plain");
-                    PrintWriter writer = response.getWriter();
-                    writer.print("Authentication Failed!");
-	            response.sendError(response.SC_UNAUTHORIZED);
-                    return;
-                }
-            } else {
-                // TODO: Resend login information ...
-                log.warn("Authentication failed ...");
-                response.setContentType("text/plain");
-                PrintWriter writer = response.getWriter();
-                writer.print("Authentication Failed!");
-	        response.sendError(response.SC_UNAUTHORIZED);
-                return;
-            }
+        if(doAuthenticate(request, response) != null) {
+            return;
         }
 
         if(!authorize(request, response)) {
@@ -745,5 +674,86 @@ public class YanelServlet extends HttpServlet {
         writer.print(sb.toString());
         response.setStatus(response.SC_OK);
         return;
+    }
+
+    /**
+     *
+     */
+    public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String yanelUsecase = request.getParameter("yanel.usecase");
+
+        Realm realm = map.getRealm(new Path(request.getServletPath()));
+
+        // HTML Form based authentication
+        String loginUsername = request.getParameter("yanel.login.username");
+        if(loginUsername != null) {
+            HttpSession session = request.getSession(true);
+            if (im.authenticate(loginUsername, request.getParameter("yanel.login.password"), realm.getID())) {
+                log.debug("Realm: " + realm);
+                session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
+            } else {
+                log.warn("Login failed: " + loginUsername);
+                // TODO: Implement response ...
+            }
+        }
+
+        // Neutron-Auth based authentication
+        if(yanelUsecase != null && yanelUsecase.equals("neutron-auth")) {
+            log.debug("Neutron Authentication ...");
+
+            String username = null;
+            String password = null;
+	    DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+            try {
+                Configuration config = builder.build(request.getInputStream());
+                Configuration[] paramConfig = config.getChildren("param");
+                for (int i = 0; i < paramConfig.length; i++) {
+                    String paramName = paramConfig[i].getAttribute("name", null);
+                    if (paramName != null) {
+                        if (paramName.equals("username")) {
+                            username = paramConfig[i].getValue();
+                        } else if (paramName.equals("password")) {
+                            password = paramConfig[i].getValue();
+                        }
+                    }
+                }
+            } catch(Exception e) {
+                log.error(e);
+            }
+
+            log.debug("Username: " + username);
+
+            if (username != null) {
+                HttpSession session = request.getSession(true);
+                log.debug("Realm ID: " + realm.getID());
+                if (im.authenticate(username, password, realm.getID())) {
+                    log.info("Authentication successful: " + username);
+                    session.setAttribute(IDENTITY_KEY, new Identity(username, null));
+                    // TODO: send some XML content, e.g. <authentication-successful/>
+                    response.setContentType("text/plain");
+                    PrintWriter writer = response.getWriter();
+                    writer.print("Neutron Authentication Successful!");
+	            response.setStatus(response.SC_OK);
+                    return response;
+                } else {
+                    // TODO: Resend login information ...
+                    log.warn("Authentication failed: " + username);
+                    response.setContentType("text/plain");
+                    PrintWriter writer = response.getWriter();
+                    writer.print("Authentication Failed!");
+	            response.sendError(response.SC_UNAUTHORIZED);
+                    return response;
+                }
+            } else {
+                // TODO: Resend login information ...
+                log.warn("Authentication failed ...");
+                response.setContentType("text/plain");
+                PrintWriter writer = response.getWriter();
+                writer.print("Authentication Failed!");
+	        response.sendError(response.SC_UNAUTHORIZED);
+                return response;
+            }
+        }
+    return null;
     }
 }
