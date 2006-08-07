@@ -88,8 +88,20 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String method = request.getMethod();
+        // Logout from Yanel
+        String yanelUsecase = request.getParameter("yanel.usecase");
+        if(yanelUsecase != null && yanelUsecase.equals("logout")) {
+            if(doLogout(request, response) != null) return;
+        }
 
+        // Authentication
+        if(doAuthenticate(request, response) != null) return;
+
+        // Check authorization
+        if(doAuthorize(request, response) != null) return;
+
+        // Delegate ...
+        String method = request.getMethod();
         if (method.equals(METHOD_PROPFIND)) {
             doPropfind(request, response);
 	} else if (method.equals(METHOD_GET)) {
@@ -107,82 +119,6 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String yanelUsecase = request.getParameter("yanel.usecase");
-
-        // Logout from Yanel
-        if(yanelUsecase != null && yanelUsecase.equals("logout")) {
-            if(doLogout(request, response) != null) return;
-        }
-
-        // Check authorization
-        if(!authorize(request, response)) {
-            // HTTP Authorization/Authentication
-            // TODO: Phoenix has not HTTP BASIC or DIGEST implemented yet!
-/*
-            response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
-	    response.sendError(response.SC_UNAUTHORIZED);
-*/
-            // Custom Authorization/Authentication
-            // ...
-
-            // TODO: Check if this is a neutron request or just a common GET request
-            StringBuffer sb = new StringBuffer("");
-            String neutronVersions = request.getHeader("Neutron");
-            // http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
-            String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
-            Realm realm = map.getRealm(new Path(request.getServletPath()));
-            if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
-                log.debug("Neutron Versions supported by client: " + neutronVersions);
-                log.debug("Authentication Scheme supported by client: " + clientSupportedAuthScheme);
-                sb.append("<?xml version=\"1.0\"?>");
-                sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
-                sb.append("<message>Authorization denied: " + getRequestURLQS(request, null, true) + "</message>");
-                sb.append("<authentication>");
-                sb.append("<original-request url=\"" + getRequestURLQS(request, null, true) + "\"/>");
-                //TODO: Also support https ...
-                sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
-                sb.append("<form>");
-                sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
-                sb.append("<param description=\"Username\" name=\"username\"/>");
-                sb.append("<param description=\"Password\" name=\"password\"/>");
-                sb.append("</form>");
-                sb.append("</login>");
-                // NOTE: Needs to be a full URL, because user might switch the server ...
-                sb.append("<logout url=\"" + getRequestURLQS(request, "yanel.usecase=logout", true) + "\" realm=\"" + realm.getName() + "\"/>");
-                sb.append("</authentication>");
-                sb.append("</exception>");
-
-                log.debug("Neutron-Auth response: " + sb);
-                response.setContentType("application/xml");
-                response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
-            } else {
-                // Custom HTML Form authentication
-
-                // TODO: Use configurable XSLT for layout, whereas each realm should be able to overwrite ...
-                sb.append("<?xml version=\"1.0\"?>");
-                sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-                sb.append("<body>");
-                sb.append("<p>Authorization denied: " + getRequestURLQS(request, null, true) + "</p>");
-                sb.append("<p>Enter username and password for realm \"" +  realm.getName()  + "\" at \"" + realm.getMountPoint() + "\" (Context Path: " + request.getContextPath() + ")</p>");
-                sb.append("<form method=\"POST\">");
-                sb.append("<p>");
-                sb.append("<table>");
-                sb.append("<tr><td>Username:</td><td>&#160;</td><td><input type=\"text\" name=\"yanel.login.username\"/></td></tr>");
-                sb.append("<tr><td>Password:</td><td>&#160;</td><td><input type=\"password\" name=\"yanel.login.password\"/></td></tr>");
-                sb.append("<tr><td colspan=\"2\">&#160;</td><td align=\"right\"><input type=\"submit\" value=\"Login\"/></td></tr>");
-                sb.append("</table>");
-                sb.append("</p>");
-                sb.append("</form>");
-                sb.append("</body>");
-                sb.append("</html>");
-                response.setContentType("application/xhtml+xml");
-            }
-            PrintWriter w = response.getWriter();
-            w.print(sb);
-            return;
-        }
-
-
         getContent(request, response);
     }
 
@@ -290,19 +226,6 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if(doAuthenticate(request, response) != null) {
-            return;
-        }
-
-        if(!authorize(request, response)) {
-            // HTTP Authorization/Authentication
-            response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
-	    response.sendError(response.SC_UNAUTHORIZED);
-            // Custom Authorization/Authentication
-            // TODO: Reuse stuff from doGet ...
-            return;
-        }
-
         String value = request.getParameter("yanel.resource.usecase");
 
         if (value != null && value.equals("save")) {
@@ -327,16 +250,7 @@ public class YanelServlet extends HttpServlet {
      * HTTP PUT implementation
      */
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         // TODO: Reuse code doPost resp. share code with doPut
-        if(!authorize(request, response)) {
-            // HTTP Authorization/Authentication
-            response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
-	    response.sendError(response.SC_UNAUTHORIZED);
-            // Custom Authorization/Authentication
-            // ...
-            return;
-        }
 
         String value = request.getParameter("yanel.resource.usecase");
 
@@ -513,7 +427,7 @@ public class YanelServlet extends HttpServlet {
      * Authorize request
      * TODO: Replace hardcoded roles by mapping between roles amd query strings ...
      */
-    private boolean authorize(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private HttpServletResponse doAuthorize(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 	Role role = null;
 
@@ -551,14 +465,23 @@ public class YanelServlet extends HttpServlet {
                 //if (im.authenticate(...)) {
                 if (userpassDecoded.equals("lenya:levi")) {
                     //return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), new Identity(...), new Role("view"));
-                    return true;
+                    authorized = true;
+                    return null;
                 }
-                return false;
+                authorized = false;
+                PrintWriter writer = response.getWriter();
+                writer.print("BASIC Authorization/Authentication Failed!");
+                response.sendError(response.SC_UNAUTHORIZED);
+                return response;
 	    } else if (authorization.toUpperCase().startsWith("DIGEST")) {
                 log.error("DIGEST is not implemented");
-                return false;
+                authorized = false;
+                PrintWriter writer = response.getWriter();
+                writer.print("DIGEST is not implemented!");
+                response.sendError(response.SC_UNAUTHORIZED);
+                return response;
             } else {
-                log.error("No such authorization implemented resp. handled by session based authorization: " + authorization);
+                log.warn("No such authorization implemented resp. handled by session based authorization: " + authorization);
                 authorized = false;
             }
         }
@@ -575,13 +498,80 @@ public class YanelServlet extends HttpServlet {
         }
         authorized = pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, role);
 
-        if (authorized) {
-            log.info("Access granted: " + getRequestURLQS(request, null, false));
-        } else {
+        if(!authorized) {
             log.warn("Access denied: " + getRequestURLQS(request, null, false));
-        }
 
-        return authorized;
+            // TODO: Shouldn't this be here instead at the beginning of service() ...?
+            //if(doAuthenticate(request, response) != null) return response;
+
+            // HTTP Authorization/Authentication
+            // TODO: Ulysses has not HTTP BASIC or DIGEST implemented yet!
+/*
+            response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
+	    response.sendError(response.SC_UNAUTHORIZED);
+*/
+            // Custom Authorization/Authentication
+            // ...
+
+            // TODO: Check if this is a neutron request or just a common GET request
+            StringBuffer sb = new StringBuffer("");
+            String neutronVersions = request.getHeader("Neutron");
+            // http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
+            String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
+            Realm realm = map.getRealm(new Path(request.getServletPath()));
+            if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
+                log.debug("Neutron Versions supported by client: " + neutronVersions);
+                log.debug("Authentication Scheme supported by client: " + clientSupportedAuthScheme);
+                sb.append("<?xml version=\"1.0\"?>");
+                sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
+                sb.append("<message>Authorization denied: " + getRequestURLQS(request, null, true) + "</message>");
+                sb.append("<authentication>");
+                sb.append("<original-request url=\"" + getRequestURLQS(request, null, true) + "\"/>");
+                //TODO: Also support https ...
+                sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
+                sb.append("<form>");
+                sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
+                sb.append("<param description=\"Username\" name=\"username\"/>");
+                sb.append("<param description=\"Password\" name=\"password\"/>");
+                sb.append("</form>");
+                sb.append("</login>");
+                // NOTE: Needs to be a full URL, because user might switch the server ...
+                sb.append("<logout url=\"" + getRequestURLQS(request, "yanel.usecase=logout", true) + "\" realm=\"" + realm.getName() + "\"/>");
+                sb.append("</authentication>");
+                sb.append("</exception>");
+
+                log.debug("Neutron-Auth response: " + sb);
+                response.setContentType("application/xml");
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+            } else {
+                // Custom HTML Form authentication
+
+                // TODO: Use configurable XSLT for layout, whereas each realm should be able to overwrite ...
+                sb.append("<?xml version=\"1.0\"?>");
+                sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+                sb.append("<body>");
+                sb.append("<p>Authorization denied: " + getRequestURLQS(request, null, true) + "</p>");
+                sb.append("<p>Enter username and password for realm \"" +  realm.getName()  + "\" at \"" + realm.getMountPoint() + "\" (Context Path: " + request.getContextPath() + ")</p>");
+                sb.append("<form method=\"POST\">");
+                sb.append("<p>");
+                sb.append("<table>");
+                sb.append("<tr><td>Username:</td><td>&#160;</td><td><input type=\"text\" name=\"yanel.login.username\"/></td></tr>");
+                sb.append("<tr><td>Password:</td><td>&#160;</td><td><input type=\"password\" name=\"yanel.login.password\"/></td></tr>");
+                sb.append("<tr><td colspan=\"2\">&#160;</td><td align=\"right\"><input type=\"submit\" value=\"Login\"/></td></tr>");
+                sb.append("</table>");
+                sb.append("</p>");
+                sb.append("</form>");
+                sb.append("</body>");
+                sb.append("</html>");
+                response.setContentType("application/xhtml+xml");
+            }
+            PrintWriter w = response.getWriter();
+            w.print(sb);
+            return response;
+        } else {
+            log.info("Access granted: " + getRequestURLQS(request, null, false));
+            return null;
+        }
     }
 
     /**
@@ -669,7 +659,6 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String yanelUsecase = request.getParameter("yanel.usecase");
 
         Realm realm = map.getRealm(new Path(request.getServletPath()));
 
@@ -680,13 +669,18 @@ public class YanelServlet extends HttpServlet {
             if (im.authenticate(loginUsername, request.getParameter("yanel.login.password"), realm.getID())) {
                 log.debug("Realm: " + realm);
                 session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
+                return null;
             } else {
                 log.warn("Login failed: " + loginUsername);
-                // TODO: Implement response ...
+                // TODO: Implement form based response ...
+                response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
+	        response.sendError(response.SC_UNAUTHORIZED);
+                return response;
             }
         }
 
         // Neutron-Auth based authentication
+        String yanelUsecase = request.getParameter("yanel.usecase");
         if(yanelUsecase != null && yanelUsecase.equals("neutron-auth")) {
             log.debug("Neutron Authentication ...");
 
@@ -726,7 +720,7 @@ public class YanelServlet extends HttpServlet {
                     return response;
                 } else {
                     // TODO: Resend login information ...
-                    log.warn("Authentication failed: " + username);
+                    log.warn("Neutron Authentication failed: " + username);
                     response.setContentType("text/plain");
                     PrintWriter writer = response.getWriter();
                     writer.print("Authentication Failed!");
@@ -735,15 +729,17 @@ public class YanelServlet extends HttpServlet {
                 }
             } else {
                 // TODO: Resend login information ...
-                log.warn("Authentication failed ...");
+                log.warn("Neutron Authentication failed because username is NULL!");
                 response.setContentType("text/plain");
                 PrintWriter writer = response.getWriter();
                 writer.print("Authentication Failed!");
                 response.sendError(response.SC_UNAUTHORIZED);
                 return response;
             }
+        } else {
+            log.debug("Neutron Authentication successful.");
+            return null;
         }
-    return null;
     }
 
     /**
