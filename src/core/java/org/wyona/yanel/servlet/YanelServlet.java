@@ -111,21 +111,10 @@ public class YanelServlet extends HttpServlet {
 
         // Logout from Yanel
         if(yanelUsecase != null && yanelUsecase.equals("logout")) {
-            log.info("Logout from Yanel ...");
-            HttpSession session = request.getSession(true);
-            session.setAttribute(IDENTITY_KEY, null);
-            String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
-            if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
-                // TODO: send some XML content, e.g. <logout-successful/>
-                response.setContentType("text/plain");
-                PrintWriter writer = response.getWriter();
-                writer.print("Neutron Logout Successful!");
-	        response.setStatus(response.SC_OK);
-                return;
-            }
+            if(doLogout(request, response) != null) return;
         }
 
-        // TODO: Implement Authorization and Authentication: http://www.goldfish.org/books/O'Reilly%20Java%20Enterprise%20CD%20Bookshelf/servlet/ch08_01.htm
+        // Check authorization
         if(!authorize(request, response)) {
             // HTTP Authorization/Authentication
             // TODO: Phoenix has not HTTP BASIC or DIGEST implemented yet!
@@ -755,5 +744,24 @@ public class YanelServlet extends HttpServlet {
             }
         }
     return null;
+    }
+
+    /**
+     *
+     */
+    public HttpServletResponse doLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.info("Logout from Yanel ...");
+        HttpSession session = request.getSession(true);
+        session.setAttribute(IDENTITY_KEY, null);
+        String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
+        if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
+            // TODO: send some XML content, e.g. <logout-successful/>
+            response.setContentType("text/plain");
+            PrintWriter writer = response.getWriter();
+            writer.print("Neutron Logout Successful!");
+            response.setStatus(response.SC_OK);
+            return response;
+        }
+        return null;
     }
 }
