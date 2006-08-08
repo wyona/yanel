@@ -33,6 +33,10 @@ ant -version
 #mvn --version
 
 echo ""
+echo "NOTE 0: As a first time user one does NOT have to configure anything, but just run build.sh and then yanel.sh! :-)"
+echo ""
+
+echo ""
 echo "NOTE 1: Copy src/build/build.properties to src/build/local.build.properties and customize the local.build.properties file."
 echo ""
 
