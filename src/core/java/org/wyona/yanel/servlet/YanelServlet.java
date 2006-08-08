@@ -686,6 +686,7 @@ public class YanelServlet extends HttpServlet {
 
             String username = null;
             String password = null;
+            String originalRequest = null;
 	    DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
             try {
                 Configuration config = builder.build(request.getInputStream());
@@ -700,6 +701,8 @@ public class YanelServlet extends HttpServlet {
                         }
                     }
                 }
+                Configuration originalRequestConfig = config.getChild("original-request");
+                originalRequest = originalRequestConfig.getAttribute("url", null);
             } catch(Exception e) {
                 log.error(e);
             }
@@ -719,12 +722,41 @@ public class YanelServlet extends HttpServlet {
                     response.setStatus(response.SC_OK);
                     return response;
                 } else {
-                    // TODO: Resend login information ...
                     log.warn("Neutron Authentication failed: " + username);
-                    response.setContentType("text/plain");
-                    PrintWriter writer = response.getWriter();
-                    writer.print("Authentication Failed!");
-                    response.sendError(response.SC_UNAUTHORIZED);
+
+                    // TODO: Refactor this code with the one from doAuthenticate ...
+                    log.debug("Original Request: " + originalRequest);
+
+                    StringBuffer sb = new StringBuffer("");
+                    sb.append("<?xml version=\"1.0\"?>");
+                    sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authentication\">");
+                    sb.append("<message>Authentication failed ...</message>");
+                    sb.append("<authentication>");
+                    // TODO: ...
+                    sb.append("<original-request url=\"" + originalRequest + "\"/>");
+                    //sb.append("<original-request url=\"" + getRequestURLQS(request, null, true) + "\"/>");
+                    //TODO: Also support https ...
+                    // TODO: ...
+                    sb.append("<login url=\"" + originalRequest + "&amp;yanel.usecase=neutron-auth" + "\" method=\"POST\">");
+                    //sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
+                    sb.append("<form>");
+                    sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
+                    sb.append("<param description=\"Username\" name=\"username\"/>");
+                    sb.append("<param description=\"Password\" name=\"password\"/>");
+                    sb.append("</form>");
+                    sb.append("</login>");
+                    // NOTE: Needs to be a full URL, because user might switch the server ...
+                    // TODO: ...
+                    sb.append("<logout url=\"" + originalRequest + "&amp;yanel.usecase=logout" + "\" realm=\"" + realm.getName() + "\"/>");
+                    sb.append("</authentication>");
+                    sb.append("</exception>");
+
+                    log.debug("Neutron-Auth response: " + sb);
+
+                    PrintWriter w = response.getWriter();
+                    w.print(sb);
+                    response.setContentType("application/xml");
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                     return response;
                 }
             } else {
