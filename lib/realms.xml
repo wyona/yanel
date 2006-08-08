@@ -2,7 +2,7 @@
 
 <realms xmlns="http://www.wyona.org/yanel/1.0">
 
-<!-- IMPORTANT: Not ready for production. Use (local.)yanel.properties ... -->
+<!-- IMPORTANT: Not ready for production yet. Use (local.)yanel.properties and the other properties files ... -->
 
 <!-- ROOT realm -->
 <realm mount-point="/">
