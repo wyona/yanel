@@ -88,6 +88,13 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String httpAcceptMediaTypes = request.getHeader("Accept");
+        log.error("DEBUG: HTTP Accept Media Types: " + httpAcceptMediaTypes);
+        String httpUserAgent = request.getHeader("User-Agent");
+        log.error("DEBUG: HTTP User Agent: " + httpUserAgent);
+        String httpAcceptLanguage = request.getHeader("Accept-Language");
+        log.error("DEBUG: HTTP Accept Language: " + httpAcceptLanguage);
+
         // Logout from Yanel
         String yanelUsecase = request.getParameter("yanel.usecase");
         if(yanelUsecase != null && yanelUsecase.equals("logout")) {
