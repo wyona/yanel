@@ -687,7 +687,7 @@ public class YanelServlet extends HttpServlet {
             String username = null;
             String password = null;
             String originalRequest = null;
-	    DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+            DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
             try {
                 Configuration config = builder.build(request.getInputStream());
                 Configuration[] paramConfig = config.getChildren("param");
