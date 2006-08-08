@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<realms xmlns="http://www.wyona.org/yanel/1.0">
+
+<!-- IMPORTANT: Not ready for production. Use (local.)yanel.properties ... -->
+
+<!-- ROOT realm -->
+<realm mount-point="/">
+  <name>Yanel Website</name>
+
+<!--
+  <reverse-proxy>
+    <host-name>yanel.wyona.org</host-name>
+    <port></port>
+    <prefix>/yanel</prefix>
+  </reverse-proxy>
+-->
+</realm>
+
+<realm mount-point="/javadoc/">
+  <name>Yanel Javadoc</name>
+</realm>
+
+<!--
+<realm mount-point="/ulysses-demo/">
+  <name>Ulysses Demo</name>
+
+  <reverse-proxy>
+    <host-name>demo.ulysses.wyona.org</host-name>
+    <port></port>
+    <prefix>/yanel/ulysses-demo</prefix>
+  </reverse-proxy>
+</realm>
+-->
+
+</realms>
