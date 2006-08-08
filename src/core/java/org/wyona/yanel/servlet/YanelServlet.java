@@ -192,7 +192,7 @@ public class YanelServlet extends HttpServlet {
 
 
         if (view != null) {
-            response.setContentType(view.getMimeType());
+            response.setContentType(patchContentType(view.getMimeType(), request));
             java.io.InputStream is = view.getInputStream();
 
             byte buffer[] = new byte[8192];
@@ -798,5 +798,19 @@ public class YanelServlet extends HttpServlet {
             return response;
         }
         return null;
+    }
+
+    /**
+     * Microsoft Internet Explorer does not understand application/xhtml+xml
+     * See http://en.wikipedia.org/wiki/Criticisms_of_Internet_Explorer#XHTML
+     */
+    public String patchContentType(String contentType, HttpServletRequest request) throws ServletException, IOException {
+        String httpAcceptMediaTypes = request.getHeader("Accept");
+        log.debug("HTTP Accept Media Types: " + httpAcceptMediaTypes);
+        if (contentType.equals("application/xhtml+xml") && httpAcceptMediaTypes.indexOf("application/xhtml+xml") < 0) {
+            log.error("DEBUG: Patch contentType because client does not seem to understand application/xhtml+xml");
+            return "text/html";
+        }
+        return contentType;
     }
 }
