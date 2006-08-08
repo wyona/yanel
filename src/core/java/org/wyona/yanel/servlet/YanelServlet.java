@@ -89,11 +89,11 @@ public class YanelServlet extends HttpServlet {
      */
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String httpAcceptMediaTypes = request.getHeader("Accept");
-        log.error("DEBUG: HTTP Accept Media Types: " + httpAcceptMediaTypes);
+        log.debug("HTTP Accept Media Types: " + httpAcceptMediaTypes);
         String httpUserAgent = request.getHeader("User-Agent");
-        log.error("DEBUG: HTTP User Agent: " + httpUserAgent);
+        log.debug("HTTP User Agent: " + httpUserAgent);
         String httpAcceptLanguage = request.getHeader("Accept-Language");
-        log.error("DEBUG: HTTP Accept Language: " + httpAcceptLanguage);
+        log.debug("HTTP Accept Language: " + httpAcceptLanguage);
 
         // Logout from Yanel
         String yanelUsecase = request.getParameter("yanel.usecase");
@@ -808,7 +808,7 @@ public class YanelServlet extends HttpServlet {
         String httpAcceptMediaTypes = request.getHeader("Accept");
         log.debug("HTTP Accept Media Types: " + httpAcceptMediaTypes);
         if (contentType.equals("application/xhtml+xml") && httpAcceptMediaTypes.indexOf("application/xhtml+xml") < 0) {
-            log.error("DEBUG: Patch contentType because client does not seem to understand application/xhtml+xml");
+            log.error("DEBUG: Patch contentType with text/html because client (" + request.getHeader("User-Agent") + ") does not seem to understand application/xhtml+xml");
             return "text/html";
         }
         return contentType;
