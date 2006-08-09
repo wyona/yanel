@@ -6,7 +6,7 @@
 >
 
 <!-- IMPORTANT: Needs to correspond to the mime-type which is sent by the server! -->
-<xsl:output method="xhtml"/>
+<xsl:output method="xhtml" encoding="UTF-8"/>
 <!--
 <xsl:output method="html"/>
 -->
@@ -32,6 +32,9 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <xsl:comment>Name: <xsl:value-of select="$yanel.path.name"/> (without suffix: <xsl:value-of select="$name-without-suffix"/>), Path: <xsl:value-of select="$yanel.path"/>, Back 2 Realm: <xsl:value-of select="$yarep.back2realm"/>, Back 2 Context: <xsl:value-of select="$yanel.back2context"/></xsl:comment>
 
   <title><xsl:value-of select="/xhtml:html/xhtml:head/xhtml:title"/> - Yanel</title>
+
+  <!-- This is needed such that Microsoft Internet Explorer displays characters such as &nbsp; correctly (also see xsl:output, whereas I (Michi) am not sure if the encoding is really needed there) -->
+  <meta content="application/xhtml+xml; charset=UTF-8" http-equiv="Content-Type"/>
 </head>
 
 <body>
