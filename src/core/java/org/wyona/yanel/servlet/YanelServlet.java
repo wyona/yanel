@@ -181,13 +181,22 @@ public class YanelServlet extends HttpServlet {
         }
 
 
-        String value = request.getParameter("yanel.resource.usecase");
+        String usecase = request.getParameter("yanel.resource.usecase");
 
-        if (value != null && value.equals("checkout")) {
+        if (usecase != null && usecase.equals("checkout")) {
             log.debug("Checkout data ...");
             // TODO: Implement checkout ...
             log.warn("Acquire lock has not been implemented yet ...!");
             // acquireLock();
+        }
+
+        String meta = request.getParameter("yanel.resource.meta");
+        if (meta != null) {
+            if (meta.length() > 0) {
+                log.error("DEBUG: meta length: " + meta.length());
+            } else {
+                log.error("DEBUG: Show all meta");
+            }
         }
 
 
