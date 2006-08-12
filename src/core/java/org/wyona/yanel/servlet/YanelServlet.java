@@ -17,6 +17,7 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
+import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.map.Map;
@@ -158,12 +159,13 @@ public class YanelServlet extends HttpServlet {
         sb.append("</session>");
 
         String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
+        Resource res = null;
         if (rti != null) {
             ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
             sb.append("<resource-type-identifier namespace=\"" + rtd.getResourceTypeNamespace() + "\" local-name=\"" + rtd.getResourceTypeLocalName() + "\"/>");
 
             try {
-                Resource res = rtr.newResource(rti);
+                res = rtr.newResource(rti);
                 res.setRTD(rtd);
                 if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                     sb.append("<resource>View Descriptors: " + ((ViewableV1) res).getViewDescriptors() + "</resource>");
@@ -196,6 +198,14 @@ public class YanelServlet extends HttpServlet {
                 log.error("DEBUG: meta length: " + meta.length());
             } else {
                 log.error("DEBUG: Show all meta");
+                if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
+                    sb.append("<last-modified>" + new java.util.Date(((ModifiableV2) res).getLastModified(new Path(request.getServletPath()))) + "</last-modified>");
+                }
+                sb.append("</yanel>");
+                response.setContentType("application/xml");
+                PrintWriter writer = response.getWriter();
+                writer.print(sb);
+                return;
             }
         }
 

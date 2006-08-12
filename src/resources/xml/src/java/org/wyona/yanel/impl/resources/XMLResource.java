@@ -19,7 +19,7 @@ package org.wyona.yanel.impl.resources;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.Topic;
-import org.wyona.yanel.core.api.attributes.ModifiableV1;
+import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
@@ -49,7 +49,7 @@ import org.apache.log4j.Category;
 /**
  *
  */
-public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
+public class XMLResource extends Resource implements ViewableV1, ModifiableV2 {
 
     private static Category log = Category.getInstance(XMLResource.class);
 
@@ -213,6 +213,20 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1 {
             log.error(e);
         }
         return null;
+    }
+
+    /**
+     *
+     */
+    public long getLastModified(Path path) {
+        try {
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            return rp.getRepo().getLastModified(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+        } catch(Exception e) {
+            log.error(e);
+        }
+        // TODO: Does that actually make sense?!
+        return -1;
     }
 
     /**
