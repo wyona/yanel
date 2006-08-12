@@ -35,6 +35,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 
   <!-- This is needed such that Microsoft Internet Explorer displays characters such as &nbsp; correctly (also see xsl:output, whereas I (Michi) am not sure if the encoding is really needed there) -->
   <meta content="application/xhtml+xml; charset=UTF-8" http-equiv="Content-Type"/>
+  <meta name="generator" content="Wyona Yanel"/>
 </head>
 
 <body>
