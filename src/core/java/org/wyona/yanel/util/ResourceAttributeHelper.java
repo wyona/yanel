@@ -42,7 +42,7 @@ public class ResourceAttributeHelper {
         if (implemented) {
             log.info(res.getClass().getName() + " does implement " + attribute + " interface!");
         } else {
-            System.out.println(res.getClass().getName() + " does NOT implement " + attribute + " interface!");
+            log.warn(res.getClass().getName() + " does NOT implement " + attribute + " interface!");
         }
         return implemented;
     }
