@@ -12,7 +12,6 @@ Also see http://bugzilla.wyona.com resp. http://yanel.wyona.org
 - YanelServlet: if realm has no authorization specified then the ROOT one is being taken instead that access is being denied: Makes this configurable
 - YanelServlet: Declare Realm for authorization on authentication screen
 - YanelServlet: Unify authentication scheme
-- YanelServlet: Improve exception handling (also handle <yanel ... as an XML object)
 - ResourceTypeRegistry class loading needs to be improved (see Yarep how it should be done ...)
 - Change rti map to XML with the possibility of resource specific path config
 - Introduce Map/Realm mounting
