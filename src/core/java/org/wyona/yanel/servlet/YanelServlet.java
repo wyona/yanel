@@ -243,6 +243,13 @@ public class YanelServlet extends HttpServlet {
                     writer.print(sb);
                     return;
                 }
+
+                // TODO: Compare If-Modified-Since with lastModified and return 304 without content resp. check on ETag
+                String ifModifiedSince = request.getHeader("If-Modified-Since");
+                if (ifModifiedSince != null) {
+                    log.error("DEBUG: TODO: Implement 304 ...");
+                }
+
                 java.io.OutputStream os = response.getOutputStream();
                 os.write(buffer, 0, bytesRead);
                 while ((bytesRead = is.read(buffer)) != -1) {
