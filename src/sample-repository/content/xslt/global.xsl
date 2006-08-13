@@ -77,7 +77,8 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 </tr>
 </table>
   <p>
-    Copyright &#169; 2006 <a href="http://www.wyona.com">Wyona</a> - <font size="-1">Powered by <a href="http://yanel.wyona.org">Wyona Yanel</a>, <a href="https://svn.wyona.org/repos/public/tomcat-cluster/">Wyona Balancer</a>, <a href="http://tomcat.apache.org">Apache Tomcat</a>, <a href="http://httpd.apache.org">Apache HTTP Server</a></font> - <a href="?yanel.resource.meta">Page Info</a>
+    <font size="-1">Powered by <a href="http://yanel.wyona.org">Wyona Yanel</a>, <a href="https://svn.wyona.org/repos/public/tomcat-cluster/">Wyona Balancer</a>, <a href="http://tomcat.apache.org">Apache Tomcat</a>, <a href="http://httpd.apache.org">Apache HTTP Server</a></font><br/>
+    Copyright &#169; 2006 <a href="http://www.wyona.com">Wyona</a>. All rights reserved. - <a href="?yanel.resource.meta">Page Info</a>
   </p>
 </body>
 </html>
