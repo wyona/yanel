@@ -160,19 +160,37 @@ public class YanelServlet extends HttpServlet {
 
         String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
         Resource res = null;
+        long lastModified = -1;
         if (rti != null) {
             ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
             sb.append("<resource-type-identifier namespace=\"" + rtd.getResourceTypeNamespace() + "\" local-name=\"" + rtd.getResourceTypeLocalName() + "\"/>");
 
             try {
                 res = rtr.newResource(rti);
-                res.setRTD(rtd);
-                if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
-                    sb.append("<resource>View Descriptors: " + ((ViewableV1) res).getViewDescriptors() + "</resource>");
-                    String viewId = request.getParameter("yanel.resource.viewid");
-                    view = ((ViewableV1) res).getView(request, viewId);
+                if (res != null) {
+                    res.setRTD(rtd);
+                    sb.append("<resource>");
+                    if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
+                        sb.append("<view>View Descriptors: " + ((ViewableV1) res).getViewDescriptors() + "</view>");
+                        String viewId = request.getParameter("yanel.resource.viewid");
+                        try {
+                            view = ((ViewableV1) res).getView(request, viewId);
+                        } catch(Exception e) {
+                            sb.append("<exception>" + e + "</exception>");
+                            log.error(e.getMessage(), e);
+                        }
+                    } else {
+                        sb.append("<no-view>" + res.getClass().getName() + " is not viewable!</no-view>");
+                    }
+                    if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
+                        lastModified = ((ModifiableV2) res).getLastModified(new Path(request.getServletPath()));
+                        sb.append("<last-modified>" + new java.util.Date(lastModified) + "</last-modified>");
+                    } else {
+                        sb.append("<no-last-modified/>");
+                    }
+                    sb.append("</resource>");
                 } else {
-                    sb.append("<resource>" + res.getClass().getName() + " is not viewable!</resource>");
+                    sb.append("<resource-is-null/>");
                 }
             } catch(Exception e) {
                 sb.append("<exception>" + e + "</exception>");
@@ -198,15 +216,12 @@ public class YanelServlet extends HttpServlet {
                 log.error("DEBUG: meta length: " + meta.length());
             } else {
                 log.error("DEBUG: Show all meta");
-                if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
-                    sb.append("<last-modified>" + new java.util.Date(((ModifiableV2) res).getLastModified(new Path(request.getServletPath()))) + "</last-modified>");
-                }
-                sb.append("</yanel>");
-                response.setContentType("application/xml");
-                PrintWriter writer = response.getWriter();
-                writer.print(sb);
-                return;
             }
+            sb.append("</yanel>");
+            response.setContentType("application/xml");
+            PrintWriter writer = response.getWriter();
+            writer.print(sb);
+            return;
         }
 
 
@@ -233,6 +248,7 @@ public class YanelServlet extends HttpServlet {
                 while ((bytesRead = is.read(buffer)) != -1) {
                     os.write(buffer, 0, bytesRead);
                 }
+                if(lastModified >= 0) response.setDateHeader("Last-Modified", lastModified);
                 return;
             } else {
                 sb.append("<exception>InputStream of view is null!</exception>");
