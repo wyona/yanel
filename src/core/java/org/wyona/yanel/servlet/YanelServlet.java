@@ -364,7 +364,9 @@ public class YanelServlet extends HttpServlet {
 
             // TODO: Well-formedness should NOT be checked necessarily, but only if POST/PUT is supposed to be XML resp. SHOULD be delegated to resource type!
             // Check on well-formedness ...
-            if (true) {
+            String contentType = request.getContentType();
+            log.debug("Content-Type: " + contentType);
+            if (contentType.equals("application/xml") || contentType.equals("application/xhtml+xml")) {
                 javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
                 try {
                     javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
@@ -436,7 +438,6 @@ public class YanelServlet extends HttpServlet {
             Resource res = getResource(request);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
 
-                String contentType = request.getContentType();
                 log.debug("Content-Type: " + contentType);
                 // TODO: Compare mime-type from response with mime-type of resource
                 //if (contentType.equals("text/xml")) { ... }
