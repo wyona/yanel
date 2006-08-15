@@ -362,7 +362,7 @@ public class YanelServlet extends HttpServlet {
             // http://www-128.ibm.com/developerworks/java/library/j-io1/
             byte[] memBuffer = baos.toByteArray();
 
-            // TODO: Well-formedness should NOT be checked necessarily, but only if POST/PUT is supposed to be XML ...
+            // TODO: Well-formedness should NOT be checked necessarily, but only if POST/PUT is supposed to be XML resp. SHOULD be delegated to resource type!
             // Check on well-formedness ...
             if (true) {
                 javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
@@ -739,6 +739,10 @@ public class YanelServlet extends HttpServlet {
             DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
             try {
                 Configuration config = builder.build(request.getInputStream());
+
+                Configuration originalRequestConfig = config.getChild("original-request");
+                originalRequest = originalRequestConfig.getAttribute("url", null);
+
                 Configuration[] paramConfig = config.getChildren("param");
                 for (int i = 0; i < paramConfig.length; i++) {
                     String paramName = paramConfig[i].getAttribute("name", null);
@@ -750,10 +754,8 @@ public class YanelServlet extends HttpServlet {
                         }
                     }
                 }
-                Configuration originalRequestConfig = config.getChild("original-request");
-                originalRequest = originalRequestConfig.getAttribute("url", null);
             } catch(Exception e) {
-                log.error(e);
+                log.warn(e);
             }
 
             log.debug("Username: " + username);
@@ -779,7 +781,7 @@ public class YanelServlet extends HttpServlet {
                     StringBuffer sb = new StringBuffer("");
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authentication\">");
-                    sb.append("<message>Authentication failed ...</message>");
+                    sb.append("<message>Authentication failed!</message>");
                     sb.append("<authentication>");
                     // TODO: ...
                     sb.append("<original-request url=\"" + originalRequest + "\"/>");
@@ -809,12 +811,37 @@ public class YanelServlet extends HttpServlet {
                     return response;
                 }
             } else {
-                // TODO: Resend login information ...
+                // TODO: Refactor resp. reuse response from above ...
                 log.warn("Neutron Authentication failed because username is NULL!");
-                response.setContentType("text/plain");
+
+                StringBuffer sb = new StringBuffer("");
+                sb.append("<?xml version=\"1.0\"?>");
+                sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authentication\">");
+                sb.append("<message>Authentication failed because no username was sent!</message>");
+                sb.append("<authentication>");
+                // TODO: ...
+                sb.append("<original-request url=\"" + originalRequest + "\"/>");
+                //sb.append("<original-request url=\"" + getRequestURLQS(request, null, true) + "\"/>");
+                //TODO: Also support https ...
+                // TODO: ...
+                sb.append("<login url=\"" + originalRequest + "&amp;yanel.usecase=neutron-auth" + "\" method=\"POST\">");
+                //sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
+                sb.append("<form>");
+                sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
+                sb.append("<param description=\"Username\" name=\"username\"/>");
+                sb.append("<param description=\"Password\" name=\"password\"/>");
+                sb.append("</form>");
+                sb.append("</login>");
+                // NOTE: Needs to be a full URL, because user might switch the server ...
+                // TODO: ...
+                sb.append("<logout url=\"" + originalRequest + "&amp;yanel.usecase=logout" + "\" realm=\"" + realm.getName() + "\"/>");
+                sb.append("</authentication>");
+                sb.append("</exception>");
+
                 PrintWriter writer = response.getWriter();
-                writer.print("Authentication Failed!");
-                response.sendError(response.SC_UNAUTHORIZED);
+                response.setContentType("application/xml");
+                writer.print(sb);
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                 return response;
             }
         } else {
