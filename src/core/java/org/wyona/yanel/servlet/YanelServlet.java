@@ -2,6 +2,7 @@ package org.wyona.yanel.servlet;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Enumeration;
@@ -292,14 +293,22 @@ public class YanelServlet extends HttpServlet {
         } else {
             log.warn("No parameter yanel.resource.usecase!");
 
-            // TODO: Implement APP POST 201 ...
             String contentType = request.getContentType();
             log.error("DEBUG: Content Type: " + contentType);
             InputStream in = intercept(request.getInputStream());
 
+            // TODO: Implement Atom entry creation
             if (contentType.equals("application/atom+xml")) {
                 log.error("DEBUG: Atom entry has been created ...");
+                response.setHeader("Location", "http://yanel.wyona.org/index.html");
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_CREATED);
+
+                byte buffer[] = new byte[8192];
+                int bytesRead;
+                OutputStream out = response.getOutputStream();
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
                 return;
             }
 
