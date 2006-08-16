@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<!-- http://bitworking.org/projects/atom/ -->
+
+<service xmlns="http://purl.org/atom/app#">
+  <workspace title="Yanel Website"> 
+    <collection title="Yanel News" href="http://yanel.wyona.org:9290/yanel-dev/atom/news-feed.xml">
+<!--
+      <accept>entry</accept>
+-->
+<!--
+      <accept>application/atom+xml</accept>
+-->
+<!-- NOTE: No accept element means only entries are being allowed (See the spec ...) -->
+    </collection>
+    <collection title="Yanel Images" href="http://ulysses.wyona.org/demo/atom/atom-feed-images.xml">
+      <accept>image/jpeg</accept>
+    </collection>
+    <collection title="Yanel Development E-Mails" href="http://yanel.wyona.org:9290/yanel-dev/atom/development-emails-feed.xml"/>
+  </workspace>
+</service>
