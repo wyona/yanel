@@ -183,6 +183,7 @@ public class YanelServlet extends HttpServlet {
                             log.error(e.getMessage(), e);
                         } catch(Exception e) {
                             // TODO: response.sendError( ....), e.g. 500 and return ...
+                            //response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                             sb.append("<exception>" + e + "</exception>");
                             log.error(e.getMessage(), e);
                         }
