@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /foo/bar.html
+
+User-agent: Nutch
+Disallow: /foo/bar.html
