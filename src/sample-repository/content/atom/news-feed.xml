@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<!-- http://bitworking.org/projects/atom/ -->
+
+<!-- This is a collection of entries -->
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title>Yanel Website News</title>
+  <link rel="self" href="http://yanel.wyona.org:9290/yanel-dev/atom/news-feed.xml"/>
+  <updated>2003-12-13T18:30:02Z</updated>
+  <author><name>Yanel</name></author>
+  <id>urn:uuid:atom/news-feed.xml</id>
+
+
+  <link rel="first"    href="http://www.wyona.org/osr-101/clients/phoenix/news-entries/13-11.xml"/>
+  <link                href="http://www.wyona.org/osr-101/clients/phoenix/news-entries/12.xml"/>
+  <link                href="http://www.wyona.org/osr-101/clients/phoenix/news-entries/11.xml"/>
+  <link                href="http://www.wyona.org/osr-101/clients/phoenix/news-entries/10.xml"/>
+  <link                href="http://www.wyona.org/osr-101/clients/phoenix/news-entries/9.xml"/>
+  <link rel="previous" href="http://www.wyona.org/osr-101/clients/phoenix/news-entries/8.xml"/>
+  <link                href="http://www.wyona.org/osr-101/clients/phoenix/news-entries/7.xml"/>
+  <link rel="next"     href="http://www.wyona.org/osr-101/clients/phoenix/news-entries/6.xml"/>
+  <link                href="http://www.wyona.org/osr-101/clients/phoenix/news-entries/5.xml"/>
+  <link                href="http://www.wyona.org/osr-101/clients/phoenix/news-entries/4.xml"/>
+  <link                href="http://www.wyona.org/osr-101/clients/phoenix/news-entries/3.xml"/>
+  <link                href="http://www.wyona.org/osr-101/clients/phoenix/news-entries/2.xml"/>
+  <link rel="last"     href="http://www.wyona.org/osr-101/clients/phoenix/news-entries/1.xml"/>
+</feed>
