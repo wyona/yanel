@@ -1,5 +1,6 @@
 package org.wyona.yanel.servlet;
 
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
@@ -227,7 +228,7 @@ public class YanelServlet extends HttpServlet {
 
         if (view != null) {
             response.setContentType(patchContentType(view.getMimeType(), request));
-            java.io.InputStream is = view.getInputStream();
+            InputStream is = view.getInputStream();
 
             byte buffer[] = new byte[8192];
             int bytesRead;
@@ -292,6 +293,9 @@ public class YanelServlet extends HttpServlet {
             log.warn("No parameter yanel.resource.usecase!");
 
             // TODO: Implement APP POST 201 ...
+            String contentType = request.getContentType();
+            log.error("DEBUG: Content Type: " + contentType);
+            InputStream in = intercept(request.getInputStream());
 
             getContent(request, response);
         }
@@ -352,7 +356,7 @@ public class YanelServlet extends HttpServlet {
         StringBuffer sb = new StringBuffer();
         log.debug("Save data ...");
 
-            java.io.InputStream in = request.getInputStream();
+            InputStream in = request.getInputStream();
             java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
             byte[] buf = new byte[8192];
             int bytesR;
@@ -884,5 +888,25 @@ public class YanelServlet extends HttpServlet {
             return "text/html";
         }
         return contentType;
+    }
+
+    /**
+     * Intercept InputStream and log content ...
+     */
+    public InputStream intercept(InputStream in) throws IOException {
+        java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
+        byte[] buf = new byte[8192];
+        int bytesR;
+        while ((bytesR = in.read(buf)) != -1) {
+            baos.write(buf, 0, bytesR);
+        }
+
+        // Buffer within memory (TODO: Maybe replace with File-buffering ...)
+        // http://www-128.ibm.com/developerworks/java/library/j-io1/
+        byte[] memBuffer = baos.toByteArray();
+
+        log.error("DEBUG: InputStream: " + baos);
+
+        return new java.io.ByteArrayInputStream(memBuffer);
     }
 }
