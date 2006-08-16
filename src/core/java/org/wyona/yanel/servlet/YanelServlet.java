@@ -297,6 +297,12 @@ public class YanelServlet extends HttpServlet {
             log.error("DEBUG: Content Type: " + contentType);
             InputStream in = intercept(request.getInputStream());
 
+            if (contentType.equals("application/atom+xml")) {
+                log.error("DEBUG: Atom entry has been created ...");
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_CREATED);
+                return;
+            }
+
             getContent(request, response);
         }
     }
