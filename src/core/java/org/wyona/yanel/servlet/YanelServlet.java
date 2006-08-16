@@ -177,7 +177,12 @@ public class YanelServlet extends HttpServlet {
                         String viewId = request.getParameter("yanel.resource.viewid");
                         try {
                             view = ((ViewableV1) res).getView(request, viewId);
+                        } catch(org.wyona.yarep.core.NoSuchNodeException e) {
+                            // TODO: 404 and return ....
+                            sb.append("<exception>" + e + "</exception>");
+                            log.error(e.getMessage(), e);
                         } catch(Exception e) {
+                            // TODO: response.sendError( ....), e.g. 500 and return ...
                             sb.append("<exception>" + e + "</exception>");
                             log.error(e.getMessage(), e);
                         }
