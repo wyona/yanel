@@ -904,7 +904,7 @@ public class YanelServlet extends HttpServlet {
     public String patchContentType(String contentType, HttpServletRequest request) throws ServletException, IOException {
         String httpAcceptMediaTypes = request.getHeader("Accept");
         log.debug("HTTP Accept Media Types: " + httpAcceptMediaTypes);
-        if (contentType.equals("application/xhtml+xml") && httpAcceptMediaTypes.indexOf("application/xhtml+xml") < 0) {
+        if (contentType.equals("application/xhtml+xml") && httpAcceptMediaTypes != null && httpAcceptMediaTypes.indexOf("application/xhtml+xml") < 0) {
             log.error("DEBUG: Patch contentType with text/html because client (" + request.getHeader("User-Agent") + ") does not seem to understand application/xhtml+xml");
             return "text/html";
         }
