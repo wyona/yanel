@@ -9,7 +9,7 @@
 <xsl:output method="xml"/>
 
 <xsl:template match="/">
-<feed xmlns="http://www.w3.org/2005/Atom" xml:base="http://yanel.wyona.org{/dir:directory/@yanel:path}">
+<feed xmlns="http://www.w3.org/2005/Atom" xml:base="http://yanel.wyona.org:9290/yanel-dev{/dir:directory/@yanel:path}">
 
   <title>Yanel Website News</title>
   <link rel="self" href="{/dir:directory/@yanel:path}"/>
