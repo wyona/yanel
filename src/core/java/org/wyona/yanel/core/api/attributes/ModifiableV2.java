@@ -25,7 +25,7 @@ import java.io.Reader;
 import java.io.Writer;
 
 /**
- *
+ * DEV (not released yet), please be aware that this interface still might change ...
  */
 public interface ModifiableV2 {
     // TODO: Shouldn't it be the other way around, that the Resource is passed to a Repository instead the Repository to the Resource?!
