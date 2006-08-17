@@ -464,8 +464,11 @@ public class YanelServlet extends HttpServlet {
         Resource res = getResource(request);
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
             out = ((ModifiableV1) res).getOutputStream(new Path(request.getServletPath()));
+        } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
+            out = ((ModifiableV2) res).getOutputStream(new Path(request.getServletPath()));
         } else {
-            log.warn(res.getClass().getName() + " is not modifiable (version 1)!");
+            String message = res.getClass().getName() + " is not modifiable (neither V1 nor V2)!";
+            log.warn(message);
  
             StringBuffer sb = new StringBuffer();
 
@@ -474,7 +477,7 @@ public class YanelServlet extends HttpServlet {
             sb.append("<?xml version=\"1.0\"?>");
             sb.append("<html>");
             sb.append("<body>");
-            sb.append("<resource>" + res.getClass().getName() + " is not modifiable (version 1)!</resource>");
+            sb.append("<resource>" + message + "</resource>");
             sb.append("</body>");
             sb.append("</html>");
             response.setContentType("application/xhtml+xml");
@@ -482,7 +485,7 @@ public class YanelServlet extends HttpServlet {
 
             sb.append("<?xml version=\"1.0\"?>");
             sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"neutron\">");
-            sb.append("<message>" + res.getClass().getName() + " is not modifiable (version 1)!</message>");
+            sb.append("<message>" + message + "</message>");
             sb.append("</exception>");
             response.setContentType("application/xml");
             PrintWriter w = response.getWriter();
