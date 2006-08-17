@@ -4,7 +4,10 @@
 
 <service xmlns="http://purl.org/atom/app#">
   <workspace title="Yanel Website"> 
+    <collection title="Yanel News" href="http://yanel.wyona.org:9290/yanel-dev/atom/entries/">
+<!--
     <collection title="Yanel News" href="http://yanel.wyona.org:9290/yanel-dev/atom/news-feed.xml">
+-->
 <!--
       <accept>entry</accept>
 -->
