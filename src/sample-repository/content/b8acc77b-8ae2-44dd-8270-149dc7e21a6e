@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<entry xmlns="http://www.w3.org/2005/Atom">
+ <title>Yanel supports APP</title>
+ <author><name>Michael Wechner</name></author>
+ <id>urn:uuid:b8acc77b-8ae2-44dd-8270-149dc7e21a6e</id>
+ <updated>2006-07-22T16:30:57-07:00</updated>
+ <summary type='html'>Yanel supports atom entry creation through APP</summary>
+ <content type='xhtml'><div xmlns='http://www.w3.org/1999/xhtml'><p>Yanel supports atom entry creation through APP</p></div></content>
+ <dc:subject xmlns:dc='http://purl.org/dc/elements/1.1/'>Yanel supports Atom Publishing Protocol</dc:subject>
+</entry>
