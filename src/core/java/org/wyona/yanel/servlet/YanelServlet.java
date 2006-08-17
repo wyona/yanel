@@ -305,17 +305,25 @@ public class YanelServlet extends HttpServlet {
 
             // TODO: Implement Atom entry creation
             if (contentType.equals("application/atom+xml")) {
-                log.error("DEBUG: Atom entry has been created ...");
-                response.setHeader("Location", "http://yanel.wyona.org/index.html");
-                response.setStatus(javax.servlet.http.HttpServletResponse.SC_CREATED);
+                try {
+                    Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}xml/>");
+                    java.io.Writer writer = ((ModifiableV2)atomEntry).getWriter(new Path("/atom/entries/HUGO.xml"));
 
-                byte buffer[] = new byte[8192];
-                int bytesRead;
-                OutputStream out = response.getOutputStream();
-                while ((bytesRead = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytesRead);
+                    log.error("DEBUG: Atom entry has been created ...");
+                    response.setHeader("Location", "http://yanel.wyona.org/index.html");
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_CREATED);
+
+                    byte buffer[] = new byte[8192];
+                    int bytesRead;
+                    OutputStream out = response.getOutputStream();
+                    while ((bytesRead = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytesRead);
+                    }
+                    return;
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    throw new IOException(e.getMessage());
                 }
-                return;
             }
 
             getContent(request, response);
@@ -374,22 +382,21 @@ public class YanelServlet extends HttpServlet {
      *
      */
     private void save(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        StringBuffer sb = new StringBuffer();
         log.debug("Save data ...");
 
-            InputStream in = request.getInputStream();
-            java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
-            byte[] buf = new byte[8192];
-            int bytesR;
-            while ((bytesR = in.read(buf)) != -1) {
-                baos.write(buf, 0, bytesR);
-            }
+        InputStream in = request.getInputStream();
+        java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
+        byte[] buf = new byte[8192];
+        int bytesR;
+        while ((bytesR = in.read(buf)) != -1) {
+            baos.write(buf, 0, bytesR);
+        }
 
-            // Buffer within memory (TODO: Maybe replace with File-buffering ...)
-            // http://www-128.ibm.com/developerworks/java/library/j-io1/
-            byte[] memBuffer = baos.toByteArray();
+        // Buffer within memory (TODO: Maybe replace with File-buffering ...)
+        // http://www-128.ibm.com/developerworks/java/library/j-io1/
+        byte[] memBuffer = baos.toByteArray();
 
-            // TODO: Well-formedness should NOT be checked necessarily, but only if POST/PUT is supposed to be XML resp. SHOULD be delegated to resource type!
+            // TODO: Should be delegated to resource type, e.g. <{http://...}xml/>!
             // Check on well-formedness ...
             String contentType = request.getContentType();
             log.debug("Content-Type: " + contentType);
@@ -414,6 +421,7 @@ public class YanelServlet extends HttpServlet {
                 } catch (org.xml.sax.SAXException e) {
                     log.warn("Data is not well-formed: "+e.getMessage());
 
+                    StringBuffer sb = new StringBuffer();
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"data-not-well-formed\">");
                     sb.append("<message>Data is not well-formed: "+e.getMessage()+"</message>");
@@ -426,6 +434,7 @@ public class YanelServlet extends HttpServlet {
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
 
+                    StringBuffer sb = new StringBuffer();
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"neutron\">");
                     //sb.append("<message>" + e.getStackTrace() + "</message>");
@@ -442,8 +451,6 @@ public class YanelServlet extends HttpServlet {
             log.info("Data seems to be well-formed :-)");
             }
 
-
-
 /*
 	    if (bytesRead == -1) {
                 response.setContentType("text/plain");
@@ -453,51 +460,74 @@ public class YanelServlet extends HttpServlet {
             }
 */
 
+        OutputStream out = null;
+        Resource res = getResource(request);
+        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
+            out = ((ModifiableV1) res).getOutputStream(new Path(request.getServletPath()));
+        } else {
+            log.warn(res.getClass().getName() + " is not modifiable (version 1)!");
+ 
+            StringBuffer sb = new StringBuffer();
+
+            // TODO: Differentiate between Neutron based and other clients ...
 /*
-            java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
-            out.write(buffer, 0, bytesRead);
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
-            }
-            log.error("DEBUG: Received Data: " + out.toString());
+            sb.append("<?xml version=\"1.0\"?>");
+            sb.append("<html>");
+            sb.append("<body>");
+            sb.append("<resource>" + res.getClass().getName() + " is not modifiable (version 1)!</resource>");
+            sb.append("</body>");
+            sb.append("</html>");
+            response.setContentType("application/xhtml+xml");
 */
 
-            Resource res = getResource(request);
-            if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
+            sb.append("<?xml version=\"1.0\"?>");
+            sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"neutron\">");
+            sb.append("<message>" + res.getClass().getName() + " is not modifiable (version 1)!</message>");
+            sb.append("</exception>");
+            response.setContentType("application/xml");
 
-                log.debug("Content-Type: " + contentType);
-                // TODO: Compare mime-type from response with mime-type of resource
-                //if (contentType.equals("text/xml")) { ... }
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
 
-                byte[] buffer = new byte[8192];
-                int bytesRead;
-                java.io.ByteArrayInputStream memIn = new java.io.ByteArrayInputStream(memBuffer);
-                java.io.OutputStream out = ((ModifiableV1) res).getOutputStream(new Path(request.getServletPath()));
-                while ((bytesRead = memIn.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytesRead);
-                }
+        if (out != null) {
+            log.debug("Content-Type: " + contentType);
+            // TODO: Compare mime-type from response with mime-type of resource
+            //if (contentType.equals("text/xml")) { ... }
 
-                sb.append("<?xml version=\"1.0\"?>");
-                sb.append("<html>");
-                sb.append("<body>");
-                sb.append("<p>Data has been saved ...</p>");
-                sb.append("</body>");
-                sb.append("</html>");
-                response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
-                response.setContentType("application/xhtml+xml");
-
-                log.info("Data has been saved ...");
-            } else {
-                log.warn(res.getClass().getName() + " is not modifiable!");
-
-                sb.append("<?xml version=\"1.0\"?>");
-                sb.append("<html>");
-                sb.append("<body>");
-                sb.append("<resource>" + res.getClass().getName() + " is not modifiable!</resource>");
-                sb.append("</body>");
-                sb.append("</html>");
-                response.setContentType("application/xhtml+xml");
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            java.io.ByteArrayInputStream memIn = new java.io.ByteArrayInputStream(memBuffer);
+            while ((bytesRead = memIn.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
             }
+
+            StringBuffer sb = new StringBuffer();
+            sb.append("<?xml version=\"1.0\"?>");
+            sb.append("<html>");
+            sb.append("<body>");
+            sb.append("<p>Data has been saved ...</p>");
+            sb.append("</body>");
+            sb.append("</html>");
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+            response.setContentType("application/xhtml+xml");
+
+            log.info("Data has been saved ...");
+            return;
+        } else {
+            log.error("OutputStream is null!");
+ 
+            StringBuffer sb = new StringBuffer();
+            sb.append("<?xml version=\"1.0\"?>");
+            sb.append("<html>");
+            sb.append("<body>");
+            sb.append("<p>Exception: OutputStream is null!</p>");
+            sb.append("</body>");
+            sb.append("</html>");
+            response.setContentType("application/xhtml+xml");
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
     }
 
     /**
