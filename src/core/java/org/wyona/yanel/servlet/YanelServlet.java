@@ -485,6 +485,8 @@ public class YanelServlet extends HttpServlet {
             sb.append("<message>" + res.getClass().getName() + " is not modifiable (version 1)!</message>");
             sb.append("</exception>");
             response.setContentType("application/xml");
+            PrintWriter w = response.getWriter();
+            w.print(sb);
 
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
@@ -509,6 +511,8 @@ public class YanelServlet extends HttpServlet {
             sb.append("<p>Data has been saved ...</p>");
             sb.append("</body>");
             sb.append("</html>");
+            PrintWriter w = response.getWriter();
+            w.print(sb);
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             response.setContentType("application/xhtml+xml");
 
@@ -524,6 +528,8 @@ public class YanelServlet extends HttpServlet {
             sb.append("<p>Exception: OutputStream is null!</p>");
             sb.append("</body>");
             sb.append("</html>");
+            PrintWriter w = response.getWriter();
+            w.print(sb);
             response.setContentType("application/xhtml+xml");
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
