@@ -105,7 +105,7 @@ public class DirectoryResource extends Resource implements ViewableV1 {
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
             transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
             defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
-            defaultView.setMimeType("application/xhtml+xml");
+            defaultView.setMimeType(getMimeType(path));
 	    defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
         } catch (Exception e) {
             log.error(e);
@@ -158,5 +158,31 @@ public class DirectoryResource extends Resource implements ViewableV1 {
         }
 
         return null;
+    }
+
+    /**
+     *
+     */
+    private String getMimeType(Path path) {
+        String mimeType = null;
+        try {
+            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
+
+            while ((mimeType = br.readLine()) != null) {
+                if (mimeType.indexOf("mime-type:") == 0) {
+                    mimeType = mimeType.substring(11);
+                    log.info("*" + mimeType + "*");
+                    // TODO: Maybe validate mime-type ...
+                    return mimeType;
+                }
+            }
+        } catch(Exception e) {
+            log.warn(e);
+        }
+
+        // NOTE: Assuming fallback re dir2xhtml.xsl ...
+        return "application/xhtml+xml";
     }
 }
