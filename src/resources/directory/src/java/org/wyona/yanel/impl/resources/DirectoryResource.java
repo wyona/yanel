@@ -24,8 +24,10 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
+import org.wyona.yarep.util.RepoPath;
 
 import org.apache.log4j.Category;
 
@@ -66,20 +68,21 @@ public class DirectoryResource extends Resource implements ViewableV1 {
 	//sb.append("<?xml-stylesheet type=\"text/xsl\" href=\"yanel/resources/directory/xslt/dir2xhtml.xsl\"?>");
 
 
+        Repository contentRepo = null;
         try {
-            org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
-            Repository repo = rp.getRepo();
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            contentRepo = rp.getRepo();
             org.wyona.yarep.core.Path p = rp.getPath();
 
             // NOTE: The schema is according to http://cocoon.apache.org/2.1/userdocs/directory-generator.html
 	    sb.append("<dir:directory yanel:path=\"" + path + "\" name=\"" + p.getName() + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
             // TODO: Do not show the children with suffix .yanel-rti resp. make this configurable!
 	    // NOTE: Do not hardcode the .yanel-rti, but rather use Path.getRTIPath ...
-            org.wyona.yarep.core.Path[] children = repo.getChildren(p);
+            org.wyona.yarep.core.Path[] children = contentRepo.getChildren(p);
             for (int i = 0; i < children.length; i++) {
-                if (repo.isResource(children[i])) {
+                if (contentRepo.isResource(children[i])) {
 	            sb.append("<dir:file path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
-                } else if (repo.isCollection(children[i])) {
+                } else if (contentRepo.isCollection(children[i])) {
 	            sb.append("<dir:directory path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
                 } else {
 	            sb.append("<yanel:exception yanel:path=\"" + children[i] + "\"/>");
@@ -96,16 +99,14 @@ public class DirectoryResource extends Resource implements ViewableV1 {
             return defaultView;
         }
 
-        File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "dir2xhtml.xsl");
-        log.debug("XSLT file: " + xsltFile);
         try {
-        Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
-        // TODO: Is this the best way to generate an InputStream from an OutputStream?
-        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-        transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
-        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
-        defaultView.setMimeType("application/xhtml+xml");
-	defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+            Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, contentRepo));
+            // TODO: Is this the best way to generate an InputStream from an OutputStream?
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
+            defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+            defaultView.setMimeType("application/xhtml+xml");
+	    defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
         } catch (Exception e) {
             log.error(e);
         }
@@ -118,5 +119,44 @@ public class DirectoryResource extends Resource implements ViewableV1 {
      */
     public View getView(HttpServletRequest request, String viewId) {
         return getView(new Path(request.getServletPath()), viewId);
+    }
+
+    /**
+     *
+     */
+    private StreamSource getXSLTStreamSource(Path path, Repository repo) throws NoSuchNodeException {
+        Path xsltPath = getXSLTPath(path);
+        if(xsltPath != null) {
+            return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString())));
+        } else {
+            File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "dir2xhtml.xsl");
+            log.error("DEBUG: XSLT file: " + xsltFile);
+            return new StreamSource(xsltFile);
+        }
+    }
+
+    /**
+     *
+     */
+    private Path getXSLTPath(Path path) {
+        String xsltPath = null;
+        try {
+            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
+
+            while((xsltPath = br.readLine()) != null) {
+                if (xsltPath.indexOf("xslt:") == 0) {
+                    xsltPath = xsltPath.substring(6);
+                    log.debug("XSLT Path: " + xsltPath);
+                    return new Path(xsltPath);
+                }
+            }
+            log.error("No XSLT Path within: " +rpRTI.getPath());
+        } catch(Exception e) {
+            log.warn(e);
+        }
+
+        return null;
     }
 }
