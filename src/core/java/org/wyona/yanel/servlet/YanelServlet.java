@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.util.Enumeration;
 
@@ -307,18 +308,22 @@ public class YanelServlet extends HttpServlet {
             if (contentType.equals("application/atom+xml")) {
                 try {
                     Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}xml/>");
-                    java.io.Writer writer = ((ModifiableV2)atomEntry).getWriter(new Path("/atom/entries/HUGO.xml"));
-
-                    log.error("DEBUG: Atom entry has been created ...");
-                    response.setHeader("Location", "http://yanel.wyona.org/index.html");
-                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_CREATED);
-
+                    OutputStream out = ((ModifiableV2)atomEntry).getOutputStream(new Path("/atom/entries/HUGO.xml"));
                     byte buffer[] = new byte[8192];
                     int bytesRead;
-                    OutputStream out = response.getOutputStream();
                     while ((bytesRead = in.read(buffer)) != -1) {
                         out.write(buffer, 0, bytesRead);
                     }
+                    log.error("DEBUG: Atom entry has been created ...");
+
+                    InputStream resourceIn = ((ModifiableV2)atomEntry).getInputStream(new Path("/atom/entries/HUGO.xml"));
+                    OutputStream responseOut = response.getOutputStream();
+                    while ((bytesRead = resourceIn.read(buffer)) != -1) {
+                        responseOut.write(buffer, 0, bytesRead);
+                    }
+
+                    response.setHeader("Location", "http://yanel.wyona.org/index.html");
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_CREATED);
                     return;
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);

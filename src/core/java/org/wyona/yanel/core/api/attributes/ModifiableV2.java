@@ -19,6 +19,7 @@ package org.wyona.yanel.core.api.attributes;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Topic;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
@@ -34,6 +35,11 @@ public interface ModifiableV2 {
      *
      */
     public Reader getReader(Path path) throws Exception;
+
+    /**
+     *
+     */
+    public InputStream getInputStream(Path path) throws Exception;
 
     /**
      *
