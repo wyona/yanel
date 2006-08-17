@@ -304,25 +304,26 @@ public class YanelServlet extends HttpServlet {
             log.error("DEBUG: Content Type: " + contentType);
             InputStream in = intercept(request.getInputStream());
 
-            // TODO: Implement Atom entry creation
             if (contentType.equals("application/atom+xml")) {
                 try {
                     Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}xml/>");
-                    OutputStream out = ((ModifiableV2)atomEntry).getOutputStream(new Path("/atom/entries/HUGO.xml"));
+                    Path entryPath = new Path("/atom/entries/" + new java.util.Date().getTime() + ".xml");
+                    OutputStream out = ((ModifiableV2)atomEntry).getOutputStream(entryPath);
                     byte buffer[] = new byte[8192];
                     int bytesRead;
                     while ((bytesRead = in.read(buffer)) != -1) {
                         out.write(buffer, 0, bytesRead);
                     }
-                    log.error("DEBUG: Atom entry has been created ...");
+                    log.error("DEBUG: Atom entry has been created: " + entryPath);
 
-                    InputStream resourceIn = ((ModifiableV2)atomEntry).getInputStream(new Path("/atom/entries/HUGO.xml"));
+                    InputStream resourceIn = ((ModifiableV2)atomEntry).getInputStream(entryPath);
                     OutputStream responseOut = response.getOutputStream();
                     while ((bytesRead = resourceIn.read(buffer)) != -1) {
                         responseOut.write(buffer, 0, bytesRead);
                     }
 
-                    response.setHeader("Location", "http://yanel.wyona.org/index.html");
+                    // TODO: Fix Location ...
+                    response.setHeader("Location", "http://yanel.wyona.org" + entryPath);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_CREATED);
                     return;
                 } catch (Exception e) {
