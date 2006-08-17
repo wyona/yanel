@@ -323,7 +323,7 @@ public class YanelServlet extends HttpServlet {
                     }
 
                     // TODO: Fix Location ...
-                    response.setHeader("Location", "http://yanel.wyona.org" + entryPath);
+                    response.setHeader("Location", "http://yanel.wyona.org:9290/yanel-dev" + entryPath);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_CREATED);
                     return;
                 } catch (Exception e) {
