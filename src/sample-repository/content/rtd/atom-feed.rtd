@@ -1,3 +1,4 @@
 <{http://www.wyona.org/yanel/resource/1.0}directory/>
 xslt: /xslt/dir2atomfeed.xsl
-mime-type: application/atom+xml
+mime-type: application/xml
+#mime-type: application/atom+xml
