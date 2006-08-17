@@ -19,6 +19,7 @@ package org.wyona.yanel.impl.resources;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.Topic;
+import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
@@ -49,7 +50,7 @@ import org.apache.log4j.Category;
 /**
  *
  */
-public class XMLResource extends Resource implements ViewableV1, ModifiableV2 {
+public class XMLResource extends Resource implements ViewableV1, ModifiableV1, ModifiableV2 {
 
     private static Category log = Category.getInstance(XMLResource.class);
 
@@ -168,20 +169,24 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV2 {
     /**
      *
      */
-    public Reader getReader(Path path) {
-        try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
-            return rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString()));
-        } catch(Exception e) {
-            log.error(e);
-        }
-        return null;
+    public Reader getReader(Path path) throws Exception {
+        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+        return rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString()));
     }
 
     /**
      *
      */
-    public Reader getReader(Topic topic) {
+    public InputStream getInputStream(Path path) throws Exception {
+        // TODO: Reuse stuff from getReader ...
+        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+        return rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+    }
+
+    /**
+     *
+     */
+    public Reader getReader(Topic topic) throws Exception {
         log.error("Not implemented yet!");
         return null;
     }

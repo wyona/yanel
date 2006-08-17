@@ -30,6 +30,7 @@ import org.wyona.yarep.util.RepoPath;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
@@ -146,14 +147,23 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
      *
      */
     public Reader getReader(Path path) throws Exception {
-            org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
-            return rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+        org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+        return rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString()));
     }
 
     /**
      *
      */
-    public Reader getReader(Topic topic) {
+    public InputStream getInputStream(Path path) throws Exception {
+        // Reuse stuff from getReader ...
+        org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+        return rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+    }
+
+    /**
+     *
+     */
+    public Reader getReader(Topic topic) throws Exception {
         log.error("Not implemented yet!");
         return null;
     }
