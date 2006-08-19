@@ -23,7 +23,11 @@
 
 <body>
 <p>
-<b>Collection Path:</b> <xsl:value-of select="/dir:directory/@yanel:path"/> (<a href="?yanel.resource.viewid=source">XML view</a>)
+<b>Yanel Path:</b> <xsl:value-of select="/dir:directory/@yanel:path"/>
+</p>
+
+<p>
+<b>Collection Path:</b> <xsl:value-of select="/dir:directory/@dir:path"/> (<a href="?yanel.resource.viewid=source">XML view</a>)
 </p>
 
 <p>
