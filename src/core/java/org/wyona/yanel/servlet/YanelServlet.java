@@ -307,7 +307,9 @@ public class YanelServlet extends HttpServlet {
             if (contentType.equals("application/atom+xml")) {
                 try {
                     Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}xml/>");
-                    Path entryPath = new Path("/atom/entries/" + new java.util.Date().getTime() + ".xml");
+                    // TODO: Replace hardcoded path ...
+                    Path entryPath = new Path("/demo/atom/entries/" + new java.util.Date().getTime() + ".xml");
+                    //Path entryPath = new Path("/atom/entries/" + new java.util.Date().getTime() + ".xml");
                     OutputStream out = ((ModifiableV2)atomEntry).getOutputStream(entryPath);
                     byte buffer[] = new byte[8192];
                     int bytesRead;
@@ -323,7 +325,8 @@ public class YanelServlet extends HttpServlet {
                     }
 
                     // TODO: Fix Location ...
-                    response.setHeader("Location", "http://yanel.wyona.org:9290/yanel-dev" + entryPath);
+                    response.setHeader("Location", "http://ulysses.wyona.org" + entryPath);
+                    //response.setHeader("Location", "http://yanel.wyona.org:9290/yanel-dev" + entryPath);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_CREATED);
                     return;
                 } catch (Exception e) {
