@@ -36,12 +36,6 @@ import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.Role;
 
-/*
-import com.wyonapictures.yanel.impl.resources.TapeResource;
-import com.wyona.yanel.impl.resources.InvoiceResource;
-import org.wyona.yanel.impl.resources.WebSearchResource;
-*/
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
