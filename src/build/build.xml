@@ -108,6 +108,15 @@
     />
   </target>
 
+  <!-- Generic deploy target for a specific resource -->
+  <target name="deploy-resource" description="Deploy JAR of a specified resource" depends="init">
+    <property name="resource.home.dir" value="${yanel.home.dir}/src/resources/NULL"/>
+
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
+      <fileset dir="${resource.home.dir}/build/lib"/>
+    </copy>
+  </target>
+
   <target name="compile-tape-resource" description="Compile Java classes of Tape resource" depends="init">
     <property name="tape-resource.classes.dir" value="${yanel.home.dir}/src/resources/tape/build/classes"/>
     <mkdir dir="${tape-resource.classes.dir}"/>
@@ -210,26 +219,34 @@
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
       <fileset dir="${yanel.home.dir}/build/lib"/>
     </copy>
-    <!--
-    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes">
-      <fileset dir="${yanel.home.dir}/build/classes"/>
-    </copy>
-    -->
 
-    <!-- TODO: Copy these libs dynamically -->
-    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
-      <fileset dir="${yanel.home.dir}/src/resources/file/build/lib"/>
-      <fileset dir="${yanel.home.dir}/src/resources/directory/build/lib"/>
-      <fileset dir="${yanel.home.dir}/src/resources/websearch/build/lib"/>
-      <fileset dir="${yanel.home.dir}/src/resources/odt/build/lib"/>
-      <fileset dir="${yanel.home.dir}/src/resources/xml/build/lib"/>
-      <fileset dir="${yanel.home.dir}/src/resources/invoice/build/lib"/>
+    <!-- Copy resources (TODO: Copy these dynamically based on yanel.properties) -->
+    <antcall target="deploy-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/file"/>
+    </antcall>
+    <antcall target="deploy-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/directory"/>
+    </antcall>
+    <antcall target="deploy-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/websearch"/>
+    </antcall>
+    <antcall target="deploy-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/odt"/>
+    </antcall>
+    <antcall target="deploy-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/xml"/>
+    </antcall>
+    <antcall target="deploy-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/tape"/>
+    </antcall>
+    <antcall target="deploy-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/invoice"/>
+    </antcall>
 <!--
-      <fileset dir="${yanel.home.dir}/src/resources/calendar/build/lib"/>
+    <antcall target="deploy-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/calendar"/>
+    </antcall>
 -->
-      <fileset dir="${yanel.home.dir}/src/resources/tape/build/lib"/>
-    </copy>
-
 
 <!--
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes">
