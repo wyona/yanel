@@ -67,36 +67,17 @@
 <!--
   <target name="init-runtime" description="Initialize all parameters and other settings for runtime" depends="webapp">
 -->
+
     <path id="classpath.run">
-      <pathelement path="${yanel.home.dir}/build/classes"/>
-<!--
-      <fileset dir="${yanel.home.dir}/build/lib">
-        <include name="*.jar"/>
-      </fileset>
--->
       <!-- Properties files -->
       <pathelement path="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
-      <fileset dir="${yanel.home.dir}/src/resources/tape/build/lib">
+
+      <!-- All from source generated libs -->
+      <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib">
         <include name="*.jar"/>
       </fileset>
-      <fileset dir="${yanel.home.dir}/src/resources/invoice/build/lib">
-        <include name="*.jar"/>
-      </fileset>
-      <fileset dir="${yanel.home.dir}/src/resources/websearch/build/lib">
-        <include name="*.jar"/>
-      </fileset>
-      <fileset dir="${yanel.home.dir}/src/resources/odt/build/lib">
-        <include name="*.jar"/>
-      </fileset>
-      <fileset dir="${yanel.home.dir}/src/resources/xml/build/lib">
-        <include name="*.jar"/>
-      </fileset>
-      <fileset dir="${yanel.home.dir}/src/resources/file/build/lib">
-        <include name="*.jar"/>
-      </fileset>
-      <fileset dir="${yanel.home.dir}/src/resources/directory/build/lib">
-        <include name="*.jar"/>
-      </fileset>
+
+      <!-- All external dependencies -->
       <pathelement path="${maven2.cp}"/>
     </path>
     <property name="run.cp" refid="classpath.run"/>
