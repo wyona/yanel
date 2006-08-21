@@ -42,6 +42,7 @@
 
 <ul>
   <li>This Feed as <a href="?yanel.resource.viewid=source">application/xml</a></li>
+  <li>This Feed as <a href="?yanel.resource.viewid=atom">application/atom+xml</a></li>
 </ul>
 </body>
 </html>
@@ -51,9 +52,13 @@
 <h3><xsl:value-of select="atom:title"/></h3>
 <p>
 <xsl:value-of select="atom:summary"/>
-<br/>
-<font size="-1">Last Published: <xsl:value-of select="atom:updated"/></font>
 </p>
+
+<xsl:copy-of select="atom:content/*"/>
+
+<br/>
+
+<font size="-1">Last Published: <xsl:value-of select="atom:updated"/></font>
 </xsl:template>
 
 </xsl:stylesheet>
