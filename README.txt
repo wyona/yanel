@@ -28,8 +28,8 @@
     Deploy third-party resources
     ----------------------------
 
-    1) ./build.sh deploy-resource -Dresource.home.dir=/home/USER/src/yanel/trunk/src/contributions/resources/atom
-    2) Add resource.xml path to lib/(local.)yanel.properties
+    1) Register resource by adding resource.xml path to lib/(local.)yanel.properties
+    2) ./build.sh deploy-resource -Dresource.home.dir=/home/USER/src/yanel/trunk/src/contributions/resources/atom
     3) ./build.sh
     4) Test resource: ./yanel.sh
     5) Restart Tomcat
