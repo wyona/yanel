@@ -67,19 +67,24 @@ public class YanelCommandLine {
             System.out.println("Resource Type: " + rtds[i].getResourceTypeUniversalName());
         }
 
-        System.out.println("\nPlease enter a path (e.g. /hello/world.html):");
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
         Path path = null;
-        try {
-            String value = br.readLine();
-            if (value.equals("")) {
-                System.out.println("No path has been specified!");
-                return;
+        if (args.length == 1 && args[0].length() > 0) {
+            path = new Path(args[0]);
+        } else {
+            System.out.println("\nPlease enter a path (e.g. /hello/world.html):");
+            try {
+                String value = br.readLine();
+                if (value.equals("")) {
+                   System.out.println("No path has been specified!");
+                   return;
+                }
+                System.out.println("The following value has been entered: " + value);
+                path = new Path(value);
+            } catch (Exception e) {
+                System.err.println(e);
             }
-            System.out.println("The following value has been entered: " + value);
-            path = new Path(value);
-        } catch (Exception e) {
-            System.err.println(e);
         }
 
         PolicyManagerFactory pmf = PolicyManagerFactory.newInstance();
