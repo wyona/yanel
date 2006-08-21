@@ -38,29 +38,6 @@
 
 
     <path id="classpath.cmdl">
-<!--
-      <fileset dir="${yanel.home.dir}/src/resources/tape/build/lib">
-        <include name="*.jar"/>
-      </fileset>
-      <fileset dir="${yanel.home.dir}/src/resources/invoice/build/lib">
-        <include name="*.jar"/>
-      </fileset>
-      <fileset dir="${yanel.home.dir}/src/resources/websearch/build/lib">
-        <include name="*.jar"/>
-      </fileset>
-      <fileset dir="${yanel.home.dir}/src/resources/odt/build/lib">
-        <include name="*.jar"/>
-      </fileset>
-      <fileset dir="${yanel.home.dir}/src/resources/xml/build/lib">
-        <include name="*.jar"/>
-      </fileset>
-      <fileset dir="${yanel.home.dir}/src/resources/file/build/lib">
-        <include name="*.jar"/>
-      </fileset>
-      <fileset dir="${yanel.home.dir}/src/resources/directory/build/lib">
-        <include name="*.jar"/>
-      </fileset>
--->
       <pathelement path="${maven2.cp}"/>
     </path>
   </target>
@@ -262,6 +239,7 @@
       <fileset dir="${yanel.home.dir}/src/resources/websearch/build/lib"/>
       <fileset dir="${yanel.home.dir}/src/resources/odt/build/lib"/>
       <fileset dir="${yanel.home.dir}/src/resources/xml/build/lib"/>
+      <fileset dir="${yanel.home.dir}/src/resources/invoice/build/lib"/>
 <!--
       <fileset dir="${yanel.home.dir}/src/resources/calendar/build/lib"/>
 -->
