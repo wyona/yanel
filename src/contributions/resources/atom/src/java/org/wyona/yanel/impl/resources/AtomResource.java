@@ -96,6 +96,16 @@ public class AtomResource extends Resource implements ViewableV1 {
             for (int i = 0; i < children.length; i++) {
                 if (contentRepo.isResource(children[i])) {
 	            sb.append("<dir:file path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
+                    java.io.InputStream entryIn = contentRepo.getInputStream(children[i]);
+                    java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
+                    byte[] buf = new byte[8192];
+                    int bytesR;
+                    while ((bytesR = entryIn.read(buf)) != -1) {
+                        baos.write(buf, 0, bytesR);
+                    }
+                    String entrySt = baos.toString();
+                    int endXMLDeclaration = entrySt.indexOf("?>");
+	            sb.append("" + entrySt.substring(endXMLDeclaration + 2));
                 } else if (contentRepo.isCollection(children[i])) {
 	            sb.append("<dir:directory path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
                 } else {
