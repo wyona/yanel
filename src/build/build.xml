@@ -37,7 +37,8 @@
     </path>
 
 
-    <path id="classpath.resources">
+    <path id="classpath.cmdl">
+<!--
       <fileset dir="${yanel.home.dir}/src/resources/tape/build/lib">
         <include name="*.jar"/>
       </fileset>
@@ -59,6 +60,7 @@
       <fileset dir="${yanel.home.dir}/src/resources/directory/build/lib">
         <include name="*.jar"/>
       </fileset>
+-->
       <pathelement path="${maven2.cp}"/>
     </path>
   </target>
@@ -141,18 +143,7 @@
       basedir="${tape-resource.classes.dir}"
     />
   </target>
-  <target name="compile-invoice-resource" description="Compile Java classes of Invoice resource" depends="init">
-    <property name="invoice-resource.classes.dir" value="${yanel.home.dir}/src/resources/invoice/build/classes"/>
-    <mkdir dir="${invoice-resource.classes.dir}"/>
-    <javac srcdir="${yanel.home.dir}/src/resources/invoice/src/java" destdir="${invoice-resource.classes.dir}"
-      classpathref="classpath.yanel"
-      debug="true"
-    />
-    <mkdir dir="${yanel.home.dir}/src/resources/invoice/build/lib"/>
-    <jar destfile="${yanel.home.dir}/src/resources/invoice/build/lib/yanel-resource-invoice-0.0.1-dev-r${yanel.revision}.jar"
-      basedir="${invoice-resource.classes.dir}"
-    />
-  </target>
+
   <target name="compile-websearch-resource" description="Compile Java classes of WebSearch resource" depends="init">
     <property name="websearch-resource.classes.dir" value="${yanel.home.dir}/src/resources/websearch/build/classes"/>
     <mkdir dir="${websearch-resource.classes.dir}"/>
@@ -170,6 +161,13 @@
     <antcall target="compile-resource">
       <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/file"/>
       <param name="resource.name" value="file"/>
+    </antcall>
+  </target>
+
+  <target name="compile-invoice-resource" description="Compile Java classes of Invoice resource" depends="init">
+    <antcall target="compile-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/invoice"/>
+      <param name="resource.name" value="invoice"/>
     </antcall>
   </target>
 
@@ -218,7 +216,7 @@
     </javac>
     <javac srcdir="${yanel.home.dir}/src/core/java/org/wyona/yanel/cmdl" destdir="${classes.dir}"
       debug="true"
-      classpathref="classpath.resources"
+      classpathref="classpath.cmdl"
     />
     <mkdir dir="${yanel.home.dir}/build/lib"/>
     <jar destfile="${yanel.home.dir}/build/lib/yanel-cmdl-0.0.1-dev-r${yanel.revision}.jar"
