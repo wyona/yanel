@@ -23,3 +23,13 @@
     ----------------
 
     http://yanel.wyona.org
+
+
+    Deploy third-party resources
+    ----------------------------
+
+    1) ./build.sh deploy-resource -Dresource.home.dir=/home/USER/src/yanel/trunk/src/contributions/resources/atom
+    2) Add resource.xml path to lib/(local.)yanel.properties
+    3) ./build.sh
+    4) Test resource: ./yanel.sh
+    5) Restart Tomcat
