@@ -113,6 +113,7 @@ public class AtomResource extends Resource implements ViewableV1 {
                     }
                     String entrySt = baos.toString();
                     int endXMLDeclaration = entrySt.indexOf("?>");
+                    // TODO: Check if endXMLDeclaration actually exists ...
 	            sb.append("" + entrySt.substring(endXMLDeclaration + 2));
                 } else if (contentRepo.isCollection(children[i])) {
 	            sb.append("<dir:directory path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
