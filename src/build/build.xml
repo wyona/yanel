@@ -430,6 +430,7 @@
     -->
     <java classname="org.wyona.yanel.cmdl.YanelCommandLine">
       <classpath refid="classpath.run"/>
+      <arg value="${yanel.path}"/>
     </java>
   </target>
 
