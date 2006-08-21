@@ -12,10 +12,10 @@
                   version="2.3" scope="provided" />
       <dependency groupId="log4j" artifactId="log4j"
                   version="1.2.8"/>
-      <dependency groupId="wyona-parser" artifactId="wyona-parser-wiki"
-                  version="r16174"/>
-      <dependency groupId="wyona-yanel" artifactId="wyona-yanel-core"
-                  version="0.0.1-dev-r16191"/>
+      <dependency groupId="wyona-org-wiki-parser" artifactId="wyona-wiki-parser"
+                  version="r16766"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-core"
+                  version="0.0.1-dev-r16762"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
