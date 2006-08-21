@@ -131,6 +131,12 @@ public class AtomResource extends Resource implements ViewableV1 {
             return defaultView;
         }
 
+        if (viewId != null && viewId.equals("atom")) {
+            defaultView.setMimeType("application/atom+xml");
+	    defaultView.setInputStream(new java.io.StringBufferInputStream(sb.toString()));
+            return defaultView;
+        }
+
         try {
             Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, contentRepo));
             // TODO: Is this the best way to generate an InputStream from an OutputStream?
