@@ -149,40 +149,24 @@
   </target>
 
   <target name="compile-directory-resource" description="Compile Java classes of Directory resource" depends="init">
-    <property name="directory-resource.classes.dir" value="${yanel.home.dir}/src/resources/directory/build/classes"/>
-    <mkdir dir="${directory-resource.classes.dir}"/>
-    <javac srcdir="${yanel.home.dir}/src/resources/directory/src/java" destdir="${directory-resource.classes.dir}"
-      classpathref="classpath.yanel"
-      debug="true"
-    />
-    <mkdir dir="${yanel.home.dir}/src/resources/directory/build/lib"/>
-    <jar destfile="${yanel.home.dir}/src/resources/directory/build/lib/yanel-resource-directory-0.0.1-dev-r${yanel.revision}.jar"
-      basedir="${directory-resource.classes.dir}"
-    />
+    <antcall target="compile-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/directory"/>
+      <param name="resource.name" value="directory"/>
+    </antcall>
   </target>
+
   <target name="compile-odt-resource" description="Compile Java classes of ODT resource" depends="init">
-    <property name="odt-resource.classes.dir" value="${yanel.home.dir}/src/resources/odt/build/classes"/>
-    <mkdir dir="${odt-resource.classes.dir}"/>
-    <javac srcdir="${yanel.home.dir}/src/resources/odt/src/java" destdir="${odt-resource.classes.dir}"
-      classpathref="classpath.yanel"
-      debug="true"
-    />
-    <mkdir dir="${yanel.home.dir}/src/resources/odt/build/lib"/>
-    <jar destfile="${yanel.home.dir}/src/resources/odt/build/lib/yanel-resource-odt-0.0.1-dev-r${yanel.revision}.jar"
-      basedir="${odt-resource.classes.dir}"
-    />
+    <antcall target="compile-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/odt"/>
+      <param name="resource.name" value="odt"/>
+    </antcall>
   </target>
+
   <target name="compile-xml-resource" description="Compile Java classes of XML resource" depends="init">
-    <property name="xml-resource.classes.dir" value="${yanel.home.dir}/src/resources/xml/build/classes"/>
-    <mkdir dir="${xml-resource.classes.dir}"/>
-    <javac srcdir="${yanel.home.dir}/src/resources/xml/src/java" destdir="${xml-resource.classes.dir}"
-      classpathref="classpath.yanel"
-      debug="true"
-    />
-    <mkdir dir="${yanel.home.dir}/src/resources/xml/build/lib"/>
-    <jar destfile="${yanel.home.dir}/src/resources/xml/build/lib/yanel-resource-xml-0.0.1-dev-r${yanel.revision}.jar"
-      basedir="${xml-resource.classes.dir}"
-    />
+    <antcall target="compile-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/xml"/>
+      <param name="resource.name" value="xml"/>
+    </antcall>
   </target>
 
   <target name="compile-cmdl" description="Compile Java classes of Yanel command line" depends="init">
