@@ -41,6 +41,8 @@ import org.apache.log4j.Category;
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
+import org.w3c.dom.Element;
+
 /**
  *
  */
@@ -138,6 +140,22 @@ public class YanelServlet extends HttpServlet {
      */
     private void getContent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         View view = null;
+
+        org.w3c.dom.Document doc = null;
+        javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
+        try {
+            javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
+            org.w3c.dom.DOMImplementation impl = parser.getDOMImplementation();
+            org.w3c.dom.DocumentType doctype = null;
+            doc = impl.createDocument("http://www.wyona.org/yanel/1.0", "yanel", doctype);
+        } catch(Exception e) {
+            log.error(e.getMessage(), e);
+            throw new ServletException(e.getMessage());
+        }
+
+        Element rootElement = doc.getDocumentElement();
+        log.error("DEBUG: Root Element: " + rootElement.getTagName());
+        Element requestElement = (Element) rootElement.appendChild(doc.createElement("request"));
 
         StringBuffer sb = new StringBuffer("");
 
