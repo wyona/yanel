@@ -154,7 +154,6 @@ public class YanelServlet extends HttpServlet {
         }
 
         Element rootElement = doc.getDocumentElement();
-        log.error("DEBUG: Root Element: " + rootElement.getTagName());
 
         StringBuffer sb = new StringBuffer("");
 
