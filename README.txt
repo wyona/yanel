@@ -29,7 +29,7 @@
     ----------------------------
 
     1) Register resource by adding resource.xml path to lib/(local.)yanel.properties
-    2) ./build.sh deploy-resource -Dresource.home.dir=/home/USER/src/yanel/trunk/src/contributions/resources/atom
-    3) ./build.sh
+    2) Add resource to build process: src/build/resources.xml (TODO: Should be generated automatically!)
+    3) Build Yanel and Resources: ./build.sh (OPTIONAL: ./build.sh clean)
     4) Test resource: ./yanel.sh
     5) Restart Tomcat
