@@ -164,6 +164,13 @@
     </antcall>
   </target>
 
+  <target name="compile-atom-resource" description="Compile Java classes of atom resource" depends="init">
+    <antcall target="compile-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/contributions/resources/atom"/>
+      <param name="resource.name" value="atom"/>
+    </antcall>
+  </target>
+
   <target name="compile-odt-resource" description="Compile Java classes of ODT resource" depends="init">
     <antcall target="compile-resource">
       <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/odt"/>
@@ -206,7 +213,7 @@
       includes="org/wyona/yanel/servlet/**"/>
   </target>
 
-  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-websearch-resource, compile-odt-resource, compile-xml-resource, compile-file-resource, compile-directory-resource, compile-impl, compile-invoice-resource, compile-tape-resource, compile-webapp">
+  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-websearch-resource, compile-odt-resource, compile-xml-resource, compile-file-resource, compile-directory-resource, compile-atom-resource, compile-impl, compile-invoice-resource, compile-tape-resource, compile-webapp">
 <!--
   <target name="webapp" description="Build webapp" depends="init, compile-webapp">
 -->
@@ -226,6 +233,9 @@
     </antcall>
     <antcall target="deploy-resource">
       <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/directory"/>
+    </antcall>
+    <antcall target="deploy-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/contributions/resources/atom"/>
     </antcall>
     <antcall target="deploy-resource">
       <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/websearch"/>
@@ -371,6 +381,7 @@
     <delete dir="${yanel.home.dir}/src/resources/xml/build"/>
     <delete dir="${yanel.home.dir}/src/resources/file/build"/>
     <delete dir="${yanel.home.dir}/src/resources/directory/build"/>
+    <delete dir="${yanel.home.dir}/src/contributions/resources/atom/build"/>
     <delete dir="${yanel.home.dir}/src/resources/tape/build"/>
     <delete dir="${yanel.home.dir}/src/resources/calendar/build"/>
 
