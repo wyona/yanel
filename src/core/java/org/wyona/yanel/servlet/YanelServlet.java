@@ -166,6 +166,9 @@ public class YanelServlet extends HttpServlet {
         long lastModified = -1;
         if (rti != null) {
             ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
+            if (rtd == null) {
+                log.error("No such resource type registered: " + rti + "\nCheck " + rtr.getConfigurationFile());
+            }
             sb.append("<resource-type-identifier namespace=\"" + rtd.getResourceTypeNamespace() + "\" local-name=\"" + rtd.getResourceTypeLocalName() + "\"/>");
 
             try {
