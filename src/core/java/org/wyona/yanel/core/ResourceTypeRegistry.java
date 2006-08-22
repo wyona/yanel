@@ -133,4 +133,11 @@ public class ResourceTypeRegistry {
             return null;
         }
     }
+
+    /**
+     *
+     */
+    public String getConfigurationFile() {
+        return CONFIGURATION_FILE;
+    }
 }

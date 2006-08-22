@@ -107,6 +107,12 @@ public class YanelCommandLine {
         }
 
         ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
+        if (rtd == null) {
+            System.err.println("Abort, because no such resource type registered: " + rti);
+            System.err.println("Make sure resource type is registered within " + rtr.getConfigurationFile());
+            return;
+        }
+
         System.out.println("Local name: " + rtd.getResourceTypeLocalName());
         System.out.println("Namespace: " + rtd.getResourceTypeNamespace());
 
