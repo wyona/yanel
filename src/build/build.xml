@@ -3,6 +3,7 @@
 <project name="yanel-main" default="deploy">
 
   <import file="dependencies.xml"/>
+  <import file="resources.xml"/>
 
   <target name="init" description="Initialize all parameters and other settings" depends="dependencies">
     <echo>Building with ${ant.version} and Java version ${ant.java.version}</echo>
@@ -88,103 +89,6 @@
       includes="org/wyona/yanel/impl/**"/>
   </target>
 
-  <!-- Generic compile target for a specific resource -->
-  <target name="compile-resource" description="Compile Java classes of a specified resource" depends="init, compile-core">
-    <property name="resource.home.dir" value="${yanel.home.dir}/src/resources/NULL"/>
-    <property name="resource.name" value="NULL"/>
-
-    <property name="resource.classes.dir" value="${resource.home.dir}/build/classes"/>
-    <property name="resource.lib.dir" value="${resource.home.dir}/build/lib"/>
-    <property name="resource.java.dir" value="${resource.home.dir}/src/java"/>
-
-    <mkdir dir="${resource.classes.dir}"/>
-    <javac srcdir="${resource.java.dir}" destdir="${resource.classes.dir}"
-      classpathref="classpath.yanel"
-      debug="true"
-    />
-    <mkdir dir="${resource.lib.dir}"/>
-    <jar destfile="${resource.lib.dir}/yanel-resource-${resource.name}-0.0.1-dev-r${yanel.revision}.jar"
-      basedir="${resource.classes.dir}"
-    />
-  </target>
-
-  <!-- Generic deploy target for a specific resource -->
-  <target name="deploy-resource" description="Deploy JAR of a specified resource" depends="init">
-    <property name="resource.home.dir" value="${yanel.home.dir}/src/resources/NULL"/>
-
-    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
-      <fileset dir="${resource.home.dir}/build/lib"/>
-    </copy>
-  </target>
-
-  <target name="compile-tape-resource" description="Compile Java classes of Tape resource" depends="init">
-    <property name="tape-resource.classes.dir" value="${yanel.home.dir}/src/resources/tape/build/classes"/>
-    <mkdir dir="${tape-resource.classes.dir}"/>
-    <javac srcdir="${yanel.home.dir}/src/resources/tape/src/java" destdir="${tape-resource.classes.dir}"
-      classpathref="classpath.yanel"
-      debug="true"
-    />
-    <mkdir dir="${yanel.home.dir}/src/resources/tape/build/lib"/>
-    <jar destfile="${yanel.home.dir}/src/resources/tape/build/lib/yanel-resource-tape-0.0.1-dev-r${yanel.revision}.jar"
-      basedir="${tape-resource.classes.dir}"
-    />
-  </target>
-
-  <target name="compile-websearch-resource" description="Compile Java classes of WebSearch resource" depends="init">
-    <property name="websearch-resource.classes.dir" value="${yanel.home.dir}/src/resources/websearch/build/classes"/>
-    <mkdir dir="${websearch-resource.classes.dir}"/>
-    <javac srcdir="${yanel.home.dir}/src/resources/websearch/src/java" destdir="${websearch-resource.classes.dir}"
-      classpathref="classpath.yanel"
-      debug="true"
-    />
-    <mkdir dir="${yanel.home.dir}/src/resources/websearch/build/lib"/>
-    <jar destfile="${yanel.home.dir}/src/resources/websearch/build/lib/yanel-resource-websearch-0.0.1-dev-r${yanel.revision}.jar"
-      basedir="${websearch-resource.classes.dir}"
-    />
-  </target>
-
-  <target name="compile-file-resource" description="Compile Java classes of File resource" depends="init">
-    <antcall target="compile-resource">
-      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/file"/>
-      <param name="resource.name" value="file"/>
-    </antcall>
-  </target>
-
-  <target name="compile-invoice-resource" description="Compile Java classes of Invoice resource" depends="init">
-    <antcall target="compile-resource">
-      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/invoice"/>
-      <param name="resource.name" value="invoice"/>
-    </antcall>
-  </target>
-
-  <target name="compile-directory-resource" description="Compile Java classes of Directory resource" depends="init">
-    <antcall target="compile-resource">
-      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/directory"/>
-      <param name="resource.name" value="directory"/>
-    </antcall>
-  </target>
-
-  <target name="compile-atom-resource" description="Compile Java classes of atom resource" depends="init">
-    <antcall target="compile-resource">
-      <param name="resource.home.dir" value="${yanel.home.dir}/src/contributions/resources/atom"/>
-      <param name="resource.name" value="atom"/>
-    </antcall>
-  </target>
-
-  <target name="compile-odt-resource" description="Compile Java classes of ODT resource" depends="init">
-    <antcall target="compile-resource">
-      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/odt"/>
-      <param name="resource.name" value="odt"/>
-    </antcall>
-  </target>
-
-  <target name="compile-xml-resource" description="Compile Java classes of XML resource" depends="init">
-    <antcall target="compile-resource">
-      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/xml"/>
-      <param name="resource.name" value="xml"/>
-    </antcall>
-  </target>
-
   <target name="compile-cmdl" description="Compile Java classes of Yanel command line" depends="init">
     <mkdir dir="${classes.dir}"/>
     <!-- TODO: Make util classes available also for webapp, etc. -->
@@ -213,7 +117,8 @@
       includes="org/wyona/yanel/servlet/**"/>
   </target>
 
-  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-websearch-resource, compile-odt-resource, compile-xml-resource, compile-file-resource, compile-directory-resource, compile-atom-resource, compile-impl, compile-invoice-resource, compile-tape-resource, compile-webapp">
+  <!-- TODO: Invoice depends on impl ...! -->
+  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-impl, compile-resources, compile-webapp">
 <!--
   <target name="webapp" description="Build webapp" depends="init, compile-webapp">
 -->
@@ -227,36 +132,7 @@
       <fileset dir="${yanel.home.dir}/build/lib"/>
     </copy>
 
-    <!-- Copy resources (TODO: Copy these dynamically based on yanel.properties) -->
-    <antcall target="deploy-resource">
-      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/file"/>
-    </antcall>
-    <antcall target="deploy-resource">
-      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/directory"/>
-    </antcall>
-    <antcall target="deploy-resource">
-      <param name="resource.home.dir" value="${yanel.home.dir}/src/contributions/resources/atom"/>
-    </antcall>
-    <antcall target="deploy-resource">
-      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/websearch"/>
-    </antcall>
-    <antcall target="deploy-resource">
-      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/odt"/>
-    </antcall>
-    <antcall target="deploy-resource">
-      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/xml"/>
-    </antcall>
-    <antcall target="deploy-resource">
-      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/tape"/>
-    </antcall>
-    <antcall target="deploy-resource">
-      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/invoice"/>
-    </antcall>
-<!--
-    <antcall target="deploy-resource">
-      <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/calendar"/>
-    </antcall>
--->
+    <antcall target="deploy-resources"/>
 
 <!--
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes">
@@ -375,15 +251,7 @@
 
   <target name="clean" description="Clean build" depends="init">
     <delete dir="${build.dir}"/>
-    <delete dir="${yanel.home.dir}/src/resources/invoice/build"/>
-    <delete dir="${yanel.home.dir}/src/resources/websearch/build"/>
-    <delete dir="${yanel.home.dir}/src/resources/odt/build"/>
-    <delete dir="${yanel.home.dir}/src/resources/xml/build"/>
-    <delete dir="${yanel.home.dir}/src/resources/file/build"/>
-    <delete dir="${yanel.home.dir}/src/resources/directory/build"/>
-    <delete dir="${yanel.home.dir}/src/contributions/resources/atom/build"/>
-    <delete dir="${yanel.home.dir}/src/resources/tape/build"/>
-    <delete dir="${yanel.home.dir}/src/resources/calendar/build"/>
+    <antcall target="clean-resources"/>
 
     <condition property="property-tomcat-cluster-node1-is-set">
       <and>
