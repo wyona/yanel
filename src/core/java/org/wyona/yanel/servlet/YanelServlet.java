@@ -155,7 +155,6 @@ public class YanelServlet extends HttpServlet {
 
         Element rootElement = doc.getDocumentElement();
         log.error("DEBUG: Root Element: " + rootElement.getTagName());
-        Element requestElement = (Element) rootElement.appendChild(doc.createElement("request"));
 
         StringBuffer sb = new StringBuffer("");
 
@@ -163,8 +162,12 @@ public class YanelServlet extends HttpServlet {
 
         String servletContextRealPath = config.getServletContext().getRealPath("/");
         sb.append("<yanel servlet-context-real-path=\""+servletContextRealPath+"\" xmlns=\"http://www.wyona.org/yanel/1.0\">");
+        rootElement.setAttribute("servlet-context-real-path", servletContextRealPath);
 
         sb.append("<request uri=\""+request.getRequestURI()+"\" servlet-path=\""+request.getServletPath()+"\"/>");
+        Element requestElement = (Element) rootElement.appendChild(doc.createElement("request"));
+        requestElement.setAttribute("uri", request.getRequestURI());
+        requestElement.setAttribute("servlet-path", request.getServletPath());
 
 	HttpSession session = request.getSession(true);
         sb.append("<session id=\""+session.getId()+"\">");
@@ -185,8 +188,22 @@ public class YanelServlet extends HttpServlet {
         if (rti != null) {
             ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
             if (rtd == null) {
-                log.error("No such resource type registered: " + rti + "\nCheck " + rtr.getConfigurationFile());
+                String message = "No such resource type registered: " + rti + ", check " + rtr.getConfigurationFile();
+                log.error(message);
+                Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+                exceptionElement.appendChild(doc.createTextNode(message));
+
+                response.setContentType("application/xml");
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                try {
+                javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    throw new ServletException(e.getMessage());
+                }
+                return;
             }
+
             sb.append("<resource-type-identifier namespace=\"" + rtd.getResourceTypeNamespace() + "\" local-name=\"" + rtd.getResourceTypeLocalName() + "\"/>");
 
             try {
