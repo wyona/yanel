@@ -41,6 +41,7 @@ import org.apache.log4j.Category;
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
@@ -192,14 +193,8 @@ public class YanelServlet extends HttpServlet {
                 Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
                 exceptionElement.appendChild(doc.createTextNode(message));
 
-                response.setContentType("application/xml");
+                setYanelOutput(response, doc);
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                try {
-                javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                    throw new ServletException(e.getMessage());
-                }
                 return;
             }
 
@@ -216,14 +211,22 @@ public class YanelServlet extends HttpServlet {
                         try {
                             view = ((ViewableV1) res).getView(request, viewId);
                         } catch(org.wyona.yarep.core.NoSuchNodeException e) {
-                            // TODO: 404 and return ....
-                            sb.append("<exception>" + e + "</exception>");
+                            String message = "No such node exception: " + e;
                             log.error(e.getMessage(), e);
+                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+                            exceptionElement.appendChild(doc.createTextNode(message));
+                            setYanelOutput(response, doc);
+                            response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
+                            return;
                         } catch(Exception e) {
-                            // TODO: response.sendError( ....), e.g. 500 and return ...
-                            //response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                            sb.append("<exception>" + e + "</exception>");
                             log.error(e.getMessage(), e);
+                            String message = e.toString();
+                            log.error(e.getMessage(), e);
+                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+                            exceptionElement.appendChild(doc.createTextNode(message));
+                            setYanelOutput(response, doc);
+                            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            return;
                         }
                     } else {
                         sb.append("<no-view>" + res.getClass().getName() + " is not viewable!</no-view>");
@@ -1014,5 +1017,18 @@ public class YanelServlet extends HttpServlet {
         log.error("DEBUG: InputStream: " + baos);
 
         return new java.io.ByteArrayInputStream(memBuffer);
+    }
+
+    /**
+     *
+     */
+    private void setYanelOutput(HttpServletResponse response, Document doc) throws ServletException {
+        response.setContentType("application/xml");
+        try {
+            javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new ServletException(e.getMessage());
+        }
     }
 }
