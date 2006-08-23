@@ -162,8 +162,8 @@
 
     <copy file="${yanel.home.dir}/lib/yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/lib/local.yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" overwrite="true" failonerror="false"/>
-    <copy file="${yanel.home.dir}/lib/yanel.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/lib/local.yanel.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/conf/yanel.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.home.dir}/conf/local.yanel.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" overwrite="true" failonerror="false"/>
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
