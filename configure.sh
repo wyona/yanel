@@ -41,7 +41,7 @@ echo "NOTE 1: Copy src/build/build.properties to src/build/local.build.propertie
 echo ""
 
 echo ""
-echo "NOTE 2: Copy conf/yanel.properties to conf/local.yanel.properties, copy lib/yanel-rti-yarep.properties to lib/local.yanel-rti-yarep.properties, copy lib/yarep.properties to lib/local.yarep.properties, copy lib/ac-policies-yarep.properties to lib/local.ac-policies-yarep.properties and copy lib/ac-identities-yarep.properties to lib/local.ac-identities-yarep.properties. Customize the local.*.properties files and run build.sh! Or run build.sh first and then customize the *.properties files within build/webapps/yanel/WEB-INF/classes"
+echo "NOTE 2: Copy conf/yanel.properties to conf/local.yanel.properties, copy conf/yanel-rti-yarep.properties to conf/local.yanel-rti-yarep.properties, copy conf/yarep.properties to conf/local.yarep.properties, copy conf/ac-policies-yarep.properties to conf/local.ac-policies-yarep.properties and copy conf/ac-identities-yarep.properties to conf/local.ac-identities-yarep.properties. Customize the local.*.properties files and run build.sh! Or run build.sh first and then customize the *.properties files within build/webapps/yanel/WEB-INF/classes"
 echo ""
 
 # ----- Reset Environment Variables
