@@ -142,26 +142,26 @@
       </fileset>
     </copy>
 -->
-    <copy file="${yanel.home.dir}/lib/CatalogManager.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/lib/catalog.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.home.dir}/conf/CatalogManager.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.home.dir}/conf/catalog.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/entities" overwrite="false">
-      <fileset dir="${yanel.home.dir}/lib/entities"/>
+      <fileset dir="${yanel.home.dir}/conf/entities"/>
     </copy>
 
-    <copy file="${yanel.home.dir}/lib/log4j.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/lib/local.log4j.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/conf/log4j.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.home.dir}/conf/local.log4j.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" overwrite="true" failonerror="false"/>
 
-    <copy file="${yanel.home.dir}/lib/yanel-rti-yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/lib/local.yanel-rti-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/conf/yanel-rti-yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.home.dir}/conf/local.yanel-rti-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" overwrite="true" failonerror="false"/>
 
-    <copy file="${yanel.home.dir}/lib/ac-policies-yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/lib/local.ac-policies-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/conf/ac-policies-yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.home.dir}/conf/local.ac-policies-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" overwrite="true" failonerror="false"/>
 
-    <copy file="${yanel.home.dir}/lib/ac-identities-yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/lib/local.ac-identities-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/conf/ac-identities-yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.home.dir}/conf/local.ac-identities-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" overwrite="true" failonerror="false"/>
 
-    <copy file="${yanel.home.dir}/lib/yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/lib/local.yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/conf/yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.home.dir}/conf/local.yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" overwrite="true" failonerror="false"/>
     <copy file="${yanel.home.dir}/conf/yanel.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/local.yanel.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" overwrite="true" failonerror="false"/>
 
