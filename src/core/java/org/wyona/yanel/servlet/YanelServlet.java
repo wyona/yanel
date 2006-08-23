@@ -156,31 +156,28 @@ public class YanelServlet extends HttpServlet {
 
         Element rootElement = doc.getDocumentElement();
 
-        StringBuffer sb = new StringBuffer("");
-
-        sb.append("<?xml version=\"1.0\"?>");
 
         String servletContextRealPath = config.getServletContext().getRealPath("/");
-        sb.append("<yanel servlet-context-real-path=\""+servletContextRealPath+"\" xmlns=\"http://www.wyona.org/yanel/1.0\">");
         rootElement.setAttribute("servlet-context-real-path", servletContextRealPath);
 
-        sb.append("<request uri=\""+request.getRequestURI()+"\" servlet-path=\""+request.getServletPath()+"\"/>");
         Element requestElement = (Element) rootElement.appendChild(doc.createElement("request"));
         requestElement.setAttribute("uri", request.getRequestURI());
         requestElement.setAttribute("servlet-path", request.getServletPath());
 
 	HttpSession session = request.getSession(true);
-        sb.append("<session id=\""+session.getId()+"\">");
+        Element sessionElement = (Element) rootElement.appendChild(doc.createElement("session"));
+        sessionElement.setAttribute("id", session.getId());
 	Enumeration enum = session.getAttributeNames();
         if (!enum.hasMoreElements()) {
-            sb.append("<no-attributes/>");
+            Element sessionNoAttributesElement = (Element) sessionElement.appendChild(doc.createElement("no-attributes"));
         }
         while (enum.hasMoreElements()) {
             String name = (String)enum.nextElement();
             String value = session.getAttribute(name).toString();
-            sb.append("<attribute name=\"" + name + "\">" + value + "</attribute>");
+            Element sessionAttributeElement = (Element) sessionElement.appendChild(doc.createElement("attribute"));
+            sessionAttributeElement.setAttribute("name", name);
+            sessionAttributeElement.appendChild(doc.createTextNode(value));
         }
-        sb.append("</session>");
 
         String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
         Resource res = null;
@@ -198,19 +195,23 @@ public class YanelServlet extends HttpServlet {
                 return;
             }
 
-            sb.append("<resource-type-identifier namespace=\"" + rtd.getResourceTypeNamespace() + "\" local-name=\"" + rtd.getResourceTypeLocalName() + "\"/>");
+            Element rtiElement = (Element) rootElement.appendChild(doc.createElement("resource-type-identifier"));
+            rtiElement.setAttribute("namespace",  rtd.getResourceTypeNamespace());
+            rtiElement.setAttribute("local-name",  rtd.getResourceTypeLocalName());
 
             try {
                 res = rtr.newResource(rti);
                 if (res != null) {
                     res.setRTD(rtd);
-                    sb.append("<resource>");
+                    Element resourceElement = (Element) rootElement.appendChild(doc.createElement("resource"));
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
-                        sb.append("<view>View Descriptors: " + ((ViewableV1) res).getViewDescriptors() + "</view>");
+                        Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
+                        viewElement.appendChild(doc.createTextNode("View Descriptors: " + ((ViewableV1) res).getViewDescriptors()));
                         String viewId = request.getParameter("yanel.resource.viewid");
                         try {
                             view = ((ViewableV1) res).getView(request, viewId);
                         } catch(org.wyona.yarep.core.NoSuchNodeException e) {
+                            // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
                             String message = "No such node exception: " + e;
                             log.error(e.getMessage(), e);
                             Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
@@ -229,24 +230,32 @@ public class YanelServlet extends HttpServlet {
                             return;
                         }
                     } else {
-                        sb.append("<no-view>" + res.getClass().getName() + " is not viewable!</no-view>");
+                        Element noViewElement = (Element) resourceElement.appendChild(doc.createElement("no-view"));
+                        noViewElement.appendChild(doc.createTextNode(res.getClass().getName() + " is not viewable!"));
                     }
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
                         lastModified = ((ModifiableV2) res).getLastModified(new Path(request.getServletPath()));
-                        sb.append("<last-modified>" + new java.util.Date(lastModified) + "</last-modified>");
+                        Element lastModifiedElement = (Element) resourceElement.appendChild(doc.createElement("last-modified"));
+                        lastModifiedElement.appendChild(doc.createTextNode(new java.util.Date(lastModified).toString()));
                     } else {
-                        sb.append("<no-last-modified/>");
+                        Element noLastModifiedElement = (Element) resourceElement.appendChild(doc.createElement("no-last-modified"));
                     }
-                    sb.append("</resource>");
                 } else {
-                    sb.append("<resource-is-null/>");
+                        Element resourceIsNullElement = (Element) rootElement.appendChild(doc.createElement("resource-is-null"));
                 }
             } catch(Exception e) {
-                sb.append("<exception>" + e + "</exception>");
                 log.error(e.getMessage(), e);
+                String message = e.toString();
+                log.error(e.getMessage(), e);
+                Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+                exceptionElement.appendChild(doc.createTextNode(message));
+                setYanelOutput(response, doc);
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
             }
         } else {
-            sb.append("<no-resource-type-identifier-found servlet-path=\""+request.getServletPath()+"\"/>");
+            Element noRTIFoundElement = (Element) rootElement.appendChild(doc.createElement("no-resource-type-identifier-found"));
+            noRTIFoundElement.setAttribute("servlet-path", request.getServletPath());
         }
 
 
@@ -266,10 +275,8 @@ public class YanelServlet extends HttpServlet {
             } else {
                 log.error("DEBUG: Show all meta");
             }
-            sb.append("</yanel>");
-            response.setContentType("application/xml");
-            PrintWriter writer = response.getWriter();
-            writer.print(sb);
+            setYanelOutput(response, doc);
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             return;
         }
 
@@ -285,11 +292,12 @@ public class YanelServlet extends HttpServlet {
                 // TODO: Yarep does not set returned Stream to null resp. is missing Exception Handling for the constructor. Exceptions should be handled here, but rather within Yarep or whatever repositary layer is being used ...
                 bytesRead = is.read(buffer);
 	        if (bytesRead == -1) {
-                    sb.append("<exception>InputStream of view does not seem to contain any data!</exception>");
-                    sb.append("</yanel>");
-                    response.setContentType("application/xml");
-                    PrintWriter writer = response.getWriter();
-                    writer.print(sb);
+                    String message = "InputStream of view does not seem to contain any data!";
+
+                    Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+                    exceptionElement.appendChild(doc.createTextNode(message));
+                    setYanelOutput(response, doc);
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     return;
                 }
 
@@ -307,16 +315,18 @@ public class YanelServlet extends HttpServlet {
                 if(lastModified >= 0) response.setDateHeader("Last-Modified", lastModified);
                 return;
             } else {
-                sb.append("<exception>InputStream of view is null!</exception>");
+                String message = "InputStream of view is null!";
+                Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+                exceptionElement.appendChild(doc.createTextNode(message));
             }
         } else {
-            sb.append("<exception>View is null!</exception>");
+            String message = "View is null!";
+            Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+            exceptionElement.appendChild(doc.createTextNode(message));
         }
 
-        sb.append("</yanel>");
-        response.setContentType("application/xml");
-        PrintWriter writer = response.getWriter();
-        writer.print(sb);
+        setYanelOutput(response, doc);
+        response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         return;
     }
 
