@@ -49,7 +49,15 @@
 </xsl:template>
 
 <xsl:template match="atom:entry">
-<h3><xsl:value-of select="atom:title"/></h3>
+<xsl:choose>
+  <xsl:when test="atom:link/@href">
+    <h3><a href="{atom:link/@href}"><xsl:value-of select="atom:title"/></a></h3>
+  </xsl:when>
+  <xsl:otherwise>
+    <h3><xsl:value-of select="atom:title"/></h3>
+  </xsl:otherwise>
+</xsl:choose>
+
 <p>
 <xsl:value-of select="atom:summary"/>
 </p>
