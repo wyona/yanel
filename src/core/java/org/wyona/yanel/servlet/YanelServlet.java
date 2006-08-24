@@ -275,8 +275,8 @@ public class YanelServlet extends HttpServlet {
             } else {
                 log.error("DEBUG: Show all meta");
             }
-            setYanelOutput(response, doc);
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+            setYanelOutput(response, doc);
             return;
         }
 
@@ -573,10 +573,12 @@ public class YanelServlet extends HttpServlet {
             sb.append("<p>Data has been saved ...</p>");
             sb.append("</body>");
             sb.append("</html>");
-            PrintWriter w = response.getWriter();
-            w.print(sb);
+
+
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             response.setContentType("application/xhtml+xml");
+            PrintWriter w = response.getWriter();
+            w.print(sb);
 
             log.info("Data has been saved ...");
             return;
@@ -824,9 +826,9 @@ public class YanelServlet extends HttpServlet {
 
         log.error("DEBUG: " + sb.toString());
 
+        response.setStatus(response.SC_OK);
         PrintWriter writer = response.getWriter();
         writer.print(sb.toString());
-        response.setStatus(response.SC_OK);
         return;
     }
 
@@ -892,11 +894,13 @@ public class YanelServlet extends HttpServlet {
                 if (im.authenticate(username, password, realm.getID())) {
                     log.info("Authentication successful: " + username);
                     session.setAttribute(IDENTITY_KEY, new Identity(username, null));
+
                     // TODO: send some XML content, e.g. <authentication-successful/>
                     response.setContentType("text/plain");
+                    response.setStatus(response.SC_OK);
+
                     PrintWriter writer = response.getWriter();
                     writer.print("Neutron Authentication Successful!");
-                    response.setStatus(response.SC_OK);
                     return response;
                 } else {
                     log.warn("Neutron Authentication failed: " + username);
@@ -987,9 +991,9 @@ public class YanelServlet extends HttpServlet {
         if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
             // TODO: send some XML content, e.g. <logout-successful/>
             response.setContentType("text/plain");
+            response.setStatus(response.SC_OK);
             PrintWriter writer = response.getWriter();
             writer.print("Neutron Logout Successful!");
-            response.setStatus(response.SC_OK);
             return response;
         }
         return null;
@@ -1036,6 +1040,13 @@ public class YanelServlet extends HttpServlet {
         response.setContentType("application/xml");
         try {
             javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
+
+/*
+            OutputStream out = response.getOutputStream();
+            javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
+            out.close();
+*/
+
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage());
