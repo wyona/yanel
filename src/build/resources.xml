@@ -75,6 +75,13 @@
     </antcall>
   </target>
 
+  <target name="compile-nutch-resource" description="Compile Java classes of nutch resource" depends="init">
+    <antcall target="compile-resource">
+      <param name="resource.home.dir" value="${yanel.home.dir}/src/contributions/resources/nutch"/>
+      <param name="resource.name" value="nutch"/>
+    </antcall>
+  </target>
+
   <target name="compile-odt-resource" description="Compile Java classes of ODT resource" depends="init">
     <antcall target="compile-resource">
       <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/odt"/>
@@ -135,6 +142,7 @@
     <antcall target="compile-file-resource"/>
     <antcall target="compile-directory-resource"/>
     <antcall target="compile-atom-resource"/>
+    <antcall target="compile-nutch-resource"/>
     <antcall target="compile-tape-resource"/>
   </target>
 
