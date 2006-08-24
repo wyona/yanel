@@ -217,6 +217,7 @@ public class YanelServlet extends HttpServlet {
                             //log.error(e.getMessage(), e);
                             Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
                             exceptionElement.appendChild(doc.createTextNode(message));
+                            exceptionElement.setAttribute("status", "404");
                             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
                             setYanelOutput(response, doc);
                             return;
@@ -226,6 +227,7 @@ public class YanelServlet extends HttpServlet {
                             log.error(e.getMessage(), e);
                             Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
                             exceptionElement.appendChild(doc.createTextNode(message));
+                            exceptionElement.setAttribute("status", "500");
                             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                             setYanelOutput(response, doc);
                             return;
