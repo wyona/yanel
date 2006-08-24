@@ -213,11 +213,12 @@ public class YanelServlet extends HttpServlet {
                         } catch(org.wyona.yarep.core.NoSuchNodeException e) {
                             // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
                             String message = "No such node exception: " + e;
-                            log.error(e.getMessage(), e);
+                            log.warn(e);
+                            //log.error(e.getMessage(), e);
                             Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
                             exceptionElement.appendChild(doc.createTextNode(message));
-                            setYanelOutput(response, doc);
                             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
+                            setYanelOutput(response, doc);
                             return;
                         } catch(Exception e) {
                             log.error(e.getMessage(), e);
@@ -225,8 +226,8 @@ public class YanelServlet extends HttpServlet {
                             log.error(e.getMessage(), e);
                             Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
                             exceptionElement.appendChild(doc.createTextNode(message));
-                            setYanelOutput(response, doc);
                             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            setYanelOutput(response, doc);
                             return;
                         }
                     } else {
