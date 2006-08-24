@@ -460,7 +460,8 @@ public class YanelServlet extends HttpServlet {
             // Check on well-formedness ...
             String contentType = request.getContentType();
             log.debug("Content-Type: " + contentType);
-            if (contentType.equals("application/xml") || contentType.equals("application/xhtml+xml")) {
+            if (contentType.indexOf("application/xml") >= 0 || contentType.indexOf("application/xhtml+xml") >= 0) {
+                log.info("Check well-formedness ...");
                 javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
                 try {
                     javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
@@ -508,7 +509,9 @@ public class YanelServlet extends HttpServlet {
                     return;
                 }
 
-            log.info("Data seems to be well-formed :-)");
+                log.info("Data seems to be well-formed :-)");
+            } else {
+                log.info("No well-formedness check required for content type: " + contentType);
             }
 
 /*
