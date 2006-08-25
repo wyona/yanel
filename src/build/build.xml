@@ -330,4 +330,8 @@
     </java>
   </target>
 
+  <target name="generate-resources-build">
+    <xslt in="../../conf/yanel.xml" out="../../build/resources.xml" style="yanel2resources.xsl"/>
+  </target>
+
 </project>
