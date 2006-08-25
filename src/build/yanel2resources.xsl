@@ -12,6 +12,14 @@
 <xsl:comment> NOTE: This file has been generated automatically from conf/yanel.xml! </xsl:comment>
 <project name="resources">
 
+  <target name="init">
+    <echo>Init ...</echo>
+  </target>
+
+  <target name="compile-core">
+    <echo>Compile Core ...</echo>
+  </target>
+
   <target name="compile-resource" description="Compile Java classes of a specific resource" depends="init, compile-core">
     <property name="resource.home.dir" value="HOME_DIR_IS_NULL"/>
     <property name="resource.name" value="NAME_IS_NULL"/>
@@ -40,6 +48,12 @@
       -->
       <param name="resource.name" value="{@name}"/>
     </antcall>
+  </target>
+</xsl:for-each>
+
+<xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
+  <target name="compile-resources" description="Compile resources" depends="init">
+    <antcall target="compile-{@name}-resource"/>
   </target>
 </xsl:for-each>
 </project>
