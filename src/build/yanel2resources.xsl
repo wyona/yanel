@@ -13,8 +13,8 @@
 <project name="resources">
 
   <target name="compile-resource" description="Compile Java classes of a specific resource" depends="init, compile-core">
-    <property name="resource.home.dir" value="${{yanel.home.dir}}/src/resources/NULL"/>
-    <property name="resource.name" value="NULL"/>
+    <property name="resource.home.dir" value="HOME_DIR_IS_NULL"/>
+    <property name="resource.name" value="NAME_IS_NULL"/>
 
     <property name="resource.classes.dir" value="${{resource.home.dir}}/build/classes"/>
     <property name="resource.lib.dir" value="${{resource.home.dir}}/build/lib"/>
@@ -32,13 +32,13 @@
   </target>
 
 <xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
-  <target name="compile-TODO-resource" description="Compile Java classes of TODO resource" depends="init">
+  <target name="compile-{@name}-resource" description="Compile Java classes of {@name} resource" depends="init">
     <antcall target="compile-resource">
       <param name="resource.home.dir" value="{@src}"/>
       <!--
       <param name="resource.home.dir" value="${yanel.home.dir}/src/resources/tape"/>
       -->
-      <param name="resource.name" value="TODO"/>
+      <param name="resource.name" value="{@name}"/>
     </antcall>
   </target>
 </xsl:for-each>
