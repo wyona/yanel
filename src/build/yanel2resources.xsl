@@ -8,7 +8,28 @@
 <xsl:output method="xml" indent="yes"/>
 
 <xsl:template match="/">
+
+<xsl:comment> NOTE: This file has been generated automatically from conf/yanel.xml! </xsl:comment>
 <project name="resources">
+
+  <target name="compile-resource" description="Compile Java classes of a specific resource" depends="init, compile-core">
+    <property name="resource.home.dir" value="${{yanel.home.dir}}/src/resources/NULL"/>
+    <property name="resource.name" value="NULL"/>
+
+    <property name="resource.classes.dir" value="${{resource.home.dir}}/build/classes"/>
+    <property name="resource.lib.dir" value="${{resource.home.dir}}/build/lib"/>
+    <property name="resource.java.dir" value="${{resource.home.dir}}/src/java"/>
+
+    <mkdir dir="${{resource.classes.dir}}"/>
+    <javac srcdir="${{resource.java.dir}}" destdir="${{resource.classes.dir}}"
+      classpathref="classpath.yanel"
+      debug="true"
+    />
+    <mkdir dir="${{resource.lib.dir}}"/>
+    <jar destfile="${{resource.lib.dir}}/yanel-resource-${{resource.name}}-0.0.1-dev-r${{yanel.revision}}.jar"
+      basedir="${{resource.classes.dir}}"
+    />
+  </target>
 
 <xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
   <target name="compile-TODO-resource" description="Compile Java classes of TODO resource" depends="init">
