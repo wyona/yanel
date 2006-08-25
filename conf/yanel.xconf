@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<!-- WARNING: Not ready for production yet! -->
+
+<yanel xmlns="http://www.wyona.org/yanel/1.0">
+
+<resources>
+  <resource src="../src/resources/file/resource.xml"/>
+  <resource src="../src/resources/directory/resource.xml"/>
+  <resource src="../src/resources/invoice/resource.xml"/>
+  <resource src="../src/resources/tape/resource.xml"/>
+  <resource src="../src/resources/websearch/resource.xml"/>
+  <resource src="../src/resources/odt/resource.xml"/>
+  <resource src="../src/resources/xml/resource.xml"/>
+  <resource src="../src/contributions/resources/atom/resource.xml" selected="false"/>
+  <resource src="../src/contributions/resources/nutch/resource.xml" selected="false"/>
+  <resource src="../src/contributions/resources/wiki/resource.xml" selected="false"/>
+</resources>
+
+
+# TODO: Proxy should be configurable per realm
+# TODO: Proxy should be enabled depending on client IP address
+#proxy-host-name=demo.ulysses.wyona.org
+# Default port corresponding to protocol (e.g. 80 for http or 443 for https)
+#proxy-port=
+# ROOT prefix which is equivalent to not setting the proxy-prefix. Please note that the proxy-prefix is being removed from the file part of the URL.
+#proxy-prefix=
+# IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make sure to fix the cookie rewriting according to http://issues.apache.org/bugzilla/show_bug.cgi?id=10722 resp. see ../src/httpd-2.2.3/conf/extra/httpd-vhosts.conf
+#proxy-prefix=/yanel
+
+# Realms configuration
+realms-config=../../../../../lib/realms.xml
+
+</yanel>
