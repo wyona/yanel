@@ -5,16 +5,20 @@
 <yanel xmlns="http://www.wyona.org/yanel/1.0">
 
 <resources>
-  <resource src="../src/resources/file/resource.xml"/>
-  <resource src="../src/resources/directory/resource.xml"/>
-  <resource src="../src/resources/invoice/resource.xml"/>
-  <resource src="../src/resources/tape/resource.xml"/>
-  <resource src="../src/resources/websearch/resource.xml"/>
-  <resource src="../src/resources/odt/resource.xml"/>
-  <resource src="../src/resources/xml/resource.xml"/>
-  <resource src="../src/contributions/resources/atom/resource.xml" selected="false"/>
-  <resource src="../src/contributions/resources/nutch/resource.xml" selected="false"/>
-  <resource src="../src/contributions/resources/wiki/resource.xml" selected="false"/>
+  <resource name="file" src="../src/resources/file/resource.xml"/>
+  <resource name="directory" src="../src/resources/directory/resource.xml"/>
+<!--
+  <resource name="invoice" src="../src/resources/invoice/resource.xml"/>
+  <resource name="tape" src="../src/resources/tape/resource.xml"/>
+  <resource name="websearch" src="../src/resources/websearch/resource.xml"/>
+-->
+  <resource name="odt" src="../src/resources/odt/resource.xml"/>
+  <resource name="xml" src="../src/resources/xml/resource.xml"/>
+  <resource name="atom" src="../src/contributions/resources/atom/resource.xml" selected="false"/>
+<!--
+  <resource name="nutch" src="../src/contributions/resources/nutch/resource.xml" selected="false"/>
+  <resource name="wiki" src="../src/contributions/resources/wiki/resource.xml" selected="false"/>
+-->
 </resources>
 
 
