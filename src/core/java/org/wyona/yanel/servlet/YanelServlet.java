@@ -167,12 +167,12 @@ public class YanelServlet extends HttpServlet {
 	HttpSession session = request.getSession(true);
         Element sessionElement = (Element) rootElement.appendChild(doc.createElement("session"));
         sessionElement.setAttribute("id", session.getId());
-	Enumeration enum = session.getAttributeNames();
-        if (!enum.hasMoreElements()) {
+	Enumeration attrNames = session.getAttributeNames();
+        if (!attrNames.hasMoreElements()) {
             Element sessionNoAttributesElement = (Element) sessionElement.appendChild(doc.createElement("no-attributes"));
         }
-        while (enum.hasMoreElements()) {
-            String name = (String)enum.nextElement();
+        while (attrNames.hasMoreElements()) {
+            String name = (String)attrNames.nextElement();
             String value = session.getAttribute(name).toString();
             Element sessionAttributeElement = (Element) sessionElement.appendChild(doc.createElement("attribute"));
             sessionAttributeElement.setAttribute("name", name);
