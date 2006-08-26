@@ -13,12 +13,13 @@
     <path id="classpath">
       <pathelement path="${maven2.cp}"/>
     </path>
-  </target>
-
-  <target name="compile" description="Compile Java classes" depends="init">
+    <property name="resource.build.dir" value="build"/>
     <property name="resource.classes.dir" value="build/classes"/>
     <property name="resource.lib.dir" value="build/lib"/>
     <property name="resource.java.dir" value="src/java"/>
+  </target>
+
+  <target name="compile" description="Compile Java classes" depends="init">
 
     <mkdir dir="${resource.classes.dir}"/>
     <javac srcdir="${resource.java.dir}" destdir="${resource.classes.dir}"
@@ -29,5 +30,9 @@
     <jar destfile="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}.jar"
       basedir="${resource.classes.dir}"
     />
+  </target>
+
+  <target name="clean" depends="init">
+    <delete dir="${resource.build.dir}"/>
   </target>
 </project>
