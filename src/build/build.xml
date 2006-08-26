@@ -16,6 +16,7 @@
     <dirname property="yanel.home.dir" file="${src.dir}"/>
 
     <property name="build.dir" value="${yanel.home.dir}/build"/>
+    <mkdir dir="${build.dir}"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="log4j.path" value="${build.dir}/logs"/>
 
@@ -330,8 +331,12 @@
     </java>
   </target>
 
-  <target name="generate-resources-build" description="Generate resources build">
+  <target name="generate-resources-build" description="Generate resources build" depends="init">
     <xslt in="../../conf/yanel.xml" out="../../build/resources.xml" style="yanel2resources.xsl"/>
+  </target>
+
+  <target name="build-resources" description="Build resources" depends="generate-resources-build">
+    <ant antfile="${yanel.home.dir}/build/resources.xml" target="build-resources"/>
   </target>
 
 </project>
