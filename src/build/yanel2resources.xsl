@@ -21,16 +21,24 @@
     <echo>Compile Core ...</echo>
   </target>
 
-<xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
   <target name="build-resources" description="Build resources" depends="init">
+<xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
 <!--
     <ant antfile="${{build.dir}}/{@src}build.xml" target="compile"/>
 -->
     <exec executable="ant">
       <arg line="-f ${{build.dir}}/{@src}build.xml compile"/>
     </exec>
-  </target>
 </xsl:for-each>
+  </target>
+
+  <target name="deploy-resources" description="Deploy resources" depends="init">
+<xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
+    <copy todir="${{build.dir}}/webapps/yanel/WEB-INF/lib">
+      <fileset dir="${{build.dir}}/{@src}/build/lib"/>
+    </copy>
+</xsl:for-each>
+  </target>
 </project>
 </xsl:template>
 
