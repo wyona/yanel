@@ -10,12 +10,10 @@
   <resource src="../src/resources/tape/"/>
   <resource src="../src/resources/odt/"/>
   <resource src="../src/resources/xml/"/>
-<!--
   <resource src="../src/resources/invoice/"/>
-  <resource src="../src/resources/websearch/"/>
--->
   <resource src="../src/contributions/resources/atom/" selected="false"/>
   <resource src="../src/contributions/resources/wiki/" selected="false"/>
+  <resource src="../src/resources/websearch/"/>
 <!--
   <resource src="../src/contributions/resources/nutch/" selected="false"/>
 -->
