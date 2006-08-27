@@ -12,8 +12,8 @@
   <resource src="../src/resources/odt/"/>
   <resource src="../src/resources/xml/"/>
   <resource src="../src/resources/invoice/"/>
-  <resource src="../src/contributions/resources/atom/" compile="false"/>
-  <resource src="../src/contributions/resources/wiki/" compile="false"/>
+  <resource src="../src/contributions/resources/atom/" compile="true"/>
+  <resource src="../src/contributions/resources/wiki/" compile="true"/>
   <resource src="../src/resources/websearch/"/>
 <!--
   <resource src="../src/contributions/resources/nutch/" compile="false"/>
