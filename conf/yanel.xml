@@ -5,8 +5,8 @@
 <yanel xmlns="http://www.wyona.org/yanel/1.0">
 
 <resources>
-<!--
   <resource name="file" src="../src/resources/file/"/>
+<!--
   <resource name="directory" src="../src/resources/directory/"/>
 -->
 <!--
