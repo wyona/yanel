@@ -5,23 +5,19 @@
 <yanel xmlns="http://www.wyona.org/yanel/1.0">
 
 <resources>
-  <resource name="file" src="../src/resources/file/"/>
+  <resource src="../src/resources/file/"/>
+  <resource src="../src/resources/directory/"/>
+  <resource src="../src/resources/tape/"/>
+  <resource src="../src/resources/odt/"/>
+  <resource src="../src/resources/xml/"/>
 <!--
-  <resource name="directory" src="../src/resources/directory/"/>
+  <resource src="../src/resources/invoice/"/>
+  <resource src="../src/resources/websearch/"/>
 -->
+  <resource src="../src/contributions/resources/atom/" selected="false"/>
+  <resource src="../src/contributions/resources/wiki/" selected="false"/>
 <!--
-  <resource name="invoice" src="../src/resources/invoice/"/>
-  <resource name="tape" src="../src/resources/tape/"/>
-  <resource name="websearch" src="../src/resources/websearch/"/>
--->
-<!--
-  <resource name="odt" src="../src/resources/odt/"/>
-  <resource name="xml" src="../src/resources/xml/"/>
--->
-  <resource name="atom" src="../src/contributions/resources/atom/" selected="false"/>
-<!--
-  <resource name="nutch" src="../src/contributions/resources/nutch/" selected="false"/>
-  <resource name="wiki" src="../src/contributions/resources/wiki/" selected="false"/>
+  <resource src="../src/contributions/resources/nutch/" selected="false"/>
 -->
 </resources>
 
