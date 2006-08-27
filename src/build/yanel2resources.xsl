@@ -44,7 +44,14 @@
 
   <target name="clean-resources" description="Clean resources" depends="init">
 <xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
+  <xsl:choose>
+    <xsl:when test="@compile='false'">
+      <xsl:comment> Do not clean: <xsl:value-of select="@src"/>build </xsl:comment>
+    </xsl:when>
+    <xsl:otherwise>
     <delete dir="${{build.dir}}/{@src}/build"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:for-each>
   </target>
 </project>
