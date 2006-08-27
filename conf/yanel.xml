@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<!-- WARNING: Not ready for production yet! -->
+<!-- WARNING: This file is being used for building, but one still needs to configure (local.)yanel.properties -->
 
 <yanel xmlns="http://www.wyona.org/yanel/1.0">
 
