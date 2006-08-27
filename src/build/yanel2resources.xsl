@@ -25,12 +25,19 @@
 
   <target name="build-resources" description="Build resources" depends="init">
 <xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
+  <xsl:choose>
+    <xsl:when test="@compile='false'">
+      <xsl:comment> Do not compile: <xsl:value-of select="@src"/> </xsl:comment>
+    </xsl:when>
+    <xsl:otherwise>
 <!--
     <ant antfile="${{build.dir}}/{@src}build.xml" target="compile"/>
 -->
     <exec executable="ant">
       <arg line="-f ${{build.dir}}/{@src}build.xml compile"/>
     </exec>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:for-each>
   </target>
 
