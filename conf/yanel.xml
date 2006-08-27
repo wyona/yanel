@@ -4,6 +4,7 @@
 
 <yanel xmlns="http://www.wyona.org/yanel/1.0">
 
+<!-- NOTE: compile is true by default -->
 <resources>
   <resource src="../src/resources/file/" compile="true"/>
   <resource src="../src/resources/directory/" compile="true"/>
