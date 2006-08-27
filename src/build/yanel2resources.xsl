@@ -7,6 +7,8 @@
 
 <xsl:output method="xml" indent="yes"/>
 
+<xsl:param name="servlet.context.prefix" select="'NULL'"/>
+
 <xsl:template match="/">
 
 <xsl:comment> NOTE: This file has been generated automatically from conf/yanel.xml! </xsl:comment>
@@ -34,7 +36,7 @@
 
   <target name="deploy-resources" description="Deploy resources" depends="init">
 <xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
-    <copy todir="${{build.dir}}/webapps/yanel/WEB-INF/lib">
+    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
       <fileset dir="${{build.dir}}/{@src}/build/lib"/>
     </copy>
 </xsl:for-each>
