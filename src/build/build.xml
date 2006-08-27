@@ -3,7 +3,9 @@
 <project name="yanel-main" default="deploy">
 
   <import file="dependencies.xml"/>
+<!--
   <import file="resources.xml"/>
+-->
 
   <target name="init" description="Initialize all parameters and other settings" depends="dependencies">
     <echo>Building with ${ant.version} and Java version ${ant.java.version}</echo>
@@ -119,7 +121,7 @@
   </target>
 
   <!-- TODO: Invoice depends on impl ...! -->
-  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-impl, compile-resources, compile-webapp">
+  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-impl, build-resources, compile-webapp">
 <!--
   <target name="webapp" description="Build webapp" depends="init, compile-webapp">
 -->
@@ -250,9 +252,11 @@
     </copy>
   </target>
 
-  <target name="clean" description="Clean build" depends="init">
+  <target name="clean" description="Clean build" depends="init, clean-resources">
     <delete dir="${build.dir}"/>
+<!--
     <antcall target="clean-resources"/>
+-->
 
     <condition property="property-tomcat-cluster-node1-is-set">
       <and>
@@ -332,11 +336,21 @@
   </target>
 
   <target name="generate-resources-build" description="Generate resources build" depends="init">
-    <xslt in="../../conf/yanel.xml" out="../../build/resources.xml" style="yanel2resources.xsl"/>
+    <xslt in="../../conf/yanel.xml" out="../../build/resources.xml" style="yanel2resources.xsl">
+      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+    </xslt>
   </target>
 
   <target name="build-resources" description="Build resources" depends="generate-resources-build">
     <ant antfile="${yanel.home.dir}/build/resources.xml" target="build-resources"/>
+  </target>
+
+  <target name="deploy-resources" description="Deploy resources" depends="generate-resources-build">
+    <ant antfile="${yanel.home.dir}/build/resources.xml" target="deploy-resources"/>
+  </target>
+
+  <target name="clean-resources" description="Clean resources" depends="generate-resources-build">
+    <ant antfile="${yanel.home.dir}/build/resources.xml" target="clean-resources"/>
   </target>
 
 </project>
