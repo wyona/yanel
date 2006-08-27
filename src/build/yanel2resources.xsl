@@ -39,6 +39,12 @@
     </copy>
 </xsl:for-each>
   </target>
+
+  <target name="clean-resources" description="Clean resources" depends="init">
+<xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
+    <delete dir="${{build.dir}}/{@src}/build"/>
+</xsl:for-each>
+  </target>
 </project>
 </xsl:template>
 
