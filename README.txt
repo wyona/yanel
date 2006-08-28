@@ -28,8 +28,7 @@
     Deploy third-party resources
     ----------------------------
 
-    1) Register resource by adding resource.xml path to lib/(local.)yanel.properties
-    2) Add resource to build process: src/build/resources.xml (TODO: Should be generated automatically!)
-    3) Build Yanel and Resources: ./build.sh (OPTIONAL: ./build.sh clean)
-    4) Test resource: ./yanel.sh
-    5) Restart Tomcat
+    1) Register resource by adding resource.xml path to conf/(local.)yanel.xml
+    2) Build Yanel and Resources: ./build.sh (OPTIONAL: ./build.sh clean)
+    3) Test resource: ./yanel.sh
+    4) Restart Tomcat
