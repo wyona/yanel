@@ -171,12 +171,14 @@ public class YanelCommandLine {
 
         Resource tapeRes = null;
         try {
-            tapeRes = rtr.newResource("<{http://www.wyonapictures.com/yanel/resource/1.0}tape/>");
+            rti = "<{http://www.wyonapictures.com/yanel/resource/1.0}tape/>";
+            tapeRes = rtr.newResource(rti);
+            rtd = rtr.getResourceTypeDefinition(rti);
+            tapeRes.setRTD(rtd);
         } catch(Exception e) {
             System.err.println(e);
             return;
         }
-        tapeRes.setRTD(rtd);
         if (ResourceAttributeHelper.hasAttributeImplemented(tapeRes, "Creatable", "1")) {
             String[] names = ((CreatableV1) tapeRes).getPropertyNames();
             String propNames = "";
@@ -192,14 +194,18 @@ public class YanelCommandLine {
             System.out.println(tapeRes.getClass().getName() + " does not implement creatable interface!");
         }
 
+
+
         Resource invoiceRes = null;
         try {
-            invoiceRes = rtr.newResource("<{http://www.wyona.com/yanel/resource/1.0}invoice/>");
+            rti = "<{http://www.wyona.com/yanel/resource/1.0}invoice/>";
+            invoiceRes = rtr.newResource(rti);
+            rtd = rtr.getResourceTypeDefinition(rti);
+            invoiceRes.setRTD(rtd);
         } catch(Exception e) {
             System.err.println(e);
             return;
         }
-        invoiceRes.setRTD(rtd);
         if (ResourceAttributeHelper.hasAttributeImplemented(invoiceRes, "Creatable", "1")) {
             String[] names = ((CreatableV1) invoiceRes).getPropertyNames();
             String propNames = "";
