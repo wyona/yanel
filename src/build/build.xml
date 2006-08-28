@@ -165,8 +165,14 @@
 
     <copy file="${yanel.home.dir}/conf/yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/local.yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" overwrite="true" failonerror="false"/>
-    <copy file="${yanel.home.dir}/conf/yanel.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/local.yanel.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" overwrite="true" failonerror="false"/>
+
+    <xslt in="../../conf/yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl">
+      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+    </xslt>
+    <condition property="local.yanel.config.exists">
+      <available file="../../conf/local.yanel.xml" type="file"/>
+    </condition>
+    <antcall target="patch-with-local-yanel-config"/>
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
@@ -191,7 +197,7 @@
       <replacetoken>javadoc,../src/javadoc-repository/repository.xml</replacetoken>
     </replace>
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="${yanel.home.dir}">
-      <replacetoken>../../../../..</replacetoken>
+      <replacetoken>..</replacetoken>
     </replace>
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.path}">
       <replacetoken>@LOG4J_PATH@</replacetoken>
@@ -351,6 +357,12 @@
 
   <target name="clean-resources" description="Clean resources" depends="generate-resources-build">
     <ant antfile="${yanel.home.dir}/build/resources.xml" target="clean-resources"/>
+  </target>
+
+  <target name="patch-with-local-yanel-config" if="local.yanel.config.exists">
+    <xslt in="../../conf/local.yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl">
+      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+    </xslt>
   </target>
 
 </project>
