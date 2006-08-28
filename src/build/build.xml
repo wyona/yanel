@@ -163,16 +163,27 @@
     <copy file="${yanel.home.dir}/conf/ac-identities-yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/local.ac-identities-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" overwrite="true" failonerror="false"/>
 
+    <!-- Create yarep.properties -->
     <copy file="${yanel.home.dir}/conf/yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/local.yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" overwrite="true" failonerror="false"/>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
+      <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
+    </replace>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/repository.xml">
+      <replacetoken>javadoc,../src/javadoc-repository/repository.xml</replacetoken>
+    </replace>
 
-    <xslt in="../../conf/yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl">
-      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
-    </xslt>
+    <!-- Create yanel.properties -->
     <condition property="local.yanel.config.exists">
       <available file="../../conf/local.yanel.xml" type="file"/>
     </condition>
+    <antcall target="generate-yanel-properties"/>
     <antcall target="patch-with-local-yanel-config"/>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="${yanel.home.dir}">
+      <replacetoken>..</replacetoken>
+    </replace>
+
+
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
@@ -190,15 +201,6 @@
     <!-- NOTE: No exception shall be thrown even if one does not build the javadocs -->
     <mkdir dir="${build.dir}/javadoc"/>
 
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
-      <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
-    </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/repository.xml">
-      <replacetoken>javadoc,../src/javadoc-repository/repository.xml</replacetoken>
-    </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="${yanel.home.dir}">
-      <replacetoken>..</replacetoken>
-    </replace>
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.path}">
       <replacetoken>@LOG4J_PATH@</replacetoken>
     </replace>
@@ -359,8 +361,14 @@
     <ant antfile="${yanel.home.dir}/build/resources.xml" target="clean-resources"/>
   </target>
 
+  <target name="generate-yanel-properties" unless="local.yanel.config.exists">
+    <xslt in="../../conf/yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl" force="false">
+      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+    </xslt>
+  </target>
+
   <target name="patch-with-local-yanel-config" if="local.yanel.config.exists">
-    <xslt in="../../conf/local.yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl">
+    <xslt in="../../conf/local.yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
     </xslt>
   </target>
