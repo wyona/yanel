@@ -21,15 +21,32 @@ resources=<xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource"><xs
 </xsl:template>
 
 <xsl:template match="yanel:reverse-proxy">
+
+
 # Reverse Proxy Configuration
-  <xsl:apply-templates select="yanel:host-name"/>
+<xsl:apply-templates select="yanel:host-name"/>
+<xsl:apply-templates select="yanel:port"/>
+<xsl:apply-templates select="yanel:prefix"/>
 </xsl:template>
+
+
 
 <xsl:template match="yanel:host-name">
 proxy-host-name=<xsl:value-of select="."/>
 </xsl:template>
 
+<xsl:template match="yanel:port">
+proxy-port=<xsl:value-of select="."/>
+</xsl:template>
+
+<xsl:template match="yanel:prefix">
+proxy-prefix=<xsl:value-of select="."/>
+</xsl:template>
+
+
 <xsl:template match="yanel:realms-config">
+
+
 # Realms configuration
 realms-config=<xsl:value-of select="@src"/>
 </xsl:template>
