@@ -358,7 +358,7 @@ public class YanelServlet extends HttpServlet {
                 InputStream in = intercept(request.getInputStream());
                 try {
                     Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}xml/>");
-                    // TODO: Check if is not a collection and possible use parent ...
+                    // TODO: Initiate Atom Feed Resource Type to get actual path for saving ...
                     log.error("DEBUG: Atom Feed: " + request.getServletPath() + " " + request.getRequestURI());
                     Path entryPath = new Path(request.getServletPath() + "/" + new java.util.Date().getTime() + ".xml");
                     OutputStream out = ((ModifiableV2)atomEntry).getOutputStream(entryPath);
@@ -377,7 +377,6 @@ public class YanelServlet extends HttpServlet {
 
                     // TODO: Fix Location ...
                     response.setHeader("Location", "http://ulysses.wyona.org" + entryPath);
-                    //response.setHeader("Location", "http://yanel.wyona.org:9290/yanel-dev" + entryPath);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_CREATED);
                     return;
                 } catch (Exception e) {
@@ -413,10 +412,38 @@ public class YanelServlet extends HttpServlet {
             log.warn("No parameter yanel.resource.usecase!");
 
             String contentType = request.getContentType();
-            InputStream in = intercept(request.getInputStream());
-            // TODO: Implement saving of existing atom entries ...
             if (contentType.indexOf("application/atom+xml") >= 0) {
-                log.error("TODO: Implement saving of existing atom entries ...");
+                InputStream in = intercept(request.getInputStream());
+                try {
+                    Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}xml/>");
+                    log.error("DEBUG: Atom Entry: " + request.getServletPath() + " " + request.getRequestURI());
+                    Path entryPath = new Path(request.getServletPath());
+/*
+                    OutputStream out = ((ModifiableV2)atomEntry).getOutputStream(entryPath);
+                    byte buffer[] = new byte[8192];
+                    int bytesRead;
+                    while ((bytesRead = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytesRead);
+                    }
+*/
+                    log.error("DEBUG: Atom entry has been saved: " + entryPath);
+
+/*
+                    InputStream resourceIn = ((ModifiableV2)atomEntry).getInputStream(entryPath);
+                    OutputStream responseOut = response.getOutputStream();
+                    while ((bytesRead = resourceIn.read(buffer)) != -1) {
+                        responseOut.write(buffer, 0, bytesRead);
+                    }
+
+                    // TODO: Fix Location ...
+                    response.setHeader("Location", "http://ulysses.wyona.org" + entryPath);
+*/
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+                    return;
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    throw new IOException(e.getMessage());
+                }
             }
 
             getContent(request, response);
