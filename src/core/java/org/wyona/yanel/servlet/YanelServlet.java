@@ -418,26 +418,14 @@ public class YanelServlet extends HttpServlet {
                     Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}xml/>");
                     log.error("DEBUG: Atom Entry: " + request.getServletPath() + " " + request.getRequestURI());
                     Path entryPath = new Path(request.getServletPath());
-/*
                     OutputStream out = ((ModifiableV2)atomEntry).getOutputStream(entryPath);
                     byte buffer[] = new byte[8192];
                     int bytesRead;
                     while ((bytesRead = in.read(buffer)) != -1) {
                         out.write(buffer, 0, bytesRead);
                     }
-*/
                     log.error("DEBUG: Atom entry has been saved: " + entryPath);
 
-/*
-                    InputStream resourceIn = ((ModifiableV2)atomEntry).getInputStream(entryPath);
-                    OutputStream responseOut = response.getOutputStream();
-                    while ((bytesRead = resourceIn.read(buffer)) != -1) {
-                        responseOut.write(buffer, 0, bytesRead);
-                    }
-
-                    // TODO: Fix Location ...
-                    response.setHeader("Location", "http://ulysses.wyona.org" + entryPath);
-*/
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
                     return;
                 } catch (Exception e) {
