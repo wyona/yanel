@@ -69,6 +69,7 @@ public class YanelServlet extends HttpServlet {
     private static final String METHOD_GET = "GET";
     private static final String METHOD_POST = "POST";
     private static final String METHOD_PUT = "PUT";
+    private static final String METHOD_DELETE = "DELETE";
 
     /**
      *
@@ -124,6 +125,8 @@ public class YanelServlet extends HttpServlet {
             doPost(request, response);
 	} else if (method.equals(METHOD_PUT)) {
             doPut(request, response);
+	} else if (method.equals(METHOD_DELETE)) {
+            doDelete(request, response);
         } else {
             log.error("No such method implemented: " + method);
         }
@@ -436,6 +439,15 @@ public class YanelServlet extends HttpServlet {
 
             getContent(request, response);
         }
+    }
+
+    /**
+     * HTTP DELETE implementation
+     */
+    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.error("TODO: Delete not implemented yet!");
+        response.sendError(response.SC_NOT_IMPLEMENTED);
+        return;
     }
 
     /**
