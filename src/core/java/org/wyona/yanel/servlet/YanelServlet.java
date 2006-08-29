@@ -357,7 +357,7 @@ public class YanelServlet extends HttpServlet {
             log.error("DEBUG: Content Type: " + contentType);
             InputStream in = intercept(request.getInputStream());
 
-            if (contentType.equals("application/atom+xml")) {
+            if (contentType.indexOf("application/atom+xml") >= 0) {
                 try {
                     Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}xml/>");
                     // TODO: Replace hardcoded path ...
