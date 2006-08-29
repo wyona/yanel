@@ -354,13 +354,13 @@ public class YanelServlet extends HttpServlet {
             log.warn("No parameter yanel.resource.usecase!");
 
             String contentType = request.getContentType();
-            InputStream in = intercept(request.getInputStream());
             if (contentType.indexOf("application/atom+xml") >= 0) {
+                InputStream in = intercept(request.getInputStream());
                 try {
                     Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}xml/>");
-                    // TODO: Replace hardcoded path ...
-                    Path entryPath = new Path("/demo/atom/entries/" + new java.util.Date().getTime() + ".xml");
-                    //Path entryPath = new Path("/atom/entries/" + new java.util.Date().getTime() + ".xml");
+                    // TODO: Check if is not a collection and possible use parent ...
+                    log.error("DEBUG: Atom Feed: " + request.getServletPath() + " " + request.getRequestURI());
+                    Path entryPath = new Path(request.getServletPath() + "/" + new java.util.Date().getTime() + ".xml");
                     OutputStream out = ((ModifiableV2)atomEntry).getOutputStream(entryPath);
                     byte buffer[] = new byte[8192];
                     int bytesRead;
