@@ -91,7 +91,7 @@ public class AtomResource extends Resource implements ViewableV1 {
             // NOTE: The schema is according to http://cocoon.apache.org/2.1/userdocs/directory-generator.html
 	    sb.append("<atom:feed yanel:path=\"" + path + "\" dir:name=\"" + p.getName() + "\" dir:path=\"" + p + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
 
-            sb.append("<atom:title>TODO</atom:title>");
+            sb.append("<atom:title>" + getFeedTitle(path) + "</atom:title>");
             sb.append("<atom:link rel=\"self\" href=\"TODO\"/>");
             sb.append("<atom:updated>2003-12-13T18:30:02Z</atom:updated>");
             sb.append("<atom:author><atom:name>TODO</atom:name></atom:author>");
@@ -226,5 +226,42 @@ public class AtomResource extends Resource implements ViewableV1 {
 
         // NOTE: Assuming fallback re dir2xhtml.xsl ...
         return "application/xhtml+xml";
+    }
+
+    /**
+     *
+     */
+    private String getFeedTitle(Path path) {
+        String feedTitle = getProperty(path, "feed-title");
+        if (feedTitle != null) {
+            return feedTitle;
+        } else {
+            // TODO: Return path of yanel-rti ...
+            return "WARNING: No feed title specified!";
+        }
+    }
+
+    /**
+     *
+     */
+    private String getProperty(Path path, String name) {
+        String property = null;
+        try {
+            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
+
+            while ((property = br.readLine()) != null) {
+                if (property.indexOf(name + ":") == 0) {
+                    property = property.substring(name.length() + 2);
+                    log.info("*" + property + "*");
+                    return property;
+                }
+            }
+        } catch(Exception e) {
+            log.warn(e);
+        }
+
+        return property;
     }
 }
