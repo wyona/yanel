@@ -354,9 +354,7 @@ public class YanelServlet extends HttpServlet {
             log.warn("No parameter yanel.resource.usecase!");
 
             String contentType = request.getContentType();
-            log.error("DEBUG: Content Type: " + contentType);
             InputStream in = intercept(request.getInputStream());
-
             if (contentType.indexOf("application/atom+xml") >= 0) {
                 try {
                     Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}xml/>");
@@ -413,6 +411,13 @@ public class YanelServlet extends HttpServlet {
             return;
         } else {
             log.warn("No parameter yanel.resource.usecase!");
+
+            String contentType = request.getContentType();
+            InputStream in = intercept(request.getInputStream());
+            // TODO: Implement saving of existing atom entries ...
+            if (contentType.indexOf("application/atom+xml") >= 0) {
+                log.error("TODO: Implement saving of existing atom entries ...");
+            }
 
             getContent(request, response);
         }
