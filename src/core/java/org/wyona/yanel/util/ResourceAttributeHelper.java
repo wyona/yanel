@@ -40,9 +40,9 @@ public class ResourceAttributeHelper {
             //if (interfaces[i].isInstance(iface)) implemented = true;
         }
         if (implemented) {
-            log.info(res.getClass().getName() + " does implement " + attribute + " interface!");
+            log.info(res.getClass().getName() + " does implement " + attribute + "V" + version + " interface!");
         } else {
-            log.warn(res.getClass().getName() + " does NOT implement " + attribute + " interface!");
+            log.warn(res.getClass().getName() + " does NOT implement " + attribute + "V" + version + " interface!");
         }
         return implemented;
     }
