@@ -27,7 +27,7 @@
 <xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
   <xsl:choose>
     <xsl:when test="@compile='false'">
-      <xsl:comment> Do not compile: <xsl:value-of select="@src"/> </xsl:comment>
+      <echo>Do not compile: <xsl:value-of select="@src"/></echo>
     </xsl:when>
     <xsl:otherwise>
     <ant inheritAll="false" antfile="${{build.dir}}/{@src}build.xml" target="compile"/>
@@ -48,7 +48,7 @@
 <xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
   <xsl:choose>
     <xsl:when test="@compile='false'">
-      <xsl:comment> Do not clean: <xsl:value-of select="@src"/>build </xsl:comment>
+      <echo>Do not clean: <xsl:value-of select="@src"/>build</echo>
     </xsl:when>
     <xsl:otherwise>
     <delete dir="${{build.dir}}/{@src}/build"/>
