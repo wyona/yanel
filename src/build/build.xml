@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="yanel-main" default="deploy">
+<project name="yanel-main" default="deploy" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
   <import file="dependencies.xml"/>
 <!--
@@ -75,7 +75,7 @@
       <classpath refid="classpath"/>
     </javac>
     <mkdir dir="${yanel.home.dir}/build/lib"/>
-    <jar destfile="${yanel.home.dir}/build/lib/yanel-core-0.0.1-dev-r${yanel.revision}.jar"
+    <jar destfile="${yanel.home.dir}/build/lib/yanel-core-${yanel.version}-r${yanel.revision}.jar"
       basedir="${classes.dir}"
       includes="org/wyona/yanel/core/**"/>
 
@@ -83,6 +83,12 @@
     <replace file="${yanel.home.dir}/build/lib/pom-core.xml" value="${yanel.version}-r${yanel.revision}">
       <replacetoken>@VERSION@</replacetoken>
     </replace>
+
+    <artifact:pom id="core.project" file="${yanel.home.dir}/build/lib/pom-core.xml"/>
+
+    <artifact:install file="${yanel.home.dir}/build/lib/yanel-core-${yanel.version}-r${yanel.revision}.jar">
+      <pom refid="core.project"/>
+    </artifact:install>
   </target>
 
   <target name="compile-impl" description="Compile Java classes of Yanel implementation" depends="init">
