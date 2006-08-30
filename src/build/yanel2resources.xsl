@@ -30,12 +30,7 @@
       <xsl:comment> Do not compile: <xsl:value-of select="@src"/> </xsl:comment>
     </xsl:when>
     <xsl:otherwise>
-<!--
-    <ant antfile="${{build.dir}}/{@src}build.xml" target="compile"/>
--->
-    <exec executable="ant">
-      <arg line="-f ${{build.dir}}/{@src}build.xml compile"/>
-    </exec>
+    <ant inheritAll="false" antfile="${{build.dir}}/{@src}build.xml" target="compile"/>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:for-each>
