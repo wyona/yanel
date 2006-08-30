@@ -295,7 +295,7 @@ public class AtomResource extends Resource implements ViewableV1 {
         try {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
 
-            org.wyona.yarep.core.Path entryPath = new org.wyona.yarep.core.Path(path.toString() + "/" + new java.util.Date().getTime() + ".xml");
+            org.wyona.yarep.core.Path entryPath = new org.wyona.yarep.core.Path(getEntriesPath(path).toString() + "/" + new java.util.Date().getTime() + ".xml");
             java.io.OutputStream out = rp.getRepo().getOutputStream(entryPath);
             byte buffer[] = new byte[8192];
             int bytesRead;
