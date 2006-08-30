@@ -15,8 +15,8 @@
   <resource src="../src/contributions/resources/atom/" compile="true"/>
   <resource src="../src/contributions/resources/wiki/" compile="true"/>
   <resource src="../src/contributions/resources/zip/" compile="true"/>
-<!--
   <resource src="../src/resources/websearch/" compile="true"/>
+<!--
   <resource src="../src/contributions/resources/nutch/" compile="false"/>
 -->
 </resources>
