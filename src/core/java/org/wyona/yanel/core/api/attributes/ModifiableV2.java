@@ -65,4 +65,9 @@ public interface ModifiableV2 {
      *
      */
     public long getLastModified(Path path);
+
+    /**
+     *
+     */
+    public boolean delete(Path path);
 }
