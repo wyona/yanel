@@ -445,8 +445,19 @@ public class YanelServlet extends HttpServlet {
      * HTTP DELETE implementation
      */
     public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.error("TODO: Delete not implemented yet!");
-        response.sendError(response.SC_NOT_IMPLEMENTED);
+        Resource res = getResource(request);
+        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
+            if (((ModifiableV2) res).delete(new Path(request.getServletPath()))) {
+                response.setStatus(response.SC_OK);
+                return;
+            } else {
+                log.warn("Resource could not be deleted: " + res);
+                response.setStatus(response.SC_FORBIDDEN);
+                return;
+            }
+        } else {
+            response.sendError(response.SC_NOT_IMPLEMENTED);
+        }
         return;
     }
 
