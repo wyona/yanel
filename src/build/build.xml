@@ -78,6 +78,11 @@
     <jar destfile="${yanel.home.dir}/build/lib/yanel-core-0.0.1-dev-r${yanel.revision}.jar"
       basedir="${classes.dir}"
       includes="org/wyona/yanel/core/**"/>
+
+    <copy file="${yanel.home.dir}/src/build/pom-core.xml" todir="${yanel.home.dir}/build/lib"/>
+    <replace file="${yanel.home.dir}/build/lib/pom-core.xml" value="${yanel.version}-r${yanel.revision}">
+      <replacetoken>@VERSION@</replacetoken>
+    </replace>
   </target>
 
   <target name="compile-impl" description="Compile Java classes of Yanel implementation" depends="init">
