@@ -640,13 +640,15 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Authorize request
-     * TODO: Replace hardcoded roles by mapping between roles amd query strings ...
      */
     private HttpServletResponse doAuthorize(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 	Role role = null;
 
+        // TODO: Replace hardcoded roles by mapping between roles amd query strings ...
         String value = request.getParameter("yanel.resource.usecase");
+        String contentType = request.getContentType();
+        String method = request.getMethod();
         if (value != null && value.equals("save")) {
             log.debug("Save data ...");
             role = new Role("write");
@@ -656,8 +658,11 @@ public class YanelServlet extends HttpServlet {
 	} else if (value != null && value.equals("checkout")) {
             log.debug("Checkout data ...");
             role = new Role("open");
+	} else if (contentType != null && contentType.indexOf("application/atom+xml") >= 0 && (method.equals(METHOD_PUT) || method.equals(METHOD_POST))) {
+            log.error("DEBUG: Write/Checkin Atom entry ...");
+            role = new Role("write");
         } else {
-            log.debug("No parameter yanel.resource.usecase!");
+            log.debug("Role will be 'view'!");
             role = new Role("view");
         }
 
