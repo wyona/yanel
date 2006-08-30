@@ -278,4 +278,29 @@ public class AtomResource extends Resource implements ViewableV1 {
         return entriesPath;
         }
     }
+
+    /**
+     * @param path feed path
+     * @param in entry content
+     * @return entry path
+     */
+    public Path createEntry(Path path, java.io.InputStream in) {
+        try {
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+
+            org.wyona.yarep.core.Path entryPath = new org.wyona.yarep.core.Path(path.toString() + "/" + new java.util.Date().getTime() + ".xml");
+            java.io.OutputStream out = rp.getRepo().getOutputStream(entryPath);
+            byte buffer[] = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+               out.write(buffer, 0, bytesRead);
+            }
+            log.error("DEBUG: Atom entry has been created: " + entryPath);
+
+            return new Path(entryPath.toString());
+        } catch(Exception e) {
+            log.error(e);
+        }
+        return null;
+    }
 }
