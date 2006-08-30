@@ -277,4 +277,12 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
         if (path.toString().equals("/")) return true;
         return false;
     }
+
+    /**
+     *
+     */
+    public boolean delete(Path path) {
+        log.error("TODO: Not implemented yet!");
+        return false;
+    }
 }

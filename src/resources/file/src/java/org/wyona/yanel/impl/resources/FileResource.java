@@ -210,4 +210,12 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
         // TODO: Does that actually make sense?!
         return -1;
     }
+
+    /**
+     *
+     */
+    public boolean delete(Path path) {
+        log.error("TODO: No implemented yet!");
+        return false;
+    }
 }
