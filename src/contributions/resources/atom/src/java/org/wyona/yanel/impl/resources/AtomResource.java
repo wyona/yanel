@@ -72,24 +72,11 @@ public class AtomResource extends Resource implements ViewableV1 {
         try {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
             contentRepo = rp.getRepo();
-            org.wyona.yarep.core.Path p = rp.getPath();
-
-            // TODO: This doesn't seem to work ... (check on Yarep ...)
-            if (contentRepo.isResource(p)) {
-                log.warn("Path is a resource instead of a collection: " + p);
-                //p = p.getParent();
-            }
-
-            // TODO: Implement org.wyona.yarep.core.Path.getParent()
-            if (!contentRepo.isCollection(p)) {
-                log.warn("Path is not a collection: " + p);
-                p = new org.wyona.yarep.core.Path(new org.wyona.commons.io.Path(p.toString()).getParent().toString());
-                log.warn("Use parent of path: " + p);
-            }
+            org.wyona.yarep.core.Path entriesPath = getEntriesPath(path, contentRepo, rp.getPath());
 
             // TODO: Add realm prefix, e.g. realm-prefix="ulysses-demo"
             // NOTE: The schema is according to http://cocoon.apache.org/2.1/userdocs/directory-generator.html
-	    sb.append("<atom:feed yanel:path=\"" + path + "\" dir:name=\"" + p.getName() + "\" dir:path=\"" + p + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
+	    sb.append("<atom:feed yanel:path=\"" + path + "\" dir:name=\"" + entriesPath.getName() + "\" dir:path=\"" + entriesPath + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
 
             sb.append("<atom:title>" + getFeedTitle(path) + "</atom:title>");
             sb.append("<atom:link rel=\"self\" href=\"TODO\"/>");
@@ -100,7 +87,7 @@ public class AtomResource extends Resource implements ViewableV1 {
 
             // TODO: Do not show the children with suffix .yanel-rti resp. make this configurable!
 	    // NOTE: Do not hardcode the .yanel-rti, but rather use Path.getRTIPath ...
-            org.wyona.yarep.core.Path[] children = contentRepo.getChildren(p);
+            org.wyona.yarep.core.Path[] children = contentRepo.getChildren(entriesPath);
             for (int i = 0; i < children.length; i++) {
                 if (contentRepo.isResource(children[i])) {
 	            sb.append("<dir:file path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
@@ -263,5 +250,32 @@ public class AtomResource extends Resource implements ViewableV1 {
         }
 
         return property;
+    }
+
+    /**
+     *
+     */
+    private org.wyona.yarep.core.Path getEntriesPath(Path feedPath, Repository repo, org.wyona.yarep.core.Path feedRepoPath) {
+        String entriesPathString = getProperty(feedPath, "entries-path");
+
+	if (entriesPathString != null) {
+            return new org.wyona.yarep.core.Path(entriesPathString);
+        } else {
+            org.wyona.yarep.core.Path entriesPath = feedRepoPath;
+
+        // TODO: This doesn't seem to work ... (check on Yarep ...)
+        if (repo.isResource(entriesPath)) {
+            log.warn("Path is a resource instead of a collection: " + entriesPath);
+            //entriesPath = entriesPath.getParent();
+        }
+
+        // TODO: Implement org.wyona.yarep.core.Path.getParent()
+        if (!repo.isCollection(entriesPath)) {
+            log.warn("Path is not a collection: " + entriesPath);
+            entriesPath = new org.wyona.yarep.core.Path(new org.wyona.commons.io.Path(entriesPath.toString()).getParent().toString());
+            log.warn("Use parent of path: " + entriesPath);
+        }
+        return entriesPath;
+        }
     }
 }
