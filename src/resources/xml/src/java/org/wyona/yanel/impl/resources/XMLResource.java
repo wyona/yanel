@@ -282,7 +282,12 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
      *
      */
     public boolean delete(Path path) {
-        log.error("TODO: Not implemented yet!");
-        return false;
+        try {
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            return rp.getRepo().delete(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+        } catch(Exception e) {
+            log.error(e);
+            return false;
+        }
     }
 }
