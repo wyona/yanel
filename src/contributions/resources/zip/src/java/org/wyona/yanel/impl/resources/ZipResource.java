@@ -16,27 +16,24 @@
 
 package org.wyona.yanel.impl.resources;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Category;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
-
-import org.apache.log4j.Category;
-
-import java.io.File;
-
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
 
 /**
  *
@@ -64,22 +61,89 @@ public class ZipResource extends Resource implements ViewableV1 {
     public View getView(Path path, String viewId) {
         View defaultView = new View();
 
-        Repository contentRepo = null;
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
-            contentRepo = rp.getRepo();
-
             String zipDir = getProperty(path, "zip-dir");
             log.error("DEBUG: Zip Directory: " + zipDir);
+            
+            RepoPath zipRp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(
+                    new org.wyona.yarep.core.Path(zipDir), new RepositoryFactory());
+            
+            Repository zipRepo = zipRp.getRepo();            
+            org.wyona.yarep.core.Path p = zipRp.getPath();            
+            
+            if (zipRepo.isCollection(p)) {
+                log.error("DEBUG: Collection: " + zipDir);                
+                                                
+                ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+                ZipOutputStream zipOut = new ZipOutputStream(byteOut);                        
+                
+                org.wyona.yarep.core.Path[] zipDirEntries = zipRepo.getChildren(zipRp.getPath());
+                
+                addZipEntries(zipOut, zipRepo, zipDirEntries);
+                
+                ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+                defaultView.setInputStream(byteIn);                    
+                defaultView.setMimeType("application/zip");
+            } else if (zipRepo.isResource(p)){
+                log.error("DEBUG: Resource: " + zipDir);
+            } else {
+                log.error("DEBUG: neither resource nor collection");
+            }
+            
         } catch(Exception e) {
             log.error(e);
         }
-
-        defaultView.setMimeType("application/neutron-archive");
-	defaultView.setInputStream(null);
+        
         return defaultView;
     }
 
+    /**
+     * 
+     * @param zipOut
+     * @param repo
+     * @param entries
+     */
+    void addZipEntries(ZipOutputStream zipOut, Repository repo, org.wyona.yarep.core.Path[] entries) {                    
+        
+        for (int i=0; i<entries.length; i++) {            
+            log.error("DEBUG: Zip entry: " + entries[i].getName());            
+            
+            if (repo.isResource(entries[i])) {                
+                int rb = 0;
+                byte[] buf = new byte[1024];                    
+                InputStream in = null;
+                
+                try {
+                    zipOut.putNextEntry(new ZipEntry(entries[i].getName()));
+                    
+                    // FIXME how to get an inpustream from a collection entry ?
+                    in = repo.getInputStream(new org.wyona.yarep.core.Path(entries[i].getName()));                    
+                    while ((rb = in.read(buf)) > 0) {
+                        zipOut.write(buf, 0, rb);
+                    }                    
+                    zipOut.closeEntry();
+                    in.close();                    
+                } catch (Exception e) {
+                    log.error(e);
+                }                
+            } else if (repo.isCollection(entries[i])) {               
+                // directory entries end with a "/"
+                ZipEntry zipEntry = new ZipEntry(entries[i].getName() + "/");
+                try {
+                    zipOut.putNextEntry(zipEntry);
+                    zipOut.closeEntry();
+                } catch (IOException e) {
+                    log.error(e);
+                }
+                
+                // recurse
+                addZipEntries(zipOut, repo, repo.getChildren(entries[i]));                
+            } else {
+                log.error("neiter resource nor collection");
+            }
+        }    
+    }
+    
     /**
      *
      */
