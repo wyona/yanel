@@ -15,9 +15,9 @@
       <dependency groupId="wyona-org-yanel" artifactId="yanel-core"
                   version="0.0.1-dev-r17165"/>
       <dependency groupId="yarep" artifactId="yarep"
-                  version="0.0.1-dev-r15817"/>
+                  version="0.0.1-dev-r17381"/>
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
-                  version="0.0.1-dev-r15048"/>
+                  version="0.0.1-dev-r17376"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
