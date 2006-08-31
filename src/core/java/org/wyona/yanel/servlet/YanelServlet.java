@@ -448,6 +448,7 @@ public class YanelServlet extends HttpServlet {
         Resource res = getResource(request);
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
             if (((ModifiableV2) res).delete(new Path(request.getServletPath()))) {
+                log.debug("Resource has been deleted: " + res);
                 response.setStatus(response.SC_OK);
                 return;
             } else {
@@ -456,9 +457,10 @@ public class YanelServlet extends HttpServlet {
                 return;
             }
         } else {
+            log.error("Resource '" + res + "' has interface ModifiableV2 not implemented." );
             response.sendError(response.SC_NOT_IMPLEMENTED);
+            return;
         }
-        return;
     }
 
     /**
