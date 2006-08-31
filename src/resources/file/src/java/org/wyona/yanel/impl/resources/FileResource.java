@@ -215,7 +215,12 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
      *
      */
     public boolean delete(Path path) {
-        log.error("TODO: No implemented yet!");
-        return false;
+        try {
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            return rp.getRepo().delete(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+        } catch(Exception e) {
+            log.error(e);
+            return false;
+        }
     }
 }
