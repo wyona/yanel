@@ -64,27 +64,29 @@ public class ZipResource extends Resource implements ViewableV1 {
         try {
             String zipDir = getProperty(path, "zip-dir");
             log.error("DEBUG: Zip Directory: " + zipDir);
+            org.wyona.yarep.core.Path zipDirPath = new org.wyona.yarep.core.Path(zipDir); 
             
             RepoPath zipRp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(
-                    new org.wyona.yarep.core.Path(zipDir), new RepositoryFactory());
+                    new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
             
-            Repository zipRepo = zipRp.getRepo();            
-            org.wyona.yarep.core.Path p = zipRp.getPath();            
+            Repository zipRepo = zipRp.getRepo();         
             
-            if (zipRepo.isCollection(p)) {
-                log.error("DEBUG: Collection: " + zipDir);                
+            log.error("DEBUG: exists: " + zipRepo.exists(zipDirPath));
+            
+            if (zipRepo.isCollection(zipDirPath)) {
+                log.error("DEBUG: Collection: " + zipDirPath);                
                                                 
                 ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
                 ZipOutputStream zipOut = new ZipOutputStream(byteOut);                        
                 
                 org.wyona.yarep.core.Path[] zipDirEntries = zipRepo.getChildren(zipRp.getPath());
                 
-                addZipEntries(zipOut, zipRepo, zipDirEntries);
+                addZipEntries(zipOut, zipRepo, zipDirEntries, "/");
                 
                 ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
                 defaultView.setInputStream(byteIn);                    
                 defaultView.setMimeType("application/zip");
-            } else if (zipRepo.isResource(p)){
+            } else if (zipRepo.isResource(zipDirPath)){
                 log.error("DEBUG: Resource: " + zipDir);
             } else {
                 log.error("DEBUG: neither resource nor collection");
@@ -103,7 +105,7 @@ public class ZipResource extends Resource implements ViewableV1 {
      * @param repo
      * @param entries
      */
-    void addZipEntries(ZipOutputStream zipOut, Repository repo, org.wyona.yarep.core.Path[] entries) {                    
+    void addZipEntries(ZipOutputStream zipOut, Repository repo, org.wyona.yarep.core.Path[] entries, String base) {                    
         
         for (int i=0; i<entries.length; i++) {            
             log.error("DEBUG: Zip entry: " + entries[i].getName());            
@@ -114,7 +116,9 @@ public class ZipResource extends Resource implements ViewableV1 {
                 InputStream in = null;
                 
                 try {
-                    zipOut.putNextEntry(new ZipEntry(entries[i].getName()));
+                    log.error("DEBUG: Zip entry path: " + base + entries[i].getName());
+                    
+                    zipOut.putNextEntry(new ZipEntry(base + entries[i].getName()));
                     
                     // FIXME how to get an inpustream from a collection entry ?
                     in = repo.getInputStream(new org.wyona.yarep.core.Path(entries[i].getName()));                    
@@ -128,7 +132,7 @@ public class ZipResource extends Resource implements ViewableV1 {
                 }                
             } else if (repo.isCollection(entries[i])) {               
                 // directory entries end with a "/"
-                ZipEntry zipEntry = new ZipEntry(entries[i].getName() + "/");
+                ZipEntry zipEntry = new ZipEntry(base + entries[i].getName() + "/");
                 try {
                     zipOut.putNextEntry(zipEntry);
                     zipOut.closeEntry();
@@ -137,7 +141,7 @@ public class ZipResource extends Resource implements ViewableV1 {
                 }
                 
                 // recurse
-                addZipEntries(zipOut, repo, repo.getChildren(entries[i]));                
+                addZipEntries(zipOut, repo, repo.getChildren(entries[i]), base + entries[i].getName() + "/");                
             } else {
                 log.error("neiter resource nor collection");
             }
