@@ -3,7 +3,7 @@
 <repository>
   <name>Javadoc RTI Map</name>
 
-  <paths src="yanel-content"/>
+  <paths src="yanel-content" class="org.wyona.yarep.impl.VFileSystemMapImpl"/>
 
   <storage class="org.wyona.yarep.core.impl.vfs.VFileSystemStorage">
     <content src="yanel-content"/>
