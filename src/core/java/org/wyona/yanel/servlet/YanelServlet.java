@@ -674,6 +674,9 @@ public class YanelServlet extends HttpServlet {
 	} else if (contentType != null && contentType.indexOf("application/atom+xml") >= 0 && (method.equals(METHOD_PUT) || method.equals(METHOD_POST))) {
             log.error("DEBUG: Write/Checkin Atom entry ...");
             role = new Role("write");
+	} else if (method.equals(METHOD_DELETE)) {
+            log.error("DEBUG: Delete rsource ...");
+            role = new Role("delete");
         } else {
             log.debug("Role will be 'view'!");
             role = new Role("view");
