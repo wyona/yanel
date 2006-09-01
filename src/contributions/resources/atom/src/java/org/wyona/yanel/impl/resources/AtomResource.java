@@ -155,6 +155,7 @@ public class AtomResource extends Resource implements ViewableV1 {
      *
      */
     public View getView(HttpServletRequest request, String viewId) {
+        // TODO: Patch requestURL with proxy config (see also YanelServlet ...)
         return getView(new Path(request.getServletPath()), viewId, request.getRequestURL().toString());
     }
 
