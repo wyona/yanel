@@ -61,7 +61,7 @@ public class AtomResource extends Resource implements ViewableV1 {
     /**
      *
      */
-    public View getView(Path path, String viewId) {
+    public View getView(Path path, String viewId, String requestURL) {
         View defaultView = new View();
 	StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
 
@@ -79,7 +79,8 @@ public class AtomResource extends Resource implements ViewableV1 {
 	    sb.append("<atom:feed yanel:path=\"" + path + "\" dir:name=\"" + entriesPath.getName() + "\" dir:path=\"" + entriesPath + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
 
             sb.append("<atom:title>" + getFeedTitle(path) + "</atom:title>");
-            sb.append("<atom:link rel=\"self\" href=\"TODO\"/>");
+            sb.append("<atom:link rel=\"self\" href=\"" + requestURL + "\"/>");
+            // TODO: Calculate date ...
             sb.append("<atom:updated>2003-12-13T18:30:02Z</atom:updated>");
             sb.append("<atom:author><atom:name>TODO</atom:name></atom:author>");
             sb.append("<atom:id>urn:uuid:TODO</atom:id>");
@@ -146,8 +147,15 @@ public class AtomResource extends Resource implements ViewableV1 {
     /**
      *
      */
+    public View getView(Path path, String viewId) {
+        return getView(path, viewId, null);
+    }
+
+    /**
+     *
+     */
     public View getView(HttpServletRequest request, String viewId) {
-        return getView(new Path(request.getServletPath()), viewId);
+        return getView(new Path(request.getServletPath()), viewId, request.getRequestURL().toString());
     }
 
     /**
