@@ -3,7 +3,7 @@
 <repository>
   <name>Yanel Javadoc Repository Content</name>
 
-  <paths src="../../build/javadoc"/>
+  <paths  class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../../build/javadoc"/>
 
   <storage class="org.wyona.yarep.core.impl.vfs.VFileSystemStorage">
     <content src="../../build/javadoc"/>
