@@ -81,7 +81,7 @@ public class ZipResource extends Resource implements ViewableV1 {
                 
                 org.wyona.yarep.core.Path[] zipDirEntries = zipRepo.getChildren(zipDirPath);
                 
-                addZipEntries(zipOut, zipRepo, zipDirEntries, "");
+                addZipEntries(zipOut, zipRepo, zipDirEntries, "", zipDirPath);
                 
                 zipOut.close();
                 
@@ -102,12 +102,11 @@ public class ZipResource extends Resource implements ViewableV1 {
     }
 
     /**
-     * 
      * @param zipOut
      * @param repo
      * @param entries
      */
-    void addZipEntries(ZipOutputStream zipOut, Repository repo, org.wyona.yarep.core.Path[] entries, String base) {                    
+    void addZipEntries(ZipOutputStream zipOut, Repository repo, org.wyona.yarep.core.Path[] entries, String base, org.wyona.yarep.core.Path zipDirPath) {
         
         String entryPath = null;
         
@@ -123,9 +122,11 @@ public class ZipResource extends Resource implements ViewableV1 {
                     
                     log.error("DEBUG: Zip entry path: " + entryPath);                    
                     
-                    zipOut.putNextEntry(new ZipEntry(entryPath));                    
-                    // FIXME how to get an inpustream from a collection entry ?
-                    in = repo.getInputStream(new org.wyona.yarep.core.Path("/" + entryPath));                    
+                    zipOut.putNextEntry(new ZipEntry(entryPath));
+                    // FIXME how to get an inpustream from a collection entry?
+                    org.wyona.yarep.core.Path yarepPath = new org.wyona.yarep.core.Path(zipDirPath.toString() + "/" + entryPath);                    
+                    log.error("DEBUG: Yarep path: " + yarepPath);
+                    in = repo.getInputStream(yarepPath);                    
                     while ((rb = in.read(buf)) > 0) {
                         zipOut.write(buf, 0, rb);
                     }                    
@@ -151,7 +152,7 @@ public class ZipResource extends Resource implements ViewableV1 {
                 }
                 
                 // recurse
-                addZipEntries(zipOut, repo, repo.getChildren(entries[i]), entryPath);
+                addZipEntries(zipOut, repo, repo.getChildren(entries[i]), entryPath, zipDirPath);
             }
         }    
     }
