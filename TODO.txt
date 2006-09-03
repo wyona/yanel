@@ -13,7 +13,6 @@ Also see http://bugzilla.wyona.com resp. http://yanel.wyona.org
 - YanelServlet: Declare Realm for authorization on authentication screen
 - YanelServlet: Unify authentication scheme
 - ResourceTypeRegistry class loading needs to be improved (see Yarep how it should be done ...)
-- Change rti map to XML with the possibility of resource specific path config
 - Introduce Map/Realm mounting
 - Introduce chain of responsibility for MapImpl (e.g. javadoc)
 -- Would it make sense to put this also into the repository layer?
@@ -25,4 +24,3 @@ Also see http://bugzilla.wyona.com resp. http://yanel.wyona.org
 - Import any website with Nutch Crawler and rti map creator
 - Implement Distribution target (zip and tar.gz)
 - Make Yanel binary available through package manager
-- Move runtime lib dependencies into init-runtime target
