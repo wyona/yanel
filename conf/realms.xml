@@ -33,4 +33,28 @@
 </realm>
 -->
 
+<!--
+<realm mount-point="/ulysses-website/">
+  <name>Ulysses Website</name>
+
+  <reverse-proxy>
+    <host-name>ulysses.wyona.org</host-name>
+    <port></port>
+    <prefix>/yanel/ulysses-website</prefix>
+  </reverse-proxy>
+</realm>
+-->
+
+<!--
+<realm mount-point="/wyona-pictures/">
+  <name>Wyona Pictures</name>
+
+  <reverse-proxy>
+    <host-name>www.wyonapictures.com</host-name>
+    <port></port>
+    <prefix>/yanel/wyona-pictures</prefix>
+  </reverse-proxy>
+</realm>
+-->
+
 </realms>
