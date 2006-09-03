@@ -63,7 +63,7 @@ public class ZipResource extends Resource implements ViewableV1 {
 
         try {
             String zipDir = getProperty(path, "zip-dir");
-            log.error("DEBUG: Zip Directory: " + zipDir);
+            log.debug("Zip Directory: " + zipDir);
             org.wyona.yarep.core.Path zipDirPath = new org.wyona.yarep.core.Path(zipDir); 
             
             RepoPath zipRp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(
@@ -71,10 +71,8 @@ public class ZipResource extends Resource implements ViewableV1 {
             
             Repository zipRepo = zipRp.getRepo();         
             
-            log.error("DEBUG: exists: " + zipRepo.exists(zipDirPath));
-            
             if (zipRepo.isCollection(zipDirPath)) {
-                log.error("DEBUG: Collection: " + zipDirPath);                
+                log.debug("Collection: " + zipDirPath);                
                                                 
                 ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
                 ZipOutputStream zipOut = new ZipOutputStream(byteOut);                        
@@ -89,9 +87,9 @@ public class ZipResource extends Resource implements ViewableV1 {
                 defaultView.setInputStream(byteIn);                    
                 defaultView.setMimeType("application/zip");
             } else if (zipRepo.isResource(zipDirPath)){
-                log.error("DEBUG: Resource: " + zipDir);
+                log.debug("Resource: " + zipDir);
             } else {
-                log.error("DEBUG: neither resource nor collection");
+                log.warn("Neither resource nor collection");
             }
             
         } catch(Exception e) {
@@ -120,12 +118,12 @@ public class ZipResource extends Resource implements ViewableV1 {
                 try {
                     entryPath = base + entries[i].getName();
                     
-                    log.error("DEBUG: Zip entry path: " + entryPath);                    
+                    log.debug("Zip entry path: " + entryPath);                    
                     
                     zipOut.putNextEntry(new ZipEntry(entryPath));
                     // FIXME how to get an inpustream from a collection entry?
                     org.wyona.yarep.core.Path yarepPath = new org.wyona.yarep.core.Path(zipDirPath.toString() + "/" + entryPath);                    
-                    log.error("DEBUG: Yarep path: " + yarepPath);
+                    log.debug("Yarep path: " + yarepPath);
                     in = repo.getInputStream(yarepPath);                    
                     while ((rb = in.read(buf)) > 0) {
                         zipOut.write(buf, 0, rb);
@@ -140,7 +138,7 @@ public class ZipResource extends Resource implements ViewableV1 {
                 
                 entryPath = base + entries[i].getName() + "/";
                 
-                log.error("DEBUG: Zip dir path: " + entryPath);                
+                log.debug("Zip dir path: " + entryPath);                
                 
                 // directory entries end with a "/"
                 ZipEntry zipEntry = new ZipEntry(entryPath);
