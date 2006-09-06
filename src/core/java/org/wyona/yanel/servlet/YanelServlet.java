@@ -675,7 +675,7 @@ public class YanelServlet extends HttpServlet {
             log.error("DEBUG: Write/Checkin Atom entry ...");
             role = new Role("write");
 	} else if (method.equals(METHOD_DELETE)) {
-            log.error("DEBUG: Delete rsource ...");
+            log.error("DEBUG: Delete resource ...");
             role = new Role("delete");
         } else {
             log.debug("Role will be 'view'!");
