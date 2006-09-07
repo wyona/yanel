@@ -19,6 +19,7 @@ package org.wyona.yanel.impl.map;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.core.map.RealmConfiguration;
 
 import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Repository;
@@ -45,6 +46,8 @@ public class MapImpl implements Map {
             // NOTE: Separate ResourceTypeIdentifier mapping from whatever else is using yarep ...
             repoFactory = new RepositoryFactory("yanel-rti-yarep.properties");
             //repoFactory = new RepositoryFactory();
+
+            RealmConfiguration realmConfig = new RealmConfiguration();  
         } catch(Exception e) {
             log.error(e.getMessage(), e);
         }
