@@ -53,6 +53,9 @@ public class NutchResource extends Resource implements ViewableV1 {
 
     private final String XML_MIME_TYPE = "application/xml";
 
+    int hitsPerPage = 10;
+    int numberOfPagesShown = 20;
+
     /**
      * 
      */
@@ -73,7 +76,9 @@ public class NutchResource extends Resource implements ViewableV1 {
         View nutchView = null;
         try {
             nutchView = new View();
-            nutchView.setInputStream(getInputStream(null));
+            String query = "yulup";
+            int start = 0;
+            nutchView.setInputStream(getInputStream(query, start));
             nutchView.setMimeType(XML_MIME_TYPE);
 
         } catch (Exception e) {
@@ -90,9 +95,9 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
 
     /**
-     *
+     * Generate result XML
      */
-    private InputStream getInputStream(String query) {
+    private InputStream getInputStream(String query, int start) {
         // Create DOM document
         org.w3c.dom.Document doc = null;
         javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
@@ -107,7 +112,14 @@ public class NutchResource extends Resource implements ViewableV1 {
 
         // Generate results
         Element rootElement = doc.getDocumentElement();
+        if (query != null) {
+            Element queryElement = (Element) rootElement.appendChild(doc.createElement("query"));
+            queryElement.appendChild(doc.createTextNode(query));
+        } else {
+            rootElement.appendChild(doc.createElement("no-query"));
+        }
         Element resultsElement = (Element) rootElement.appendChild(doc.createElement("results"));
+        resultsElement.setAttribute("start", "" + start);
 /*
         for (int i ...
         Element hitElement = (Element) resultsElement.appendChild(doc.createElement("hit"));
