@@ -27,6 +27,10 @@ public class Realm {
     private String id;
     private Path mountPoint;
 
+    private String proxyHostName;
+    private String proxyPort;
+    private String proxyPrefix;
+
     /**
      *
      */
@@ -61,13 +65,30 @@ public class Realm {
      *
      */
     public void setProxy(String hostName, String port, String prefix) {
+        proxyHostName = hostName;
+        proxyPort = port;
+        proxyPrefix = prefix;
     }
 
     /**
      *
      */
     public String getProxyHostName() {
-        return null;
+        return proxyHostName;
+    }
+
+    /**
+     *
+     */
+    public String getProxyPort() {
+        return proxyPort;
+    }
+
+    /**
+     *
+     */
+    public String getProxyPrefix() {
+        return proxyPrefix;
     }
 
     /**
