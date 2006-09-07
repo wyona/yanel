@@ -18,6 +18,8 @@
                   version="0.0.1-dev-r15817"/>
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
                   version="0.0.1-dev-r15048"/>
+      <dependency groupId="apache-org-nutch" artifactId="nutch"
+                  version="0.8"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
