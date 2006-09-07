@@ -61,10 +61,6 @@ public class YanelServlet extends HttpServlet {
 
     private static String IDENTITY_KEY = "identity";
 
-    String proxyServerName = null;
-    String proxyPort = null;
-    String proxyPrefix = null;
-
     private static final String METHOD_PROPFIND = "PROPFIND";
     private static final String METHOD_GET = "GET";
     private static final String METHOD_POST = "POST";
@@ -86,10 +82,6 @@ public class YanelServlet extends HttpServlet {
 
         MapFactory mf = MapFactory.newInstance();
         map = mf.newMap();
-
-        proxyServerName = rtr.proxyHostName;
-        proxyPort = rtr.proxyPort;
-        proxyPrefix = rtr.proxyPrefix;
     }
 
     /**
@@ -818,14 +810,18 @@ public class YanelServlet extends HttpServlet {
      *
      */
     private String getRequestURLQS(HttpServletRequest request, String addQS, boolean xml) {
+        Realm realm = map.getRealm(new Path(request.getServletPath()));
+        String proxyHostName = realm.getProxyHostName();
+        String proxyPort = realm.getProxyPort();
+        String proxyPrefix = realm.getProxyPrefix();
 
         URL url = null;
 	
         try {
 	    url = new URL(request.getRequestURL().toString());
 
-            if (proxyServerName != null) {
-                url = new URL(url.getProtocol(), proxyServerName, url.getPort(), url.getFile());
+            if (proxyHostName != null) {
+                url = new URL(url.getProtocol(), proxyHostName, url.getPort(), url.getFile());
             }
 
             if (proxyPort != null) {
@@ -840,7 +836,7 @@ public class YanelServlet extends HttpServlet {
                 url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile().substring(proxyPrefix.length()));
             }
 
-            if(proxyServerName != null || proxyPort != null || proxyPrefix != null) {
+            if(proxyHostName != null || proxyPort != null || proxyPrefix != null) {
                 log.debug("Proxy enabled request: " + url);
             }
         } catch (Exception e) {

@@ -39,10 +39,6 @@ public class ResourceTypeRegistry {
 
     private URL propertiesURL;
 
-    public String proxyHostName;
-    public String proxyPort;
-    public String proxyPrefix;
-
     java.util.HashMap hm = new java.util.HashMap();
 
     /**
@@ -85,12 +81,6 @@ public class ResourceTypeRegistry {
                     log.warn("No such file or directory: " + resConfigFile);
                 }
             }
-
-            // TODO: This is actually a servlet thing and should be moved there ...
-            proxyHostName = props.getProperty("proxy-host-name");
-            proxyPort = props.getProperty("proxy-port");
-            proxyPrefix = props.getProperty("proxy-prefix");
-            log.debug("Proxy Settings: " + proxyHostName + ", " + proxyPort + ", " + proxyPrefix);
         } catch (Exception e) {
             log.error(e);
         }
