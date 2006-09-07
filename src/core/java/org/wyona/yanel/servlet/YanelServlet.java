@@ -705,16 +705,19 @@ public class YanelServlet extends HttpServlet {
                     return null;
                 }
                 authorized = false;
+
+                response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
+                response.sendError(response.SC_UNAUTHORIZED);
                 PrintWriter writer = response.getWriter();
                 writer.print("BASIC Authorization/Authentication Failed!");
-                response.sendError(response.SC_UNAUTHORIZED);
                 return response;
 	    } else if (authorization.toUpperCase().startsWith("DIGEST")) {
                 log.error("DIGEST is not implemented");
                 authorized = false;
+                response.sendError(response.SC_UNAUTHORIZED);
+                response.setHeader("WWW-Authenticate", "DIGEST realm=\"yanel\"");
                 PrintWriter writer = response.getWriter();
                 writer.print("DIGEST is not implemented!");
-                response.sendError(response.SC_UNAUTHORIZED);
                 return response;
             } else {
                 log.warn("No such authorization implemented resp. handled by session based authorization: " + authorization);
@@ -779,6 +782,7 @@ public class YanelServlet extends HttpServlet {
                 log.debug("Neutron-Auth response: " + sb);
                 response.setContentType("application/xml");
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
             } else {
                 // Custom HTML Form authentication
 
@@ -993,10 +997,12 @@ public class YanelServlet extends HttpServlet {
 
                     log.debug("Neutron-Auth response: " + sb);
 
-                    PrintWriter w = response.getWriter();
-                    w.print(sb);
                     response.setContentType("application/xml");
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
+
+                    PrintWriter w = response.getWriter();
+                    w.print(sb);
                     return response;
                 }
             } else {
@@ -1027,10 +1033,12 @@ public class YanelServlet extends HttpServlet {
                 sb.append("</authentication>");
                 sb.append("</exception>");
 
-                PrintWriter writer = response.getWriter();
                 response.setContentType("application/xml");
-                writer.print(sb);
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
+
+                PrintWriter writer = response.getWriter();
+                writer.print(sb);
                 return response;
             }
         } else {
