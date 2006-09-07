@@ -16,16 +16,19 @@
 
 package org.wyona.yanel.impl.resources;
 
+import org.wyona.yanel.core.Path;
+import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
+import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
-import org.wyona.yanel.impl.ResourceDefaultImpl;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
  */
-public class NutchResource extends ResourceDefaultImpl implements ViewableV1 {
+public class NutchResource extends Resource implements ViewableV1 {
 
     /**
      *
@@ -38,5 +41,19 @@ public class NutchResource extends ResourceDefaultImpl implements ViewableV1 {
      */
     public ViewDescriptor[] getViewDescriptors() {
         return null;
+    }
+
+    /**
+     *
+     */
+    public View getView(Path path, String viewId) {
+        return null;
+    }
+
+    /**
+     *
+     */
+    public View getView(HttpServletRequest request, String viewId) {
+        return getView(new Path(request.getServletPath()), viewId);
     }
 }
