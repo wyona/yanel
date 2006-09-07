@@ -174,7 +174,12 @@ public class YanelCommandLine {
             rti = "<{http://www.wyonapictures.com/yanel/resource/1.0}tape/>";
             tapeRes = rtr.newResource(rti);
             rtd = rtr.getResourceTypeDefinition(rti);
-            tapeRes.setRTD(rtd);
+            if (tapeRes != null) {
+                tapeRes.setRTD(rtd);
+            } else {
+                System.err.println("No such resource registered for rti: " + rti);
+                return;
+            }
         } catch(Exception e) {
             System.err.println(e);
             return;
