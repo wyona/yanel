@@ -60,6 +60,19 @@ public class Realm {
     /**
      *
      */
+    public void setProxy(String hostName, String port, String prefix) {
+    }
+
+    /**
+     *
+     */
+    public String getProxyHostName() {
+        return null;
+    }
+
+    /**
+     *
+     */
     public String toString() {
         return "Name: " + name + ", ID: " + id + ", Mount-Point: " + mountPoint;
     }
