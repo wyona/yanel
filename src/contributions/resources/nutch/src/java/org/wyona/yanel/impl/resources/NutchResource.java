@@ -16,44 +16,112 @@
 
 package org.wyona.yanel.impl.resources;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+//import org.apache.hadoop.conf.Configuration;
+import org.apache.nutch.searcher.Hits;
+import org.apache.nutch.searcher.NutchBean;
+import org.w3c.dom.Document;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+
+import org.apache.log4j.Category;
+
+import org.w3c.dom.Element;
 
 /**
- *
+ * 
  */
 public class NutchResource extends Resource implements ViewableV1 {
+    private static Category log = Category.getInstance(NutchResource.class);
+
+    private final String XML_MIME_TYPE = "application/xml";
 
     /**
-     *
+     * 
      */
     public NutchResource() {
     }
 
     /**
-     *
+     * 
      */
     public ViewDescriptor[] getViewDescriptors() {
         return null;
     }
 
     /**
-     *
+     * 
      */
     public View getView(Path path, String viewId) {
-        return null;
+        View nutchView = null;
+        try {
+            nutchView = new View();
+            nutchView.setInputStream(getInputStream(null));
+            nutchView.setMimeType(XML_MIME_TYPE);
+
+        } catch (Exception e) {
+            log.error(e, e);
+        }
+        return nutchView;
+    }
+
+    /**
+     * 
+     */
+    public View getView(HttpServletRequest request, String viewId) {
+        return getView(new Path(request.getServletPath()), viewId);
     }
 
     /**
      *
      */
-    public View getView(HttpServletRequest request, String viewId) {
-        return getView(new Path(request.getServletPath()), viewId);
+    private InputStream getInputStream(String query) {
+        // Create DOM document
+        org.w3c.dom.Document doc = null;
+        javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
+        try {
+            javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
+            org.w3c.dom.DOMImplementation impl = parser.getDOMImplementation();
+            org.w3c.dom.DocumentType doctype = null;
+            doc = impl.createDocument("http://www.wyona.org/yanel/1.0", "nutch", doctype);
+        } catch(Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+        // Generate results
+        Element rootElement = doc.getDocumentElement();
+        Element resultsElement = (Element) rootElement.appendChild(doc.createElement("results"));
+/*
+        for (int i ...
+        Element hitElement = (Element) resultsElement.appendChild(doc.createElement("hit"));
+*/
+
+        // Generate InputStream from DOM document
+        try {
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(baos));
+            return new java.io.ByteArrayInputStream(baos.toByteArray());
+        } catch(Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+        return null;
     }
 }
