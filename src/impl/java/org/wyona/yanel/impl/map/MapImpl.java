@@ -37,6 +37,7 @@ public class MapImpl implements Map {
     private static Category log = Category.getInstance(MapImpl.class);
 
     RepositoryFactory repoFactory;
+    RealmConfiguration realmConfig;
 
     /**
      *
@@ -47,7 +48,7 @@ public class MapImpl implements Map {
             repoFactory = new RepositoryFactory("yanel-rti-yarep.properties");
             //repoFactory = new RepositoryFactory();
 
-            RealmConfiguration realmConfig = new RealmConfiguration();  
+            realmConfig = new RealmConfiguration();
         } catch(Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -108,11 +109,15 @@ public class MapImpl implements Map {
      */
     public Realm getRealm(Path path) {
         RepoPath rp = new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), repoFactory);
+        Realm realm = null;
         Repository root = repoFactory.firstRepository();
         if (rp.getRepo().getID().equals(root.getID())) {
-            return new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/"));
+            realm = new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/"));
         } else {
-            return new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/" + rp.getRepo().getID() + "/"));
+            realm = new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/" + rp.getRepo().getID() + "/"));
         }
+
+        realm.setProxy(realmConfig.proxyHostName, realmConfig.proxyPort, realmConfig.proxyPrefix);
+        return realm;
     }
 }
