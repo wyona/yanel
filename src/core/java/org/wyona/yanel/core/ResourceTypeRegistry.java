@@ -91,12 +91,6 @@ public class ResourceTypeRegistry {
             proxyPort = props.getProperty("proxy-port");
             proxyPrefix = props.getProperty("proxy-prefix");
             log.debug("Proxy Settings: " + proxyHostName + ", " + proxyPort + ", " + proxyPrefix);
-
-            File realmsConfigFile = new File(props.getProperty("realms-config"));
-            if (!realmsConfigFile.isAbsolute()) {
-                realmsConfigFile = FileUtil.file(propsFile.getParentFile().getAbsolutePath(), realmsConfigFile.toString());
-            }
-            log.error("DEBUG: Realms Configuration: " + realmsConfigFile);
         } catch (Exception e) {
             log.error(e);
         }
