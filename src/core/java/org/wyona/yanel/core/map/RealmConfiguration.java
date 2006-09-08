@@ -78,7 +78,7 @@ public class RealmConfiguration {
             if (!realmsConfigFile.isAbsolute()) {
                 realmsConfigFile = FileUtil.file(propsFile.getParentFile().getAbsolutePath(), realmsConfigFile.toString());
             }
-            log.error("DEBUG: Realms Configuration: " + realmsConfigFile);
+            log.debug("Realms Configuration: " + realmsConfigFile);
             readRealms();
 
             // TODO: This is actually a servlet thing and should be moved there ...
@@ -116,7 +116,7 @@ public class RealmConfiguration {
                 Realm realm = new Realm(name.getValue(), realmId, new org.wyona.commons.io.Path(mountPoint));
                 Configuration proxy = realmElements[i].getChild("reverse-proxy", false);
                 if (proxy != null) {
-                    realm.setProxy(proxy.getChild("host-name").getValue(), null, null);
+                    realm.setProxy(proxy.getChild("host-name").getValue(), proxy.getChild("port").getValue(""), proxy.getChild("prefix").getValue());
                 }
                 log.error("DEBUG: " + realm);
             }

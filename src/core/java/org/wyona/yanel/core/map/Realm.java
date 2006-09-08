@@ -99,6 +99,12 @@ public class Realm {
         if (proxyHostName != null) {
             descr = descr + ", Reverse Proxy Host Name: " + proxyHostName;
         }
+        if (proxyPort != null) {
+            descr = descr + ", Reverse Proxy Port: " + proxyPort;
+        }
+        if (proxyPrefix != null) {
+            descr = descr + ", Reverse Proxy Prefix: " + proxyPrefix;
+        }
         return descr;
     }
 }
