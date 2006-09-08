@@ -96,7 +96,7 @@ public class MapImpl implements Map {
             Repository repo = repoFactory.newRepository(repoIds[i]);
             if (repoIds[i].equals(root.getID())) {
                 // ROOT realm
-                realms[i] = realmConfig.getRealm("/");
+                realms[i] = realmConfig.getRootRealm();
                 //realms[i] = new Realm(repo.getName(), repo.getID(), new Path("/"));
             } else {
                 realms[i] = realmConfig.getRealm(repo.getID());
@@ -117,7 +117,7 @@ public class MapImpl implements Map {
         Realm realm = null;
         Repository root = repoFactory.firstRepository();
         if (rp.getRepo().getID().equals(root.getID())) {
-            realm = realmConfig.getRealm("/");
+            realm = realmConfig.getRootRealm();
             //realm = new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/"));
         } else {
             realm = realmConfig.getRealm(rp.getRepo().getID());

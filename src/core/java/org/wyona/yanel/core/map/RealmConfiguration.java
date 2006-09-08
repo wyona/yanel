@@ -44,7 +44,8 @@ public class RealmConfiguration {
 
     private File realmsConfigFile; 
 
-    java.util.HashMap hm = new java.util.HashMap();
+    private java.util.HashMap hm = new java.util.HashMap();
+    private Realm rootRealm = null;
 
     /**
      *
@@ -102,6 +103,7 @@ public class RealmConfiguration {
             for (int i = 0;i < realmElements.length; i++) {
                 String mountPoint = realmElements[i].getAttribute("mount-point", null);
                 String realmId = realmElements[i].getAttribute("id", null);
+                String rootFlag = realmElements[i].getAttribute("root", "false");
                 Configuration name = realmElements[i].getChild("name", false);
                 Realm realm = new Realm(name.getValue(), realmId, new org.wyona.commons.io.Path(mountPoint));
                 Configuration proxy = realmElements[i].getChild("reverse-proxy", false);
@@ -110,6 +112,15 @@ public class RealmConfiguration {
                 }
                 log.debug("Realm: " + realm);
                 hm.put(realmId, realm);
+                if (rootFlag.equals("true")) {
+                    log.debug("Root realm found: " + realm.getID());
+                    if (rootRealm == null) {
+                        log.debug("Root realm set: " + realm.getID());
+                        rootRealm = realm;
+                    } else {
+                        log.error("Root realm has already been set: " + realmId);
+                    }
+                }
             }
         } catch (Exception e) {
             log.error(e);
@@ -127,15 +138,20 @@ public class RealmConfiguration {
     /**
      *
      */
+    public Realm getRootRealm() {
+        return rootRealm;
+    }
+
+    /**
+     *
+     */
     private void inheritRootRealmProperties() {
-        String rootKey = "/";
-        Realm root = (Realm) hm.get(rootKey);
         java.util.Iterator keyIterator = hm.keySet().iterator();
         while(keyIterator.hasNext()) {
             String key = (String)keyIterator.next();
             Realm realm = (Realm)hm.get(key);
-            if ((realm.getProxyHostName() == null) && (!key.equals(rootKey))) {
-                realm.setProxy(root.getProxyHostName(), root.getProxyPort(), root.getProxyPrefix());
+            if ((realm.getProxyHostName() == null) && (!key.equals(rootRealm.getID()))) {
+                realm.setProxy(rootRealm.getProxyHostName(), rootRealm.getProxyPort(), rootRealm.getProxyPrefix());
                 log.debug("Inherit root realm properties to realm: " + key);
             }
         }
