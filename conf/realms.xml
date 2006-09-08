@@ -5,7 +5,7 @@
 <!-- IMPORTANT: Not ready for production yet. Use (local.)yanel.xml and the other properties files ... -->
 
 <!-- ROOT realm -->
-<realm mount-point="/">
+<realm id="/" mount-point="/">
   <name>Yanel Website</name>
 
 <!--
@@ -17,12 +17,12 @@
 -->
 </realm>
 
-<realm mount-point="/javadoc/">
+<realm id="javadoc" mount-point="/javadoc/">
   <name>Yanel Javadoc</name>
 </realm>
 
 <!--
-<realm mount-point="/ulysses-demo/">
+<realm id="ulysses-demo" mount-point="/ulysses-demo/">
   <name>Ulysses Demo</name>
 
   <reverse-proxy>
@@ -34,7 +34,7 @@
 -->
 
 <!--
-<realm mount-point="/ulysses-website/">
+<realm id="ulysses-website" mount-point="/ulysses-website/">
   <name>Ulysses Website</name>
 
   <reverse-proxy>
@@ -46,7 +46,7 @@
 -->
 
 <!--
-<realm mount-point="/wyona-pictures/">
+<realm id="wyona-pictures" mount-point="/wyona-pictures/">
   <name>Wyona Pictures</name>
 
   <reverse-proxy>
