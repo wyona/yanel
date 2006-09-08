@@ -12,6 +12,12 @@
                   version="2.3" scope="provided" />
       <dependency groupId="log4j" artifactId="log4j"
                   version="1.2.8"/>
+      <dependency groupId="apache-org-lucene" artifactId="hadoop"
+                  version="0.5.0"/>
+      <dependency groupId="apache-org-lucene" artifactId="lucene-core"
+                  version="1.9.1"/> 
+      <dependency groupId="apache-org-lucene" artifactId="lucene-misc"
+                  version="1.9.1"/>
       <dependency groupId="wyona-org-yanel" artifactId="yanel-core"
                   version="0.0.1-dev-r16762"/>
       <dependency groupId="yarep" artifactId="yarep"
@@ -26,6 +32,12 @@
       <remoteRepository refid="wyona.remote.repository"/>
       <dependency groupId="apache-org-nutch" artifactId="nutch"
                   version="0.8"/>
+      <dependency groupId="apache-org-lucene" artifactId="hadoop"
+                  version="0.5.0"/>
+      <dependency groupId="apache-org-lucene" artifactId="lucene-core"
+                  version="1.9.1"/>
+      <dependency groupId="apache-org-lucene" artifactId="lucene-misc"
+                  version="1.9.1"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
