@@ -5,7 +5,7 @@
 <!-- IMPORTANT: Not ready for production yet. Use (local.)yanel.xml and the other properties files ... -->
 
 <!-- ROOT realm -->
-<realm id="/" mount-point="/">
+<realm id="yanel-sample" mount-point="/" root="true">
   <name>Yanel Website</name>
 
 <!--
