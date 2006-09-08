@@ -96,9 +96,14 @@ public class MapImpl implements Map {
             Repository repo = repoFactory.newRepository(repoIds[i]);
             if (repoIds[i].equals(root.getID())) {
                 // ROOT realm
-                realms[i] = new Realm(repo.getName(), repo.getID(), new Path("/"));
+                realms[i] = realmConfig.getRealm("/");
+                //realms[i] = new Realm(repo.getName(), repo.getID(), new Path("/"));
             } else {
-                realms[i] = new Realm(repo.getName(), repo.getID(), new Path("/" + repoIds[i] + "/"));
+                realms[i] = realmConfig.getRealm(repo.getID());
+                if (realms[i] == null) {
+                    log.warn("No such realm defined: " + repo.getID() + " (fallback to repo configuration ...)");
+                    realms[i] = new Realm(repo.getName(), repo.getID(), new Path("/" + repoIds[i] + "/"));
+                }
             }
         }
         return realms;
@@ -112,12 +117,14 @@ public class MapImpl implements Map {
         Realm realm = null;
         Repository root = repoFactory.firstRepository();
         if (rp.getRepo().getID().equals(root.getID())) {
-            realm = new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/"));
+            realm = realmConfig.getRealm("/");
+            //realm = new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/"));
         } else {
-            realm = new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/" + rp.getRepo().getID() + "/"));
+            realm = realmConfig.getRealm(rp.getRepo().getID());
+            //realm = new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/" + rp.getRepo().getID() + "/"));
         }
 
-        realm.setProxy(realmConfig.proxyHostName, realmConfig.proxyPort, realmConfig.proxyPrefix);
+        //realm.setProxy(realmConfig.proxyHostName, realmConfig.proxyPort, realmConfig.proxyPrefix);
         return realm;
     }
 }
