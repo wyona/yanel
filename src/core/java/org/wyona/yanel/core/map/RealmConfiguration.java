@@ -110,7 +110,15 @@ public class RealmConfiguration {
 
             Configuration[] realmElements = config.getChildren("realm");
             for (int i = 0;i < realmElements.length; i++) {
-                log.error("DEBUG: " + realmElements[i].getAttribute("mount-point", null));
+                String mountPoint = realmElements[i].getAttribute("mount-point", null);
+                String realmId = realmElements[i].getAttribute("id", null);
+                Configuration name = realmElements[i].getChild("name", false);
+                Realm realm = new Realm(name.getValue(), realmId, new org.wyona.commons.io.Path(mountPoint));
+                Configuration proxy = realmElements[i].getChild("reverse-proxy", false);
+                if (proxy != null) {
+                    realm.setProxy(proxy.getChild("host-name").getValue(), null, null);
+                }
+                log.error("DEBUG: " + realm);
             }
         } catch (Exception e) {
             log.error(e);

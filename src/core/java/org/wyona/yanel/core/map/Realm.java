@@ -95,6 +95,10 @@ public class Realm {
      *
      */
     public String toString() {
-        return "Name: " + name + ", ID: " + id + ", Mount-Point: " + mountPoint;
+        String descr = "Name: " + name + ", ID: " + id + ", Mount-Point: " + mountPoint;
+        if (proxyHostName != null) {
+            descr = descr + ", Reverse Proxy Host Name: " + proxyHostName;
+        }
+        return descr;
     }
 }
