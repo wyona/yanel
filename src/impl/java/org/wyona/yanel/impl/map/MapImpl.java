@@ -125,6 +125,7 @@ public class MapImpl implements Map {
         }
 
         //realm.setProxy(realmConfig.proxyHostName, realmConfig.proxyPort, realmConfig.proxyPrefix);
+
         return realm;
     }
 }
