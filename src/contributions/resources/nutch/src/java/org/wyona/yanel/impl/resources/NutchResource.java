@@ -115,19 +115,19 @@ public class NutchResource extends Resource implements ViewableV1 {
         
         resultsElement.setAttribute("start", "" + start);
         
-        Configuration configuration = NutchConfiguration.create();
-        
-        NutchBean nutchBean = null;
-        Query query = null;
-        Hits hits = null;
+        Configuration configuration = new Configuration();
+        configuration.addDefaultResource("nutch-default.xml");
+        configuration.addFinalResource("nutch-local.xml");
+
+        log.error("DEBUG: " + configuration.get("searcher.dir"));
         
         try {
-            nutchBean = new NutchBean(configuration);
-            query = Query.parse(searchTerm, configuration);
-            hits = nutchBean.search(query, 10);
+            log.error("DEBUG: Hello Nutch ...");
+            //NutchBean nutchBean = new NutchBean(configuration);
+/*
+            Query query = Query.parse(searchTerm, configuration);
+            Hits hits = nutchBean.search(query, 10);
 
-            //*
-            
             int length = (int)Math.min(hits.getTotal(), hitsPerPage); 
             resultsElement.setAttribute("end", "" + (start + length));
             Hit[] show = hits.getHits(0, length);
@@ -149,9 +149,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 summaryElement = (Element) resultElement.appendChild(doc.createElement("summary"));
                 summaryElement.appendChild(doc.createTextNode(summaries[i].toString()));
             }
-            
-            //*/
-            
+*/
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
