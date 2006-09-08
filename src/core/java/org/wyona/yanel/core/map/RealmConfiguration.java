@@ -114,6 +114,7 @@ public class RealmConfiguration {
         } catch (Exception e) {
             log.error(e);
         }
+        inheritRootRealmProperties();
     }
 
     /**
@@ -121,5 +122,22 @@ public class RealmConfiguration {
      */
     public Realm getRealm(String id) {
         return (Realm) hm.get(id);
+    }
+
+    /**
+     *
+     */
+    private void inheritRootRealmProperties() {
+        String rootKey = "/";
+        Realm root = (Realm) hm.get(rootKey);
+        java.util.Iterator keyIterator = hm.keySet().iterator();
+        while(keyIterator.hasNext()) {
+            String key = (String)keyIterator.next();
+            Realm realm = (Realm)hm.get(key);
+            if ((realm.getProxyHostName() == null) && (!key.equals(rootKey))) {
+                realm.setProxy(root.getProxyHostName(), root.getProxyPort(), root.getProxyPrefix());
+                log.debug("Inherit root realm properties to realm: " + key);
+            }
+        }
     }
 }
