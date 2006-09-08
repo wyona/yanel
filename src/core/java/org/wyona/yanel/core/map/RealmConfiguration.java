@@ -25,6 +25,9 @@ import java.util.Properties;
 
 import org.apache.log4j.Category;
 
+import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
+
 import org.wyona.commons.io.FileUtil;
 
 /**
@@ -38,6 +41,8 @@ public class RealmConfiguration {
     public static String CONFIGURATION_FILE = DEFAULT_CONFIGURATION_FILE;
 
     private URL propertiesURL;
+
+    private File realmsConfigFile; 
 
     public String proxyHostName;
     public String proxyPort;
@@ -69,11 +74,12 @@ public class RealmConfiguration {
             props.load(propertiesURL.openStream());
             File propsFile = new File(propertiesURL.getFile());
 
-            File realmsConfigFile = new File(props.getProperty("realms-config"));
+            realmsConfigFile = new File(props.getProperty("realms-config"));
             if (!realmsConfigFile.isAbsolute()) {
                 realmsConfigFile = FileUtil.file(propsFile.getParentFile().getAbsolutePath(), realmsConfigFile.toString());
             }
             log.error("DEBUG: Realms Configuration: " + realmsConfigFile);
+            readRealms();
 
             // TODO: This is actually a servlet thing and should be moved there ...
             proxyHostName = props.getProperty("proxy-host-name");
@@ -90,5 +96,24 @@ public class RealmConfiguration {
      */
     public String getConfigurationFile() {
         return CONFIGURATION_FILE;
+    }
+
+    /**
+     *
+     */
+    public void readRealms() {
+        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+        Configuration config;
+
+        try {
+            config = builder.buildFromFile(realmsConfigFile);
+
+            Configuration[] realmElements = config.getChildren("realm");
+            for (int i = 0;i < realmElements.length; i++) {
+                log.error("DEBUG: " + realmElements[i].getAttribute("mount-point", null));
+            }
+        } catch (Exception e) {
+            log.error(e);
+        }
     }
 }
