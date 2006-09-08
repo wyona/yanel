@@ -528,7 +528,7 @@
 
 <property>
   <name>searcher.dir</name>
-  <value>/home/dee/Desktop/build/crawl</value>
+  <value>crawl</value>
   <description>
   Path to root of crawl.  This directory is searched (in
   order) for either the file search-servers.txt, containing a list of
@@ -801,7 +801,7 @@
 
 <property>
   <name>extension.ontology.extension-name</name>
-  <value>ige</value>
+  <value></value>
   <description>Use the specified online ontology extension. If empty,
   the first available extension will be used. The "name" here refers to an 'id'
   attribute of the 'implementation' element in the plugin descriptor XML
@@ -810,7 +810,8 @@
 
 <property>
   <name>extension.ontology.urls</name>
-  <value>/home/dee/Desktop/ontology/ipi.owl</value>
+  <value>
+  </value>
   <description>Urls of owl files, separated by spaces, such as
   http://www.example.com/ontology/time.owl
   http://www.example.com/ontology/space.owl
