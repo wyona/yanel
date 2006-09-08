@@ -223,6 +223,8 @@
       <fileset refid="maven2.fileset"/>
       <mapper type="flatten"/>
     </copy>
+
+    <ant antfile="${yanel.home.dir}/build/resources.xml" target="copy-resources-dependencies"/>
   </target>
 
   <target name="war" description="Build war file" depends="init, webapp">

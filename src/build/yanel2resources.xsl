@@ -56,6 +56,15 @@
   </xsl:choose>
 </xsl:for-each>
   </target>
+
+  <target name="copy-resources-dependencies" description="Copy dependencies of resources" depends="init">
+<xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
+    <ant inheritAll="false" antfile="${{build.dir}}/{@src}build.xml" target="copy-dependencies">
+      <property name="build.dir" value="${{build.dir}}"/>
+      <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
+    </ant>
+</xsl:for-each>
+  </target>
 </project>
 </xsl:template>
 
