@@ -118,10 +118,18 @@ public class RealmConfiguration {
                 if (proxy != null) {
                     realm.setProxy(proxy.getChild("host-name").getValue(), proxy.getChild("port").getValue(""), proxy.getChild("prefix").getValue());
                 }
-                log.error("DEBUG: " + realm);
+                log.debug("Realm: " + realm);
+                hm.put(realmId, realm);
             }
         } catch (Exception e) {
             log.error(e);
         }
+    }
+
+    /**
+     *
+     */
+    public Realm getRealm(String id) {
+        return (Realm) hm.get(id);
     }
 }
