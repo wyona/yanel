@@ -22,6 +22,12 @@
                   version="0.8"/>
     </artifact:dependencies>
 
+    <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="apache-org-nutch" artifactId="nutch"
+                  version="0.8"/>
+    </artifact:dependencies>
+
     <property name="maven2.cp" refid="maven2.classpath"/>
     <!--<echo>Maven2 classpath: ${maven2.cp}</echo>-->
   </target>

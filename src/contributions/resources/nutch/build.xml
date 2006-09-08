@@ -41,7 +41,7 @@
 
   <target name="copy-dependencies" depends="init">
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
-      <fileset refid="maven2.fileset"/>
+      <fileset refid="maven2.resource.fileset"/>
       <mapper type="flatten"/>
     </copy>
   </target>
