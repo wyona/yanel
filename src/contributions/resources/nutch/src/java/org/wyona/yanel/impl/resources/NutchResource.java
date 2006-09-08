@@ -16,41 +16,32 @@
 
 package org.wyona.yanel.impl.resources;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 
-//import org.apache.hadoop.conf.Configuration;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.log4j.Category;
+import org.apache.nutch.searcher.Hit;
+import org.apache.nutch.searcher.HitDetails;
 import org.apache.nutch.searcher.Hits;
 import org.apache.nutch.searcher.NutchBean;
-import org.w3c.dom.Document;
+import org.apache.nutch.searcher.Query;
+import org.apache.nutch.searcher.Summary;
+import org.apache.nutch.util.NutchConfiguration;
+import org.w3c.dom.Element;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-
-import org.apache.log4j.Category;
-
-import org.w3c.dom.Element;
-
 /**
  * 
  */
 public class NutchResource extends Resource implements ViewableV1 {
+    
     private static Category log = Category.getInstance(NutchResource.class);
-
     private final String XML_MIME_TYPE = "application/xml";
 
     int hitsPerPage = 10;
@@ -97,7 +88,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     /**
      * Generate result XML
      */
-    private InputStream getInputStream(String query, int start) {
+    private InputStream getInputStream(String searchTerm, int start) {
         // Create DOM document
         org.w3c.dom.Document doc = null;
         javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
@@ -110,21 +101,61 @@ public class NutchResource extends Resource implements ViewableV1 {
             log.error(e.getMessage(), e);
         }
 
-        // Generate results
+        //create root element
         Element rootElement = doc.getDocumentElement();
-        if (query != null) {
+        
+        // Generate results
+        if (searchTerm != null) {
             Element queryElement = (Element) rootElement.appendChild(doc.createElement("query"));
-            queryElement.appendChild(doc.createTextNode(query));
+            queryElement.appendChild(doc.createTextNode(searchTerm));
         } else {
             rootElement.appendChild(doc.createElement("no-query"));
         }
         Element resultsElement = (Element) rootElement.appendChild(doc.createElement("results"));
+        
         resultsElement.setAttribute("start", "" + start);
-/*
-        for (int i ...
-        Element hitElement = (Element) resultsElement.appendChild(doc.createElement("hit"));
-*/
+        
+        Configuration configuration = NutchConfiguration.create();
+        
+        NutchBean nutchBean = null;
+        Query query = null;
+        Hits hits = null;
+        
+        try {
+            nutchBean = new NutchBean(configuration);
+            query = Query.parse(searchTerm, configuration);
+            hits = nutchBean.search(query, 10);
 
+            //*
+            
+            int length = (int)Math.min(hits.getTotal(), hitsPerPage); 
+            resultsElement.setAttribute("end", "" + (start + length));
+            Hit[] show = hits.getHits(0, length);
+            HitDetails[] details = nutchBean.getDetails(show);
+            
+            Summary[] summaries = nutchBean.getSummary(details, query);
+            Element resultElement = null;
+            Element detailElement = null;
+            Element summaryElement = null;
+            
+            Element queryElement = (Element) rootElement.appendChild(doc.createElement("query"));
+            queryElement.appendChild(doc.createTextNode(searchTerm));
+            
+            for (int i = 0; i < hits.getLength(); i++) {
+                resultElement = (Element) resultsElement.appendChild(doc.createElement("result"));
+                resultElement.setAttribute("index", "" + (start + i));
+                detailElement = (Element) resultElement.appendChild(doc.createElement("detail"));
+                detailElement.appendChild(doc.createTextNode(details[i].toString()));
+                summaryElement = (Element) resultElement.appendChild(doc.createElement("summary"));
+                summaryElement.appendChild(doc.createTextNode(summaries[i].toString()));
+            }
+            
+            //*/
+            
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        
         // Generate InputStream from DOM document
         try {
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
