@@ -17,6 +17,8 @@
 package org.wyona.yanel.impl.resources;
 
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -67,7 +69,7 @@ public class NutchResource extends Resource implements ViewableV1 {
         View nutchView = null;
         try {
             nutchView = new View();
-            String query = "yulup";
+            String query = "european";
             int start = 0;
             nutchView.setInputStream(getInputStream(query, start));
             nutchView.setMimeType(XML_MIME_TYPE);
@@ -117,14 +119,24 @@ public class NutchResource extends Resource implements ViewableV1 {
         
         Configuration configuration = new Configuration();
         configuration.addDefaultResource("nutch-default.xml");
-        configuration.addFinalResource("nutch-local.xml");
 
-        log.error("DEBUG: " + configuration.get("searcher.dir"));
+        try {
+            String protocol = "file:";
+            String projectPath = "/home/dee/src/wyona/public/";
+            String configPath =  "yanel/src/contributions/resources/nutch/conf/";
+            String defaultFile = "nutch-default.xml";
+            String localFile = "nutch-local.xml";
+            URL defaultResource = new URL(protocol + projectPath + configPath + defaultFile);
+            configuration.addDefaultResource(defaultResource);
+            URL finalResource = new URL(protocol + projectPath + configPath + localFile);
+            configuration.addFinalResource(finalResource);
+        } catch (MalformedURLException e) {
+            log.error(e.getMessage(), e);
+        }
         
         try {
-            log.error("DEBUG: Hello Nutch ...");
-            //NutchBean nutchBean = new NutchBean(configuration);
-/*
+            org.apache.hadoop.fs.Path path = new org.apache.hadoop.fs.Path(configuration.get("searcher.dir", "crawl"));
+            NutchBean nutchBean = new NutchBean(configuration);
             Query query = Query.parse(searchTerm, configuration);
             Hits hits = nutchBean.search(query, 10);
 
@@ -138,9 +150,6 @@ public class NutchResource extends Resource implements ViewableV1 {
             Element detailElement = null;
             Element summaryElement = null;
             
-            Element queryElement = (Element) rootElement.appendChild(doc.createElement("query"));
-            queryElement.appendChild(doc.createTextNode(searchTerm));
-            
             for (int i = 0; i < hits.getLength(); i++) {
                 resultElement = (Element) resultsElement.appendChild(doc.createElement("result"));
                 resultElement.setAttribute("index", "" + (start + i));
@@ -149,7 +158,6 @@ public class NutchResource extends Resource implements ViewableV1 {
                 summaryElement = (Element) resultElement.appendChild(doc.createElement("summary"));
                 summaryElement.appendChild(doc.createTextNode(summaries[i].toString()));
             }
-*/
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -162,7 +170,6 @@ public class NutchResource extends Resource implements ViewableV1 {
         } catch(Exception e) {
             log.error(e.getMessage(), e);
         }
-
         return null;
     }
 }
