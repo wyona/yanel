@@ -20,7 +20,8 @@
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
-      <!-- No resource specific libs yet -->
+      <dependency groupId="wyona-org-wiki-parser" artifactId="wyona-wiki-parser"
+                  version="r16766"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
