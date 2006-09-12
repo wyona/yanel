@@ -16,7 +16,7 @@
     1) configure
     2) build
     3) yanel
-    4) http://127.0.0.1:8888
+    4) http://127.0.0.1:8888 (IMPORTANT: Copy xml-apis-1.3.02.jar and xercesImpl-2.7.1.jar into endorsed dir of Tomcat)
 
 
     More Information
