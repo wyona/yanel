@@ -44,5 +44,14 @@
       <fileset refid="maven2.resource.fileset"/>
       <mapper type="flatten"/>
     </copy>
+
+    <antcall target="copy-plugins"/>
+  </target>
+
+  <target name="copy-plugins">
+    <echo>Copy plugins: ${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes</echo>
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/plugins">
+      <fileset dir="lib/plugins"/>
+    </copy>
   </target>
 </project>
