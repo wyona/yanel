@@ -106,9 +106,11 @@ public class NutchResource extends Resource implements ViewableV1 {
         } catch(Exception e) {
             log.error(e.getMessage(), e);
         }
-
+        
         //create root element
         Element rootElement = doc.getDocumentElement();
+        
+        
         
         // Generate results
         if (searchTerm != null) {
@@ -123,6 +125,7 @@ public class NutchResource extends Resource implements ViewableV1 {
         
         Configuration configuration = new Configuration();
 
+
         try {
             String confDir = "file:" + rtd.getConfigFile().getParentFile().getAbsolutePath()  + File.separator + "conf";
             log.debug("Conf Dir: " + confDir);
@@ -135,28 +138,79 @@ public class NutchResource extends Resource implements ViewableV1 {
         }
         
         try {
-            org.apache.hadoop.fs.Path path = new org.apache.hadoop.fs.Path(configuration.get("searcher.dir", "crawl"));
+            org.apache.hadoop.fs.Path path = new org.apache.hadoop.fs.Path(configuration.get("searcher.dir"));
+            java.io.File crawlDir = new java.io.File(configuration.get("searcher.dir"));
+            if(!crawlDir.exists()) {
+                Element exceptionEl = (Element) resultsElement.appendChild(doc.createElement("exception"));
+                String message = "No such crawl directory: " + crawlDir;
+                exceptionEl.appendChild(doc.createTextNode(message));
+                log.warn(message);
+            } else {
             NutchBean nutchBean = new NutchBean(configuration);
             Query query = Query.parse(searchTerm, configuration);
             Hits hits = nutchBean.search(query, 10);
 
             int length = (int)Math.min(hits.getTotal(), hitsPerPage); 
             resultsElement.setAttribute("end", "" + (start + length));
+            resultsElement.setAttribute("totalHits", "" + hits.getTotal());
             Hit[] show = hits.getHits(0, length);
             HitDetails[] details = nutchBean.getDetails(show);
             
             Summary[] summaries = nutchBean.getSummary(details, query);
             Element resultElement = null;
+            Element explanationElement = null;
+            Element fetchedDateElement = null;
+            
+            Element anchorsElement = null;
+            Element anchorElement = null;
+            Element inlinkElement = null;
             Element detailElement = null;
+            Element detailFieldElement = null;
+            Element detailValueElement = null;
+            Element hitElement = null;
             Element summaryElement = null;
             
             for (int i = 0; i < hits.getLength(); i++) {
                 resultElement = (Element) resultsElement.appendChild(doc.createElement("result"));
-                resultElement.setAttribute("index", "" + (start + i));
+                //start counting from 1 instead of zero
+                resultElement.setAttribute("index", "" + (i+1));
+                //explanation
+                explanationElement = (Element) resultElement.appendChild(doc.createElement("explanation"));
+                //explanationElement.appendChild(doc.createTextNode(nutchBean.getExplanation(query, show[i])));
+                //fetchedDate
+                fetchedDateElement = (Element) resultElement.appendChild(doc.createElement("fetchedDate"));
+                fetchedDateElement.appendChild(doc.createTextNode("" + nutchBean.getFetchDate(details[i])));
+                //anchors
+                
+                String[] anchors = nutchBean.getAnchors(details[i]);
+                //log.error("DEBUG: anchors.length for details[i]" + anchors[i].length());
+                /*
+                if(anchors.length != 0) {
+                    anchorsElement = (Element) resultElement.appendChild(doc.createElement("anchors"));
+                    for(int c = 0; c < anchors.length; c++) {
+                        anchorElement = (Element) resultElement.appendChild(doc.createElement("anchor"));
+                        anchorElement.appendChild(doc.createTextNode(anchors[c]));
+                    }
+                }
+                */
+                //inlinks
+                //nutchBean.getInlinks(details[i]);
+                
                 detailElement = (Element) resultElement.appendChild(doc.createElement("detail"));
-                detailElement.appendChild(doc.createTextNode(details[i].toString()));
+                detailElement.setAttribute("field", details[i].getField(i));
+                detailElement.setAttribute("value", details[i].getValue(i));
+                detailElement.appendChild(doc.createTextNode(details[i].toHtml()));
+
+                hitElement = (Element) resultElement.appendChild(doc.createElement("hit"));
+                hitElement.setAttribute("dedupValue", hits.getHit(i).getDedupValue());
+                hitElement.setAttribute("indexDocNo", "" + hits.getHit(i).getIndexDocNo());
+                hitElement.setAttribute("indexNo", "" + hits.getHit(i).getIndexNo());
+                hitElement.appendChild(doc.createTextNode(hits.getHit(i).toString()));
+                
                 summaryElement = (Element) resultElement.appendChild(doc.createElement("summary"));
-                summaryElement.appendChild(doc.createTextNode(summaries[i].toString()));
+                //toHtml will wrap searched words with <span class="highlight"><SEARCH_TERM/></span> 
+                summaryElement.appendChild(doc.createTextNode(summaries[i].toHtml(false)));
+            }
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
