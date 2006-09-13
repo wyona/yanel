@@ -125,7 +125,7 @@ public class NutchResource extends Resource implements ViewableV1 {
 
         try {
             String confDir = "file:" + rtd.getConfigFile().getParentFile().getAbsolutePath()  + File.separator + "conf";
-            log.error("DEBUG: Conf Dir: " + confDir);
+            log.debug("Conf Dir: " + confDir);
             URL defaultResource = new URL(confDir + File.separator + defaultFile);
             configuration.addDefaultResource(defaultResource);
             URL finalResource = new URL(confDir + File.separator + localFile);
