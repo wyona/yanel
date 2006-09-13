@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin
+   id="query-url"
+   name="URL Query Filter"
+   version="1.0.0"
+   provider-name="nutch.org">
+
+   <runtime>
+      <library name="query-url.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="nutch-extensionpoints"/>
+   </requires>
+
+   <extension id="org.apache.nutch.searcher.url.URLQueryFilter"
+              name="Nutch URL Query Filter"
+              point="org.apache.nutch.searcher.QueryFilter">
+      <implementation id="URLQueryFilter"
+                      class="org.apache.nutch.searcher.url.URLQueryFilter">
+        <parameter name="fields" value="url"/>
+      </implementation>
+      
+   </extension>
+
+</plugin>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin
+   id="query-site"
+   name="Site Query Filter"
+   version="1.0.0"
+   provider-name="nutch.org">
+
+   <runtime>
+      <library name="query-site.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="nutch-extensionpoints"/>
+   </requires>
+
+   <extension id="org.apache.nutch.searcher.site.SiteQueryFilter"
+              name="Nutch Site Query Filter"
+              point="org.apache.nutch.searcher.QueryFilter">
+      <implementation id="SiteQueryFilter"
+                      class="org.apache.nutch.searcher.site.SiteQueryFilter">
+        <parameter name="raw-fields" value="site"/>
+      </implementation>
+      
+   </extension>
+
+</plugin>
