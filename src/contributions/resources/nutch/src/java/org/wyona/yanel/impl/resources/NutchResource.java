@@ -38,6 +38,8 @@ import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
+import java.io.File;
+
 /**
  * 
  */
@@ -48,6 +50,8 @@ public class NutchResource extends Resource implements ViewableV1 {
 
     int hitsPerPage = 10;
     int numberOfPagesShown = 20;
+    String defaultFile = "nutch-default.xml";
+    String localFile = "nutch-local.xml";
 
     /**
      * 
@@ -118,17 +122,13 @@ public class NutchResource extends Resource implements ViewableV1 {
         resultsElement.setAttribute("start", "" + start);
         
         Configuration configuration = new Configuration();
-        configuration.addDefaultResource("nutch-default.xml");
 
         try {
-            String protocol = "file:";
-            String projectPath = "/home/dee/src/wyona/public/";
-            String configPath =  "yanel/src/contributions/resources/nutch/conf/";
-            String defaultFile = "nutch-default.xml";
-            String localFile = "nutch-local.xml";
-            URL defaultResource = new URL(protocol + projectPath + configPath + defaultFile);
+            String confDir = "file:" + rtd.getConfigFile().getParentFile().getAbsolutePath()  + File.separator + "conf";
+            log.error("DEBUG: Conf Dir: " + confDir);
+            URL defaultResource = new URL(confDir + File.separator + defaultFile);
             configuration.addDefaultResource(defaultResource);
-            URL finalResource = new URL(protocol + projectPath + configPath + localFile);
+            URL finalResource = new URL(confDir + File.separator + localFile);
             configuration.addFinalResource(finalResource);
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
