@@ -46,6 +46,7 @@
     </copy>
 
     <antcall target="copy-plugins"/>
+    <copy file="conf/common-terms.utf8" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
   </target>
 
   <target name="copy-plugins">
