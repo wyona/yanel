@@ -93,6 +93,9 @@ public class AtomResource extends Resource implements ViewableV1 {
                 if (contentRepo.isResource(children[i])) {
 	            sb.append("<dir:file path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
                     java.io.InputStream entryIn = contentRepo.getInputStream(children[i]);
+
+                    //org.apache.abdera.model.Document entry = org.apache.abdera.parser.Parser.INSTANCE.parse(entryIn);
+
                     java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
                     byte[] buf = new byte[8192];
                     int bytesR;

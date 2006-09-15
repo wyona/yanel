@@ -18,11 +18,14 @@
                   version="0.0.1-dev-r15817"/>
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
                   version="0.0.1-dev-r15048"/>
+      <dependency groupId="apache-org-incubator" artifactId="abdera.core"
+                  version="0.1.0-incubating.retro"/>
     </artifact:dependencies>
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
-      <!-- No resource specific libs yet -->
+      <dependency groupId="apache-org-incubator" artifactId="abdera.core"
+                  version="0.1.0-incubating.retro"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
