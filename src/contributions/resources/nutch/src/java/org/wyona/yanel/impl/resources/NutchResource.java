@@ -22,6 +22,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
@@ -31,12 +33,15 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Category;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Explanation;
 import org.apache.nutch.crawl.Inlinks;
 import org.apache.nutch.searcher.Hit;
 import org.apache.nutch.searcher.HitDetails;
 import org.apache.nutch.searcher.Hits;
 import org.apache.nutch.searcher.NutchBean;
 import org.apache.nutch.searcher.Query;
+import org.apache.nutch.searcher.QueryFilters;
 import org.apache.nutch.searcher.Summary;
 import org.apache.nutch.searcher.Summary.Fragment;
 import org.apache.nutch.util.NutchConfiguration;
@@ -44,6 +49,7 @@ import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
@@ -65,10 +71,12 @@ public class NutchResource extends Resource implements ViewableV1 {
     private Element resultsElement = null;
     private String exceptionMessage = null;
     private Document document = null;
-    int hitsPerPage = 10;
-    int numberOfPagesShown = 20;
-    String defaultFile = "nutch-default.xml";
-    String localFile = "nutch-local.xml";
+    private int start = 0;
+    private int hitsPerPage = 10;
+    private int numberOfPagesShown = 20;
+    private String defaultFile = "nutch-default.xml";
+    private String localFile = "nutch-local.xml";
+    private String searchTerm = "ige"; 
 
     /**
      * 
@@ -90,11 +98,8 @@ public class NutchResource extends Resource implements ViewableV1 {
         View nutchView = null;
         try {
             nutchView = new View();
-            String query = "european";
-            int start = 0;
-            nutchView.setInputStream(getInputStream(query, start));
+            nutchView.setInputStream(getInputStream(searchTerm, start));
             nutchView.setMimeType(XML_MIME_TYPE);
-
         } catch (Exception e) {
             log.error(e, e);
         }
@@ -167,8 +172,18 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
     
     private void createDocument4SearchResult(String searchTerm, int start) {
+        Element resultElement = null;
+        Element fetchedDateElement = null;
+        Element segmentElement = null;
+        Element digestElement = null;
+        Element urlElement = null;
+        Element titleElement = null;
+        Element hitIndexDocNoElement = null;
+        Element hitDedupValueElement = null;
+        Element hitIndexNoElement = null;
+        Element fragmentsElement = null;
+        Element fragmentElement = null;
         try {
-            //org.apache.hadoop.fs.Path path = new org.apache.hadoop.fs.Path(configuration.get("searcher.dir"));
             if(!crawlDir.exists()) {
                 exceptionElement = (Element) resultsElement.appendChild(document.createElement("exception"));
                 exceptionMessage = "No such crawl directory: " + crawlDir;
@@ -180,30 +195,13 @@ public class NutchResource extends Resource implements ViewableV1 {
                 Hits hits = nutchBean.search(query, 10);
                 
                 int length = (int)Math.min(hits.getTotal(), hitsPerPage); 
-                resultsElement.setAttribute("end", "" + (start + length));
+                resultsElement.setAttribute("end", "" + (start + length -1));//cause we start countin from zero
                 resultsElement.setAttribute("totalHits", "" + hits.getTotal());
                 
                 Hit[] show = hits.getHits(0, length);
                 HitDetails[] details = nutchBean.getDetails(show);
                 
                 Summary[] summaries = nutchBean.getSummary(details, query);
-                Element resultElement = null;
-                Element fetchedDateElement = null;
-                Element segmentElement = null;
-                Element digestElement = null;
-                Element urlElement = null;
-                Element titleElement = null;
-                //Element boostElement = null;
-                Element hitIndexDocNoElement = null;
-                Element hitDedupValueElement = null;
-                Element hitIndexNoElement = null;
-                
-                Element fragmentsElement = null;
-                Element fragmentElement = null;
-                Element anchorsElement = null;
-                Element anchorElement = null;
-                Element explanationElement = null;
-                
                 for (int i = 0; i < show.length; i++) {
                     resultElement = (Element) resultsElement.appendChild(document.createElement("result"));
                     resultElement.setAttribute("index", "" + (i+1));
@@ -217,9 +215,6 @@ public class NutchResource extends Resource implements ViewableV1 {
                     urlElement.appendChild(document.createTextNode(details[i].getValue("url")));
                     titleElement = (Element) resultElement.appendChild(document.createElement("title"));
                     titleElement.appendChild(document.createTextNode(details[i].getValue("title")));
-                    //boost seems not to work or is it really always the same ?? ? i don't think so
-                    //boostElement = (Element) resultElement.appendChild(document.createElement("boost"));
-                    //boostElement.appendChild(document.createTextNode(details[i].getValue("boost")));
                     hitIndexDocNoElement = (Element) resultElement.appendChild(document.createElement("hitIndexDocNo"));
                     hitIndexDocNoElement.appendChild(document.createTextNode("" + hits.getHit(i).getIndexDocNo()));
                     hitDedupValueElement = (Element) resultElement.appendChild(document.createElement("hitDedupValue"));
@@ -228,37 +223,17 @@ public class NutchResource extends Resource implements ViewableV1 {
                     hitIndexNoElement.appendChild(document.createTextNode("" + hits.getHit(i).getIndexNo()));
                     fragmentsElement = (Element) resultElement.appendChild(document.createElement("fragments"));
                     Fragment[] fragments = summaries[i].getFragments();
+                    
                     for(int c = 0; c< fragments.length; c++) {
                         fragmentElement = (Element) fragmentsElement.appendChild(document.createElement("fragment"));
                         fragmentElement.setAttribute("highlight", "" + fragments[c].isHighlight());
                         fragmentElement.setAttribute("ellipsis", "" + fragments[c].isEllipsis());
                         fragmentElement.appendChild(document.createTextNode(fragments[c].getText()));
                     }
-                    
-                    String[] anchors = nutchBean.getAnchors(details[i]);
-                    if(anchors != null) {
-                        anchorsElement = (Element) resultElement.appendChild(document.createElement("anchors"));
-                        for(int b = 0; b < anchors.length; b++) {
-                            anchorElement = (Element) resultElement.appendChild(document.createElement("anchor"));
-                            anchorElement.appendChild(document.createTextNode(anchors[b]));
-                        }
-                    }
-                    //produces wack html brrrrr
-                    //explanationElement = (Element) resultElement.appendChild(document.createElement("explanation"));
-                    //explanationElement.appendChild(document.createTextNode(nutchBean.getExplanation(query, show[i])));
-                    
-                    /*
-                    //inlinks
-                    //nutchBean.getInlinks(details[i]);
-                    summaryElement = (Element) resultElement.appendChild(document.createElement("summary"));
-                    //toHtml will wrap searched words with <span class="highlight"><SEARCH_TERM/></span> 
-                    summaryElement.appendChild(document.createTextNode(summaries[i].toHtml(false)));
-                    */
                 }
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }        
-        
     }
 }
