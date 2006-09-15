@@ -47,6 +47,9 @@ import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
+import org.wyona.yarep.core.RepositoryFactory;
+import org.wyona.yarep.util.RepoPath;
+
 /**
  * 
  */
@@ -79,15 +82,16 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
     public View getView(Path path, String viewId) {
         View defaultView = new View();
         try {
-            input = new File("/Users/Freax/Work/Wyona/workspace/yanel/wiki-parser/test/hello-world.txt");
-            WikiParser wikiin = new WikiParser(new FileInputStream(input));
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            WikiParser wikiin = new WikiParser(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
             SimpleNode node = wikiin.WikiBody();
-            ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
             
-            traverse(byteOut, node, 0);
-            
-            ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
-            defaultView.setInputStream(byteIn);                    
+            StringBuffer sb = new StringBuffer("<?xml  version=\"1.0\"?>");
+            int indent = 0;
+            traverse(sb, node, indent);
+            log.debug(sb);
+
+            defaultView.setInputStream(new java.io.StringBufferInputStream(sb.toString()));                    
             defaultView.setMimeType(XML_MIME_TYPE);
             
             return defaultView;
@@ -98,37 +102,45 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
     }
 
     /**
-     * Traverse tree and output XML
+     * Traverse tree and output an "XML String"
      */
-    public void traverse(OutputStream out, SimpleNode node, int depth) {
+    public void traverse(StringBuffer sb, SimpleNode node, int indent) {
 
-        PrintWriter pr = new PrintWriter(out);
-        
-        SimpleNode n = node;        
-        
-        pr.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                
-        for (int i=0; i<depth; i++)
-            pr.print(" ");      
-        pr.print("<" + n.toString());       
+        for (int i = 0; i < indent; i++) sb.append(" ");
+
+        if (node.toString().equals("Text")) {
+            if (!node.optionMap.isEmpty()) {
+                Set keySet = node.optionMap.keySet();
+                Iterator kit = keySet.iterator();
+                while (kit.hasNext()) {
+                    Object option = kit.next();
+                    Object value = node.optionMap.get(option);
+                    sb.append(value.toString());
+                }
+            }       
+        } else {
+            sb.append("<" + node.toString());
+
         if (!node.optionMap.isEmpty()) {
             Set keySet = node.optionMap.keySet();
             Iterator kit = keySet.iterator();
             while (kit.hasNext()) {
                 Object option = kit.next();
                 Object value = node.optionMap.get(option);
-                pr.print(" " + option.toString() + "=" + "\"" + value.toString() + "\"");
+                sb.append(" " + option.toString() + "=" + "\"" + value.toString() + "\"");
             }
         }       
-        if (n.jjtGetNumChildren() > 0) {
-            pr.println(">"); 
-            for (int i = 0; i < n.jjtGetNumChildren(); i++) 
-                traverse(out, (SimpleNode)node.jjtGetChild(i), depth + 1);                        
-            for (int i = 0; i < depth; i++)
-                pr.print(" ");      
-            pr.println("</" + n.toString() + ">");
+
+        if (node.jjtGetNumChildren() > 0) {
+            sb.append(">");
+            for (int i = 0; i < node.jjtGetNumChildren(); i++) 
+                traverse(sb, (SimpleNode)node.jjtGetChild(i), indent + 1);
+            for (int i = 0; i < indent; i++)
+                sb.append(" ");
+            sb.append("</" + node.toString() + ">");
         } else {
-            pr.println("/>"); 
+            sb.append("/>"); 
+        }
         }
     }
     
