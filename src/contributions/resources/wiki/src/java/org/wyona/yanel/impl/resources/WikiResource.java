@@ -158,12 +158,50 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
     }
 
     /**
+     * Traverse tree and output an "XML Document"
+     */
+    public void traverse(Document doc, Element element, SimpleNode node) {
+
+        if (node.toString().equals("Text")) {
+            if (!node.optionMap.isEmpty()) {
+                Set keySet = node.optionMap.keySet();
+                Iterator kit = keySet.iterator();
+                while (kit.hasNext()) {
+                    Object option = kit.next();
+                    Object value = node.optionMap.get(option);
+                    element.appendChild(doc.createTextNode(value.toString()));
+                }
+            }
+        } else {
+            Element child = (Element) element.appendChild(doc.createElement(node.toString()));
+
+/*
+            if (!node.optionMap.isEmpty()) {
+                Set keySet = node.optionMap.keySet();
+                Iterator kit = keySet.iterator();
+                while (kit.hasNext()) {
+                    Object option = kit.next();
+                    Object value = node.optionMap.get(option);
+                    sb.append(" " + option.toString() + "=" + "\"" + value.toString() + "\"");
+                }
+            }
+*/
+
+            if (node.jjtGetNumChildren() > 0) {
+                for (int i = 0; i < node.jjtGetNumChildren(); i++)
+                    traverse(doc, child, (SimpleNode) node.jjtGetChild(i));
+            }
+        }
+    }
+
+    /**
      * 
      */
     public View getView(HttpServletRequest request, String viewId) {
         return getView(new Path(request.getServletPath()), viewId);
     }
 
+/*
     private InputStream getInputStream(File wikifile) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
@@ -189,6 +227,7 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
         }
         return null;
     }
+*/
 
     /**
      * 
