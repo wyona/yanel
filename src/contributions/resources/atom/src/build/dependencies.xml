@@ -20,12 +20,36 @@
                   version="0.0.1-dev-r15048"/>
       <dependency groupId="apache-org-incubator" artifactId="abdera.core"
                   version="0.1.0-incubating.retro"/>
+      <dependency groupId="apache-org-incubator" artifactId="abdera.parser"
+                  version="0.1.0-incubating.retro"/>
+      <dependency groupId="ws-commons" artifactId="axiom-api"
+                  version="1.0"/>
+      <dependency groupId="ws-commons" artifactId="axiom-impl"
+                  version="1.0"/>
+		  <!--
+      <dependency groupId="stax" artifactId="stax-api"
+                  version="1.0"/>
+      <dependency groupId="stax" artifactId="stax"
+                  version="1.1.2-dev"/>
+		  -->
     </artifact:dependencies>
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
       <dependency groupId="apache-org-incubator" artifactId="abdera.core"
                   version="0.1.0-incubating.retro"/>
+      <dependency groupId="apache-org-incubator" artifactId="abdera.parser"
+                  version="0.1.0-incubating.retro"/>
+      <dependency groupId="ws-commons" artifactId="axiom-api"
+                  version="1.0"/>
+      <dependency groupId="ws-commons" artifactId="axiom-impl"
+                  version="1.0"/>
+		  <!--
+      <dependency groupId="stax" artifactId="stax-api"
+                  version="1.0"/>
+      <dependency groupId="stax" artifactId="stax"
+                  version="1.1.2-dev"/>
+		  -->
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
