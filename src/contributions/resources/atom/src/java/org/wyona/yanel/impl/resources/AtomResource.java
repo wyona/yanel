@@ -92,10 +92,28 @@ public class AtomResource extends Resource implements ViewableV1 {
             for (int i = 0; i < children.length; i++) {
                 if (contentRepo.isResource(children[i])) {
 	            sb.append("<dir:file path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
+
+/*
+                    org.apache.abdera.parser.Parser parser = org.apache.abdera.parser.Parser.INSTANCE;
+                    if (parser != null) {
+                        org.apache.abdera.model.Document doc = parser.parse(contentRepo.getInputStream(children[i]));
+                        if (doc != null) {
+                            org.apache.abdera.model.Entry entry = (org.apache.abdera.model.Entry) doc.getRoot();
+                            if (entry != null) {
+                                log.error("DEBUG: Published: " + entry.getPublished());
+                                log.error("DEBUG: Updated: " + entry.getUpdated());
+                            } else {
+                                log.error("Atom entry is null!" + children[i]);
+                            }
+                        } else {
+                            log.error("Atom doc is null!" + children[i]);
+                        }
+                    } else {
+                        log.error("Atom Parser is null!" + children[i]);
+                    }
+*/
+
                     java.io.InputStream entryIn = contentRepo.getInputStream(children[i]);
-
-                    //org.apache.abdera.model.Document entry = org.apache.abdera.parser.Parser.INSTANCE.parse(entryIn);
-
                     java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
                     byte[] buf = new byte[8192];
                     int bytesR;
@@ -171,7 +189,7 @@ public class AtomResource extends Resource implements ViewableV1 {
             return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString())));
         } else {
             File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "atomfeed2xhtml.xsl");
-            log.error("DEBUG: XSLT file: " + xsltFile);
+            log.debug("XSLT file: " + xsltFile);
             return new StreamSource(xsltFile);
         }
     }
@@ -193,7 +211,7 @@ public class AtomResource extends Resource implements ViewableV1 {
                     return new Path(xsltPath);
                 }
             }
-            log.error("No XSLT Path within: " +rpRTI.getPath());
+            log.info("No XSLT Path within: " +rpRTI.getPath());
         } catch(Exception e) {
             log.warn(e);
         }
