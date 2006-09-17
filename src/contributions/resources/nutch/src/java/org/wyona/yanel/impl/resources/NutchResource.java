@@ -136,6 +136,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      */
     private InputStream getInputStream(String searchTerm, int start, String viewId) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
         try {
             DocumentBuilder parser = dbf.newDocumentBuilder();
             DOMImplementation impl = parser.getDOMImplementation();
