@@ -71,6 +71,7 @@ public class NutchResource extends Resource implements ViewableV1 {
 
     private static Category log = Category.getInstance(NutchResource.class);
     private final String XML_MIME_TYPE = "application/xml";
+    private final String XHTML_MIME_TYPE = "application/xhtml+xml";
     private Configuration configuration = null;
     private File crawlDir = null;
     private Element exceptionElement = null;
@@ -111,8 +112,12 @@ public class NutchResource extends Resource implements ViewableV1 {
             repository = rp.getRepo();
 
             nutchView = new View();
-            nutchView.setInputStream(getInputStream(searchTerm, start));
-            nutchView.setMimeType(XML_MIME_TYPE);
+            nutchView.setInputStream(getInputStream(searchTerm, start, viewId));
+            if (viewId != null && viewId.equals("source")) {
+                nutchView.setMimeType(XML_MIME_TYPE);
+            } else {
+                nutchView.setMimeType(XHTML_MIME_TYPE);
+            }
         } catch (Exception e) {
             log.error(e, e);
         }
@@ -129,7 +134,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     /**
      * Generate result XML
      */
-    private InputStream getInputStream(String searchTerm, int start) {
+    private InputStream getInputStream(String searchTerm, int start, String viewId) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder parser = dbf.newDocumentBuilder();
@@ -176,20 +181,14 @@ public class NutchResource extends Resource implements ViewableV1 {
 
         // Generate InputStream from DOM document
         try {
+            Transformer transformer = null;
+            if (viewId != null && viewId.equals("source")) {
+                transformer = TransformerFactory.newInstance().newTransformer();
+            } else {
+                transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
+            }
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            /*
-             * Transformer transformer =
-             * TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path,
-             * contentRepo)); // TODO: Is this the best way to generate an InputStream from an
-             * OutputStream? ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             * transformer.transform(new StreamSource(new StringBufferInputStream(sb.toString())),
-             * new StreamResult(baos)); defaultView.setInputStream(new
-             * ByteArrayInputStream(baos.toByteArray()));
-             */
-            Transformer transformer = TransformerFactory.newInstance()
-                    .newTransformer(getXSLTStreamSource(path, repository));
-            transformer.transform(new javax.xml.transform.dom.DOMSource(document),
-                    new StreamResult(byteArrayOutputStream));
+            transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
             return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
