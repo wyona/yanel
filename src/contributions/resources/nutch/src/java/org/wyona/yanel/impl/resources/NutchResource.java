@@ -166,14 +166,14 @@ public class NutchResource extends Resource implements ViewableV1 {
 
         try {
             crawlDir = new File(configuration.get("searcher.dir"));
-            crawlDir.isDirectory();
         } catch (Exception e) {
+            log.error(e);
             exceptionElement = (Element) resultsElement.appendChild(document.createElement("exception"));
-            exceptionMessage = "No crawl directory specified in nutch-local.xml";
-            exceptionElement.appendChild(document.createTextNode(exceptionMessage));
-            log.warn(exceptionMessage);
+            exceptionElement.appendChild(document.createTextNode(e.getMessage()));
         }
-        createDocument4SearchResult(searchTerm, start);
+
+        if (crawlDir != null) createDocument4SearchResult(searchTerm, start);
+
         // Generate InputStream from DOM document
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -198,7 +198,6 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
 
     private void createDocument4SearchResult(String searchTerm, int start) {
-        Element resultElement = null;
         Element fetchedDateElement = null;
         Element segmentElement = null;
         Element digestElement = null;
@@ -210,11 +209,12 @@ public class NutchResource extends Resource implements ViewableV1 {
         Element fragmentsElement = null;
         Element fragmentElement = null;
         try {
-            if (!crawlDir.exists()) {
+            if (!crawlDir.isDirectory()) {
                 exceptionElement = (Element) resultsElement.appendChild(document.createElement("exception"));
                 exceptionMessage = "No such crawl directory: " + crawlDir;
                 exceptionElement.appendChild(document.createTextNode(exceptionMessage));
                 log.warn(exceptionMessage);
+                return;
             } else {
                 NutchBean nutchBean = new NutchBean(configuration);
                 Query query = Query.parse(searchTerm, configuration);
@@ -230,7 +230,7 @@ public class NutchResource extends Resource implements ViewableV1 {
 
                 Summary[] summaries = nutchBean.getSummary(details, query);
                 for (int i = 0; i < show.length; i++) {
-                    resultElement = (Element) resultsElement.appendChild(document.createElement("result"));
+                    Element resultElement = (Element) resultsElement.appendChild(document.createElement("result"));
                     resultElement.setAttribute("index", "" + (i + 1));
                     fetchedDateElement = (Element) resultElement.appendChild(document.createElement("fetchedDate"));
                     fetchedDateElement.appendChild(document.createTextNode(""
