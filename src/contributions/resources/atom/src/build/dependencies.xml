@@ -30,6 +30,10 @@
                   version="1.0"/>
       <dependency groupId="stax" artifactId="stax"
                   version="1.1.2-dev"/>
+      <dependency groupId="javax.activation" artifactId="activation"
+                  version="1.1"/>
+      <dependency groupId="net.sourceforge.retroweaver" artifactId="retroweaver"
+                  version="1.2.4"/>
     </artifact:dependencies>
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
@@ -46,6 +50,10 @@
                   version="1.0"/>
       <dependency groupId="stax" artifactId="stax"
                   version="1.1.2-dev"/>
+      <dependency groupId="javax.activation" artifactId="activation"
+                  version="1.1"/>
+      <dependency groupId="net.sourceforge.retroweaver" artifactId="retroweaver"
+                  version="1.2.4"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
