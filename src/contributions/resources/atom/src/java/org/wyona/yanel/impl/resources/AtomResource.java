@@ -93,7 +93,6 @@ public class AtomResource extends Resource implements ViewableV1 {
                 if (contentRepo.isResource(children[i])) {
 	            sb.append("<dir:file path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
 
-/*
                     org.apache.abdera.parser.Parser parser = org.apache.abdera.parser.Parser.INSTANCE;
                     if (parser != null) {
                         org.apache.abdera.model.Document doc = parser.parse(contentRepo.getInputStream(children[i]));
@@ -111,7 +110,6 @@ public class AtomResource extends Resource implements ViewableV1 {
                     } else {
                         log.error("Atom Parser is null!" + children[i]);
                     }
-*/
 
                     java.io.InputStream entryIn = contentRepo.getInputStream(children[i]);
                     java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
