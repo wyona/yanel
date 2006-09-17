@@ -2,10 +2,9 @@
 
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
-  xmlns:dir="http://apache.org/cocoon/directory/2.0"
-  xmlns:yanel="http://www.wyona.org/yanel/resource/directory/1.0"
+  xmlns:yanel="http://www.wyona.org/yanel/1.0"
+  xmlns="http://www.wyona.org/yanel/1.0"
 >
 
 <xsl:output method="xhtml"/>
@@ -15,25 +14,26 @@
 -->
 
 <xsl:template match="/">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<xhtml:html>
 
-<head>
-  <title>Result for search term: <xsl:value-of select="/nutch/query"/></title>
-</head>
+<xhtml:head>
+  <xhtml:title>Results for query: <xsl:value-of select="/nutch/query"/></xhtml:title>
+</xhtml:head>
 
-<body>
-<p>
-<b>TEST:</b> <xsl:value-of select="/"/>
-</p>
-</body>
-</html>
+<xhtml:body>
+<xhtml:form>
+<xhtml:p>
+  <xhtml:input type="text" name="query"/>
+  <xhtml:input type="submit" value="Search"/>
+</xhtml:p>
+</xhtml:form>
+
+<xhtml:p>
+<xhtml:b>Results:</xhtml:b>
+  <xsl:apply-templates/>
+</xhtml:p>
+</xhtml:body>
+</xhtml:html>
 </xsl:template>
 
-<xsl:template match="dir:directory">
-Collection: <a href="{@name}/"><xsl:value-of select="@path"/>/</a><br/>
-</xsl:template>
-
-<xsl:template match="dir:file">
-Resource: <a href="{@name}"><xsl:value-of select="@path"/></a><br/>
-</xsl:template>
 </xsl:stylesheet>
