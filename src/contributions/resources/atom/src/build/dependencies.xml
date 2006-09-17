@@ -26,12 +26,10 @@
                   version="1.0"/>
       <dependency groupId="ws-commons" artifactId="axiom-impl"
                   version="1.0"/>
-		  <!--
       <dependency groupId="stax" artifactId="stax-api"
                   version="1.0"/>
       <dependency groupId="stax" artifactId="stax"
                   version="1.1.2-dev"/>
-		  -->
     </artifact:dependencies>
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
@@ -44,12 +42,10 @@
                   version="1.0"/>
       <dependency groupId="ws-commons" artifactId="axiom-impl"
                   version="1.0"/>
-		  <!--
       <dependency groupId="stax" artifactId="stax-api"
                   version="1.0"/>
       <dependency groupId="stax" artifactId="stax"
                   version="1.1.2-dev"/>
-		  -->
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
