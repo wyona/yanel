@@ -15,6 +15,7 @@
 
     <path id="classpath">
       <pathelement path="${maven2.cp}"/>
+      <pathelement path="${maven2.resource.cp}"/>
     </path>
     <property name="resource.build.dir" value="${resource.home.dir}/build"/>
     <property name="resource.classes.dir" value="${resource.build.dir}/classes"/>

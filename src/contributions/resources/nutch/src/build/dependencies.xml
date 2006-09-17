@@ -12,20 +12,12 @@
                   version="2.3" scope="provided" />
       <dependency groupId="log4j" artifactId="log4j"
                   version="1.2.8"/>
-      <dependency groupId="apache-org-lucene" artifactId="hadoop"
-                  version="0.5.0"/>
-      <dependency groupId="apache-org-lucene" artifactId="lucene-core"
-                  version="1.9.1"/> 
-      <dependency groupId="apache-org-lucene" artifactId="lucene-misc"
-                  version="1.9.1"/>
       <dependency groupId="wyona-org-yanel" artifactId="yanel-core"
                   version="0.0.1-dev-r16762"/>
       <dependency groupId="yarep" artifactId="yarep"
                   version="0.0.1-dev-r15817"/>
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
                   version="0.0.1-dev-r15048"/>
-      <dependency groupId="apache-org-nutch" artifactId="nutch"
-                  version="0.8"/>
     </artifact:dependencies>
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
@@ -42,6 +34,7 @@
 
     <property name="maven2.cp" refid="maven2.classpath"/>
     <!--<echo>Maven2 classpath: ${maven2.cp}</echo>-->
+    <property name="maven2.resource.cp" refid="maven2.resource.classpath"/>
   </target>
 
 </project>
