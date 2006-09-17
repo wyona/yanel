@@ -4,7 +4,6 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
   xmlns:yanel="http://www.wyona.org/yanel/1.0"
-  xmlns="http://www.wyona.org/yanel/1.0"
 >
 
 <xsl:output method="xhtml"/>
