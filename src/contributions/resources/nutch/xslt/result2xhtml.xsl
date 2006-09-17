@@ -16,7 +16,7 @@
 <xhtml:html>
 
 <xhtml:head>
-  <xhtml:title>Results for query: <xsl:value-of select="/nutch/query"/></xhtml:title>
+  <xhtml:title>Results for query: <xsl:value-of select="/yanel:nutch/yanel:query"/></xhtml:title>
 </xhtml:head>
 
 <xhtml:body>
