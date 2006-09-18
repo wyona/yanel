@@ -23,17 +23,21 @@
     xmlns:dc="http://purl.org/dc/elements/1.1/"
     >
 
-<xsl:param name="rendertype" select="''"/>
-<xsl:param name="nodeid"/>
-<xsl:param name="area"/>
-<xsl:param name="publication"/>
-<xsl:param name="contextprefix"/>
+<xsl:param name="yanel.path.name" select="'YANEL_PATH_NAME_IS_NULL'"/>
+<xsl:param name="yanel.path" select="'YANEL_PATH_IS_NULL'"/>
+
+<xsl:variable name="name-without-suffix" select="substring-before($yanel.path.name, '.')"/>
+
+<!-- TODO: Lenya stuff which needs to be replaced ... -->
+<xsl:param name="area" select="'AREA_IS_NULL'"/>
+<xsl:param name="publication" select="'PUBLICATION_IS_NULL'"/>
+<xsl:param name="contextprefix" select="'CONTEXT_PREFIX_IS_NULL'"/>
 
 <xsl:template match="/">
   <html>
   <head>
     <title>A Wiki page</title>
-    <link rel="neutron-introspection" href="introspection.xml" type="application/neutron+xml"/>
+    <link rel="neutron-introspection" href="introspection-{$name-without-suffix}.xml" type="application/neutron+xml"/>
   </head>
   <body>
     <xsl:apply-templates/>

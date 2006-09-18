@@ -112,6 +112,9 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
             } else {
             try {
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
+                transformer.setParameter("yanel.path.name", path.getName());
+                transformer.setParameter("yanel.path", path.toString());
+
                 // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
                 transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
