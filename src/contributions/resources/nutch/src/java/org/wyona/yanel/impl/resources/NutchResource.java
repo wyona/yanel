@@ -86,7 +86,6 @@ public class NutchResource extends Resource implements ViewableV1 {
     private int numberOfPagesShown = 20;
     private String defaultFile = "nutch-default.xml";
     private String localFile = "nutch-local.xml";
-    private String searchTerm = "ige";
     private Path path = null;
     private Repository repository  = null;
 
@@ -107,6 +106,13 @@ public class NutchResource extends Resource implements ViewableV1 {
      * 
      */
     public View getView(Path path, String viewId) {
+        return getView(path, viewId, "NO_SEARCH_TERM");
+    }
+
+    /**
+     * 
+     */
+    public View getView(Path path, String viewId, String searchTerm) {
         View nutchView = null;
         this.path = path;
         try {
@@ -131,7 +137,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * 
      */
     public View getView(HttpServletRequest request, String viewId) {
-        return getView(new Path(request.getServletPath()), viewId);
+        return getView(new Path(request.getServletPath()), viewId, request.getParameter("query"));
     }
 
     /**
@@ -151,7 +157,7 @@ public class NutchResource extends Resource implements ViewableV1 {
         // create root element
         Element rootElement = document.getDocumentElement();
         // Generate results
-        if (searchTerm != null) {
+        if (searchTerm != null && searchTerm.length() > 0) {
             Element queryElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "query"));
             queryElement.appendChild(document.createTextNode(searchTerm));
         } else {
