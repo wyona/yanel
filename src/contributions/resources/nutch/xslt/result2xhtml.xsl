@@ -63,7 +63,8 @@
                 Results <xhtml:b><xsl:value-of select="number(@yanel:start + 1)"/></xhtml:b>- 
                 <xhtml:b><xsl:value-of select="number(@yanel:end + 1)"/></xhtml:b> of about 
                 <xhtml:b><xsl:value-of select="number(@yanel:totalHits)"/></xhtml:b> for 
-                <xhtml:b><xsl:value-of select="$query"/></xhtml:b>
+                <xhtml:b><xsl:value-of select="$query"/></xhtml:b><xhtml:br/>
+                <xhtml:a href="?query={$query}&amp;yanel.resource.viewid=source">view results as XML</xhtml:a>
               </xhtml:font>
             </xhtml:td>
           </xhtml:tr>
