@@ -22,6 +22,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -238,10 +240,12 @@ public class NutchResource extends Resource implements ViewableV1 {
                 Element fragmentElement = null;
                 for (int i = 0; i < show.length; i++) {
                     Element resultElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "result"));
-                    resultElement.setAttribute("index", "" + (i + 1));
+                    resultElement.setAttributeNS(NAME_SPACE, "index", "" + (i + 1));
                     fetchedDateElement = (Element) resultElement.appendChild(document.createElementNS(NAME_SPACE, "fetchedDate"));
-                    fetchedDateElement.appendChild(document.createTextNode(""
-                            + nutchBean.getFetchDate(details[i])));
+                    Date fetchedDate = new Date(nutchBean.getFetchDate(details[i]));
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
+                    String formattedDate = simpleDateFormat.format(fetchedDate);
+                    fetchedDateElement.appendChild(document.createTextNode(formattedDate));
                     segmentElement = (Element) resultElement.appendChild(document.createElementNS(NAME_SPACE, "segment"));
                     segmentElement.appendChild(document.createTextNode(details[i].getValue("segment")));
                     digestElement = (Element) resultElement.appendChild(document.createElementNS(NAME_SPACE, "digest"));
