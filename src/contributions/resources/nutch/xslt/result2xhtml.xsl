@@ -39,7 +39,15 @@
     </xhtml:html>
   </xsl:template>
   
-  <xsl:template match="yanel:query"><!-- do nothing --></xsl:template>
+  <xsl:template match="yanel:query">
+    <!-- do nothing -->
+  </xsl:template>
+  
+  <xsl:template match="yanel:no-query">
+<!--
+  <xhtml:p>No query yet.</xhtml:p>
+-->
+  </xsl:template>
   
   <xsl:template match="yanel:results">
     <xhtml:table border="0">
