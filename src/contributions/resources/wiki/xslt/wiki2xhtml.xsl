@@ -30,9 +30,15 @@
 <xsl:param name="contextprefix"/>
 
 <xsl:template match="/">
-  <div id="body">
+  <html>
+  <head>
+    <title>A Wiki page</title>
+    <link rel="neutron-introspection" href="introspection.xml" type="application/neutron+xml"/>
+  </head>
+  <body>
     <xsl:apply-templates/>
-  </div>
+  </body>
+  </html>
 </xsl:template>
 
 <xsl:template match="wiki:wiki">
