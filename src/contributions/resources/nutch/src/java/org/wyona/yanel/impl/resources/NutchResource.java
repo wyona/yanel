@@ -276,7 +276,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                         fragmentElement = (Element) fragmentsElement.appendChild(document.createElementNS(NAME_SPACE, "fragment"));
                         fragmentElement.setAttributeNS(NAME_SPACE, "highlight", "" + fragments[c].isHighlight());
                         fragmentElement.setAttributeNS(NAME_SPACE, "ellipsis", "" + fragments[c].isEllipsis());
-                        fragmentElement.appendChild(document.createTextNode(fragments[c].getText()));
+                        fragmentElement.appendChild(document.createTextNode(replaceAmpersand(fragments[c].getText())));
                     }
                 }
             }
@@ -358,5 +358,25 @@ public class NutchResource extends Resource implements ViewableV1 {
 
         // NOTE: Assuming fallback re dir2xhtml.xsl ...
         return "application/xhtml+xml";
+    }
+    
+    /**
+     * this method replaces all occurences of '&' but not '&amp;' with '&amp;'
+     * @param inputString with or without '&'
+     * @return replaced ampersands as string
+     */
+    private String replaceAmpersand(String inputString) {
+        String [] tokens = inputString.split("&amp;");
+        String replacedAmpersand = null;
+        if(inputString.indexOf("&amp;") < 0) {
+            replacedAmpersand = inputString.replaceAll("&", "&amp;");
+        } else {
+            replacedAmpersand = "";
+            for(int i = 0; i < tokens.length; i++) {
+                replacedAmpersand += tokens[i].replaceAll("&", "&amp;") + "&amp;";
+            }
+        }
+        System.out.println("\n\n" + replacedAmpersand + "\n\n");
+        return replacedAmpersand;
     }
 }
