@@ -72,6 +72,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     private static Category log = Category.getInstance(NutchResource.class);
     private final String XML_MIME_TYPE = "application/xml";
     private final String XHTML_MIME_TYPE = "application/xhtml+xml";
+    private final String NAME_SPACE = "http://www.wyona.org/yanel/1.0";
     private Configuration configuration = null;
     private File crawlDir = null;
     private Element exceptionElement = null;
@@ -141,7 +142,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             DocumentBuilder parser = dbf.newDocumentBuilder();
             DOMImplementation impl = parser.getDOMImplementation();
             DocumentType doctype = null;
-            document = impl.createDocument("http://www.wyona.org/yanel/1.0", "nutch", doctype);
+            document = impl.createDocument(NAME_SPACE, "nutch", doctype);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -149,13 +150,13 @@ public class NutchResource extends Resource implements ViewableV1 {
         Element rootElement = document.getDocumentElement();
         // Generate results
         if (searchTerm != null) {
-            Element queryElement = (Element) rootElement.appendChild(document.createElement("query"));
+            Element queryElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "query"));
             queryElement.appendChild(document.createTextNode(searchTerm));
         } else {
-            rootElement.appendChild(document.createElement("no-query"));
+            rootElement.appendChild(document.createElementNS(NAME_SPACE, "no-query"));
         }
-        resultsElement = (Element) rootElement.appendChild(document.createElement("results"));
-        resultsElement.setAttribute("start", "" + start);
+        resultsElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "results"));
+        resultsElement.setAttributeNS(NAME_SPACE, "start", "" + start);
         configuration = new Configuration();
 
         try {
@@ -174,7 +175,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             crawlDir = new File(configuration.get("searcher.dir"));
         } catch (Exception e) {
             log.error(e);
-            exceptionElement = (Element) resultsElement.appendChild(document.createElement("exception"));
+            exceptionElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "exception"));
             exceptionElement.appendChild(document.createTextNode(e.getMessage()));
         }
 
@@ -196,21 +197,17 @@ public class NutchResource extends Resource implements ViewableV1 {
         }
         return null;
     }
-
+    
+    /**
+     * this method creates a document for the given searchTerm starting at result <start> 
+     * and stores the informations within a xml 
+     * @param searchTerm 
+     * @param start position of found results for searchTerm 
+     */
     private void createDocument4SearchResult(String searchTerm, int start) {
-        Element fetchedDateElement = null;
-        Element segmentElement = null;
-        Element digestElement = null;
-        Element urlElement = null;
-        Element titleElement = null;
-        Element hitIndexDocNoElement = null;
-        Element hitDedupValueElement = null;
-        Element hitIndexNoElement = null;
-        Element fragmentsElement = null;
-        Element fragmentElement = null;
         try {
             if (!crawlDir.isDirectory()) {
-                exceptionElement = (Element) resultsElement.appendChild(document.createElement("exception"));
+                exceptionElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "exception"));
                 exceptionMessage = "No such crawl directory: " + crawlDir;
                 exceptionElement.appendChild(document.createTextNode(exceptionMessage));
                 log.warn(exceptionMessage);
@@ -221,44 +218,54 @@ public class NutchResource extends Resource implements ViewableV1 {
                 Hits hits = nutchBean.search(query, 10);
 
                 int length = (int) Math.min(hits.getTotal(), hitsPerPage);
-                resultsElement.setAttribute("end", "" + (start + length - 1));// cause we start
+                resultsElement.setAttributeNS(NAME_SPACE, "end", "" + (start + length - 1));// cause we start
                 // countin from zero
-                resultsElement.setAttribute("totalHits", "" + hits.getTotal());
+                resultsElement.setAttributeNS(NAME_SPACE, "totalHits", "" + hits.getTotal());
 
                 Hit[] show = hits.getHits(0, length);
                 HitDetails[] details = nutchBean.getDetails(show);
 
                 Summary[] summaries = nutchBean.getSummary(details, query);
+                Element fetchedDateElement = null;
+                Element segmentElement = null;
+                Element digestElement = null;
+                Element urlElement = null;
+                Element titleElement = null;
+                Element hitIndexDocNoElement = null;
+                Element hitDedupValueElement = null;
+                Element hitIndexNoElement = null;
+                Element fragmentsElement = null;
+                Element fragmentElement = null;
                 for (int i = 0; i < show.length; i++) {
-                    Element resultElement = (Element) resultsElement.appendChild(document.createElement("result"));
+                    Element resultElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "result"));
                     resultElement.setAttribute("index", "" + (i + 1));
-                    fetchedDateElement = (Element) resultElement.appendChild(document.createElement("fetchedDate"));
+                    fetchedDateElement = (Element) resultElement.appendChild(document.createElementNS(NAME_SPACE, "fetchedDate"));
                     fetchedDateElement.appendChild(document.createTextNode(""
                             + nutchBean.getFetchDate(details[i])));
-                    segmentElement = (Element) resultElement.appendChild(document.createElement("segment"));
+                    segmentElement = (Element) resultElement.appendChild(document.createElementNS(NAME_SPACE, "segment"));
                     segmentElement.appendChild(document.createTextNode(details[i].getValue("segment")));
-                    digestElement = (Element) resultElement.appendChild(document.createElement("digest"));
+                    digestElement = (Element) resultElement.appendChild(document.createElementNS(NAME_SPACE, "digest"));
                     digestElement.appendChild(document.createTextNode(details[i].getValue("digest")));
-                    urlElement = (Element) resultElement.appendChild(document.createElement("url"));
+                    urlElement = (Element) resultElement.appendChild(document.createElementNS(NAME_SPACE, "url"));
                     urlElement.appendChild(document.createTextNode(details[i].getValue("url")));
-                    titleElement = (Element) resultElement.appendChild(document.createElement("title"));
+                    titleElement = (Element) resultElement.appendChild(document.createElementNS(NAME_SPACE, "title"));
                     titleElement.appendChild(document.createTextNode(details[i].getValue("title")));
-                    hitIndexDocNoElement = (Element) resultElement.appendChild(document.createElement("hitIndexDocNo"));
+                    hitIndexDocNoElement = (Element) resultElement.appendChild(document.createElementNS(NAME_SPACE, "hitIndexDocNo"));
                     hitIndexDocNoElement.appendChild(document.createTextNode(""
                             + hits.getHit(i).getIndexDocNo()));
-                    hitDedupValueElement = (Element) resultElement.appendChild(document.createElement("hitDedupValue"));
+                    hitDedupValueElement = (Element) resultElement.appendChild(document.createElementNS(NAME_SPACE, "hitDedupValue"));
                     hitDedupValueElement.appendChild(document.createTextNode(hits.getHit(i)
                             .getDedupValue()));
-                    hitIndexNoElement = (Element) resultElement.appendChild(document.createElement("hitIndexNo"));
+                    hitIndexNoElement = (Element) resultElement.appendChild(document.createElementNS(NAME_SPACE, "hitIndexNo"));
                     hitIndexNoElement.appendChild(document.createTextNode(""
                             + hits.getHit(i).getIndexNo()));
-                    fragmentsElement = (Element) resultElement.appendChild(document.createElement("fragments"));
+                    fragmentsElement = (Element) resultElement.appendChild(document.createElementNS(NAME_SPACE, "fragments"));
                     Fragment[] fragments = summaries[i].getFragments();
 
                     for (int c = 0; c < fragments.length; c++) {
-                        fragmentElement = (Element) fragmentsElement.appendChild(document.createElement("fragment"));
-                        fragmentElement.setAttribute("highlight", "" + fragments[c].isHighlight());
-                        fragmentElement.setAttribute("ellipsis", "" + fragments[c].isEllipsis());
+                        fragmentElement = (Element) fragmentsElement.appendChild(document.createElementNS(NAME_SPACE, "fragment"));
+                        fragmentElement.setAttributeNS(NAME_SPACE, "highlight", "" + fragments[c].isHighlight());
+                        fragmentElement.setAttributeNS(NAME_SPACE, "ellipsis", "" + fragments[c].isEllipsis());
                         fragmentElement.appendChild(document.createTextNode(fragments[c].getText()));
                     }
                 }
