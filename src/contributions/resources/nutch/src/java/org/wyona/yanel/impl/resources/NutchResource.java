@@ -160,9 +160,6 @@ public class NutchResource extends Resource implements ViewableV1 {
         if (searchTerm != null && searchTerm.length() > 0) {
             Element queryElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "query"));
             queryElement.appendChild(document.createTextNode(searchTerm));
-        } else {
-            rootElement.appendChild(document.createElementNS(NAME_SPACE, "no-query"));
-        }
         resultsElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "results"));
         resultsElement.setAttributeNS(NAME_SPACE, "start", "" + start);
         configuration = new Configuration();
@@ -188,6 +185,10 @@ public class NutchResource extends Resource implements ViewableV1 {
         }
 
         if (crawlDir != null) createDocument4SearchResult(searchTerm, start);
+
+        } else {
+            rootElement.appendChild(document.createElementNS(NAME_SPACE, "no-query"));
+        }
 
         // Generate InputStream from DOM document
         try {
