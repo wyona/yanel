@@ -73,7 +73,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 &#160;Solutions<br/>
 <br/>
 <b>Search</b><br/>
-&#160;<form action="{$yarep.back2realm}search.html" method="GET"><input type="text" name="query"/></form>
+&#160;<form action="{$yarep.back2realm}en/search.html" method="GET"><input type="text" name="query"/></form>
 </td>
 
 <td>&#160;&#160;</td>
