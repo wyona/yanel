@@ -277,7 +277,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                         fragmentElement = (Element) fragmentsElement.appendChild(document.createElementNS(NAME_SPACE, "fragment"));
                         fragmentElement.setAttributeNS(NAME_SPACE, "highlight", "" + fragments[c].isHighlight());
                         fragmentElement.setAttributeNS(NAME_SPACE, "ellipsis", "" + fragments[c].isEllipsis());
-                        fragmentElement.appendChild(document.createTextNode(replaceAmpersand(fragments[c].getText())));
+                        fragmentElement.appendChild(document.createCDATASection(replaceAmpersand(fragments[c].getText())));
                     }
                 }
             }
@@ -369,7 +369,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     private String replaceAmpersand(String inputString) {
         String [] tokens = inputString.split("&amp;");
         String replacedAmpersand = null;
-        if(inputString.indexOf("&amp;") < 0) {
+        if(inputString.indexOf("&amp;") == -1) {
             replacedAmpersand = inputString.replaceAll("&", "&amp;");
         } else {
             replacedAmpersand = "";
@@ -377,7 +377,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 replacedAmpersand += tokens[i].replaceAll("&", "&amp;") + "&amp;";
             }
         }
-        System.out.println("\n\n" + replacedAmpersand + "\n\n");
+        log.debug("[" + inputString + "] replaced with [" + replacedAmpersand + "]");
         return replacedAmpersand;
     }
 }
