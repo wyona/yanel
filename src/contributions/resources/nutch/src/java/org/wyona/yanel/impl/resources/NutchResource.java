@@ -84,6 +84,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     private int start = 0;
     private int hitsPerPage = 10;
     private int numberOfPagesShown = 20;
+    private int totalHitCount = 100;
     private String defaultFile = "nutch-default.xml";
     private String localFile = "nutch-local.xml";
     private Path path = null;
@@ -106,13 +107,13 @@ public class NutchResource extends Resource implements ViewableV1 {
      * 
      */
     public View getView(Path path, String viewId) {
-        return getView(path, viewId, "NO_SEARCH_TERM");
+        return getView(path, viewId, "NO_SEARCH_TERM", start, hitsPerPage);
     }
 
     /**
      * 
      */
-    public View getView(Path path, String viewId, String searchTerm) {
+    public View getView(Path path, String viewId, String searchTerm, int start, int hitsPerPage) {
         View nutchView = null;
         this.path = path;
         try {
@@ -121,7 +122,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             repository = rp.getRepo();
 
             nutchView = new View();
-            nutchView.setInputStream(getInputStream(searchTerm, start, viewId));
+            nutchView.setInputStream(getInputStream(searchTerm, start, hitsPerPage, viewId));
             if (viewId != null && viewId.equals("source")) {
                 nutchView.setMimeType(XML_MIME_TYPE);
             } else {
@@ -137,13 +138,25 @@ public class NutchResource extends Resource implements ViewableV1 {
      * 
      */
     public View getView(HttpServletRequest request, String viewId) {
-        return getView(new Path(request.getServletPath()), viewId, request.getParameter("query"));
+        int _start = 0;
+        try {
+            _start = Integer.parseInt(request.getParameter("start"));
+        } catch(Exception e) {
+            _start = start;
+        }
+        int _hitsPerPage = 0;
+        try {
+            _hitsPerPage = Integer.parseInt(request.getParameter("hitsPerPage"));
+        } catch(Exception e) {
+            _hitsPerPage = hitsPerPage;
+        }
+        return getView(new Path(request.getServletPath()), viewId, request.getParameter("query"), _start, _hitsPerPage);
     }
 
     /**
      * Generate result XML
      */
-    private InputStream getInputStream(String searchTerm, int start, String viewId) {
+    private InputStream getInputStream(String searchTerm, int start, int hitsPerPage, String viewId) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         try {
@@ -184,7 +197,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             exceptionElement.appendChild(document.createTextNode(e.getMessage()));
         }
 
-        if (crawlDir != null) createDocument4SearchResult(searchTerm, start);
+        if (crawlDir != null) createDocument4SearchResult(searchTerm, start, hitsPerPage);
 
         } else {
             rootElement.appendChild(document.createElementNS(NAME_SPACE, "no-query"));
@@ -213,7 +226,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @param searchTerm 
      * @param start position of found results for searchTerm 
      */
-    private void createDocument4SearchResult(String searchTerm, int start) {
+    private void createDocument4SearchResult(String searchTerm, int start, int hitsPerPage) {
         try {
             if (!crawlDir.isDirectory()) {
                 exceptionElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "exception"));
@@ -224,14 +237,12 @@ public class NutchResource extends Resource implements ViewableV1 {
             } else {
                 NutchBean nutchBean = new NutchBean(configuration);
                 Query query = Query.parse(searchTerm, configuration);
-                Hits hits = nutchBean.search(query, 10);
-
-                int length = (int) Math.min(hits.getTotal(), hitsPerPage);
-                resultsElement.setAttributeNS(NAME_SPACE, "end", "" + (start + length - 1));// cause we start
-                // countin from zero
+                Hits hits = nutchBean.search(query, totalHitCount);
+                
+                int range = (int) Math.min(hits.getTotal() - start, hitsPerPage);
+                resultsElement.setAttributeNS(NAME_SPACE, "hitsPerPage", "" + hitsPerPage);
                 resultsElement.setAttributeNS(NAME_SPACE, "totalHits", "" + hits.getTotal());
-
-                Hit[] show = hits.getHits(0, length);
+                Hit[] show = hits.getHits(start, range);
                 HitDetails[] details = nutchBean.getDetails(show);
 
                 Summary[] summaries = nutchBean.getSummary(details, query);
