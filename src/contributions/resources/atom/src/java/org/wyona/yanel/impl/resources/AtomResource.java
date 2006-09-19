@@ -101,6 +101,7 @@ public class AtomResource extends Resource implements ViewableV1 {
                         if (doc != null) {
                             Entry entry = (Entry) doc.getRoot();
                             if (entry != null) {
+                                entry.addLink(children[i].getName(), "edit");
                                 orderedEntries = addEntry(orderedEntries, entry);
                             } else {
                                 log.error("Atom entry is null!" + children[i]);
@@ -117,10 +118,22 @@ public class AtomResource extends Resource implements ViewableV1 {
 
             for (int i = 0; i < orderedEntries.size(); i++) {
                 Entry entry = (Entry) orderedEntries.elementAt(i);
-                log.error("DEBUG: Ordered Published: " + entry.getPublished());
-                log.error("DEBUG: Ordered Updated: " + entry.getUpdated());
+
+                log.debug("Ordered Published: " + entry.getPublished());
+                log.debug("Ordered Updated: " + entry.getUpdated());
+                log.debug("Edit Link: " + entry.getLink("edit"));
+
+	        sb.append("<dir:file name=\"" + entry.getLink("edit").getHref() + "\"/>");
+	        sb.append("<entry xmlns=\"http://www.w3.org/2005/Atom\">");
+	        sb.append("<title>" + entry.getTitle() + "</title>");
+	        sb.append("<author><name>" + entry.getAuthor().getName() + "</name></author>");
+	        sb.append("" + entry.getLink("edit"));
+	        sb.append("<updated>" + entry.getUpdated() + "</updated>");
+	        sb.append("<published>" + entry.getPublished() + "</published>");
+	        sb.append("</entry>");
             }
 
+/*
             for (int i = 0; i < children.length; i++) {
                 if (contentRepo.isResource(children[i])) {
 	            sb.append("<dir:file path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
@@ -145,6 +158,7 @@ public class AtomResource extends Resource implements ViewableV1 {
 	            sb.append("<yanel:exception yanel:path=\"" + children[i] + "\"/>");
                 }
             }
+*/
         } catch(Exception e) {
             log.error(e);
         }
@@ -354,12 +368,9 @@ public class AtomResource extends Resource implements ViewableV1 {
     }
 
     /**
-     *
+     * Order entries by published date
      */
     private Vector addEntry(Vector orderedEntries, Entry entry) {
-        log.error("DEBUG: Published: " + entry.getPublished());
-        log.error("DEBUG: Updated: " + entry.getUpdated());
-
         long timePublished = entry.getPublished().getTime();
         int pos = 0;
         for (int i = 0; i < orderedEntries.size(); i++) {
