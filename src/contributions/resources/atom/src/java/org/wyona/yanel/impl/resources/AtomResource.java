@@ -127,9 +127,13 @@ public class AtomResource extends Resource implements ViewableV1 {
 	        sb.append("<entry xmlns=\"http://www.w3.org/2005/Atom\">");
 	        sb.append("<title>" + entry.getTitle() + "</title>");
 	        sb.append("<author><name>" + entry.getAuthor().getName() + "</name></author>");
+                // TODO: get id ...
 	        sb.append("" + entry.getLink("edit"));
 	        sb.append("<updated>" + entry.getUpdated() + "</updated>");
 	        sb.append("<published>" + entry.getPublished() + "</published>");
+	        sb.append("" + entry.getSummaryElement());
+	        sb.append("" + entry.getContentElement());
+                // TODO: get dublin core subject ...
 	        sb.append("</entry>");
             }
 
