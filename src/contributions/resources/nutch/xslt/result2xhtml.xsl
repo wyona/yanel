@@ -3,9 +3,9 @@
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:yanel="http://www.wyona.org/yanel/1.0"
   xmlns:i18n="http://apache.org/cocoon/i18n/2.1"  
-  xmlns="http://www.wyona.org/yanel/1.0"
 >
 
   <xsl:output method="xhtml"/>
@@ -50,6 +50,7 @@
   </xsl:template>
   
   <xsl:template match="yanel:results">
+    <xsl:apply-templates select="yanel:exception"/>
     <xhtml:table border="0">
       <xsl:choose>
         <xsl:when test="number(@yanel:totalHits) > 0">
@@ -145,6 +146,12 @@
       <xsl:when test="@yanel:highlight = 'true'"><xhtml:b><xsl:value-of select="."/></xhtml:b></xsl:when>
       <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template match="yanel:exception">
+    <p>
+       <div style="color: red; font-size: 24px;">Exception:</div> <xsl:value-of select="."/>
+    </p>
   </xsl:template>
 
 </xsl:stylesheet>
