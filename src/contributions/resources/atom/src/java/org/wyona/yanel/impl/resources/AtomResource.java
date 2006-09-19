@@ -29,9 +29,11 @@ import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
 
+import org.apache.abdera.model.Entry;
 import org.apache.log4j.Category;
 
 import java.io.File;
+import java.util.Vector;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -89,27 +91,39 @@ public class AtomResource extends Resource implements ViewableV1 {
             // TODO: Do not show the children with suffix .yanel-rti resp. make this configurable!
 	    // NOTE: Do not hardcode the .yanel-rti, but rather use Path.getRTIPath ...
             org.wyona.yarep.core.Path[] children = contentRepo.getChildren(entriesPath);
-            for (int i = 0; i < children.length; i++) {
-                if (contentRepo.isResource(children[i])) {
-	            sb.append("<dir:file path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
 
-                    org.apache.abdera.parser.Parser parser = org.apache.abdera.parser.Parser.INSTANCE;
-                    if (parser != null) {
+            Vector orderedEntries = new Vector();
+            org.apache.abdera.parser.Parser parser = org.apache.abdera.parser.Parser.INSTANCE;
+            if (parser != null) {
+                for (int i = 0; i < children.length; i++) {
+                    if (contentRepo.isResource(children[i])) {
                         org.apache.abdera.model.Document doc = parser.parse(contentRepo.getInputStream(children[i]));
                         if (doc != null) {
-                            org.apache.abdera.model.Entry entry = (org.apache.abdera.model.Entry) doc.getRoot();
+                            Entry entry = (Entry) doc.getRoot();
                             if (entry != null) {
-                                log.error("DEBUG: Published: " + entry.getPublished());
-                                log.error("DEBUG: Updated: " + entry.getUpdated());
+                                orderedEntries = addEntry(orderedEntries, entry);
                             } else {
                                 log.error("Atom entry is null!" + children[i]);
                             }
                         } else {
                             log.error("Atom doc is null!" + children[i]);
                         }
-                    } else {
-                        log.error("Atom Parser is null!" + children[i]);
                     }
+                }
+            } else {
+                log.error("Atom Parser is null!");
+	        sb.append("<exception>Atom parser is null!</exception>");
+            }
+
+            for (int i = 0; i < orderedEntries.size(); i++) {
+                Entry entry = (Entry) orderedEntries.elementAt(i);
+                log.error("DEBUG: Ordered Published: " + entry.getPublished());
+                log.error("DEBUG: Ordered Updated: " + entry.getUpdated());
+            }
+
+            for (int i = 0; i < children.length; i++) {
+                if (contentRepo.isResource(children[i])) {
+	            sb.append("<dir:file path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
 
                     java.io.InputStream entryIn = contentRepo.getInputStream(children[i]);
                     java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
@@ -337,5 +351,25 @@ public class AtomResource extends Resource implements ViewableV1 {
             log.error(e);
         }
         return null;
+    }
+
+    /**
+     *
+     */
+    private Vector addEntry(Vector orderedEntries, Entry entry) {
+        log.error("DEBUG: Published: " + entry.getPublished());
+        log.error("DEBUG: Updated: " + entry.getUpdated());
+
+        long timePublished = entry.getPublished().getTime();
+        int pos = 0;
+        for (int i = 0; i < orderedEntries.size(); i++) {
+            Entry current = (Entry) orderedEntries.elementAt(i);
+            if (timePublished > current.getPublished().getTime()) {
+                break;
+            }
+            pos++;
+        }
+        orderedEntries.add(pos, entry);
+        return orderedEntries;
     }
 }
