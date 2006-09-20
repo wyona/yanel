@@ -8,4 +8,11 @@
 <description>
 Atom Feed Generator
 </description>
+
+<rtd>
+  <property name="xslt"/>
+  <property name="mime-type"/>
+  <property name="feed-title"/>
+  <property name="entries-path"/>
+</rtd>
 </resource>
