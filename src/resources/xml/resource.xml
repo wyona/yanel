@@ -8,4 +8,9 @@
 <description>
 XML whereas an XSLT can be specified and applied
 </description>
+
+<rtd>
+  <property name="mime-type"/>
+  <property name="xslt"/>
+</rtd>
 </resource>
