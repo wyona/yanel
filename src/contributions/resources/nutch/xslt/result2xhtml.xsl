@@ -130,7 +130,7 @@
           <xsl:otherwise>
             <xsl:if test="number($pageNo) &gt; number($minPage)">
               <xsl:if test="number($pageNo) &lt; number($maxPage)">
-                <a href="suche.html?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(number($pageNo - 1) * $hitsPerPage)}"><xsl:value-of select="$pageNo" /></a>&#0160;
+                <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(number($pageNo - 1) * $hitsPerPage)}"><xsl:value-of select="$pageNo" /></a>&#0160;
               </xsl:if>
             </xsl:if>
           </xsl:otherwise>
