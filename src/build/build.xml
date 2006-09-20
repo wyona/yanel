@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 
 <project name="yanel-main" default="deploy" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+  <description>Yanel Build</description>
+
+  <property file="local.build.properties"/>
+  <property file="build.properties"/>
 
   <import file="dependencies.xml"/>
 <!--
@@ -9,9 +13,6 @@
 
   <target name="init" description="Initialize all parameters and other settings" depends="dependencies">
     <echo>Building with ${ant.version} and Java version ${ant.java.version}</echo>
-
-    <property file="local.build.properties"/>
-    <property file="build.properties"/>
 
     <dirname property="build.src.dir" file="${ant.file}"/>
     <dirname property="src.dir" file="${build.src.dir}"/>
