@@ -8,4 +8,8 @@
 <description>
 Getting Search results from a a Nutch crawl
 </description>
+
+<rtd>
+  <property name="xslt"/>
+</rtd>
 </resource>
