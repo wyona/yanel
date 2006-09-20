@@ -119,10 +119,6 @@ public class AtomResource extends Resource implements ViewableV1 {
             for (int i = 0; i < orderedEntries.size(); i++) {
                 Entry entry = (Entry) orderedEntries.elementAt(i);
 
-                log.debug("Ordered Published: " + entry.getPublished());
-                log.debug("Ordered Updated: " + entry.getUpdated());
-                log.debug("Edit Link: " + entry.getLink("edit"));
-
 	        sb.append("<dir:file name=\"" + entry.getLink("edit").getHref() + "\"/>");
 	        sb.append("<entry xmlns=\"http://www.w3.org/2005/Atom\">");
 	        sb.append("<title>" + entry.getTitle() + "</title>");
@@ -164,7 +160,7 @@ public class AtomResource extends Resource implements ViewableV1 {
             }
 */
         } catch(Exception e) {
-            log.error(e);
+            log.error(e, e);
         }
 	sb.append("</atom:feed>");
 
@@ -374,17 +370,22 @@ public class AtomResource extends Resource implements ViewableV1 {
     /**
      * Order entries by published date
      */
-    private Vector addEntry(Vector orderedEntries, Entry entry) {
-        long timePublished = entry.getPublished().getTime();
-        int pos = 0;
-        for (int i = 0; i < orderedEntries.size(); i++) {
-            Entry current = (Entry) orderedEntries.elementAt(i);
-            if (timePublished > current.getPublished().getTime()) {
-                break;
+    private Vector addEntry(Vector orderedEntries, Entry entry) throws Exception {
+        java.util.Date datePublished = entry.getPublished();
+        if (datePublished != null) {
+            long timePublished = datePublished.getTime();
+            int pos = 0;
+            for (int i = 0; i < orderedEntries.size(); i++) {
+                Entry current = (Entry) orderedEntries.elementAt(i);
+                if (timePublished > current.getPublished().getTime()) {
+                    break;
+                }
+                pos++;
             }
-            pos++;
+            orderedEntries.add(pos, entry);
+        } else {
+            log.error("Entry will be ignored because entry does not have a published date: " + entry.getLink("edit").getHref());
         }
-        orderedEntries.add(pos, entry);
         return orderedEntries;
     }
 }
