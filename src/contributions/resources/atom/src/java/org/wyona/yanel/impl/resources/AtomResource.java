@@ -224,24 +224,9 @@ public class AtomResource extends Resource implements ViewableV1 {
      *
      */
     private Path getXSLTPath(Path path) {
-        String xsltPath = null;
-        try {
-            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
-
-            while((xsltPath = br.readLine()) != null) {
-                if (xsltPath.indexOf("xslt:") == 0) {
-                    xsltPath = xsltPath.substring(6);
-                    log.debug("XSLT Path: " + xsltPath);
-                    return new Path(xsltPath);
-                }
-            }
-            log.info("No XSLT Path within: " +rpRTI.getPath());
-        } catch(Exception e) {
-            log.warn(e);
-        }
-
+        String xsltPath = getProperty(path, "xslt");
+        if (xsltPath != null) return new Path(xsltPath);
+        log.info("No XSLT Path within: " + path);
         return null;
     }
 
@@ -249,23 +234,8 @@ public class AtomResource extends Resource implements ViewableV1 {
      *
      */
     private String getMimeType(Path path) {
-        String mimeType = null;
-        try {
-            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
-
-            while ((mimeType = br.readLine()) != null) {
-                if (mimeType.indexOf("mime-type:") == 0) {
-                    mimeType = mimeType.substring(11);
-                    log.info("*" + mimeType + "*");
-                    // TODO: Maybe validate mime-type ...
-                    return mimeType;
-                }
-            }
-        } catch(Exception e) {
-            log.warn(e);
-        }
+        String mimeType = getProperty(path, "mime-type");
+        if (mimeType != null) return mimeType;
 
         // NOTE: Assuming fallback re dir2xhtml.xsl ...
         return "application/xhtml+xml";
