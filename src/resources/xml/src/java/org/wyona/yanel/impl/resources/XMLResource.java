@@ -75,6 +75,9 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
         String mimeType = getMimeType(path, viewId);
         defaultView.setMimeType(mimeType);
 
+        String yanelPath = getProperty(path, "yanel-path");
+        if (yanelPath != null) log.error("DEBUG: Yanel Path: " + yanelPath);
+
         try {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
 
@@ -122,23 +125,8 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
      *
      */
     private String getMimeType(Path path, String viewId) {
-        String mimeType = null;
-        try {
-            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
-
-            while ((mimeType = br.readLine()) != null) {
-                if (mimeType.indexOf("mime-type:") == 0) {
-                    mimeType = mimeType.substring(11);
-                    log.info("*" + mimeType + "*");
-                    // TODO: Maybe validate mime-type ...
-                    return mimeType;
-                }
-            }
-        } catch(Exception e) {
-            log.warn(e);
-        }
+        String mimeType = getProperty(path, "mime-type");
+        if (mimeType != null) return mimeType;
 
         String suffix = path.getSuffix();
         if (suffix != null) {
@@ -238,24 +226,9 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
      *
      */
     private Path getXSLTPath(Path path) {
-        String xsltPath = null;
-        try {
-            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
-
-            while((xsltPath = br.readLine()) != null) {
-                if (xsltPath.indexOf("xslt:") == 0) {
-                    xsltPath = xsltPath.substring(6);
-                    log.debug("XSLT Path: " + xsltPath);
-                    return new Path(xsltPath);
-                }
-            }
-            log.error("No XSLT Path within: " +rpRTI.getPath());
-        } catch(Exception e) {
-            log.warn(e);
-        }
-
+        String xsltPath = getProperty(path, "xslt");
+        if (xsltPath != null) return new Path(xsltPath);
+        log.info("No XSLT Path within: " + path);
         return null;
     }
 
@@ -289,5 +262,29 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
             log.error(e);
             return false;
         }
+    }
+
+    /**
+     *
+     */
+    private String getProperty(Path path, String name) {
+        String property = null;
+        try {
+            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
+
+            while ((property = br.readLine()) != null) {
+                if (property.indexOf(name + ":") == 0) {
+                    property = property.substring(name.length() + 2);
+                    log.info("*" + property + "*");
+                    return property;
+                }
+            }
+        } catch(Exception e) {
+            log.warn(e);
+        }
+
+        return property;
     }
 }
