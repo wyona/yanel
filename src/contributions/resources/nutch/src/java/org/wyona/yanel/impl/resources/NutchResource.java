@@ -242,6 +242,8 @@ public class NutchResource extends Resource implements ViewableV1 {
                 int range = (int) Math.min(hits.getTotal() - start, hitsPerPage);
                 resultsElement.setAttributeNS(NAME_SPACE, "hitsPerPage", "" + hitsPerPage);
                 resultsElement.setAttributeNS(NAME_SPACE, "totalHits", "" + hits.getTotal());
+                resultsElement.setAttributeNS(NAME_SPACE, "currentPageNo", "" + ((start / hitsPerPage) + 1));
+                resultsElement.setAttributeNS(NAME_SPACE, "numberOfPagesShown", "" + numberOfPagesShown);
                 Hit[] show = hits.getHits(start, range);
                 HitDetails[] details = nutchBean.getDetails(show);
 
