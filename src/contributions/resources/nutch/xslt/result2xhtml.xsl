@@ -7,11 +7,7 @@
   xmlns:yanel="http://www.wyona.org/yanel/1.0"
   xmlns:i18n="http://apache.org/cocoon/i18n/2.1"  
 >
-
-  <xsl:param name="start" select="'0'"/>
-  <xsl:param name="hitsPerPage" select="'10'" />
-  
-
+ 
   <xsl:output method="xhtml"/>
   <!-- NOTE: Must correspond with the mime-type delivered by the server. See src/java/org/wyona/yanel/impl/resources/DirectoryResource.java -->
   <!--
@@ -20,6 +16,10 @@
   
   <xsl:variable name="query"><xsl:value-of select="/yanel:nutch/yanel:query"/></xsl:variable>
   <xsl:variable name="totalHits" select="/yanel:nutch/yanel:results/@yanel:totalHits" />
+  <xsl:variable name="hitsPerPage" select="/yanel:nutch/yanel:results/@yanel:hitsPerPage" />
+  <xsl:variable name="currentPageNo" select="/yanel:nutch/yanel:results/@yanel:currentPageNo" />
+  <xsl:variable name="numberOfPagesShown" select="/yanel:nutch/yanel:results/@yanel:numberOfPagesShown" />
+  <xsl:variable name="range" select="number($numberOfPagesShown div 2)" />
   
   <xsl:template match="/">
     
@@ -79,7 +79,7 @@
                 <xhtml:b><xsl:value-of select="$maxHit"/></xhtml:b> of about 
                 <xhtml:b><xsl:value-of select="number(@yanel:totalHits)"/></xhtml:b> for 
                 <xhtml:b><xsl:value-of select="$query"/></xhtml:b><xhtml:br/>
-                <xhtml:a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={$start}&amp;yanel.resource.viewid=source">view results as XML</xhtml:a>
+                <xhtml:a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(@yanel:start)}&amp;yanel.resource.viewid=source">view results as XML</xhtml:a>
               </xhtml:font>
             </xhtml:td>
           </xhtml:tr>
@@ -88,19 +88,15 @@
             <xsl:apply-templates select="."/>
           </xsl:for-each>
           
-          
-          <!-- PAGENING -->
-          <xhtml:table width="100%" border="1">
+          <xhtml:table width="100%" border="0">
             <xhtml:tr>
               <xhtml:td></xhtml:td>
-     	        <xhtml:td width="120" align="center">
-     	          <!-- TODO: call only if more than one page results  -->
-                <xsl:comment><xsl:value-of select="$totalHits" /></xsl:comment>
-                <xsl:comment><xsl:value-of select="$hitsPerPage" /></xsl:comment>
-                <xsl:comment><xsl:value-of select="number(ceiling($totalHits div $hitsPerPage))" /></xsl:comment>
-     	          <xsl:call-template name="makeLinksForPagening">
-     	            <xsl:with-param name="pageNo">1</xsl:with-param>
-     	          </xsl:call-template>
+     	        <xhtml:td align="center">
+                <xhtml:font size="-2">
+                  <xsl:call-template name="makeLinksForPagening">
+     	              <xsl:with-param name="pageNo">1</xsl:with-param>
+     	            </xsl:call-template>
+                </xhtml:font>
      	        </xhtml:td>
      	        <xhtml:td></xhtml:td>
      	      </xhtml:tr>
@@ -119,17 +115,31 @@
   
   <xsl:template name="makeLinksForPagening">
   	<xsl:param name="pageNo"/>
-    <xsl:comment><xsl:value-of select="$pageNo" /></xsl:comment>
-  	
-    <xsl:choose><!--  and (number($pageNo - 1) != $start) -->
-      <xsl:when test="number($pageNo - 1) != number(ceiling($totalHits div $hitsPerPage))">
-        <a href="suche.html?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(number($pageNo - 1) * $hitsPerPage)}"><xsl:value-of select="$pageNo" /></a>&#0160;    
+    <xsl:variable name="minPage"><xsl:value-of select="number($currentPageNo - $range - 1)" /></xsl:variable>
+    <xsl:variable name="maxPage"><xsl:value-of select="number($currentPageNo + $range)" /></xsl:variable>
+    <xsl:if test="number(floor($totalHits div $hitsPerPage)) != 0">
+      <xsl:if test="number($pageNo - 1) != number(ceiling($totalHits div $hitsPerPage))">
+        <xsl:choose>
+          <xsl:when test="number($pageNo) = number($currentPageNo)">
+            <xsl:if test="number($pageNo) &gt; number($minPage)">
+              <xsl:if test="number($pageNo) &lt; number($maxPage)">
+                <xsl:value-of select="$pageNo" />&#0160;
+              </xsl:if>
+            </xsl:if>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:if test="number($pageNo) &gt; number($minPage)">
+              <xsl:if test="number($pageNo) &lt; number($maxPage)">
+                <a href="suche.html?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(number($pageNo - 1) * $hitsPerPage)}"><xsl:value-of select="$pageNo" /></a>&#0160;
+              </xsl:if>
+            </xsl:if>
+          </xsl:otherwise>
+        </xsl:choose>
         <xsl:call-template name="makeLinksForPagening">
           <xsl:with-param name="pageNo"><xsl:value-of select="number($pageNo + 1)" /></xsl:with-param>
         </xsl:call-template>
-  	  </xsl:when>
-      <xsl:otherwise></xsl:otherwise>
-    </xsl:choose>
+      </xsl:if>
+    </xsl:if>
   </xsl:template>
   
   <xsl:template match="yanel:result">
@@ -159,33 +169,7 @@
       <xhtml:tr>
         <xhtml:td clospan="2"><xhtml:font size="-2" color="green"><xsl:value-of select="yanel:url"/></xhtml:font></xhtml:td>
       </xhtml:tr>
-      <!--
-      <xhtml:tr>
-        <xhtml:td>fetched Date</xhtml:td>
-        <xhtml:td><i18n:date-time src-pattern="long" pattern="yyyy-MM-dd hh:mm:ss"><xsl:value-of select="yanel:fetchedDate"/></i18n:date-time></xhtml:td>
-      </xhtml:tr>
-      <xhtml:tr>
-        <xhtml:td>segment</xhtml:td>
-        <xhtml:td><xsl:value-of select="yanel:segment"/></xhtml:td>
-      </xhtml:tr>
-      <xhtml:tr>
-        <xhtml:td>digest</xhtml:td>
-        <xhtml:td><xsl:value-of select="yanel:digest"/></xhtml:td>
-      </xhtml:tr>
       
-      <xhtml:tr>
-        <xhtml:td>Hit index document number</xhtml:td>
-        <xhtml:td><xsl:value-of select="yanel:hitIndexDocNo"/></xhtml:td>
-      </xhtml:tr>
-      <xhtml:tr>
-        <xhtml:td>deduplicate value</xhtml:td>
-        <xhtml:td><xsl:value-of select="yanel:hitDedupValue"/></xhtml:td>
-      </xhtml:tr>
-      <xhtml:tr>
-        <xhtml:td>Hit index number</xhtml:td>
-        <xhtml:td><xsl:value-of select="yanel:hitIndexNo"/></xhtml:td>
-      </xhtml:tr>
-      -->
     </xhtml:table>
   </xsl:template>
   
