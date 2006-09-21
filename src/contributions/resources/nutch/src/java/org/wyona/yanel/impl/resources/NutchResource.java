@@ -18,53 +18,40 @@ package org.wyona.yanel.impl.resources;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Category;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Explanation;
-import org.apache.nutch.crawl.Inlinks;
 import org.apache.nutch.searcher.Hit;
 import org.apache.nutch.searcher.HitDetails;
 import org.apache.nutch.searcher.Hits;
 import org.apache.nutch.searcher.NutchBean;
 import org.apache.nutch.searcher.Query;
-import org.apache.nutch.searcher.QueryFilters;
 import org.apache.nutch.searcher.Summary;
 import org.apache.nutch.searcher.Summary.Fragment;
-import org.apache.nutch.util.NutchConfiguration;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
-import org.wyona.yarep.core.NoSuchNodeException;
-import org.wyona.yarep.core.Repository;
-import org.wyona.yarep.core.RepositoryFactory;
-import org.wyona.yarep.util.RepoPath;
-import java.io.File;
 
 /**
  * 
@@ -89,6 +76,9 @@ public class NutchResource extends Resource implements ViewableV1 {
     private String localFile = "nutch-local.xml";
     private Path path = null;
     private Repository repository  = null;
+    private String language = "en";
+    //messages is the name of the ResourceBundle
+    private String messages = "messages";
 
     /**
      * 
@@ -107,15 +97,16 @@ public class NutchResource extends Resource implements ViewableV1 {
      * 
      */
     public View getView(Path path, String viewId) {
-        return getView(path, viewId, "NO_SEARCH_TERM", start, hitsPerPage);
+        return getView(path, viewId, "NO_SEARCH_TERM", start, hitsPerPage, language);
     }
 
     /**
      * 
      */
-    public View getView(Path path, String viewId, String searchTerm, int start, int hitsPerPage) {
+    public View getView(Path path, String viewId, String searchTerm, int start, int hitsPerPage, String language) {
         View nutchView = null;
         this.path = path;
+        this.language = language;
         try {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
                     new RepositoryFactory());
@@ -150,7 +141,13 @@ public class NutchResource extends Resource implements ViewableV1 {
         } catch(Exception e) {
             _hitsPerPage = hitsPerPage;
         }
-        return getView(new Path(request.getServletPath()), viewId, request.getParameter("query"), _start, _hitsPerPage);
+        String _language = request.getLocale().getLanguage();
+        try {
+            _language = request.getParameter("language");
+        } catch(Exception e) {
+            _language = request.getLocale().getLanguage();
+        }
+        return getView(new Path(request.getServletPath()), viewId, request.getParameter("query"), _start, _hitsPerPage, _language);
     }
 
     /**
@@ -212,11 +209,13 @@ public class NutchResource extends Resource implements ViewableV1 {
                 transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
             }
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            DOMResult xmlResult = new DOMResult();
             transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
-
-            //Transformer i18nTransformer = new org.wyona.xml.I18nTransformer(new File("/foo/bar/locale/nutch_" + language + ".xml"));
-            //i18nTransformer.transform(outputFromAbove, new StreamResult(...));
-
+            InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            
+            I18nTransformer i18nTransformer = new I18nTransformer(messages, language, inputStream, byteArrayOutputStream);
+            i18nTransformer.transform();
+            
             return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
