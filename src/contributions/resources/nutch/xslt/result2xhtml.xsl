@@ -23,27 +23,28 @@
   
   <xsl:template match="/">
     
-    <xhtml:html>
+    <html>
     
-    <xhtml:head>
-      <xhtml:title>Results for query: [<xsl:value-of select="$query"/>]</xhtml:title>
-    </xhtml:head>
+    <head>
+      <title>Results for query: [<xsl:value-of select="$query"/>]</title>
+      <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
+    </head>
     
-    <xhtml:body>
-    <xhtml:form>
-    <xhtml:p>
-      <xhtml:input type="text" name="query" value="{$query}"/>
-      <xhtml:input type="hidden" name="hitsPerPage" value="{$hitsPerPage}"/>
-      <xhtml:input type="submit" value="Search"/>
-    </xhtml:p>
-    </xhtml:form>
+    <body>
+    <form>
+    <p>
+      <input type="text" name="query" value="{$query}"/>
+      <input type="hidden" name="hitsPerPage" value="{$hitsPerPage}"/>
+      <input type="submit" value="Search"/>
+    </p>
+    </form>
     
-    <xhtml:p>
+    <p>
       <xsl:apply-templates/>
-    </xhtml:p>
+    </p>
     
-    </xhtml:body>
-    </xhtml:html>
+    </body>
+    </html>
   </xsl:template>
   
   <xsl:template match="yanel:query">
