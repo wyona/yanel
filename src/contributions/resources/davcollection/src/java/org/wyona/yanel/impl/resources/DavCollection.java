@@ -97,6 +97,7 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
                             WEBDAV_EL_RES,
                             "httpd/unix-directory",
                             new Date(contentRepo.getLastModified(children[i])).toGMTString());
+                    
                 } else if (contentRepo.isCollection(children[i])) {
                     this.propfindAddResource(request.getContextPath() + children[i].toString(), 
                             children[i].getName(), 

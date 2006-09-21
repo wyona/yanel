@@ -57,7 +57,7 @@ public abstract class XmlViewResource extends Resource implements ViewableV2, Co
         OutputFormat outputFormat = new OutputFormat(DEFAULT_METHOD, DEFAULT_ENCODING, DEFAULT_INDENT);
         outputFormat.setIndent(DEFAULT_INDENT_WIDTH);
         outputFormat.setLineWidth(DEFAULT_LINE_WIDTH);
-        //outputFormat.setStandalone(true);
+
         // initialise the XML content handler
         this.xmlSerializer = new XMLSerializer(outputFormat);
     }
