@@ -22,6 +22,7 @@ import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
+import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
@@ -227,9 +228,14 @@ public class YanelServlet extends HttpServlet {
                             setYanelOutput(response, doc);
                             return;
                         }
+                    } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
+                        log.error("DEBUG: Resource is viewable V2");
+                        String viewId = request.getParameter("yanel.resource.viewid");
+                        ((ViewableV2) res).getView(request, response, viewId);
+                        return;
                     } else {
-                        Element noViewElement = (Element) resourceElement.appendChild(doc.createElement("no-view"));
-                        noViewElement.appendChild(doc.createTextNode(res.getClass().getName() + " is not viewable!"));
+                         Element noViewElement = (Element) resourceElement.appendChild(doc.createElement("no-view"));
+                         noViewElement.appendChild(doc.createTextNode(res.getClass().getName() + " is not viewable!"));
                     }
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
                         lastModified = ((ModifiableV2) res).getLastModified(new Path(request.getServletPath()));
