@@ -23,6 +23,8 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.io.OutputStream;
+
 /**
  *
  */
@@ -36,7 +38,7 @@ public interface ViewableV2 {
     /**
      * NOTE: A resource does not necessarily have a path
      */
-    public View getView(Path path, String viewId) throws Exception;
+    public View getView(Path path, OutputStream out, String viewId) throws Exception;
 
     /**
      *
