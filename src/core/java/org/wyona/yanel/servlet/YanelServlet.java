@@ -869,32 +869,7 @@ public class YanelServlet extends HttpServlet {
      * Also maybe interesting http://sourceforge.net/projects/openharmonise
      */
     public void doPropfind(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/xml");
-
-        StringBuffer sb = new StringBuffer("");
-        sb.append("<?xml version=\"1.0\"?>");
-        sb.append("<D:multistatus xmlns:D=\"DAV:\">");
-        sb.append("<D:response xmlns:lp1=\"DAV:\">");
-        sb.append("<D:href>" + request.getRequestURL() + "</D:href>");
-        sb.append("<D:propstat>");
-        sb.append("<D:prop>");
-        sb.append("<lp1:resourcetype>");
-	//sb.append("<D:collection/>");
-	sb.append("<D:resource/>");
-	sb.append("</lp1:resourcetype>");
-        //sb.append("<D:getcontenttype>httpd/unix-directory</D:getcontenttype>");
-        sb.append("</D:prop>");
-        sb.append("</D:propstat>");
-        sb.append("<D:status>HTTP/1.1 200 OK</D:status>");
-        sb.append("</D:response>");
-        sb.append("</D:multistatus>");
-
-        log.error("DEBUG: " + sb.toString());
-
-        response.setStatus(response.SC_OK);
-        PrintWriter writer = response.getWriter();
-        writer.print(sb.toString());
-        return;
+        getContent(request, response);
     }
 
     /**
