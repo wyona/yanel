@@ -286,11 +286,14 @@ public class NutchResource extends Resource implements ViewableV1 {
                     fragmentsElement = (Element) resultElement.appendChild(document.createElementNS(NAME_SPACE, "fragments"));
                     Fragment[] fragments = summaries[i].getFragments();
 
-                    for (int c = 0; c < fragments.length; c++) {
+                    for (int j = 0; j < fragments.length; j++) {
                         fragmentElement = (Element) fragmentsElement.appendChild(document.createElementNS(NAME_SPACE, "fragment"));
-                        fragmentElement.setAttributeNS(NAME_SPACE, "highlight", "" + fragments[c].isHighlight());
-                        fragmentElement.setAttributeNS(NAME_SPACE, "ellipsis", "" + fragments[c].isEllipsis());
-                        fragmentElement.appendChild(document.createCDATASection(replaceAmpersand(fragments[c].getText())));
+                        fragmentElement.setAttributeNS(NAME_SPACE, "highlight", "" + fragments[j].isHighlight());
+                        fragmentElement.setAttributeNS(NAME_SPACE, "ellipsis", "" + fragments[j].isEllipsis());
+                        // Also see org.apache.nutch.searcher.Summary.toHtml()
+                        fragmentElement.appendChild(document.createCDATASection(fragments[j].toString()));
+                        // TODO: Why does this not work for all cases? ...
+                        //fragmentElement.appendChild(document.createCDATASection(replaceAmpersand(fragments[j].getText())));
                     }
                 }
             }
