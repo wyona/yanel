@@ -52,7 +52,10 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
-
+import org.wyona.yarep.core.NoSuchNodeException;
+import org.wyona.yarep.core.Repository;
+import org.wyona.yarep.core.RepositoryFactory;
+import org.wyona.yarep.util.RepoPath;
 /**
  * 
  */
@@ -113,7 +116,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             repository = rp.getRepo();
 
             nutchView = new View();
-            nutchView.setInputStream(getInputStream(searchTerm, start, hitsPerPage, viewId));
+            nutchView.setInputStream(getInputStream(searchTerm, start, hitsPerPage, viewId, language));
             if (viewId != null && viewId.equals("source")) {
                 nutchView.setMimeType(XML_MIME_TYPE);
             } else {
@@ -153,7 +156,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     /**
      * Generate result XML
      */
-    private InputStream getInputStream(String searchTerm, int start, int hitsPerPage, String viewId) {
+    private InputStream getInputStream(String searchTerm, int start, int hitsPerPage, String viewId, String language) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         try {
@@ -247,6 +250,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 resultsElement.setAttributeNS(NAME_SPACE, "totalHits", "" + hits.getTotal());
                 resultsElement.setAttributeNS(NAME_SPACE, "currentPageNo", "" + ((start / hitsPerPage) + 1));
                 resultsElement.setAttributeNS(NAME_SPACE, "numberOfPagesShown", "" + numberOfPagesShown);
+                resultsElement.setAttributeNS(NAME_SPACE, "language", language);
                 Hit[] show = hits.getHits(start, range);
                 HitDetails[] details = nutchBean.getDetails(show);
 
