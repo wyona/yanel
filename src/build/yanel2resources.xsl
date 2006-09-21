@@ -7,7 +7,8 @@
 
 <xsl:output method="xml" indent="yes"/>
 
-<xsl:param name="servlet.context.prefix" select="'NULL'"/>
+<xsl:param name="servlet.context.prefix" select="'NULL_servlet_context_prefix'"/>
+<xsl:param name="yanel.source.version" select="'NULL_yanel_source_version'"/>
 
 <xsl:template match="/">
 
@@ -30,7 +31,9 @@
       <echo>INFO: Do not compile: <xsl:value-of select="@src"/></echo>
     </xsl:when>
     <xsl:otherwise>
-    <ant inheritAll="false" antfile="${{build.dir}}/{@src}build.xml" target="compile"/>
+    <ant inheritAll="false" antfile="${{build.dir}}/{@src}build.xml" target="compile">
+      <property name="yanel.source.version" value="{$yanel.source.version}"/>
+    </ant>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:for-each>
@@ -62,6 +65,7 @@
     <ant inheritAll="false" antfile="${{build.dir}}/{@src}build.xml" target="copy-dependencies">
       <property name="build.dir" value="${{build.dir}}"/>
       <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
+      <property name="yanel.source.version" value="{$yanel.source.version}"/>
     </ant>
 </xsl:for-each>
   </target>
