@@ -26,7 +26,7 @@
     <html>
     
     <head>
-      <title>Results for query: [<xsl:value-of select="$query"/>]</title>
+      <title><xsl:apply-templates select="/yanel:nutch/yanel:no-query" mode="title"/><xsl:apply-templates select="/yanel:nutch/yanel:query" mode="title"/></title>
       <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
     </head>
     
@@ -55,6 +55,14 @@
 <!--
   <xhtml:p>No query yet.</xhtml:p>
 -->
+  </xsl:template>
+
+  <xsl:template match="yanel:query" mode="title">
+    Results for query: <xsl:value-of select="."/>
+  </xsl:template>
+  
+  <xsl:template match="yanel:no-query" mode="title">
+    Search for ...
   </xsl:template>
   
   <xsl:template match="yanel:results">
