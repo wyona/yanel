@@ -43,7 +43,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 </head>
 
 <body bgcolor="#ffffff">
-<h1>YANEL</h1>
+<h1><a href="{$yarep.back2realm}index.html" style="text-decoration: none;">YANEL</a></h1>
 
 <table>
 <tr>
