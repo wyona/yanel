@@ -32,6 +32,7 @@ public class ResourceAttributeHelper {
      */
     static public boolean hasAttributeImplemented(Resource res, String attribute, String version) {
         boolean implemented = false;
+        // TODO: check superclasses that maybe implementing the interface, .getSuper()....
         Class[] interfaces = res.getClass().getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
             //System.out.println(interfaces[i].getName());
