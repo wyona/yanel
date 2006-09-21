@@ -42,7 +42,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
   <meta name="DC.Language" content="TODO"/>
 </head>
 
-<body bgcolor="#fff">
+<body bgcolor="#ffffff">
 <h1>YANEL</h1>
 
 <table>
