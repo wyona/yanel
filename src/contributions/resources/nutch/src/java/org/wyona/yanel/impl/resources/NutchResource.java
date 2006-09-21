@@ -213,6 +213,10 @@ public class NutchResource extends Resource implements ViewableV1 {
             }
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
+
+            //Transformer i18nTransformer = new org.wyona.xml.I18nTransformer(new File("/foo/bar/locale/nutch_" + language + ".xml"));
+            //i18nTransformer.transform(outputFromAbove, new StreamResult(...));
+
             return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
