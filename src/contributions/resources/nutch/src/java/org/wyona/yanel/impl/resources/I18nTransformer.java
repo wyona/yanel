@@ -20,11 +20,10 @@ public class I18nTransformer {
     private InputStream inputStream = null;
     private ByteArrayOutputStream byteArrayOutputStream = null;
     
-    public I18nTransformer(String messages, String language, InputStream inputStream, ByteArrayOutputStream byteArrayOutputStream) {
+    public I18nTransformer(String messages, String language, InputStream inputStream) {
         currentLocale = new Locale(language, language.toUpperCase());
         messageBundle = ResourceBundle.getBundle(messages, currentLocale);
         this.inputStream = inputStream;
-        this.byteArrayOutputStream = byteArrayOutputStream;
     }
     
     public void transform() {
@@ -35,6 +34,7 @@ public class I18nTransformer {
             I18nFilter filter = new I18nFilter(messageBundle); 
             filter.setParent(reader); 
             XMLSerializer xmlSerializer = new XMLSerializer();
+            byteArrayOutputStream = new ByteArrayOutputStream();
             xmlSerializer.setOutputByteStream(byteArrayOutputStream);
             ContentHandler contentHandler = xmlSerializer.asContentHandler();
             filter.setContentHandler(contentHandler); 
