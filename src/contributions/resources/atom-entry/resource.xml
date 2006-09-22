@@ -8,4 +8,9 @@
 <description>
 Atom Entry
 </description>
+
+<rtd>
+  <property name="xslt"/>
+  <property name="mime-type"/>
+</rtd>
 </resource>
