@@ -144,12 +144,14 @@ public class NutchResource extends Resource implements ViewableV1 {
         } catch(Exception e) {
             _hitsPerPage = hitsPerPage;
         }
-        String _language = request.getLocale().getLanguage();
+        String _language = language;
         try {
             _language = request.getParameter("language");
         } catch(Exception e) {
-            _language = request.getLocale().getLanguage();
+            //use fallback language
+            _language = language;
         }
+        if(_language == null) _language = language;
         return getView(new Path(request.getServletPath()), viewId, request.getParameter("query"), _start, _hitsPerPage, _language);
     }
 
@@ -216,7 +218,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
             InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
             
-            I18nTransformer i18nTransformer = new I18nTransformer(messages, language, inputStream, byteArrayOutputStream);
+            I18nTransformer i18nTransformer = new I18nTransformer(messages, language, inputStream);
             i18nTransformer.transform();
             
             return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
