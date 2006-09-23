@@ -364,17 +364,15 @@ public class YanelServlet extends HttpServlet {
                     Path entryPath = new Path(request.getServletPath() + "/" + new java.util.Date().getTime() + ".xml");
 
                     Path p = ((ModifiableV2)atomEntry).write(entryPath, in);
+                    if (p != null) {
+                        log.error("DEBUG: Atom entry has been created: " + p);
+                    } else {
+                        log.error("Atom entry has NOT been created!");
+                        // TODO: Return HTTP ...
+                    }
 
                     byte buffer[] = new byte[8192];
                     int bytesRead;
-/*
-                    OutputStream out = ((ModifiableV2)atomEntry).getOutputStream(entryPath);
-                    while ((bytesRead = in.read(buffer)) != -1) {
-                        out.write(buffer, 0, bytesRead);
-                    }
-*/
-                    log.error("DEBUG: Atom entry has been created: " + entryPath);
-
                     InputStream resourceIn = ((ModifiableV2)atomEntry).getInputStream(entryPath);
                     OutputStream responseOut = response.getOutputStream();
                     while ((bytesRead = resourceIn.read(buffer)) != -1) {
@@ -421,15 +419,18 @@ public class YanelServlet extends HttpServlet {
             if (contentType.indexOf("application/atom+xml") >= 0) {
                 InputStream in = intercept(request.getInputStream());
                 try {
-                    Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}xml/>");
+                    Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>");
                     log.error("DEBUG: Atom Entry: " + request.getServletPath() + " " + request.getRequestURI());
                     Path entryPath = new Path(request.getServletPath());
-                    OutputStream out = ((ModifiableV2)atomEntry).getOutputStream(entryPath);
+                    Path p = ((ModifiableV2)atomEntry).write(entryPath, in);
+
+/*
                     byte buffer[] = new byte[8192];
                     int bytesRead;
                     while ((bytesRead = in.read(buffer)) != -1) {
                         out.write(buffer, 0, bytesRead);
                     }
+*/
                     log.error("DEBUG: Atom entry has been saved: " + entryPath);
 
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);

@@ -45,6 +45,9 @@ import java.io.Writer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
+import org.apache.abdera.model.Document;
+import org.apache.abdera.model.Entry;
+import org.apache.abdera.parser.Parser;
 import org.apache.log4j.Category;
 
 /**
@@ -225,15 +228,24 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
      */
     public Path write(Path path, InputStream in) throws Exception {
         try {
+            Parser parser = Parser.INSTANCE;
+            Document doc = parser.parse(in);
+            Entry entry = (Entry) doc.getRoot();
+            java.util.Date date = new java.util.Date();
+            entry.setUpdated(date);
+            java.util.Date publishedDate = entry.getPublished();
+            if (publishedDate == null) {
+                log.error("No published date!");
+                entry.setPublished(date);
+            }
+
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
             OutputStream out = rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
-            byte buffer[] = new byte[8192];
-            int bytesRead;
 
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
-            }
-            log.error("DEBUG: Atom entry has been created: " + path);
+            org.apache.abdera.writer.Writer writer = org.apache.abdera.writer.Writer.INSTANCE;
+            writer.writeTo(entry, out);
+
+            log.error("DEBUG: Atom entry has been written: " + path);
         } catch(Exception e) {
             log.error(e);
             throw e;
