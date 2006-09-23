@@ -200,6 +200,15 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
     /**
      *
      */
+    public Path write(Path path, InputStream in) {
+        log.warn("Not implemented yet!");
+        OutputStream out = getOutputStream(path);
+        return path;
+    }
+
+    /**
+     *
+     */
     public long getLastModified(Path path) {
         try {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());

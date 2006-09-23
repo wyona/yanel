@@ -223,6 +223,27 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
     /**
      *
      */
+    public Path write(Path path, InputStream in) throws Exception {
+        try {
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            OutputStream out = rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+            byte buffer[] = new byte[8192];
+            int bytesRead;
+
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+            log.error("DEBUG: Atom entry has been created: " + path);
+        } catch(Exception e) {
+            log.error(e);
+            throw e;
+        }
+        return path;
+    }
+
+    /**
+     *
+     */
     public long getLastModified(Path path) {
         try {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());

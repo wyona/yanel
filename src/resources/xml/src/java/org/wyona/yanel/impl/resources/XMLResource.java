@@ -211,6 +211,15 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
     /**
      *
      */
+    public Path write(Path path, InputStream in) {
+        OutputStream out = getOutputStream(path);
+        log.warn("Not implemented yet!");
+        return path;
+    }
+
+    /**
+     *
+     */
     public long getLastModified(Path path) {
         try {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
