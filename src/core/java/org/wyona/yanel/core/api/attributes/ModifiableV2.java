@@ -52,14 +52,19 @@ public interface ModifiableV2 {
     public Writer getWriter(Path path);
 
     /**
-     *
+     * To write data
      */
     public Writer getWriter(Topic topic);
 
     /**
-     *
+     * To write data
      */
     public OutputStream getOutputStream(Path path);
+
+    /**
+     * To write data and allowing the resource to modify data during writing, e.g. "updated" element of atom entry
+     */
+    public Path write(Path path, InputStream in) throws Exception;
 
     /**
      *
