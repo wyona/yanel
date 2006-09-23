@@ -422,15 +422,17 @@ public class YanelServlet extends HttpServlet {
                     Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>");
                     log.error("DEBUG: Atom Entry: " + request.getServletPath() + " " + request.getRequestURI());
                     Path entryPath = new Path(request.getServletPath());
-                    Path p = ((ModifiableV2)atomEntry).write(entryPath, in);
+                    // TODO: There seems to be a problem ...
+                    //Path p = ((ModifiableV2)atomEntry).write(entryPath, in);
 
-/*
+                    // NOTE: This method does not update updated date
+                    OutputStream out = ((ModifiableV2)atomEntry).getOutputStream(entryPath);
                     byte buffer[] = new byte[8192];
                     int bytesRead;
                     while ((bytesRead = in.read(buffer)) != -1) {
                         out.write(buffer, 0, bytesRead);
                     }
-*/
+
                     log.error("DEBUG: Atom entry has been saved: " + entryPath);
 
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
