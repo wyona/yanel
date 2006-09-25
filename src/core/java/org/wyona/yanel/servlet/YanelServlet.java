@@ -423,15 +423,17 @@ public class YanelServlet extends HttpServlet {
                     log.error("DEBUG: Atom Entry: " + request.getServletPath() + " " + request.getRequestURI());
                     Path entryPath = new Path(request.getServletPath());
                     // TODO: There seems to be a problem ...
-                    //Path p = ((ModifiableV2)atomEntry).write(entryPath, in);
+                    Path p = ((ModifiableV2)atomEntry).write(entryPath, in);
 
                     // NOTE: This method does not update updated date
+/*
                     OutputStream out = ((ModifiableV2)atomEntry).getOutputStream(entryPath);
                     byte buffer[] = new byte[8192];
                     int bytesRead;
                     while ((bytesRead = in.read(buffer)) != -1) {
                         out.write(buffer, 0, bytesRead);
                     }
+*/
 
                     log.error("DEBUG: Atom entry has been saved: " + entryPath);
 
