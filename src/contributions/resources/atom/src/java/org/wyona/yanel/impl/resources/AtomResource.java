@@ -93,7 +93,8 @@ public class AtomResource extends Resource implements ViewableV1 {
             org.wyona.yarep.core.Path[] children = contentRepo.getChildren(entriesPath);
 
             Vector orderedEntries = new Vector();
-            org.apache.abdera.parser.Parser parser = org.apache.abdera.parser.Parser.INSTANCE;
+            org.apache.abdera.Abdera abdera = new org.apache.abdera.Abdera();
+            org.apache.abdera.parser.Parser parser = abdera.getParser();
             if (parser != null) {
                 for (int i = 0; i < children.length; i++) {
                     if (contentRepo.isResource(children[i])) {

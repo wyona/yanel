@@ -228,7 +228,8 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
      */
     public Path write(Path path, InputStream in) throws Exception {
         try {
-            Parser parser = Parser.INSTANCE;
+            org.apache.abdera.Abdera abdera = new org.apache.abdera.Abdera();
+            Parser parser = abdera.getParser();
             Document doc = parser.parse(in);
             Entry entry = (Entry) doc.getRoot();
             java.util.Date date = new java.util.Date();
@@ -242,7 +243,7 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
             OutputStream out = rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
 
-            org.apache.abdera.writer.Writer writer = org.apache.abdera.writer.Writer.INSTANCE;
+            org.apache.abdera.writer.Writer writer = abdera.getWriter();
             writer.writeTo(entry, out);
 
             log.error("DEBUG: Atom entry has been written: " + path);
