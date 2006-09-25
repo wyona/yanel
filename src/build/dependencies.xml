@@ -38,11 +38,9 @@
                   version="${xml.apis.version}"/>
       <dependency groupId="xml-resolver" artifactId="xml-resolver"
                   version="1.1"/>
-<!-- The XSLT engine of Java on MacOS X seems to have trouble. With Xalan enabled it should work! -->
-<!--
+<!-- The XSLT engine of Java on MacOS X seems to have trouble. With Xalan enabled it should work! Also Abdera seems to need Xalan ... -->
       <dependency groupId="xalan" artifactId="xalan"
                   version="2.7.0"/>
--->
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl"
                   version="0.0.1-dev-r15775"/>
     </artifact:dependencies>
