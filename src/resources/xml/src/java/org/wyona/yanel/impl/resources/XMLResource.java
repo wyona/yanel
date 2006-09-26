@@ -79,7 +79,6 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
         defaultView.setMimeType(mimeType);
 
         String yanelPath = getProperty(path, "yanel-path");
-        log.error("DEBUG: yanel-path: " + yanelPath);
 
         Path xsltPath = getXSLTPath(path);
 
@@ -87,7 +86,6 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
 
 	    if (xsltPath != null) {
-                log.error("DEBUG: Hello 1: " + xsltPath);
                 TransformerFactory tf = TransformerFactory.newInstance();
                 //tf.setURIResolver(null);
                 Transformer transformer = tf.newTransformer(new StreamSource(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(xsltPath.toString()))));
@@ -98,14 +96,10 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
                 // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
 
-
-                log.error("DEBUG: Hello 2");
                 org.xml.sax.XMLReader xmlReader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
-                log.error("DEBUG: Hello 3");
                 xmlReader.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
                 transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML(rp, yanelPath))), new StreamResult(baos));
                 defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
-                log.error("DEBUG: Hello 4");
 
                 return defaultView;
             } else {
