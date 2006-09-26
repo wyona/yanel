@@ -43,7 +43,7 @@ public class ResourceAttributeHelper {
         if (implemented) {
             log.info(res.getClass().getName() + " does implement " + attribute + "V" + version + " interface!");
         } else {
-            log.warn(res.getClass().getName() + " does NOT implement " + attribute + "V" + version + " interface!");
+            log.info(res.getClass().getName() + " does NOT implement " + attribute + "V" + version + " interface!");
         }
         return implemented;
     }
