@@ -22,16 +22,7 @@
     <mkdir dir="${build.dir}"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="log4j.path" value="${build.dir}/logs"/>
-    
-    <!-- copy resource bundles to classes directory-->
-    <!-- i am not sure if we need the properties in both directories -->
-    <!-- it seem we only need the properties in the WEB-INF/classes directory -->
-    <!--copy file="messages.properties" todir="${build.dir}/classes"/>
-    <copy file="messages_de.properties" todir="${build.dir}/classes"/>
-    <copy file="messages_en.properties" todir="${build.dir}/classes"/-->
-    <copy file="messages.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes"/>
-    <copy file="messages_de.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes"/>
-    <copy file="messages_en.properties" todir="${build.dir}/webapps/yanel/WEB-INF/classes"/>
+
 
     <path id="classpath">
       <!--
@@ -73,7 +64,6 @@
       <!-- All external dependencies -->
       <pathelement path="${maven2.cp}"/>
     </path>
-
     <property name="run.cp" refid="classpath.run"/>
 <!--
     <echo>Classpath to run yanel: ${run.cp}</echo>
