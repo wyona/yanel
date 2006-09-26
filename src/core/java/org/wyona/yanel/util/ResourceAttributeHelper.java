@@ -21,7 +21,7 @@ import org.wyona.yanel.core.Resource;
 import org.apache.log4j.Category;
 
 /**
- *
+ * @deprecated Use org.wyona.yanel.core.util.ResourceAttributeHelper
  */
 public class ResourceAttributeHelper {
 
