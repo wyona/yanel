@@ -20,8 +20,12 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
     private static Category log = Category.getInstance(DavCollection.class);
     
     // WebDAV namespace definition
-    private static final String WEBDAV_NS_PREFIX = "D";
-    private static final String WEBDAV_NS_URI = "DAV:";
+    
+    // NOTE: We use the DavCollection in the context of Neutron10 so
+    // the namespaces are different.
+    private static final String WEBDAV_NS_PREFIX = ""; // "D"
+    private static final String WEBDAV_PREFIX = ""; //WEBDAV_NS_PREFIX + ":";
+    private static final String WEBDAV_NS_URI = "http://www.wyona.org/neutron/1.0"; //"DAV:";
     
     // WebDav element definitions
     private static final String WEBDAV_EL_MSTATUS   = "multistatus";
@@ -53,7 +57,7 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
         
         startDocument();          
         startPrefixMapping(WEBDAV_NS_PREFIX, WEBDAV_NS_URI);      
-        startElement(WEBDAV_NS_PREFIX, WEBDAV_EL_MSTATUS, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_MSTATUS, null);
+        startElement(WEBDAV_NS_PREFIX, WEBDAV_EL_MSTATUS, WEBDAV_PREFIX + WEBDAV_EL_MSTATUS, null);
         
         // copyied from DirectoryResource.java, modified to use a ContentHandler
         // instead of a StringBuffer for the XML view 
@@ -113,7 +117,7 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
             log.error(e);
         }
         
-        endElement(WEBDAV_NS_URI, WEBDAV_EL_MSTATUS, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_MSTATUS);
+        endElement(WEBDAV_NS_URI, WEBDAV_EL_MSTATUS, WEBDAV_PREFIX + WEBDAV_EL_MSTATUS);
         endPrefixMapping(WEBDAV_NS_PREFIX);
         endDocument();
     }
@@ -129,52 +133,52 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
      */
     void propfindAddResource(String href, String displayName, String type, String mimeType, String lastModified ) throws SAXException {
         // response
-        startElement(WEBDAV_NS_URI, WEBDAV_EL_RESPONSE, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_RESPONSE, null);            
+        startElement(WEBDAV_NS_URI, WEBDAV_EL_RESPONSE, WEBDAV_PREFIX + WEBDAV_EL_RESPONSE, null);            
         // href
-        startElement(WEBDAV_NS_URI, WEBDAV_EL_HREF, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_HREF, null);
+        startElement(WEBDAV_NS_URI, WEBDAV_EL_HREF, WEBDAV_PREFIX + WEBDAV_EL_HREF, null);
         characters(href);
-        endElement(WEBDAV_NS_URI, WEBDAV_EL_HREF, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_HREF);
+        endElement(WEBDAV_NS_URI, WEBDAV_EL_HREF, WEBDAV_PREFIX + WEBDAV_EL_HREF);
         // propstat
-        startElement(WEBDAV_NS_URI, WEBDAV_EL_PROPSTAT, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_PROPSTAT, null);
+        startElement(WEBDAV_NS_URI, WEBDAV_EL_PROPSTAT, WEBDAV_PREFIX + WEBDAV_EL_PROPSTAT, null);
         //properties            
-        startElement(WEBDAV_NS_URI, WEBDAV_EL_PROP, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_PROP, null);
+        startElement(WEBDAV_NS_URI, WEBDAV_EL_PROP, WEBDAV_PREFIX + WEBDAV_EL_PROP, null);
         // displayname
-        startElement(WEBDAV_NS_URI, WEBDAV_EL_DISPNAME, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_DISPNAME, null);
+        startElement(WEBDAV_NS_URI, WEBDAV_EL_DISPNAME, WEBDAV_PREFIX + WEBDAV_EL_DISPNAME, null);
         characters(displayName);
-        endElement(WEBDAV_NS_URI, WEBDAV_EL_DISPNAME, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_DISPNAME);
+        endElement(WEBDAV_NS_URI, WEBDAV_EL_DISPNAME, WEBDAV_PREFIX + WEBDAV_EL_DISPNAME);
         // lastmodified
-        startElement(WEBDAV_NS_URI, WEBDAV_EL_LASTMOD, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_LASTMOD, null);
+        startElement(WEBDAV_NS_URI, WEBDAV_EL_LASTMOD, WEBDAV_PREFIX + WEBDAV_EL_LASTMOD, null);
         characters(lastModified);
-        endElement(WEBDAV_NS_URI, WEBDAV_EL_LASTMOD, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_LASTMOD);
+        endElement(WEBDAV_NS_URI, WEBDAV_EL_LASTMOD, WEBDAV_PREFIX + WEBDAV_EL_LASTMOD);
         // creationdate
-        startElement(WEBDAV_NS_URI, WEBDAV_EL_CREATDATE, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_CREATDATE, null);
-        endElement(WEBDAV_NS_URI, WEBDAV_EL_CREATDATE, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_CREATDATE);
+        startElement(WEBDAV_NS_URI, WEBDAV_EL_CREATDATE, WEBDAV_PREFIX + WEBDAV_EL_CREATDATE, null);
+        endElement(WEBDAV_NS_URI, WEBDAV_EL_CREATDATE, WEBDAV_PREFIX + WEBDAV_EL_CREATDATE);
         //resourcetype
-        startElement(WEBDAV_NS_URI, WEBDAV_EL_RESTYPE, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_RESTYPE, null);
+        startElement(WEBDAV_NS_URI, WEBDAV_EL_RESTYPE, WEBDAV_PREFIX + WEBDAV_EL_RESTYPE, null);
         if (type == WEBDAV_EL_COLL) {
             // collection
-            startElement(WEBDAV_NS_URI, type, WEBDAV_NS_PREFIX + ":" + type, null);
-            endElement(WEBDAV_NS_URI, type, WEBDAV_NS_PREFIX + ":" + type);
+            startElement(WEBDAV_NS_URI, type, WEBDAV_PREFIX + type, null);
+            endElement(WEBDAV_NS_URI, type, WEBDAV_PREFIX + type);
         }
-        endElement(WEBDAV_NS_URI, WEBDAV_EL_RESTYPE, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_RESTYPE);
+        endElement(WEBDAV_NS_URI, WEBDAV_EL_RESTYPE, WEBDAV_PREFIX + WEBDAV_EL_RESTYPE);
         // getcontenttype
-        startElement(WEBDAV_NS_URI, WEBDAV_EL_CONTTYPE, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_CONTTYPE, null);
+        startElement(WEBDAV_NS_URI, WEBDAV_EL_CONTTYPE, WEBDAV_PREFIX + WEBDAV_EL_CONTTYPE, null);
         characters(mimeType);
-        endElement(WEBDAV_NS_URI, WEBDAV_EL_CONTTYPE, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_CONTTYPE);
+        endElement(WEBDAV_NS_URI, WEBDAV_EL_CONTTYPE, WEBDAV_PREFIX + WEBDAV_EL_CONTTYPE);
         // getcontentlength
-        startElement(WEBDAV_NS_URI, WEBDAV_EL_CONTLEN, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_CONTLEN, null);
+        startElement(WEBDAV_NS_URI, WEBDAV_EL_CONTLEN, WEBDAV_PREFIX + WEBDAV_EL_CONTLEN, null);
         characters("0");
-        endElement(WEBDAV_NS_URI, WEBDAV_EL_CONTLEN, WEBDAV_NS_PREFIX + ":" +  WEBDAV_EL_CONTLEN);
+        endElement(WEBDAV_NS_URI, WEBDAV_EL_CONTLEN, WEBDAV_PREFIX +  WEBDAV_EL_CONTLEN);
         // lockdiscovery
-        startElement(WEBDAV_NS_URI, WEBDAV_EL_LOCKDISC, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_LOCKDISC, null);
-        endElement(WEBDAV_NS_URI, WEBDAV_EL_LOCKDISC, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_LOCKDISC);            
-        endElement(WEBDAV_NS_URI, WEBDAV_EL_PROP, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_PROP);
+        startElement(WEBDAV_NS_URI, WEBDAV_EL_LOCKDISC, WEBDAV_PREFIX + WEBDAV_EL_LOCKDISC, null);
+        endElement(WEBDAV_NS_URI, WEBDAV_EL_LOCKDISC, WEBDAV_PREFIX + WEBDAV_EL_LOCKDISC);            
+        endElement(WEBDAV_NS_URI, WEBDAV_EL_PROP, WEBDAV_PREFIX + WEBDAV_EL_PROP);
         // status
-        startElement(WEBDAV_NS_URI, WEBDAV_EL_STATUS, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_STATUS, null);
+        startElement(WEBDAV_NS_URI, WEBDAV_EL_STATUS, WEBDAV_PREFIX + WEBDAV_EL_STATUS, null);
         characters("HTTP/1.1 200 OK");
-        endElement(WEBDAV_NS_URI, WEBDAV_EL_STATUS, WEBDAV_NS_PREFIX + ":" +  WEBDAV_EL_STATUS);
-        endElement(WEBDAV_NS_URI, WEBDAV_EL_PROPSTAT, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_PROPSTAT);
-        endElement(WEBDAV_NS_URI, WEBDAV_EL_RESPONSE, WEBDAV_NS_PREFIX + ":" + WEBDAV_EL_RESPONSE);        
+        endElement(WEBDAV_NS_URI, WEBDAV_EL_STATUS, WEBDAV_PREFIX +  WEBDAV_EL_STATUS);
+        endElement(WEBDAV_NS_URI, WEBDAV_EL_PROPSTAT, WEBDAV_PREFIX + WEBDAV_EL_PROPSTAT);
+        endElement(WEBDAV_NS_URI, WEBDAV_EL_RESPONSE, WEBDAV_PREFIX + WEBDAV_EL_RESPONSE);        
     }
     
 }
