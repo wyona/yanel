@@ -62,7 +62,9 @@
       </fileset>
 
       <!-- All external dependencies -->
+      <!--
       <pathelement path="${maven2.cp}"/>
+      -->
     </path>
     <property name="run.cp" refid="classpath.run"/>
 <!--
@@ -371,6 +373,8 @@
     <java classname="org.wyona.yanel.cmdl.YanelCommandLine">
       <classpath refid="classpath.run"/>
       <arg value="${yanel.path}"/>
+      <!-- On Linux, Java 1.4.2 needs this sysproperty whereas on Mac OS X it doesn't seem to be necessary -->
+      <sysproperty key="org.xml.sax.driver" value="org.apache.xerces.parsers.SAXParser"/>
     </java>
   </target>
 
