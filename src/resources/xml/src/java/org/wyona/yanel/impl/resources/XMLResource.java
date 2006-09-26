@@ -19,11 +19,14 @@ package org.wyona.yanel.impl.resources;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.Topic;
+import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+
+import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
@@ -76,18 +79,18 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
         defaultView.setMimeType(mimeType);
 
         String yanelPath = getProperty(path, "yanel-path");
-        if (yanelPath != null) log.error("DEBUG: Yanel Path: " + yanelPath);
+        log.error("DEBUG: yanel-path: " + yanelPath);
+
+        Path xsltPath = getXSLTPath(path);
 
         try {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
 
-            if (mimeType.equals("application/xml")) {
-                defaultView.setInputStream(getContentXML(rp));
-                return defaultView;
-	    } else if (mimeType.equals("application/xhtml+xml") || mimeType.equals("text/html")) {
+	    if (xsltPath != null) {
+                log.error("DEBUG: Hello 1: " + xsltPath);
                 TransformerFactory tf = TransformerFactory.newInstance();
                 //tf.setURIResolver(null);
-                Transformer transformer = tf.newTransformer(new StreamSource(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString()))));
+                Transformer transformer = tf.newTransformer(new StreamSource(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(xsltPath.toString()))));
                 transformer.setParameter("yanel.path.name", path.getName());
                 transformer.setParameter("yanel.path", path.toString());
                 transformer.setParameter("yanel.back2context", backToRoot(path, ""));
@@ -96,16 +99,18 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
 
 
+                log.error("DEBUG: Hello 2");
                 org.xml.sax.XMLReader xmlReader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
+                log.error("DEBUG: Hello 3");
                 xmlReader.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
-                transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML(rp))), new StreamResult(baos));
+                transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML(rp, yanelPath))), new StreamResult(baos));
                 defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+                log.error("DEBUG: Hello 4");
 
                 return defaultView;
             } else {
                 log.debug("Mime-Type: " + mimeType);
-                defaultView.setInputStream(getContentXML(rp));
-                //defaultView.setInputStream(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
+                defaultView.setInputStream(getContentXML(rp, yanelPath));
             }
         } catch(Exception e) {
             log.error(e);
@@ -117,12 +122,27 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
     /**
      *
      */
-    private InputStream getContentXML(RepoPath rp) throws Exception {
+    private InputStream getContentXML(RepoPath rp, String yanelPath) throws Exception {
+        if (yanelPath != null) {
+            log.error("DEBUG: Yanel Path: " + yanelPath);
+            Yanel yanel = new Yanel();
+            Resource res = yanel.getResource(new Path(yanelPath));
+            if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
+                View view = ((ViewableV1) res).getView(new Path(yanelPath), null);
+                if (view.getMimeType().indexOf("xml") >= 0) {
+                    return view.getInputStream();
+                } else {
+                    log.warn("No XML like mime-type: " + yanelPath);
+                }
+            } else {
+                log.warn("Resource is not ViewableV1: " + yanelPath);
+            }
+        }
         return rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
     }
 
     /**
-     *
+     * Get mime type
      */
     private String getMimeType(Path path, String viewId) {
         String mimeType = getProperty(path, "mime-type");
@@ -232,7 +252,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
     }
 
     /**
-     *
+     * Get XSLT path
      */
     private Path getXSLTPath(Path path) {
         String xsltPath = getProperty(path, "xslt");
