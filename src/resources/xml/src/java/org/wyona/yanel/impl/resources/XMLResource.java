@@ -118,18 +118,20 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
      */
     private InputStream getContentXML(RepoPath rp, String yanelPath) throws Exception {
         if (yanelPath != null) {
-            log.error("DEBUG: Yanel Path: " + yanelPath);
+            log.debug("Yanel Path: " + yanelPath);
             Yanel yanel = new Yanel();
-            Resource res = yanel.getResource(new Path(yanelPath));
+            Path path = new Path("/" + rp.getRepo().getID() + yanelPath);
+            Resource res = yanel.getResource(path);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
-                View view = ((ViewableV1) res).getView(new Path(yanelPath), null);
+                View view = ((ViewableV1) res).getView(path, null);
                 if (view.getMimeType().indexOf("xml") >= 0) {
+                    // TODO: Shall the mime-type be transfered?
                     return view.getInputStream();
                 } else {
-                    log.warn("No XML like mime-type: " + yanelPath);
+                    log.warn("No XML like mime-type: " + path);
                 }
             } else {
-                log.warn("Resource is not ViewableV1: " + yanelPath);
+                log.warn("Resource is not ViewableV1: " + path);
             }
         }
         return rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
