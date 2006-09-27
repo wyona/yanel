@@ -28,6 +28,8 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
@@ -218,10 +220,12 @@ public class NutchResource extends Resource implements ViewableV1 {
             transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
             InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
             
-            I18nTransformer i18nTransformer = new I18nTransformer(messages, language, inputStream);
-            i18nTransformer.transform();
+            I18nTransformer i18nTransformer = new I18nTransformer(messages, language);
+            SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
+            saxParser.parse(inputStream, i18nTransformer);
             
-            return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            return i18nTransformer.getInputStream();
+            
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

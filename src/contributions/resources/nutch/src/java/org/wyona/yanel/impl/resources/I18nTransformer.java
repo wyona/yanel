@@ -1,48 +1,101 @@
 package org.wyona.yanel.impl.resources;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import javax.xml.parsers.SAXParser; 
-import javax.xml.parsers.SAXParserFactory; 
 import org.apache.log4j.Category;
-import org.apache.xml.serialize.XMLSerializer;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource; 
-import org.xml.sax.XMLReader; 
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
-public class I18nTransformer {
-    
+public class I18nTransformer extends DefaultHandler {
+
     private static Category log = Category.getInstance(I18nTransformer.class);
     private Locale currentLocale = null;
     private ResourceBundle messageBundle = null;
-    private InputStream inputStream = null;
-    private ByteArrayOutputStream byteArrayOutputStream = null;
-    
-    public I18nTransformer(String messages, String language, InputStream inputStream) {
-        currentLocale = new Locale(language/*, language.toUpperCase()*/);
+    private ByteArrayInputStream byteArrayInputStream = null;
+    private StringBuffer transformedXmlAsBuffer = null;
+
+    public I18nTransformer(String messages, String language) {
+        currentLocale = new Locale(language);
         messageBundle = ResourceBundle.getBundle(messages, currentLocale);
-        this.inputStream = inputStream;
+    }
+
+    public void startDocument() throws SAXException {
+        transformedXmlAsBuffer = new StringBuffer();
+    }
+
+    public void endDocument() throws SAXException {
+        setResultInputStream();
+    }
+
+    public void startElement(String namespaceURI, String localName, String qName, Attributes attrs) throws SAXException {
+        String eName = ("".equals(localName)) ? qName : localName;
+        
+        if ((eName.equals("message")) || (eName.equals("i18n:message"))) {
+            String key = attrs.getValue("key");
+            String i18nText = messageBundle.getString(key);
+            log.debug("TAG [key] " + key + " [message]" + i18nText);
+            char[] i18nMessage = i18nText.toCharArray(); 
+            characters(i18nMessage, 0, i18nMessage.length);
+        } else {
+            transformedXmlAsBuffer.append("<" + eName);
+            for(int i = 0; i < attrs.getLength(); i++) {
+                String aName = attrs.getQName(i);
+                String aValue = attrs.getValue(i);
+                if(aValue.indexOf("i18n:attr key=") != -1) {
+                    String key = aValue.substring(14);
+                    String i18nValue = messageBundle.getString(key);
+                    aValue = i18nValue;
+                    log.debug("ATTR [key] " + key + " [message]" + i18nValue);
+                }
+                aValue = replaceAmpersand(aValue);
+                transformedXmlAsBuffer.append(" " + aName + "=\"" + aValue + "\"");
+            }
+            transformedXmlAsBuffer.append(">");
+        }
+    }
+
+    public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
+        String eName = ("".equals(localName)) ? qName : localName;
+        if ((eName.equals("message")) || (eName.equals("i18n:message"))) {
+            /*ignore these tags*/
+        } else {
+            transformedXmlAsBuffer.append("</" + eName + ">");
+        }
+    }
+
+    public void characters(char[] buf, int offset, int len) throws SAXException {
+        String s = new String(buf, offset, len);
+        s =  replaceAmpersand(s);
+        transformedXmlAsBuffer.append(s);
+    }
+
+    private void setResultInputStream() {
+        this.byteArrayInputStream = new ByteArrayInputStream(transformedXmlAsBuffer.toString().getBytes());
+    }
+ 
+    public ByteArrayInputStream getInputStream() {
+        return this.byteArrayInputStream;
     }
     
-    public void transform() {
-        try {
-            SAXParserFactory spf = SAXParserFactory.newInstance(); 
-            SAXParser parser = spf.newSAXParser(); 
-            XMLReader reader = parser.getXMLReader(); 
-            I18nFilter filter = new I18nFilter(messageBundle); 
-            filter.setParent(reader); 
-            XMLSerializer xmlSerializer = new XMLSerializer();
-            byteArrayOutputStream = new ByteArrayOutputStream();
-            xmlSerializer.setOutputByteStream(byteArrayOutputStream);
-            ContentHandler contentHandler = xmlSerializer.asContentHandler();
-            filter.setContentHandler(contentHandler); 
-            //filter.setErrorHandler(contentHandler); 
-            InputSource inputSource = new InputSource(inputStream); 
-            filter.parse(inputSource); 
-        } catch(Exception e) {
-            log.error(e.getMessage(), e);
+    /**
+     * this method replaces all occurences of '&' but not '&amp;' with '&amp;'
+     * @param inputString with or without '&'
+     * @return replaced ampersands as string
+     */
+    private String replaceAmpersand(String inputString) {
+        String [] tokens = inputString.split("&amp;");
+        String replacedAmpersand = null;
+        if(inputString.indexOf("&amp;") == -1) {
+            replacedAmpersand = inputString.replaceAll("&", "&amp;");
+        } else {
+            replacedAmpersand = "";
+            for(int i = 0; i < tokens.length; i++) {
+                replacedAmpersand += tokens[i].replaceAll("&", "&amp;") + "&amp;";
+            }
         }
+        log.debug("[" + inputString + "] replaced with [" + replacedAmpersand + "]");
+        return replacedAmpersand;
     }
 }
