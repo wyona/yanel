@@ -11,6 +11,43 @@
   <import file="resources.xml"/>
 -->
 
+  <target name="config" description="Initialize all local properties files">
+    <property name="project.home" location="../.."/>
+    <echo>As a first time user one does NOT have to configure anything, but just run build.sh and then yanel.sh! :-)</echo>
+    <echo>***************************************</echo>
+    <echo>Building with project.home = ${project.home}</echo>
+    <echo>Will now create local properties files if they do not exist.</echo>
+    <copy file="${project.home}/src/build/build.properties" 
+      tofile="${project.home}/src/build/local.build.properties" overwrite="false"/>
+    <copy file="${project.home}/conf/yanel.xml"
+      tofile="${project.home}/local.yanel.xml" overwrite="false"/>
+    <copy file="${project.home}/conf/realms.xml"
+      tofile="${project.home}/conf/local.realms.xml" overwrite="false"/>
+    <copy file="${project.home}/conf/yanel-rti-yarep.properties"
+      tofile="${project.home}/conf/local.yanel-rti-yarep.properties"
+      overwrite="false"/>
+    <copy file="${project.home}/conf/yarep.properties"
+      tofile="${project.home}/conf/local.yarep.properties" overwrite="false"/>
+    <copy file="${project.home}/conf/ac-policies-yarep.properties"
+      tofile="${project.home}/conf/local.ac-policies-yarep.properties"
+      overwrite="false"/>
+    <copy file="${project.home}/conf/ac-identities-yarep.properties"
+      tofile="${project.home}/conf/local.ac-identities-yarep.properties"
+      overwrite="false"/>
+    <echo>Local property files:</echo>
+    <echo>${project.home}/src/build/local.build.properties"</echo>
+    <echo>${project.home}/local.yanel.xml"</echo>
+    <echo>${project.home}/conf/local.realms.xml"</echo>
+    <echo>${project.home}/conf/local.yanel-rti-yarep.properties"</echo>
+    <echo>${project.home}/conf/local.yarep.properties"</echo>
+    <echo>${project.home}/conf/local.ac-policies-yarep.properties</echo>
+    <echo>${project.home}/conf/local.ac-identities-yarep.properties</echo>
+    <echo>***************************************</echo>
+    <echo>Customize the local.*.properties files and run build.sh! Or run build.sh first
+      and then customize the *.properties files within
+      build/webapps/yanel/WEB-INF/classes</echo>
+  </target>
+    
   <target name="init" description="Initialize all parameters and other settings" depends="dependencies">
     <echo>Building with ${ant.version} and Java version ${ant.java.version}</echo>
 
