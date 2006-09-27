@@ -352,7 +352,7 @@ public class YanelServlet extends HttpServlet {
             // releaseLock();
             return;
         } else {
-            log.warn("No parameter yanel.resource.usecase!");
+            log.info("No parameter yanel.resource.usecase!");
 
             String contentType = request.getContentType();
             if (contentType.indexOf("application/atom+xml") >= 0) {
