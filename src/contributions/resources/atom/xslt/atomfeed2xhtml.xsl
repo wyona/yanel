@@ -22,9 +22,7 @@
 <!--
   <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-{$name-without-suffix}.xml"/>
 -->
-<!--
   <link rel="introspection" type="application/atomserv+xml" href="introspection-{$name-without-suffix}.xml"/>
--->
   <meta content="application/xhtml+xml; charset=UTF-8" http-equiv="Content-Type"/>
   <title><xsl:value-of select="/atom:feed/atom:title"/> - Ulysses Demo</title>
 </head>
