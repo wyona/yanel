@@ -31,6 +31,16 @@
 <body>
 <h1><xsl:value-of select="/atom:feed/atom:title"/></h1>
 
+<p>
+Author: <xsl:value-of select="/atom:feed/atom:author"/>
+<br/>
+Update: <xsl:value-of select="/atom:feed/atom:updated"/>
+<br/>
+Link: <xsl:value-of select="/atom:feed/atom:link/@href"/>
+<br/>
+ID: <xsl:value-of select="/atom:feed/atom:id"/>
+</p>
+
 <h2>Entries</h2>
 <xsl:apply-templates select="/atom:feed/atom:entry"/>
 
