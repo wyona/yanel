@@ -38,7 +38,3 @@ ANT_HOME=$ORIGINAL_ANT_HOME
 #echo $ANT_HOME
 PATH=$ORIGINAL_PATH
 #echo $PATH
-
-echo "INFO: Configuration has been completed successfully :-)"
-echo "INFO: Remember to customize the properties files if needed."
-echo "INFO: Start building Yanel by executing build.sh"
