@@ -33,6 +33,7 @@ import org.apache.abdera.model.Entry;
 import org.apache.log4j.Category;
 
 import java.io.File;
+import java.util.Date;
 import java.util.Vector;
 
 import javax.xml.transform.Transformer;
@@ -46,6 +47,8 @@ import javax.xml.transform.stream.StreamResult;
 public class AtomFeedResource extends Resource implements ViewableV1 {
 
     private static Category log = Category.getInstance(AtomFeedResource.class);
+
+    Date feedUpdated = null;
 
     /**
      *
@@ -76,18 +79,6 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
             contentRepo = rp.getRepo();
 
-            // TODO: Add realm prefix, e.g. realm-prefix="ulysses-demo"
-            // NOTE: The schema is according to http://cocoon.apache.org/2.1/userdocs/directory-generator.html
-	    sb.append("<atom:feed yanel:path=\"" + path + "\" dir:name=\"" + entriesPath.getName() + "\" dir:path=\"" + entriesPath + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
-
-            sb.append("<atom:title>" + getFeedTitle(path) + "</atom:title>");
-            sb.append("<atom:link rel=\"self\" href=\"" + requestURL + "\"/>");
-            // TODO: Calculate date ...
-            sb.append("<atom:updated>2003-12-13T18:30:02Z</atom:updated>");
-            sb.append("<atom:author><atom:name>TODO</atom:name></atom:author>");
-            sb.append("<atom:id>urn:uuid:TODO</atom:id>");
-
-
             // TODO: Do not show the children with suffix .yanel-rti resp. make this configurable!
 	    // NOTE: Do not hardcode the .yanel-rti, but rather use Path.getRTIPath ...
             org.wyona.yarep.core.Path[] children = contentRepo.getChildren(entriesPath);
@@ -100,12 +91,16 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
                     if (contentRepo.isResource(children[i])) {
                         org.apache.abdera.model.Document doc = parser.parse(contentRepo.getInputStream(children[i]));
                         if (doc != null) {
-                            Entry entry = (Entry) doc.getRoot();
-                            if (entry != null) {
-                                entry.addLink(children[i].getName(), "edit");
-                                orderedEntries = addEntry(orderedEntries, entry);
-                            } else {
-                                log.error("Atom entry is null!" + children[i]);
+                            try {
+                                Entry entry = (Entry) doc.getRoot();
+                                if (entry != null) {
+                                    entry.addLink(children[i].getName(), "edit");
+                                    orderedEntries = addEntry(orderedEntries, entry);
+                                } else {
+                                    log.error("Atom entry is null!" + children[i]);
+                                }
+                            } catch(ClassCastException e) {
+                                log.warn(e + ": Does not seem to be an atom entry: " + children[i]);
                             }
                         } else {
                             log.error("Atom doc is null!" + children[i]);
@@ -114,8 +109,18 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
                 }
             } else {
                 log.error("Atom Parser is null!");
-	        sb.append("<exception>Atom parser is null!</exception>");
             }
+
+            // TODO: Add realm prefix, e.g. realm-prefix="ulysses-demo"
+            // NOTE: The schema is according to http://cocoon.apache.org/2.1/userdocs/directory-generator.html
+	    sb.append("<atom:feed yanel:path=\"" + path + "\" dir:name=\"" + entriesPath.getName() + "\" dir:path=\"" + entriesPath + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
+
+            sb.append("<atom:title>" + getFeedTitle(path) + "</atom:title>");
+            sb.append("<atom:link rel=\"self\" href=\"" + requestURL + "\"/>");
+            // TODO: Calculate date ...
+            sb.append("<atom:updated>" + feedUpdated + "</atom:updated>");
+            sb.append("<atom:author><atom:name>TODO</atom:name></atom:author>");
+            sb.append("<atom:id>urn:uuid:TODO</atom:id>");
 
             for (int i = 0; i < orderedEntries.size(); i++) {
                 Entry entry = (Entry) orderedEntries.elementAt(i);
@@ -127,47 +132,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
                 //writer.writeTo(entry, sw);
                 entry.writeTo(sw);
                 sb.append(sw.toString());
-/*
-	        sb.append("<entry xmlns=\"http://www.w3.org/2005/Atom\">");
-	        sb.append("<title>" + entry.getTitle() + "</title>");
-	        sb.append("<author><name>" + entry.getAuthor().getName() + "</name></author>");
-                // TODO: get id ...
-	        sb.append("" + entry.getLink("edit"));
-	        sb.append("<updated>" + entry.getUpdated() + "</updated>");
-	        sb.append("<published>" + entry.getPublished() + "</published>");
-	        sb.append("" + entry.getSummaryElement());
-	        sb.append("" + entry.getContentElement());
-                // TODO: get dublin core subject ...
-	        sb.append("</entry>");
-*/
             }
-
-/*
-            for (int i = 0; i < children.length; i++) {
-                if (contentRepo.isResource(children[i])) {
-	            sb.append("<dir:file path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
-
-                    java.io.InputStream entryIn = contentRepo.getInputStream(children[i]);
-                    java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
-                    byte[] buf = new byte[8192];
-                    int bytesR;
-                    while ((bytesR = entryIn.read(buf)) != -1) {
-                        baos.write(buf, 0, bytesR);
-                    }
-                    String entrySt = baos.toString();
-                    int endXMLDeclaration = entrySt.indexOf("?>");
-                    if (endXMLDeclaration >= 0) {
-	                sb.append("" + entrySt.substring(endXMLDeclaration + 2));
-                    } else {
-	                sb.append(entrySt);
-                    }
-                } else if (contentRepo.isCollection(children[i])) {
-	            sb.append("<dir:directory path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
-                } else {
-	            sb.append("<yanel:exception yanel:path=\"" + children[i] + "\"/>");
-                }
-            }
-*/
         } catch(Exception e) {
             log.error(e, e);
         }
@@ -330,7 +295,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
         try {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
 
-            org.wyona.yarep.core.Path entryPath = new org.wyona.yarep.core.Path(getEntriesPath(path).toString() + "/" + new java.util.Date().getTime() + ".xml");
+            org.wyona.yarep.core.Path entryPath = new org.wyona.yarep.core.Path(getEntriesPath(path).toString() + "/" + new Date().getTime() + ".xml");
             java.io.OutputStream out = rp.getRepo().getOutputStream(entryPath);
             byte buffer[] = new byte[8192];
             int bytesRead;
@@ -347,10 +312,10 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
     }
 
     /**
-     * Order entries by published date
+     * Order entries by published date and set feed updated
      */
     private Vector addEntry(Vector orderedEntries, Entry entry) throws Exception {
-        java.util.Date datePublished = entry.getPublished();
+        Date datePublished = entry.getPublished();
         if (datePublished != null) {
             long timePublished = datePublished.getTime();
             int pos = 0;
@@ -365,6 +330,16 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
         } else {
             log.error("Entry will be ignored because entry does not have a published date: " + entry.getLink("edit").getHref());
         }
+
+        Date entryUpdated = entry.getUpdated();
+        if (entryUpdated != null) {
+            long timeUpdated = entryUpdated.getTime();
+            if (feedUpdated == null) feedUpdated = entryUpdated;
+            if (timeUpdated > feedUpdated.getTime()) {
+                feedUpdated = entryUpdated;
+            }
+        }
+
         return orderedEntries;
     }
 }
