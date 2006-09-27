@@ -43,14 +43,14 @@ import javax.xml.transform.stream.StreamResult;
 /**
  *
  */
-public class AtomResource extends Resource implements ViewableV1 {
+public class AtomFeedResource extends Resource implements ViewableV1 {
 
-    private static Category log = Category.getInstance(AtomResource.class);
+    private static Category log = Category.getInstance(AtomFeedResource.class);
 
     /**
      *
      */
-    public AtomResource() {
+    public AtomFeedResource() {
     }
 
     /**

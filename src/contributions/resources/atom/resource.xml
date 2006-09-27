@@ -3,7 +3,7 @@
 <resource xmlns="http://www.wyona.org/yanel/1.0"
   name="atom"
   namespace="http://www.wyona.org/yanel/resource/1.0"
-  class="org.wyona.yanel.impl.resources.AtomResource"
+  class="org.wyona.yanel.impl.resources.AtomFeedResource"
   >
 <description>
 Atom Feed Generator
