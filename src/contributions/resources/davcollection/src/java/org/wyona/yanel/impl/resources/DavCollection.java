@@ -81,13 +81,6 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
                 log.warn("Use parent of path: " + p);
             }
          
-            
-            this.propfindAddResource(request.getContextPath() + path.toString(), 
-                    path.getName(), 
-                    WEBDAV_EL_COLL,
-                    "httpd/unix-directory",
-                    new Date(contentRepo.getLastModified(p)).toGMTString());
-            
             // TODO: Do not show the children with suffix .yanel-rti resp. make
             // this configurable!
             // NOTE: Do not hardcode the .yanel-rti, but rather use
@@ -96,14 +89,14 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
             org.wyona.yarep.core.Path[] children = contentRepo.getChildren(p);
             for (int i = 0; i < children.length; i++) {
                 if (contentRepo.isResource(children[i])) {
-                    this.propfindAddResource(request.getContextPath() + children[i].toString(), 
+                    this.propfindAddResource(request.getContextPath() + "/" + contentRepo.getID() + children[i].toString(), 
                             children[i].getName(), 
                             WEBDAV_EL_RES,
                             "httpd/unix-directory",
                             new Date(contentRepo.getLastModified(children[i])).toGMTString());
                     
                 } else if (contentRepo.isCollection(children[i])) {
-                    this.propfindAddResource(request.getContextPath() + children[i].toString(), 
+                    this.propfindAddResource(request.getContextPath() + "/" + contentRepo.getID() + children[i].toString(),
                             children[i].getName(), 
                             WEBDAV_EL_COLL,
                             "httpd/unix-directory",
