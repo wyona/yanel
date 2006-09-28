@@ -165,6 +165,7 @@
     <xsl:choose>
       <!-- external links -->
       
+      <!--
       <xsl:when test="@type = 'internal' and (@suffix = 'gif' or @suffix = 'jpg' or @suffix = 'png')">
         <img src="{$contextprefix}/{$publication}/{$area}{@href}.{@suffix}" alt="{@label}"/>
       </xsl:when>
@@ -177,8 +178,11 @@
       <xsl:when test="@type='external'">
         <a href="{@href}.{@suffix}"><xsl:value-of select="@href"/></a><img src="{$contextprefix}/{$publication}/{$area}/out.png?lenya.module=wiki" alt="external link"/>
       </xsl:when>
+      -->
       
+      <!-- TODO: What are these when(s) all good for?! -->
       <!-- internal links -->
+<!--
       <xsl:when test="@label and @valid ='false'">
         <a class="brokenlink" alt="Broken Link"><xsl:value-of select="@label"/></a>
       </xsl:when>
@@ -198,10 +202,18 @@
       <xsl:when test="@label and @type = 'internal'">
         <a href="{$contextprefix}/{$publication}/{$area}{@href}.html"><xsl:value-of select="@label"/></a>
       </xsl:when>
+-->
       
       
       <xsl:otherwise>
-        <a href="{$contextprefix}/{$publication}/{$area}{@href}.html"><xsl:value-of select="@href"/></a>
+        <xsl:choose>
+          <xsl:when test="@label">
+            <a href="{@href}"><xsl:value-of select="@label"/></a>
+          </xsl:when>
+          <xsl:otherwise>
+            <a href="{@href}"><xsl:value-of select="@href"/></a>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
