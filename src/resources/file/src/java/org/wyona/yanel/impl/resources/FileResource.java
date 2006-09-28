@@ -99,6 +99,8 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
             log.debug("SUFFIX: " + suffix);
             if (suffix.equals("html")) {
                 mimeType = "text/html";
+            } else if (suffix.equals("htm")) {
+                mimeType = "text/html";
             } else if (suffix.equals("xhtml")) {
                 mimeType = "application/xhtml+xml";
             } else if (suffix.equals("xml")) {
