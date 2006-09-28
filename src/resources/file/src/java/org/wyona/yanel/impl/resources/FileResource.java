@@ -107,6 +107,8 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
                 mimeType = "application/xml";
             } else if (suffix.equals("css")) {
                 mimeType = "text/css";
+            } else if (suffix.equals("js")) {
+                mimeType = "application/x-javascript";
             } else if (suffix.equals("png")) {
                 mimeType = "image/png";
             } else if (suffix.equals("jpg")) {
