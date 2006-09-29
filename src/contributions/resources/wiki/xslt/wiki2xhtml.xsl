@@ -44,6 +44,12 @@
       </body>
     </html>
   </xsl:template>
+
+  <xsl:template match="/">
+    <html>
+      <body>Where has the namespace gone?</body>
+    </html>
+  </xsl:template>
   
   <xsl:template match="wiki:wiki">
     <xsl:apply-templates/>
