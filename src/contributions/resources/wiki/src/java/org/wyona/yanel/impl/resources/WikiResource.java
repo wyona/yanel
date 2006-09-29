@@ -123,8 +123,7 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
 */
 
             Transformer transformer = null;
-            if(true) {
-            //if(viewId != null && viewId.equals("source")) {
+            if(viewId != null && viewId.equals("source")) {
                 transformer = TransformerFactory.newInstance().newTransformer();
                 defaultView.setMimeType(XML_MIME_TYPE);
             } else {
