@@ -123,8 +123,8 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
 */
 
             Transformer transformer = null;
-            //if(true) {
-            if(viewId != null && viewId.equals("source")) {
+            if(true) {
+            //if(viewId != null && viewId.equals("source")) {
                 transformer = TransformerFactory.newInstance().newTransformer();
                 defaultView.setMimeType(XML_MIME_TYPE);
             } else {
@@ -208,22 +208,21 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
                     Object option = kit.next();
                     Object value = node.optionMap.get(option);
                     element.appendChild(doc.createTextNode(value.toString()));
+                    //element.setAttributeNS(NAME_SPACE, "value", value.toString());
                 }
             }
         } else {
             Element child = (Element) element.appendChild(doc.createElementNS(NAME_SPACE, node.toString()));
 
-/*
             if (!node.optionMap.isEmpty()) {
                 Set keySet = node.optionMap.keySet();
                 Iterator kit = keySet.iterator();
                 while (kit.hasNext()) {
                     Object option = kit.next();
                     Object value = node.optionMap.get(option);
-                    sb.append(" " + option.toString() + "=" + "\"" + value.toString() + "\"");
+                    element.setAttributeNS(NAME_SPACE, option.toString(), value.toString());
                 }
             }
-*/
 
             if (node.jjtGetNumChildren() > 0) {
                 for (int i = 0; i < node.jjtGetNumChildren(); i++)
