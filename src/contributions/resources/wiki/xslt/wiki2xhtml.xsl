@@ -55,10 +55,10 @@
   
   <xsl:template match="wiki:Paragraph">
     <p>
-      <xsl:apply-templates select="wiki:Title"/>
 <!--
-      <xsl:apply-templates/>
+      <xsl:apply-templates select="wiki:Title"/>
 -->
+      <xsl:apply-templates/>
     </p>
   </xsl:template>
   
@@ -109,6 +109,8 @@
     </ul>
   </xsl:template>
   
+<!-- TODO: Something is fishy here ... it's probably the depth attribute causing the problem ... -->
+<!--
   <xsl:template match="wiki:BListItem">
     <xsl:param name="depth" select="@depth" />
     <xsl:choose>
@@ -124,6 +126,7 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+-->
   
   <xsl:template match="wiki:NList">
     <ol>
@@ -131,6 +134,8 @@
     </ol>
   </xsl:template>
   
+<!-- TODO: Something is fishy here ... -->
+<!--
   <xsl:template match="wiki:NListItem">
     <xsl:param name="depth" select="@depth" />
     <xsl:choose>
@@ -146,6 +151,7 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+-->
   
   <xsl:template match="wiki:Table">
     <table style="border:1px #000000 solid; border-collapse: collapse;">
