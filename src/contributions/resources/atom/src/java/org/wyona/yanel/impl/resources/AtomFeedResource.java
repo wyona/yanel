@@ -152,6 +152,10 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
 
         try {
             Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, contentRepo));
+            transformer.setParameter("yanel.path.name", path.getName());
+            transformer.setParameter("yanel.path", path.toString());
+            //transformer.setParameter("yanel.back2context", backToRoot(path, ""));
+            //transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
             // TODO: Is this the best way to generate an InputStream from an OutputStream?
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
             transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
