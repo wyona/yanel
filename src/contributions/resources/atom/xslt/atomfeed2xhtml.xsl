@@ -19,6 +19,12 @@
 <xsl:template match="/">
 <html>
 <head>
+  <xsl:comment>
+  yanel.path.name = <xsl:value-of select="$yanel.path.name"/>,
+  yanel.path = <xsl:value-of select="$yanel.path"/>,
+  yanel.back2context = <xsl:value-of select="$yanel.back2context"/>,
+  yanel.back2realm = <xsl:value-of select="$yanel.back2realm"/>,
+  </xsl:comment>
 <!--
   <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-{$name-without-suffix}.xml"/>
 -->
