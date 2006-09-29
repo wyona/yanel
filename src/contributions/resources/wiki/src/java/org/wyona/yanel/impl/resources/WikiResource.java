@@ -77,6 +77,7 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
      */
     public WikiResource() {
         dbf = DocumentBuilderFactory.newInstance();
+        //dbf = new org.apache.xerces.jaxp.DocumentBuilderFactoryImpl();
         dbf.setNamespaceAware(true);
     }
 
@@ -102,9 +103,13 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
             SimpleNode node = wikiin.WikiBody();
 
             DocumentBuilder parser = dbf.newDocumentBuilder();
+            log.error("DEBUG: Namespace aware: " + parser.isNamespaceAware());
+/*
             DOMImplementation impl = parser.getDOMImplementation();
             DocumentType doctype = null;
             Document document = impl.createDocument(NAME_SPACE, "wiki", doctype);
+*/
+            Document document = parser.parse(new java.io.StringBufferInputStream("<wiki:wiki xmlns:wiki=\""+NAME_SPACE+"\" xmlns=\""+NAME_SPACE+"\"></wiki:wiki>"));
             Element rootElement = document.getDocumentElement();
             traverse(document, rootElement, node);
 
@@ -118,6 +123,7 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
 */
 
             Transformer transformer = null;
+            //if(true) {
             if(viewId != null && viewId.equals("source")) {
                 transformer = TransformerFactory.newInstance().newTransformer();
                 defaultView.setMimeType(XML_MIME_TYPE);
