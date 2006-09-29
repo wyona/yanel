@@ -297,13 +297,14 @@
     <copy todir="${tomcat1.webapps.dir}/${servlet.context.prefix}">
       <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
     </copy>
-
+<!--
     <fail message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar). Copy lib (build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar) to Tomcat's endorsed directory.">
       <condition><not><available file="${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar"/></not></condition>
     </fail>
     <fail message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar). Copy lib (build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar) to Tomcat's endorsed directory.">
       <condition><not><available file="${tomcat1.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar"/></not></condition>
     </fail>
+-->
   </target>
 
   <target name="deploy-to-tomcat-cluster-node2" if="property-tomcat-cluster-node2-is-set" description="Deploy webapp to Tomcat cluster node 2">

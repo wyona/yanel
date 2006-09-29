@@ -20,12 +20,10 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
     private static Category log = Category.getInstance(DavCollection.class);
     
     // WebDAV namespace definition
-    
-    // NOTE: We use the DavCollection in the context of Neutron10 so
-    // the namespaces are different.
-    private static final String WEBDAV_NS_PREFIX = ""; // "D"
-    private static final String WEBDAV_PREFIX = ""; //WEBDAV_NS_PREFIX + ":";
-    private static final String WEBDAV_NS_URI = "http://www.wyona.org/neutron/1.0"; //"DAV:";
+
+    private static final String WEBDAV_NS_PREFIX = "D";
+    private static final String WEBDAV_PREFIX = WEBDAV_NS_PREFIX + ":";
+    private static final String WEBDAV_NS_URI = "DAV:";
     
     // WebDav element definitions
     private static final String WEBDAV_EL_MSTATUS   = "multistatus";
