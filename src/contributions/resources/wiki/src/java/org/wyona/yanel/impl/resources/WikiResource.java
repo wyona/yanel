@@ -62,8 +62,10 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
     private static Category log = Category.getInstance(WikiResource.class);
 
     private final String XML_MIME_TYPE = "application/xml";
+    private final String NAME_SPACE = "http://apache.org/cocoon/wiki/1.0";
 
-    private Document document = null;
+    private DocumentBuilderFactory dbf = null;
+    //private Document document = null;
 
     private File input = null;
 
@@ -75,6 +77,8 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
      * 
      */
     public WikiResource() {
+        dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
     }
 
     /**
@@ -98,33 +102,39 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
                     .getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
             SimpleNode node = wikiin.WikiBody();
 
+            DocumentBuilder parser = dbf.newDocumentBuilder();
+            DOMImplementation impl = parser.getDOMImplementation();
+            DocumentType doctype = null;
+            Document document = impl.createDocument(NAME_SPACE, "wiki", doctype);
+            Element rootElement = document.getDocumentElement();
+            traverse(document, rootElement, node);
+
             StringBuffer sb = new StringBuffer("<?xml  version=\"1.0\"?>");
             int indent = 0;
-            sb.append("<wiki xmlns=\"http://apache.org/cocoon/wiki/1.0\">");
+            sb.append("<wiki xmlns=\"" + NAME_SPACE + "\">");
             traverse(sb, node, indent);
             sb.append("</wiki>");
             log.debug(sb);
 
-
             if(viewId != null && viewId.equals("source")) {
-            defaultView.setInputStream(new java.io.StringBufferInputStream(sb.toString()));
-            defaultView.setMimeType(XML_MIME_TYPE);
+                defaultView.setInputStream(new java.io.StringBufferInputStream(sb.toString()));
+                defaultView.setMimeType(XML_MIME_TYPE);
             } else {
-            try {
-                Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
-                transformer.setParameter("yanel.path.name", path.getName());
-                transformer.setParameter("yanel.path", path.toString());
+                try {
+                    Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
+                    transformer.setParameter("yanel.path.name", path.getName());
+                    transformer.setParameter("yanel.path", path.toString());
 
-                // TODO: Is this the best way to generate an InputStream from an OutputStream?
-                java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-                transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
-                defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
-                defaultView.setMimeType("application/xhtml+xml");
-                //defaultView.setMimeType(getMimeType(path));
-                defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
-            } catch (Exception e) {
-                log.error(e);
-            }
+                    // TODO: Is this the best way to generate an InputStream from an OutputStream?
+                    java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+                    transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
+                    defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+                    defaultView.setMimeType("application/xhtml+xml");
+                    //defaultView.setMimeType(getMimeType(path));
+                    defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+                } catch (Exception e) {
+                    log.error(e);
+                }
             }
 
             return defaultView;
@@ -233,7 +243,7 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
             File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
                     .getParentFile()
                     .getAbsolutePath(), "xslt" + File.separator + "wiki2xhtml.xsl");
-            log.error("DEBUG: XSLT file: " + xsltFile);
+            log.debug("XSLT file: " + xsltFile);
             return new StreamSource(xsltFile);
         }
     }
@@ -259,7 +269,7 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
                     return new Path(xsltPath);
                 }
             }
-            log.error("No XSLT Path within: " + rpRTI.getPath());
+            log.info("No XSLT Path within: " + rpRTI.getPath());
         } catch (Exception e) {
             log.warn(e);
         }
@@ -296,34 +306,6 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
 
         // NOTE: Assuming fallback re dir2xhtml.xsl ...
         return "application/xhtml+xml";
-    }
-*/
-
-/*
-    private InputStream getInputStream(File wikifile) {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        try {
-            DocumentBuilder parser = dbf.newDocumentBuilder();
-            DOMImplementation impl = parser.getDOMImplementation();
-            DocumentType doctype = null;
-            document = impl.createDocument("http://www.wyona.org/yanel/1.0", "wiki", doctype);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        // create root element
-        Element rootElement = document.getDocumentElement();
-        try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-            Transformer transformer = TransformerFactory.newInstance()
-                    .newTransformer(getXSLTStreamSource(path, repository));
-            transformer.transform(new javax.xml.transform.dom.DOMSource(document),
-                    new StreamResult(byteArrayOutputStream));
-            return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        return null;
     }
 */
 }
