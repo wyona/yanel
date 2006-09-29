@@ -165,9 +165,12 @@ public class NutchResource extends Resource implements ViewableV1 {
         dbf.setNamespaceAware(true);
         try {
             DocumentBuilder parser = dbf.newDocumentBuilder();
+/*
             DOMImplementation impl = parser.getDOMImplementation();
             DocumentType doctype = null;
             document = impl.createDocument(NAME_SPACE, "nutch", doctype);
+*/
+            document = parser.parse(new java.io.StringBufferInputStream("<nutch:nutch xmlns:nutch=\""+NAME_SPACE+"\" xmlns=\""+NAME_SPACE+"\"/>"));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -219,12 +222,15 @@ public class NutchResource extends Resource implements ViewableV1 {
             DOMResult xmlResult = new DOMResult();
             transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
             InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            return inputStream;
             
+/*
             I18nTransformer i18nTransformer = new I18nTransformer(messages, language);
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(inputStream, i18nTransformer);
             
             return i18nTransformer.getInputStream();
+*/
             
         } catch (Exception e) {
             log.error(e.getMessage(), e);
