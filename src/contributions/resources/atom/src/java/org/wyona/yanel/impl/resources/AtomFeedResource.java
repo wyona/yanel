@@ -29,6 +29,7 @@ import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
 
+import org.apache.abdera.model.AtomDate;
 import org.apache.abdera.model.Entry;
 import org.apache.log4j.Category;
 
@@ -118,7 +119,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
             sb.append("<atom:title>" + getFeedTitle(path) + "</atom:title>");
             sb.append("<atom:link rel=\"self\" href=\"" + requestURL + "\"/>");
             // TODO: Calculate date ...
-            sb.append("<atom:updated>" + feedUpdated + "</atom:updated>");
+            sb.append("<atom:updated>" + AtomDate.format(feedUpdated) + "</atom:updated>");
             sb.append("<atom:author><atom:name>TODO</atom:name></atom:author>");
             sb.append("<atom:id>urn:uuid:TODO</atom:id>");
 
