@@ -206,8 +206,8 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
                 while (kit.hasNext()) {
                     Object option = kit.next();
                     Object value = node.optionMap.get(option);
-                    element.appendChild(doc.createTextNode(value.toString()));
-                    //element.setAttributeNS(NAME_SPACE, "value", value.toString());
+                    Element textNode = (Element) element.appendChild(doc.createElementNS(NAME_SPACE, "Text"));
+                    textNode.setAttributeNS(NAME_SPACE, "value", value.toString());
                 }
             }
         } else {
@@ -219,7 +219,7 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
                 while (kit.hasNext()) {
                     Object option = kit.next();
                     Object value = node.optionMap.get(option);
-                    element.setAttributeNS(NAME_SPACE, option.toString(), value.toString());
+                    child.setAttributeNS(NAME_SPACE, option.toString(), value.toString());
                 }
             }
 
