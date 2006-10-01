@@ -231,24 +231,27 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
      * Get property from RTI
      */
     private String getProperty(Path path, String name, String defaultValue) {
-        String property = defaultValue;
+        String propertyValue = defaultValue;
         try {
             // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
             RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
 
+            String property = null;
             while ((property = br.readLine()) != null) {
                 if (property.indexOf(name + ":") == 0) {
-                    property = property.substring(name.length() + 2);
-                    log.info("*" + property + "*");
-                    return property;
+                    propertyValue = property.substring(name.length() + 2);
+                    log.info("*" + propertyValue + "*");
+                    return propertyValue;
                 }
             }
         } catch(Exception e) {
             log.warn(e);
         }
 
-        return property;
+        log.error("DEBUG: Default value: " + propertyValue);
+
+        return propertyValue;
     }
 
     /**
