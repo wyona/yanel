@@ -249,8 +249,6 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
             log.warn(e);
         }
 
-        log.error("DEBUG: Default value: " + propertyValue);
-
         return propertyValue;
     }
 
@@ -289,6 +287,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
     }
 
     /**
+     * Is this method obsolete?
      * @param path feed path
      * @param in entry content
      * @return entry path
@@ -304,7 +303,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
             while ((bytesRead = in.read(buffer)) != -1) {
                out.write(buffer, 0, bytesRead);
             }
-            log.error("DEBUG: Atom entry has been created: " + entryPath);
+            log.info("Atom entry has been created: " + entryPath);
 
             return new Path(entryPath.toString());
         } catch(Exception e) {
