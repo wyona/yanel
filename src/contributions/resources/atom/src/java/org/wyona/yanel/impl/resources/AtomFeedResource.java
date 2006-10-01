@@ -120,7 +120,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
             sb.append("<atom:link rel=\"self\" href=\"" + requestURL + "\"/>");
             // TODO: Calculate date ...
             sb.append("<atom:updated>" + AtomDate.format(feedUpdated) + "</atom:updated>");
-            sb.append("<atom:author><atom:name>TODO</atom:name></atom:author>");
+            sb.append("<atom:author><atom:name>" + getProperty(path, "author", "WARNING: No author specified!") + "</atom:name></atom:author>");
             sb.append("<atom:id>urn:uuid:TODO</atom:id>");
 
             for (int i = 0; i < orderedEntries.size(); i++) {
@@ -203,7 +203,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
      *
      */
     private Path getXSLTPath(Path path) {
-        String xsltPath = getProperty(path, "xslt");
+        String xsltPath = getProperty(path, "xslt", null);
         if (xsltPath != null) return new Path(xsltPath);
         log.info("No XSLT Path within: " + path);
         return null;
@@ -213,7 +213,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
      *
      */
     private String getMimeType(Path path) {
-        String mimeType = getProperty(path, "mime-type");
+        String mimeType = getProperty(path, "mime-type", null);
         if (mimeType != null) return mimeType;
 
         // NOTE: Assuming fallback re dir2xhtml.xsl ...
@@ -224,20 +224,14 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
      *
      */
     private String getFeedTitle(Path path) {
-        String feedTitle = getProperty(path, "feed-title");
-        if (feedTitle != null) {
-            return feedTitle;
-        } else {
-            // TODO: Return path of yanel-rti ...
-            return "WARNING: No feed title specified!";
-        }
+        return getProperty(path, "feed-title", "WARNING: No feed title specified!");
     }
 
     /**
-     *
+     * Get property from RTI
      */
-    private String getProperty(Path path, String name) {
-        String property = null;
+    private String getProperty(Path path, String name, String defaultValue) {
+        String property = defaultValue;
         try {
             // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
             RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
@@ -261,7 +255,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
      *
      */
     private org.wyona.yarep.core.Path getEntriesPath(Path feedPath) {
-        String entriesPathString = getProperty(feedPath, "entries-path");
+        String entriesPathString = getProperty(feedPath, "entries-path", null);
 
 	if (entriesPathString != null) {
             return new org.wyona.yarep.core.Path(entriesPathString);
