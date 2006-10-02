@@ -31,9 +31,18 @@
       <echo>INFO: Do not compile: <xsl:value-of select="@src"/></echo>
     </xsl:when>
     <xsl:otherwise>
+      <xsl:choose>
+        <xsl:when test="starts-with(@src, '/')">
+    <ant inheritAll="false" antfile="{@src}/build.xml" target="compile">
+      <property name="yanel.source.version" value="{$yanel.source.version}"/>
+    </ant>
+        </xsl:when>
+        <xsl:otherwise>
     <ant inheritAll="false" antfile="${{build.dir}}/{@src}build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
     </ant>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:for-each>
@@ -41,9 +50,18 @@
 
   <target name="deploy-resources" description="Deploy resources" depends="init">
 <xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
+    <xsl:choose>
+      <xsl:when test="starts-with(@src, '/')">
+    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
+      <fileset dir="{@src}/build/lib"/>
+    </copy>
+      </xsl:when>
+      <xsl:otherwise>
     <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
       <fileset dir="${{build.dir}}/{@src}/build/lib"/>
     </copy>
+      </xsl:otherwise>
+    </xsl:choose>
 </xsl:for-each>
   </target>
 
@@ -62,11 +80,22 @@
 
   <target name="copy-resources-dependencies" description="Copy dependencies of resources" depends="init">
 <xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
-    <ant inheritAll="false" antfile="${{build.dir}}/{@src}build.xml" target="copy-dependencies">
+    <xsl:choose>
+      <xsl:when test="starts-with(@src, '/')">
+    <ant inheritAll="false" antfile="{@src}/build.xml" target="copy-dependencies">
       <property name="build.dir" value="${{build.dir}}"/>
       <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
     </ant>
+      </xsl:when>
+      <xsl:otherwise>
+    <ant inheritAll="false" antfile="${{build.dir}}/{@src}/build.xml" target="copy-dependencies">
+      <property name="build.dir" value="${{build.dir}}"/>
+      <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
+      <property name="yanel.source.version" value="{$yanel.source.version}"/>
+    </ant>
+      </xsl:otherwise>
+    </xsl:choose>
 </xsl:for-each>
   </target>
 </project>
