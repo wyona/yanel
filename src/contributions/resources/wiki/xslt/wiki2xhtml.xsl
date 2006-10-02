@@ -55,9 +55,6 @@
   
   <xsl:template match="wiki:Paragraph">
     <p>
-<!--
-      <xsl:apply-templates select="wiki:Title"/>
--->
       <xsl:apply-templates/>
     </p>
   </xsl:template>
@@ -105,14 +102,12 @@
   
   <xsl:template match="wiki:BList">
     <ul>
-      <xsl:apply-templates select="wiki:BListItem"></xsl:apply-templates>
+      <xsl:apply-templates/>
     </ul>
   </xsl:template>
-  
-<!-- TODO: Something is fishy here ... it's probably the depth attribute causing the problem ... -->
-<!--
+ 
   <xsl:template match="wiki:BListItem">
-    <xsl:param name="depth" select="@depth" />
+    <xsl:param name="depth" select="number(@wiki:depth)" />
     <xsl:choose>
       <xsl:when test="$depth &lt;= 1">
         <li><xsl:apply-templates /></li>
@@ -126,18 +121,16 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
--->
+
   
   <xsl:template match="wiki:NList">
     <ol>
-      <xsl:apply-templates select="wiki:NListItem"></xsl:apply-templates>
+      <xsl:apply-templates/>
     </ol>
   </xsl:template>
   
-<!-- TODO: Something is fishy here ... -->
-<!--
   <xsl:template match="wiki:NListItem">
-    <xsl:param name="depth" select="@depth" />
+    <xsl:param name="depth" select="@wiki:depth" />
     <xsl:choose>
       <xsl:when test="$depth &lt;= 1">
         <li><xsl:apply-templates /></li>
@@ -151,7 +144,6 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
--->
   
   <xsl:template match="wiki:Table">
     <table style="border:1px #000000 solid; border-collapse: collapse;">
@@ -216,11 +208,11 @@
       
       <xsl:otherwise>
         <xsl:choose>
-          <xsl:when test="@label">
-            <a href="{@href}"><xsl:value-of select="@label"/></a>
+          <xsl:when test="@wiki:label">
+            <a href="{@href}"><xsl:value-of select="@wiki:label"/></a>
           </xsl:when>
           <xsl:otherwise>
-            <a href="{@href}"><xsl:value-of select="@href"/></a>
+            <a href="{@href}"><xsl:value-of select="@wiki:href"/></a>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:otherwise>
@@ -228,11 +220,11 @@
   </xsl:template>
   
   <xsl:template match="wiki:Text">
-    <xsl:value-of select="@value"/>
+    <xsl:value-of select="@wiki:value"/>
   </xsl:template>
   
   <xsl:template match="wiki:PlainText">
-    <xsl:value-of select="@value"/>
+    <xsl:value-of select="@wiki:value"/>
   </xsl:template>
   
   <xsl:template match="wiki:Plain">
