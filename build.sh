@@ -21,7 +21,7 @@ fi
 # ----- Set Environment Variables
 ORIGINAL_ANT_HOME=$ANT_HOME
 unset ANT_HOME
-ANT_HOME=$PWD/tools/apache-ant-1.6.2
+ANT_HOME=$PWD/tools/apache-ant-1.6.5
 #echo $ANT_HOME
 
 ORIGINAL_PATH=$PATH
