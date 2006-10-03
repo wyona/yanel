@@ -60,6 +60,13 @@
     <mkdir dir="${build.dir}"/>
     <property name="classes.dir" location="${build.dir}/classes"/>
     <property name="log4j.path" location="${build.dir}/logs"/>
+    <property name="log4j.file" location="${log4j.path}/log4j.log"/>
+    <path id="log4j.file.ref">
+      <pathelement location="${log4j.file}"/>
+    </path>
+    <pathconvert targetos="unix" property="log4j.file.forward.slashes" refid="log4j.file.ref">
+    </pathconvert>
+    <echo>Log4j file with forward slashes: ${log4j.file.forward.slashes}</echo>
 
 
     <path id="classpath">
@@ -256,11 +263,11 @@
     <!-- NOTE: No exception shall be thrown even if one does not build the javadocs -->
     <mkdir dir="${build.dir}/javadoc"/>
 
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.path}">
-      <replacetoken>@LOG4J_PATH@</replacetoken>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.file.forward.slashes}">
+      <replacetoken>@LOG4J_FILE@</replacetoken>
     </replace>
     <mkdir dir="${log4j.path}"/>
-    <touch file="${log4j.path}/log4j.log"/>
+    <touch file="${log4j.file}"/>
 
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
       <fileset refid="maven2.fileset"/>
