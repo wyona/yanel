@@ -254,6 +254,7 @@
       <replacetoken>@LOG4J_PATH@</replacetoken>
     </replace>
     <mkdir dir="${log4j.path}"/>
+    <touch file="${log4j.path}/log4j.log"/>
 
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
       <fileset refid="maven2.fileset"/>
