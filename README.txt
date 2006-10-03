@@ -14,9 +14,9 @@
     ---------------
 
     1) configure
-    2) build
+    2) build (NOTE: You might have to configure a proxy. Please see below for more details)
     3) yanel
-    4) http://127.0.0.1:8888 (IMPORTANT: Copy xml-apis-1.3.02.jar and xercesImpl-2.7.1.jar into endorsed dir of Tomcat)
+    4) http://127.0.0.1:8080
 
 
     More Information
@@ -32,3 +32,11 @@
     2) Build Yanel and Resources: ./build.sh (OPTIONAL: ./build.sh clean)
     3) Test resource: ./yanel.sh
     4) Restart Tomcat
+
+
+    Proxy Configuration
+    -------------------
+
+    If your network connection requires you to use an HTTP proxy,
+    then set your proxy configuration in the file called "(local.)build.properties"
+    located in "src/build".
