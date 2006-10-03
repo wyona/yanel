@@ -2,7 +2,19 @@
 
 <project name="yanel-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
-  <target name="dependencies" description="Dependencies">
+  <target name="probe-proxy">
+    <echo>Check if proxy has been set ...</echo>
+    <condition property="proxy.enabled">
+      <isset property="proxy.host"/>
+    </condition>
+  </target>
+
+  <target name="proxy" depends="probe-proxy" if="proxy.enabled">
+    <echo>Set proxy ...</echo>
+    <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}" proxyuser="${proxy.user}" proxypassword="${proxy.pass}"/>
+  </target>
+
+  <target name="dependencies" description="Dependencies" depends="proxy">
     <!-- INFO: http://maven.apache.org/ant-tasks.html -->
     <artifact:remoteRepository id="wyona.remote.repository" url="http://www.wyona.org/maven2/"/>
 
