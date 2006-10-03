@@ -4,10 +4,7 @@
 
 <!-- NOTE: compile is true by default -->
 <resources>
-  <!-- HEADSUP: 
-  Mind the trailing / in the @src!!! 
-  Do not forget it, since the resource get registered like:
-  {@src}resource.xml. --> 
+  <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
   <resource src="../src/resources/file/"                        compile="true"/>
   <resource src="../src/resources/directory/"                   compile="true"/>
   <resource src="../src/resources/tape/"                        compile="true"/>
