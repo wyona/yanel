@@ -38,7 +38,7 @@
     </ant>
         </xsl:when>
         <xsl:otherwise>
-    <ant inheritAll="false" antfile="${{build.dir}}/{@src}build.xml" target="compile">
+    <ant inheritAll="false" antfile="${{build.dir}}/{@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
     </ant>
         </xsl:otherwise>
