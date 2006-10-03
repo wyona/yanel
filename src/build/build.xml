@@ -46,14 +46,20 @@
   <target name="init" description="Initialize all parameters and other settings" depends="dependencies">
     <echo>Building with ${ant.version} and Java version ${ant.java.version}</echo>
 
+<!--
     <dirname property="build.src.dir" file="${ant.file}"/>
     <dirname property="src.dir" file="${build.src.dir}"/>
     <dirname property="yanel.home.dir" file="${src.dir}"/>
+-->
+    <property name="yanel.home.dir" location="../../"/>
+<!--
+    <echo>Yanel Home Dir: ${yanel.home.dir}</echo>
+-->
 
-    <property name="build.dir" value="${yanel.home.dir}/build"/>
+    <property name="build.dir" location="${yanel.home.dir}/build"/>
     <mkdir dir="${build.dir}"/>
-    <property name="classes.dir" value="${build.dir}/classes"/>
-    <property name="log4j.path" value="${build.dir}/logs"/>
+    <property name="classes.dir" location="${build.dir}/classes"/>
+    <property name="log4j.path" location="${build.dir}/logs"/>
 
 
     <path id="classpath">
