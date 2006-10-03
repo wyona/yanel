@@ -11,7 +11,7 @@ if [ "$JAVA_HOME" = "" ];then
   echo "       Have you installed JDK (Java Development Kit)? If so, then set JAVA_HOME ..."
   echo "       MacOS X : setenv JAVA_HOME /usr"
   echo "       Linux   : export JAVA_HOME=/usr/local/j2sdk-..."
-  echo "       Windows : Click Start ..."
+  echo "       Windows : Click Start, click 'My Computer', right click on window, select 'Properties', click the 'Advanced' tab, click 'Environment Variables'"
   exit 1
 fi
 
