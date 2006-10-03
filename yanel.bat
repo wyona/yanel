@@ -2,7 +2,7 @@
 
 rem ----- Ignore system ANT_HOME variable
 set ORIGINAL_ANT_HOME=%ANT_HOME%
-set ANT_HOME=tools\apache-ant-1.6.2
+set ANT_HOME=tools\apache-ant-1.6.5
 
 call %ANT_HOME%\bin\ant -version
 rem call %ANT_HOME%\bin\ant -f src\build\build.xml
