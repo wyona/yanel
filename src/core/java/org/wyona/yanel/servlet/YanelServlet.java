@@ -19,6 +19,7 @@ import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
+import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
@@ -59,6 +60,7 @@ public class YanelServlet extends HttpServlet {
     PolicyManager pm;
     IdentityManager im;
     Map map;
+    Yanel yanel;
 
     private static String IDENTITY_KEY = "identity";
 
@@ -83,6 +85,8 @@ public class YanelServlet extends HttpServlet {
 
         MapFactory mf = MapFactory.newInstance();
         map = mf.newMap();
+
+        yanel = new Yanel();
     }
 
     /**
@@ -198,7 +202,10 @@ public class YanelServlet extends HttpServlet {
             try {
                 res = rtr.newResource(rti);
                 if (res != null) {
+                    // TODO: This has been already set by ResourceTypeRegistry
                     res.setRTD(rtd);
+                    res.setYanel(yanel);
+
                     Element resourceElement = (Element) rootElement.appendChild(doc.createElement("resource"));
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                         Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
@@ -481,7 +488,10 @@ public class YanelServlet extends HttpServlet {
 
             try {
                 Resource res = rtr.newResource(rti);
+                // TODO: This has been already set by ResourceTypeRegistry
                 res.setRTD(rtd);
+                res.setYanel(yanel);
+
                 return res;
             } catch(Exception e) {
                 log.error(e.getMessage(), e);
