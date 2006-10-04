@@ -55,6 +55,11 @@
 <!--
     <echo>Yanel Home Dir: ${yanel.home.dir}</echo>
 -->
+    <path id="yanel.home.dir.ref">
+      <pathelement location="${yanel.home.dir}"/>
+    </path>
+    <pathconvert targetos="unix" property="yanel.home.dir.forward.slashes" refid="yanel.home.dir.ref">
+    </pathconvert>
 
     <property name="build.dir" location="${yanel.home.dir}/build"/>
     <mkdir dir="${build.dir}"/>
@@ -230,10 +235,10 @@
     <!-- Create yarep.properties -->
     <copy file="${yanel.home.dir}/conf/yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/local.yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" overwrite="true" failonerror="false"/>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="yanel-sample,${yanel.home.dir.forward.slashes}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
     </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/repository.xml">
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="javadoc,${yanel.home.dir.forward.slashes}/src/javadoc-repository/repository.xml">
       <replacetoken>javadoc,../src/javadoc-repository/repository.xml</replacetoken>
     </replace>
 
@@ -243,23 +248,23 @@
     </condition>
     <antcall target="generate-yanel-properties"/>
     <antcall target="patch-with-local-yanel-config"/>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="${yanel.home.dir}">
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="${yanel.home.dir.forward.slashes}">
       <replacetoken>..</replacetoken>
     </replace>
 
 
 
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/repository.xml">
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="yanel-sample,${yanel.home.dir.forward.slashes}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
     </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" value="security-sample,${yanel.home.dir}/src/sample-repository/config/">
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" value="security-sample,${yanel.home.dir.forward.slashes}/src/sample-repository/config/">
       <replacetoken>security-sample,../src/sample-repository/config/</replacetoken>
     </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" value="yanel-sample,${yanel.home.dir}/src/sample-repository/config/">
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" value="yanel-sample,${yanel.home.dir.forward.slashes}/src/sample-repository/config/">
       <replacetoken>yanel-sample,../src/sample-repository/config/</replacetoken>
     </replace>
 
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="javadoc,${yanel.home.dir}/src/javadoc-repository/yanel-rti-repository.xml">
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="javadoc,${yanel.home.dir.forward.slashes}/src/javadoc-repository/yanel-rti-repository.xml">
       <replacetoken>javadoc,../src/javadoc-repository/yanel-rti-repository.xml</replacetoken>
     </replace>
     <!-- NOTE: No exception shall be thrown even if one does not build the javadocs -->
