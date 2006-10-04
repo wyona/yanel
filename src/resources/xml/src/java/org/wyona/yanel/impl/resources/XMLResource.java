@@ -119,7 +119,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
     private InputStream getContentXML(RepoPath rp, String yanelPath) throws Exception {
         if (yanelPath != null) {
             log.debug("Yanel Path: " + yanelPath);
-            Yanel yanel = new Yanel();
+            Yanel yanel = getYanel();
             Path path = new Path("/" + rp.getRepo().getID() + yanelPath);
             Resource res = yanel.getResource(path);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
