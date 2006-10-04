@@ -24,8 +24,8 @@ import org.wyona.yanel.core.map.MapFactory;
  */
 public class Yanel {
 
-    Map map = null;
-    ResourceTypeRegistry rtr = null;
+    private Map map = null;
+    private ResourceTypeRegistry rtr = null;
 
     /**
      *
@@ -49,5 +49,12 @@ public class Yanel {
         resource.setYanel(this);
 
         return resource;
+    }
+
+    /**
+     *
+     */
+    public Map getMap() throws Exception {
+        return map;
     }
 }
