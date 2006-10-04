@@ -169,6 +169,7 @@ public class YanelCommandLine {
         }
 
 
+/*
         Resource tapeRes = null;
         try {
             rti = "<{http://www.wyonapictures.com/yanel/resource/1.0}tape/>";
@@ -246,5 +247,6 @@ public class YanelCommandLine {
             System.err.println(e);
             return;
         }
+*/
     }
 }
