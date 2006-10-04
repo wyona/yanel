@@ -120,6 +120,7 @@ public class YanelCommandLine {
         Resource res = null;
         try {
             res = rtr.newResource(rti);
+            res.setYanel(new org.wyona.yanel.core.Yanel());
         } catch(Exception e) {
             System.err.println("Exception 435435: " + e);
             return;
