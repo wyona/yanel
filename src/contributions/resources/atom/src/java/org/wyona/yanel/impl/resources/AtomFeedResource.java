@@ -117,6 +117,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
 	    sb.append("<atom:feed yanel:path=\"" + path + "\" dir:name=\"" + entriesPath.getName() + "\" dir:path=\"" + entriesPath + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
 
             sb.append("<atom:title>" + getFeedTitle(path) + "</atom:title>");
+            log.error("DEBUG: Realm: " + getYanel().getMap().getRealm(path).getProxyHostName());
             sb.append("<atom:link rel=\"self\" href=\"" + requestURL + "\"/>");
             // TODO: Calculate date ...
             sb.append("<atom:updated>" + AtomDate.format(feedUpdated) + "</atom:updated>");
