@@ -118,7 +118,7 @@ public class ResourceTypeRegistry {
             Resource resource = (Resource) Class.forName(rtd.getResourceTypeClassname()).newInstance();
 
             resource.setRTD(rtd);
-            // TODO: Set Yanel instance ...
+            // TODO: Set Yanel instance ... but Yanel should be a singleton, because it instantiates the Map ... see Cmdl and Servlet ...
             //resource.setYanel(...);
 
             return resource;
