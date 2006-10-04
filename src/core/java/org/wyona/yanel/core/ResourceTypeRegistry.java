@@ -116,7 +116,11 @@ public class ResourceTypeRegistry {
 	ResourceTypeDefinition rtd = (ResourceTypeDefinition) hm.get(universalName);
         if (rtd != null) {
             Resource resource = (Resource) Class.forName(rtd.getResourceTypeClassname()).newInstance();
+
             resource.setRTD(rtd);
+            // TODO: Set Yanel instance ...
+            //resource.setYanel(...);
+
             return resource;
         } else {
             log.error("No resource registered for rti: " + universalName);
