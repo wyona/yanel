@@ -41,6 +41,13 @@ public class Yanel {
      */
     public Resource getResource(Path path) throws Exception {
         String rti = map.getResourceTypeIdentifier(path);
-        return rtr.newResource(rti);
+        Resource resource = rtr.newResource(rti);
+
+        ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
+        resource.setRTD(rtd);
+
+        resource.setYanel(this);
+
+        return resource;
     }
 }
