@@ -30,6 +30,18 @@
               <maxIdleTime>30000</maxIdleTime>
             </connector>
           </connectors>
+          <systemProperties>
+            <systemProperty>
+              <!-- this starts jetty in debugging mode -->
+              <!--FIXME: needs to configurable via "./yanel-jetty.sh debug" or similar-->
+              <name>
+                -Xdebug -Xrunjdwp:transport
+              </name>
+              <value>
+                dt_socket,address=8000,server=y,suspend=n
+              </value>
+            </systemProperty>
+          </systemProperties>
           <webApp>${yanel.war.location}</webApp>
           <contextPath>/</contextPath>
         </configuration>
