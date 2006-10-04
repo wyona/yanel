@@ -34,6 +34,7 @@ import org.apache.abdera.model.Entry;
 import org.apache.log4j.Category;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Date;
 import java.util.Vector;
 
@@ -117,9 +118,30 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
 	    sb.append("<atom:feed yanel:path=\"" + path + "\" dir:name=\"" + entriesPath.getName() + "\" dir:path=\"" + entriesPath + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
 
             sb.append("<atom:title>" + getFeedTitle(path) + "</atom:title>");
-            log.error("DEBUG: Realm: " + getYanel().getMap().getRealm(path).getProxyHostName());
-            sb.append("<atom:link rel=\"self\" href=\"" + requestURL + "\"/>");
-            // TODO: Calculate date ...
+            org.wyona.yanel.core.map.Realm realm = getYanel().getMap().getRealm(path);
+            String proxyHostName = realm.getProxyHostName();
+            if (proxyHostName != null) {
+                log.error("DEBUG: Proxy Host Name: " + proxyHostName);
+                URL url = new URL(requestURL);
+                url = new URL(url.getProtocol(), proxyHostName, url.getPort(), url.getFile());
+                String proxyPort = realm.getProxyPort();
+                if (proxyPort != null) {
+                    log.error("DEBUG: Proxy Port: " + proxyPort);
+                    if (proxyPort.length() > 0) {
+                        url = new URL(url.getProtocol(), url.getHost(), new Integer(proxyPort).intValue(), url.getFile());
+                    } else {
+                        url = new URL(url.getProtocol(), url.getHost(), url.getDefaultPort(), url.getFile());
+                    }
+                }
+                String proxyPrefix = realm.getProxyPrefix();
+                if (proxyPrefix != null) {
+                    log.error("DEBUG: Proxy Prefix: " + proxyPrefix);
+                    url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile().substring(proxyPrefix.length()));
+                }
+                sb.append("<atom:link rel=\"self\" href=\"" + url + "\"/>");
+            } else {
+                sb.append("<atom:link rel=\"self\" href=\"" + requestURL + "\"/>");
+            }
             sb.append("<atom:updated>" + AtomDate.format(feedUpdated) + "</atom:updated>");
             sb.append("<atom:author><atom:name>" + getProperty(path, "author", "WARNING: No author specified!") + "</atom:name></atom:author>");
             sb.append("<atom:id>urn:uuid:TODO</atom:id>");
