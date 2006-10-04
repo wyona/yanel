@@ -29,25 +29,25 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
 </realm>
 
 <!--
-<realm id="ulysses-demo" mount-point="/ulysses-demo/">
-  <name>Ulysses Demo</name>
+<realm id="yulup-demo" mount-point="/yulup-demo/">
+  <name>Yulup Demo</name>
 
   <reverse-proxy>
-    <host-name>demo.ulysses.wyona.org</host-name>
+    <host-name>demo.yulup.org</host-name>
     <port></port>
-    <prefix>/yanel/ulysses-demo</prefix>
+    <prefix>/yanel/yulup-demo</prefix>
   </reverse-proxy>
 </realm>
 -->
 
 <!--
-<realm id="ulysses-website" mount-point="/ulysses-website/">
-  <name>Ulysses Website</name>
+<realm id="yulup-website" mount-point="/yulup-website/">
+  <name>Yulup Website</name>
 
   <reverse-proxy>
-    <host-name>ulysses.wyona.org</host-name>
+    <host-name>www.yulup.org</host-name>
     <port></port>
-    <prefix>/yanel/ulysses-website</prefix>
+    <prefix>/yanel/yulup-website</prefix>
   </reverse-proxy>
 </realm>
 -->
