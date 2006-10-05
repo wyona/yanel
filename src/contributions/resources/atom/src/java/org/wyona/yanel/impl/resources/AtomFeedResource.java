@@ -68,7 +68,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
     /**
      *
      */
-    public View getView(Path path, String viewId, String requestURL) {
+    public View getView(Path path, String viewId, String requestURL, String queryString) {
         View defaultView = new View();
 	StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
 
@@ -118,15 +118,20 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
 	    sb.append("<atom:feed yanel:path=\"" + path + "\" dir:name=\"" + entriesPath.getName() + "\" dir:path=\"" + entriesPath + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
 
             sb.append("<atom:title>" + getFeedTitle(path) + "</atom:title>");
+
+            // Set self ...
+            String selfURL = getProperty(path, "self-url", null);
+            if (selfURL != null) {
+                sb.append("<atom:link rel=\"self\" href=\"" + selfURL + "\"/>");
+            } else {
+            if (requestURL != null) {
             org.wyona.yanel.core.map.Realm realm = getYanel().getMap().getRealm(path);
             String proxyHostName = realm.getProxyHostName();
             if (proxyHostName != null) {
-                log.error("DEBUG: Proxy Host Name: " + proxyHostName);
                 URL url = new URL(requestURL);
                 url = new URL(url.getProtocol(), proxyHostName, url.getPort(), url.getFile());
                 String proxyPort = realm.getProxyPort();
                 if (proxyPort != null) {
-                    log.error("DEBUG: Proxy Port: " + proxyPort);
                     if (proxyPort.length() > 0) {
                         url = new URL(url.getProtocol(), url.getHost(), new Integer(proxyPort).intValue(), url.getFile());
                     } else {
@@ -135,13 +140,23 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
                 }
                 String proxyPrefix = realm.getProxyPrefix();
                 if (proxyPrefix != null) {
-                    log.error("DEBUG: Proxy Prefix: " + proxyPrefix);
                     url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile().substring(proxyPrefix.length()));
                 }
-                sb.append("<atom:link rel=\"self\" href=\"" + url + "\"/>");
+                if (queryString != null) {
+                    sb.append("<atom:link rel=\"self\" href=\"" + url + "?" + queryString + "\"/>");
+                } else {
+                    sb.append("<atom:link rel=\"self\" href=\"" + url + "\"/>");
+                }
             } else {
+                // TODO: Add query string
                 sb.append("<atom:link rel=\"self\" href=\"" + requestURL + "\"/>");
             }
+            } else {
+                sb.append("<atom:link rel=\"self\" href=\"" + path + "\"/>");
+            }
+            }
+
+
             sb.append("<atom:updated>" + AtomDate.format(feedUpdated) + "</atom:updated>");
             sb.append("<atom:author><atom:name>" + getProperty(path, "author", "WARNING: No author specified!") + "</atom:name></atom:author>");
             sb.append("<atom:id>urn:uuid:TODO</atom:id>");
@@ -197,15 +212,14 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
      *
      */
     public View getView(Path path, String viewId) {
-        return getView(path, viewId, null);
+        return getView(path, viewId, null, null);
     }
 
     /**
      *
      */
     public View getView(HttpServletRequest request, String viewId) {
-        // TODO: Patch requestURL with proxy config (see also YanelServlet ...)
-        return getView(new Path(request.getServletPath()), viewId, request.getRequestURL().toString());
+        return getView(new Path(request.getServletPath()), viewId, request.getRequestURL().toString(), request.getQueryString());
     }
 
     /**
