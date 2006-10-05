@@ -123,6 +123,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
             Path path = new Path("/" + rp.getRepo().getID() + yanelPath);
             Resource res = yanel.getResource(path);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
+                // TODO: Pass the request ...
                 View view = ((ViewableV1) res).getView(path, null);
                 if (view.getMimeType().indexOf("xml") >= 0) {
                     // TODO: Shall the mime-type be transfered?
