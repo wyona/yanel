@@ -14,5 +14,6 @@ Atom Feed Generator
   <property name="mime-type"/>
   <property name="feed-title"/>
   <property name="entries-path"/>
+  <property name="self-url"/>
 </rtd>
 </resource>
