@@ -97,7 +97,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
                                 Entry entry = (Entry) doc.getRoot();
                                 if (entry != null) {
                                     entry.addLink(children[i].getName(), "edit");
-                                    //entry.addLink("http://www.yulup.org:80/news-entries" + children[i].getName());
+                                    entry.addLink(getEntriesURL(path) + children[i].getName());
                                     orderedEntries = addEntry(orderedEntries, entry);
                                 } else {
                                     log.error("Atom entry is null!" + children[i]);
@@ -380,5 +380,12 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
         }
 
         return orderedEntries;
+    }
+
+    /**
+     *
+     */
+    String getEntriesURL(Path path) {
+        return getProperty(path, "entries-url", null);
     }
 }
