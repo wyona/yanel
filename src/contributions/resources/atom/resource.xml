@@ -15,5 +15,7 @@ Atom Feed Generator
   <property name="feed-title"/>
   <property name="entries-path"/>
   <property name="self-url"/>
+  <property name="entries-url"/>
+  <property name="author"/>
 </rtd>
 </resource>
