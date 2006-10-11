@@ -450,6 +450,8 @@ public class YanelServlet extends HttpServlet {
                     log.error(e.getMessage(), e);
                     throw new IOException(e.getMessage());
                 }
+            } else {
+                log.debug("TODO: WebDAV PUT ...");
             }
 
             getContent(request, response);
