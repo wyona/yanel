@@ -14,6 +14,8 @@
   <xsl:output method="html"/>
   -->
   
+  <xsl:param name="language" select="/yanel:nutch/@yanel:language"/>
+  
   <xsl:variable name="query"><xsl:value-of select="/yanel:nutch/yanel:query"/></xsl:variable>
   <xsl:variable name="totalHits" select="/yanel:nutch/yanel:results/@yanel:totalHits" />
   <xsl:variable name="hitsPerPage" select="/yanel:nutch/yanel:results/@yanel:hitsPerPage" />
@@ -31,10 +33,12 @@
     </head>
     
     <body>
+    
     <form>
     <p>
       <input type="text" name="query" value="{$query}"/>
       <input type="hidden" name="hitsPerPage" value="{$hitsPerPage}"/>
+      <input type="hidden" name="language" value="{$language}"/>
       <input type="submit" value="i18n:attr key=search"/>
     </p>
     </form>
