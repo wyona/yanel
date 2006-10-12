@@ -134,6 +134,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * 
      */
     public View getView(HttpServletRequest request, String viewId) {
+        
         int _start = 0;
         try {
             _start = Integer.parseInt(request.getParameter("start"));
@@ -176,6 +177,7 @@ public class NutchResource extends Resource implements ViewableV1 {
         }
         // create root element
         Element rootElement = document.getDocumentElement();
+        rootElement.setAttributeNS(NAME_SPACE, "language", language);
         // Generate results
         if (searchTerm != null && searchTerm.length() > 0) {
             Element queryElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "query"));
@@ -222,15 +224,13 @@ public class NutchResource extends Resource implements ViewableV1 {
             DOMResult xmlResult = new DOMResult();
             transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
             InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-            return inputStream;
-            
-/*
+
             I18nTransformer i18nTransformer = new I18nTransformer(messages, language);
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(inputStream, i18nTransformer);
             
             return i18nTransformer.getInputStream();
-*/
+
             
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -262,7 +262,6 @@ public class NutchResource extends Resource implements ViewableV1 {
                 resultsElement.setAttributeNS(NAME_SPACE, "totalHits", "" + hits.getTotal());
                 resultsElement.setAttributeNS(NAME_SPACE, "currentPageNo", "" + ((start / hitsPerPage) + 1));
                 resultsElement.setAttributeNS(NAME_SPACE, "numberOfPagesShown", "" + numberOfPagesShown);
-                resultsElement.setAttributeNS(NAME_SPACE, "language", language);
                 Hit[] show = hits.getHits(start, range);
                 HitDetails[] details = nutchBean.getDetails(show);
 
