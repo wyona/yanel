@@ -273,7 +273,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
      *
      */
     private boolean isRoot(org.wyona.commons.io.Path path) {
-        if (path.toString().equals("/")) return true;
+        if (path.toString().equals(File.separator)) return true;
         return false;
     }
 
