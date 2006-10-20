@@ -28,7 +28,7 @@
       <dependency groupId="yarep" artifactId="yarep"
                   version="0.0.1-dev-r17887"/>
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
-                  version="0.0.1-dev-r17376"/>
+                  version="0.0.1-dev-r19469"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core"
                   version="0.0.1-dev-r15584"/>
 

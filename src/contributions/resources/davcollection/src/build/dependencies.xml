@@ -17,7 +17,7 @@
       <dependency groupId="yarep" artifactId="yarep"
                   version="0.0.1-dev-r17887"/>
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
-                  version="0.0.1-dev-r15048"/>
+                  version="0.0.1-dev-r19469"/>
     </artifact:dependencies>
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
