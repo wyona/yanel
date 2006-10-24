@@ -16,32 +16,23 @@
 
 package org.wyona.yanel.impl.resources;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.Set;
+import java.io.InputStreamReader;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Category;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.DocumentType;
-import org.w3c.dom.Element;
-import org.wyona.wiki.SimpleNode;
-import org.wyona.wiki.Wiki2XML;
-import org.wyona.wiki.WikiParser;
+
+import org.wyona.wikiparser.IWikiParser;
+import org.wyona.wikiparser.IWikiParserFactory;
+import org.wyona.wikiparser.WikiParserFactory;
+
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ContinuableV1;
@@ -60,24 +51,15 @@ import org.wyona.yarep.util.RepoPath;
 public class WikiResource extends Resource implements ContinuableV1, ViewableV1 {
 
     private static Category log = Category.getInstance(WikiResource.class);
-
     private final String XML_MIME_TYPE = "application/xml";
-    private final String NAME_SPACE = "http://apache.org/cocoon/wiki/1.0";
-
     private DocumentBuilderFactory dbf = null;
-
-    private File input = null;
-
     private Repository repository  = null;
     
-    private Path path = null;
-
     /**
      * 
      */
     public WikiResource() {
         dbf = DocumentBuilderFactory.newInstance();
-        //dbf = new org.apache.xerces.jaxp.DocumentBuilderFactoryImpl();
         dbf.setNamespaceAware(true);
     }
 
@@ -87,41 +69,27 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
     public ViewDescriptor[] getViewDescriptors() {
         return null;
     }
-
+    
     /**
      * 
      */
     public View getView(Path path, String viewId) {
         View defaultView = new View();
-        this.path = path;
         try {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
                     new RepositoryFactory());
             repository = rp.getRepo();
-            WikiParser wikiin = new WikiParser(rp.getRepo()
-                    .getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
-            SimpleNode node = wikiin.WikiBody();
-
-            DocumentBuilder parser = dbf.newDocumentBuilder();
-            log.error("DEBUG: Namespace aware: " + parser.isNamespaceAware());
-/*
-            DOMImplementation impl = parser.getDOMImplementation();
-            DocumentType doctype = null;
-            Document document = impl.createDocument(NAME_SPACE, "wiki", doctype);
-*/
-            Document document = parser.parse(new java.io.StringBufferInputStream("<wiki:wiki xmlns:wiki=\""+NAME_SPACE+"\" xmlns=\""+NAME_SPACE+"\"></wiki:wiki>"));
-            Element rootElement = document.getDocumentElement();
-            traverse(document, rootElement, node);
-
-/*
-            StringBuffer sb = new StringBuffer("<?xml  version=\"1.0\"?>");
-            int indent = 0;
-            sb.append("<wiki xmlns=\"" + NAME_SPACE + "\">");
-            traverse(sb, node, indent);
-            sb.append("</wiki>");
-            log.debug(sb);
-*/
-
+            
+            //these fields are specified via interface
+            int type = 1;//is the jspWikiParser
+            InputStream inputStream = rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+            //instantiate wiki parser via factory
+            
+            IWikiParserFactory wikiparserFactory = new WikiParserFactory();
+            IWikiParser wikiParser = wikiparserFactory.create(type, inputStream);
+            //wikiParser does the transformation
+            wikiParser.parse(inputStream);
+            
             Transformer transformer = null;
             if(viewId != null && viewId.equals("source")) {
                 transformer = TransformerFactory.newInstance().newTransformer();
@@ -130,104 +98,16 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
                 transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
                 transformer.setParameter("yanel.path.name", path.getName());
                 transformer.setParameter("yanel.path", path.toString());
-
                 defaultView.setMimeType("application/xhtml+xml");
-                //defaultView.setMimeType(getMimeType(path));
             }
-
-            // TODO: Is this the best way to generate an InputStream from an OutputStream?
-            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-            transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(baos));
-            //transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
-            defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
-
+            
+            defaultView.setInputStream(wikiParser.getInputStream());
+            
             return defaultView;
         } catch (Exception e) {
             log.error(e, e);
         }
         return null;
-    }
-
-    /**
-     * Traverse tree and output an "XML String"
-     */
-/*
-    public void traverse(StringBuffer sb, SimpleNode node, int indent) {
-
-        for (int i = 0; i < indent; i++)
-            sb.append(" ");
-
-        if (node.toString().equals("Text")) {
-            if (!node.optionMap.isEmpty()) {
-                Set keySet = node.optionMap.keySet();
-                Iterator kit = keySet.iterator();
-                while (kit.hasNext()) {
-                    Object option = kit.next();
-                    Object value = node.optionMap.get(option);
-                    sb.append(value.toString());
-                }
-            }
-        } else {
-            sb.append("<" + node.toString());
-
-            if (!node.optionMap.isEmpty()) {
-                Set keySet = node.optionMap.keySet();
-                Iterator kit = keySet.iterator();
-                while (kit.hasNext()) {
-                    Object option = kit.next();
-                    Object value = node.optionMap.get(option);
-                    sb.append(" " + option.toString() + "=" + "\"" + value.toString() + "\"");
-                }
-            }
-
-            if (node.jjtGetNumChildren() > 0) {
-                sb.append(">");
-                for (int i = 0; i < node.jjtGetNumChildren(); i++)
-                    traverse(sb, (SimpleNode) node.jjtGetChild(i), indent + 1);
-                for (int i = 0; i < indent; i++)
-                    sb.append(" ");
-                sb.append("</" + node.toString() + ">");
-            } else {
-                sb.append("/>");
-            }
-        }
-    }
-*/
-
-    /**
-     * Traverse tree and output an "XML Document"
-     */
-    public void traverse(Document doc, Element element, SimpleNode node) {
-
-        if (node.toString().equals("Text")) {
-            if (!node.optionMap.isEmpty()) {
-                Set keySet = node.optionMap.keySet();
-                Iterator kit = keySet.iterator();
-                while (kit.hasNext()) {
-                    Object option = kit.next();
-                    Object value = node.optionMap.get(option);
-                    Element textNode = (Element) element.appendChild(doc.createElementNS(NAME_SPACE, "Text"));
-                    textNode.setAttributeNS(NAME_SPACE, "value", value.toString());
-                }
-            }
-        } else {
-            Element child = (Element) element.appendChild(doc.createElementNS(NAME_SPACE, node.toString()));
-
-            if (!node.optionMap.isEmpty()) {
-                Set keySet = node.optionMap.keySet();
-                Iterator kit = keySet.iterator();
-                while (kit.hasNext()) {
-                    Object option = kit.next();
-                    Object value = node.optionMap.get(option);
-                    child.setAttributeNS(NAME_SPACE, option.toString(), value.toString());
-                }
-            }
-
-            if (node.jjtGetNumChildren() > 0) {
-                for (int i = 0; i < node.jjtGetNumChildren(); i++)
-                    traverse(doc, child, (SimpleNode) node.jjtGetChild(i));
-            }
-        }
     }
 
     /**
@@ -278,39 +158,6 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
         } catch (Exception e) {
             log.warn(e);
         }
-
         return null;
     }
-
-
-
-
-/*
-    private String getMimeType(Path path) {
-        String mimeType = null;
-        try {
-            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory
-            // ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
-                    new RepositoryFactory("yanel-rti-yarep.properties"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo()
-                    .getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath()
-                            .toString())));
-
-            while ((mimeType = br.readLine()) != null) {
-                if (mimeType.indexOf("mime-type:") == 0) {
-                    mimeType = mimeType.substring(11);
-                    log.info("*" + mimeType + "*");
-                    // TODO: Maybe validate mime-type ...
-                    return mimeType;
-                }
-            }
-        } catch (Exception e) {
-            log.warn(e);
-        }
-
-        // NOTE: Assuming fallback re dir2xhtml.xsl ...
-        return "application/xhtml+xml";
-    }
-*/
 }
