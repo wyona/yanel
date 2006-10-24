@@ -451,10 +451,13 @@ public class YanelServlet extends HttpServlet {
                     throw new IOException(e.getMessage());
                 }
             } else {
-                log.debug("TODO: WebDAV PUT ...");
+                save(request, response);
+/*
+                log.warn("TODO: WebDAV PUT ...");
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_IMPLEMENTED);
+                return;
+*/
             }
-
-            getContent(request, response);
         }
     }
 
