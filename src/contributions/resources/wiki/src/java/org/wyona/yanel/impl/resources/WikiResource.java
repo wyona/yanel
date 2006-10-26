@@ -16,15 +16,14 @@
 
 package org.wyona.yanel.impl.resources;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Category;
@@ -101,7 +100,9 @@ public class WikiResource extends Resource implements ContinuableV1, ViewableV1 
                 defaultView.setMimeType("application/xhtml+xml");
             }
             
-            defaultView.setInputStream(wikiParser.getInputStream());
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            transformer.transform(new StreamSource(wikiParser.getInputStream()), new StreamResult(baos));
+            defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
             
             return defaultView;
         } catch (Exception e) {
