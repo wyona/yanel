@@ -15,7 +15,7 @@
       <dependency groupId="wyona-org-wiki-parser" artifactId="wiki-parser-factory"
                   version="r19560"/>
       <dependency groupId="wyona-org-wiki-parser" artifactId="jsp-wiki-parser"
-                  version="r19631"/>
+                  version="r19645"/>
 
       <dependency groupId="wyona-org-wiki-parser" artifactId="wyona-wiki-parser"
                   version="r16766"/>
@@ -39,7 +39,7 @@
       <dependency groupId="wyona-org-wiki-parser" artifactId="wiki-parser-factory"
                   version="r19560"/>
       <dependency groupId="wyona-org-wiki-parser" artifactId="jsp-wiki-parser"
-                  version="r19631"/>
+                  version="r19645"/>
 
       <dependency groupId="wyona-org-wiki-parser" artifactId="wyona-wiki-parser"
                   version="r16766"/>
