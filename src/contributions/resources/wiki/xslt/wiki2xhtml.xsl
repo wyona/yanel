@@ -17,7 +17,7 @@
 
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:wiki="http://apache.org/cocoon/wiki/1.0"
+                xmlns:wiki="http://www.wyona.org/yanel/1.0"
                 xmlns:lenya="http://apache.org/cocoon/lenya/page-envelope/1.0"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -107,7 +107,7 @@
   </xsl:template>
  
   <xsl:template match="wiki:BListItem">
-    <xsl:param name="depth" select="number(@wiki:depth)" />
+    <xsl:param name="depth" select="number(@depth)" />
     <xsl:choose>
       <xsl:when test="$depth &lt;= 1">
         <li><xsl:apply-templates /></li>
@@ -130,7 +130,7 @@
   </xsl:template>
   
   <xsl:template match="wiki:NListItem">
-    <xsl:param name="depth" select="@wiki:depth" />
+    <xsl:param name="depth" select="@depth" />
     <xsl:choose>
       <xsl:when test="$depth &lt;= 1">
         <li><xsl:apply-templates /></li>
@@ -205,14 +205,14 @@
       </xsl:when>
 -->
       
-      
+      <xsl:when test="false"></xsl:when>
       <xsl:otherwise>
         <xsl:choose>
-          <xsl:when test="@wiki:label">
-            <a href="{@href}"><xsl:value-of select="@wiki:label"/></a>
+          <xsl:when test="@label">
+            <a href="{@href}"><xsl:value-of select="@label"/></a>
           </xsl:when>
           <xsl:otherwise>
-            <a href="{@href}"><xsl:value-of select="@wiki:href"/></a>
+            <a href="{@href}"><xsl:value-of select="@href"/></a>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:otherwise>
@@ -220,11 +220,11 @@
   </xsl:template>
   
   <xsl:template match="wiki:Text">
-    <xsl:value-of select="@wiki:value"/>
+    <xsl:value-of select="@value"/>
   </xsl:template>
   
   <xsl:template match="wiki:PlainText">
-    <xsl:value-of select="@wiki:value"/>
+    <xsl:value-of select="@value"/>
   </xsl:template>
   
   <xsl:template match="wiki:Plain">
