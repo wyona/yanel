@@ -47,7 +47,7 @@ import org.wyona.yarep.util.RepoPath;
 /**
  * 
  */
-public class WikiResource extends Resource implements ContinuableV1, ViewableV1 {
+public class WikiResource extends Resource implements ViewableV1 {
 
     private static Category log = Category.getInstance(WikiResource.class);
     private final String XML_MIME_TYPE = "application/xml";
