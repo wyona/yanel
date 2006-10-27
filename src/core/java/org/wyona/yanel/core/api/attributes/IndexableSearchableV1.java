@@ -17,7 +17,7 @@
 package org.wyona.yanel.core.api.attributes;
 
 /**
- *
+ * DEV (not released yet), please be aware that this interface still might change ...
  */
 public interface IndexableSearchableV1 {
 

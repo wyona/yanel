@@ -17,9 +17,11 @@
 package org.wyona.yanel.core.api.attributes;
 
 /**
- * http://jakarta.apache.org/commons/sandbox/javaflow/
- * http://rifers.org/wiki/display/RIFECNT/Home
- * ...
+ * DEV (not released yet), please be aware that this interface still might change ...
  */
 public interface ContinuableV1 {
+/*
+http://jakarta.apache.org/commons/sandbox/javaflow/
+http://rifers.org/wiki/display/RIFECNT/Home
+*/
 }

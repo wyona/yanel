@@ -23,7 +23,7 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- *
+ * RELEASED, do NOT change!
  */
 public interface ViewableV1 {
 

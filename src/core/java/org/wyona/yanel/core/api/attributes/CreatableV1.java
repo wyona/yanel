@@ -17,7 +17,7 @@
 package org.wyona.yanel.core.api.attributes;
 
 /**
- *
+ * RELEASED, do NOT change!
  */
 public interface CreatableV1 {
 

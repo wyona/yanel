@@ -19,7 +19,7 @@ package org.wyona.yanel.core.api.attributes;
 import org.wyona.yanel.core.api.attributes.CreatableV1;
 
 /**
- *
+ * DEV (not released yet), please be aware that this interface still might change ...
  */
 public interface CreatableV2 extends CreatableV1 {
 

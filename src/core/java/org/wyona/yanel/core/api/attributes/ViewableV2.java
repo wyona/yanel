@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 
 /**
- *
+ * DEV (not released yet), please be aware that this interface still might change ...
  */
 public interface ViewableV2 {
 
