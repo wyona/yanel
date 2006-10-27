@@ -70,13 +70,12 @@ public class WikiResource extends Resource implements ViewableV1 {
     }
     
     /**
-     * 
+     *
      */
     public View getView(Path path, String viewId) {
         View defaultView = new View();
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
-                    new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
             repository = rp.getRepo();
             
             //these fields are specified via interface
