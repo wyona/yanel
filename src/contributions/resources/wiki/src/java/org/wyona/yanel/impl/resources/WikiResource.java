@@ -18,9 +18,12 @@ package org.wyona.yanel.impl.resources;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
@@ -34,7 +37,6 @@ import org.wyona.wikiparser.WikiParserFactory;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.api.attributes.ContinuableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
@@ -99,8 +101,12 @@ public class WikiResource extends Resource implements ViewableV1 {
                 defaultView.setMimeType("application/xhtml+xml");
             }
             
+            LinkChecker linkChecker = new LinkChecker();
+            SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
+            saxParser.parse(wikiParser.getInputStream(), linkChecker);
+            
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-            transformer.transform(new StreamSource(wikiParser.getInputStream()), new StreamResult(baos));
+            transformer.transform(new StreamSource(linkChecker.getInputStream()), new StreamResult(baos));
             defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
             
             return defaultView;
@@ -109,7 +115,7 @@ public class WikiResource extends Resource implements ViewableV1 {
         }
         return null;
     }
-
+    
     /**
      * 
      */
@@ -117,6 +123,12 @@ public class WikiResource extends Resource implements ViewableV1 {
         return getView(new Path(request.getServletPath()), viewId);
     }
 
+    /**
+     * 
+     */
+    public View getView(HttpServletRequest request, OutputStream outputStream, String viewId) {
+        return null;
+    }
     /**
      * 
      */
@@ -133,6 +145,43 @@ public class WikiResource extends Resource implements ViewableV1 {
         }
     }
 
+    /**
+     * @return the empty wiki resource as String 
+     */
+    private String getEmptyWikiXml() {
+        StringBuffer emptyWikiXml = new StringBuffer();
+        emptyWikiXml.append("<?xml version=\"1.0\"?>");
+        emptyWikiXml.append("\n");
+        emptyWikiXml.append("<wiki xmlns=\"http://www.wyona.org/neutron/1.0\">");
+        emptyWikiXml.append("\n");
+        emptyWikiXml.append("</wiki>");
+        
+        return emptyWikiXml.toString();
+    }
+    
+    /**
+     * @param newWikiPage
+     * @return the empty wiki introspection as String
+     */
+    private String getEmptyWikiIntrospection(String newWikiPage) {
+        StringBuffer emptyWikiPageContent = new StringBuffer();
+        emptyWikiPageContent.append("<?xml version=\"1.0\"?>");
+        emptyWikiPageContent.append("\n");
+        emptyWikiPageContent.append("<introspection xmlns=\"http://www.wyona.org/neutron/1.0\">");
+        emptyWikiPageContent.append("\n\t");
+        emptyWikiPageContent.append("<edit mime-type=\"application/xml\" name=\"" + newWikiPage + "\">");
+        emptyWikiPageContent.append("\n\t\t");
+        emptyWikiPageContent.append("<checkout url=\"/wiki/" + newWikiPage + ".html\" method=\"GET\"/>");
+        emptyWikiPageContent.append("\n\t\t");
+        emptyWikiPageContent.append("<checkin url=\"/wiki/" + newWikiPage + ".html?yanel.resource.usecase=checkin\" method=\"PUT\"/>");
+        emptyWikiPageContent.append("\n\t");
+        emptyWikiPageContent.append("</edit>");
+        emptyWikiPageContent.append("\n");
+        emptyWikiPageContent.append("</introspection>");
+        
+        return emptyWikiPageContent.toString();
+    }
+    
     /**
      * 
      */
