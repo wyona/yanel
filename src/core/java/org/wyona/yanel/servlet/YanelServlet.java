@@ -133,6 +133,12 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Check if a new resource shall be created ...
+        String yanelUsecase = request.getParameter("yanel.usecase");
+        if(yanelUsecase != null && yanelUsecase.equals("create")) {
+            log.warn("TODO: Create usecase not implemented yet!");
+        }
+
         getContent(request, response);
     }
 
@@ -700,6 +706,14 @@ public class YanelServlet extends HttpServlet {
 	} else if (method.equals(METHOD_DELETE)) {
             log.error("DEBUG: Delete resource ...");
             role = new Role("delete");
+        } else {
+            log.debug("Role will be 'view'!");
+            role = new Role("view");
+        }
+        value = request.getParameter("yanel.usecase");
+        if (value != null && value.equals("create")) {
+            log.debug("Create new resource ...");
+            role = new Role("create");
         } else {
             log.debug("Role will be 'view'!");
             role = new Role("view");
