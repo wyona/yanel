@@ -205,14 +205,16 @@
       </xsl:when>
 -->
       
-      <xsl:when test="false"></xsl:when>
+      <xsl:when test="@exist">
+        <u><xsl:value-of select="@label"/></u><a href="{@href}">?</a><xsl:text>&#0160;</xsl:text>
+      </xsl:when>
       <xsl:otherwise>
         <xsl:choose>
           <xsl:when test="@label">
-            <a href="{@href}"><xsl:value-of select="@label"/></a>
+            <a href="{@href}"><xsl:value-of select="@label"/></a><xsl:text>&#0160;</xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <a href="{@href}"><xsl:value-of select="@href"/></a>
+            <a href="{@href}"><xsl:value-of select="@href"/></a><xsl:text>&#0160;</xsl:text>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:otherwise>
