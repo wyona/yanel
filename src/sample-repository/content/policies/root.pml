@@ -14,4 +14,8 @@
     <user id="lenya" permission="true"/>
   </role>
 
+  <role id="create">
+    <user id="lenya" permission="true"/>
+  </role>
+
 </policy>
