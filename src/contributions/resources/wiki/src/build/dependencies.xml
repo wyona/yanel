@@ -15,13 +15,14 @@
       <dependency groupId="wyona-org-wiki-parser" artifactId="wiki-parser-factory"
                   version="r19560"/>
       <dependency groupId="wyona-org-wiki-parser" artifactId="jsp-wiki-parser"
-                  version="r19645"/>
+                  version="r19702"/>
 
       <dependency groupId="wyona-org-wiki-parser" artifactId="wyona-wiki-parser"
                   version="r16766"/>
 
       <dependency groupId="wyona-org-yanel" artifactId="yanel-core"
                   version="${yanel.source.version}"/>
+      
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
                   version="0.0.1-dev-r19469"/>
       <dependency groupId="yarep" artifactId="yarep"
@@ -39,7 +40,7 @@
       <dependency groupId="wyona-org-wiki-parser" artifactId="wiki-parser-factory"
                   version="r19560"/>
       <dependency groupId="wyona-org-wiki-parser" artifactId="jsp-wiki-parser"
-                  version="r19645"/>
+                  version="r19702"/>
 
       <dependency groupId="wyona-org-wiki-parser" artifactId="wyona-wiki-parser"
                   version="r16766"/>
@@ -66,7 +67,7 @@
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
-    <echo>Maven2 classpath: ${maven2.cp}</echo>
+    <property name="maven2.resource.cp" refid="maven2.resource.classpath"/>
   </target>
 
 </project>
