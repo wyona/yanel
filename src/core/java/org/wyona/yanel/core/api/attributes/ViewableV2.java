@@ -44,4 +44,9 @@ public interface ViewableV2 {
      *
      */
     public void getView(HttpServletRequest request, HttpServletResponse response, String viewId) throws Exception;
+    
+    /**
+     * 
+     */
+    public boolean exists(Path path);
 }

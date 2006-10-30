@@ -172,4 +172,9 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
         endElement(WEBDAV_NS_URI, WEBDAV_EL_RESPONSE, WEBDAV_PREFIX + WEBDAV_EL_RESPONSE);        
     }
     
+    public boolean exists(Path path) {
+        //TODO not implemented yet
+        log.error("Method is not implemented yet");
+        return false;
+    }
 }
