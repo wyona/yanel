@@ -1,9 +1,9 @@
 !Wiki Test Page
 
-{{
+{{{
 Hello
   Pre
-}}
+}}}
 
 ----
 
