@@ -352,6 +352,15 @@
     <antcall target="clean-resources"/>
 -->
 
+    <condition property="yes-delete-tomcat-cluster-node1">
+      <and>
+        <isset property="tomcat1.home.dir"/>
+        <available file="${tomcat1.webapps.dir}/${servlet.context.prefix}" type="dir"/>
+        <istrue value="${force-clean}"/>
+      </and>
+    </condition>
+    <antcall target="do-clean-tomcat-cluster-node1"/>
+
     <condition property="property-tomcat-cluster-node1-is-set">
       <and>
         <isset property="tomcat1.home.dir"/>
@@ -360,6 +369,16 @@
     </condition>
     <antcall target="ask-to-clean-tomcat-cluster-node1"/>
 
+
+    <condition property="yes-delete-tomcat-cluster-node2">
+      <and>
+        <isset property="tomcat1.home.dir"/>
+        <available file="${tomcat1.webapps.dir}/${servlet.context.prefix}" type="dir"/>
+        <istrue value="${force-clean}"/>
+      </and>
+    </condition>
+    <antcall target="do-clean-tomcat-cluster-node2"/>
+    
     <condition property="property-tomcat-cluster-node2-is-set">
       <and>
         <isset property="tomcat2.home.dir"/>
