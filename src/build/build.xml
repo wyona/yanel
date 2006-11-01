@@ -154,7 +154,7 @@
     </javac>
 
     <mkdir dir="${yanel.home.dir}/build/lib"/>
-    <jar destfile="${yanel.home.dir}/build/lib/yanel-impl-0.0.1-dev-r${yanel.revision}.jar"
+    <jar destfile="${yanel.home.dir}/build/lib/yanel-impl-${yanel.version}-r${yanel.revision}.jar"
       basedir="${classes.dir}"
       includes="org/wyona/yanel/impl/**"/>
   </target>
@@ -170,7 +170,7 @@
       classpathref="classpath.cmdl"
     />
     <mkdir dir="${yanel.home.dir}/build/lib"/>
-    <jar destfile="${yanel.home.dir}/build/lib/yanel-cmdl-0.0.1-dev-r${yanel.revision}.jar"
+    <jar destfile="${yanel.home.dir}/build/lib/yanel-cmdl-${yanel.version}-r${yanel.revision}.jar"
       basedir="${classes.dir}"
       includes="org/wyona/yanel/cmdl/**,org/wyona/yanel/util/**"/>
   </target>
@@ -182,7 +182,7 @@
       classpathref="classpath"
     />
     <mkdir dir="${yanel.home.dir}/build/lib"/>
-    <jar destfile="${yanel.home.dir}/build/lib/yanel-webapp-0.0.1-dev-r${yanel.revision}.jar"
+    <jar destfile="${yanel.home.dir}/build/lib/yanel-webapp-${yanel.version}-r${yanel.revision}.jar"
       basedir="${classes.dir}"
       includes="org/wyona/yanel/servlet/**"/>
   </target>
