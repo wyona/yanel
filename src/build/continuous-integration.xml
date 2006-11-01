@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<project name="yanel-continuous-integration" default="continuous-integration" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+  <description>Yanel Build for Continuous Integration</description>
+
+  <target name="continuous-integration">
+    <antcall target="clean"/>
+    <antcall target="deploy"/>
+  </target>
+
+  <target name="start-tomcat" description="starts tomcat">
+    <echo>Starting Tomcat...</echo>
+    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="startup.sh" spawn="true"/>
+    <sleep seconds="20"/>
+  </target>
+
+  <target name="stop-tomcat" description="stops tomcat">
+    <echo>Stopping Tomcat...</echo>
+    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="shutdown.sh" spawn="false"/>
+  </target>
+
+</project>
