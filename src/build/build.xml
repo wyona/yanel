@@ -7,6 +7,7 @@
   <property file="build.properties"/>
 
   <import file="dependencies.xml"/>
+  <import file="continuous-integration.xml"/>
 
   <target name="config" description="Initialize all local properties files" depends="init">
     <echo>As a first time user one does NOT have to configure anything, but just run build.sh resp. build.bat and then yanel.sh resp. yanel.bat!</echo>
