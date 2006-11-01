@@ -32,7 +32,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -45,9 +44,7 @@ import org.apache.nutch.searcher.NutchBean;
 import org.apache.nutch.searcher.Query;
 import org.apache.nutch.searcher.Summary;
 import org.apache.nutch.searcher.Summary.Fragment;
-import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
-import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
@@ -221,7 +218,6 @@ public class NutchResource extends Resource implements ViewableV1 {
                 transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
             }
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            DOMResult xmlResult = new DOMResult();
             transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
             InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
 
