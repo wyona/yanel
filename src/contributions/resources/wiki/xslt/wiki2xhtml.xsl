@@ -205,12 +205,13 @@
       </xsl:when>
 -->
       
-      <!-- TODO: Let's turn the logic here ... -->
-      <xsl:when test="@exist">
-<!--
-        <u><xsl:value-of select="@label"/></u><a href="?yanel.usecase=create&amp;resource-name=wiki&amp;resource-namespace=http://www.wyona.org/yanel/resource/1.0&amp;name={@href}">?</a><xsl:text>&#0160;</xsl:text>
--->
-        <u><xsl:value-of select="@label"/></u><a href="?yanel.usecase=create&amp;name={@href}">?</a><xsl:text>&#0160;</xsl:text>
+      <xsl:when test="@exist = 'false'">
+        <u>
+        <xsl:choose>
+          <xsl:when test="@label"><xsl:value-of select="@label"/></xsl:when>
+          <xsl:otherwise><xsl:value-of select="@href"/></xsl:otherwise>
+        </xsl:choose>
+        </u><a href="?yanel.usecase=create&amp;name={@href}">?</a><xsl:text>&#0160;</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:choose>
