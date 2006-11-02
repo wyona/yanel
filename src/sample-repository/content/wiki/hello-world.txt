@@ -7,6 +7,8 @@ Hello
 
 ----
 
+[newNotExistingLink]
+
 *Forced line break
 
 Line 1\\
