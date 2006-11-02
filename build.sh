@@ -29,4 +29,4 @@ PATH=$PWD/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 # ----- Build Yanel
 #mvn --version
 ant -version
-ant -f src/build/build.xml $@
+ant -f src/build/build.xml "$@"
