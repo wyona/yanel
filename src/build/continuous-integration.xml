@@ -3,18 +3,29 @@
 <project name="yanel-continuous-integration" default="continuous-integration" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
   <description>Yanel Build for Continuous Integration</description>
 
+  <property file="local.continuous-integration.properties"/>
+  <property file="continuous-integration.properties"/>
+
   <target name="continuous-integration">
+    <echo>Cleaning Yanel</echo>
     <antcall target="clean"/>
+    <echo>Deploying Yanel</echo>
     <antcall target="deploy"/>
   </target>
 
   <target name="start-tomcat" description="starts tomcat">
     <echo>Starting Tomcat...</echo>
     <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="startup.sh" spawn="true"/>
-    <sleep seconds="20"/>
+    <waitfor maxwait="60" maxwaitunit="second" checkevery="4000">
+      <and>
+        <socket server="${tomcat.ip}" port="${tomcat.port}"/>
+      </and>
+    </waitfor>
+    <delete file="${document.root}/cruise_is_building.html"/>
   </target>
 
   <target name="stop-tomcat" description="stops tomcat">
+    <copy file="${document.root}/cruise_is_building.html.orig" tofile="${document.root}/cruise_is_building.html"/>
     <echo>Stopping Tomcat...</echo>
     <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="shutdown.sh" spawn="false"/>
   </target>
