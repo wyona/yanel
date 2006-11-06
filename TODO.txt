@@ -2,6 +2,8 @@
 Also see http://bugzilla.wyona.com resp. http://yanel.wyona.org
 
 - grep -rl TODO *
+- Wiki resource cannot be built when offline because of missing dependency
+- Nutch resource: nutch config should also be configurable within RTI and not just globally
 - deploy xml-apis, xerces and xalan as endorsed libs
 - "Bug": Check if Access is being denied if no policiy configuration is being specified ...
 - Downgrading/Upgrading, automatic updates, history, Maven dependency ...
