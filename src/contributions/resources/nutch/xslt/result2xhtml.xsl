@@ -119,7 +119,9 @@
         <xsl:when test="$query = ''"><!-- if no query inserted show empty form --></xsl:when>
         <xsl:otherwise>
           <tr>
-            <td colspan="2"><i18n:message key="yourSearch"/> - <b><xsl:value-of select="$query" /></b> - <i18n:message key="didNotMatchAnyDocments"/></td>
+            <td colspan="2">
+              <i18n:message key="yourSearch"/> - <b><xsl:value-of select="$query" /></b> - <i18n:message key="didNotMatchAnyDocuments"/>
+            </td>
           </tr>
         </xsl:otherwise>
       </xsl:choose>
