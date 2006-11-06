@@ -220,14 +220,13 @@ public class NutchResource extends Resource implements ViewableV1 {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
             InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            //return inputStream;
 
+            // Internationalization
             I18nTransformer i18nTransformer = new I18nTransformer(messages, language);
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(inputStream, i18nTransformer);
-            
             return i18nTransformer.getInputStream();
-
-            
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -305,7 +304,12 @@ public class NutchResource extends Resource implements ViewableV1 {
                         fragmentElement.setAttributeNS(NAME_SPACE, "highlight", "" + fragments[j].isHighlight());
                         fragmentElement.setAttributeNS(NAME_SPACE, "ellipsis", "" + fragments[j].isEllipsis());
                         // Also see org.apache.nutch.searcher.Summary.toHtml()
-                        fragmentElement.appendChild(document.createCDATASection(fragments[j].toString()));
+                        
+                        String fragmentValue = replaceAmpersand(fragments[j].toString());
+                        fragmentValue = fragmentValue.replaceAll("<", "&lt;");
+                        fragmentValue = fragmentValue.replaceAll(">", "&gt;");
+                        
+                        fragmentElement.appendChild(document.createCDATASection(fragmentValue));
                         // TODO: Why does this not work for all cases? ...
                         //fragmentElement.appendChild(document.createCDATASection(replaceAmpersand(fragments[j].getText())));
                     }
@@ -327,7 +331,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
                     .getParentFile()
                     .getAbsolutePath(), "xslt" + File.separator + "result2xhtml.xsl");
-            log.error("DEBUG: XSLT file: " + xsltFile);
+            log.debug("XSLT file: " + xsltFile);
             return new StreamSource(xsltFile);
         }
     }
@@ -353,7 +357,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                     return new Path(xsltPath);
                 }
             }
-            log.error("No XSLT Path within: " + rpRTI.getPath());
+            log.info("No XSLT Path within rti: " + rpRTI.getPath());
         } catch (Exception e) {
             log.warn(e);
         }
