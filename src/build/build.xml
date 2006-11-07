@@ -239,8 +239,8 @@
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="yanel-sample,${yanel.home.dir.forward.slashes}/src/sample-repository/config/repository.xml">
       <replacetoken>yanel-sample,../src/sample-repository/config/repository.xml</replacetoken>
     </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="javadoc,${yanel.home.dir.forward.slashes}/src/javadoc-repository/repository.xml">
-      <replacetoken>javadoc,../src/javadoc-repository/repository.xml</replacetoken>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="javadoc,${yanel.home.dir.forward.slashes}/src/realms/javadoc/repository.xml">
+      <replacetoken>javadoc,../src/realms/javadoc/repository.xml</replacetoken>
     </replace>
 
     <!-- Create yanel.properties -->
@@ -265,8 +265,8 @@
       <replacetoken>yanel-sample,../src/sample-repository/config/</replacetoken>
     </replace>
 
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="javadoc,${yanel.home.dir.forward.slashes}/src/javadoc-repository/yanel-rti-repository.xml">
-      <replacetoken>javadoc,../src/javadoc-repository/yanel-rti-repository.xml</replacetoken>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="javadoc,${yanel.home.dir.forward.slashes}/src/realms/javadoc/yanel-rti-repository.xml">
+      <replacetoken>javadoc,../src/realms/javadoc/yanel-rti-repository.xml</replacetoken>
     </replace>
     <!-- NOTE: No exception shall be thrown even if one does not build the javadocs -->
     <mkdir dir="${build.dir}/javadoc"/>
