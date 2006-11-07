@@ -34,6 +34,8 @@
 
       <dependency groupId="com-ecyrd-jspwiki" artifactId="jspwiki-parser"
                   version="2.4.71"/>
+
+      <!-- TODO: Why is the test lib needed? -->
       <dependency groupId="com-ecyrd-jspwiki" artifactId="jspwiki-parser-test"
                   version="2.4.71"/>
 
