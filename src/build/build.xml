@@ -320,6 +320,7 @@
       <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
     </copy>
 
+    <!-- TODO: Ask to copy the missing libs instead to abort the build process. -->
     <fail message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar). Copy lib (build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar) to Tomcat's endorsed directory.">
       <condition><not><available file="${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar"/></not></condition>
     </fail>
