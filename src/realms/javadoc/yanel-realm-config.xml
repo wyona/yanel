@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<realm-config>
+  <name>Yanel Javadoc</name>
+  <rti>yanel-rti-repository.xml</rti>
+  <data>repository.xml</data>
+
+<!--
+  <ac-policies/>
+  <ac-identities/>
+-->
+</realm-config>
