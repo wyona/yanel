@@ -1,0 +1,2 @@
+Main-Class: org/wyona/yanel/resource/wiki/htmlunit/WikiResourceSuite
+
