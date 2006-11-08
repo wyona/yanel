@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>How a request is being processed</title>
+</head>
+<body><h1>How a new realm is being added</h1><p>
+</p><ul><li>This document explains how to add a new realm to Yanel. We will
+explain this using the Yulup Website as an example. From now on, we
+will refer to the directories that contain Yanel and the Yulup website
+as $YANEL_HOME and $YULUP_WEBSITE .</li><li>Download the Yulup Website from Wyona's repository using subversion:<br/>
+                 svn co http://svn.wyona.com/repos/public/yulup/website</li><li>To add a new realm, we need to edit some properties files placed
+in $YANEL_HOME/conf. To do this, we will copy some *.properties files
+to local.*.properties.</li><li>Copy the file yanel-rti-yarep-properties to
+local.yanel-rti-yarep.properties and add the following entry to the
+configurations property<br/>
+     # Relative Paths<br/>
+     configurations=yulup,$YULUP_WEBSITE/yulup-website/yanel/config/yanel-rti-repository.xml</li><li>Copy the file yarep.properties to local.yarep.properties and add the following entry to the     configurations property<br/>
+     #Relative Paths<br/>
+     configurations=yulup,$YULUP_WEBSITE/yulup-website/yanel/config/data-repository.xml</li><li>Copy the file ac-identities-yarep.properties to
+local.ac-identities-yarep.properties and add the following entry to the
+configurations property<br/>
+    #Relative Paths              configurations=yulup,$YULUP_WEBSITE/yulup-website/yanel/config/ac-identities-repository.xml</li><li>Copy the file ac-policies-yarep.properties to
+local.ac-policies-yarep.properties and add the following entry to the
+configurations property<br/>
+   #Relative Paths<br/>
+   configurations=yulup,$YULUP_WEBSITE/yulup-website/yanel/config/ac-policies-repository.xml</li><li>Copy the file realms.xml to local.realms.xml and add the following entry<br/>
+    &lt;realm id="yulup" mount-point="/yulup/"&gt;<br/>
+       &lt;name&gt;Yulup Website&lt;/name&gt;<br/>
+    &lt;/realm&gt;
+</li></ul></body>
+</html>
