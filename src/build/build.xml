@@ -355,13 +355,19 @@
       <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
     </copy>
 
-    <!-- TODO: Ask to copy the missing libs instead to abort the build process. -->
-    <fail message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar). Copy lib (build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar) to Tomcat's endorsed directory.">
-      <condition><not><available file="${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar"/></not></condition>
-    </fail>
-    <fail message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar). Copy lib (build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar) to Tomcat's endorsed directory.">
-      <condition><not><available file="${tomcat1.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar"/></not></condition>
-    </fail>
+    <condition property="ask-to-copy-endorsed-xerces-to-node1">
+      <not>
+        <available file="${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar"/>
+      </not>
+    </condition>
+    <antcall target="ask-to-copy-endorsed-xerces-to-node1"/>
+    
+    <condition property="ask-to-copy-endorsed-xml-apis-to-node1">
+      <not>
+        <available file="${tomcat1.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar"/>
+      </not>
+    </condition>
+    <antcall target="ask-to-copy-endorsed-xml-apis-to-node1"/>
   </target>
 
   <target name="deploy-to-tomcat-cluster-node2" if="property-tomcat-cluster-node2-is-set" description="Deploy webapp to Tomcat cluster node 2">
@@ -375,12 +381,67 @@
       <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
     </copy>
 
-    <fail message="Endorsed lib is missing (${tomcat2.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar). Copy lib to Tomcat's endorsed directory.">
-      <condition><not><available file="${tomcat2.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar"/></not></condition>
-    </fail>
-    <fail message="Endorsed lib is missing (${tomcat2.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar). Copy lib to Tomcat's endorsed directory.">
-      <condition><not><available file="${tomcat2.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar"/></not></condition>
-    </fail>
+    <condition property="ask-to-copy-endorsed-xerces-node2">
+      <not>
+        <available file="${tomcat2.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar"/>
+      </not>
+    </condition>
+    <antcall target="ask-to-copy-endorsed-xerces-node2"/>
+    
+    <condition property="ask-to-copy-endorsed-xml-apis-node2">
+      <not>
+        <available file="${tomcat2.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar"/>
+      </not>
+    </condition>
+    <antcall target="ask-to-copy-endorsed-xml-apis-node2"/>
+  </target>
+
+  <target name="ask-to-copy-endorsed-xerces-to-node1" if="ask-to-copy-endorsed-xerces-to-node1">
+    <input message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar). Do you want it to be added? (yes/NO):" addproperty="answer"/>
+    <condition property="yes-do-copy-endorsed-xerces-to-node1">
+      <equals arg1="yes" arg2="${answer}"/>
+    </condition>
+    <antcall target="do-copy-endorsed-xerces-to-node1"/>
+  </target>
+
+  <target name="ask-to-copy-endorsed-xml-apis-to-node1" if="ask-to-copy-endorsed-xml-apis-to-node1">
+    <input message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar). Do you want it to be added? (yes/NO):" addproperty="answer"/>
+    <condition property="yes-do-copy-endorsed-xml-apis-to-node1">
+      <equals arg1="yes" arg2="${answer}"/>
+    </condition>
+    <antcall target="do-copy-endorsed-xml-apis-to-node1"/>
+  </target>
+  
+  <target name="do-copy-endorsed-xerces-to-node1" if="yes-do-copy-endorsed-xerces-to-node1">
+    <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar" todir="${tomcat1.home.dir}/common/endorsed" overwrite="false"/>
+  </target>
+  
+  <target name="do-copy-endorsed-xml-apis-to-node1" if="yes-do-copy-endorsed-xml-apis-to-node1">
+    <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${tomcat1.home.dir}/common/endorsed" overwrite="false"/>
+  </target>
+
+  <target name="ask-to-copy-endorsed-xerces-node2" if="ask-to-copy-endorsed-xerces-node2">
+    <input message="Endorsed lib is missing (${tomcat2.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar). Do you want it to be added? (yes/NO):" addproperty="answer"/>
+    <condition property="yes-do-copy-endorsed-xerces-node2">
+      <equals arg1="yes" arg2="${answer}"/>
+    </condition>
+    <antcall target="do-copy-endorsed-xerces-node2"/>
+  </target>
+  
+  <target name="do-copy-endorsed-xerces-node2" if="yes-do-copy-endorsed-xerces-node2">
+    <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar" todir="${tomcat2.home.dir}/common/endorsed" overwrite="false"/>
+  </target>
+
+  <target name="ask-to-copy-endorsed-xml-apis-node2" if="ask-to-copy-endorsed-xml-apis-node2">
+    <input message="Endorsed lib is missing (${tomcat2.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar). Do you want it to be added? (yes/NO):" addproperty="answer"/>
+    <condition property="yes-do-copy-endorsed-xml-apis-node2">
+      <equals arg1="yes" arg2="${answer}"/>
+    </condition>
+    <antcall target="do-copy-endorsed-xml-apis-node2"/>
+  </target>
+  
+  <target name="do-copy-endorsed-xml-apis-node2" if="yes-do-copy-endorsed-xml-apis-node2">
+    <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${tomcat2.home.dir}/common/endorsed" overwrite="false"/>
   </target>
 
   <target name="clean" description="Clean build" depends="init, clean-resources">
