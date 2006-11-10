@@ -13,7 +13,7 @@
     Getting Started
     ---------------
 
-    1) configure
+    1) configure (NOTE: Will also ask for SSL configuration)
     2) build (NOTE: You might have to configure a proxy. Please see below for more details)
     3) yanel
     4) http://127.0.0.1:8080
