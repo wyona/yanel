@@ -9,7 +9,7 @@
   <import file="dependencies.xml"/>
   <import file="continuous-integration.xml"/>
   
-  <target name="createCK" description="Prepare Certificate Keystore" depends="">
+  <target name="createCK" description="Prepare Certificate Keystore" depends="init">
     <!-- delete already created file -->
     <delete file="${certificate.keystore}"/>
     <!-- create new keystore file -->
@@ -28,9 +28,14 @@
       <arg line="-dname"/>
       <arg value="CN=${certificate.common.name}, OU=${certificate.organisation.unit}, O=${certificate.organisation}, L=${certificate.locality.name}, S=${certificate.state.name}, C=${certificate.country.code}"/>
     </exec>
+
+
     <!-- copy file to tomcat dir -->
+<!--
     <copy file="${certificate.keystore}" todir="${tomcat1.home.dir}"/>
+-->
     <!-- add Connector entry if not exist or modify with out settings -->
+<!--
     <xslt in="${tomcat1.home.dir}/conf/server.xml"
           out="${tomcat1.home.dir}/conf/server.xml.ssl"
           style="connector.xsl">
@@ -39,9 +44,12 @@
       <param name="keystorePass" expression="${certificate.keypass}"/>
       <param name="defaultPort" expression="${servlet.default.port}"/>
     </xslt>
+-->
     <!--  replace file and backup original -->
+<!--
     <copy file="${tomcat1.home.dir}/conf/server.xml" tofile="${tomcat1.home.dir}/conf/server.xml.BACKUP"/>
     <move file="${tomcat1.home.dir}/conf/server.xml.ssl" tofile="${tomcat1.home.dir}/conf/server.xml"/>
+-->
   </target>
   
   <target name="config" description="Initialize all local properties files" depends="createCK, init">
