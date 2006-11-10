@@ -11,7 +11,7 @@
   
   <target name="createCK" description="Prepare Certificate Keystore" depends="init">
     <!-- delete already created file -->
-    <delete file="${certificate.keystore}"/>
+    <delete file="${build.dir}/${certificate.keystore}"/>
     <!-- create new keystore file -->
     <exec executable="keytool">
       <arg line="-genkey"/>
@@ -24,7 +24,7 @@
       <arg line="-keypass"/>
       <arg value="${certificate.keypass}"/>
       <arg line="-keystore"/>
-      <arg value="${certificate.keystore}"/>
+      <arg value="${build.dir}/${certificate.keystore}"/>
       <arg line="-dname"/>
       <arg value="CN=${certificate.common.name}, OU=${certificate.organisation.unit}, O=${certificate.organisation}, L=${certificate.locality.name}, S=${certificate.state.name}, C=${certificate.country.code}"/>
     </exec>
