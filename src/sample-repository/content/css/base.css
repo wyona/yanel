@@ -1,0 +1,99 @@
+#mainFrame {
+  position: absolute;
+  left: 50%;
+  margin-left: -400px;
+  top:0px;
+  background: white;
+  width: 780px;
+  height: 700px;
+}
+#header {
+  position: absolute;
+  top: 17px;
+  width: 780px;
+  height: 23px;
+  background: black;
+  padding: 15px 0px 0px 15px;
+  border:0px;
+}
+#navigation {
+  position: absolute;
+  top: 70px;
+  left: 0px;
+  width: 170px;
+  font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
+  font-size: 11px;
+  color: #777777;
+  padding: 20px 0px 20px 10px;
+  border: 1px solid lightgrey;
+}
+
+#content {
+  position:absolute;
+  top: 70px;
+  left: 200px;
+  font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
+  font-size: 10px;
+  min-height: 441px;
+  color: #777777;
+  padding: 2px 20px 10px 10px;
+  width: 560px;
+  border: 1px solid lightgrey;
+  
+}
+
+#footer_container {
+  position:fixed;
+  bottom:0; left:0; right:0;
+  text-align:center;
+  margin:0;
+  height:2em;
+  z-index:3;
+}
+
+#footer {
+  position:absolute;
+  font-size: 11px;
+  font-color: lightgrey;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background:white;
+  z-index:3;
+}
+
+input {
+  font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
+  font-size: 12px;
+  color: #000000;
+  text-decoration: none;
+  border: 1px solid #777777;
+}
+select {
+  border-top: 1px solid #777777;
+}
+a:link {
+  font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
+  font-size: 10px;
+  color: lightblue;
+  text-decoration: none;
+  /* padding-left: 5px; */
+  line-height: 20px
+}
+a:visited {
+  font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
+  font-size: 10px;
+  color: purple;
+  text-decoration: none;
+  line-height: 20px
+}
+a:hover {
+  font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
+  font-size: 10spx;
+  color: lightgreen;
+  text-decoration: none;
+  /* padding-left: 5px; */
+  line-height: 20px
+}
+
