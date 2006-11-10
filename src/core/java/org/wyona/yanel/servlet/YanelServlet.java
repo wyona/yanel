@@ -714,9 +714,6 @@ public class YanelServlet extends HttpServlet {
         if (value != null && value.equals("create")) {
             log.debug("Create new resource ...");
             role = new Role("create");
-        } else {
-            log.debug("Role will be 'view'!");
-            role = new Role("view");
         }
 
         boolean authorized = false;
