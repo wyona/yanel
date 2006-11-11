@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<repository>
+  <name>Yanel Welcome and Admin Data Repository</name>
+
+  <paths src="../data-paths" fallback="true"/>
+
+  <storage class="org.wyona.yarep.core.impl.fs.FileSystemStorage">
+    <content src="../data"/>
+  </storage>
+</repository>
