@@ -325,8 +325,8 @@
     <!-- Create yarep.properties -->
     <copy file="${yanel.home.dir}/conf/yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/local.yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" overwrite="true" failonerror="false"/>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="yanel-sample,${yanel.home.dir.forward.slashes}/src/realms/yanel-website/config/repository.xml">
-      <replacetoken>yanel-sample,../src/realms/yanel-website/config/repository.xml</replacetoken>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="yanel-website,${yanel.home.dir.forward.slashes}/src/realms/yanel-website/config/repository.xml">
+      <replacetoken>yanel-website,../src/realms/yanel-website/config/repository.xml</replacetoken>
     </replace>
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="javadoc,${yanel.home.dir.forward.slashes}/src/realms/javadoc/repository.xml">
       <replacetoken>javadoc,../src/realms/javadoc/repository.xml</replacetoken>
@@ -347,14 +347,14 @@
 
 
 
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="yanel-sample,${yanel.home.dir.forward.slashes}/src/realms/yanel-website/config/repository.xml">
-      <replacetoken>yanel-sample,../src/realms/yanel-website/config/repository.xml</replacetoken>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="yanel-website,${yanel.home.dir.forward.slashes}/src/realms/yanel-website/config/repository.xml">
+      <replacetoken>yanel-website,../src/realms/yanel-website/config/repository.xml</replacetoken>
     </replace>
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" value="security-sample,${yanel.home.dir.forward.slashes}/src/realms/yanel-website/config/">
       <replacetoken>security-sample,../src/realms/yanel-website/config/</replacetoken>
     </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" value="yanel-sample,${yanel.home.dir.forward.slashes}/src/realms/yanel-website/config/">
-      <replacetoken>yanel-sample,../src/realms/yanel-website/config/</replacetoken>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" value="yanel-website,${yanel.home.dir.forward.slashes}/src/realms/yanel-website/config/">
+      <replacetoken>yanel-website,../src/realms/yanel-website/config/</replacetoken>
     </replace>
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="javadoc,${yanel.home.dir.forward.slashes}/src/realms/javadoc/yanel-rti-repository.xml">
