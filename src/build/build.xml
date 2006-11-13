@@ -331,6 +331,9 @@
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="javadoc,${yanel.home.dir.forward.slashes}/src/realms/javadoc/repository.xml">
       <replacetoken>javadoc,../src/realms/javadoc/repository.xml</replacetoken>
     </replace>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="welcome,${yanel.home.dir.forward.slashes}/src/realms/welcome-admin/yanel/config/data-repository.xml">
+      <replacetoken>welcome,../src/realms/welcome-admin/yanel/config/data-repository.xml</replacetoken>
+    </replace>
 
     <!-- Create yanel.properties -->
     <condition property="local.yanel.config.exists">
@@ -359,6 +362,10 @@
     </replace>
     <!-- NOTE: No exception shall be thrown even if one does not build the javadocs -->
     <mkdir dir="${build.dir}/javadoc"/>
+
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="welcome,${yanel.home.dir.forward.slashes}/src/realms/welcome-admin/yanel/config/rti-repository.xml">
+      <replacetoken>welcome,../src/realms/welcome-admin/yanel/config/rti-repository.xml</replacetoken>
+    </replace>
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.file.forward.slashes}">
       <replacetoken>@LOG4J_FILE@</replacetoken>
