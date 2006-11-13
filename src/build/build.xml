@@ -104,8 +104,10 @@
     <condition property="yes.continue">
       <equals arg1="yes" arg2="${answer}"/>
     </condition>
-    <fail unless="yes.continue" message="configuration aborted"/>
+    <antcall target="configure-local"/>
+  </target>
 
+  <target name="configure-local" if="yes.continue">
     <echo>Will now create local properties files if these do not exist.</echo>
 
     <copy file="${yanel.home.dir}/src/build/build.properties" tofile="${yanel.home.dir}/src/build/local.build.properties" overwrite="false"/>
