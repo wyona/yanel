@@ -28,6 +28,10 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
   <name>Yanel Javadoc</name>
 </realm>
 
+<realm id="welcome" mount-point="/welcome/">
+  <name>Yanel Welcome and General Administration</name>
+</realm>
+
 <!--
 <realm id="yulup-demo" mount-point="/yulup-demo/">
   <name>Yulup Demo</name>
