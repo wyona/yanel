@@ -3,7 +3,7 @@
 <realms xmlns="http://www.wyona.org/yanel/1.0">
 
 <!-- ROOT realm -->
-<realm id="yanel-sample" mount-point="/" root="true">
+<realm id="yanel-website" mount-point="/yanel-website/" root="false">
   <name>Yanel Website</name>
 
 <!--
@@ -28,7 +28,7 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
   <name>Yanel Javadoc</name>
 </realm>
 
-<realm id="welcome" mount-point="/welcome/">
+<realm id="welcome" mount-point="/" root="true">
   <name>Yanel Welcome and General Administration</name>
 </realm>
 
