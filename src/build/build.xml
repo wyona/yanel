@@ -350,8 +350,8 @@
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="yanel-website,${yanel.home.dir.forward.slashes}/src/realms/yanel-website/config/repository.xml">
       <replacetoken>yanel-website,../src/realms/yanel-website/config/repository.xml</replacetoken>
     </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" value="security-sample,${yanel.home.dir.forward.slashes}/src/realms/yanel-website/config/">
-      <replacetoken>security-sample,../src/realms/yanel-website/config/</replacetoken>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" value="${yanel.home.dir.forward.slashes}/src/realms">
+      <replacetoken>../src/realms</replacetoken>
     </replace>
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" value="yanel-website,${yanel.home.dir.forward.slashes}/src/realms/yanel-website/config/">
       <replacetoken>yanel-website,../src/realms/yanel-website/config/</replacetoken>
