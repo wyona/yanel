@@ -718,11 +718,9 @@ public class YanelServlet extends HttpServlet {
         urlString = urlString.replaceAll("http:", "https:");
         urlString = urlString.replaceAll("" + port, "" + sslPort);
 
-        String linkMeTo = urlString + "?" + request.getQueryString();
-
-        response.setHeader("Location", linkMeTo);
-        response.setStatus(307);
-        log.info("redirecting to SECURE SSL URL: " + linkMeTo);
+        response.setHeader("Location", urlString);
+        response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT);
+        log.info("redirecting to SECURE SSL URL: " + urlString);
         return response;
     }
 
