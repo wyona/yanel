@@ -404,6 +404,16 @@
     <echo></echo>
     <echo>INFO: Start using Yanel by executing yanel.sh</echo>
   </target>
+  
+  <target name="setServerProperties" description="setting server properties">
+    <copy file="server.properties"  todir="${build.dir}" />
+    <replace file="${build.dir}/server.properties" value="${servlet.default.port}">
+      <replacetoken>@@PORT_NO@@</replacetoken>
+    </replace>
+    <replace file="${build.dir}/server.properties" value="${certificate.port.number}">
+      <replacetoken>@@SSL_PORT@@</replacetoken>
+    </replace>
+  </target>
 
   <target name="deploy-to-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Deploy webapp to Tomcat cluster node 1">
     <echo>Copy webapp (${tomcat1.webapps.dir}):</echo>
@@ -429,6 +439,9 @@
       </not>
     </condition>
     <antcall target="ask-to-copy-endorsed-xml-apis-to-node1"/>
+    
+    <antcall target="setServerProperties"/>
+    <copy file="${build.dir}/server.properties"  todir="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/" />
   </target>
 
   <target name="deploy-to-tomcat-cluster-node2" if="property-tomcat-cluster-node2-is-set" description="Deploy webapp to Tomcat cluster node 2">
@@ -455,6 +468,9 @@
       </not>
     </condition>
     <antcall target="ask-to-copy-endorsed-xml-apis-node2"/>
+    
+    <antcall target="setServerProperties"/>
+    <copy file="${build.dir}/server.properties"  todir="${tomcat2.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/" />
   </target>
 
   <target name="ask-to-copy-endorsed-xerces-to-node1" if="ask-to-copy-endorsed-xerces-to-node1">
