@@ -24,4 +24,10 @@ PATH=$PWD/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 # ----- Start/Stop Yanel
 #mvn --version
 ant -version
-ant -f src/build/build.xml run-yanel-cmdl -Dyanel.path=$1
+if [ "$1" == "start" ]; then
+  ant -f src/build/build.xml start-tomcat
+elif [ "$1" == "stop" ]; then
+  ant -f src/build/build.xml stop-tomcat
+else
+  ant -f src/build/build.xml run-yanel-cmdl -Dyanel.path=$1
+fi
