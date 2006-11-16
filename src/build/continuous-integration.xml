@@ -15,19 +15,28 @@
 
   <target name="start-tomcat" description="starts tomcat">
     <echo>Starting Tomcat...</echo>
-    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="startup.sh" spawn="true"/>
+    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="startup.sh" spawn="false"/>
     <waitfor maxwait="60" maxwaitunit="second" checkevery="4000">
       <and>
         <socket server="${tomcat.ip}" port="${tomcat.port}"/>
       </and>
     </waitfor>
-    <delete file="${document.root}/cruise_is_building.html"/>
+    <available file="${document.root}/cruise_is_building.html" property="cruise_is_building_html_available"/>
+    <antcall target="delete-building-hint"/>
   </target>
 
   <target name="stop-tomcat" description="stops tomcat">
-    <copy file="${document.root}/cruise_is_building.html.orig" tofile="${document.root}/cruise_is_building.html"/>
+    <available file="${document.root}/cruise_is_building.html.orig" property="cruise_is_building_html_orig_available"/>
+    <antcall target="copy-building-hint"/>
     <echo>Stopping Tomcat...</echo>
     <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="shutdown.sh" spawn="false"/>
   </target>
 
+  <target name="copy-building-hint" if="cruise_is_building_html_orig_available" description="copy a message to the httpd saying yanel is stoped and building">
+    <copy file="${document.root}/cruise_is_building.html.orig" tofile="${document.root}/cruise_is_building.html"/>
+  </target>
+
+  <target name="delete-building-hint" if="cruise_is_building_html_available" description="removes the message from the httpd saying yanel is stoped and building">
+    <delete file="${document.root}/cruise_is_building.html"/>
+  </target>
 </project>
