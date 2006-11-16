@@ -926,6 +926,8 @@ public class YanelServlet extends HttpServlet {
      */
     private String getRequestURLQS(HttpServletRequest request, String addQS, boolean xml) {
         Realm realm = map.getRealm(new Path(request.getServletPath()));
+        // TODO: Handle this exception more gracefully!
+        if (realm == null) log.error("No realm found for path " + new Path(request.getServletPath()));
         String proxyHostName = realm.getProxyHostName();
         String proxyPort = realm.getProxyPort();
         String proxyPrefix = realm.getProxyPrefix();
