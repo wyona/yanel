@@ -402,7 +402,7 @@
   <target name="final-message">
     <echo>INFO: Build has been completed successfully :-)</echo>
     <echo></echo>
-    <echo>INFO: Start using Yanel by executing "yanel.sh start" resp. "yanel.sh /hello/world.html"</echo>
+    <echo>INFO: Start using Yanel by executing "yanel(.sh) start" resp. "yanel(.sh) /hello/world.html"</echo>
   </target>
   
   <target name="setServerProperties" description="setting server properties">
