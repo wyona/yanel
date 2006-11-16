@@ -13,10 +13,10 @@
     Getting Started
     ---------------
 
-    1) configure (NOTE: Will also ask for SSL configuration)
-    2) build (NOTE: You might have to configure a proxy. Please see below for more details)
-    3) yanel
-    4) http://127.0.0.1:8080
+    1) Run "configure" (NOTE: Will also ask for SSL configuration)
+    2) Run "build" (NOTE: You might have to configure a proxy. Please see below for more details)
+    3) Run "yanel start/stop" to start or stop Tomcat resp. run "yanel /hello/world.html" from the command line
+    4) Browse to http://127.0.0.1:8080
 
 
     More Information
