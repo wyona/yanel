@@ -89,43 +89,53 @@ public class MapImpl implements Map {
      *
      */
     public Realm[] getRealms() {
-        String[] repoIds = repoFactory.getRepositoryIDs();
-        Repository root = repoFactory.firstRepository();
-        Realm[] realms = new Realm[repoIds.length];
-        for (int i = 0;i < realms.length; i++) {
-            Repository repo = repoFactory.newRepository(repoIds[i]);
-            if (repoIds[i].equals(root.getID())) {
-                // ROOT realm
-                realms[i] = realmConfig.getRootRealm();
-                //realms[i] = new Realm(repo.getName(), repo.getID(), new Path("/"));
-            } else {
-                realms[i] = realmConfig.getRealm(repo.getID());
-                if (realms[i] == null) {
-                    log.warn("No such realm defined: " + repo.getID() + " (fallback to repo configuration ...)");
-                    realms[i] = new Realm(repo.getName(), repo.getID(), new Path("/" + repoIds[i] + "/"));
+        try {
+            String[] repoIds = repoFactory.getRepositoryIDs();
+            Repository root = repoFactory.firstRepository();
+            Realm[] realms = new Realm[repoIds.length];
+            for (int i = 0;i < realms.length; i++) {
+                Repository repo = repoFactory.newRepository(repoIds[i]);
+                if (repoIds[i].equals(root.getID())) {
+                    // ROOT realm
+                    realms[i] = realmConfig.getRootRealm();
+                    //realms[i] = new Realm(repo.getName(), repo.getID(), new Path("/"));
+                } else {
+                    realms[i] = realmConfig.getRealm(repo.getID());
+                    if (realms[i] == null) {
+                        log.warn("No such realm defined: " + repo.getID() + " (fallback to repo configuration ...)");
+                        realms[i] = new Realm(repo.getName(), repo.getID(), new Path("/" + repoIds[i] + "/"));
+                    }
                 }
             }
+            return realms;
+        } catch (Exception e) {
+            log.error(e);
+            return null;
         }
-        return realms;
     }
 
     /**
      *
      */
     public Realm getRealm(Path path) {
-        RepoPath rp = new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), repoFactory);
-        Realm realm = null;
-        Repository root = repoFactory.firstRepository();
-        if (rp.getRepo().getID().equals(root.getID())) {
-            realm = realmConfig.getRootRealm();
-            //realm = new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/"));
-        } else {
-            realm = realmConfig.getRealm(rp.getRepo().getID());
-            //realm = new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/" + rp.getRepo().getID() + "/"));
+        try {
+            RepoPath rp = new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), repoFactory);
+            Realm realm = null;
+            Repository root = repoFactory.firstRepository();
+            if (rp.getRepo().getID().equals(root.getID())) {
+                realm = realmConfig.getRootRealm();
+                //realm = new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/"));
+            } else {
+                realm = realmConfig.getRealm(rp.getRepo().getID());
+                //realm = new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/" + rp.getRepo().getID() + "/"));
+            }
+    
+            //realm.setProxy(realmConfig.proxyHostName, realmConfig.proxyPort, realmConfig.proxyPrefix);
+    
+            return realm;
+        } catch (Exception e) {
+            log.error(e);
+            return null;
         }
-
-        //realm.setProxy(realmConfig.proxyHostName, realmConfig.proxyPort, realmConfig.proxyPrefix);
-
-        return realm;
     }
 }
