@@ -36,6 +36,22 @@
     <li>See conf/catalog.xml resp. classes/catalog.xml</li>
   </ul>
 </li>
+<li>Install Apache-Httpd with SSL support 
+  <ul>
+    <li>Download Apache-Httpd (http://httpd.apache.org)</li>
+       <li>Download Open-SSL (http://www.openssl.org)</li>
+       <li>Build Open-SSL</li>
+       <li>./config</li>
+       <li>make</li>
+       <li>make install</li>
+       <li>Build Apache-Httpd with SSL</li>
+       <li>./configure --enable-layout=Apache --enable-ssl=shared --with-ssl=/Path/to/Open-SSL-Folder --enable-static-support --with-mpm=worker --enable-nonportable-atomics --enable-proxy</li>
+       <li>make</li>
+       <li>make install</li>
+       <li>Create SSL-Key</li>
+       <li>To be continued ...</li>
+  </ul>
+</li>
 </ul>
 
 </body>
