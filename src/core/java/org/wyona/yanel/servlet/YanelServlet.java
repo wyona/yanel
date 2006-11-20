@@ -70,6 +70,8 @@ public class YanelServlet extends HttpServlet {
     private static final String METHOD_PUT = "PUT";
     private static final String METHOD_DELETE = "DELETE";
 
+    private String sslPort = null;
+
     /**
      *
      */
@@ -87,6 +89,9 @@ public class YanelServlet extends HttpServlet {
         map = mf.newMap();
 
         yanel = new Yanel();
+
+        //sslPort = "8443";
+        sslPort = config.getInitParameter("ssl-port");
     }
 
     /**
@@ -773,6 +778,23 @@ public class YanelServlet extends HttpServlet {
 
         if(!authorized) {
             log.warn("Access denied: " + getRequestURLQS(request, null, false));
+
+            if(!request.isSecure()) {
+                if(sslPort != null) {
+                    log.error("DEBUG: Redirect to SSL ...");
+                    try {
+	                URL url = new URL(getRequestURLQS(request, null, false).toString());
+                        url = new URL("https", url.getHost(), new Integer(sslPort).intValue(), url.getFile());
+                        response.setHeader("Location", url.toString());
+                        response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT);
+                        return response;
+                    } catch (Exception e) {
+                        log.error(e);
+                    }
+                } else {
+                    log.warn("SSL does not seem to be configured!");
+                }
+            }
 
             // TODO: Shouldn't this be here instead at the beginning of service() ...?
             //if(doAuthenticate(request, response) != null) return response;
