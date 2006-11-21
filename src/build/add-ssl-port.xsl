@@ -22,18 +22,11 @@
 
   <xsl:template match="webApp:servlet">
     <servlet>
-      <xsl:copy-of select="webApp:servlet-name"/>
-      <xsl:copy-of select="webApp:servlet-class"/>
-      <xsl:for-each select="webApp:init-param">
-        <xsl:variable name="pName" select="webApp:param-name"/>
-        <xsl:variable name="pValue" select="webApp:param-value"/>
-        <xsl:if test="$pName = 'ssl-port'">
-          <init-param>
-            <param-name>ssl-port</param-name>
-            <param-value><xsl:value-of select="$portNumber"/></param-value>
-          </init-param>
-        </xsl:if>
-      </xsl:for-each>
+      <xsl:copy-of select="*"/>
+       <init-param>
+         <param-name>ssl-port</param-name>
+         <param-value><xsl:value-of select="$portNumber"/></param-value>
+       </init-param>
     </servlet>
   </xsl:template>
 
