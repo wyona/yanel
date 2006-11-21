@@ -19,6 +19,12 @@
   <servlet>
     <servlet-name>YanelServlet</servlet-name>
     <servlet-class>org.wyona.yanel.servlet.YanelServlet</servlet-class>
+    
+    <init-param>
+      <param-name>ssl-port</param-name>
+      <param-value>443</param-value>
+    </init-param>
+    
   </servlet>
 
   <servlet-mapping>

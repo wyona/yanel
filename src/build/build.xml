@@ -23,7 +23,7 @@
     <xslt in="${tomcat1.home.dir}/conf/server.xml"
           out="${tomcat1.home.dir}/conf/server.xml.ssl"
           style="connector.xsl">
-      <param name="portNumber" expression="${certificate.port.number}"/>
+      <param name="portNumber" expression="${tomcat1.ssl.port}"/>
       <param name="keystoreFile" expression="${certificate.keystore}"/>
       <param name="keystorePass" expression="${certificate.keypass}"/>
       <param name="defaultPort" expression="${servlet.default.port}"/>
@@ -49,7 +49,7 @@
     <xslt in="${tomcat2.home.dir}/conf/server.xml"
           out="${tomcat2.home.dir}/conf/server.xml.ssl"
           style="connector.xsl">
-      <param name="portNumber" expression="${certificate.port.number}"/>
+      <param name="portNumber" expression="${tomcat2.ssl.port}"/>
       <param name="keystoreFile" expression="${certificate.keystore}"/>
       <param name="keystorePass" expression="${certificate.keypass}"/>
       <param name="defaultPort" expression="${servlet.default.port}"/>
@@ -389,10 +389,16 @@
     <condition property="property-tomcat-cluster-node1-is-set">
       <isset property="tomcat1.home.dir"/>
     </condition>
+    <condition property="property-tomcat1-ssl-port-is-set">
+      <isset property="tomcat1.ssl.port"/>
+    </condition>
     <antcall target="deploy-to-tomcat-cluster-node1"/>
 
     <condition property="property-tomcat-cluster-node2-is-set">
       <isset property="tomcat2.home.dir"/>
+    </condition>
+    <condition property="property-tomcat2-ssl-port-is-set">
+      <isset property="tomcat2.ssl.port"/>
     </condition>
     <antcall target="deploy-to-tomcat-cluster-node2"/>
 
@@ -403,16 +409,6 @@
     <echo>INFO: Build has been completed successfully :-)</echo>
     <echo></echo>
     <echo>INFO: Start using Yanel by executing "yanel(.sh) start" resp. "yanel(.sh) /hello/world.html"</echo>
-  </target>
-  
-  <target name="setServerProperties" description="setting server properties">
-    <copy file="server.properties"  todir="${build.dir}" />
-    <replace file="${build.dir}/server.properties" value="${servlet.default.port}">
-      <replacetoken>@@PORT_NO@@</replacetoken>
-    </replace>
-    <replace file="${build.dir}/server.properties" value="${certificate.port.number}">
-      <replacetoken>@@SSL_PORT@@</replacetoken>
-    </replace>
   </target>
 
   <target name="deploy-to-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Deploy webapp to Tomcat cluster node 1">
@@ -425,7 +421,8 @@
     <copy todir="${tomcat1.webapps.dir}/${servlet.context.prefix}">
       <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
     </copy>
-
+    <antcall target="patch-tomcat-cluster-node-1-ssl-port"/>
+    
     <condition property="ask-to-copy-endorsed-xerces-to-node1">
       <not>
         <available file="${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar"/>
@@ -440,10 +437,28 @@
     </condition>
     <antcall target="ask-to-copy-endorsed-xml-apis-to-node1"/>
     
-    <antcall target="setServerProperties"/>
-    <copy file="${build.dir}/server.properties"  todir="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/" />
   </target>
-
+  
+  <target name="patch-tomcat-cluster-node-1-ssl-port" if="property-tomcat1-ssl-port-is-set">
+    <echo>ssl port for tomcat is set</echo>
+    <xslt in="${tomcat1.home.dir}/webapps/yanel/WEB-INF/web.xml"
+          out="${tomcat1.home.dir}/webapps/yanel/WEB-INF/web.xml.tmp"
+          style="sslPort.xsl">
+      <param name="portNumber" expression="${tomcat1.ssl.port}"/>
+    </xslt>
+    <move file="${tomcat1.home.dir}/webapps/yanel/WEB-INF/web.xml.tmp" tofile="${tomcat1.home.dir}/webapps/yanel/WEB-INF/web.xml"/>
+  </target>
+  
+  <target name="patch-tomcat-cluster-node-2-ssl-port" if="property-tomcat-cluster-node2-is-set">
+    <xslt in="${tomcat2.home.dir}/webapps/yanel/WEB-INF/web.xml"
+          out="${tomcat2.home.dir}/webapps/yanel/WEB-INF/web.xml.tmp"
+          style="sslPort.xsl">
+      <param name="portNumber" expression="${tomcat2.ssl.port}"/>
+    </xslt>
+    <move file="${tomcat2.home.dir}/webapps/yanel/WEB-INF/web.xml.tmp" tofile="${tomcat2.home.dir}/webapps/yanel/WEB-INF/web.xml"/>
+  </target>
+  
+  
   <target name="deploy-to-tomcat-cluster-node2" if="property-tomcat-cluster-node2-is-set" description="Deploy webapp to Tomcat cluster node 2">
     <echo>Copy webapp (${tomcat2.webapps.dir}):</echo>
 
@@ -468,9 +483,6 @@
       </not>
     </condition>
     <antcall target="ask-to-copy-endorsed-xml-apis-node2"/>
-    
-    <antcall target="setServerProperties"/>
-    <copy file="${build.dir}/server.properties"  todir="${tomcat2.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/" />
   </target>
 
   <target name="ask-to-copy-endorsed-xerces-to-node1" if="ask-to-copy-endorsed-xerces-to-node1">
