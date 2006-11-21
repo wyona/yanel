@@ -26,7 +26,7 @@
       <param name="portNumber" expression="${tomcat1.ssl.port}"/>
       <param name="keystoreFile" expression="${certificate.keystore}"/>
       <param name="keystorePass" expression="${certificate.keypass}"/>
-      <param name="defaultPort" expression="${servlet.default.port}"/>
+      <param name="defaultPort" expression="${tomcat1.http.port}"/>
     </xslt>
     <tstamp>
       <format property="timestamp" pattern="yyyyMMdd'T'HHmmss"/>
@@ -52,7 +52,7 @@
       <param name="portNumber" expression="${tomcat2.ssl.port}"/>
       <param name="keystoreFile" expression="${certificate.keystore}"/>
       <param name="keystorePass" expression="${certificate.keypass}"/>
-      <param name="defaultPort" expression="${servlet.default.port}"/>
+      <param name="defaultPort" expression="${tomcat2.http.port}"/>
     </xslt>
     <tstamp>
       <format property="timestamp" pattern="yyyyMMdd'T'HHmmss"/>
