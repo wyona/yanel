@@ -36,20 +36,32 @@
     <li>See conf/catalog.xml resp. classes/catalog.xml</li>
   </ul>
 </li>
+
 <li>Install Apache-Httpd with SSL support 
   <ul>
-    <li>Download Apache-Httpd (http://httpd.apache.org)</li>
-       <li>Download Open-SSL (http://www.openssl.org)</li>
-       <li>Build Open-SSL</li>
-       <li>./config</li>
+       <li>Download <a href="http://www.openssl.org">Open-SSL</a> version 0.9.8d or higher<br/></li>
+       <li>Build Open-SSL
+       <ul>
+         <li>./config</li>
+         <li>make</li>
+         <li>make install (will install at /usr/local/ssl by default, see INSTALL file for more details)</li>
+       </ul></li>
+       <li>Test Open-SSL installation by typing "/usr/local/ssl/bin/openssl version"</li>
+       <li>Download <a href="http://httpd.apache.org">Apache-Httpd</a> version 2.2.3 or higher</li>
+       <li>Build Apache-Httpd with SSL
+         <ul>
+       <li>./configure --enable-ssl=shared --with-ssl=/usr/local/ssl --enable-proxy --enable-proxy-http<br/></li>
        <li>make</li>
-       <li>make install</li>
-       <li>Build Apache-Httpd with SSL</li>
-       <li>./configure --enable-layout=Apache --enable-ssl=shared --with-ssl=/Path/to/Open-SSL-Folder --enable-static-support --with-mpm=worker --enable-nonportable-atomics --enable-proxy</li>
-       <li>make</li>
-       <li>make install</li>
-       <li>Create SSL-Key</li>
-       <li>To be continued ...</li>
+       <li>make install (will install at /usr/local/apache2, see INSTALL file for more details)<br/></li>
+         </ul></li>
+       <li>Create SSL-Key
+         <ul>
+           <li>openssl genrsa 1024 > /usr/local/apache2/conf/server.key</li>
+           <li>openssl req -new -x509 -nodes -sha1 -days 365 -key /usr/local/apache2/conf/server.key > /usr/local/apache2/conf/server.crt</li>
+         </ul></li>
+       <li>Uncomment SSL config within /usr/local/apache2/conf/httpd.conf (Include conf/extra/httpd-ssl.conf)</li>
+       <li>Startup Apache: /usr/local/apache2/bin/apachectl start</li>
+       <li>Test SSL: https://127.0.0.1:80</li>
   </ul>
 </li>
 </ul>
