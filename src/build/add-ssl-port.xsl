@@ -17,9 +17,9 @@
       <xsl:apply-templates select="@*"/>
       <xsl:apply-templates />
     </xsl:copy>
-    
   </xsl:template>
 
+  <!-- TODO: What about copying attributes! -->
   <xsl:template match="webApp:servlet">
     <servlet>
       <xsl:copy-of select="*"/>
