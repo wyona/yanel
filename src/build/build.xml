@@ -441,21 +441,21 @@
   
   <target name="patch-tomcat-cluster-node-1-ssl-port" if="property-tomcat1-ssl-port-is-set">
     <echo>ssl port for tomcat is set</echo>
-    <xslt in="${tomcat1.home.dir}/webapps/yanel/WEB-INF/web.xml"
-          out="${tomcat1.home.dir}/webapps/yanel/WEB-INF/web.xml.tmp"
+    <xslt in="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"
+          out="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp"
           style="add-ssl-port.xsl">
       <param name="portNumber" expression="${tomcat1.ssl.port}"/>
     </xslt>
-    <move file="${tomcat1.home.dir}/webapps/yanel/WEB-INF/web.xml.tmp" tofile="${tomcat1.home.dir}/webapps/yanel/WEB-INF/web.xml"/>
+    <move file="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp" tofile="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"/>
   </target>
   
   <target name="patch-tomcat-cluster-node-2-ssl-port" if="property-tomcat-cluster-node2-is-set">
-    <xslt in="${tomcat2.home.dir}/webapps/yanel/WEB-INF/web.xml"
-          out="${tomcat2.home.dir}/webapps/yanel/WEB-INF/web.xml.tmp"
+    <xslt in="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"
+          out="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp"
           style="add-ssl-port.xsl">
       <param name="portNumber" expression="${tomcat2.ssl.port}"/>
     </xslt>
-    <move file="${tomcat2.home.dir}/webapps/yanel/WEB-INF/web.xml.tmp" tofile="${tomcat2.home.dir}/webapps/yanel/WEB-INF/web.xml"/>
+    <move file="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp" tofile="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"/>
   </target>
   
   
