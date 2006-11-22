@@ -14,7 +14,6 @@
   </target>
 
   <target name="start-tomcat" description="starts tomcat">
-    <echo>Starting Tomcat (${tomcat1.home.dir}/bin) ...</echo>
     <condition property="isWindows">
       <os family="windows"/>
     </condition>
@@ -33,18 +32,47 @@
   </target>
   
   <target name="startup-tomcat-windows" if="isWindows">
-    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="startup.bat" spawn="false"/>
-  </target>
-  <target name="startup-tomcat-unix" if="isUnix">
-    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="startup.sh" spawn="false"/>
+     <condition property="isTomcat1HomeSet">
+       <isset property="tomcat1.home.dir"/>
+     </condition>
+    <antcall target="startup-tomcat-windows-node1"/>
+     <condition property="isTomcat2HomeSet">
+       <isset property="tomcat2.home.dir"/>
+     </condition>
+    <antcall target="startup-tomcat-windows-node2"/>
   </target>
 
+  <target name="startup-tomcat-unix" if="isUnix">
+     <condition property="isTomcat1HomeSet">
+       <isset property="tomcat1.home.dir"/>
+     </condition>
+    <antcall target="startup-tomcat-unix-node1"/>
+     <condition property="isTomcat2HomeSet">
+       <isset property="tomcat2.home.dir"/>
+     </condition>
+    <antcall target="startup-tomcat-unix-node2"/>
+  </target>
+
+
+  <target name="startup-tomcat-windows-node1" if="isTomcat1HomeSet">
+    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="startup.bat" spawn="false"/>
+  </target>
+  <target name="startup-tomcat-unix-node1" if="isTomcat1HomeSet">
+    <echo>Starting Tomcat (${tomcat1.home.dir}/bin/startup.sh) ...</echo>
+    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="startup.sh" spawn="false"/>
+  </target>
+  <target name="startup-tomcat-windows-node2" if="isTomcat2HomeSet">
+    <exec dir="${tomcat2.home.dir}/bin" resolveexecutable="true" executable="startup.bat" spawn="false"/>
+  </target>
+  <target name="startup-tomcat-unix-node2" if="isTomcat2HomeSet">
+    <echo>Starting Tomcat (${tomcat2.home.dir}/bin/startup.sh) ...</echo>
+    <exec dir="${tomcat2.home.dir}/bin" resolveexecutable="true" executable="startup.sh" spawn="false"/>
+  </target>
   
   <target name="stop-tomcat" description="stops tomcat">
     <available file="${document.root}/cruise_is_building.html.orig" property="cruise_is_building_html_orig_available"/>
     <antcall target="copy-building-hint"/>
-    <echo>Stopping Tomcat (${tomcat1.home.dir}/bin) ...</echo>
-        <condition property="isWindows">
+    <condition property="isWindows">
       <os family="windows"/>
     </condition>
     <condition property="isUnix">
@@ -53,11 +81,45 @@
     <antcall target="shutdown-tomcat-windows"/>
     <antcall target="shutdown-tomcat-unix"/>
   </target>
+  
   <target name="shutdown-tomcat-windows" if="isWindows">
-     <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="shutdown.bat" spawn="false"/>
+     <echo>Windows ...</echo>
+     <condition property="isTomcat1HomeSet">
+       <isset property="tomcat1.home.dir"/>
+     </condition>
+    <antcall target="shutdown-tomcat-windows-node1"/>
+     <condition property="isTomcat2HomeSet">
+       <isset property="tomcat2.home.dir"/>
+     </condition>
+    <antcall target="shutdown-tomcat-windows-node2"/>
   </target>
+
   <target name="shutdown-tomcat-unix" if="isUnix">
-     <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="shutdown.sh" spawn="false"/>
+     <echo>Unix ...</echo>
+     <condition property="isTomcat1HomeSet">
+       <isset property="tomcat1.home.dir"/>
+     </condition>
+     <antcall target="shutdown-tomcat-unix-node1"/>
+     <condition property="isTomcat2HomeSet">
+       <isset property="tomcat2.home.dir"/>
+     </condition>
+     <antcall target="shutdown-tomcat-unix-node2"/>
+  </target>
+
+
+  <target name="shutdown-tomcat-windows-node1"  if="isTomcat1HomeSet">
+    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="shutdown.bat" spawn="false"/>
+  </target>
+  <target name="shutdown-tomcat-unix-node1"  if="isTomcat1HomeSet">
+    <echo>Shutdown Tomcat (${tomcat1.home.dir}/bin/shutdown.sh) ...</echo>
+    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="shutdown.sh" spawn="false"/>
+  </target>
+  <target name="shutdown-tomcat-windows-node2"  if="isTomcat2HomeSet">
+    <exec dir="${tomcat2.home.dir}/bin" resolveexecutable="true" executable="shutdown.bat" spawn="false"/>
+  </target>
+  <target name="shutdown-tomcat-unix-node2"  if="isTomcat2HomeSet">
+    <echo>Shutdown Tomcat (${tomcat2.home.dir}/bin/shutdown.sh) ...</echo>
+    <exec dir="${tomcat2.home.dir}/bin" resolveexecutable="true" executable="shutdown.sh" spawn="false"/>
   </target>
 
   <target name="copy-building-hint" if="cruise_is_building_html_orig_available" description="copy a message to the httpd saying yanel is stoped and building">
