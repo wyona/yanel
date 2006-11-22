@@ -95,6 +95,7 @@ public class YanelServlet extends HttpServlet {
             //sslPort = "8443";
             sslPort = config.getInitParameter("ssl-port");
         } catch (Exception e) {
+            log.error(e);
             throw new ServletException(e.getMessage(), e);
         }
     }
