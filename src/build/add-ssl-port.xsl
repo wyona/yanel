@@ -6,28 +6,28 @@
   
   <xsl:output method="xml" indent="yes"/>
 
-  <xsl:param name="portNumber"/>
-
-  <xsl:template match="@*" priority="-1">
-    <xsl:copy/>
+  <xsl:param name="ssl-port" select="'NULL'"/>
+  
+  <xsl:template match="/">
+    <xsl:apply-templates select="@*|node()"/>
   </xsl:template>
-
-  <xsl:template match="node()" priority="-1">
+  
+  <xsl:template match="webApp:servlet">
     <xsl:copy>
-      <xsl:apply-templates select="@*"/>
-      <xsl:apply-templates />
+      <xsl:apply-templates/>
+      <init-param>
+        <param-name>ssl-port</param-name>
+        <param-value><xsl:value-of select="$ssl-port"/></param-value>
+      </init-param>
     </xsl:copy>
   </xsl:template>
-
-  <!-- TODO: What about copying attributes! -->
-  <xsl:template match="webApp:servlet">
-    <servlet>
-      <xsl:copy-of select="*"/>
-       <init-param>
-         <param-name>ssl-port</param-name>
-         <param-value><xsl:value-of select="$portNumber"/></param-value>
-       </init-param>
-    </servlet>
+  
+  <xsl:template match="webApp:init-param[webApp:param-name/text()='ssl-port']">
   </xsl:template>
-
+  
+  <xsl:template match="@*|node()">
+    <xsl:copy>
+      <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
+  </xsl:template>
 </xsl:stylesheet>
