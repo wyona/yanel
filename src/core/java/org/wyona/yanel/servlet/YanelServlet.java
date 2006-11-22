@@ -650,6 +650,8 @@ public class YanelServlet extends HttpServlet {
             while ((bytesRead = memIn.read(buffer)) != -1) {
                 out.write(buffer, 0, bytesRead);
             }
+            out.flush();
+            out.close();
 
             StringBuffer sb = new StringBuffer();
             sb.append("<?xml version=\"1.0\"?>");
