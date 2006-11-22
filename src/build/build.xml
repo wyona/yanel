@@ -23,10 +23,10 @@
     <xslt in="${tomcat1.home.dir}/conf/server.xml"
           out="${tomcat1.home.dir}/conf/server.xml.ssl"
           style="connector.xsl">
-      <param name="portNumber" expression="${tomcat1.ssl.port}"/>
+      <param name="ssl-port" expression="${tomcat1.ssl.port}"/>
       <param name="keystoreFile" expression="${certificate.keystore}"/>
       <param name="keystorePass" expression="${certificate.keypass}"/>
-      <param name="defaultPort" expression="${tomcat1.http.port}"/>
+      <param name="http-port" expression="${tomcat1.http.port}"/>
     </xslt>
     <tstamp>
       <format property="timestamp" pattern="yyyyMMdd'T'HHmmss"/>
@@ -49,10 +49,10 @@
     <xslt in="${tomcat2.home.dir}/conf/server.xml"
           out="${tomcat2.home.dir}/conf/server.xml.ssl"
           style="connector.xsl">
-      <param name="portNumber" expression="${tomcat2.ssl.port}"/>
+      <param name="ssl-port" expression="${tomcat2.ssl.port}"/>
       <param name="keystoreFile" expression="${certificate.keystore}"/>
       <param name="keystorePass" expression="${certificate.keypass}"/>
-      <param name="defaultPort" expression="${tomcat2.http.port}"/>
+      <param name="http-port" expression="${tomcat2.http.port}"/>
     </xslt>
     <tstamp>
       <format property="timestamp" pattern="yyyyMMdd'T'HHmmss"/>
