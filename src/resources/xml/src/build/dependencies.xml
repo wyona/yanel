@@ -15,7 +15,7 @@
       <dependency groupId="wyona-org-yanel" artifactId="yanel-core"
                   version="0.0.1-dev-r17165"/>
       <dependency groupId="yarep" artifactId="yarep"
-                  version="0.0.1-dev-r17381"/>
+                  version="0.0.1-dev-r20207"/>
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
                   version="0.0.1-dev-r19469"/>
       <!-- IMPORT: xerces 2.7.1 is dependent on xml-apis 1.3.02 -->

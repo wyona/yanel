@@ -104,7 +104,7 @@ public class ZipResource extends Resource implements ViewableV1 {
      * @param repo
      * @param entries
      */
-    void addZipEntries(ZipOutputStream zipOut, Repository repo, org.wyona.yarep.core.Path[] entries, String base, org.wyona.yarep.core.Path zipDirPath) {
+    void addZipEntries(ZipOutputStream zipOut, Repository repo, org.wyona.yarep.core.Path[] entries, String base, org.wyona.yarep.core.Path zipDirPath) throws Exception {
         
         String entryPath = null;
         
