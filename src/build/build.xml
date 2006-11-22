@@ -445,16 +445,16 @@
     <xslt in="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"
           out="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp"
           style="add-ssl-port.xsl">
-      <param name="portNumber" expression="${tomcat1.ssl.port}"/>
+      <param name="ssl-port" expression="${tomcat1.ssl.port}"/>
     </xslt>
     <move file="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp" tofile="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"/>
   </target>
   
-  <target name="patch-tomcat-cluster-node-2-ssl-port" if="property-tomcat-cluster-node2-is-set">
+  <target name="patch-tomcat-cluster-node-2-ssl-port" if="property-tomcat2-ssl-port-is-set">
     <xslt in="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"
           out="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp"
           style="add-ssl-port.xsl">
-      <param name="portNumber" expression="${tomcat2.ssl.port}"/>
+      <param name="ssl-port" expression="${tomcat2.ssl.port}"/>
     </xslt>
     <move file="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp" tofile="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"/>
   </target>
@@ -470,6 +470,7 @@
     <copy todir="${tomcat2.webapps.dir}/${servlet.context.prefix}">
       <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
     </copy>
+    <antcall target="patch-tomcat-cluster-node-2-ssl-port"/>
 
     <condition property="ask-to-copy-endorsed-xerces-node2">
       <not>
