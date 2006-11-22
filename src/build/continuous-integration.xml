@@ -14,8 +14,15 @@
   </target>
 
   <target name="start-tomcat" description="starts tomcat">
-    <echo>Starting Tomcat...</echo>
-    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="startup.sh" spawn="false"/>
+    <echo>Starting Tomcat (${tomcat1.home.dir}/bin) ...</echo>
+    <condition property="isWindows">
+      <os family="windows"/>
+    </condition>
+    <condition property="isUnix">
+      <os family="unix"/>
+    </condition>
+    <antcall target="startup-tomcat-windows"/>
+    <antcall target="startup-tomcat-unix"/>
     <waitfor maxwait="60" maxwaitunit="second" checkevery="4000">
       <and>
         <socket server="${tomcat.ip}" port="${tomcat.port}"/>
@@ -24,12 +31,33 @@
     <available file="${document.root}/cruise_is_building.html" property="cruise_is_building_html_available"/>
     <antcall target="delete-building-hint"/>
   </target>
+  
+  <target name="startup-tomcat-windows" if="isWindows">
+    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="startup.bat" spawn="false"/>
+  </target>
+  <target name="startup-tomcat-unix" if="isUnix">
+    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="startup.sh" spawn="false"/>
+  </target>
 
+  
   <target name="stop-tomcat" description="stops tomcat">
     <available file="${document.root}/cruise_is_building.html.orig" property="cruise_is_building_html_orig_available"/>
     <antcall target="copy-building-hint"/>
-    <echo>Stopping Tomcat...</echo>
-    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="shutdown.sh" spawn="false"/>
+    <echo>Stopping Tomcat (${tomcat1.home.dir}/bin) ...</echo>
+        <condition property="isWindows">
+      <os family="windows"/>
+    </condition>
+    <condition property="isUnix">
+      <os family="unix"/>
+    </condition>
+    <antcall target="shutdown-tomcat-windows"/>
+    <antcall target="shutdown-tomcat-unix"/>
+  </target>
+  <target name="shutdown-tomcat-windows" if="isWindows">
+     <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="shutdown.bat" spawn="false"/>
+  </target>
+  <target name="shutdown-tomcat-unix" if="isUnix">
+     <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="shutdown.sh" spawn="false"/>
   </target>
 
   <target name="copy-building-hint" if="cruise_is_building_html_orig_available" description="copy a message to the httpd saying yanel is stoped and building">
