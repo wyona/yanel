@@ -75,23 +75,28 @@ public class YanelServlet extends HttpServlet {
     /**
      *
      */
-    public void init(ServletConfig config) {
+    public void init(ServletConfig config) throws ServletException {
         this.config = config;
-        rtr = new ResourceTypeRegistry();
+        
+        try {
+            yanel = Yanel.getInstance();
+            
+            rtr = new ResourceTypeRegistry();
 
-        PolicyManagerFactory pmf = PolicyManagerFactory.newInstance();
-        pm = pmf.newPolicyManager();
+            PolicyManagerFactory pmf = PolicyManagerFactory.newInstance();
+            pm = pmf.newPolicyManager();
 
-        IdentityManagerFactory imf = IdentityManagerFactory.newInstance();
-        im = imf.newIdentityManager();
+            IdentityManagerFactory imf = IdentityManagerFactory.newInstance();
+            im = imf.newIdentityManager();
 
-        MapFactory mf = MapFactory.newInstance();
-        map = mf.newMap();
+            MapFactory mf = MapFactory.newInstance();
+            map = mf.newMap();
 
-        yanel = new Yanel();
-
-        //sslPort = "8443";
-        sslPort = config.getInitParameter("ssl-port");
+            //sslPort = "8443";
+            sslPort = config.getInitParameter("ssl-port");
+        } catch (Exception e) {
+            throw new ServletException(e.getMessage(), e);
+        }
     }
 
     /**

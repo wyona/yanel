@@ -20,6 +20,7 @@ import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
+import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.api.attributes.CreatableV1;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
@@ -47,9 +48,10 @@ public class YanelCommandLine {
     /**
      *
      */
-    static public void main(String[] args) {
+    static public void main(String[] args) throws Exception {
         System.out.println("Welcome to the Yanel command line interface!\n");
 
+        Yanel yanel = Yanel.getInstance();
         MapFactory mf = MapFactory.newInstance();
         Map map = mf.newMap();
 
@@ -120,7 +122,7 @@ public class YanelCommandLine {
         Resource res = null;
         try {
             res = rtr.newResource(rti);
-            res.setYanel(new org.wyona.yanel.core.Yanel());
+            res.setYanel(yanel);
         } catch(Exception e) {
             System.err.println("Exception 435435: " + e);
             return;

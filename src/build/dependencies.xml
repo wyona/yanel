@@ -55,6 +55,9 @@
                   version="2.7.0"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl"
                   version="0.0.1-dev-r15775"/>
+                  
+      <dependency groupId="spring" artifactId="spring"
+                  version="2.0"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>

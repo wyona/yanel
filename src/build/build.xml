@@ -307,6 +307,7 @@
       <fileset dir="${yanel.home.dir}/conf/entities"/>
     </copy>
 
+    <copy file="${yanel.home.dir}/conf/spring-yanel-config.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/realms.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/log4j.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/yanel-rti-yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>

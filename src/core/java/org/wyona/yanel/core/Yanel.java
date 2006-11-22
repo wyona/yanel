@@ -18,24 +18,49 @@ package org.wyona.yanel.core;
 
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.MapFactory;
+import org.wyona.yarep.core.RepositoryFactory;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- *
+ * This class is a singleton.
  */
 public class Yanel {
 
     private Map map = null;
     private ResourceTypeRegistry rtr = null;
+    private ApplicationContext applicationContext;
+    
+    private static final String SPRING_CONFIG_FILE = "spring-yanel-config.xml"; 
+
+    private static Yanel yanel = null;
 
     /**
-     *
-     */
-    public Yanel() {
-        MapFactory mf = MapFactory.newInstance();
-        map = mf.newMap();
-        rtr = new ResourceTypeRegistry();
+    * Private constructor
+    */
+   private Yanel() throws Exception {
+       MapFactory mf = MapFactory.newInstance();
+       map = mf.newMap();
+       rtr = new ResourceTypeRegistry();
+
+       applicationContext = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
+       
+       // example:
+       //RepositoryFactory repoFactory = (RepositoryFactory)applicationContext.getBean("repositoryFactory");
     }
 
+    public static Yanel getInstance() throws Exception {
+        if (yanel == null) {
+            yanel = new Yanel();
+        } 
+        return yanel;
+    }
+    
+    public BeanFactory getBeanFactory() {
+        return applicationContext;
+    }
+    
     /**
      *
      */
