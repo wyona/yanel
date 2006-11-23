@@ -115,6 +115,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 &#160;Consulting<br/>
 &#160;Training<br/>
 &#160;Solutions<br/>
+&#160;<a href="{$yarep.back2realm}en/contact.html">Contact</a><br/>
 <br/>
 <b>Search</b>
 &#160;<form action="{$yarep.back2realm}en/search.html" method="GET"><input type="text" name="query" class="searchbox" size="14"/></form>
