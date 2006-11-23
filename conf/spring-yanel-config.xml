@@ -6,4 +6,5 @@
     <!-- this is just an example so far, it's not really used -->
     <!-- <property name="someProperty"><value>someValue</value></property> -->
   </bean>
+  <bean id="map" class="org.wyona.yanel.impl.map.MapImpl"/>
 </beans>
