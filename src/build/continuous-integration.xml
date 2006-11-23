@@ -55,6 +55,7 @@
 
 
   <target name="startup-tomcat-windows-node1" if="isTomcat1HomeSet">
+    <echo>Startup Tomcat Cluster Node 1: ${tomcat1.home.dir}/bin/startup.bat</echo>
     <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="startup.bat" spawn="false"/>
   </target>
   <target name="startup-tomcat-unix-node1" if="isTomcat1HomeSet">
