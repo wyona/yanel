@@ -10,6 +10,8 @@ Hello
 [newNotExistingLink]\\
 [contact|mailto:contact@wyona.com]
 
+[back to testing page|../testing.html]\\
+
 *Forced line break
 
 Line 1\\
