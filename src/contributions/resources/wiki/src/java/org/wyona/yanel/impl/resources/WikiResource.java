@@ -41,7 +41,6 @@ import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
-import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
@@ -56,6 +55,7 @@ public class WikiResource extends Resource implements ViewableV1 {
     private final String XML_MIME_TYPE = "application/xml";
     private DocumentBuilderFactory dbf = null;
     private Repository repository  = null;
+    private String context = null;
     
     /**
      * 
@@ -81,6 +81,10 @@ public class WikiResource extends Resource implements ViewableV1 {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
             repository = rp.getRepo();
             
+            
+            String path2Resource = path.toString();
+            path2Resource = path2Resource.substring(0, path2Resource.lastIndexOf("/") + 1);
+            
             //these fields are specified via interface
             int type = 1;//is the jspWikiParser
             InputStream inputStream = rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
@@ -102,12 +106,14 @@ public class WikiResource extends Resource implements ViewableV1 {
                 defaultView.setMimeType("application/xhtml+xml");
             }
             
-            LinkChecker linkChecker = new LinkChecker();
+            LinkChecker linkChecker = new LinkChecker(path2Resource);
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(wikiParser.getInputStream(), linkChecker);
-            
+            //transformer.setParameter("yanel.contextPath", context);
+            //transformer.setParameter("yanel.path2Resource", path2Resource);
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
             transformer.transform(new StreamSource(linkChecker.getInputStream()), new StreamResult(baos));
+            
             defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
             
             return defaultView;
@@ -121,6 +127,7 @@ public class WikiResource extends Resource implements ViewableV1 {
      * 
      */
     public View getView(HttpServletRequest request, String viewId) {
+        context = request.getContextPath();
         return getView(new Path(request.getServletPath()), viewId);
     }
 
@@ -146,43 +153,6 @@ public class WikiResource extends Resource implements ViewableV1 {
         }
     }
 
-    /**
-     * @return the empty wiki resource as String 
-     */
-    private String getEmptyWikiXml() {
-        StringBuffer emptyWikiXml = new StringBuffer();
-        emptyWikiXml.append("<?xml version=\"1.0\"?>");
-        emptyWikiXml.append("\n");
-        emptyWikiXml.append("<wiki xmlns=\"http://www.wyona.org/neutron/1.0\">");
-        emptyWikiXml.append("\n");
-        emptyWikiXml.append("</wiki>");
-        
-        return emptyWikiXml.toString();
-    }
-    
-    /**
-     * @param newWikiPage
-     * @return the empty wiki introspection as String
-     */
-    private String getEmptyWikiIntrospection(String newWikiPage) {
-        StringBuffer emptyWikiPageContent = new StringBuffer();
-        emptyWikiPageContent.append("<?xml version=\"1.0\"?>");
-        emptyWikiPageContent.append("\n");
-        emptyWikiPageContent.append("<introspection xmlns=\"http://www.wyona.org/neutron/1.0\">");
-        emptyWikiPageContent.append("\n\t");
-        emptyWikiPageContent.append("<edit mime-type=\"application/xml\" name=\"" + newWikiPage + "\">");
-        emptyWikiPageContent.append("\n\t\t");
-        emptyWikiPageContent.append("<checkout url=\"/wiki/" + newWikiPage + ".html\" method=\"GET\"/>");
-        emptyWikiPageContent.append("\n\t\t");
-        emptyWikiPageContent.append("<checkin url=\"/wiki/" + newWikiPage + ".html?yanel.resource.usecase=checkin\" method=\"PUT\"/>");
-        emptyWikiPageContent.append("\n\t");
-        emptyWikiPageContent.append("</edit>");
-        emptyWikiPageContent.append("\n");
-        emptyWikiPageContent.append("</introspection>");
-        
-        return emptyWikiPageContent.toString();
-    }
-    
     /**
      * 
      */

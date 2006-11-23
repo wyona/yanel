@@ -13,8 +13,10 @@ public class LinkChecker extends DefaultHandler {
     private static Category log = Category.getInstance(LinkChecker.class);
     private ByteArrayInputStream byteArrayInputStream = null;
     private StringBuffer transformedXmlAsBuffer = null;
-
-    public LinkChecker() {
+    private String path2Resource = null;
+    
+    public LinkChecker(String path2Resource) {
+        this.path2Resource = path2Resource;
     }
     
     public void startDocument() throws SAXException {
@@ -81,7 +83,10 @@ public class LinkChecker extends DefaultHandler {
     }
     
     private boolean resourceExists(String path) {
-        
+        if(!path.startsWith("/")) {
+            path = path2Resource + path;
+        }
+        log.debug("checking link --> " + path);
         RepoPath rp;
         try {
             rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path), new RepositoryFactory());
