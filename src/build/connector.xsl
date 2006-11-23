@@ -27,7 +27,7 @@
     <!-- Create TLS Connector if not exists, whereas use standard connector as template -->
     <xsl:if test="not(count(//Connector[@sslProtocol = 'TLS']))">
       <xsl:copy> 
-        <xsl:copy-of select="@*[not(self::redirectPort)]"/>
+        <xsl:copy-of select="@*[not(redirectPort)]"/>
         <xsl:attribute name="port"><xsl:value-of select="$ssl-port"/></xsl:attribute>
         <xsl:attribute name="keystoreFile"><xsl:value-of select="$keystoreFile"/></xsl:attribute>
         <xsl:attribute name="keystorePass"><xsl:value-of select="$keystorePass"/></xsl:attribute>
