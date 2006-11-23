@@ -74,7 +74,7 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
         defaultView.setMimeType(mimeType);
 
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
 
             if (mimeType.equals("application/xml")) {
                 defaultView.setInputStream(getContentXML(rp));
@@ -123,7 +123,7 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
         String mimeType = null;
         try {
             // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
             br.readLine();
             mimeType = br.readLine();
@@ -170,7 +170,7 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
      */
     public Reader getReader(Path path) {
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             return rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString()));
         } catch(Exception e) {
             log.error(e);
@@ -207,11 +207,17 @@ public class ODTResource extends Resource implements ViewableV1, ModifiableV1 {
      */
     public OutputStream getOutputStream(Path path) {
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             return rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
         } catch(Exception e) {
             log.error(e);
         }
         return null;
     }
+    
+    protected RepositoryFactory getRepositoryFactory() {
+        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
+    }
+    
+
 }

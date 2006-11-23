@@ -62,7 +62,8 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
      */
     public View getView(Path path, String viewId) throws Exception {
         View defaultView = new View();
-            org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+        
+            org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             defaultView.setInputStream(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
 
             defaultView.setMimeType(getMimeType(path, viewId));
@@ -77,7 +78,7 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
         String mimeType = null;
         try {
             // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            org.wyona.yarep.util.RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+            org.wyona.yarep.util.RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
             br.readLine();
             mimeType = br.readLine();
@@ -151,7 +152,7 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
      *
      */
     public Reader getReader(Path path) throws Exception {
-        org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+        org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
         return rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString()));
     }
 
@@ -160,7 +161,7 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
      */
     public InputStream getInputStream(Path path) throws Exception {
         // Reuse stuff from getReader ...
-        org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+        org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
         return rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
     }
 
@@ -193,7 +194,7 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
      */
     public OutputStream getOutputStream(Path path) {
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             return rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
         } catch(Exception e) {
             log.error(e);
@@ -215,7 +216,7 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
      */
     public long getLastModified(Path path) {
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             return rp.getRepo().getLastModified(new org.wyona.yarep.core.Path(rp.getPath().toString()));
         } catch(Exception e) {
             log.error(e);
@@ -229,11 +230,16 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
      */
     public boolean delete(Path path) {
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             return rp.getRepo().delete(new org.wyona.yarep.core.Path(rp.getPath().toString()));
         } catch(Exception e) {
             log.error(e);
             return false;
         }
     }
+    
+    protected RepositoryFactory getRepositoryFactory() {
+        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
+    }    
+    
 }

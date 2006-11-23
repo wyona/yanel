@@ -83,7 +83,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
         Path xsltPath = getXSLTPath(path);
 
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
 
 	    if (xsltPath != null) {
                 TransformerFactory tf = TransformerFactory.newInstance();
@@ -175,7 +175,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
      *
      */
     public Reader getReader(Path path) throws Exception {
-        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
         return rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString()));
     }
 
@@ -184,7 +184,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
      */
     public InputStream getInputStream(Path path) throws Exception {
         // TODO: Reuse stuff from getReader ...
-        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
         return rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
     }
 
@@ -217,7 +217,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
      */
     public OutputStream getOutputStream(Path path) {
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             return rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
         } catch(Exception e) {
             log.error(e);
@@ -239,7 +239,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
      */
     public long getLastModified(Path path) {
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             return rp.getRepo().getLastModified(new org.wyona.yarep.core.Path(rp.getPath().toString()));
         } catch(Exception e) {
             log.error(e);
@@ -282,7 +282,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
      */
     public boolean delete(Path path) {
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             return rp.getRepo().delete(new org.wyona.yarep.core.Path(rp.getPath().toString()));
         } catch(Exception e) {
             log.error(e);
@@ -297,7 +297,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
         String property = null;
         try {
             // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
 
             while ((property = br.readLine()) != null) {
@@ -313,4 +313,9 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
 
         return property;
     }
+    
+    protected RepositoryFactory getRepositoryFactory() {
+        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
+    }
+    
 }

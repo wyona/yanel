@@ -39,27 +39,24 @@ public class Yanel {
     * Private constructor
     */
    private Yanel() throws Exception {
-      
 	   applicationContext = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);	     
-       // example:
-       //RepositoryFactory repoFactory = (RepositoryFactory)applicationContext.getBean("repositoryFactory");
-	   
        map = (Map) applicationContext.getBean("map");
        rtr = new ResourceTypeRegistry();
-
-      
-  
     }
-
+   
     public static Yanel getInstance() throws Exception {
         if (yanel == null) {
             yanel = new Yanel();
         } 
         return yanel;
     }
-    
+   
     public BeanFactory getBeanFactory() {
         return applicationContext;
+    }
+    
+    public RepositoryFactory getRepositoryFactory(String id) {
+        return (RepositoryFactory)applicationContext.getBean(id);
     }
     
     /**

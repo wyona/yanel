@@ -72,7 +72,7 @@ public class DirectoryResource extends Resource implements ViewableV1 {
         Repository contentRepo = null;
         try {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path
-                    .toString()), new RepositoryFactory());
+                    .toString()), getRepositoryFactory());
             contentRepo = rp.getRepo();
             org.wyona.yarep.core.Path p = rp.getPath();
 
@@ -174,7 +174,7 @@ public class DirectoryResource extends Resource implements ViewableV1 {
             // TODO: Get yanel RTI yarep properties file name from framework
             // resp. use MapFactory ...!
             RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path
-                    .toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+                    .toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(
                     new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
 
@@ -202,7 +202,7 @@ public class DirectoryResource extends Resource implements ViewableV1 {
             // TODO: Get yanel RTI yarep properties file name from framework
             // resp. use MapFactory ...!
             RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path
-                    .toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+                    .toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(
                     new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
 
@@ -221,4 +221,10 @@ public class DirectoryResource extends Resource implements ViewableV1 {
         // NOTE: Assuming fallback re dir2xhtml.xsl ...
         return "application/xhtml+xml";
     }
+    
+    protected RepositoryFactory getRepositoryFactory() {
+        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
+    }
+    
+
 }

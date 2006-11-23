@@ -112,7 +112,7 @@ public class NutchResource extends Resource implements ViewableV1 {
         this.language = language;
         try {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
-                    new RepositoryFactory());
+                    getRepositoryFactory());
             repository = rp.getRepo();
 
             nutchView = new View();
@@ -346,7 +346,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory
             // ...!
             RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
-                    new RepositoryFactory("yanel-rti-yarep.properties"));
+                    yanel.getRepositoryFactory("RTIRepositoryFactory"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo()
                     .getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath()
                             .toString())));
@@ -375,7 +375,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory
             // ...!
             RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
-                    new RepositoryFactory("yanel-rti-yarep.properties"));
+                    yanel.getRepositoryFactory("RTIRepositoryFactory"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo()
                     .getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath()
                             .toString())));
@@ -415,4 +415,10 @@ public class NutchResource extends Resource implements ViewableV1 {
         log.debug("[" + inputString + "] replaced with [" + replacedAmpersand + "]");
         return replacedAmpersand;
     }
+    
+    protected RepositoryFactory getRepositoryFactory() {
+        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
+    }
+    
+
 }

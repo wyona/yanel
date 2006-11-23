@@ -67,7 +67,7 @@ public class ZipResource extends Resource implements ViewableV1 {
             org.wyona.yarep.core.Path zipDirPath = new org.wyona.yarep.core.Path(zipDir); 
             
             RepoPath zipRp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(
-                    new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+                    new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             
             Repository zipRepo = zipRp.getRepo();         
             
@@ -169,7 +169,7 @@ public class ZipResource extends Resource implements ViewableV1 {
         String property = null;
         try {
             // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
 
             while ((property = br.readLine()) != null) {
@@ -185,4 +185,10 @@ public class ZipResource extends Resource implements ViewableV1 {
 
         return property;
     }
+    
+    protected RepositoryFactory getRepositoryFactory() {
+        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
+    }
+    
+
 }

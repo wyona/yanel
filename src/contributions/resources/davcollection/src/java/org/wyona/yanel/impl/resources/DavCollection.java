@@ -62,7 +62,7 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
         
         Repository contentRepo = null;
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("DefaultRepositoryFactory"));
             contentRepo = rp.getRepo();
             org.wyona.yarep.core.Path p = rp.getPath();
 

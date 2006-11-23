@@ -78,7 +78,7 @@ public class WikiResource extends Resource implements ViewableV1 {
     public View getView(Path path, String viewId) {
         View defaultView = new View();
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             repository = rp.getRepo();
             
             
@@ -162,7 +162,7 @@ public class WikiResource extends Resource implements ViewableV1 {
             // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory
             // ...!
             RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
-                    new RepositoryFactory("yanel-rti-yarep.properties"));
+                    yanel.getRepositoryFactory("RTIRepositoryFactory"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo()
                     .getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath()
                             .toString())));
@@ -180,4 +180,10 @@ public class WikiResource extends Resource implements ViewableV1 {
         }
         return null;
     }
+    
+    protected RepositoryFactory getRepositoryFactory() {
+        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
+    }
+    
+
 }

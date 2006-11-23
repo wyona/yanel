@@ -79,7 +79,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
 
         Repository contentRepo = null;
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             contentRepo = rp.getRepo();
 
             // TODO: Do not show the children with suffix .yanel-rti resp. make this configurable!
@@ -273,7 +273,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
         String propertyValue = defaultValue;
         try {
             // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
 
             String property = null;
@@ -301,7 +301,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
             return new org.wyona.yarep.core.Path(entriesPathString);
         } else {
             try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(feedPath.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(feedPath.toString()), getRepositoryFactory());
             Repository repo = rp.getRepo();
             org.wyona.yarep.core.Path entriesPath = rp.getPath();
 
@@ -333,7 +333,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
      */
     public Path createEntry(Path path, java.io.InputStream in) {
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
 
             org.wyona.yarep.core.Path entryPath = new org.wyona.yarep.core.Path(getEntriesPath(path).toString() + "/" + new Date().getTime() + ".xml");
             java.io.OutputStream out = rp.getRepo().getOutputStream(entryPath);
@@ -389,4 +389,9 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
     String getEntriesURL(Path path) {
         return getProperty(path, "entries-url", null);
     }
+    
+    protected RepositoryFactory getRepositoryFactory() {
+        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
+    }
+    
 }

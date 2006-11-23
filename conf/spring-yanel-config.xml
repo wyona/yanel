@@ -2,10 +2,16 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-  <bean id="repositoryFactory" class="org.wyona.yarep.core.RepositoryFactory">
-    <!-- this is just an example so far, it's not really used -->
-    <!-- <property name="someProperty"><value>someValue</value></property> -->
+  <bean id="DefaultRepositoryFactory" class="org.wyona.yarep.core.RepositoryFactory"/>
+  <bean id="RTIRepositoryFactory" class="org.wyona.yarep.core.RepositoryFactory">
+    <constructor-arg type="java.lang.String" value="yanel-rti-yarep.properties"/>
   </bean>
+  <!-- <bean id="ACPoliciesRepositoryFactory" class="org.wyona.yarep.core.RepositoryFactory">
+    <constructor-arg type="java.lang.String" value="ac-policies-yarep.properties"/>
+  </bean>
+  <bean id="ACIdentitiesRepositoryFactory" class="org.wyona.yarep.core.RepositoryFactory">
+    <constructor-arg type="java.lang.String" value="ac-identities-yarep.properties"/>
+  </bean> -->
   <bean id="map" class="org.wyona.yanel.impl.map.MapImpl"/>
   <bean id="policyManager" class="org.wyona.security.impl.PolicyManagerImpl"/>
   <bean id="identityManager" class="org.wyona.security.impl.IdentityManagerImpl"/>

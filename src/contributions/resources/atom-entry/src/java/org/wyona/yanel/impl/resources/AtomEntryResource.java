@@ -79,7 +79,7 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
         defaultView.setMimeType(mimeType);
 
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
 
             if (mimeType.equals("application/xml")) {
                 defaultView.setInputStream(getContentXML(rp));
@@ -128,7 +128,7 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
         String mimeType = null;
         try {
             // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
 
             while ((mimeType = br.readLine()) != null) {
@@ -173,7 +173,7 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
      *
      */
     public Reader getReader(Path path) throws Exception {
-        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
         return rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString()));
     }
 
@@ -182,7 +182,7 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
      */
     public InputStream getInputStream(Path path) throws Exception {
         // TODO: Reuse stuff from getReader ...
-        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
         return rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
     }
 
@@ -215,7 +215,7 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
      */
     public OutputStream getOutputStream(Path path) {
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             return rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
         } catch(Exception e) {
             log.error(e);
@@ -240,7 +240,7 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
                 entry.setPublished(date);
             }
 
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             OutputStream out = rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
 
             org.apache.abdera.writer.Writer writer = abdera.getWriter();
@@ -259,7 +259,7 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
      */
     public long getLastModified(Path path) {
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             return rp.getRepo().getLastModified(new org.wyona.yarep.core.Path(rp.getPath().toString()));
         } catch(Exception e) {
             log.error(e);
@@ -275,7 +275,7 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
         String xsltPath = null;
         try {
             // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory("yanel-rti-yarep.properties"));
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
 
             while((xsltPath = br.readLine()) != null) {
@@ -317,11 +317,17 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
      */
     public boolean delete(Path path) {
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             return rp.getRepo().delete(new org.wyona.yarep.core.Path(rp.getPath().toString()));
         } catch(Exception e) {
             log.error(e);
             return false;
         }
     }
+    
+    protected RepositoryFactory getRepositoryFactory() {
+        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
+    }
+    
+
 }

@@ -17,6 +17,7 @@
 package org.wyona.yanel.impl.map;
 
 import org.wyona.yanel.core.Path;
+import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.map.RealmConfiguration;
@@ -45,7 +46,7 @@ public class MapImpl implements Map {
     public MapImpl() {
         try {
             // NOTE: Separate ResourceTypeIdentifier mapping from whatever else is using yarep ...
-            repoFactory = new RepositoryFactory("yanel-rti-yarep.properties");
+            repoFactory = Yanel.getInstance().getRepositoryFactory("RTIRepositoryFactory");
             //repoFactory = new RepositoryFactory();
 
             realmConfig = new RealmConfiguration();

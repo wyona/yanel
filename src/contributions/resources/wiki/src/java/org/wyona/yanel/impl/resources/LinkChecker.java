@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import org.apache.log4j.Category;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
+import org.wyona.yanel.core.Yanel;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -89,7 +90,7 @@ public class LinkChecker extends DefaultHandler {
         log.debug("checking link --> " + path);
         RepoPath rp;
         try {
-            rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path), new RepositoryFactory());
+            rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path), Yanel.getInstance().getRepositoryFactory("DefaultRepositoryFactory"));
             return rp.getRepo().isResource(new org.wyona.yarep.core.Path(rp.getPath().toString()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
