@@ -796,7 +796,9 @@ public class YanelServlet extends HttpServlet {
 	                URL url = new URL(getRequestURLQS(request, null, false).toString());
                         url = new URL("https", url.getHost(), new Integer(sslPort).intValue(), url.getFile());
                         response.setHeader("Location", url.toString());
-                        response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT);
+                        // TODO: Yulup has a bug re TEMPORARY_REDIRECT
+                        //response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT);
+                        response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY);
                         return response;
                     } catch (Exception e) {
                         log.error(e);
