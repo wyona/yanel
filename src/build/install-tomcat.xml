@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<project name="install-default-tomcat" default="install-default-tomcat" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+  <description>Install Default Tomcat</description>
+
+  <target name="install-default-tomcat" description="Install Default Tomcat" depends="init">
+    <echo>Install Default Tomcat ...</echo>
+
+    <unzip src="${yanel.home.dir}/tools/apache-tomcat/apache-tomcat-5.5.20.zip" dest="${yanel.home.dir}/local"/>
+  </target>
+</project>
