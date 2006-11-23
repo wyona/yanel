@@ -27,7 +27,6 @@ import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.map.Map;
-import org.wyona.yanel.core.map.MapFactory;
 import org.wyona.yanel.core.map.Realm;
 
 import org.wyona.yanel.util.ResourceAttributeHelper;
@@ -52,8 +51,7 @@ public class YanelCommandLine {
         System.out.println("Welcome to the Yanel command line interface!\n");
 
         Yanel yanel = Yanel.getInstance();
-        MapFactory mf = MapFactory.newInstance();
-        Map map = mf.newMap();
+        Map map = (Map) yanel.getBeanFactory().getBean("map");
 
         ResourceTypeRegistry rtr = new ResourceTypeRegistry();
 

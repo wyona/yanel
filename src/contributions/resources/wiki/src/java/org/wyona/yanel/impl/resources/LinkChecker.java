@@ -2,12 +2,12 @@ package org.wyona.yanel.impl.resources;
 
 import java.io.ByteArrayInputStream;
 import org.apache.log4j.Category;
+import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.map.Map;
-import org.wyona.yanel.core.map.MapFactory;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -81,13 +81,13 @@ public class LinkChecker extends DefaultHandler {
     }
     
     private boolean resourceExists(String path) {
-        Resource resource = null;
-        MapFactory mf = MapFactory.newInstance();
-        Map map = mf.newMap();
-        String rti = map.getResourceTypeIdentifier(new org.wyona.yanel.core.Path(path));
-        ResourceTypeRegistry rtr = new ResourceTypeRegistry();
+        Resource resource = null;        
         String viewId = null;
         try {
+            Map map = (Map) Yanel.getInstance().getBeanFactory().getBean("map");
+            String rti = map.getResourceTypeIdentifier(new org.wyona.yanel.core.Path(path));
+            
+            ResourceTypeRegistry rtr = new ResourceTypeRegistry();
             resource = rtr.newResource(rti);
 	    
             if(ResourceAttributeHelper.hasAttributeImplemented(resource, "Viewable", "1")) {

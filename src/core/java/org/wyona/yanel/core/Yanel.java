@@ -17,7 +17,6 @@
 package org.wyona.yanel.core;
 
 import org.wyona.yanel.core.map.Map;
-import org.wyona.yanel.core.map.MapFactory;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -40,14 +39,16 @@ public class Yanel {
     * Private constructor
     */
    private Yanel() throws Exception {
-       MapFactory mf = MapFactory.newInstance();
-       map = mf.newMap();
-       rtr = new ResourceTypeRegistry();
-
-       applicationContext = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
-       
+      
+	   applicationContext = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);	     
        // example:
        //RepositoryFactory repoFactory = (RepositoryFactory)applicationContext.getBean("repositoryFactory");
+	   
+       map = (Map) applicationContext.getBean("map");
+       rtr = new ResourceTypeRegistry();
+
+      
+  
     }
 
     public static Yanel getInstance() throws Exception {

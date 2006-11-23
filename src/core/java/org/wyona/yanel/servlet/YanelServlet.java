@@ -26,7 +26,6 @@ import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.map.Map;
-import org.wyona.yanel.core.map.MapFactory;
 import org.wyona.yanel.core.map.Realm;
 
 import org.wyona.yanel.util.ResourceAttributeHelper;
@@ -89,8 +88,8 @@ public class YanelServlet extends HttpServlet {
             IdentityManagerFactory imf = IdentityManagerFactory.newInstance();
             im = imf.newIdentityManager();
 
-            MapFactory mf = MapFactory.newInstance();
-            map = mf.newMap();
+          
+            map = (Map) yanel.getBeanFactory().getBean("map");
 
             //sslPort = "8443";
             sslPort = config.getInitParameter("ssl-port");

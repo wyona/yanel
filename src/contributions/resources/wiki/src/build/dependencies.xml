@@ -27,6 +27,8 @@
                   version="0.0.1-dev-r19469"/>
       <dependency groupId="yarep" artifactId="yarep"
                   version="0.0.1-dev-r20207"/>
+      <dependency groupId="spring" artifactId="spring"
+                  version="2.0"/>
     </artifact:dependencies>
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
