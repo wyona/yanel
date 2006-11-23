@@ -27,4 +27,10 @@ public interface CreatableV2 extends CreatableV1 {
      *
      */
     public String getPropertyType(String propertyName);
+
+    
+    /**
+     * creates the resource
+     */
+    public void create(String path);
 }

@@ -28,6 +28,7 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 
+import org.wyona.yanel.servlet.CreateUsecaseHelper;
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
 import org.wyona.security.core.IdentityManagerFactory;
@@ -145,10 +146,12 @@ public class YanelServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Check if a new resource shall be created ...
         String yanelUsecase = request.getParameter("yanel.usecase");
-        if(yanelUsecase != null && yanelUsecase.equals("create")) {
-            log.warn("TODO: Create usecase not implemented yet!");
-        }
 
+        if(yanelUsecase != null && yanelUsecase.equals("create")) {
+            CreateUsecaseHelper creator = new CreateUsecaseHelper();
+            creator.create(request, response);
+            return;
+        }
         getContent(request, response);
     }
 
