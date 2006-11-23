@@ -2,13 +2,8 @@ package org.wyona.yanel.impl.resources;
 
 import java.io.ByteArrayInputStream;
 import org.apache.log4j.Category;
-import org.wyona.yanel.core.Yanel;
-import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.ResourceTypeRegistry;
-import org.wyona.yanel.core.api.attributes.ViewableV1;
-import org.wyona.yanel.core.api.attributes.ViewableV2;
-import org.wyona.yanel.core.map.Map;
-import org.wyona.yanel.core.util.ResourceAttributeHelper;
+import org.wyona.yarep.core.RepositoryFactory;
+import org.wyona.yarep.util.RepoPath;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -40,9 +35,14 @@ public class LinkChecker extends DefaultHandler {
                 String aName = attrs.getQName(i);
                 String aValue = attrs.getValue(i);
                 if(aName.equals("href")) {
-                    if(!aValue.startsWith("http://") && !aValue.startsWith("www") && !resourceExists(aValue)) {
-                        log.error("Resource : [" + aValue + "] does not exist");
-                        transformedXmlAsBuffer.append(" exist=\"false\"");
+                    if(aValue.startsWith("external_")) {
+                        //do not check this link cause it is EXTERNAL 
+                        aValue = aValue.substring(9);
+                    } else {//check internal links if they already exist
+                        if(!resourceExists(aValue)) {
+                            log.error("Resource : [" + aValue + "] does not exist");
+                            transformedXmlAsBuffer.append(" exist=\"false\"");
+                        }
                     }
                 }
                 transformedXmlAsBuffer.append(" " + aName + "=\"" + aValue + "\"");
@@ -81,27 +81,14 @@ public class LinkChecker extends DefaultHandler {
     }
     
     private boolean resourceExists(String path) {
-        Resource resource = null;        
-        String viewId = null;
+        
+        RepoPath rp;
         try {
-            Map map = (Map) Yanel.getInstance().getBeanFactory().getBean("map");
-            String rti = map.getResourceTypeIdentifier(new org.wyona.yanel.core.Path(path));
-            
-            ResourceTypeRegistry rtr = new ResourceTypeRegistry();
-            resource = rtr.newResource(rti);
-	    
-            if(ResourceAttributeHelper.hasAttributeImplemented(resource, "Viewable", "1")) {
-                if(((ViewableV1) resource).getView(new org.wyona.yanel.core.Path(path), viewId) != null) return true;
-            } else if(ResourceAttributeHelper.hasAttributeImplemented(resource, "Viewable", "2")) {
-                if(((ViewableV2) resource).exists(new org.wyona.yanel.core.Path(path))) return true;
-            } else {
-                return false;
-            }
-	    
+            rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path), new RepositoryFactory());
+            return rp.getRepo().isResource(new org.wyona.yarep.core.Path(rp.getPath().toString()));
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
         }
         return false;
     }
-    
 }
