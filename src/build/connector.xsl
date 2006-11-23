@@ -17,39 +17,48 @@
     <xsl:copy> 
       <xsl:copy-of select="@*"/>
       <xsl:attribute name="redirectPort"><xsl:value-of select="$ssl-port"/></xsl:attribute>
+
+<!-- UTF-8 Support -->
+<!--
+        <xsl:attribute name="URIEncoding">UTF-8</xsl:attribute>
+-->
     </xsl:copy>
     
-    <!-- create TLS Connector if not exists-->
-    <!--
+    <!-- Create TLS Connector if not exists, whereas use standard connector as template -->
     <xsl:if test="not(count(//Connector[@sslProtocol = 'TLS']))">
       <xsl:copy> 
-        <xsl:copy-of select="@*"/>
-        <xsl:attribute name="port"><xsl:value-of select="$portNumber"/></xsl:attribute>
-        <xsl:attribute name="URIEncoding">UTF-8</xsl:attribute>
+        <xsl:copy-of select="@*[not(self::redirectPort)]"/>
+        <xsl:attribute name="port"><xsl:value-of select="$ssl-port"/></xsl:attribute>
         <xsl:attribute name="keystoreFile"><xsl:value-of select="$keystoreFile"/></xsl:attribute>
         <xsl:attribute name="keystorePass"><xsl:value-of select="$keystorePass"/></xsl:attribute>
         <xsl:attribute name="secure">true</xsl:attribute>
         <xsl:attribute name="scheme">https</xsl:attribute>
         <xsl:attribute name="sslProtocol">TLS</xsl:attribute>
         <xsl:attribute name="clientAuth">false</xsl:attribute>
+
+<!-- UTF-8 Support -->
+<!--
+        <xsl:attribute name="URIEncoding">UTF-8</xsl:attribute>
+-->
       </xsl:copy>
     </xsl:if>
-    -->
     
   </xsl:template>
   
   <!-- in case TLS is already set replace it with our settings from (local.)build.properties -->
-<!--
   <xsl:template match="Connector[@sslProtocol = 'TLS']">
     <xsl:copy> 
       <xsl:copy-of select="@*"/>
-      <xsl:attribute name="port"><xsl:value-of select="$portNumber"/></xsl:attribute>
-      <xsl:attribute name="URIEncoding">UTF-8</xsl:attribute>
+      <xsl:attribute name="port"><xsl:value-of select="$ssl-port"/></xsl:attribute>
       <xsl:attribute name="keystoreFile"><xsl:value-of select="$keystoreFile"/></xsl:attribute>
       <xsl:attribute name="keystorePass"><xsl:value-of select="$keystorePass"/></xsl:attribute>
+
+<!-- UTF-8 Support -->
+<!--
+        <xsl:attribute name="URIEncoding">UTF-8</xsl:attribute>
+-->
     </xsl:copy>
   </xsl:template>
--->
   
   <xsl:template match="@*|node()">
     <xsl:copy>
