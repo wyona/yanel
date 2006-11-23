@@ -8,6 +8,7 @@
 
   <import file="dependencies.xml"/>
   <import file="continuous-integration.xml"/>
+  <import file="install-tomcat.xml"/>
   
   <target name="ask-to-reconfigure-tomcat-cluster-node1" description="reconfigure Tomcat cluster node 1" if="isTomcat1HomeSet">
     <input message="Do you want to reconfigure tomcat cluster node 1 in order to support SSL? (yes/NO):" defaultvalue="NO" addproperty="answerReconfigureTomcat1"/>
