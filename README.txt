@@ -13,6 +13,7 @@
     Getting Started
     ---------------
 
+    0) OPTIONAL: Install default Tomcat by running "build install-default-tomcat"
     1) Run "configure" (NOTE: Will also ask for SSL configuration)
     2) Run "build" (NOTE: You might have to configure a proxy. Please see below for more details)
     3) Run "yanel start/stop" to start or stop Tomcat resp. run "yanel /hello/world.html" from the command line
