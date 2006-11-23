@@ -6,6 +6,7 @@
   <target name="install-default-tomcat" description="Install Default Tomcat" depends="init">
     <echo>Install Default Tomcat ...</echo>
 
+    <mkdir dir="${yanel.home.dir}/local"/>
     <unzip src="${yanel.home.dir}/tools/apache-tomcat/apache-tomcat-5.5.20.zip" dest="${yanel.home.dir}/local"/>
 
     <!-- TODO: Only copy for Java 1.4! -->
