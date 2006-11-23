@@ -31,7 +31,6 @@ import org.wyona.yanel.core.map.Realm;
 
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
-import org.wyona.security.core.PolicyManagerFactory;
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.Role;
@@ -87,8 +86,9 @@ public class YanelCommandLine {
             }
         }
 
-        PolicyManagerFactory pmf = PolicyManagerFactory.newInstance();
-        PolicyManager pm = pmf.newPolicyManager();
+      
+        PolicyManager pm = (PolicyManager) yanel.getBeanFactory().getBean("policyManager");
+    
 
         String[] groupnames = {"admin", "accounting"};
         if (pm.authorize(new org.wyona.commons.io.Path(path.toString()), new Identity("lenya", groupnames), new Role("view"))) {

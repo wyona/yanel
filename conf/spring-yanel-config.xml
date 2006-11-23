@@ -7,4 +7,6 @@
     <!-- <property name="someProperty"><value>someValue</value></property> -->
   </bean>
   <bean id="map" class="org.wyona.yanel.impl.map.MapImpl"/>
+  <bean id="policyManager" class="org.wyona.security.impl.PolicyManagerImpl"/>
+  <bean id="identityManager" class="org.wyona.security.impl.IdentityManagerImpl"/>
 </beans>

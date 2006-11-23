@@ -31,8 +31,6 @@ import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.servlet.CreateUsecaseHelper;
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
-import org.wyona.security.core.IdentityManagerFactory;
-import org.wyona.security.core.PolicyManagerFactory;
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.PolicyManager;
@@ -83,12 +81,9 @@ public class YanelServlet extends HttpServlet {
             
             rtr = new ResourceTypeRegistry();
 
-            PolicyManagerFactory pmf = PolicyManagerFactory.newInstance();
-            pm = pmf.newPolicyManager();
+            pm = (PolicyManager) yanel.getBeanFactory().getBean("policyManager");
 
-            IdentityManagerFactory imf = IdentityManagerFactory.newInstance();
-            im = imf.newIdentityManager();
-
+            im = (IdentityManager) yanel.getBeanFactory().getBean("identityManager");
           
             map = (Map) yanel.getBeanFactory().getBean("map");
 
