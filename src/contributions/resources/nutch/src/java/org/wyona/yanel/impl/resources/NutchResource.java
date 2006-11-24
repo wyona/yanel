@@ -82,6 +82,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     private String language = "en";
     //messages is the name of the ResourceBundle
     private String messages = "messages";
+    private RepoPath rp = null;
 
     /**
      * 
@@ -111,7 +112,7 @@ public class NutchResource extends Resource implements ViewableV1 {
         this.path = path;
         this.language = language;
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
+            rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
                     getRepositoryFactory());
             repository = rp.getRepo();
 
@@ -216,22 +217,53 @@ public class NutchResource extends Resource implements ViewableV1 {
             if (viewId != null && viewId.equals("source")) {
                 transformer = TransformerFactory.newInstance().newTransformer();
             } else {
-                transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
+                File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "result2xhtml.xsl");
+                transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
+                transformer.setParameter("yanel.path.name", path.getName());
+                transformer.setParameter("yanel.path", path.toString());
+                transformer.setParameter("yanel.back2context", backToRoot(path, ""));
+                transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
             }
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
+            
             InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-            //return inputStream;
-
-            // Internationalization
             I18nTransformer i18nTransformer = new I18nTransformer(messages, language);
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(inputStream, i18nTransformer);
-            return i18nTransformer.getInputStream();
+            
+            transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
+            transformer.setParameter("yanel.path.name", path.getName());
+            transformer.setParameter("yanel.path", path.toString());
+            transformer.setParameter("yanel.back2context", backToRoot(path, ""));
+            transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+            byteArrayOutputStream = new ByteArrayOutputStream();
+            transformer.transform(new StreamSource(i18nTransformer.getInputStream()), new StreamResult(byteArrayOutputStream));
+            
+            return new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
         return null;
+    }
+
+    /**
+     *
+     */
+    private String backToRoot(Path path, String backToRoot) {
+        org.wyona.commons.io.Path parent = path.getParent();
+        if (parent != null && !isRoot(parent)) {
+            return backToRoot(new Path(parent.toString()), backToRoot + "../");
+        }
+        return backToRoot;
+    }
+
+    /**
+     *
+     */
+    private boolean isRoot(org.wyona.commons.io.Path path) {
+        if (path.toString().equals(File.separator)) return true;
+        return false;
     }
     
     /**

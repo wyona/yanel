@@ -1,2 +1,3 @@
 <{http://www.wyona.org/yanel/resource/1.0}nutch/>
 #xslt: /xslt/myxslt.xsl
+xslt: /xslt/global.xsl
