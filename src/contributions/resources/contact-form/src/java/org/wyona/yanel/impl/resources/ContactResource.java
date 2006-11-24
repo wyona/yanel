@@ -161,10 +161,8 @@ public class ContactResource extends Resource implements ViewableV1 {
                 .newTransformer(getXSLTStreamSource(path, contentRepo));
         transformer.setParameter("yanel.path.name", path.getName());
         transformer.setParameter("yanel.path", path.toString());
-        // transformer.setParameter("yanel.back2context", backToRoot(path,
-        // ""));
-        // transformer.setParameter("yarep.back2realm", backToRoot(new
-        // org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+        transformer.setParameter("yanel.back2context", backToRoot(path, ""));
+        transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
         // TODO: Is this the best way to generate an InputStream from an
         // OutputStream?
         java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
@@ -235,10 +233,12 @@ public class ContactResource extends Resource implements ViewableV1 {
             throws Exception, TransformerConfigurationException,
             TransformerFactoryConfigurationError, NoSuchNodeException,
             TransformerException {
+
+        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
+        
         Transformer transformer = prepareTransformer(path);
-        // transformer.setParameter("yanel.back2context", backToRoot(path, ""));
-        // transformer.setParameter("yarep.back2realm", backToRoot(new
-        // org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+        transformer.setParameter("yanel.back2context", backToRoot(path, ""));
+        transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
         // TODO: Is this the best way to generate an InputStream from an
         // OutputStream?
         java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
@@ -412,12 +412,38 @@ public class ContactResource extends Resource implements ViewableV1 {
         return "application/xhtml+xml";
     }
     
+    /**
+     * 
+     * @return
+     */
     protected RepositoryFactory getRepositoryFactory() {
         return yanel.getRepositoryFactory("DefaultRepositoryFactory");
     }
     
+    /**
+     * 
+     * @return
+     */
     protected RepositoryFactory getRTIRepositoryFactory() {
         return yanel.getRepositoryFactory("RTIRepositoryFactory");
     }
     
+   /**
+    *
+    */
+   private String backToRoot(Path path, String backToRoot) {
+       org.wyona.commons.io.Path parent = path.getParent();
+       if (parent != null && !isRoot(parent)) {
+           return backToRoot(new Path(parent.toString()), backToRoot + "../");
+       }
+       return backToRoot;
+   }
+   
+  /**
+   *
+   */
+  private boolean isRoot(org.wyona.commons.io.Path path) {
+      if (path.toString().equals(File.separator)) return true;
+      return false;
+  }
 }
