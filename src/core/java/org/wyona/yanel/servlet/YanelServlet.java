@@ -22,6 +22,7 @@ import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
+import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
@@ -264,6 +265,19 @@ public class YanelServlet extends HttpServlet {
                         lastModifiedElement.appendChild(doc.createTextNode(new java.util.Date(lastModified).toString()));
                     } else {
                         Element noLastModifiedElement = (Element) resourceElement.appendChild(doc.createElement("no-last-modified"));
+                    }
+                    if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
+                        // retrieve the revisions, but only in the meta usecase (for performance reasons):
+                        if (request.getParameter("yanel.resource.meta") != null) {
+                            String[] revisions = ((VersionableV2)res).getRevisions(new Path(request.getServletPath()));
+                            Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement("revisions"));
+                            if (revisions != null) {
+                                for (int i=0; i<revisions.length; i++) {
+                                    Element revisionElement = (Element) revisionsElement.appendChild(doc.createElement("revision"));
+                                    revisionElement.appendChild(doc.createTextNode(revisions[i]));
+                                }
+                            }
+                        }
                     }
                 } else {
                         Element resourceIsNullElement = (Element) rootElement.appendChild(doc.createElement("resource-is-null"));

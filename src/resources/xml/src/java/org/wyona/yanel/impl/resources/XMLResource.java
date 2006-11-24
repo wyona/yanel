@@ -22,6 +22,7 @@ import org.wyona.yanel.core.Topic;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
+import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
@@ -53,7 +54,7 @@ import org.apache.log4j.Category;
 /**
  *
  */
-public class XMLResource extends Resource implements ViewableV1, ModifiableV1, ModifiableV2 {
+public class XMLResource extends Resource implements ViewableV1, ModifiableV1, ModifiableV2, VersionableV2 {
 
     private static Category log = Category.getInstance(XMLResource.class);
 
@@ -314,8 +315,17 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
         return property;
     }
     
+    public String[] getRevisions(Path path) {
+        try {
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
+            return rp.getRepo().getRevisions(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+        } catch(Exception e) {
+            log.error(e);
+            return null;
+        }
+    }
+
     protected RepositoryFactory getRepositoryFactory() {
         return yanel.getRepositoryFactory("DefaultRepositoryFactory");
     }
-    
 }

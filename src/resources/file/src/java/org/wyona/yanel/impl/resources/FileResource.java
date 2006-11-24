@@ -20,6 +20,7 @@ import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.Topic;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
+import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
@@ -40,7 +41,7 @@ import org.apache.log4j.Category;
 /**
  *
  */
-public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
+public class FileResource extends Resource implements ViewableV1, ModifiableV2, VersionableV2 {
 
     private static Category log = Category.getInstance(FileResource.class);
 
@@ -64,6 +65,7 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
         View defaultView = new View();
         
             org.wyona.yarep.util.RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
+            
             defaultView.setInputStream(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
 
             defaultView.setMimeType(getMimeType(path, viewId));
@@ -238,6 +240,16 @@ public class FileResource extends Resource implements ViewableV1, ModifiableV2 {
         }
     }
     
+    public String[] getRevisions(Path path) {
+        try {
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
+            return rp.getRepo().getRevisions(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+        } catch(Exception e) {
+            log.error(e);
+            return null;
+        }
+    }
+
     protected RepositoryFactory getRepositoryFactory() {
         return yanel.getRepositoryFactory("DefaultRepositoryFactory");
     }    
