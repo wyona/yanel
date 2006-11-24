@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<introspection xmlns="http://www.wyona.org/neutron/1.0">
+
+<edit mime-type="application/xhtml+xml" name="contact-form">
+  <open url="contact-form.xhtml" method="GET"/>
+  <save url="contact-form.xhtml?yanel.resource.usecase=save" method="PUT"/>
+</edit>
+
+</introspection>
