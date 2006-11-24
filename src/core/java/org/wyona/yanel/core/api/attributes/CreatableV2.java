@@ -16,6 +16,9 @@
 
 package org.wyona.yanel.core.api.attributes;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.api.attributes.CreatableV1;
 
 /**
@@ -32,5 +35,5 @@ public interface CreatableV2 extends CreatableV1 {
     /**
      * creates the resource
      */
-    public void create(String path);
+    public void create(HttpServletRequest request, String createName);
 }

@@ -33,7 +33,8 @@ import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
-import org.wyona.yarep.core.Path;
+import org.wyona.yanel.core.Path;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,7 +44,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class CreateUsecaseHelper {
 
-    private static Logger log = Logger.getLogger("test");
+    private static Logger log = Logger.getLogger(CreateUsecaseHelper.class);
 
     /**
      *
@@ -52,13 +53,19 @@ public class CreateUsecaseHelper {
 
         String createName = request.getParameter("create.name");
         String resourceType = request.getParameter("resource.type");
+        String create = request.getParameter("create");
 
         if (resourceType == null) {
             PrintWriter w = response.getWriter();
             w.print(resourcesTypeSelectScreen(createName));
         } else {
-            PrintWriter w = response.getWriter();
-            w.print(createResourceScreen(createName, resourceType));
+            if(create == null){
+                PrintWriter w = response.getWriter();
+                w.print(createResourceScreen(createName, resourceType));
+            } else{
+                PrintWriter w = response.getWriter();
+                w.print(doCreate(resourceType, request, createName));
+            }
         }
         return response;
 
@@ -277,6 +284,56 @@ public class CreateUsecaseHelper {
         }
 
         return resourcesCreateScreen;
+    }
+    
+    public String doCreate(String resourceType, HttpServletRequest request, String createName ) {
+        String responseAfterCreationScreen = null;
+        ResourceTypeRegistry rtr = new ResourceTypeRegistry();
+        String[] PropertyNames = null;
+        
+        try {
+            Resource resource = rtr.newResource(resourceType);
+            if (resource != null) {
+                if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Creatable", "2")) {
+                    PropertyNames = ((CreatableV2) resource).getPropertyNames();
+                    
+
+                        ((CreatableV2) resource).create(request, createName);
+                        
+                        //response after creation, better would be a redirect to the fresh created resource
+                        StringBuffer form = new StringBuffer();
+                        form.append("<?xml version=\"1.0\"?>");
+                        form.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+                        form.append("<body>");
+                        form.append("creation successfull");
+                        form.append("</body>");
+                        responseAfterCreationScreen = form.toString();
+                    }else{
+                        //response after creation failed
+                        StringBuffer form = new StringBuffer();
+                        form.append("<?xml version=\"1.0\"?>");
+                        form.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+                        form.append("<body>");
+                        form.append("creation NOT successfull!");
+                        form.append("</body>");
+                        responseAfterCreationScreen = form.toString();
+                    }
+                return responseAfterCreationScreen;
+                }
+
+            }
+         catch (Exception e) {
+            log.error(e.getMessage(), e);
+            String message = e.toString();
+            log.error(e.getMessage(), e);
+            // Element exceptionElement = (Element)
+            // rootElement.appendChild(doc.createElement("exception"));
+            // exceptionElement.appendChild(doc.createTextNode(message));
+            // setYanelOutput(response, doc);
+            // response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return message;
+        }
+        return responseAfterCreationScreen;
     }
 
 }

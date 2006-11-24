@@ -16,9 +16,12 @@
 
 package org.wyona.yanel.impl.resources;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
+import java.io.PrintWriter;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -66,6 +69,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     public WikiResource() {
         dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
+        properties.put("title", "");
     }
 
     /**
@@ -184,6 +188,43 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
         return null;
     }
     
+    /**
+     * @return the empty wiki resource as String 
+     */
+    private String getEmptyWikiXml() {
+        StringBuffer emptyWikiXml = new StringBuffer();
+        emptyWikiXml.append("<?xml version=\"1.0\"?>");
+        emptyWikiXml.append("\n");
+        emptyWikiXml.append("<wiki xmlns=\"http://www.wyona.org/neutron/1.0\">");
+        emptyWikiXml.append("\n");
+        emptyWikiXml.append("</wiki>");
+        
+        return emptyWikiXml.toString();
+    }
+    
+    /**
+     * @param newWikiPage
+     * @return the empty wiki introspection as String
+     */
+    private String getEmptyWikiIntrospection(String newWikiPage) {
+        StringBuffer emptyWikiPageContent = new StringBuffer();
+        emptyWikiPageContent.append("<?xml version=\"1.0\"?>");
+        emptyWikiPageContent.append("\n");
+        emptyWikiPageContent.append("<introspection xmlns=\"http://www.wyona.org/neutron/1.0\">");
+        emptyWikiPageContent.append("\n\t");
+        emptyWikiPageContent.append("<edit mime-type=\"application/xml\" name=\"" + newWikiPage + "\">");
+        emptyWikiPageContent.append("\n\t\t");
+        emptyWikiPageContent.append("<checkout url=\"/wiki/" + newWikiPage + ".html\" method=\"GET\"/>");
+        emptyWikiPageContent.append("\n\t\t");
+        emptyWikiPageContent.append("<checkin url=\"/wiki/" + newWikiPage + ".html?yanel.resource.usecase=checkin\" method=\"PUT\"/>");
+        emptyWikiPageContent.append("\n\t");
+        emptyWikiPageContent.append("</edit>");
+        emptyWikiPageContent.append("\n");
+        emptyWikiPageContent.append("</introspection>");
+        
+        return emptyWikiPageContent.toString();
+    }    
+    
     protected RepositoryFactory getRepositoryFactory() {
         return yanel.getRepositoryFactory("DefaultRepositoryFactory");
     }
@@ -207,8 +248,64 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
         //TODO not implemented yet
         return null;
     }
-    
-    public void create(String name){
+  
+    public void create(HttpServletRequest request ,String createName){
         log.warn("TODO: Not implemented yet!");
+        //yanel rti TODO does not work yet
+        //writeRti(new Path(request.getServletPath()), createName, "rtd/wiki.rtd");
+        
+        
+        //content
+        writeContent(new Path(request.getServletPath()), createName, this.getEmptyWikiXml());
+
+        //introspection
+        //writeToRepo(newpath,content);
     }
+ 
+    public void writeContent(Path path,String createName,  String content){
+        
+        try{
+            
+        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()+"/"+createName), new RepositoryFactory());
+        repository = rp.getRepo();
+
+        // Write content to repository
+        System.out.println("\nWriting content to repository " + repository.getName() +"with content: "+content+"to path: "+path.toString()+"/"+createName);
+        Writer writer = repository.getWriter(rp.getPath());
+        writer.write(content);
+        writer.close();
+        }
+        catch (Exception e) {
+            log.warn(e);
+        }
+    }
+
+    public void writeRti(Path path,String createName,  String content){
+        
+        try{
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()+"/"+createName), yanel.getRepositoryFactory("RTIRepositoryFactory"));
+            
+            repository = rpRTI.getRepo();
+
+            // Write content to repository
+            System.out.println("\nWriting content to repository " + repository.getName() +"with content: "+content+"to path: "+path.toString()+"/"+createName);
+            Writer writer = repository.getWriter(rpRTI.getPath());
+            writer.write(content);
+            writer.close();
+            
+            //Writer br = rpRTI.getRepo().getWriter(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString()));
+            
+            //PrintWriter br = new PrintWriter(rpRTI.getRepo().getWriter(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
+
+            
+            // Write the rti file
+            //System.out.println("\nWriting RTI to repository " + repository.getName() +"with content: "+content+"to path: "+path.toString()+"/"+createName);
+            //br.write(content);
+            //br.close();
+        }
+        catch (Exception e) {
+            log.error(e);
+        }
+    }
+            
 }
