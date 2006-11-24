@@ -122,13 +122,13 @@ public class YanelServlet extends HttpServlet {
         String method = request.getMethod();
         if (method.equals(METHOD_PROPFIND)) {
             doPropfind(request, response);
-	} else if (method.equals(METHOD_GET)) {
+        } else if (method.equals(METHOD_GET)) {
             doGet(request, response);
-	} else if (method.equals(METHOD_POST)) {
+        } else if (method.equals(METHOD_POST)) {
             doPost(request, response);
-	} else if (method.equals(METHOD_PUT)) {
+        } else if (method.equals(METHOD_PUT)) {
             doPut(request, response);
-	} else if (method.equals(METHOD_DELETE)) {
+        } else if (method.equals(METHOD_DELETE)) {
             doDelete(request, response);
         } else {
             log.error("No such method implemented: " + method);
@@ -178,10 +178,10 @@ public class YanelServlet extends HttpServlet {
         requestElement.setAttribute("uri", request.getRequestURI());
         requestElement.setAttribute("servlet-path", request.getServletPath());
 
-	HttpSession session = request.getSession(true);
+        HttpSession session = request.getSession(true);
         Element sessionElement = (Element) rootElement.appendChild(doc.createElement("session"));
         sessionElement.setAttribute("id", session.getId());
-	Enumeration attrNames = session.getAttributeNames();
+        Enumeration attrNames = session.getAttributeNames();
         if (!attrNames.hasMoreElements()) {
             Element sessionNoAttributesElement = (Element) sessionElement.appendChild(doc.createElement("no-attributes"));
         }
@@ -316,7 +316,7 @@ public class YanelServlet extends HttpServlet {
             if (is != null) {
                 // TODO: Yarep does not set returned Stream to null resp. is missing Exception Handling for the constructor. Exceptions should be handled here, but rather within Yarep or whatever repositary layer is being used ...
                 bytesRead = is.read(buffer);
-	        if (bytesRead == -1) {
+                if (bytesRead == -1) {
                     String message = "InputStream of view does not seem to contain any data!";
 
                     Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
@@ -365,7 +365,7 @@ public class YanelServlet extends HttpServlet {
             log.debug("Save data ...");
             save(request, response);
             return;
-	} else if (value != null && value.equals("checkin")) {
+        } else if (value != null && value.equals("checkin")) {
             log.debug("Checkin data ...");
             save(request, response);
             // TODO: Implement checkin ...
@@ -426,7 +426,7 @@ public class YanelServlet extends HttpServlet {
             log.debug("Save data ...");
             save(request, response);
             return;
-	} else if (value != null && value.equals("checkin")) {
+        } else if (value != null && value.equals("checkin")) {
             log.debug("Checkin data ...");
             save(request, response);
             // TODO: Implement checkin ...
@@ -599,7 +599,7 @@ public class YanelServlet extends HttpServlet {
             }
 
 /*
-	    if (bytesRead == -1) {
+        if (bytesRead == -1) {
                 response.setContentType("text/plain");
                 PrintWriter writer = response.getWriter();
                 writer.print("No content!");
@@ -695,7 +695,7 @@ public class YanelServlet extends HttpServlet {
      */
     private HttpServletResponse doAuthorize(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-	Role role = null;
+    Role role = null;
 
         // TODO: Replace hardcoded roles by mapping between roles amd query strings ...
         String value = request.getParameter("yanel.resource.usecase");
@@ -704,16 +704,16 @@ public class YanelServlet extends HttpServlet {
         if (value != null && value.equals("save")) {
             log.debug("Save data ...");
             role = new Role("write");
-	} else if (value != null && value.equals("checkin")) {
+        } else if (value != null && value.equals("checkin")) {
             log.debug("Checkin data ...");
             role = new Role("write");
-	} else if (value != null && value.equals("checkout")) {
+        } else if (value != null && value.equals("checkout")) {
             log.debug("Checkout data ...");
             role = new Role("open");
-	} else if (contentType != null && contentType.indexOf("application/atom+xml") >= 0 && (method.equals(METHOD_PUT) || method.equals(METHOD_POST))) {
+        } else if (contentType != null && contentType.indexOf("application/atom+xml") >= 0 && (method.equals(METHOD_PUT) || method.equals(METHOD_POST))) {
             log.error("DEBUG: Write/Checkin Atom entry ...");
             role = new Role("write");
-	} else if (method.equals(METHOD_DELETE)) {
+        } else if (method.equals(METHOD_DELETE)) {
             log.error("DEBUG: Delete resource ...");
             role = new Role("delete");
         } else {
@@ -741,7 +741,7 @@ public class YanelServlet extends HttpServlet {
                 String userpassDecoded = new String(dec.decodeBuffer(userpassEncoded));
                 log.error("DEBUG: userpassDecoded: " + userpassDecoded);
                 // TODO: Use security package and remove hardcoded ...
-		// Authenticate every request ...
+        // Authenticate every request ...
                 //if (im.authenticate(...)) {
                 if (userpassDecoded.equals("lenya:levi")) {
                     //return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), new Identity(...), new Role("view"));
@@ -755,7 +755,7 @@ public class YanelServlet extends HttpServlet {
                 PrintWriter writer = response.getWriter();
                 writer.print("BASIC Authorization/Authentication Failed!");
                 return response;
-	    } else if (authorization.toUpperCase().startsWith("DIGEST")) {
+            } else if (authorization.toUpperCase().startsWith("DIGEST")) {
                 log.error("DIGEST is not implemented");
                 authorized = false;
                 response.sendError(response.SC_UNAUTHORIZED);
@@ -788,7 +788,7 @@ public class YanelServlet extends HttpServlet {
                 if(sslPort != null) {
                     log.error("DEBUG: Redirect to SSL ...");
                     try {
-	                URL url = new URL(getRequestURLQS(request, null, false).toString());
+                    URL url = new URL(getRequestURLQS(request, null, false).toString());
                         url = new URL("https", url.getHost(), new Integer(sslPort).intValue(), url.getFile());
                         response.setHeader("Location", url.toString());
                         // TODO: Yulup has a bug re TEMPORARY_REDIRECT
@@ -810,7 +810,7 @@ public class YanelServlet extends HttpServlet {
             // TODO: Ulysses has not HTTP BASIC or DIGEST implemented yet!
 /*
             response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
-	    response.sendError(response.SC_UNAUTHORIZED);
+        response.sendError(response.SC_UNAUTHORIZED);
 */
             // Custom Authorization/Authentication
             // ...
@@ -889,9 +889,9 @@ public class YanelServlet extends HttpServlet {
         String proxyPrefix = realm.getProxyPrefix();
 
         URL url = null;
-	
+    
         try {
-	    url = new URL(request.getRequestURL().toString());
+        url = new URL(request.getRequestURL().toString());
 
             if (proxyHostName != null) {
                 url = new URL(url.getProtocol(), proxyHostName, url.getPort(), url.getFile());
@@ -958,7 +958,7 @@ public class YanelServlet extends HttpServlet {
                 log.warn("Login failed: " + loginUsername);
                 // TODO: Implement form based response ...
                 response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
-	        response.sendError(response.SC_UNAUTHORIZED);
+            response.sendError(response.SC_UNAUTHORIZED);
                 return response;
             }
         }
