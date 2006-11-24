@@ -191,13 +191,9 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     /**
      * @return the empty wiki resource as String 
      */
-    private String getEmptyWikiXml() {
+    private String getEmptyWiki(String title) {
         StringBuffer emptyWikiXml = new StringBuffer();
-        emptyWikiXml.append("<?xml version=\"1.0\"?>");
-        emptyWikiXml.append("\n");
-        emptyWikiXml.append("<wiki xmlns=\"http://www.wyona.org/neutron/1.0\">");
-        emptyWikiXml.append("\n");
-        emptyWikiXml.append("</wiki>");
+        emptyWikiXml.append("!"+title);
         
         return emptyWikiXml.toString();
     }
@@ -256,7 +252,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
         
         
         //content
-        writeContent(new Path(request.getServletPath()), createName, this.getEmptyWikiXml());
+        writeContent(new Path(request.getServletPath()), createName, this.getEmptyWiki(request.getParameter("title")));
 
         //introspection
         //writeToRepo(newpath,content);
