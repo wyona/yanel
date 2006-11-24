@@ -232,15 +232,21 @@ public class CreateUsecaseHelper {
                     form.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
                     form.append("<body>");
                     form.append("<h1>Create new resource</h1>");
-                    form.append("Name: " + createName + "<br/>");
+                    if (createName == null) {
+                        form.append("Name: <input type=\"text\"/><br/>");
+                    } else {
+                        form.append("Name: " + createName + "<br/>");
+                    }
                     form.append("Resource Type: " + rti + "<br/><br/>");
                     form.append("<form>");
                     form.append("<input type=\"hidden\" name=\"yanel.usecase\" value=\"create\"/>");
                     form.append("<input type=\"hidden\" name=\"resource.type\" value=\""+rti+"\"/>");
                     form.append("<input type=\"hidden\" name=\"create.name\" value=\""+createName+"\"/>");
-
                     form.append("<input type=\"hidden\" name=\"create\" value=\"create.resource\"/>");
 
+                    if (PropertyNames.length == 0) {
+                        form.append("<p>No resource specific properties!</p>");
+                    }
                     for (int i = 0; i < PropertyNames.length; i++) {
                         form.append(PropertyNames[i] + ":<input name=\"" + PropertyNames[i]
                                 + "\" value=\""
