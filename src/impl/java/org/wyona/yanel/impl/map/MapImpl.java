@@ -37,7 +37,6 @@ public class MapImpl implements Map {
 
     private static Category log = Category.getInstance(MapImpl.class);
 
-    RepositoryFactory repoFactory;
     RealmConfiguration realmConfig;
 
     /**
@@ -46,13 +45,16 @@ public class MapImpl implements Map {
     public MapImpl() {
         try {
             // NOTE: Separate ResourceTypeIdentifier mapping from whatever else is using yarep ...
-            repoFactory = Yanel.getInstance().getRepositoryFactory("RTIRepositoryFactory");
-            //repoFactory = new RepositoryFactory();
 
             realmConfig = new RealmConfiguration();
         } catch(Exception e) {
             log.error(e.getMessage(), e);
         }
+    }
+    
+    protected RepositoryFactory getRepositoryFactory() throws Exception {
+        return Yanel.getInstance().getRepositoryFactory("RTIRepositoryFactory");
+        //repoFactory = new RepositoryFactory();
     }
 
     /**
@@ -68,7 +70,7 @@ public class MapImpl implements Map {
     public String getResourceTypeIdentifier(Path path) {
         log.debug("Original path: " + path);
         try {
-            RepoPath rp = new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),repoFactory);
+            RepoPath rp = new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),getRepositoryFactory());
             Repository repo = rp.getRepo();
             log.debug("Repo Name: " + repo.getName());
             log.debug("New path: " + rp.getPath());
@@ -91,6 +93,7 @@ public class MapImpl implements Map {
      */
     public Realm[] getRealms() {
         try {
+            RepositoryFactory repoFactory = getRepositoryFactory();
             String[] repoIds = repoFactory.getRepositoryIDs();
             Repository root = repoFactory.firstRepository();
             Realm[] realms = new Realm[repoIds.length];
@@ -120,6 +123,7 @@ public class MapImpl implements Map {
      */
     public Realm getRealm(Path path) {
         try {
+            RepositoryFactory repoFactory = getRepositoryFactory();
             RepoPath rp = new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), repoFactory);
             Realm realm = null;
             Repository root = repoFactory.firstRepository();
