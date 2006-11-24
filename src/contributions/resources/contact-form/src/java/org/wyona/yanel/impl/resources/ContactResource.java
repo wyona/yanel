@@ -220,7 +220,12 @@ public class ContactResource extends Resource implements ViewableV1 {
             sb.append("<div id=\"contenBody\">");
             sb.append("<h1>" + status.get(SendMail.STATUS) + "</h1>");
             sb.append("<p>Your message has not been sent.</p>");
-            sb.append("<p>" + status.get(SendMail.MESSAGE) + "</p>");
+            
+            String errorMessage = (String) status.get(SendMail.MESSAGE);
+            errorMessage = errorMessage.replaceAll("<", "&lt;");
+            errorMessage = errorMessage.replaceAll(">", "&gt;");
+            
+            sb.append("<p>" + errorMessage + "</p>");
             sb.append("</div>");
             sb.append("</body>");
         }
@@ -241,6 +246,7 @@ public class ContactResource extends Resource implements ViewableV1 {
         transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
         // TODO: Is this the best way to generate an InputStream from an
         // OutputStream?
+        
         java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
         transformer.transform(new StreamSource(
                 new java.io.StringBufferInputStream(sb.toString())),
