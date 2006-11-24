@@ -211,7 +211,10 @@
           <xsl:when test="@label"><xsl:value-of select="@label"/></xsl:when>
           <xsl:otherwise><xsl:value-of select="@href"/></xsl:otherwise>
         </xsl:choose>
-        </u><a href="?yanel.usecase=create&amp;name={@href}">?</a><xsl:text>&#0160;</xsl:text>
+        </u><a href="?yanel.usecase=create&amp;create.name={@href}">?</a><xsl:text>&#0160;</xsl:text>
+<!--
+        </u><a href="?yanel.usecase=create&amp;create.name={@href}&amp;resource.type=&lt;{http://www.wyona.org/yanel/resource/1.0}wiki/>">?</a><xsl:text>&#0160;</xsl:text>
+-->
       </xsl:when>
       <xsl:otherwise>
         <xsl:choose>
