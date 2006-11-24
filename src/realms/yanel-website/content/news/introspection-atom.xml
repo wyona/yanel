@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<service xmlns="http://purl.org/atom/app#">
+  <workspace title="Yanel Website News">
+    <collection title="News" href="news-atom-entries/?yanel.resource.viewid=atom">
+    </collection>
+  </workspace>
+</service>

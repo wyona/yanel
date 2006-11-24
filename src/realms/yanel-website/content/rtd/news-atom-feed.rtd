@@ -1,0 +1,6 @@
+<{http://www.wyona.org/yanel/resource/1.0}atom/>
+feed-title: News
+author: Yanel Editorial Team
+xslt: /xslt/news-atom-entries2xhtml.xsl
+self-url: http://yanel.wyona.org/news/release-atom-entries/?yanel.resource.viewid=atom
+#self-url: http://www.yulup.org:9190/ulysses/download/release-atom-entries/?yanel.resource.viewid=atom

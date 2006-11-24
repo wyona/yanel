@@ -190,6 +190,22 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
 	    defaultView.setInputStream(new java.io.StringBufferInputStream(sb.toString()));
             return defaultView;
         }
+        
+        if (viewId != null && viewId.equals("rss2.0")) {
+        	try {
+        		File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "atomfeed2rss2.0.xsl");
+        		Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
+        		java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+                transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
+                defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+                defaultView.setMimeType("text/xml");
+                defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));	            
+        	} catch(Exception e) {
+                log.error(e);
+            }
+            return defaultView;
+        }
+
 
         try {
             Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, contentRepo));
@@ -202,7 +218,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
             transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
             defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
             defaultView.setMimeType(getMimeType(path));
-	    defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+	        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
         } catch (Exception e) {
             log.error(e);
         }

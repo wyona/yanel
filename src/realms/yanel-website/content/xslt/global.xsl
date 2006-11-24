@@ -95,10 +95,11 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 &#160;<a href="{$yarep.back2realm}license.html">License</a><br/>
 &#160;<a href="{$yarep.back2realm}{$language}/getting-started.html">Getting Started</a><br/>
 &#160;Features<br/>
-&#160;News<br/>
 <!--
+&#160;News<br/>
+ -->
 &#160;<a href="{$yarep.back2realm}news/index.html">News</a><br/>
--->
+
 &#160;<a href="{$yarep.back2realm}documentation/index.html">Documentation</a><br/>
 <br/>
 <b>Development/Community</b><br/>

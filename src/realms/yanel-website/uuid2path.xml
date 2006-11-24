@@ -8,6 +8,8 @@
   <node uuid="deutsch"               ><name parent-uuid="/">de</name></node>
   <node uuid="documentation"         ><name parent-uuid="/">documentation</name></node>
   <node uuid="documentation.xhtml"   ><name parent-uuid="documentation">index.html</name></node>
+  <node uuid="news"                  ><name parent-uuid="/">news</name></node>
+  <node uuid="news.xhtml"            ><name parent-uuid="news">index.html</name></node>
   <node uuid="download"              ><name parent-uuid="/">download</name></node>
   <node uuid="download.xhtml"        ><name parent-uuid="/">download.html</name></node>
   <node uuid="english"               ><name parent-uuid="/">en</name></node>
