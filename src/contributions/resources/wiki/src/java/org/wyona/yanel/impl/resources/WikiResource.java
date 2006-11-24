@@ -19,6 +19,7 @@ package org.wyona.yanel.impl.resources;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,6 +39,7 @@ import org.wyona.wikiparser.WikiParserFactory;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
+import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
@@ -49,13 +51,14 @@ import org.wyona.yarep.util.RepoPath;
 /**
  * 
  */
-public class WikiResource extends Resource implements ViewableV1 {
+public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
 
     private static Category log = Category.getInstance(WikiResource.class);
     private final String XML_MIME_TYPE = "application/xml";
     private DocumentBuilderFactory dbf = null;
     private Repository repository  = null;
     private String context = null;
+    private HashMap properties = new HashMap();
     
     /**
      * 
@@ -185,5 +188,27 @@ public class WikiResource extends Resource implements ViewableV1 {
         return yanel.getRepositoryFactory("DefaultRepositoryFactory");
     }
     
+    
+    public String[] getPropertyNames() {
+        String[] propertyNames = (String[])properties.keySet().toArray(new String[properties.keySet().size()]);
+        return propertyNames;
+    }
 
+    public void setProperty(String name, Object value){
+        properties.put(name, value);
+    }
+
+    public Object getProperty(String name){
+        Object property = properties.get(name);
+        return property;
+    }
+    
+    public String getPropertyType(String propertyName){
+        //TODO not implemented yet
+        return null;
+    }
+    
+    public void create(String name){
+        log.warn("TODO: Not implemented yet!");
+    }
 }
