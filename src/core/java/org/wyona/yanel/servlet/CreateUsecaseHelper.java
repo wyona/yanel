@@ -305,7 +305,7 @@ public class CreateUsecaseHelper {
                         form.append("<?xml version=\"1.0\"?>");
                         form.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
                         form.append("<body>");
-                        form.append("creation successfull");
+                        form.append("New resource has been created successfully: <a href=\"" + createName + "\">" + createName + "</a>");
                         form.append("</body>");
                         responseAfterCreationScreen = form.toString();
                     }else{
