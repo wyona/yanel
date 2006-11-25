@@ -18,10 +18,12 @@
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:wiki="http://www.wyona.org/yanel/1.0"
-                xmlns:lenya="http://apache.org/cocoon/lenya/page-envelope/1.0"
                 xmlns="http://www.w3.org/1999/xhtml"
+                >
+<!--
                 xmlns:dc="http://purl.org/dc/elements/1.1/"
                 >
+-->
   
   <xsl:param name="yanel.path.name" select="'YANEL_PATH_NAME_IS_NULL'"/>
   <xsl:param name="yanel.path" select="'YANEL_PATH_IS_NULL'"/>
@@ -164,47 +166,6 @@
   
   <xsl:template match="wiki:Link">
     <xsl:choose>
-      <!-- external links -->
-      
-      <!--
-      <xsl:when test="@type = 'internal' and (@suffix = 'gif' or @suffix = 'jpg' or @suffix = 'png')">
-        <img src="{$contextprefix}/{$publication}/{$area}{@href}.{@suffix}" alt="{@label}"/>
-      </xsl:when>
-      <xsl:when test="@type = 'external' and (@suffix = 'gif' or @suffix = 'jpg' or @suffix = 'png')">
-        <img src="{@href}.{@suffix}" alt="{@label}"/>
-      </xsl:when>
-      <xsl:when test="@label and @type = 'external'">
-        <a href="{@href}.{@suffix}"><xsl:value-of select="@label"/></a><img src="{$contextprefix}/{$publication}/{$area}/out.png?lenya.module=wiki" alt="external link"/>
-      </xsl:when>
-      <xsl:when test="@type='external'">
-        <a href="{@href}.{@suffix}"><xsl:value-of select="@href"/></a><img src="{$contextprefix}/{$publication}/{$area}/out.png?lenya.module=wiki" alt="external link"/>
-      </xsl:when>
-      -->
-      
-      <!-- TODO: What are these when(s) all good for?! -->
-      <!-- internal links -->
-<!--
-      <xsl:when test="@label and @valid ='false'">
-        <a class="brokenlink" alt="Broken Link"><xsl:value-of select="@label"/></a>
-      </xsl:when>
-      
-      <xsl:when test="@valid ='false'">
-        <a class="brokenlink" alt="Broken Link"><xsl:value-of select="@href"/></a>
-      </xsl:when>
-      
-      <xsl:when test="@label and @type = 'internal' and @exists = 'false'">
-        <a href="?doctype=wiki&#38;lenya.usecase=site.create&#38;documentId={@href}"><xsl:value-of select="@label"/></a><img src="{$contextprefix}/{$publication}/{$area}/new.png?lenya.module=wiki" alt="create new document"/>
-      </xsl:when>
-      
-      <xsl:when test="@type = 'internal' and @exists = 'false'">
-        <a href="?doctype=wiki&#38;lenya.usecase=site.create&#38;documentId={@href}"><xsl:value-of select="@href"/></a><img src="{$contextprefix}/{$publication}/{$area}/new.png?lenya.module=wiki" alt="create new document"/>
-      </xsl:when>
-      
-      <xsl:when test="@label and @type = 'internal'">
-        <a href="{$contextprefix}/{$publication}/{$area}{@href}.html"><xsl:value-of select="@label"/></a>
-      </xsl:when>
--->
-      
       <xsl:when test="@exist = 'false'">
         <u>
         <xsl:choose>
