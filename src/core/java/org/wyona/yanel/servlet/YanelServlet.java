@@ -145,7 +145,7 @@ public class YanelServlet extends HttpServlet {
 
         if(yanelUsecase != null && yanelUsecase.equals("create")) {
             CreateUsecaseHelper creator = new CreateUsecaseHelper();
-            creator.create(request, response);
+            creator.create(request, response, yanel);
             return;
         }
         getContent(request, response);
