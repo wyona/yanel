@@ -275,37 +275,22 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
      *
      */
     public void writeRti(Path path, String createName){
-        log.error("DEBUG: " + path +" "+ createName);
         try {
-            log.error("DEBUG: " + yanel);
-            log.error("DEBUG: " + yanel.getRepositoryFactory("RTIRepositoryFactory"));
             RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
 
-        log.error("DEBUG: " + rpRTI);
             repository = rpRTI.getRepo();
-            log.error("DEBUG: repository " + repository.getName());
             org.wyona.yarep.core.Path newPath = new org.wyona.yarep.core.Path(rpRTI.getPath().getParent() + "/" + createName);
 
-            String content = "<{http://www.}wiki/>\nmime-type: application/xhtml+xml";
+            String content = "<{http://www.wyona.org/yanel/resource/1.0}wiki/>\nmime-type: application/xhtml+xml";
 
             log.error("DEBUG: Writing content to repository " + repository.getName() + " with content:\n" + content + "\nto path: " + newPath);
 
-/*
+            //java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
+
             // Write content to repository
-            Writer writer = repository.getWriter(rpRTI.getPath());
+            Writer writer = repository.getWriter(new org.wyona.yarep.core.Path(new Path(newPath.toString()).getRTIPath().toString()));
             writer.write(content);
             writer.close();
-            
-            //Writer br = rpRTI.getRepo().getWriter(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString()));
-            
-            //PrintWriter br = new PrintWriter(rpRTI.getRepo().getWriter(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
-
-            
-            // Write the rti file
-            //System.out.println("\nWriting RTI to repository " + repository.getName() +"with content: "+content+"to path: "+path.toString()+"/"+createName);
-            //br.write(content);
-            //br.close();
-*/
         } catch (Exception e) {
             log.error(e);
         }
