@@ -245,37 +245,41 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
         return null;
     }
   
+    /**
+     *
+     */
     public void create(HttpServletRequest request ,String createName){
-        log.warn("TODO: Not implemented yet!");
+        writeContent(new Path(request.getServletPath()), createName, getEmptyWiki(request.getParameter("title")));
+
+        log.warn("TODO: Implementation is incomplete!");
         //yanel rti TODO does not work yet
         //writeRti(new Path(request.getServletPath()), createName, "rtd/wiki.rtd");
-        
-        
-        //content
-        writeContent(new Path(request.getServletPath()), createName, this.getEmptyWiki(request.getParameter("title")));
 
         //introspection
         //writeToRepo(newpath,content);
     }
  
-    public void writeContent(Path path,String createName,  String content){
-        
-        try{
-            
-        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()+"/"+createName), new RepositoryFactory());
-        repository = rp.getRepo();
+    /**
+     * Write new content into data repository
+     */
+    public void writeContent(Path path, String createName, String content) {
+        try {
+            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
+            repository = rp.getRepo();
+            org.wyona.yarep.core.Path newPath = new org.wyona.yarep.core.Path(rp.getPath().getParent() + "/" + createName);
 
-        // Write content to repository
-        System.out.println("\nWriting content to repository " + repository.getName() +"with content: "+content+"to path: "+path.toString()+"/"+createName);
-        Writer writer = repository.getWriter(rp.getPath());
-        writer.write(content);
-        writer.close();
-        }
-        catch (Exception e) {
-            log.warn(e);
+            log.error("DEBUG: Writing content into repository \"" + repository.getName() + "\" with content:\n" + content + "\nto path: " + newPath);
+            Writer writer = repository.getWriter(newPath);
+            writer.write(content);
+            writer.close();
+        } catch (Exception e) {
+            log.error(e);
         }
     }
 
+    /**
+     *
+     */
     public void writeRti(Path path,String createName,  String content){
         
         try{
