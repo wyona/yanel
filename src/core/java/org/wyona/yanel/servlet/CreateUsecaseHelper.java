@@ -55,7 +55,7 @@ public class CreateUsecaseHelper {
         String resourceType = request.getParameter("resource.type");
         String create = request.getParameter("create");
 
-        if (resourceType == null) {
+        if (resourceType == null || createName == null) {
             PrintWriter w = response.getWriter();
             w.print(resourcesTypeSelectScreen(createName));
         } else {
@@ -209,7 +209,7 @@ public class CreateUsecaseHelper {
         }
 
         form.append("</select>");
-        form.append("<br/><input type=\"submit\" value=\"Proceed\"/>");
+        form.append("<br/><input type=\"submit\" value=\"Next\"/>");
         form.append("</form>");
         form.append("</body>");
         form.append("</html>");
@@ -255,13 +255,13 @@ public class CreateUsecaseHelper {
                         form.append("<p>No resource specific properties!</p>");
                     }
                     for (int i = 0; i < PropertyNames.length; i++) {
-                        form.append(PropertyNames[i] + ":<input name=\"" + PropertyNames[i]
+                        form.append(PropertyNames[i] + ": <input name=\"" + PropertyNames[i]
                                 + "\" value=\""
                                 + ((CreatableV2) resource).getProperty(PropertyNames[i])
                                 + "\" size=\"60\">");
                     }
 
-                    form.append("<input type=\"submit\" value=\"Create Resource\"/>");
+                    form.append("<br/><br/><input type=\"submit\" value=\"Create Resource\"/>");
                     form.append("</form>");
                     form.append("</body>");
                     form.append("</html>");
