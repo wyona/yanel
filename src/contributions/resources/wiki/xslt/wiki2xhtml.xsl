@@ -39,6 +39,8 @@
     <html>
       <head>
         <title>A Wiki page</title>
+          <link rel="neutron-introspection" href="introspection-{$yanel.path.name}.xml" type="application/neutron+xml"/>
+<!--
         <xsl:choose>
           <xsl:when test="string-length($name-without-suffix) > 0">
             <link rel="neutron-introspection" href="introspection-{$name-without-suffix}.xml" type="application/neutron+xml"/>
@@ -47,6 +49,7 @@
             <link rel="neutron-introspection" href="introspection-{$yanel.path.name}.xml" type="application/neutron+xml"/>
           </xsl:otherwise>
         </xsl:choose>
+-->
       </head>
       <body>
         <xsl:apply-templates/>
