@@ -127,7 +127,6 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
     private String getMimeType(Path path, String viewId) {
         String mimeType = null;
         try {
-            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
             RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
 
