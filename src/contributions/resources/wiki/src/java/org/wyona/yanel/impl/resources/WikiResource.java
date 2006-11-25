@@ -197,21 +197,17 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
      * @param newWikiPage
      * @return the empty wiki introspection as String
      */
-    private String getEmptyWikiIntrospection(String newWikiPage) {
+    private String getWikiIntrospection(String title, String createName) {
         StringBuffer emptyWikiPageContent = new StringBuffer();
         emptyWikiPageContent.append("<?xml version=\"1.0\"?>");
         emptyWikiPageContent.append("\n");
-        emptyWikiPageContent.append("<introspection xmlns=\"http://www.wyona.org/neutron/1.0\">");
-        emptyWikiPageContent.append("\n\t");
-        emptyWikiPageContent.append("<edit mime-type=\"application/xml\" name=\"" + newWikiPage + "\">");
-        emptyWikiPageContent.append("\n\t\t");
-        emptyWikiPageContent.append("<checkout url=\"/wiki/" + newWikiPage + ".html\" method=\"GET\"/>");
-        emptyWikiPageContent.append("\n\t\t");
-        emptyWikiPageContent.append("<checkin url=\"/wiki/" + newWikiPage + ".html?yanel.resource.usecase=checkin\" method=\"PUT\"/>");
-        emptyWikiPageContent.append("\n\t");
-        emptyWikiPageContent.append("</edit>");
+        emptyWikiPageContent.append("\n<introspection xmlns=\"http://www.wyona.org/neutron/1.0\">");
         emptyWikiPageContent.append("\n");
-        emptyWikiPageContent.append("</introspection>");
+        emptyWikiPageContent.append("\n  <edit mime-type=\"text/plain\" name=\"" + title + "\">");
+        emptyWikiPageContent.append("\n    <checkout url=\"" + createName + ".txt?yanel.resource.usecase=checkout\" method=\"GET\"/>");
+        emptyWikiPageContent.append("\n    <checkin  url=\"" + createName + ".txt?yanel.resource.usecase=checkin\" method=\"PUT\"/>");
+        emptyWikiPageContent.append("\n  </edit>");
+        emptyWikiPageContent.append("\n</introspection>");
         
         return emptyWikiPageContent.toString();
     }    
@@ -244,19 +240,16 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
      *
      */
     public void create(HttpServletRequest request ,String createName){
-        writeContent(new Path(request.getServletPath()), createName, getEmptyWiki(request.getParameter("title")));
+        String title = request.getParameter("title");
+        writeContentAndIntrospection(new Path(request.getServletPath()), createName, getEmptyWiki(title), title);
 
         writeRti(new Path(request.getServletPath()), createName);
-
-        log.warn("TODO: Implementation is incomplete!");
-        //introspection
-        //writeToRepo(newpath,content);
     }
  
     /**
      * Write new content into data repository
      */
-    public void writeContent(Path path, String createName, String content) {
+    public void writeContentAndIntrospection(Path path, String createName, String content, String title) {
         try {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
             repository = rp.getRepo();
@@ -265,6 +258,13 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
             log.info("Writing content into repository \"" + repository.getName() + "\" with content:\n" + content + "\nto path: " + newPath);
             Writer writer = repository.getWriter(newPath);
             writer.write(content);
+            writer.close();
+
+            org.wyona.yarep.core.Path introspectionPath = new org.wyona.yarep.core.Path(rp.getPath().getParent() + "/introspection-" + createName + ".xml");
+            String introspectionContent = getWikiIntrospection(title, createName);
+            log.error("DEBUG: Writing introspection into repository \"" + repository.getName() + "\" with content:\n" + introspectionContent + "\nto path: " + introspectionPath);
+            writer = repository.getWriter(introspectionPath);
+            writer.write(introspectionContent);
             writer.close();
         } catch (Exception e) {
             log.error(e);
@@ -283,11 +283,8 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
 
             String content = "<{http://www.wyona.org/yanel/resource/1.0}wiki/>\nmime-type: application/xhtml+xml";
 
-            log.error("DEBUG: Writing content to repository " + repository.getName() + " with content:\n" + content + "\nto path: " + newPath);
+            log.info("Writing content to repository " + repository.getName() + " with content:\n" + content + "\nto path: " + newPath);
 
-            //java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
-
-            // Write content to repository
             Writer writer = repository.getWriter(new org.wyona.yarep.core.Path(new Path(newPath.toString()).getRTIPath().toString()));
             writer.write(content);
             writer.close();
