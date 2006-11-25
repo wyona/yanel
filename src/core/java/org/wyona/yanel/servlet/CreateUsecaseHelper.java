@@ -49,133 +49,27 @@ public class CreateUsecaseHelper {
     /**
      *
      */
-    public HttpServletResponse create(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public HttpServletResponse create(HttpServletRequest request, HttpServletResponse response, org.wyona.yanel.core.Yanel yanel) throws IOException {
 
         String createName = request.getParameter("create.name");
         String resourceType = request.getParameter("resource.type");
         String create = request.getParameter("create");
 
+        PrintWriter w = response.getWriter();
         if (resourceType == null || createName == null) {
-            PrintWriter w = response.getWriter();
             w.print(resourcesTypeSelectScreen(createName));
         } else {
             if(create == null){
-                PrintWriter w = response.getWriter();
-                w.print(createResourceScreen(createName, resourceType));
+                if (resourceType.equals("") || createName.equals("")) {
+                    w.print(resourcesTypeSelectScreen(createName));
+                } else {
+                    w.print(createResourceScreen(createName, resourceType));
+                }
             } else{
-                PrintWriter w = response.getWriter();
-                w.print(doCreate(resourceType, request, createName));
+                w.print(doCreate(resourceType, request, createName, yanel));
             }
         }
         return response;
-
-
-
-
-
-/*
-        String create = request.getParameter("create");
-        String path = request.getRequestURI();
-
-        
-        if (create != null && create.equals("create.resource")) {
-            
-            String[] PropertyNames = null;
-
-            ResourceTypeRegistry rtr = new ResourceTypeRegistry();
-            try {
-                Resource resource = rtr.newResource(resourceType);
-                if (resource != null) {
-                    if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Creatable", "2")) {
-                        PropertyNames = ((CreatableV2) resource).getPropertyNames();
-                        
-                        for (int i = 0; i < PropertyNames.length; i++) {
-                            
-                            if(PropertyNames[i].equals("Name")){
-                                ((CreatableV2) resource).create(path+"/"+request.getParameter(PropertyNames[i]));
-                            }
-                        }
-                        
-                        try {
-                            String parent = request.getRequestURL().toString().substring(0,request.getRequestURL().toString().indexOf("?"));
-                            URL url = new URL(parent+"/"+createName);
-                            
-                            response.setHeader("Location", url.toString());
-                            response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY);
-                            return response;
-                        } catch (Exception e) {
-                            log.error(e);
-                        }
-
-                        return response;
-                    }
-
-                }
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-                String message = e.toString();
-                log.error(e.getMessage(), e);
-                // Element exceptionElement = (Element)
-                // rootElement.appendChild(doc.createElement("exception"));
-                // exceptionElement.appendChild(doc.createTextNode(message));
-                // setYanelOutput(response, doc);
-                // response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return response;
-            }
-            
-            
-
-        }
-        // if no resourceType is available it returns the resourcesSelectScreen
-        if (resourceType == null) {
-            String resourcesSelectScreen = this.resourcesTypeSelectScreen(createName);
-
-            PrintWriter w = response.getWriter();
-            w.print(resourcesSelectScreen);
-            return response;
-        } else {
-            String resourcesCreateScreen = this.createResourceScreen(createName, resourceType);
-            if (ResourceExistsHelper.resourceExists(path)) {
-                if (createName == null) {
-                    // make child of path, ask for name
-                    System.out.println("make child of path, ask for name. resourec " + path
-                            + " exists");
-                    createResourceScreen("", resourceType);
-                } else {
-                    // create child of request path with name createName
-                    System.out.println("create child of request path with name createName. resourec "
-                            + path + " exists");
-                    createResourceScreen(createName, resourceType);
-                }
-            } else {
-                // check if parent exists
-                String parent = "";
-                if (path.lastIndexOf("/") != -1) {
-                    parent = path.substring(0, path.lastIndexOf("/"));
-                }
-                if (ResourceExistsHelper.resourceExists(parent)) {
-                    createName = path.substring(path.lastIndexOf("/"), path.length());
-                    log.debug("the requested resource (" + path
-                            + ") does not exist, will create it");
-                    // build this path
-                    System.out.println("build this path. resource " + path + " exists");
-                    createResourceScreen(createName, resourceType);
-                } else {
-                    log.debug("the requested resource (" + path
-                            + ") does not exist, even not its parent ( " + parent
-                            + " ). please create the parent first");
-                    // build this path
-                    System.out.println("the requested resource (" + path
-                            + ") does not exist, even not its parent( " + parent
-                            + " ). please create the parent first");
-                }
-            }
-            PrintWriter w = response.getWriter();
-            w.print(resourcesCreateScreen);
-            return response;
-        }
-*/
-
     }
 
     /**
@@ -291,7 +185,7 @@ public class CreateUsecaseHelper {
     /**
      *
      */
-    public String doCreate(String resourceType, HttpServletRequest request, String createName ) {
+    public String doCreate(String resourceType, HttpServletRequest request, String createName, org.wyona.yanel.core.Yanel yanel) {
         String responseAfterCreationScreen = null;
         ResourceTypeRegistry rtr = new ResourceTypeRegistry();
         String[] PropertyNames = null;
@@ -299,6 +193,8 @@ public class CreateUsecaseHelper {
         try {
             Resource resource = rtr.newResource(resourceType);
             if (resource != null) {
+                resource.setYanel(yanel);
+                //resource.setRDT();
                 if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Creatable", "2")) {
                     PropertyNames = ((CreatableV2) resource).getPropertyNames();
                     
