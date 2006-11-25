@@ -166,13 +166,8 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     private Path getXSLTPath(Path path) {
         String xsltPath = null;
         try {
-            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory
-            // ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
-                    yanel.getRepositoryFactory("RTIRepositoryFactory"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo()
-                    .getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath()
-                            .toString())));
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
+            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
 
             while ((xsltPath = br.readLine()) != null) {
                 if (xsltPath.indexOf("xslt:") == 0) {
@@ -251,10 +246,9 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     public void create(HttpServletRequest request ,String createName){
         writeContent(new Path(request.getServletPath()), createName, getEmptyWiki(request.getParameter("title")));
 
-        log.warn("TODO: Implementation is incomplete!");
-        //yanel rti TODO does not work yet
-        //writeRti(new Path(request.getServletPath()), createName, "rtd/wiki.rtd");
+        writeRti(new Path(request.getServletPath()), createName);
 
+        log.warn("TODO: Implementation is incomplete!");
         //introspection
         //writeToRepo(newpath,content);
     }
@@ -268,7 +262,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
             repository = rp.getRepo();
             org.wyona.yarep.core.Path newPath = new org.wyona.yarep.core.Path(rp.getPath().getParent() + "/" + createName);
 
-            log.error("DEBUG: Writing content into repository \"" + repository.getName() + "\" with content:\n" + content + "\nto path: " + newPath);
+            log.info("Writing content into repository \"" + repository.getName() + "\" with content:\n" + content + "\nto path: " + newPath);
             Writer writer = repository.getWriter(newPath);
             writer.write(content);
             writer.close();
@@ -280,15 +274,24 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     /**
      *
      */
-    public void writeRti(Path path,String createName,  String content){
-        
-        try{
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()+"/"+createName), yanel.getRepositoryFactory("RTIRepositoryFactory"));
-            
-            repository = rpRTI.getRepo();
+    public void writeRti(Path path, String createName){
+        log.error("DEBUG: " + path +" "+ createName);
+        try {
+            log.error("DEBUG: " + yanel);
+            log.error("DEBUG: " + yanel.getRepositoryFactory("RTIRepositoryFactory"));
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
 
+        log.error("DEBUG: " + rpRTI);
+            repository = rpRTI.getRepo();
+            log.error("DEBUG: repository " + repository.getName());
+            org.wyona.yarep.core.Path newPath = new org.wyona.yarep.core.Path(rpRTI.getPath().getParent() + "/" + createName);
+
+            String content = "<{http://www.}wiki/>\nmime-type: application/xhtml+xml";
+
+            log.error("DEBUG: Writing content to repository " + repository.getName() + " with content:\n" + content + "\nto path: " + newPath);
+
+/*
             // Write content to repository
-            System.out.println("\nWriting content to repository " + repository.getName() +"with content: "+content+"to path: "+path.toString()+"/"+createName);
             Writer writer = repository.getWriter(rpRTI.getPath());
             writer.write(content);
             writer.close();
@@ -302,8 +305,8 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
             //System.out.println("\nWriting RTI to repository " + repository.getName() +"with content: "+content+"to path: "+path.toString()+"/"+createName);
             //br.write(content);
             //br.close();
-        }
-        catch (Exception e) {
+*/
+        } catch (Exception e) {
             log.error(e);
         }
     }
