@@ -253,12 +253,14 @@ public class CreateUsecaseHelper {
 
                     if (PropertyNames.length == 0) {
                         form.append("<p>No resource specific properties!</p>");
-                    }
-                    for (int i = 0; i < PropertyNames.length; i++) {
-                        form.append(PropertyNames[i] + ": <input name=\"" + PropertyNames[i]
+                    } else {
+                        form.append("<p>Resource specific properties:</p>");
+                        for (int i = 0; i < PropertyNames.length; i++) {
+                            form.append(PropertyNames[i] + ": <input name=\"" + PropertyNames[i]
                                 + "\" value=\""
                                 + ((CreatableV2) resource).getProperty(PropertyNames[i])
                                 + "\" size=\"60\">");
+                        }
                     }
 
                     form.append("<br/><br/><input type=\"submit\" value=\"Create Resource\"/>");
@@ -286,6 +288,9 @@ public class CreateUsecaseHelper {
         return resourcesCreateScreen;
     }
     
+    /**
+     *
+     */
     public String doCreate(String resourceType, HttpServletRequest request, String createName ) {
         String responseAfterCreationScreen = null;
         ResourceTypeRegistry rtr = new ResourceTypeRegistry();
