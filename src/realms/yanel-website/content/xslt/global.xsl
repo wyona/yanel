@@ -43,6 +43,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
   <meta name="DC.Language" content="TODO"/>
 
   <link rel="stylesheet" href="{$yarep.back2realm}css/global.css" type="text/css"/>
+  <xsl:copy-of select="/xhtml:html/xhtml:head/*"/>
 </head>
 
 <body bgcolor="#ffffff">
