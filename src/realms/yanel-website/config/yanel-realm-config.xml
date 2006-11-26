@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<realm-config>
+  <name>Yanel Website</name>
+  <rti>repository.xml</rti>
+  <data>repository.xml</data>
+  <ac-policies>repository.xml</ac-policies>
+  <ac-identities>repository.xml</ad-identities>
+</realm-config>
