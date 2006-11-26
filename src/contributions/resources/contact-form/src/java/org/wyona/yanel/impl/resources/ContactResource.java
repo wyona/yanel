@@ -70,6 +70,8 @@ public class ContactResource extends Resource implements ViewableV1 {
     private String subject;
 
     private String content;
+    
+    private ContactBean contact = null;
 
     /**
      * 
@@ -122,7 +124,7 @@ public class ContactResource extends Resource implements ViewableV1 {
             return computeForward(path, status);
         } else {
             // getting the form values
-            ContactBean contact = new ContactBean(request);
+            contact = new ContactBean(request);
             verifyContact(contact);
             try {
                 SendMail.send(smtpHost, smtpPort, from, to, subject, content);
@@ -218,20 +220,94 @@ public class ContactResource extends Resource implements ViewableV1 {
             sb.append("</head>");
             sb.append("<body>");
             sb.append("<div id=\"contenBody\">");
-            sb.append("<h1>" + status.get(SendMail.STATUS) + "</h1>");
-            sb.append("<p>Your message has not been sent.</p>");
+            
             
             String errorMessage = (String) status.get(SendMail.MESSAGE);
             errorMessage = errorMessage.replaceAll("<", "&lt;");
             errorMessage = errorMessage.replaceAll(">", "&gt;");
             
+            sb.append(getForm(errorMessage, contact));
+            /*
+            sb.append("<h1>" + status.get(SendMail.STATUS) + "</h1>");
+            sb.append("<p>Your message has not been sent.</p>");
+            
             sb.append("<p>" + errorMessage + "</p>");
+            */
             sb.append("</div>");
             sb.append("</body>");
         }
         sb.append("</html>");
         computeView(path, defaultView, sb);
         return defaultView;
+    }
+    
+    
+    private String getForm(String errorMessage, ContactBean bean) {
+      
+      String form = "<form method=\"post\" action=\"#\">" +
+                    "\n\t<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\">" +
+                    "\n\t\t<tr>" + 
+                    "\n\t\t\t<td colspan=\"2\">" + 
+                    "\n\t\t\t\t<h1>Your mail could not be sent</h1>" + 
+                    "\n\t\t\t\t<h2>" + errorMessage + "</h2>" + 
+                    "\n\t\t\t</td>" + 
+                    "\n\t\t</tr>" + 
+                    "\n\t\t<tr>" + 
+                    "\n\t\t\t<td colspan=\"2\"></td>" +
+                    "\n\t\t</tr>" +
+                    "\n\t\t<tr>" +
+                    "\n\t\t\t<td align=\"right\" valign=\"top\" class=\"contentfield\">Company</td>" +
+                    "\n\t\t\t<td>" +
+                    "\n\t\t\t\t<input type=\"text\" name=\"company\" class=\"box\" size=\"40\" value=\"" + contact.getCompany() + "\"/>" +
+                    "\n\t\t\t</td>" +
+                    "\n\t\t</tr>" +
+                    "\n\t\t<tr>" +
+                    "\n\t\t\t<td align=\"right\" valign=\"top\" class=\"contentfield\">Firstname</td>" +
+                    "\n\t\t\t<td>" +
+                    "\n\t\t\t\t<input type=\"text\" name=\"firstName\" class=\"box\" size=\"40\" value=\"" + contact.getFirstName() + "\"/>" +
+                    "\n\t\t\t</td>" +
+                    "\n\t\t</tr>" +
+                    "\n\t\t<tr>" +
+                    "\n\t\t\t\t<td align=\"right\" valign=\"top\" class=\"contentfield\">Lastname</td>" +
+                    "\n\t\t\t\t<td>" +
+                    "\n\t\t\t\t\t<input type=\"text\" name=\"lastName\" class=\"box\" size=\"40\" value=\"" + contact.getLastName() + "\"/>" +
+                    "\n\t\t\t</td>" +
+                    "\n\t\t</tr>" +
+                    "\n\t\t<tr>" +
+                    "\n\t\t\t<td align=\"right\" valign=\"top\" class=\"contentfield\">Address</td>" +
+                    "\n\t\t\t<td>" +
+                    "\n\t\t\t\t<input type=\"text\" name=\"address\" class=\"box\" size=\"40\" value=\"" + contact.getAddress() + "\"/>" +
+                    "\n\t\t\t</td>" +
+                    "\n\t\t</tr>" +
+                    "\n\t\t<tr>" +
+                    "\n\t\t\t<td align=\"right\" valign=\"top\" class=\"contentfield\">ZIP / City</td>" +
+                    "\n\t\t\t<td>" +
+                    "\n\t\t\t\t<input type=\"text\" name=\"city\" class=\"box\" size=\"40\" value=\"" + contact.getCity() + "\"/>" +
+                    "\n\t\t\t</td>" +
+                    "\n\t\t</tr>" +
+                    "\n\t\t<tr>" +
+                    "\n\t\t\t<td align=\"right\" valign=\"top\" class=\"contentfield\">E-Mail</td>" +
+                    "\n\t\t\t<td>" +
+                    "\n\t\t\t\t<input type=\"text\" name=\"email\" class=\"box\" backgroundcolor=\"lightgrey\" size=\"40\" value=\"" + contact.getEmail() + "\"/>" +
+                    "\n\t\t\t</td>" +
+                    "\n\t\t</tr>" +
+                    "\n\t\t<tr>" +
+                    "\n\t\t\t<td align=\"right\" valign=\"top\" class=\"contentfield\">Message</td>" +
+                    "\n\t\t\t<td>" +
+                    "\n\t\t\t\t<textarea rows=\"8\" name=\"message\" cols=\"30\" class=\"box\" value=\"" + contact.getMessage() + "\">&#160;</textarea>" +
+                    "\n\t\t\t</td>" +
+                    "\n\t\t</tr>" +
+                    "\n\t\t<tr>" +
+                    "\n\t\t\t<td>&#160;" +
+                    "\n\t\t\t</td>" +
+                    "\n\t\t\t<td>" +
+                    "\n\t\t\t\t<input type=\"submit\" value=\"send \"/>" +
+                    "\n\t\t\t</td>" +
+                    "\n\t\t</tr>" +
+                    "\n\t</table>" +
+                    "</form>";
+                    
+        return form;  
     }
 
     private void computeView(Path path, View defaultView, StringBuffer sb)
