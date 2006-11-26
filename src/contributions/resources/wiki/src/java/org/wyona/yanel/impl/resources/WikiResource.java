@@ -260,9 +260,11 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
             writer.write(content);
             writer.close();
 
+            repository.addSymbolicLink(newPath, new org.wyona.yarep.core.Path(newPath.toString() + ".txt"));
+
             org.wyona.yarep.core.Path introspectionPath = new org.wyona.yarep.core.Path(rp.getPath().getParent() + "/introspection-" + createName + ".xml");
             String introspectionContent = getWikiIntrospection(title, createName);
-            log.error("DEBUG: Writing introspection into repository \"" + repository.getName() + "\" with content:\n" + introspectionContent + "\nto path: " + introspectionPath);
+            log.info("Writing introspection into repository \"" + repository.getName() + "\" with content:\n" + introspectionContent + "\nto path: " + introspectionPath);
             writer = repository.getWriter(introspectionPath);
             writer.write(introspectionContent);
             writer.close();
