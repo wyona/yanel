@@ -39,7 +39,7 @@ public class Yanel {
     * Private constructor
     */
    private Yanel() throws Exception {
-	   applicationContext = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);	     
+       applicationContext = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
        map = (Map) applicationContext.getBean("map");
        rtr = new ResourceTypeRegistry();
     }
