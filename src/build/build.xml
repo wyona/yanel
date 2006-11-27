@@ -5,6 +5,14 @@
 
   <property file="local.build.properties"/>
   <property file="build.properties"/>
+  
+  <condition property="isWindows">
+   <os family="windows"/>
+  </condition>
+  
+  <condition property="isUnix">
+   <os family="unix"/>
+  </condition>
 
   <import file="dependencies.xml"/>
   <import file="continuous-integration.xml"/>
@@ -407,11 +415,68 @@
     <antcall target="final-message"/>
   </target>
 
-  <target name="final-message">
-    <echo>INFO: Build has been completed successfully :-)</echo>
-    <echo></echo>
-    <echo>INFO: Start using Yanel by executing "yanel(.sh) start" resp. "yanel(.sh) /hello/world.html"</echo>
+  <target name="final-message">    
+    <antcall target="final-message-windows"/>
+    <antcall target="final-message-unix"/>
   </target>
+  
+  <target name="final-message-windows" if="isWindows">
+    <echo message="*****************************************************************"/>
+    <echo message="*"/>
+    <echo message="* You have successfully built Yanel ${yanel.version} (Revision ${yanel.revision})"/>
+    <echo message="*"/>
+    <echo message="*"/>
+    <echo message="* Start using Yanel by typing"/>
+    <echo message="*"/>
+    <echo message="*      Tomcat:      yanel start"/>
+    <echo message="*"/>
+    <echo message="*                   and browse to "/>
+    <echo message="*"/>
+    <echo message="*                   http://127.0.0.1:8080/${servlet.context.prefix}/"/>
+    <echo message="*"/>
+<!--
+    <echo message="*      Jetty:       yanel start-jetty"/> 
+    <echo message="*"/>
+    <echo message="*                   and browse to "/>
+    <echo message="*"/> 
+    <echo message="*                   http://127.0.0.1:8888"/>
+-->
+    <echo message="*"/>
+    <echo message="* Thanks for using Yanel"/>
+    <echo message="*"/>
+    <echo message="*****************************************************************"/>
+  </target>
+  
+  <target name="final-message-unix" if="isUnix">
+    <echo message="*****************************************************************"/>
+    <echo message="*"/>
+    <echo message="* You have successfully built Yanel ${yanel.version} (Revision ${yanel.revision})"/>
+    <echo message="*"/>
+    <echo message="*"/>
+    <echo message="* Start using Yanel by typing"/>
+    <echo message="*"/>
+    <echo message="*      Tomcat:    ./yanel.sh start"/>
+    <echo message="*"/>
+    <echo message="*                 and browse to "/>
+    <echo message="*"/>
+    <!-- TODO: Differentiate between ROOT context and regular context prefix! -->
+    <echo message="*                 http://127.0.0.1:8080/${servlet.context.prefix}/"/>
+    <echo message="*"/>
+<!-- TODO: Make Jetty available! -->
+<!--
+    <echo message="*       Jetty:    ./yanel.sh start-jetty"/>
+    <echo message="*"/>
+    <echo message="*                 and browse to "/>
+    <echo message="*"/> 
+    <echo message="*                 http://127.0.0.1:8888"/>
+-->
+    <echo message="*"/>
+    <echo message="* Thanks for using Yanel"/>
+    <echo message="*"/>
+    <echo message="*****************************************************************"/>
+  </target>
+  
+  
 
   <target name="deploy-to-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Deploy webapp to Tomcat cluster node 1">
     <echo>Copy webapp (${tomcat1.webapps.dir}):</echo>
