@@ -92,6 +92,12 @@
   </target>
   
   <target name="config" description="Initialize all local properties files" depends="init">
+    <condition property="local.build.properties.does.not.exist.yet">
+      <not>
+        <available file="local.build.properties" type="file"/>
+      </not>
+    </condition>
+    <antcall target="create-local-build-properties"/>
   
     <condition property="isTomcat1HomeSet">
       <isset property="tomcat1.home.dir"/>
@@ -116,10 +122,14 @@
     <antcall target="configure-local"/>
   </target>
 
-  <target name="configure-local" if="yes.continue">
-    <echo>Will now create local properties files if these do not exist.</echo>
+  <target name="create-local-build-properties" if="local.build.properties.does.not.exist.yet" depends="init">
+    <echo>Build configuration ${yanel.home.dir}/local.build.properties does not exist yet!</echo>
 
     <copy file="${yanel.home.dir}/src/build/build.properties" tofile="${yanel.home.dir}/src/build/local.build.properties" overwrite="false"/>
+  </target>
+
+  <target name="configure-local" if="yes.continue">
+    <echo>Will now create local properties files if these do not exist.</echo>
 
     <copy file="${yanel.home.dir}/conf/yanel.xml" tofile="${yanel.home.dir}/conf/local.yanel.xml" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/realms.xml" tofile="${yanel.home.dir}/conf/local.realms.xml" overwrite="false"/>
