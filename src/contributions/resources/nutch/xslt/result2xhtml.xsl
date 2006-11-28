@@ -81,7 +81,7 @@
             <td width="50%"></td>
             <td align="right">
               <font size="-1">
-                <i18n:message key="results"/> <b><xsl:value-of select="number(@yanel:start + 1)"/></b>- 
+                <i18n:message key="results"/>&#160;<b><xsl:value-of select="number(@yanel:start + 1)"/></b>- 
                 
                 <xsl:variable name="maxHit">
                   <xsl:choose>
@@ -89,18 +89,24 @@
                     <xsl:otherwise><xsl:value-of select="number(@yanel:start + @yanel:hitsPerPage)" /></xsl:otherwise>
                   </xsl:choose>
                 </xsl:variable>
-                <b><xsl:value-of select="$maxHit"/></b> <i18n:message key="ofAbout"/>
-                <b><xsl:value-of select="number(@yanel:totalHits)"/></b> <i18n:message key="for"/> 
+                <b><xsl:value-of select="$maxHit"/></b>&#160;<i18n:message key="ofAbout"/>&#160;
+                <b><xsl:value-of select="number(@yanel:totalHits)"/></b>&#160;<i18n:message key="for"/>&#160; 
                 <b><xsl:value-of select="$query"/></b><br/>
                 <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(@yanel:start)}&amp;yanel.resource.viewid=source"><i18n:message key="viewResultsAsXml"/></a>
               </font>
             </td>
           </tr>
           
-          <xsl:for-each select="yanel:result">
-            <xsl:apply-templates select="."/>
-          </xsl:for-each>
+          <tr>
+            <td colspan="2">
+              <xsl:for-each select="yanel:result">
+                <xsl:apply-templates select="."/>
+              </xsl:for-each>
+            </td>
+          </tr>
           
+          <tr>
+            <td colspan="2">
           <table width="100%" border="0">
             <tr>
               <td></td>
@@ -114,6 +120,8 @@
      	        <td></td>
      	      </tr>
           </table>
+            </td>
+          </tr>
           
         </xsl:when>
         <xsl:when test="$query = ''"><!-- if no query inserted show empty form --></xsl:when>
