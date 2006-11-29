@@ -28,6 +28,15 @@ if [ "$1" == "start" ]; then
   ant -f src/build/build.xml start-tomcat
 elif [ "$1" == "stop" ]; then
   ant -f src/build/build.xml stop-tomcat
+elif [ "$1" == "start-jetty" ]; then
+  MAVEN=`which mvn`
+  if [ -z "$MAVEN" ]; then
+    echo "ERROR: No \"mvn\" command available!"
+    echo "       Have you installed Maven 2.0.4? If so, then check your PATH and try again or install Maven 2.0.4 from http://maven.apache.org"
+  else
+    shift
+    mvn jetty:run-war -f  src/build/pom-webapp.xml $@
+  fi  
 else
   ant -f src/build/build.xml run-yanel-cmdl -Dyanel.path=$1
 fi
