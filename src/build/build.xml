@@ -144,6 +144,7 @@
     <copy file="${yanel.home.dir}/conf/yarep.properties" tofile="${yanel.home.dir}/${local.config.dir}/local.yarep.properties" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/ac-policies-yarep.properties" tofile="${yanel.home.dir}/${local.config.dir}/local.ac-policies-yarep.properties" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/ac-identities-yarep.properties" tofile="${yanel.home.dir}/${local.config.dir}/local.ac-identities-yarep.properties" overwrite="false"/>
+    <copy file="${yanel.home.dir}/conf/log4j.properties" tofile="${yanel.home.dir}/${local.config.dir}/local.log4j.properties" overwrite="false"/>
 
     <echo>Customize the ${local.config.dir}/local.* files and run build.sh OR run build.sh first and then customize the config files within build/webapps/yanel/WEB-INF/classes</echo>
   </target>
