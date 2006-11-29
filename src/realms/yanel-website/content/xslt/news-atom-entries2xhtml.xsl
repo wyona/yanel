@@ -48,10 +48,12 @@
 </xsl:template>
 
 <xsl:template match="atom:entry">
-
-<xsl:copy-of select="atom:content/*"/>
+  <h3><xsl:value-of select="atom:title"/></h3>
+  <xsl:copy-of select="atom:content/*"/>
+  <br/>
+  <font size="-1">Updated: <xsl:value-of select="atom:updated"/></font>
 <br/>
-
+<font size="-1">Published: <xsl:value-of select="atom:published"/></font>
 </xsl:template>
 
 </xsl:stylesheet>
