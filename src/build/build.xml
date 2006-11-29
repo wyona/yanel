@@ -766,5 +766,9 @@
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
     </xslt>
   </target>
+  
+  <target name="test" description="Run tests">
+    <ant dir="../test" target="test" inheritall="false"/>
+  </target>
 
 </project>

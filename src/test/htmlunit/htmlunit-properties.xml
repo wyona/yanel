@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<config>
+  <htmlunit>
+    <!--
+      Logging:
+       1. trace (the least serious)
+       2. debug
+       3. info
+       4. warn
+       5. error
+       6. fatal (the most serious)
+    -->
+    <debugLevel>4</debugLevel>
+    <baseUrl>http://localhost:8080/yanel/</baseUrl>
+    <language>en-us</language>
+  </htmlunit>
+</config>

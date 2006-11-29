@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="test" default="test" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <property file="../build/local.build.properties"/>
+  <property file="../build/build.properties"/>
+
+  <property name="junit.src.dir" value="junit"/>
+  <property name="htmlunit.src.dir" value="htmlunit"/>
+  <property name="test.results.dir" value="test-results"/>
+  <property name="conf.dir" value="../../conf"/>
+  <property name="build.dir" value="../../build"/>
+  <property name="yanel.build.dir" value="${build.dir}/classes"/>
+  <property name="junit.build.dir" value="${build.dir}/test/junit"/>
+  <property name="htmlunit.build.dir" value="${build.dir}/test/htmlunit"/>
+  <property name="webapp.classes.dir" value="${build.dir}/webapps/yanel/WEB-INF/classes"/>
+  <property name="webapp.lib.dir" value="${build.dir}/webapps/yanel/WEB-INF/lib"/>
+
+  <property name="yanel.source.version" value="${yanel.version}-r${yanel.revision}"/>
+  
+  <target name="init" depends="dependencies">
+    <path id="classpath">
+      <pathelement path="${maven2.cp}"/>
+      <pathelement location="${junit.build.dir}"/>
+      <pathelement location="${htmlunit.build.dir}"/>
+      <pathelement location="${webapp.classes.dir}"/>
+      <fileset dir="${webapp.lib.dir}">
+        <include name="**.jar"/>
+      </fileset>
+    </path>
+    <!-- <property name="cp" refid="classpath"/>
+    <echo>classpath: ${cp}</echo> -->
+  </target>
+  
+  <target name="dependencies" description="Dependencies">
+    <!-- INFO: http://maven.apache.org/ant-tasks.html -->
+    <artifact:remoteRepository id="wyona.remote.repository" url="http://www.wyona.org/maven2/"/>
+
+    <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-codec" version="1.3"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-collections" version="3.2"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-configuration" version="1.1"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-httpclient" version="3.0.1"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-io" version="1.2"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-lang" version="2.1"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-logging" version="1.0.4"/>
+      <dependency groupId="htmlunit" artifactId="htmlunit" version="1.10"/>
+      <dependency groupId="jaxen" artifactId="jaxen" version="1.1-beta-10"/>
+      <dependency groupId="rhino" artifactId="rhino" version="1.6R2"/>
+      <dependency groupId="nekohtml" artifactId="nekohtml" version="0.9.5"/>
+    </artifact:dependencies>
+
+    <property name="maven2.cp" refid="maven2.classpath"/>
+  </target>
+ 
+  <target name="build" depends="init" description="Build tests">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${junit.build.dir}"/>
+    <mkdir dir="${htmlunit.build.dir}"/>
+    <javac srcdir="${junit.src.dir}" destdir="${junit.build.dir}">
+      <classpath refid="classpath" />
+    </javac>
+    <javac srcdir="${htmlunit.src.dir}" destdir="${htmlunit.build.dir}">
+      <classpath refid="classpath" />
+    </javac>
+    <antcall target="build-resources"/>
+  </target>
+
+  <target name="build-resources" depends="init" description="Build tests of resources">
+    <condition property="local.yanel.config.exists">
+      <available file="${conf.dir}/conf/local.yanel.xml" type="file"/>
+    </condition>
+    <antcall target="generate-resources-test-build-from-default"/>
+    <antcall target="generate-resources-test-build-from-local"/>
+    <antcall target="copy-properties"/>
+    <ant antfile="${build.dir}/test-resources.xml" target="build-test-resources" inheritRefs="true"/>
+  </target>
+  
+  <target name="generate-resources-test-build-from-default" depends="init" unless="local.yanel.config.exists">
+    <xslt in="${conf.dir}/yanel.xml" out="${build.dir}/test-resources.xml" style="test-resources.xsl" force="false"/>
+  </target>
+
+  <target name="generate-resources-test-build-from-local" depends="init" if="local.yanel.config.exists">
+    <xslt in="${conf.dir}/conf/local.yanel.xml" out="${build.dir}/test-resources.xml" style="test-resources.xsl" force="true"/>
+  </target>
+  
+  <target name="copy-properties">
+    <copy todir="${junit.build.dir}">
+      <fileset dir="${junit.src.dir}">
+        <include name="*.xml"/>
+      </fileset>
+    </copy>
+    <copy todir="${htmlunit.build.dir}">
+      <fileset dir="${htmlunit.src.dir}">
+        <include name="*.xml"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="clean" description="Clean the build">
+    <echo>Clean ${junit.build.dir}</echo>
+    <delete dir="${junit.build.dir}"/>
+    <echo>Clean ${htmlunit.build.dir}</echo>
+    <delete dir="${htmlunit.build.dir}"/>
+    <echo>Remove ${build.dir}/test-resources.xml</echo>
+    <delete file="${build.dir}/test-resources.xml"/>
+  </target>
+
+  <target name="test" depends="build" description="Run all tests">
+    <mkdir dir="${test.results.dir}" />
+    <echo>Running the tests</echo>
+    <echo>NOTE: Running the tests might take a while. Thanks for your patience ...</echo>
+    <antcall target="junit"/>
+    <antcall target="htmlunit"/>
+  </target>
+  
+  <target name="junit" depends="build" description="Run junit tests">
+    <echo>Running the junit tests</echo>
+    <junit fork="yes" printsummary="yes" haltonfailure="no" failureproperty="junit.tests.failed">
+      <batchtest todir="${test.results.dir}" unless="test.class.name">
+        <fileset dir="${junit.build.dir}" includes="**/*Test.class" excludes="**/Abstract*.class"/>
+      </batchtest>
+      <test todir="${test.results.dir}" name="${test.class.name}" if="test.class.name"/>
+      <formatter type="plain" usefile="false"/>
+      <formatter type="xml"/>
+      <classpath refid="classpath" />
+      <jvmarg value="-Djunit.base.dir=${basedir}/junit"/>
+    </junit>
+    <fail if="junit.tests.failed"  message="One or more junit tests failed."/>
+  </target>
+
+  <target name="htmlunit" depends="build" description="Run htmlunit tests">
+    <echo>Running the htmlunit tests</echo>
+    <junit fork="yes" printsummary="yes" haltonfailure="no" failureproperty="htmlunit.tests.failed">
+      <batchtest todir="${test.results.dir}" unless="test.class.name">
+        <fileset dir="${htmlunit.build.dir}" includes="**/*Test.class" excludes="**/Abstract*.class"/>
+      </batchtest>
+      <formatter type="plain" usefile="false"/>
+      <formatter type="xml"/>
+      <classpath refid="classpath" />
+      <jvmarg value="-Dhtmlunit.base.dir=${basedir}/htmlunit"/>
+    </junit>
+    <fail if="htmlunit.tests.failed"  message="One or more htmlunit tests failed."/>
+  </target>
+
+</project>
