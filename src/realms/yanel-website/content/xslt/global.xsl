@@ -101,7 +101,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
  -->
 &#160;<a href="{$yarep.back2realm}news/index.html">News</a><br/>
 
-&#160;<a href="{$yarep.back2realm}documentation/index.html">Documentation</a><br/>
+&#160;<a href="{$yarep.back2realm}en/documentation/index.html">Documentation</a><br/>
 <br/>
 <b>Development/Community</b><br/>
 &#160;<a href="{$yarep.back2realm}download/source-repository.html">Get the Source</a><br/>
