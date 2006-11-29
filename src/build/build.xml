@@ -136,25 +136,16 @@
   <target name="configure-local" if="yes.continue">
     <echo>Will now create local properties files if these do not exist.</echo>
 
-    <copy file="${yanel.home.dir}/conf/yanel.xml" tofile="${yanel.home.dir}/conf/local.yanel.xml" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/realms.xml" tofile="${yanel.home.dir}/conf/local.realms.xml" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/yanel-rti-yarep.properties" tofile="${yanel.home.dir}/conf/local.yanel-rti-yarep.properties" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/yarep.properties" tofile="${yanel.home.dir}/conf/local.yarep.properties" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/ac-policies-yarep.properties" tofile="${yanel.home.dir}/conf/local.ac-policies-yarep.properties" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/ac-identities-yarep.properties" tofile="${yanel.home.dir}/conf/local.ac-identities-yarep.properties" overwrite="false"/>
+    <mkdir dir="${yanel.home.dir}/${local.config.dir}"/>
 
-<!--
-    <echo>Local property files:</echo>
-    <echo>${project.home}/src/build/local.build.properties"</echo>
-    <echo>${project.home}/local.yanel.xml"</echo>
-    <echo>${project.home}/conf/local.realms.xml"</echo>
-    <echo>${project.home}/conf/local.yanel-rti-yarep.properties"</echo>
-    <echo>${project.home}/conf/local.yarep.properties"</echo>
-    <echo>${project.home}/conf/local.ac-policies-yarep.properties</echo>
-    <echo>${project.home}/conf/local.ac-identities-yarep.properties</echo>
--->
+    <copy file="${yanel.home.dir}/conf/yanel.xml" tofile="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" overwrite="false"/>
+    <copy file="${yanel.home.dir}/conf/realms.xml" tofile="${yanel.home.dir}/${local.config.dir}/local.realms.xml" overwrite="false"/>
+    <copy file="${yanel.home.dir}/conf/yanel-rti-yarep.properties" tofile="${yanel.home.dir}/${local.config.dir}/local.yanel-rti-yarep.properties" overwrite="false"/>
+    <copy file="${yanel.home.dir}/conf/yarep.properties" tofile="${yanel.home.dir}/${local.config.dir}/local.yarep.properties" overwrite="false"/>
+    <copy file="${yanel.home.dir}/conf/ac-policies-yarep.properties" tofile="${yanel.home.dir}/${local.config.dir}/local.ac-policies-yarep.properties" overwrite="false"/>
+    <copy file="${yanel.home.dir}/conf/ac-identities-yarep.properties" tofile="${yanel.home.dir}/${local.config.dir}/local.ac-identities-yarep.properties" overwrite="false"/>
 
-    <echo>Customize the local.*.properties files and run build.sh! Or run build.sh first and then customize the *.properties files within build/webapps/yanel/WEB-INF/classes</echo>
+    <echo>Customize the ${local.config.dir}/local.* files and run build.sh OR run build.sh first and then customize the config files within build/webapps/yanel/WEB-INF/classes</echo>
   </target>
     
   <target name="init" description="Initialize all parameters and other settings" depends="dependencies">
@@ -341,19 +332,19 @@
 
     <!-- Create yanel.properties -->
     <condition property="local.yanel.config.exists">
-      <available file="../../conf/local.yanel.xml" type="file"/>
+      <available file="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" type="file"/>
     </condition>
     <antcall target="generate-yanel-properties"/>
 
 
     <!-- Overwrite default by local properties -->
     <!-- TODO: Make the patching selectable within the build.properties of the build ... -->
-    <copy file="${yanel.home.dir}/conf/local.yanel-rti-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" overwrite="true" failonerror="false"/>
-    <copy file="${yanel.home.dir}/conf/local.yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" overwrite="true" failonerror="false"/>
-    <copy file="${yanel.home.dir}/conf/local.ac-identities-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" overwrite="true" failonerror="false"/>
-    <copy file="${yanel.home.dir}/conf/local.ac-policies-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" overwrite="true" failonerror="false"/>
-    <copy file="${yanel.home.dir}/conf/local.log4j.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" overwrite="true" failonerror="false"/>
-    <copy file="${yanel.home.dir}/conf/local.realms.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/${local.config.dir}/local.yanel-rti-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/${local.config.dir}/local.yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/${local.config.dir}/local.ac-identities-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/${local.config.dir}/local.ac-policies-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/${local.config.dir}/local.log4j.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.home.dir}/${local.config.dir}/local.realms.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" overwrite="true" failonerror="false"/>
     <antcall target="patch-with-local-yanel-config"/>
 
 
@@ -723,21 +714,21 @@
 
   <target name="generate-resources-build" description="Generate resources build" depends="init">
     <condition property="local.yanel.config.exists">
-      <available file="../../conf/local.yanel.xml" type="file"/>
+      <available file="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" type="file"/>
     </condition>
     <antcall target="generate-resources-build-from-default"/>
     <antcall target="generate-resources-build-from-local"/>
   </target>
 
   <target name="generate-resources-build-from-default" description="Generate resources build from default config" depends="init" unless="local.yanel.config.exists">
-    <xslt in="../../conf/yanel.xml" out="../../build/resources.xml" style="yanel2resources.xsl" force="false">
+    <xslt in="${yanel.home.dir}/conf/yanel.xml" out="../../build/resources.xml" style="yanel2resources.xsl" force="false">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
     </xslt>
   </target>
 
   <target name="generate-resources-build-from-local" description="Generate resources build from local config" depends="init" if="local.yanel.config.exists">
-    <xslt in="../../conf/local.yanel.xml" out="../../build/resources.xml" style="yanel2resources.xsl" force="true">
+    <xslt in="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" out="../../build/resources.xml" style="yanel2resources.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
     </xslt>
@@ -756,13 +747,13 @@
   </target>
 
   <target name="generate-yanel-properties" unless="local.yanel.config.exists">
-    <xslt in="../../conf/yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl" force="false">
+    <xslt in="${yanel.home.dir}/conf/yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl" force="false">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
     </xslt>
   </target>
 
   <target name="patch-with-local-yanel-config" if="local.yanel.config.exists">
-    <xslt in="../../conf/local.yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl" force="true">
+    <xslt in="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
     </xslt>
   </target>
