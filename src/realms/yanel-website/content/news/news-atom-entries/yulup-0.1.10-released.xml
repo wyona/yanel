@@ -1,0 +1,15 @@
+<entry xmlns="http://www.w3.org/2005/Atom">
+ <title type="text">Yulup 0.1.10 released</title>
+ <author><name>Michael Wechner</name></author>
+
+ <id>urn:lenya-uuid:download:release-atom-entries:phoenix-prototype-1-0.1.8.xml</id>
+ <updated>2006-11-24T01:28:52.047Z</updated>
+ <published>2006-11-24T16:30:57-01:00</published>
+
+ <summary type="html">Yulup 0.1.10 released</summary>
+ <content type="xhtml">
+   <div xmlns="http://www.w3.org/1999/xhtml">
+     Yulup <a href="http://www.yulup.org/download/index.html">0.1.10</a> has been released.
+   </div>
+ </content>
+</entry>
