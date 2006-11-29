@@ -1,0 +1,16 @@
+<entry xmlns="http://www.w3.org/2005/Atom">
+ <title type="text">Yanel supports SVN based repositories</title>
+ <author><name>Michael Wechner</name></author>
+
+ <id>urn:lenya-uuid:download:release-atom-entries:svn-support.xml</id>
+ <updated>2006-11-29T01:28:52.047Z</updated>
+ <published>2006-11-29T16:30:57-01:00</published>
+
+ <summary type="html">Yanel supports subversion</summary>
+ <content type="xhtml">
+   <div xmlns="http://www.w3.org/1999/xhtml">
+      One can use Yanel to read from and write to Subversion.
+      A sample configuration can be found within the <a href="http://svn.wyona.com/repos/public/yarep/trunk/src/test/repository/svn-example/config/repository.xml">Yarep examples</a>.
+   </div>
+ </content>
+</entry>
