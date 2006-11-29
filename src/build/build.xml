@@ -125,7 +125,10 @@
   <target name="create-local-build-properties" if="local.build.properties.does.not.exist.yet" depends="init">
     <echo>Build configuration ${yanel.home.dir}/local.build.properties does not exist yet!</echo>
 
+    <antcall target="install-default-tomcat"/>
+<!--
     <copy file="${yanel.home.dir}/src/build/build.properties" tofile="${yanel.home.dir}/src/build/local.build.properties" overwrite="false"/>
+-->
   </target>
 
   <target name="configure-local" if="yes.continue">
