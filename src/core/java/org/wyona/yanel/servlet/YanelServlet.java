@@ -455,6 +455,7 @@ public class YanelServlet extends HttpServlet {
                 InputStream in = intercept(request.getInputStream());
                 try {
                     Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>");
+                    atomEntry.setYanel(yanel);
                     log.error("DEBUG: Atom Entry: " + request.getServletPath() + " " + request.getRequestURI());
                     Path entryPath = new Path(request.getServletPath());
                     // TODO: There seems to be a problem ...
