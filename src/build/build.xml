@@ -108,13 +108,9 @@
       <isset property="tomcat2.home.dir"/>
     </condition>
     <antcall target="ask-to-reconfigure-tomcat-cluster-node2"/>
-  
-    <echo>########################################################################</echo>
-    <echo># As a first time user one does NOT have to configure anything, but    #</echo>
-    <echo># just run build.sh resp. build.bat and then yanel.sh resp. yanel.bat! #</echo>
-    <echo>########################################################################</echo>
 
-    <input message="Do you want to continue the configuration? (yes/NO)" addproperty="answer" defaultvalue="NO"/>
+    <antcall target="first-time-user-configuration-message"/>
+    <input message="Do you want to continue the configuration nevertheless? (yes/NO)" addproperty="answer" defaultvalue="NO"/>
 
     <condition property="yes.continue">
       <equals arg1="yes" arg2="${answer}"/>
@@ -122,13 +118,19 @@
     <antcall target="configure-local"/>
   </target>
 
+  <target name="first-time-user-configuration-message">
+    <echo>#################################################################################</echo>
+    <echo># As a first time user one does NOT have to configure anything any further, but #</echo>
+    <echo># rather exit here and just run build.sh on UNIX resp. build.bat on Windows!    #</echo>
+    <echo>#################################################################################</echo>
+  </target>
+
   <target name="create-local-build-properties" if="local.build.properties.does.not.exist.yet" depends="init">
     <echo>Build configuration ${yanel.home.dir}/local.build.properties does not exist yet!</echo>
 
-    <antcall target="install-default-tomcat"/>
-<!--
     <copy file="${yanel.home.dir}/src/build/build.properties" tofile="${yanel.home.dir}/src/build/local.build.properties" overwrite="false"/>
--->
+
+    <antcall target="install-default-tomcat"/>
   </target>
 
   <target name="configure-local" if="yes.continue">
