@@ -13,8 +13,8 @@
   <property name="yanel.build.dir" value="${build.dir}/classes"/>
   <property name="junit.build.dir" value="${build.dir}/test/junit"/>
   <property name="htmlunit.build.dir" value="${build.dir}/test/htmlunit"/>
-  <property name="webapp.classes.dir" value="${build.dir}/webapps/yanel/WEB-INF/classes"/>
-  <property name="webapp.lib.dir" value="${build.dir}/webapps/yanel/WEB-INF/lib"/>
+  <property name="webapp.classes.dir" value="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
+  <property name="webapp.lib.dir" value="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib"/>
 
   <property name="yanel.source.version" value="${yanel.version}-r${yanel.revision}"/>
   
