@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<realm-config>
+  <name>Yanel From Scratch Realm</name>
+  <rti>rti-repository.xml</rti>
+  <data>data-repository.xml</data>
+  <ac-policies>ac-policies-repository.xml</ac-policies>
+
+<!--
+  <ac-identities/>
+-->
+</realm-config>

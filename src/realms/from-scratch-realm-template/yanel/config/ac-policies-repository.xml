@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<repository>
+  <name>Yanel From Scratch Access Control Policies</name>
+
+  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../ac-policies"/>
+
+  <storage class="org.wyona.yarep.core.impl.vfs.VFileSystemStorage">
+    <content src="../ac-policies"/>
+  </storage>
+</repository>
