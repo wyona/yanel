@@ -8,6 +8,7 @@
   <!-- This should rather be shared by all languages -->
   <alternative-languages>
     <lang ref="urn:uuid:about/de.xhtml">de</lang>
+    <lang ref="urn:uuid:about/es.xhtml">es</lang>
     <lang ref="urn:uuid:about/fr.xhtml">fr</lang>
   </alternative-languages>
 </meta>

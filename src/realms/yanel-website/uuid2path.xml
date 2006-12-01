@@ -5,6 +5,7 @@
   <node uuid="about/en.xhtml"        ><name parent-uuid="english">about.html</name></node>
   <node uuid="about/ku.xhtml"        ><name parent-uuid="ku">jibuy.html</name></node>
   <node uuid="about/tr.xhtml"        ><name parent-uuid="tr">hakkinda.html</name></node>
+  <node uuid="about/es.xhtml"        ><name parent-uuid="espanol">acerca.html</name></node>
   <node uuid="deutsch"               ><name parent-uuid="/">de</name></node>
   <node uuid="documentation"         ><name parent-uuid="/">documentation</name></node>
   <node uuid="documentation.xhtml"   ><name parent-uuid="documentation">index.html</name></node>
@@ -13,6 +14,7 @@
   <node uuid="download"              ><name parent-uuid="/">download</name></node>
   <node uuid="download.xhtml"        ><name parent-uuid="/">download.html</name></node>
   <node uuid="english"               ><name parent-uuid="/">en</name></node>
+  <node uuid="espanol"               ><name parent-uuid="/">es</name></node>
   <node uuid="ku"                    ><name parent-uuid="/">ku</name></node>
   <node uuid="tr"                    ><name parent-uuid="/">tr</name></node>
 </uuid2path>
