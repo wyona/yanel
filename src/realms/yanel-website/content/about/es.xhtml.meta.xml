@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<meta xmlns="http://www.wyona.org/yanel/meta/1.0">
+  <!-- http://dublincore.org/documents/1999/07/02/dces/ -->
+  <dc:language xmlns:dc="http://purl.org/dc/elements/1.1/">es</dc:language>
+  <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">lenya</dc:creator>
+
+  <!-- This should rather be shared by all languages -->
+  <alternative-languages>
+    <lang ref="urn:uuid:about/de.xhtml">de</lang>
+    <lang ref="urn:uuid:about/en.xhtml">en</lang>
+    <lang ref="urn:uuid:about/fr.xhtml">fr</lang>
+  </alternative-languages>
+</meta>
