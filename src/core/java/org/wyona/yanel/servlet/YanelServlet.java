@@ -394,6 +394,7 @@ public class YanelServlet extends HttpServlet {
                 InputStream in = intercept(request.getInputStream());
                 try {
                     Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>");
+                    atomEntry.setYanel(yanel);
                     // TODO: Initiate Atom Feed Resource Type to get actual path for saving ...
                     log.error("DEBUG: Atom Feed: " + request.getServletPath() + " " + request.getRequestURI());
                     Path entryPath = new Path(request.getServletPath() + "/" + new java.util.Date().getTime() + ".xml");
