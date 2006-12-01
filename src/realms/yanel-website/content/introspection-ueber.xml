@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<introspection xmlns="http://www.wyona.org/neutron/1.0">
+<edit mime-type="application/xhtml+xml" name="Ueber Yanel">
+  <checkout url="ueber.xhtml?yanel.resource.usecase=checkout" method="GET"/>
+  <checkin  url="ueber.xhtml?yanel.resource.usecase=checkin"  method="PUT"/>
+</edit>
+
+<edit mime-type="application/xml" name="Layout (XSLT)">
+  <checkout url="../xslt/global.xsl?yanel.resource.usecase=checkout" method="GET"/>
+  <checkin  url="../xslt/global.xsl?yanel.resource.usecase=checkin"  method="PUT"/>
+</edit>
+
+<edit mime-type="text/text" name="Layout (CSS)">
+  <checkout url="../css/global.css?yanel.resource.usecase=checkout" method="GET"/>
+  <checkin  url="../css/global.css?yanel.resource.usecase=checkin"  method="PUT"/>
+</edit>
+</introspection>
