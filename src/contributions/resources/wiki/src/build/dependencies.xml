@@ -23,7 +23,7 @@
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
                   version="0.0.1-dev-r19469"/>
       <dependency groupId="yarep" artifactId="yarep"
-                  version="0.0.1-dev-r20348"/>
+                  version="0.0.1-dev-r20514"/>
       <dependency groupId="spring" artifactId="spring"
                   version="2.0"/>
     </artifact:dependencies>

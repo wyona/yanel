@@ -42,6 +42,7 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Repository;
+import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
 import org.wyona.yarep.util.YarepUtil;
@@ -373,7 +374,7 @@ public class ContactResource extends Resource implements ViewableV1 {
      * 
      */
     private StreamSource getXSLTStreamSource(Path path, Repository repo)
-            throws NoSuchNodeException {
+            throws NoSuchNodeException, RepositoryException {
         Path xsltPath = getXSLTPath(path);
         if (xsltPath != null) {
             return new StreamSource(repo

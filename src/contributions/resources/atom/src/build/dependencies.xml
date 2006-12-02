@@ -15,7 +15,7 @@
       <dependency groupId="wyona-org-yanel" artifactId="yanel-core"
                   version="${yanel.source.version}"/>
       <dependency groupId="yarep" artifactId="yarep"
-                  version="0.0.1-dev-r20207"/>
+                  version="0.0.1-dev-r20514"/>
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
                   version="0.0.1-dev-r19469"/>
     </artifact:dependencies>
