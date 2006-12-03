@@ -18,15 +18,42 @@
   <import file="continuous-integration.xml"/>
   <import file="install-tomcat.xml"/>
   
-  <target name="ask-to-reconfigure-tomcat-cluster-node1" description="reconfigure Tomcat cluster node 1" if="isTomcat1HomeSet">
-    <input message="Do you want to reconfigure tomcat cluster node 1 in order to support SSL? (yes/NO):" defaultvalue="NO" addproperty="answerReconfigureTomcat1"/>
-    <condition property="reconfigureTomcat1">
-      <equals arg1="yes" arg2="${answerReconfigureTomcat1}"/>
+  <target name="ask-to-reconfigure-tomcat-cluster-node1" description="reconfigure Tomcat cluster node 1" if="isTomcat1PortsSet">
+    <input message="Do you want to reconfigure tomcat cluster node 1 in order to support SSL? (YES/no):" defaultvalue="NO" addproperty="answerReconfigureTomcat1"/>
+    <condition property="doNotReconfigureTomcat1">
+      <equals arg1="no" arg2="${answerReconfigureTomcat1}"/>
     </condition>
     <antcall target="reconfigure-tomcat-cluster-node1"/>
+    <antcall target="comment-local-tomcat1-ports"/>
   </target>
   
-  <target name="reconfigure-tomcat-cluster-node1" if="reconfigureTomcat1" description="reconfigures tomcat regarding ssl">
+  <target name="comment-local-tomcat1-ports" if="doNotReconfigureTomcat1" description="Comment ports of Tomcat Cluster Node 1 within local.build.properties">
+    <replace file="${yanel.home.dir}/src/build/local.build.properties" value="#tomcat1.ssl.port=${tomcat1.ssl.port}">
+      <replacetoken>tomcat1.ssl.port=8443</replacetoken>
+<!--
+      <replacetoken>tomcat1.ssl.port=${tomcat1.ssl.port}</replacetoken>
+-->
+    </replace>
+    <replace file="${yanel.home.dir}/src/build/local.build.properties" value="#tomcat1.http.port=${tomcat1.http.port}">
+      <replacetoken>tomcat1.http.port=8080</replacetoken>
+<!--
+      <replacetoken>tomcat1.http.port=${tomcat1.http.port}</replacetoken>
+-->
+    </replace>
+  </target>
+
+  <target name="reconfigure-tomcat-cluster-node1" unless="doNotReconfigureTomcat1" description="reconfigures tomcat regarding ssl">
+    <!-- TODO: Ask the port numbers -->
+
+<!--
+    <replace file="${yanel.home.dir}/src/build/local.build.properties" value="tomcat1.http.port=8080">
+      <replacetoken>#tomcat1.http.port=9190</replacetoken>
+    </replace>
+    <replace file="${yanel.home.dir}/src/build/local.build.properties" value="tomcat1.ssl.port=8443">
+      <replacetoken>#tomcat1.ssl.port=9143</replacetoken>
+    </replace>
+-->
+
     <antcall target="createCK"/>
     <copy file="${build.dir}/${certificate.keystore}" todir="${tomcat1.home.dir}"/>
     <xslt in="${tomcat1.home.dir}/conf/server.xml"
@@ -98,9 +125,19 @@
       </not>
     </condition>
     <antcall target="create-local-build-properties"/>
+
+    <!-- Reload local.build.properties -->
+    <property file="local.build.properties"/>
+
+<!--
+    <echo>Tomcat Ports: ${tomcat1.ssl.port}, ${tomcat1.http.port}</echo>
+-->
   
-    <condition property="isTomcat1HomeSet">
-      <isset property="tomcat1.home.dir"/>
+    <condition property="isTomcat1PortsSet">
+      <and>
+        <isset property="tomcat1.ssl.port"/>
+        <isset property="tomcat1.http.port"/>
+      </and>
     </condition>
     <antcall target="ask-to-reconfigure-tomcat-cluster-node1"/>
     
@@ -128,7 +165,18 @@
   <target name="create-local-build-properties" if="local.build.properties.does.not.exist.yet" depends="init">
     <echo>Build configuration ${yanel.home.dir}/local.build.properties does not exist yet!</echo>
 
+    <input message="Do you have an existing Tomcat instance which you want to use as servlet engine for Yanel? If so, please enter the path of your Tomcat instance (e.g. /home/yanel/jakarta-tomcat-5.0.30), or otherwise just hit return (recommended to first time users :-) and Tomcat 5.5.20 will be installed at ${default.tomcat.home.dir} (You will always be able to change this setting at some later time within src/build/local.build.properties): " defaultvalue="${default.tomcat.home.dir}" addproperty="pathOfUserSpecificTomcat"/>
+
+    <echo>User specific Tomcat: ${pathOfUserSpecificTomcat}</echo>
+
     <copy file="${yanel.home.dir}/src/build/build.properties" tofile="${yanel.home.dir}/src/build/local.build.properties" overwrite="false"/>
+    <replace file="${yanel.home.dir}/src/build/local.build.properties" value="tomcat1.home.dir=${pathOfUserSpecificTomcat}">
+      <replacetoken>#tomcat1.home.dir=../tomcat-cluster/build/jakarta-tomcat-5.0.30-cnode1</replacetoken>
+    </replace>
+
+    <condition property="yes.install.default.tomcat">
+      <equals arg1="${pathOfUserSpecificTomcat}" arg2="${default.tomcat.home.dir}"/>
+    </condition>
 
     <antcall target="install-default-tomcat"/>
   </target>
@@ -181,6 +229,7 @@
     <echo>Log4j file with forward slashes: ${log4j.file.forward.slashes}</echo>
 -->
 
+    <property name="default.tomcat.home.dir" location="${yanel.home.dir}/local/apache-tomcat-5.5.20"/>
 
     <path id="classpath">
       <!--
@@ -548,26 +597,26 @@
   </target>
 
   <target name="ask-to-copy-endorsed-xerces-to-node1" if="ask-to-copy-endorsed-xerces-to-node1">
-    <input message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar). Do you want it to be added? (yes/NO):" addproperty="answer"/>
-    <condition property="yes-do-copy-endorsed-xerces-to-node1">
-      <equals arg1="yes" arg2="${answer}"/>
+    <input message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
+    <condition property="do-not-copy-endorsed-xerces-to-node1">
+      <equals arg1="no" arg2="${answer}"/>
     </condition>
     <antcall target="do-copy-endorsed-xerces-to-node1"/>
   </target>
 
   <target name="ask-to-copy-endorsed-xml-apis-to-node1" if="ask-to-copy-endorsed-xml-apis-to-node1">
-    <input message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar). Do you want it to be added? (yes/NO):" addproperty="answer"/>
-    <condition property="yes-do-copy-endorsed-xml-apis-to-node1">
-      <equals arg1="yes" arg2="${answer}"/>
+    <input message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
+    <condition property="do-not-copy-endorsed-xml-apis-to-node1">
+      <equals arg1="no" arg2="${answer}"/>
     </condition>
     <antcall target="do-copy-endorsed-xml-apis-to-node1"/>
   </target>
   
-  <target name="do-copy-endorsed-xerces-to-node1" if="yes-do-copy-endorsed-xerces-to-node1">
+  <target name="do-copy-endorsed-xerces-to-node1" unless="do-not-copy-endorsed-xerces-to-node1">
     <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar" todir="${tomcat1.home.dir}/common/endorsed" overwrite="false"/>
   </target>
   
-  <target name="do-copy-endorsed-xml-apis-to-node1" if="yes-do-copy-endorsed-xml-apis-to-node1">
+  <target name="do-copy-endorsed-xml-apis-to-node1" unless="do-not-copy-endorsed-xml-apis-to-node1">
     <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${tomcat1.home.dir}/common/endorsed" overwrite="false"/>
   </target>
 

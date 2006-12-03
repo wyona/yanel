@@ -3,13 +3,20 @@
 <project name="install-default-tomcat" default="install-default-tomcat" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
   <description>Install Default Tomcat</description>
 
-  <target name="install-default-tomcat" description="Install Default Tomcat" depends="init">
+  <target name="install-default-tomcat" description="Install Default Tomcat" depends="init" if="yes.install.default.tomcat">
     <echo>Install Default Tomcat ...</echo>
 
     <mkdir dir="${yanel.home.dir}/local"/>
     <unzip src="${yanel.home.dir}/tools/apache-tomcat/apache-tomcat-5.5.20.zip" dest="${yanel.home.dir}/local"/>
 
     <!-- TODO: Only copy for Java 1.4! -->
-    <copy file="${yanel.home.dir}/tools/apache-tomcat/java-1.4/apache-tomcat-5.5.20/bin/jmx.jar" todir="${yanel.home.dir}/local/apache-tomcat-5.5.20/bin"/>
+    <copy file="${yanel.home.dir}/tools/apache-tomcat/java-1.4/apache-tomcat-5.5.20/bin/jmx.jar" todir="${default.tomcat.home.dir}/bin"/>
+
+    <replace file="${yanel.home.dir}/src/build/local.build.properties" value="tomcat1.http.port=8080">
+      <replacetoken>#tomcat1.http.port=9190</replacetoken>
+    </replace>
+    <replace file="${yanel.home.dir}/src/build/local.build.properties" value="tomcat1.ssl.port=8443">
+      <replacetoken>#tomcat1.ssl.port=9143</replacetoken>
+    </replace>
   </target>
 </project>
