@@ -92,8 +92,7 @@ public class DirectoryResource extends Resource implements ViewableV1 {
             // TODO: Add realm prefix, e.g. realm-prefix="ulysses-demo"
             // NOTE: The schema is according to
             // http://cocoon.apache.org/2.1/userdocs/directory-generator.html
-            sb
-                    .append("<dir:directory yanel:path=\""
+            sb.append("<dir:directory yanel:path=\""
                             + path
                             + "\" dir:name=\""
                             + p.getName()
