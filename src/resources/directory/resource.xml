@@ -4,4 +4,9 @@
 <description>
 Directory
 </description>
+
+<rtd>
+  <property name="xslt"/>
+  <property name="mime-type"/>
+</rtd>
 </resource>
