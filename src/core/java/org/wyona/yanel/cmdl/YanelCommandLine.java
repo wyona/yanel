@@ -72,7 +72,7 @@ public class YanelCommandLine {
         if (args.length == 1 && args[0].length() > 0) {
             path = new Path(args[0]);
         } else {
-            System.out.println("\nPlease enter a path (e.g. /hello/world.html):");
+            System.out.println("\nPlease enter a path (e.g. /index.html):");
             try {
                 String value = br.readLine();
                 if (value.equals("")) {
@@ -142,16 +142,12 @@ public class YanelCommandLine {
                 System.out.println("mime-type: " + view.getMimeType());
 
                 BufferedReader bReader = new BufferedReader(new java.io.InputStreamReader(view.getInputStream()));
-                System.out.println(" 1. Line: " + bReader.readLine());
-                System.out.println(" 2. Line: " + bReader.readLine());
-                System.out.println(" 3. Line: " + bReader.readLine());
-                System.out.println(" 4. Line: " + bReader.readLine());
-                System.out.println(" 5. Line: " + bReader.readLine());
-                System.out.println(" 6. Line: " + bReader.readLine());
-                System.out.println(" 7. Line: " + bReader.readLine());
-                System.out.println(" 8. Line: " + bReader.readLine());
-                System.out.println(" 9. Line: " + bReader.readLine());
-                System.out.println("10. Line: " + bReader.readLine());
+                int k = 0;
+                String line = null;
+                while ((line = bReader.readLine()) != null) {
+                    k++;
+                    System.out.println("Line " + k + ": " + line);
+                }
             } catch(Exception e) {
                 System.err.println(e);
             }
