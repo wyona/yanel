@@ -8,8 +8,10 @@
   <property name="junit.src.dir" value="junit"/>
   <property name="htmlunit.src.dir" value="htmlunit"/>
   <property name="test.results.dir" value="test-results"/>
-  <property name="conf.dir" value="../../conf"/>
-  <property name="build.dir" value="../../build"/>
+  <property name="yanel.home.dir" location="../../"/>
+  <property name="conf.dir" value="${yanel.home.dir}/conf"/>
+  <property name="local.conf.dir" value="${yanel.home.dir}/${local.config.dir}"/>
+  <property name="build.dir" value="${yanel.home.dir}/build"/>
   <property name="yanel.build.dir" value="${build.dir}/classes"/>
   <property name="junit.build.dir" value="${build.dir}/test/junit"/>
   <property name="htmlunit.build.dir" value="${build.dir}/test/htmlunit"/>
@@ -69,7 +71,7 @@
 
   <target name="build-resources" depends="init" description="Build tests of resources">
     <condition property="local.yanel.config.exists">
-      <available file="${conf.dir}/conf/local.yanel.xml" type="file"/>
+      <available file="${local.conf.dir}/local.yanel.xml" type="file"/>
     </condition>
     <antcall target="generate-resources-test-build-from-default"/>
     <antcall target="generate-resources-test-build-from-local"/>
@@ -82,7 +84,7 @@
   </target>
 
   <target name="generate-resources-test-build-from-local" depends="init" if="local.yanel.config.exists">
-    <xslt in="${conf.dir}/conf/local.yanel.xml" out="${build.dir}/test-resources.xml" style="test-resources.xsl" force="true"/>
+    <xslt in="${local.conf.dir}/local.yanel.xml" out="${build.dir}/test-resources.xml" style="test-resources.xsl" force="true"/>
   </target>
   
   <target name="copy-properties">
