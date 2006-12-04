@@ -56,7 +56,8 @@
 
   <target name="startup-tomcat-windows-node1" if="isTomcat1HomeSet">
     <echo>Startup Tomcat Cluster Node 1: ${tomcat1.home.dir}/bin/startup.bat</echo>
-    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="startup.bat" spawn="false"/>
+    <!-- NOTE: Spawn is true because otherwise the batch script will not continue beyond this call (This is only necessary for Windows) -->
+    <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="startup.bat" spawn="true"/>
   </target>
   <target name="startup-tomcat-unix-node1" if="isTomcat1HomeSet">
     <echo>Starting Tomcat (${tomcat1.home.dir}/bin/startup.sh) ...</echo>
@@ -64,7 +65,9 @@
     <exec dir="${tomcat1.home.dir}/bin" resolveexecutable="true" executable="startup.sh" spawn="false"/>
   </target>
   <target name="startup-tomcat-windows-node2" if="isTomcat2HomeSet">
-    <exec dir="${tomcat2.home.dir}/bin" resolveexecutable="true" executable="startup.bat" spawn="false"/>
+    <echo>Startup Tomcat Cluster Node 2: ${tomcat2.home.dir}/bin/startup.bat</echo>
+    <!-- NOTE: Spawn is true because otherwise the batch script will not continue beyond this call (This is only necessary for Windows) -->
+    <exec dir="${tomcat2.home.dir}/bin" resolveexecutable="true" executable="startup.bat" spawn="true"/>
   </target>
   <target name="startup-tomcat-unix-node2" if="isTomcat2HomeSet">
     <echo>Starting Tomcat (${tomcat2.home.dir}/bin/startup.sh) ...</echo>
