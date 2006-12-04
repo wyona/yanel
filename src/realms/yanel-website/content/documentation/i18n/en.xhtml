@@ -31,13 +31,14 @@ After having replaced all Messages with a <br/><tt><b>&lt;i18n:message key="KEY_
 Assuming you want the following text internationalized:<br/> <tt><b>"Hello World"</b></tt> you would have to replace the Hallo World with a tag <tt><b>&lt;i18n:message key="HelloWorld"&gt;</b></tt> where the key has to be unique within a bundle named messages.<br/>
 </p>
 <p>
-The transformer finds this tag looks in his properties for the selected locale, which is here by default (<b>en</b>)glish if no <tt>request.parameter</tt> name <tt>lang</tt> is given, and replaces the 
+The transformer finds this tag looks in his properties for the selected locale, which is here by default (<b>en</b>)glish if no <tt>request.parameter</tt> name <tt>yanel.meta.language</tt> is given, and replaces the 
 <tt><b>&lt;i18n:message key="HelloWorld"&gt;</b></tt> with the value from <tt>messages_en.properties</tt>. So that the result would be <tt><b>"Hello World"</b></tt>.<br/>
 </p>
 <p>
 Attributes are handled a bit different. For attributes e.g. within a form imagine the submit button. You would have to have e.g. <tt>&lt;input type="submit" value="<b>i18n:attr key=cancel</b>"&gt;</tt>
 here the transformer will look for a key cancel within the properties and replace it with the selected language. 
 </p>
+
 
 </body>
 </html>

@@ -19,13 +19,20 @@ package org.wyona.yanel.impl.resources;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.StringReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -44,8 +51,10 @@ import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.RepositoryFactory;
+import org.wyona.yanel.core.transformation.I18nTransformer;
 import org.wyona.yarep.util.RepoPath;
 import org.wyona.yarep.util.YarepUtil;
+import org.wyona.yanel.core.util.HttpServletRequestHelper;;
 
 /**
  * 
@@ -53,27 +62,24 @@ import org.wyona.yarep.util.YarepUtil;
 public class ContactResource extends Resource implements ViewableV1 {
 
     private static final String SMTP_HOST = "smtpHost:";
-
     private static final String SMTP_PORT = "smtpPort:";
-
     private static final String TO = "to:";
-
     private static Category log = Category.getInstance(ContactResource.class);
-
-    private String smtpHost;
-
+    private String smtpHost = "";
     private int smtpPort = 0;
-
-    private String to;
-
-    private String from;
-
-    private String subject;
-
-    private String content;
-    
+    private String to = "";
+    private String from = "";
+    private String subject = "YANEL FEEDBACK";
+    private String content = "";
     private ContactBean contact = null;
-
+    private String defaultLanguage = "en";
+    private String messageBundle = "contact-form";
+    
+    private Repository repository  = null;
+    private RepoPath rp = null;
+    private Path path = null;
+    private String language = null;
+    
     /**
      * 
      */
@@ -91,287 +97,173 @@ public class ContactResource extends Resource implements ViewableV1 {
      * 
      */
     public View getView(Path path, String viewId) {
-        View defaultView = new View();
-        defaultView.setMimeType("application/xml");
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        defaultView.setInputStream(new java.io.StringBufferInputStream(sb
-                .toString()));
-        return defaultView;
+        return null;
     }
 
     /**
-     * @throws Exception
      * 
      */
     public View getView(HttpServletRequest request, String viewId)
             throws Exception {
-        Path path = new Path(request.getServletPath());
-        Enumeration enumeration = request.getParameterNames();
-        boolean submit = enumeration.hasMoreElements();
-        // if submit null just return the file
-        if (!submit) {
-            View defaultView = new View();
-            return plainRequest(path, defaultView);
+        path = new Path(request.getServletPath());
+        rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
+        repository = rp.getRepo();
+        try {
+            language = request.getParameter("yanel.meta.language");
+        } catch(Exception e) {
+            log.debug("language param is not found will use default : " + language);
+            language = defaultLanguage;
         }
-        String uri = request.getRequestURI();
-
-        boolean success = false;
-        Map status = null;
-        if (!getProperties(path)) {
-            log.warn("SetupException: ");
-            status = new HashMap(3);
-            status.put(SendMail.STATUS, "user-error");
-            status.put(SendMail.MESSAGE, "Please verify your setup of the rti!");
-            return computeForward(path, status);
-        } else {
-            // getting the form values
-            contact = new ContactBean(request);
-            verifyContact(contact);
-            try {
-                SendMail.send(smtpHost, smtpPort, from, to, subject, content);
-                success = true;
-                status = new HashMap(3);
-                status.put(SendMail.STATUS, "success");
-            } catch (AddressException e) {
-                log.warn("AddressException: ", e);
-                status = new HashMap(3);
-                status.put(SendMail.STATUS, "user-error");
-                status.put(SendMail.MESSAGE, e.getMessage());
-            } catch (MessagingException e) {
-                log.warn("MessagingException: "
-                        + "An error occured while sending email.", e);
-
-                status = new HashMap(3);
-                status.put(SendMail.STATUS, "server-error");
-                status.put(SendMail.MESSAGE,
-                        "An error occured while sending email: "
-                                + e.getMessage());
-            } finally {
-                return computeForward(path, status);
+        if(language == null || ("").equals(language)) {
+            log.debug("language param is empty or null : " + language);
+            language = defaultLanguage;
+        }
+        Transformer transformer = null;
+        I18nTransformer i18nTransformer = null;
+        File xslFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "contact-form.xsl");
+        File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "contact-form.xml");        
+        try {
+            transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xslFile));
+            boolean submit = false;
+            Enumeration enumeration = request.getParameterNames();
+            while(enumeration.hasMoreElements()){
+                if(enumeration.nextElement().toString().equals("submit")) 
+                    submit = true;
             }
+            if(submit) {
+                sendMail(request, transformer);
+                transformer.setParameter("company", HttpServletRequestHelper.getParameter(request, "company"));
+                transformer.setParameter("firstName", HttpServletRequestHelper.getParameter(request, "firstName"));
+                transformer.setParameter("lastName", HttpServletRequestHelper.getParameter(request, "lastName"));
+                transformer.setParameter("email", HttpServletRequestHelper.getParameter(request, "email"));
+                transformer.setParameter("address", HttpServletRequestHelper.getParameter(request, "address"));
+                transformer.setParameter("zipCity", HttpServletRequestHelper.getParameter(request, "zipCity"));
+                transformer.setParameter("message", HttpServletRequestHelper.getParameter(request, "message"));
+            }
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            transformer.transform(new javax.xml.transform.stream.StreamSource(xmlFile), new StreamResult(byteArrayOutputStream));
+            //translate the form
+            i18nTransformer = new I18nTransformer(messageBundle, language);
+            SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
+            saxParser = SAXParserFactory.newInstance().newSAXParser();
+            saxParser.parse(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), i18nTransformer);
+            
+            transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
+            transformer.setParameter("yanel.path.name", path.getName());
+            transformer.setParameter("yanel.path", path.toString());
+            transformer.setParameter("yanel.back2context", backToRoot(path, ""));
+            transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+ 
+            byteArrayOutputStream = new ByteArrayOutputStream();
+            transformer.transform(new StreamSource(i18nTransformer.getInputStream()), new StreamResult(byteArrayOutputStream));
+            //tranlate the page
+            i18nTransformer = new I18nTransformer("global", language);
+            saxParser = SAXParserFactory.newInstance().newSAXParser();
+            saxParser.parse(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), i18nTransformer);
+            
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
-    }
-
-    private View plainRequest(Path path, View defaultView) throws Exception,
-            TransformerConfigurationException,
-            TransformerFactoryConfigurationError, NoSuchNodeException,
-            TransformerException {
-        Repository contentRepo;
-        RepoPath rp = contentRepo(path);
-        contentRepo = rp.getRepo();
-
-        Transformer transformer = TransformerFactory.newInstance()
-                .newTransformer(getXSLTStreamSource(path, contentRepo));
-        transformer.setParameter("yanel.path.name", path.getName());
-        transformer.setParameter("yanel.path", path.toString());
-        transformer.setParameter("yanel.back2context", backToRoot(path, ""));
-        transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
-        // TODO: Is this the best way to generate an InputStream from an
-        // OutputStream?
-        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-        transformer.transform(new StreamSource(rp.getRepo().getInputStream(
-                new org.wyona.yarep.core.Path(rp.getPath().toString()))),
-                new StreamResult(baos));
-        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos
-                .toByteArray()));
-        defaultView.setMimeType(getMimeType(path));
-        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos
-                .toByteArray()));
-
-        return defaultView;
-    }
-
-    private RepoPath contentRepo(Path path) throws Exception {
-        return new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(
-                path.toString()), getRepositoryFactory());
-    }
-
-    private String getMimeType(Path path, String viewId) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    private View computeForward(Path path, Map status) throws Exception {
         View defaultView = new View();
         defaultView.setMimeType("application/xml");
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-        sb.append("<head>");
-        // here we need to test the status of the mail
-        String statusCode = (String) status.get(SendMail.STATUS);
-        if (statusCode.equals("success")) {
-            sb.append("<title>Your message has been sent successfully.</title>");
-            sb.append("</head>");
-            sb.append("<body>");
-            sb.append("<div id=\"contenBody\">");
-            sb.append("<h1>Success</h1>");
-            sb.append("<p>Following message has been sent:</p>");
-            // decoding content of the message body
-            StringReader stringReader = new StringReader(content);
-            BufferedReader reader = new BufferedReader(stringReader);
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                sb.append("<p>" + line + "</p>");
-            }
-            // finishing
-            sb.append("</div>");
-            sb.append("</body>");
-        } else {
-            sb.append("<title>Your message has not been sent.</title>");
-            sb.append("</head>");
-            sb.append("<body>");
-            sb.append("<div id=\"contenBody\">");
-            
-            
-            String errorMessage = (String) status.get(SendMail.MESSAGE);
-            errorMessage = errorMessage.replaceAll("<", "&lt;");
-            errorMessage = errorMessage.replaceAll(">", "&gt;");
-            
-            sb.append(getForm(errorMessage, contact));
-            /*
-            sb.append("<h1>" + status.get(SendMail.STATUS) + "</h1>");
-            sb.append("<p>Your message has not been sent.</p>");
-            
-            sb.append("<p>" + errorMessage + "</p>");
-            */
-            sb.append("</div>");
-            sb.append("</body>");
-        }
-        sb.append("</html>");
-        computeView(path, defaultView, sb);
+        defaultView.setInputStream(i18nTransformer.getInputStream());
         return defaultView;
     }
+
     
+
+
     
-    private String getForm(String errorMessage, ContactBean bean) {
-      
-      String form = "<form method=\"post\" action=\"#\">" +
-                    "\n\t<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\">" +
-                    "\n\t\t<tr>" + 
-                    "\n\t\t\t<td colspan=\"2\">" + 
-                    "\n\t\t\t\t<h1>Your mail could not be sent</h1>" + 
-                    "\n\t\t\t\t<h2>" + errorMessage + "</h2>" + 
-                    "\n\t\t\t</td>" + 
-                    "\n\t\t</tr>" + 
-                    "\n\t\t<tr>" + 
-                    "\n\t\t\t<td colspan=\"2\"></td>" +
-                    "\n\t\t</tr>" +
-                    "\n\t\t<tr>" +
-                    "\n\t\t\t<td align=\"right\" valign=\"top\" class=\"contentfield\">Company</td>" +
-                    "\n\t\t\t<td>" +
-                    "\n\t\t\t\t<input type=\"text\" name=\"company\" class=\"box\" size=\"40\" value=\"" + contact.getCompany() + "\"/>" +
-                    "\n\t\t\t</td>" +
-                    "\n\t\t</tr>" +
-                    "\n\t\t<tr>" +
-                    "\n\t\t\t<td align=\"right\" valign=\"top\" class=\"contentfield\">Firstname</td>" +
-                    "\n\t\t\t<td>" +
-                    "\n\t\t\t\t<input type=\"text\" name=\"firstName\" class=\"box\" size=\"40\" value=\"" + contact.getFirstName() + "\"/>" +
-                    "\n\t\t\t</td>" +
-                    "\n\t\t</tr>" +
-                    "\n\t\t<tr>" +
-                    "\n\t\t\t\t<td align=\"right\" valign=\"top\" class=\"contentfield\">Lastname</td>" +
-                    "\n\t\t\t\t<td>" +
-                    "\n\t\t\t\t\t<input type=\"text\" name=\"lastName\" class=\"box\" size=\"40\" value=\"" + contact.getLastName() + "\"/>" +
-                    "\n\t\t\t</td>" +
-                    "\n\t\t</tr>" +
-                    "\n\t\t<tr>" +
-                    "\n\t\t\t<td align=\"right\" valign=\"top\" class=\"contentfield\">Address</td>" +
-                    "\n\t\t\t<td>" +
-                    "\n\t\t\t\t<input type=\"text\" name=\"address\" class=\"box\" size=\"40\" value=\"" + contact.getAddress() + "\"/>" +
-                    "\n\t\t\t</td>" +
-                    "\n\t\t</tr>" +
-                    "\n\t\t<tr>" +
-                    "\n\t\t\t<td align=\"right\" valign=\"top\" class=\"contentfield\">ZIP / City</td>" +
-                    "\n\t\t\t<td>" +
-                    "\n\t\t\t\t<input type=\"text\" name=\"city\" class=\"box\" size=\"40\" value=\"" + contact.getCity() + "\"/>" +
-                    "\n\t\t\t</td>" +
-                    "\n\t\t</tr>" +
-                    "\n\t\t<tr>" +
-                    "\n\t\t\t<td align=\"right\" valign=\"top\" class=\"contentfield\">E-Mail</td>" +
-                    "\n\t\t\t<td>" +
-                    "\n\t\t\t\t<input type=\"text\" name=\"email\" class=\"box\" backgroundcolor=\"lightgrey\" size=\"40\" value=\"" + contact.getEmail() + "\"/>" +
-                    "\n\t\t\t</td>" +
-                    "\n\t\t</tr>" +
-                    "\n\t\t<tr>" +
-                    "\n\t\t\t<td align=\"right\" valign=\"top\" class=\"contentfield\">Message</td>" +
-                    "\n\t\t\t<td>" +
-                    "\n\t\t\t\t<textarea rows=\"8\" name=\"message\" cols=\"30\" class=\"box\" value=\"" + contact.getMessage() + "\">&#160;</textarea>" +
-                    "\n\t\t\t</td>" +
-                    "\n\t\t</tr>" +
-                    "\n\t\t<tr>" +
-                    "\n\t\t\t<td>&#160;" +
-                    "\n\t\t\t</td>" +
-                    "\n\t\t\t<td>" +
-                    "\n\t\t\t\t<input type=\"submit\" value=\"send \"/>" +
-                    "\n\t\t\t</td>" +
-                    "\n\t\t</tr>" +
-                    "\n\t</table>" +
-                    "</form>";
-                    
-        return form;  
-    }
-
-    private void computeView(Path path, View defaultView, StringBuffer sb)
-            throws Exception, TransformerConfigurationException,
-            TransformerFactoryConfigurationError, NoSuchNodeException,
-            TransformerException {
-
-        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-        
-        Transformer transformer = prepareTransformer(path);
-        transformer.setParameter("yanel.back2context", backToRoot(path, ""));
-        transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
-        // TODO: Is this the best way to generate an InputStream from an
-        // OutputStream?
-        
-        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-        transformer.transform(new StreamSource(
-                new java.io.StringBufferInputStream(sb.toString())),
-                new StreamResult(baos));
-        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos
-                .toByteArray()));
-        defaultView.setMimeType(getMimeType(path));
-        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos
-                .toByteArray()));
-    }
-
-    private Transformer prepareTransformer(Path path) throws Exception,
-            TransformerConfigurationException,
-            TransformerFactoryConfigurationError, NoSuchNodeException {
-        Repository contentRepo;
-        RepoPath rp = contentRepo(path);
-        contentRepo = rp.getRepo();
-        Transformer transformer = TransformerFactory.newInstance()
-                .newTransformer(getXSLTStreamSource(path, contentRepo));
-        transformer.setParameter("yanel.path.name", path.getName());
-        transformer.setParameter("yanel.path", path.toString());
-        return transformer;
-    }
-
     /**
-     * Here we need to verify whether we have all props that we need for the
-     * SendMail class.
+     * 
+     * @param request
+     * @param transformer
      */
-    private boolean verifyContact(ContactBean contact) {
-        boolean success = false;
-        if (null != contact.email & null != contact.message) {
-
-            from = contact.email;
-            subject = "Yanel feedback";
+    private void sendMail(HttpServletRequest request, Transformer transformer) {
+        String email = request.getParameter("email");
+        if(email == null || ("").equals(email)) {
+            transformer.setParameter("error", "emailNotSet");
+        } else if(!validateEmail(email)) {
+            transformer.setParameter("error", "emailNotValid");
+        } else {
+            contact = new ContactBean(request);
+            smtpHost = getProperty(SMTP_HOST);
+            try {
+                smtpPort = Integer.parseInt(getProperty(SMTP_PORT));
+            } catch(NumberFormatException nfe) {
+                log.error(nfe);
+                transformer.setParameter("error", "smtpPortNotCorrect");
+                smtpPort = 0;
+            }
+            to = getProperty(TO);
+            from = email;
             content = "Company: " + contact.getCompany() + "\n" + "Firstname: "
                     + contact.getFirstName() + "\n" + "Lastname: "
                     + contact.getLastName() + "\n" + "Address: "
                     + contact.getAddress() + "\n" + "City: " + contact.getCity()
                     + "\n" + "Email: " + contact.getEmail() + "\n" + "\n"
                     + "Message:\n" + contact.message;
-            success = true;
+            
+            if(smtpHost != null && smtpPort != 0 && to != null) {
+                try {
+                    SendMail.send(smtpHost, smtpPort, from, to, subject, content);
+                    transformer.setParameter("sent", "true");
+                } catch(javax.mail.MessagingException me) {
+                    log.error("#" + me + "#");
+                    if(("" + me).startsWith("javax.mail.MessagingException: Unknown SMTP")) {
+                        transformer.setParameter("error", "unknownHost");
+                    } else if(("" + me).startsWith("javax.mail.SendFailedException: Invalid Addresses")) {
+                        transformer.setParameter("error", "invalidAddress");
+                    } else {
+                        transformer.setParameter("error", "couldNotSendMail");
+                    }
+                }
+            } else {
+                transformer.setParameter("error", "smtpConfigError");
+            }
         }
-        return success;
-
+    }
+    
+    /**
+     * this method checks if the specified email is valid against a regex
+     * @param email
+     * @return true if email is valid
+     */
+    private boolean validateEmail(String email) {
+        String emailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
+        Pattern pattern = Pattern.compile(emailRegEx);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.find();
+    }
+    
+    /**
+     * 
+     * @param path
+     * @return
+     * @throws Exception
+     */
+    private RepoPath contentRepo(Path path) throws Exception {
+        return new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(
+                path.toString()), getRepositoryFactory());
     }
 
     /**
      * 
+     * @param path
+     * @param viewId
+     * @return
+     */
+    private String getMimeType(Path path, String viewId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    /**
+     * 
+     * @param path
+     * @param repo
+     * @return
+     * @throws NoSuchNodeException
      */
     private StreamSource getXSLTStreamSource(Path path, Repository repo)
             throws NoSuchNodeException, RepositoryException {
@@ -388,21 +280,18 @@ public class ContactResource extends Resource implements ViewableV1 {
             return new StreamSource(xsltFile);
         }
     }
-
+    
     /**
      * 
+     * @param path
+     * @return
      */
     private Path getXSLTPath(Path path) {
         String xsltPath = null;
         try {
-            // TODO: Get yanel RTI yarep properties file name from framework
-            // resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil()
-                    .getRepositoryPath(new org.wyona.yarep.core.Path(path
-                            .toString()), getRTIRepositoryFactory());
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI
+            java.io.BufferedReader br = new java.io.BufferedReader(rp
                     .getRepo().getReader(
-                            new org.wyona.yarep.core.Path(new Path(rpRTI
+                            new org.wyona.yarep.core.Path(new Path(rp
                                     .getPath().toString()).getRTIPath()
                                     .toString())));
 
@@ -413,69 +302,45 @@ public class ContactResource extends Resource implements ViewableV1 {
                     return new Path(xsltPath);
                 }
             }
-            log.error("No XSLT Path within: " + rpRTI.getPath());
+            log.error("No XSLT Path within: " + rp.getPath());
         } catch (Exception e) {
             log.warn(e);
         }
-
         return null;
     }
-
+    
     /**
-     * Here we need to verify that all default information like mail host, port,
-     * etc. are set. If not we can directly abort the processing and report an
-     * error.
+     * this method reads out the specified key from rti file 
+     * if key cannot be found return null
+     * @param key
+     * @return value
      */
-    private boolean getProperties(Path path) {
-        boolean success = false;
-        String line = null;
+    private String getProperty(String key) {
         try {
-            // TODO: Get yanel RTI yarep properties file name from framework
-            // resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil()
-                    .getRepositoryPath(new org.wyona.yarep.core.Path(path
-                            .toString()), getRTIRepositoryFactory());
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI
-                    .getRepo().getReader(
-                            new org.wyona.yarep.core.Path(new Path(rpRTI
-                                    .getPath().toString()).getRTIPath()
-                                    .toString())));
-
-            while ((line = br.readLine()) != null) {
-                if (line.indexOf(SMTP_HOST) == 0) {
-                    smtpHost = line.substring(SMTP_HOST.length() + 1);
-                }
-                if (line.indexOf(SMTP_PORT) == 0) {
-                    smtpPort = Integer.parseInt(line.substring(SMTP_PORT
-                            .length() + 1));
-                }
-                if (line.indexOf(TO) == 0) {
-                    to = line.substring(TO.length() + 1);
+            java.io.BufferedReader bufferedReader = new java.io.BufferedReader(rp.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rp.getPath().toString()).getRTIPath().toString())));
+            String line = null;
+            while((line = bufferedReader.readLine()) != null) {
+                if(line.indexOf(key) == 0) {
+                    return line.substring(key.length() + 1);
                 }
             }
         } catch (Exception e) {
-            log.warn(e);
+            log.error(e);
         }
-        if (null != smtpHost & 0 < smtpPort & null != to) {
-            success = true;
-        }
-        return success;
+        return null;
     }
-
+    
     /**
      * 
+     * @param path
+     * @return
      */
     private String getMimeType(Path path) {
         String mimeType = null;
         try {
-            // TODO: Get yanel RTI yarep properties file name from framework
-            // resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil()
-                    .getRepositoryPath(new org.wyona.yarep.core.Path(path
-                            .toString()), getRTIRepositoryFactory());
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI
+            java.io.BufferedReader br = new java.io.BufferedReader(rp
                     .getRepo().getReader(
-                            new org.wyona.yarep.core.Path(new Path(rpRTI
+                            new org.wyona.yarep.core.Path(new Path(rp
                                     .getPath().toString()).getRTIPath()
                                     .toString())));
 
@@ -483,36 +348,29 @@ public class ContactResource extends Resource implements ViewableV1 {
                 if (mimeType.indexOf("mime-type:") == 0) {
                     mimeType = mimeType.substring(11);
                     log.info("*" + mimeType + "*");
-                    // TODO: Maybe validate mime-type ...
                     return mimeType;
                 }
             }
         } catch (Exception e) {
             log.warn(e);
         }
-
         // NOTE: Assuming fallback re dir2xhtml.xsl ...
         return "application/xhtml+xml";
     }
-    
-    /**
-     * 
-     * @return
-     */
-    protected RepositoryFactory getRepositoryFactory() {
-        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    protected RepositoryFactory getRTIRepositoryFactory() {
-        return yanel.getRepositoryFactory("RTIRepositoryFactory");
-    }
-    
+   
    /**
-    *
+    * 
+    * @return
+    */
+   protected RepositoryFactory getRepositoryFactory() {
+       return yanel.getRepositoryFactory("DefaultRepositoryFactory");
+   }
+   
+   /**
+    * 
+    * @param path
+    * @param backToRoot
+    * @return
     */
    private String backToRoot(Path path, String backToRoot) {
        org.wyona.commons.io.Path parent = path.getParent();
@@ -521,12 +379,14 @@ public class ContactResource extends Resource implements ViewableV1 {
        }
        return backToRoot;
    }
-   
-  /**
-   *
-   */
-  private boolean isRoot(org.wyona.commons.io.Path path) {
-      if (path.toString().equals(File.separator)) return true;
-      return false;
-  }
+
+   /**
+    * 
+    * @param path
+    * @return
+    */
+   private boolean isRoot(org.wyona.commons.io.Path path) {
+       if (path.toString().equals(File.separator)) return true;
+       return false;
+   }
 }

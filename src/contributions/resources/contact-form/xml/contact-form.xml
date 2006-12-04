@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form name="contact-form">
+  <inputfields>
+    <input required="false">company</input>
+    <input required="false">firstName</input>
+    <input required="false">lastName</input>
+    <input required="true">email</input>
+    <input required="false">address</input>
+    <input required="false">zipCity</input>
+  </inputfields>
+  <textAreas>
+    <textArea required="false">message</textArea>
+  </textAreas>
+</form>

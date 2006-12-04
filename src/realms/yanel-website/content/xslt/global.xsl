@@ -1,8 +1,9 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
+  xmlns:i18n="http://apache.org/cocoon/i18n/2.1"
   xmlns="http://www.w3.org/1999/xhtml"
 >
 
@@ -17,7 +18,7 @@
 <xsl:param name="yanel.back2context" select="'BACK2CONTEXT_IS_NULL'"/>
 <xsl:param name="yarep.back2realm" select="'BACK2REALM_IS_NULL'"/>
 
-<xsl:param name="language" select="'en'"/>
+<xsl:param name="yanel.meta.language" select="'en'"/>
 
 <xsl:variable name="name-without-suffix" select="substring-before($yanel.path.name, '.')"/>
 
@@ -77,8 +78,8 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <tr>
   <td colspan="3" id="footer">
   <p>
-    <font size="-1">Powered by <a href="http://yanel.wyona.org">Wyona Yanel</a>, <a href="https://svn.wyona.org/repos/public/tomcat-cluster/">Wyona Balancer</a>, <a href="http://tomcat.apache.org">Apache Tomcat</a>, <a href="http://httpd.apache.org">Apache HTTP Server</a></font><br/>
-    Copyright &#169; 2006 <a href="http://www.wyona.com">Wyona</a>. All rights reserved. - <a href="?yanel.resource.meta">Page Info</a>
+    <font size="-1"><i18n:message key="poweredBy"/><a href="http://yanel.wyona.org">Wyona Yanel</a>, <a href="https://svn.wyona.org/repos/public/tomcat-cluster/">Wyona Balancer</a>, <a href="http://tomcat.apache.org">Apache Tomcat</a>, <a href="http://httpd.apache.org">Apache HTTP Server</a></font><br/>
+    Copyright &#169; 2006 <a href="http://www.wyona.com">Wyona</a>. <i18n:message key="allRightsReserved"/>. - <a href="?yanel.resource.meta"><i18n:message key="pageInfo"/></a>
   </p>
   </td>
 </tr>
@@ -91,10 +92,10 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 
 <xsl:template name="navigation">
 <b>All You Need</b><br/>
-&#160;<a href="{$yarep.back2realm}{$language}/about.html">About</a><br/>
+&#160;<a href="{$yarep.back2realm}{$yanel.meta.language}/about.html">About</a><br/>
 &#160;<a href="{$yarep.back2realm}download.html">Download</a><br/>
 &#160;<a href="{$yarep.back2realm}license.html">License</a><br/>
-&#160;<a href="{$yarep.back2realm}{$language}/getting-started.html">Getting Started</a><br/>
+&#160;<a href="{$yarep.back2realm}{$yanel.meta.language}/getting-started.html">Getting Started</a><br/>
 &#160;Features<br/>
 <!--
 &#160;News<br/>
@@ -119,7 +120,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 &#160;Solutions<br/>
 &#160;<a href="{$yarep.back2realm}en/contact.html">Contact</a><br/>
 <br/>
-<b>Search</b>
+<b><i18n:message key="search"/></b>
 &#160;<form action="{$yarep.back2realm}en/search.html" method="GET"><input type="text" name="query" class="searchbox" size="14"/></form>
 </xsl:template>
 

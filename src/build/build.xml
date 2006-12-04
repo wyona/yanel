@@ -776,6 +776,13 @@
   </target>
 
   <target name="deploy-resources" description="Deploy resources" depends="generate-resources-build">
+  
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/">
+      <fileset dir="." casesensitive="yes">
+        <include name="global_*.properties"/>
+      </fileset>
+    </copy>
+    
     <ant antfile="${yanel.home.dir}/build/resources.xml" target="deploy-resources"/>
   </target>
 

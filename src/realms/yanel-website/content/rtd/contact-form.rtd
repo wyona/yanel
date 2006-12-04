@@ -1,4 +1,4 @@
-<{http://www.wyona.org/yanel/resource/1.0}xml/>
+<{http://www.wyona.org/yanel/resource/1.0}contact-form/>
 mime-type: application/xhtml+xml
 xslt: /xslt/global.xsl
 
@@ -8,3 +8,4 @@ xslt: /xslt/global.xsl
 #to: contact@localhost
 #smtpHost: localhost
 #smtpPort: 25
+

@@ -45,5 +45,9 @@
       <fileset refid="maven2.resource.fileset"/>
       <mapper type="flatten"/>
     </copy>
+    
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes">
+      <fileset dir="conf" includes="contact-form_*.properties"/>
+    </copy>
   </target>
 </project>

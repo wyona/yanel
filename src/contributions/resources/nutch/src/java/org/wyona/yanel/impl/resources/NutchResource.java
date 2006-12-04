@@ -51,7 +51,7 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
-import org.wyona.yarep.core.NoSuchNodeException;
+import org.wyona.yanel.core.transformation.I18nTransformer;
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
@@ -81,7 +81,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     private Repository repository  = null;
     private String language = "en";
     //messages is the name of the ResourceBundle
-    private String messages = "messages";
+    private String messages = "nutch";
     private RepoPath rp = null;
 
     /**
@@ -148,12 +148,12 @@ public class NutchResource extends Resource implements ViewableV1 {
         }
         String _language = language;
         try {
-            _language = request.getParameter("language");
+            _language = request.getParameter("yanel.meta.language");
         } catch(Exception e) {
             //use fallback language
             _language = language;
         }
-        if(_language == null) _language = language;
+        if(_language == null || ("").equals(_language)) _language = language;
         return getView(new Path(request.getServletPath()), viewId, request.getParameter("query"), _start, _hitsPerPage, _language);
     }
 
@@ -181,31 +181,32 @@ public class NutchResource extends Resource implements ViewableV1 {
         if (searchTerm != null && searchTerm.length() > 0) {
             Element queryElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "query"));
             queryElement.appendChild(document.createTextNode(searchTerm));
-        resultsElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "results"));
-        resultsElement.setAttributeNS(NAME_SPACE, "start", "" + start);
-        configuration = new Configuration();
-
-        try {
-            String confDir = "file:" + rtd.getConfigFile().getParentFile().getAbsolutePath()
-                    + File.separator + "conf";
-            log.debug("Conf Dir: " + confDir);
-            URL defaultResource = new URL(confDir + File.separator + defaultFile);
-            configuration.addDefaultResource(defaultResource);
-            URL finalResource = new URL(confDir + File.separator + localFile);
-            configuration.addFinalResource(finalResource);
-        } catch (MalformedURLException e) {
-            log.error(e.getMessage(), e);
-        }
-
-        try {
-            crawlDir = new File(configuration.get("searcher.dir"));
-        } catch (Exception e) {
-            log.error(e);
-            exceptionElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "exception"));
-            exceptionElement.appendChild(document.createTextNode(e.getMessage()));
-        }
-
-        if (crawlDir != null) createDocument4SearchResult(searchTerm, start, hitsPerPage);
+            resultsElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "results"));
+            resultsElement.setAttributeNS(NAME_SPACE, "start", "" + start);
+            configuration = new Configuration();
+    
+            try {
+                String confDir = "file:" + rtd.getConfigFile().getParentFile().getAbsolutePath()
+                        + File.separator + "conf";
+                log.debug("Conf Dir: " + confDir);
+                URL defaultResource = new URL(confDir + File.separator + defaultFile);
+                configuration.addDefaultResource(defaultResource);
+                URL finalResource = new URL(confDir + File.separator + localFile);
+                configuration.addFinalResource(finalResource);
+            } catch (MalformedURLException e) {
+                log.error(e.getMessage(), e);
+            }
+    
+            try {
+                crawlDir = new File(configuration.get("searcher.dir"));
+            } catch (Exception e) {
+                log.error(e);
+                exceptionElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "exception"));
+                exceptionElement.appendChild(document.createTextNode(e.getMessage()));
+            }
+    
+            if (crawlDir != null) 
+                createDocument4SearchResult(searchTerm, start, hitsPerPage);
 
         } else {
             rootElement.appendChild(document.createElementNS(NAME_SPACE, "no-query"));
@@ -239,8 +240,13 @@ public class NutchResource extends Resource implements ViewableV1 {
             transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
             byteArrayOutputStream = new ByteArrayOutputStream();
             transformer.transform(new StreamSource(i18nTransformer.getInputStream()), new StreamResult(byteArrayOutputStream));
+ 
+            inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            i18nTransformer = new I18nTransformer("global", language);
+            saxParser = SAXParserFactory.newInstance().newSAXParser();
+            saxParser.parse(inputStream, i18nTransformer);
             
-            return new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            return i18nTransformer.getInputStream();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -276,8 +282,10 @@ public class NutchResource extends Resource implements ViewableV1 {
         try {
             if (!crawlDir.isDirectory()) {
                 exceptionElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "exception"));
-                exceptionMessage = "No such crawl directory: " + crawlDir;
+                
+                exceptionMessage = "noSuchCrawlDirectory#" + crawlDir;
                 exceptionElement.appendChild(document.createTextNode(exceptionMessage));
+                
                 log.warn(exceptionMessage);
                 return;
             } else {
