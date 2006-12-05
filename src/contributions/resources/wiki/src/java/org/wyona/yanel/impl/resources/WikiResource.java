@@ -16,6 +16,8 @@
 
 package org.wyona.yanel.impl.resources;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +44,7 @@ import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.transformation.I18nTransformer;
 
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
@@ -59,6 +62,8 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     private Repository repository  = null;
     private HashMap properties = new HashMap();
     private String defaultWikiParserBeanId = "jspWikiParser";
+    
+    private String language = "en";
     
     /**
      * 
@@ -99,19 +104,33 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
                 transformer = TransformerFactory.newInstance().newTransformer();
                 defaultView.setMimeType(XML_MIME_TYPE);
             } else {
-                transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
+                transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(null, repository));
                 transformer.setParameter("yanel.path.name", path.getName());
                 transformer.setParameter("yanel.path", path.toString());
                 defaultView.setMimeType("application/xhtml+xml");
             }
-            
             LinkChecker linkChecker = new LinkChecker(path2Resource);
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(wikiParser.getInputStream(), linkChecker);
-            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-            transformer.transform(new StreamSource(linkChecker.getInputStream()), new StreamResult(baos));
             
-            defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+            java.io.ByteArrayOutputStream byteArrayOutputStream = new java.io.ByteArrayOutputStream();
+            transformer.transform(new StreamSource(linkChecker.getInputStream()), new StreamResult(byteArrayOutputStream));
+            
+            inputStream = new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            
+            transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
+            transformer.setParameter("yanel.back2context", backToRoot(path, ""));
+            transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+            
+            byteArrayOutputStream = new ByteArrayOutputStream();
+            transformer.transform(new StreamSource(inputStream), new StreamResult(byteArrayOutputStream));
+ 
+            inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            I18nTransformer i18nTransformer = new I18nTransformer("global", language);
+            saxParser = SAXParserFactory.newInstance().newSAXParser();
+            saxParser.parse(inputStream, i18nTransformer);
+
+            defaultView.setInputStream(i18nTransformer.getInputStream());
             
             return defaultView;
         } catch (Exception e) {
@@ -120,10 +139,38 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
         return null;
     }
     
+   /**
+    *
+    */
+   private String backToRoot(Path path, String backToRoot) {
+       org.wyona.commons.io.Path parent = path.getParent();
+       if (parent != null && !isRoot(parent)) {
+           return backToRoot(new Path(parent.toString()), backToRoot + "../");
+       }
+       return backToRoot;
+   }
+
+   /**
+    *
+    */
+   private boolean isRoot(org.wyona.commons.io.Path path) {
+       if (path.toString().equals(File.separator)) return true;
+       return false;
+   }
+    
     /**
      * 
      */
     public View getView(HttpServletRequest request, String viewId) {
+        String _language = language;
+        try {
+            _language = request.getParameter("yanel.meta.language");
+        } catch(Exception e) {
+            //use fallback language
+            _language = language;
+        }
+        if(_language == null || ("").equals(_language)) _language = language;
+        else language = _language;
         return getView(new Path(request.getServletPath()), viewId);
     }
 
