@@ -16,12 +16,11 @@
 
 package org.wyona.yanel.impl.resources;
 
-import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.io.PrintWriter;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,8 +35,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.log4j.Category;
 
 import org.wyona.wikiparser.IWikiParser;
-import org.wyona.wikiparser.IWikiParserFactory;
-import org.wyona.wikiparser.WikiParserFactory;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
@@ -60,8 +57,8 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     private final String XML_MIME_TYPE = "application/xml";
     private DocumentBuilderFactory dbf = null;
     private Repository repository  = null;
-    private String context = null;
     private HashMap properties = new HashMap();
+    private String defaultWikiParserBeanId = "jspWikiParser";
     
     /**
      * 
@@ -92,14 +89,9 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
             String path2Resource = path.toString();
             path2Resource = path2Resource.substring(0, path2Resource.lastIndexOf("/") + 1);
             
-            //these fields are specified via interface
-            int type = 1;//is the jspWikiParser
+            String wikiParserBeanId = getWikiSyntax(path);
             InputStream inputStream = rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
-            //instantiate wiki parser via factory
-            
-            IWikiParserFactory wikiparserFactory = new WikiParserFactory();
-            IWikiParser wikiParser = wikiparserFactory.create(type, inputStream);
-            //wikiParser does the transformation
+            IWikiParser wikiParser = (IWikiParser) yanel.getBeanFactory().getBean(wikiParserBeanId);
             wikiParser.parse(inputStream);
             
             Transformer transformer = null;
@@ -116,8 +108,6 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
             LinkChecker linkChecker = new LinkChecker(path2Resource);
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(wikiParser.getInputStream(), linkChecker);
-            //transformer.setParameter("yanel.contextPath", context);
-            //transformer.setParameter("yanel.path2Resource", path2Resource);
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
             transformer.transform(new StreamSource(linkChecker.getInputStream()), new StreamResult(baos));
             
@@ -134,7 +124,6 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
      * 
      */
     public View getView(HttpServletRequest request, String viewId) {
-        context = request.getContextPath();
         return getView(new Path(request.getServletPath()), viewId);
     }
 
@@ -183,6 +172,49 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
         return null;
     }
     
+    /**
+     * this method will get the wikiparser type for this resource 
+     * first it will look up the rti resp. rtd than 
+     * it will look in the config file for this resource if none of the could be found
+     * it will use the default hard coded in this class  
+     */
+    private String getWikiSyntax(Path path) {
+        String wikiParserBeanId = null;
+        try {
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
+            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
+
+            while ((wikiParserBeanId = br.readLine()) != null) {
+                if (wikiParserBeanId.indexOf("wiki-syntax:") == 0) {
+                    wikiParserBeanId = wikiParserBeanId.substring(13);
+                    log.debug("found wiki-syntax in rti file: " + wikiParserBeanId);
+                    return wikiParserBeanId;
+                }
+            }
+            File configFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
+                    .getParentFile()
+                    .getAbsolutePath(), "config" + File.separator + "wikiParser.config");
+            log.debug("configFile : " + configFile.getAbsolutePath());
+            br = new java.io.BufferedReader(new java.io.FileReader(configFile));
+            while ((wikiParserBeanId = br.readLine()) != null) {
+                if (wikiParserBeanId.indexOf("wiki-syntax:") == 0) {
+                    wikiParserBeanId = wikiParserBeanId.substring(13);
+                    log.debug("found wiki-syntax in config file: " + wikiParserBeanId);
+                    return wikiParserBeanId;
+                }
+            }
+        } catch (IOException ioe) {
+            log.error("IOException");
+        } catch (Exception e) {
+            log.error("Exception" + e);//was warn
+        } finally {
+            wikiParserBeanId = defaultWikiParserBeanId;    
+        }
+        log.debug("using fallback default wikiParser!");
+        return wikiParserBeanId;
+    }
+    
+
     /**
      * @return the empty wiki resource as String 
      */

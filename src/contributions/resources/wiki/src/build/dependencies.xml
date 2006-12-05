@@ -12,11 +12,6 @@
                   version="2.3" scope="provided" />
       <dependency groupId="log4j" artifactId="log4j"
                   version="1.2.8"/>
-      <dependency groupId="wyona-org-wiki-parser" artifactId="wiki-parser-factory"
-                  version="r19560"/>
-
-      <dependency groupId="wyona-org-wiki-parser" artifactId="jsp-wiki-parser"
-                  version="0.0.1-dev-r20084"/>
 
       <dependency groupId="wyona-org-yanel" artifactId="yanel-core"
                   version="${yanel.source.version}"/>
@@ -34,12 +29,12 @@
       <dependency groupId="com-ecyrd-jspwiki" artifactId="JSPWiki-patched"
                   version="2.4.71"/>
 
+      <dependency groupId="wyona-org-wiki-parser" artifactId="jsp-wiki-parser"
+                  version="0.0.1-dev-r20369"/>
       <dependency groupId="wyona-org-wiki-parser" artifactId="wiki-parser-factory"
                   version="r19560"/>
-      <dependency groupId="wyona-org-wiki-parser" artifactId="jsp-wiki-parser"
-                  version="0.0.1-dev-r20084"/>
-      <dependency groupId="wyona-org-wiki-parser" artifactId="wyona-wiki-parser"
-                  version="r16766"/>
+      <!-- dependency groupId="wyona-org-wiki-parser" artifactId="wyona-wiki-parser"
+                  version="r16766"/ -->
       <dependency groupId="apache-org-lucene" artifactId="lucene-highlighter"
                   version="1.x"/>
       <dependency groupId="apache-org-commons" artifactId="jrcs-diff"

@@ -41,6 +41,7 @@
   </target>
 
   <target name="copy-dependencies" depends="init">
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" file="src/build/spring-wiki-config.xml"/>
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
       <fileset refid="maven2.resource.fileset"/>
       <mapper type="flatten"/>

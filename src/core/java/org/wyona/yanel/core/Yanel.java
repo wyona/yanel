@@ -31,7 +31,7 @@ public class Yanel {
     private ResourceTypeRegistry rtr = null;
     private ApplicationContext applicationContext;
     
-    private static final String SPRING_CONFIG_FILE = "spring-yanel-config.xml"; 
+    private static final String SPRING_CONFIG_FILE = "spring-*-config.xml"; 
 
     private static Yanel yanel = null;
 
