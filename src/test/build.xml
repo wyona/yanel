@@ -22,10 +22,10 @@
   
   <target name="init" depends="dependencies">
     <path id="classpath">
+      <pathelement location="${webapp.classes.dir}"/>
       <pathelement path="${maven2.cp}"/>
       <pathelement location="${junit.build.dir}"/>
       <pathelement location="${htmlunit.build.dir}"/>
-      <pathelement location="${webapp.classes.dir}"/>
       <fileset dir="${webapp.lib.dir}">
         <include name="**.jar"/>
       </fileset>
