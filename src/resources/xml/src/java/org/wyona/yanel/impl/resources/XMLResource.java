@@ -27,6 +27,7 @@ import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
+import org.wyona.yanel.core.transformation.I18nTransformer;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
 import org.wyona.yarep.core.Repository;
@@ -35,12 +36,15 @@ import org.wyona.yarep.util.RepoPath;
 
 import javax.servlet.http.HttpServletRequest;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -57,6 +61,8 @@ import org.apache.log4j.Category;
 public class XMLResource extends Resource implements ViewableV1, ModifiableV1, ModifiableV2, VersionableV2 {
 
     private static Category log = Category.getInstance(XMLResource.class);
+    
+    private String language = "en"; 
 
     /**
      *
@@ -100,7 +106,13 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
                 org.xml.sax.XMLReader xmlReader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
                 xmlReader.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
                 transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML(rp, yanelPath))), new StreamResult(baos));
-                defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+
+                InputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
+                I18nTransformer i18nTransformer = new I18nTransformer("global", language);
+                SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
+                saxParser.parse(inputStream, i18nTransformer);
+
+                defaultView.setInputStream(i18nTransformer.getInputStream());
 
                 return defaultView;
             } else {
@@ -169,6 +181,15 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
      *
      */
     public View getView(HttpServletRequest request, String viewId) {
+        String _language = language;
+        try {
+            _language = request.getParameter("yanel.meta.language");
+        } catch(Exception e) {
+            //use fallback language
+            _language = language;
+        }
+        if(_language != null && !("").equals(_language)) language = _language;
+
         return getView(new Path(request.getServletPath()), viewId);
     }
 
