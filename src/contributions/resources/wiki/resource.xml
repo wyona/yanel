@@ -12,5 +12,10 @@ Wiki (tested with JSPWiki content)
 <rtd>
   <property name="wiki-syntax" default-value="jspWikiParser"/>
   <property name="xslt"/>
+
+<!-- TODO: Mime-Type property is not implemented yet! Is this actually necessary? -->
+<!--
+  <property name="mime-type" default-value="application/xhtml+xml"/>
+-->
 </rtd>
 </resource>
