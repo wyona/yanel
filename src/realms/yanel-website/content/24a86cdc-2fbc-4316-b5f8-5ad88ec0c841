@@ -10,7 +10,7 @@
 <h1>Import an existing website as a new realm</h1>
 <ul>
   <li>sudo apt-get install httrack</li>
-  <li>httrack -w http://foo.bar</li><li>Add introspection link to (X)HTML head</li><li>Make introspection documents available</li><li>...</li>
+  <li>httrack -w http://foo.bar</li><li>Add introspection link to (X)HTML head</li><li>Make introspection documents available</li><li>...</li><li>One might have to change the encoding: iconv -f ISO-8859-1 -t UTF-8 page.html > page.html.UTF-8</li>
 </ul>
 </body>
 </html>
