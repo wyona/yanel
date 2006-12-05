@@ -11,5 +11,6 @@ Wiki (tested with JSPWiki content)
 
 <rtd>
   <property name="wiki-syntax" default-value="jspWikiParser"/>
+  <property name="xslt"/>
 </rtd>
 </resource>
