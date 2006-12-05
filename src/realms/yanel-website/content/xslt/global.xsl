@@ -30,7 +30,6 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 </xsl:comment>
 
 <head>
-  <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-{$name-without-suffix}.xml"/>
 <xsl:comment>Name: <xsl:value-of select="$yanel.path.name"/> (without suffix: <xsl:value-of select="$name-without-suffix"/>), Path: <xsl:value-of select="$yanel.path"/>, Back 2 Realm: <xsl:value-of select="$yarep.back2realm"/>, Back 2 Context: <xsl:value-of select="$yanel.back2context"/></xsl:comment>
 
   <title><xsl:value-of select="/xhtml:html/xhtml:head/xhtml:title"/> - Yanel</title>
@@ -45,6 +44,16 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 
   <link rel="stylesheet" href="{$yarep.back2realm}css/global.css" type="text/css"/>
   <xsl:copy-of select="/xhtml:html/xhtml:head/*[name(.) != 'title']"/>
+
+  <xsl:choose>
+  <xsl:when test="/xhtml:html/xhtml:head/xhtml:link/@rel='neutron-introspection'">
+    <!-- NOTE: Use the one from the copy above in case one exists! -->
+  </xsl:when>
+  <xsl:otherwise>
+    <!-- TODO: Maybe one should better not cut-off the suffix! -->
+    <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-{$name-without-suffix}.xml"/>
+  </xsl:otherwise>
+  </xsl:choose>
 </head>
 
 <body bgcolor="#ffffff">
