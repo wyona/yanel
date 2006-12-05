@@ -362,7 +362,10 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
             repository = rpRTI.getRepo();
             org.wyona.yarep.core.Path newPath = new org.wyona.yarep.core.Path(rpRTI.getPath().getParent() + "/" + createName);
 
-            String content = "<{http://www.wyona.org/yanel/resource/1.0}wiki/>\nmime-type: application/xhtml+xml";
+            // TODO: Do not hardcode xslt ...
+            String content = "<{http://www.wyona.org/yanel/resource/1.0}wiki/>\nxslt: /xslt/global.xsl";
+            // TODO: Make mime-type configurable
+            //String content = "<{http://www.wyona.org/yanel/resource/1.0}wiki/>\nmime-type: application/xhtml+xml\nxslt: /xslt/global.xsl";
 
             log.info("Writing content to repository " + repository.getName() + " with content:\n" + content + "\nto path: " + newPath);
 
