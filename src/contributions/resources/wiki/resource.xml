@@ -8,4 +8,8 @@
 <description>
 Wiki (tested with JSPWiki content)
 </description>
+
+<rtd>
+  <property name="wiki-syntax" default-value="jspWikiParser"/>
+</rtd>
 </resource>
