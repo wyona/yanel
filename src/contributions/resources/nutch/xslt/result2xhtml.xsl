@@ -205,7 +205,10 @@
   
   <xsl:template match="yanel:exception">
     <p>
-       <div style="color: red; font-size: 24px;"><i18n:message key="exception"/></div> <xsl:value-of select="."/>
+       <div style="color: red; font-size: 24px;"><i18n:message key="exception"/></div> 
+       <xsl:variable name="message"><xsl:value-of select="substring-before(string(.), '#')"/></xsl:variable>
+       <xsl:variable name="directory"><xsl:value-of select="substring-after(string(.), '#')"/></xsl:variable>
+       <i18n:message key="{$message}"/><xsl:value-of select="$directory"/>
     </p>
   </xsl:template>
 

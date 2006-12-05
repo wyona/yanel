@@ -49,7 +49,7 @@
     <antcall target="copy-plugins"/>
     <copy file="conf/common-terms.utf8" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes">
-      <fileset dir="conf" includes="messages_*.properties"/>
+      <fileset dir="conf" includes="nutch_*.properties"/>
     </copy>
   </target>
 

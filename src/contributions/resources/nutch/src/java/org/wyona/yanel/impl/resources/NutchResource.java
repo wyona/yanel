@@ -215,8 +215,12 @@ public class NutchResource extends Resource implements ViewableV1 {
         // Generate InputStream from DOM document
         try {
             Transformer transformer = null;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             if (viewId != null && viewId.equals("source")) {
                 transformer = TransformerFactory.newInstance().newTransformer();
+                transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
+                return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+                
             } else {
                 File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "result2xhtml.xsl");
                 transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
@@ -224,29 +228,31 @@ public class NutchResource extends Resource implements ViewableV1 {
                 transformer.setParameter("yanel.path", path.toString());
                 transformer.setParameter("yanel.back2context", backToRoot(path, ""));
                 transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+                
+                
+                transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
+                
+                InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+                I18nTransformer i18nTransformer = new I18nTransformer(messages, language);
+                SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
+                saxParser.parse(inputStream, i18nTransformer);
+                
+                transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
+                transformer.setParameter("yanel.path.name", path.getName());
+                transformer.setParameter("yanel.path", path.toString());
+                transformer.setParameter("yanel.back2context", backToRoot(path, ""));
+                transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+                byteArrayOutputStream = new ByteArrayOutputStream();
+                transformer.transform(new StreamSource(i18nTransformer.getInputStream()), new StreamResult(byteArrayOutputStream));
+     
+                inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+                i18nTransformer = new I18nTransformer("global", language);
+                saxParser = SAXParserFactory.newInstance().newSAXParser();
+                saxParser.parse(inputStream, i18nTransformer);
+                
+                return i18nTransformer.getInputStream();
             }
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
             
-            InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-            I18nTransformer i18nTransformer = new I18nTransformer(messages, language);
-            SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
-            saxParser.parse(inputStream, i18nTransformer);
-            
-            transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
-            transformer.setParameter("yanel.path.name", path.getName());
-            transformer.setParameter("yanel.path", path.toString());
-            transformer.setParameter("yanel.back2context", backToRoot(path, ""));
-            transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
-            byteArrayOutputStream = new ByteArrayOutputStream();
-            transformer.transform(new StreamSource(i18nTransformer.getInputStream()), new StreamResult(byteArrayOutputStream));
- 
-            inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-            i18nTransformer = new I18nTransformer("global", language);
-            saxParser = SAXParserFactory.newInstance().newSAXParser();
-            saxParser.parse(inputStream, i18nTransformer);
-            
-            return i18nTransformer.getInputStream();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
