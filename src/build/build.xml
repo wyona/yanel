@@ -351,7 +351,7 @@
       <fileset dir="${yanel.home.dir}/src/webapp"/>
     </copy>
 
-    <!-- TODO: Copy onle core, impl, webapp, but NOT cmdl, etc. -->
+    <!-- TODO: Copy only core, impl, webapp, but NOT cmdl, etc. -->
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
       <fileset dir="${yanel.home.dir}/build/lib"/>
     </copy>
@@ -417,9 +417,6 @@
       <replacetoken>yanel-website,../src/realms/yanel-website/config/</replacetoken>
     </replace>
 
-    <!-- NOTE: No exception shall be thrown even if one does not build the javadocs -->
-    <mkdir dir="${build.dir}/javadoc"/>
-
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.file.forward.slashes}">
       <replacetoken>@LOG4J_FILE@</replacetoken>
     </replace>
@@ -430,6 +427,14 @@
       <fileset refid="maven2.fileset"/>
       <mapper type="flatten"/>
     </copy>
+
+    <!-- TODO: So far only the javadoc of the core is being built -->
+    <condition property="javadoc-does-not-exist-yet">
+      <not>
+        <available file="${build.dir}/javadoc" type="dir"/>
+      </not>
+    </condition>
+    <antcall target="generate-javadoc"/>
 
     <ant antfile="${yanel.home.dir}/build/resources.xml" target="copy-resources-dependencies"/>
   </target>
@@ -725,6 +730,7 @@
   </target>
 
   <target name="javadoc" description="Generate Javadoc" depends="init">
+    <mkdir dir="${build.dir}/javadoc"/>
     <javadoc
       packagenames="org.*"
       sourcepath="${yanel.home.dir}/src/core/java"
@@ -732,6 +738,10 @@
       classpathref="classpath.run"
     >
     </javadoc>
+  </target>
+
+  <target name="generate-javadoc" description="Generate Javadoc" if="javadoc-does-not-exist-yet">
+    <antcall target="javadoc"/>
   </target>
 
   <target name="run-yanel-cmdl" description="Run command line tool" depends="init-runtime">
