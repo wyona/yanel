@@ -108,11 +108,14 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
                 transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML(rp, yanelPath))), new StreamResult(baos));
 
                 InputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
+/*
                 I18nTransformer i18nTransformer = new I18nTransformer("global", language);
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 saxParser.parse(inputStream, i18nTransformer);
 
                 defaultView.setInputStream(i18nTransformer.getInputStream());
+*/
+                defaultView.setInputStream(inputStream);
 
                 return defaultView;
             } else {
