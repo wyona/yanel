@@ -213,6 +213,8 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
                 }
             }
             log.info("No XSLT Path within: " + rpRTI.getPath());
+            log.info("will use global even if not in RTI file: ");
+            return new Path("/xslt/global.xsl");
         } catch (Exception e) {
             log.warn(e);
         }
