@@ -114,24 +114,26 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
             saxParser.parse(wikiParser.getInputStream(), linkChecker);
             
             java.io.ByteArrayOutputStream byteArrayOutputStream = new java.io.ByteArrayOutputStream();
+            
             transformer.transform(new StreamSource(linkChecker.getInputStream()), new StreamResult(byteArrayOutputStream));
             
-            inputStream = new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-            
-            transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
-            transformer.setParameter("yanel.back2context", backToRoot(path, ""));
-            transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
-            
-            byteArrayOutputStream = new ByteArrayOutputStream();
-            transformer.transform(new StreamSource(inputStream), new StreamResult(byteArrayOutputStream));
- 
+            if(getXSLTPath(path) != null) {
+                inputStream = new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+                
+                transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
+                transformer.setParameter("yanel.back2context", backToRoot(path, ""));
+                transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+                
+                byteArrayOutputStream = new ByteArrayOutputStream();
+                transformer.transform(new StreamSource(inputStream), new StreamResult(byteArrayOutputStream));    
+            }
+
             inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
             I18nTransformer i18nTransformer = new I18nTransformer("global", language);
             saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(inputStream, i18nTransformer);
 
             defaultView.setInputStream(i18nTransformer.getInputStream());
-            
             return defaultView;
         } catch (Exception e) {
             log.error(e, e);
@@ -208,13 +210,11 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
             while ((xsltPath = br.readLine()) != null) {
                 if (xsltPath.indexOf("xslt:") == 0) {
                     xsltPath = xsltPath.substring(6);
-                    log.debug("XSLT Path: " + xsltPath);
+                    log.info("XSLT Path: " + xsltPath);
                     return new Path(xsltPath);
                 }
             }
             log.info("No XSLT Path within: " + rpRTI.getPath());
-            log.info("will use global even if not in RTI file: ");
-            return new Path("/xslt/global.xsl");
         } catch (Exception e) {
             log.warn(e);
         }
