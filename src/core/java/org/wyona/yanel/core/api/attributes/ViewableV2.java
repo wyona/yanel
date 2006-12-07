@@ -16,12 +16,8 @@
 
 package org.wyona.yanel.core.api.attributes;
 
-import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import java.io.OutputStream;
 
@@ -35,18 +31,15 @@ public interface ViewableV2 {
      */
     public ViewDescriptor[] getViewDescriptors();
 
+    public View getView(String viewId) throws Exception;
+    
     /**
      * NOTE: A resource does not necessarily have a path
      */
-    public View getView(Path path, OutputStream out, String viewId) throws Exception;
+    //public View getView(Path path, OutputStream out, String viewId) throws Exception;
 
-    /**
-     *
-     */
-    public void getView(HttpServletRequest request, HttpServletResponse response, String viewId) throws Exception;
-    
     /**
      * 
      */
-    public boolean exists(Path path);
+    public boolean exists() throws Exception;
 }

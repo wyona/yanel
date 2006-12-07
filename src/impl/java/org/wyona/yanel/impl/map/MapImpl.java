@@ -38,23 +38,20 @@ public class MapImpl implements Map {
     private static Category log = Category.getInstance(MapImpl.class);
 
     RealmConfiguration realmConfig;
+    
 
     /**
      *
      */
     public MapImpl() {
-        try {
-            // NOTE: Separate ResourceTypeIdentifier mapping from whatever else is using yarep ...
-
-            realmConfig = new RealmConfiguration();
-        } catch(Exception e) {
-            log.error(e.getMessage(), e);
-        }
+    }
+    
+    public void setRealmConfiguration(RealmConfiguration realmConfig) {
+        this.realmConfig = realmConfig;
     }
     
     protected RepositoryFactory getRepositoryFactory() throws Exception {
         return Yanel.getInstance().getRepositoryFactory("RTIRepositoryFactory");
-        //repoFactory = new RepositoryFactory();
     }
 
     /**
@@ -66,6 +63,7 @@ public class MapImpl implements Map {
 
     /**
      * See James Clark's explanation on namespaces: http://www.jclark.com/xml/xmlns.htm
+     * @deprecated
      */
     public String getResourceTypeIdentifier(Path path) {
         log.debug("Original path: " + path);
@@ -89,7 +87,7 @@ public class MapImpl implements Map {
     }
 
     /**
-     *
+     * @deprecated
      */
     public Realm[] getRealms() {
         try {
@@ -119,7 +117,7 @@ public class MapImpl implements Map {
     }
 
     /**
-     *
+     * @deprecated
      */
     public Realm getRealm(Path path) {
         try {
@@ -143,4 +141,49 @@ public class MapImpl implements Map {
             return null;
         }
     }
+    
+    /* (non-Javadoc)
+     * @see org.wyona.yanel.core.map.Map#getRealm(java.lang.String)
+     */
+    public Realm getRealm(String url) throws Exception {
+        log.debug("getRealm(): URL: " + url);
+        Realm[] realms = realmConfig.getRealms();
+        
+        for (int i=0; i<realms.length; i++) {
+            log.debug("checking realm : " + realms[i].getID() + " with mountpoint: " + realms[i].getMountPoint().toString());
+            if (url.startsWith(realms[i].getMountPoint().toString())) {
+                log.debug("matched!");
+                return realms[i];
+            }
+        }
+        log.debug("nothing matched! - > root realm");
+        return realmConfig.getRootRealm();
+    }
+
+    /**
+     * Maps the given url to a path. This default implementation does a one-to-one mapping,
+     * but removes the realm prefix (mount-point).
+     * E.g. if the url is /yanel-website/foo/bar.html, it will return /foo/bar.html.
+     */
+    public Path getPath(Realm realm, String url) throws Exception {
+        log.debug("getPath(): URL: " + url);
+        /*Realm[] realms = realmConfig.getRealms();
+        
+        for (int i=0; i<realms.length; i++) {
+            String mountPoint = realms[i].getMountPoint().toString();
+            log.debug("checking realm : " + realms[i].getID() + " with mountpoint: " + mountPoint);
+            if (url.startsWith(mountPoint)) {
+                log.debug("matched!");
+                return new Path("/" + url.substring(mountPoint.length()));
+            }
+        }
+        log.debug("nothing matched! - > return url as path");*/
+        String mountPoint = realm.getMountPoint().toString();
+        if (!url.startsWith(mountPoint)) {
+            throw new Exception("Cannot map url [" + url + "] to path because the url does not " + 
+                    "belong to the given realm : " + realm.getID() + ": " + mountPoint);
+        }
+        return new Path("/" + url.substring(mountPoint.length()));
+    }
+
 }

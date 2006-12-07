@@ -17,6 +17,8 @@
 package org.wyona.yanel.core;
 
 import org.wyona.yanel.core.map.Map;
+import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.core.map.RealmConfiguration;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -30,6 +32,8 @@ public class Yanel {
     private Map map = null;
     private ResourceTypeRegistry rtr = null;
     private ApplicationContext applicationContext;
+    private RealmConfiguration realmConfig;
+    private ResourceManager resourceManager;
     
     private static final String SPRING_CONFIG_FILE = "spring-*-config.xml"; 
 
@@ -40,8 +44,16 @@ public class Yanel {
     */
    private Yanel() throws Exception {
        applicationContext = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
+   } 
+   
+   public void init() throws Exception {
        map = (Map) applicationContext.getBean("map");
+       realmConfig = new RealmConfiguration();
+       map.setRealmConfiguration(realmConfig);
+
        rtr = new ResourceTypeRegistry();
+       resourceManager = new ResourceManager();
+       resourceManager.setResourceTypeRegistry(rtr);
     }
    
     public static Yanel getInstance() throws Exception {
@@ -62,22 +74,25 @@ public class Yanel {
     /**
      *
      */
-    public Resource getResource(Path path) throws Exception {
-        String rti = map.getResourceTypeIdentifier(path);
-        Resource resource = rtr.newResource(rti);
-
-        ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
-        resource.setRTD(rtd);
-
-        resource.setYanel(this);
-
-        return resource;
-    }
-
-    /**
-     *
-     */
     public Map getMap() throws Exception {
         return map;
     }
+    
+    public ResourceTypeRegistry getResourceTypeRegistry() {
+        return rtr;
+    }
+    
+    public ResourceManager getResourceManager() {
+        return resourceManager;
+    }
+    
+    /**
+     * @deprecated
+     * use getResourceManager().getResource() instead 
+     */
+    public Resource getResource(Realm realm, Path path) throws Exception {
+        return resourceManager.getResource(null, null, realm, path);
+    }
+
+
 }

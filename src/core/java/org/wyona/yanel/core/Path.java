@@ -21,7 +21,7 @@ import org.apache.log4j.Category;
 /**
  *
  */
-public class Path extends org.wyona.commons.io.Path {
+public class Path extends org.wyona.yarep.core.Path {
 
     private static Category log = Category.getInstance(Path.class);
 

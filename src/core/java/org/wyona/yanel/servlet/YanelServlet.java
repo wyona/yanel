@@ -1,7 +1,9 @@
 package org.wyona.yanel.servlet;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpSession;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
+import org.wyona.yanel.core.ResourceTypeIdentifier;
 import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
@@ -30,6 +33,8 @@ import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 
 import org.wyona.yanel.servlet.CreateUsecaseHelper;
+import org.wyona.yanel.servlet.communication.HttpRequest;
+import org.wyona.yanel.servlet.communication.HttpResponse;
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
 import org.wyona.security.core.api.Identity;
@@ -79,8 +84,9 @@ public class YanelServlet extends HttpServlet {
         
         try {
             yanel = Yanel.getInstance();
+            yanel.init();
             
-            rtr = new ResourceTypeRegistry();
+            rtr = yanel.getResourceTypeRegistry();
 
             pm = (PolicyManager) yanel.getBeanFactory().getBean("policyManager");
 
@@ -175,6 +181,11 @@ public class YanelServlet extends HttpServlet {
         String servletContextRealPath = config.getServletContext().getRealPath("/");
         rootElement.setAttribute("servlet-context-real-path", servletContextRealPath);
 
+        
+        //log.deubg("servletContextRealPath: " + servletContextRealPath);
+        //log.debug("contextPath: " + request.getContextPath());
+        //log.debug("servletPath: " + request.getServletPath());
+        
         Element requestElement = (Element) rootElement.appendChild(doc.createElement("request"));
         requestElement.setAttribute("uri", request.getRequestURI());
         requestElement.setAttribute("servlet-path", request.getServletPath());
@@ -194,13 +205,32 @@ public class YanelServlet extends HttpServlet {
             sessionAttributeElement.appendChild(doc.createTextNode(value));
         }
 
-        String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
+        Realm realm;
+        Path path;
+        ResourceTypeIdentifier rti;
+        
+        try {
+            realm = map.getRealm(request.getServletPath());
+            path = map.getPath(realm, request.getServletPath());
+            rti = yanel.getResourceManager().getResourceTypeIdentifier(realm, path);
+        } catch (Exception e) {
+            String message = "URL could not be mapped to realm/path " + e.getMessage();
+            log.error(message, e);
+            Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+            exceptionElement.appendChild(doc.createTextNode(message));
+
+            setYanelOutput(response, doc);
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
+        
+        //String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
         Resource res = null;
         long lastModified = -1;
         if (rti != null) {
-            ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
+            ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti.getUniversalName());
             if (rtd == null) {
-                String message = "No such resource type registered: " + rti + ", check " + rtr.getConfigurationFile();
+                String message = "No such resource type registered: " + rti.getUniversalName() + ", check " + rtr.getConfigurationFile();
                 log.error(message);
                 Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
                 exceptionElement.appendChild(doc.createTextNode(message));
@@ -215,11 +245,10 @@ public class YanelServlet extends HttpServlet {
             rtiElement.setAttribute("local-name",  rtd.getResourceTypeLocalName());
 
             try {
-                res = rtr.newResource(rti);
+                HttpRequest httpRequest = new HttpRequest(request);
+                HttpResponse httpResponse = new HttpResponse(response);
+                res = yanel.getResourceManager().getResource(httpRequest, httpResponse, realm, path, rtd, rti);
                 if (res != null) {
-                    // TODO: This has been already set by ResourceTypeRegistry
-                    res.setRTD(rtd);
-                    res.setYanel(yanel);
 
                     Element resourceElement = (Element) rootElement.appendChild(doc.createElement("resource"));
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
@@ -253,14 +282,13 @@ public class YanelServlet extends HttpServlet {
                     } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
                         log.error("DEBUG: Resource is viewable V2");
                         String viewId = request.getParameter("yanel.resource.viewid");
-                        ((ViewableV2) res).getView(request, response, viewId);
-                        return;
+                        view = ((ViewableV2) res).getView(viewId);
                     } else {
                          Element noViewElement = (Element) resourceElement.appendChild(doc.createElement("no-view"));
                          noViewElement.appendChild(doc.createTextNode(res.getClass().getName() + " is not viewable!"));
                     }
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
-                        lastModified = ((ModifiableV2) res).getLastModified(new Path(request.getServletPath()));
+                        lastModified = ((ModifiableV2) res).getLastModified();
                         Element lastModifiedElement = (Element) resourceElement.appendChild(doc.createElement("last-modified"));
                         lastModifiedElement.appendChild(doc.createTextNode(new java.util.Date(lastModified).toString()));
                     } else {
@@ -269,7 +297,7 @@ public class YanelServlet extends HttpServlet {
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
                         // retrieve the revisions, but only in the meta usecase (for performance reasons):
                         if (request.getParameter("yanel.resource.meta") != null) {
-                            String[] revisions = ((VersionableV2)res).getRevisions(new Path(request.getServletPath()));
+                            String[] revisions = ((VersionableV2)res).getRevisions();
                             Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement("revisions"));
                             if (revisions != null) {
                                 for (int i=0; i<revisions.length; i++) {
@@ -321,8 +349,19 @@ public class YanelServlet extends HttpServlet {
 
 
         if (view != null) {
+            // check if the view contatins the response (otherwise assume that the resource 
+            // wrote the response, and just return).
+            if (!view.isResponse()) return;
+            
             response.setContentType(patchContentType(view.getMimeType(), request));
             InputStream is = view.getInputStream();
+            
+            
+            //BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            //String line;
+            //System.out.println("getContentXML: "+path);
+            //while ((line = reader.readLine()) != null) System.out.println(line);
+
 
             byte buffer[] = new byte[8192];
             int bytesRead;
@@ -399,17 +438,13 @@ public class YanelServlet extends HttpServlet {
                     log.error("DEBUG: Atom Feed: " + request.getServletPath() + " " + request.getRequestURI());
                     Path entryPath = new Path(request.getServletPath() + "/" + new java.util.Date().getTime() + ".xml");
 
-                    Path p = ((ModifiableV2)atomEntry).write(entryPath, in);
-                    if (p != null) {
-                        log.error("DEBUG: Atom entry has been created: " + p);
-                    } else {
-                        log.error("Atom entry has NOT been created!");
-                        // TODO: Return HTTP ...
-                    }
+                    atomEntry.setPath(entryPath);
+                    
+                    ((ModifiableV2)atomEntry).write(in);
 
                     byte buffer[] = new byte[8192];
                     int bytesRead;
-                    InputStream resourceIn = ((ModifiableV2)atomEntry).getInputStream(entryPath);
+                    InputStream resourceIn = ((ModifiableV2)atomEntry).getInputStream();
                     OutputStream responseOut = response.getOutputStream();
                     while ((bytesRead = resourceIn.read(buffer)) != -1) {
                         responseOut.write(buffer, 0, bytesRead);
@@ -459,8 +494,11 @@ public class YanelServlet extends HttpServlet {
                     atomEntry.setYanel(yanel);
                     log.error("DEBUG: Atom Entry: " + request.getServletPath() + " " + request.getRequestURI());
                     Path entryPath = new Path(request.getServletPath());
+                    
+                    atomEntry.setPath(entryPath);
+                    
                     // TODO: There seems to be a problem ...
-                    Path p = ((ModifiableV2)atomEntry).write(entryPath, in);
+                    ((ModifiableV2)atomEntry).write(in);
 
                     // NOTE: This method does not update updated date
 /*
@@ -495,45 +533,44 @@ public class YanelServlet extends HttpServlet {
      * HTTP DELETE implementation
      */
     public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Resource res = getResource(request);
-        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
-            if (((ModifiableV2) res).delete(new Path(request.getServletPath()))) {
-                log.debug("Resource has been deleted: " + res);
-                response.setStatus(response.SC_OK);
-                return;
+        try {
+            Resource res = getResource(request, response);
+            res.setPath(new Path(request.getServletPath()));
+            if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
+                if (((ModifiableV2) res).delete()) {
+                    log.debug("Resource has been deleted: " + res);
+                    response.setStatus(response.SC_OK);
+                    return;
+                } else {
+                    log.warn("Resource could not be deleted: " + res);
+                    response.setStatus(response.SC_FORBIDDEN);
+                    return;
+                }
             } else {
-                log.warn("Resource could not be deleted: " + res);
-                response.setStatus(response.SC_FORBIDDEN);
+                log.error("Resource '" + res + "' has interface ModifiableV2 not implemented." );
+                response.sendError(response.SC_NOT_IMPLEMENTED);
                 return;
             }
-        } else {
-            log.error("Resource '" + res + "' has interface ModifiableV2 not implemented." );
-            response.sendError(response.SC_NOT_IMPLEMENTED);
-            return;
+        } catch (Exception e) {
+            log.error("Could not delete resource with URL " + request.getRequestURL() + " " + e.getMessage(), e);
+            throw new ServletException(e.getMessage(), e);
         }
     }
 
     /**
      *
      */
-    private Resource getResource(HttpServletRequest request) {
-        String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
-        if (rti != null) {
-            ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
-
-            try {
-                Resource res = rtr.newResource(rti);
-                // TODO: This has been already set by ResourceTypeRegistry
-                res.setRTD(rtd);
-                res.setYanel(yanel);
-
-                return res;
-            } catch(Exception e) {
-                log.error(e.getMessage(), e);
-                return null;
-            }
-        } else {
-            log.error("<no-resource-type-identifier-found servlet-path=\""+request.getServletPath()+"\"/>");
+    private Resource getResource(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            Realm realm = map.getRealm(request.getServletPath());
+            Path path = map.getPath(realm, request.getServletPath());
+            HttpRequest httpRequest = new HttpRequest(request);
+            HttpResponse httpResponse = new HttpResponse(response);
+            Resource res = yanel.getResourceManager().getResource(httpRequest, httpResponse, realm, path);
+            
+            return res;
+        } catch(Exception e) {
+            log.error(e.getMessage(), e);
             return null;
         }
     }
@@ -624,11 +661,16 @@ public class YanelServlet extends HttpServlet {
 */
 
         OutputStream out = null;
-        Resource res = getResource(request);
+        Resource res = getResource(request, response);
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
             out = ((ModifiableV1) res).getOutputStream(new Path(request.getServletPath()));
         } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
-            out = ((ModifiableV2) res).getOutputStream(new Path(request.getServletPath()));
+            try {
+                out = ((ModifiableV2) res).getOutputStream();
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                throw new ServletException(e.getMessage(), e);
+            }
         } else {
             String message = res.getClass().getName() + " is not modifiable (neither V1 nor V2)!";
             log.warn(message);

@@ -24,6 +24,10 @@ import java.io.Reader;
 import java.io.Writer;
 
 import org.wyona.yanel.core.Path;
+import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.api.attributes.ModifiableV2;
+import org.wyona.yanel.core.map.Map;
+import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.junit.AbstractYanelTest;
 
 /**
@@ -33,22 +37,30 @@ public class XMLResourceTest extends AbstractYanelTest {
 
     protected XMLResource resource;
 
-    protected Path path;
-
     public void setUp() throws Exception {
         super.setUp();
         this.testName = "Test for the XML Resource";
-        this.resource = new XMLResource();
-        this.path = new Path("/yanel-website/test-xml-resource.html");
-        this.resource.setYanel(this.yanel);
-
+        
+        Realm realm = yanel.getMap().getRealm("/yanel-website/");
+        Path path = new Path("/test-xml-resource.html");
+        resource = new XMLResource();
+        resource.setPath(path);
+        resource.setRealm(realm);
+        
+        /*
+        String url = "/yanel-website/test-xml-resource.html";
+        Map map = yanel.getMap();
+        Realm realm = yanel.getMap().getRealm(url);
+        Path path = yanel.getMap().getPath(realm, url);
+        this.resource = yanel.getResourceManager().getResource(null, null, realm, path);
+        */
     }
 
     public void testWriteRead() throws Exception {
 
         // Write resource
-        OutputStream os = this.resource.getOutputStream(path);
-        assertNotNull("getOutputStream() should not return null for path: " + path, os);
+        OutputStream os = ((ModifiableV2)this.resource).getOutputStream();
+        assertNotNull("getOutputStream() should not return null for path: " + this.resource.getPath(), os);
         Writer writer = new OutputStreamWriter(os, "UTF-8");
         String testContent = "Hello World! " + System.currentTimeMillis();
 
@@ -56,8 +68,8 @@ public class XMLResourceTest extends AbstractYanelTest {
         writer.close();
 
         // Read resource
-        InputStream is = this.resource.getInputStream(path);
-        assertNotNull("getInputStream() should not return null for path: " + path, is);
+        InputStream is = ((ModifiableV2)this.resource).getInputStream();
+        assertNotNull("getInputStream() should not return null for path: " + this.resource.getPath(), is);
         Reader reader = new InputStreamReader(is, "UTF-8");
         BufferedReader br = new BufferedReader(reader);
         String line = br.readLine();

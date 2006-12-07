@@ -17,6 +17,7 @@
 package org.wyona.yanel.core.map;
 
 import org.wyona.commons.io.Path;
+import org.wyona.yarep.core.Repository;
 
 /**
  *
@@ -26,6 +27,8 @@ public class Realm {
     private String name;
     private String id;
     private Path mountPoint;
+    private Repository repository;
+    private Repository rtiRepository;
 
     private String proxyHostName;
     private String proxyPort;
@@ -107,4 +110,22 @@ public class Realm {
         }
         return descr;
     }
+    
+    public Repository getRepository() throws Exception {
+        return repository;
+    }
+    
+    public void setRepository(Repository repository) throws Exception {
+        this.repository = repository;
+    }
+
+    public Repository getRTIRepository() throws Exception {
+        return rtiRepository;
+    }
+    
+    public void setRTIRepository(Repository repository) throws Exception {
+        this.rtiRepository = repository;
+    }
+
+
 }

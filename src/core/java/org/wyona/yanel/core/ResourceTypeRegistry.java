@@ -26,6 +26,8 @@ import java.util.Properties;
 import org.apache.log4j.Category;
 
 import org.wyona.commons.io.FileUtil;
+import org.wyona.yanel.core.map.Map;
+import org.wyona.yanel.core.map.Realm;
 
 /**
  *
@@ -110,7 +112,7 @@ public class ResourceTypeRegistry {
     }
 
     /**
-     *
+     * @deprecated
      */
     public Resource newResource(String universalName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 	ResourceTypeDefinition rtd = (ResourceTypeDefinition) hm.get(universalName);
@@ -127,6 +129,7 @@ public class ResourceTypeRegistry {
             return null;
         }
     }
+
 
     /**
      *

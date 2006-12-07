@@ -25,6 +25,7 @@ public class View {
 
     private String mt;
     private InputStream is;
+    private boolean isResponse = true;
 
     /**
      *
@@ -52,5 +53,23 @@ public class View {
      */
     public InputStream getInputStream() {
         return is;
+    }
+
+    /**
+     * Checks if this view will be used by Yanel to write the response.
+     * The default is true, and may be turned off for resources which want to 
+     * write the response themselves.
+     */
+    public boolean isResponse() {
+        return isResponse;
+    }
+
+    /**
+     * Choose whether this view will be used by Yanel to write the response.
+     * The default is true, and may be turned off for resources which want to 
+     * write the response themselves.
+     */
+    public void setResponse(boolean isResponse) {
+        this.isResponse = isResponse;
     }
 }

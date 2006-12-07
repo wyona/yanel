@@ -29,7 +29,7 @@ import org.wyona.yanel.core.attributes.viewable.View;
  */
 public interface VersionableV2 {
 
-    public String[] getRevisions(Path path);
+    public String[] getRevisions() throws Exception;
     
     /*
      * Methods which could be added to this interface:

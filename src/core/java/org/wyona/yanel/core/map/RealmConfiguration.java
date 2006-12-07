@@ -21,6 +21,7 @@ import java.lang.ClassNotFoundException;
 import java.lang.IllegalAccessException;
 import java.lang.InstantiationException;
 import java.net.URL;
+import java.util.LinkedHashMap;
 import java.util.Properties;
 
 import org.apache.log4j.Category;
@@ -29,6 +30,8 @@ import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
 import org.wyona.commons.io.FileUtil;
+import org.wyona.yanel.core.Yanel;
+import org.wyona.yarep.core.RepositoryFactory;
 
 /**
  *
@@ -44,7 +47,7 @@ public class RealmConfiguration {
 
     private File realmsConfigFile; 
 
-    private java.util.HashMap hm = new java.util.HashMap();
+    private LinkedHashMap hm = new LinkedHashMap();
     private Realm rootRealm = null;
 
     /**
@@ -77,6 +80,7 @@ public class RealmConfiguration {
             }
             log.debug("Realms Configuration: " + realmsConfigFile);
             readRealms();
+            assignRepositories();
         } catch (Exception e) {
             log.error(e);
         }
@@ -136,6 +140,14 @@ public class RealmConfiguration {
     }
 
     /**
+     * Get all realms in the order they given in the (local.)yanel.properties file.
+     */
+    public Realm[] getRealms() {
+        Realm[] realms = new Realm[hm.size()];
+        return realms = (Realm[])hm.values().toArray(realms);
+    }
+
+    /**
      *
      */
     public Realm getRootRealm() {
@@ -155,5 +167,25 @@ public class RealmConfiguration {
                 log.debug("Inherit root realm properties to realm: " + key);
             }
         }
+    }
+    
+    /**
+     * Assigns the repositories to the realms.
+     * Each realm has a default data repository and a rti repository.
+     * The id of the realm matches the id of the repository.
+     */
+    private void assignRepositories() throws Exception {
+        RepositoryFactory defaultRepoFactory = Yanel.getInstance().getRepositoryFactory("DefaultRepositoryFactory");
+        RepositoryFactory rtiRepoFactory = Yanel.getInstance().getRepositoryFactory("RTIRepositoryFactory");
+        
+        java.util.Iterator keyIterator = hm.keySet().iterator();
+        while(keyIterator.hasNext()) {
+            String key = (String)keyIterator.next();
+            Realm realm = (Realm)hm.get(key);
+            
+            realm.setRepository(defaultRepoFactory.newRepository(realm.getID()));
+            realm.setRTIRepository(rtiRepoFactory.newRepository(realm.getID()));
+        }
+        
     }
 }

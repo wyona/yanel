@@ -20,10 +20,10 @@ import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.Topic;
 import org.wyona.yanel.core.Yanel;
-import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
+import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
@@ -35,6 +35,7 @@ import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -44,6 +45,7 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -58,11 +60,9 @@ import org.apache.log4j.Category;
 /**
  *
  */
-public class XMLResource extends Resource implements ViewableV1, ModifiableV1, ModifiableV2, VersionableV2 {
+public class XMLResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2 {
 
     private static Category log = Category.getInstance(XMLResource.class);
-    
-    private String language = "en"; 
 
     /**
      *
@@ -80,33 +80,34 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
     /**
      *
      */
-    public View getView(Path path, String viewId) {
+    public View getView(String viewId) {
         View defaultView = new View();
         String mimeType = getMimeType(path, viewId);
         defaultView.setMimeType(mimeType);
 
-        String yanelPath = getProperty(path, "yanel-path");
+        String yanelPath = getRTI().getProperty("yanel-path");
+        //if (yanelPath == null) yanelPath = path.toString();
 
         Path xsltPath = getXSLTPath(path);
 
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
+            Repository repo = getRealm().getRepository();
 
-	    if (xsltPath != null) {
+            if (xsltPath != null) {
                 TransformerFactory tf = TransformerFactory.newInstance();
                 //tf.setURIResolver(null);
-                Transformer transformer = tf.newTransformer(new StreamSource(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(xsltPath.toString()))));
+                Transformer transformer = tf.newTransformer(new StreamSource(repo.getInputStream(xsltPath)));
                 transformer.setParameter("yanel.path.name", path.getName());
                 transformer.setParameter("yanel.path", path.toString());
                 transformer.setParameter("yanel.back2context", backToRoot(path, ""));
-                transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+                transformer.setParameter("yarep.back2realm", backToRoot(path, ""));
                 // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
 
                 org.xml.sax.XMLReader xmlReader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
                 xmlReader.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
-                transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML(rp, yanelPath))), new StreamResult(baos));
-
+                transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML(repo, yanelPath))), new StreamResult(baos));
+                
                 InputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
 /*
                 I18nTransformer i18nTransformer = new I18nTransformer("global", language);
@@ -120,7 +121,7 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
                 return defaultView;
             } else {
                 log.debug("Mime-Type: " + mimeType);
-                defaultView.setInputStream(getContentXML(rp, yanelPath));
+                defaultView.setInputStream(getContentXML(repo, yanelPath));
             }
         } catch(Exception e) {
             log.error(e);
@@ -129,18 +130,40 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
         return defaultView;
     }
 
+   /**
+    *
+    */
+   public View getView(HttpServletRequest request, HttpServletResponse response, String viewid) {
+       return getView(viewid);
+   
+   }
+
+    private String getLanguage() {
+        String language = "en";
+        try {
+            language = getRequest().getParameter("yanel.meta.language");
+        } catch(Exception e) {
+            //use fallback language
+            language = "en";
+        }
+        if(language != null && language.length() > 0) return language;
+        return "en";
+    }
+
+
     /**
      *
      */
-    private InputStream getContentXML(RepoPath rp, String yanelPath) throws Exception {
+    private InputStream getContentXML(Repository repo, String yanelPath) throws Exception {
         if (yanelPath != null) {
             log.debug("Yanel Path: " + yanelPath);
-            Yanel yanel = getYanel();
-            Path path = new Path("/" + rp.getRepo().getID() + yanelPath);
-            Resource res = yanel.getResource(path);
+            Resource res = yanel.getResourceManager().getResource(getRequest(), getResponse(), 
+                    getRealm(), new Path(yanelPath));
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                 // TODO: Pass the request ...
-                View view = ((ViewableV1) res).getView(path, null);
+                String viewV1path = getRealm().getMountPoint() + yanelPath.substring(1);
+                log.debug("including document: " + viewV1path);
+                View view = ((ViewableV1) res).getView(new Path(viewV1path), null);
                 if (view.getMimeType().indexOf("xml") >= 0) {
                     // TODO: Shall the mime-type be transfered?
                     return view.getInputStream();
@@ -151,14 +174,15 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
                 log.warn("Resource is not ViewableV1: " + path);
             }
         }
-        return rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+        
+        return repo.getInputStream(path);
     }
 
     /**
      * Get mime type
      */
     private String getMimeType(Path path, String viewId) {
-        String mimeType = getProperty(path, "mime-type");
+        String mimeType = getRTI().getProperty("mime-type");
         if (mimeType != null) return mimeType;
 
         String suffix = path.getSuffix();
@@ -183,40 +207,21 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
     /**
      *
      */
-    public View getView(HttpServletRequest request, String viewId) {
-        String _language = language;
-        try {
-            _language = request.getParameter("yanel.meta.language");
-        } catch(Exception e) {
-            //use fallback language
-            _language = language;
-        }
-        if(_language != null && !("").equals(_language)) language = _language;
-
-        return getView(new Path(request.getServletPath()), viewId);
+    public Reader getReader() throws Exception {
+        return getRealm().getRepository().getReader(path);
     }
 
     /**
      *
      */
-    public Reader getReader(Path path) throws Exception {
-        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-        return rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+    public InputStream getInputStream() throws Exception {
+        return getRealm().getRepository().getInputStream(path);
     }
 
     /**
      *
      */
-    public InputStream getInputStream(Path path) throws Exception {
-        // TODO: Reuse stuff from getReader ...
-        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-        return rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
-    }
-
-    /**
-     *
-     */
-    public Reader getReader(Topic topic) throws Exception {
+    public Writer getWriter() throws Exception {
         log.error("Not implemented yet!");
         return null;
     }
@@ -224,60 +229,29 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
     /**
      *
      */
-    public Writer getWriter(Path path) {
-        log.error("Not implemented yet!");
-        return null;
+    public OutputStream getOutputStream() throws Exception {
+        return getRealm().getRepository().getOutputStream(path);
     }
 
     /**
      *
      */
-    public Writer getWriter(Topic topic) {
-        log.error("Not implemented yet!");
-        return null;
-    }
-
-    /**
-     *
-     */
-    public OutputStream getOutputStream(Path path) {
-        try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-            return rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
-        } catch(Exception e) {
-            log.error(e);
-        }
-        return null;
-    }
-
-    /**
-     *
-     */
-    public Path write(Path path, InputStream in) {
-        OutputStream out = getOutputStream(path);
+    public void write(InputStream in) throws Exception {
         log.warn("Not implemented yet!");
-        return path;
     }
 
     /**
      *
      */
-    public long getLastModified(Path path) {
-        try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-            return rp.getRepo().getLastModified(new org.wyona.yarep.core.Path(rp.getPath().toString()));
-        } catch(Exception e) {
-            log.error(e);
-        }
-        // TODO: Does that actually make sense?!
-        return -1;
+    public long getLastModified() throws Exception {
+        return getRealm().getRepository().getLastModified(path);
     }
 
     /**
      * Get XSLT path
      */
     private Path getXSLTPath(Path path) {
-        String xsltPath = getProperty(path, "xslt");
+        String xsltPath = getRTI().getProperty("xslt");
         if (xsltPath != null) return new Path(xsltPath);
         log.info("No XSLT Path within: " + path);
         return null;
@@ -305,51 +279,17 @@ public class XMLResource extends Resource implements ViewableV1, ModifiableV1, M
     /**
      *
      */
-    public boolean delete(Path path) {
-        try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-            return rp.getRepo().delete(new org.wyona.yarep.core.Path(rp.getPath().toString()));
-        } catch(Exception e) {
-            log.error(e);
-            return false;
-        }
+    public boolean delete() throws Exception {
+        return getRealm().getRepository().delete(path);
     }
 
-    /**
-     *
-     */
-    private String getProperty(Path path, String name) {
-        String property = null;
-        try {
-            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
-
-            while ((property = br.readLine()) != null) {
-                if (property.indexOf(name + ":") == 0) {
-                    property = property.substring(name.length() + 2);
-                    log.info("*" + property + "*");
-                    return property;
-                }
-            }
-        } catch(Exception e) {
-            log.warn(e);
-        }
-
-        return property;
-    }
-    
-    public String[] getRevisions(Path path) {
-        try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-            return rp.getRepo().getRevisions(new org.wyona.yarep.core.Path(rp.getPath().toString()));
-        } catch(Exception e) {
-            log.error(e);
-            return null;
-        }
+    public String[] getRevisions() throws Exception {
+        return getRealm().getRepository().getRevisions(path);
     }
 
-    protected RepositoryFactory getRepositoryFactory() {
-        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
+    public boolean exists() throws Exception {
+        log.warn("Not implemented yet!");
+        return true; 
     }
+
 }

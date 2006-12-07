@@ -16,63 +16,51 @@
 
 package org.wyona.yanel.core.api.attributes;
 
-import org.wyona.yanel.core.Path;
-import org.wyona.yanel.core.Topic;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 
+import org.wyona.yanel.core.Path;
+
 /**
  * DEV (not released yet), please be aware that this interface still might change ...
  */
 public interface ModifiableV2 {
-    // TODO: Shouldn't it be the other way around, that the Resource is passed to a Repository instead the Repository to the Resource?!
-    //TODO: Shouldn't we use java.io.Serializable (writeObject, readObject)?!
 
     /**
      *
      */
-    public Reader getReader(Path path) throws Exception;
+    public Reader getReader() throws Exception;
 
     /**
      *
      */
-    public InputStream getInputStream(Path path) throws Exception;
+    public InputStream getInputStream() throws Exception;
+    
+    /**
+     *
+     */
+    public Writer getWriter() throws Exception;
 
     /**
      *
      */
-    public Reader getReader(Topic topic) throws Exception;
+    public OutputStream getOutputStream() throws Exception;
+
+    /**
+     * To write data and allowing the resource to modify data during writing, 
+     * e.g. "updated" element of atom entry
+     */
+    public void write(InputStream in) throws Exception;
+    
+    /**
+     *
+     */
+    public long getLastModified() throws Exception;
 
     /**
      *
      */
-    public Writer getWriter(Path path);
-
-    /**
-     * To write data
-     */
-    public Writer getWriter(Topic topic);
-
-    /**
-     * To write data
-     */
-    public OutputStream getOutputStream(Path path);
-
-    /**
-     * To write data and allowing the resource to modify data during writing, e.g. "updated" element of atom entry
-     */
-    public Path write(Path path, InputStream in) throws Exception;
-
-    /**
-     *
-     */
-    public long getLastModified(Path path);
-
-    /**
-     *
-     */
-    public boolean delete(Path path);
+    public boolean delete() throws Exception;
 }

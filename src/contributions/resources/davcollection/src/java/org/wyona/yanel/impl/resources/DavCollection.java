@@ -10,6 +10,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Category;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
+import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
@@ -17,6 +18,13 @@ import org.xml.sax.SAXException;
 
 public class DavCollection extends XmlViewResource implements ViewableV2 {
 
+    public boolean exists() throws Exception {
+        // TODO Auto-generated method stub
+        log.warn("Not implemented yet!");
+        return false;
+    }
+
+    
     private static Category log = Category.getInstance(DavCollection.class);
     
     // WebDAV namespace definition
@@ -49,7 +57,7 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
         // TODO Auto-generated constructor stub
     }
 
-    public void buildXmlView(Path path, String viewId, HttpServletRequest request, HttpServletResponse response) throws SAXException {
+    public void buildXmlView(Path path, String viewId) throws SAXException {
 
         response.setStatus(207, "Multi Status");
         

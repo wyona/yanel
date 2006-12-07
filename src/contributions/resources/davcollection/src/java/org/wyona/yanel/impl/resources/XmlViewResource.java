@@ -68,27 +68,20 @@ public abstract class XmlViewResource extends Resource implements ViewableV2, Co
      * @param requestParameters
      * @throws SAXException 
      */
-    public abstract void buildXmlView(Path path, String viewId, HttpServletRequest request, HttpServletResponse response) throws SAXException;
+    public abstract void buildXmlView(Path path, String viewId) throws SAXException;
         
-    public void getView(HttpServletRequest request, HttpServletResponse response, String viewId) throws Exception {
+    public View getView(String viewId) throws Exception {
+        
         // set the output stream for the XML serializer
-        this.xmlSerializer.setOutputByteStream(response.getOutputStream());       
+        this.xmlSerializer.setOutputByteStream(response.getOutputStream());
         
         this.contentHandler = xmlSerializer.asContentHandler();
         
-        buildXmlView(new Path(request.getServletPath()), viewId, request, response);
-    }
-
-    public View getView(Path path, OutputStream outputStream, String viewId) throws Exception {
+        buildXmlView(path, viewId);
         
-        // set the output stream for the XML serializer
-        this.xmlSerializer.setOutputByteStream(outputStream);
-        
-        this.contentHandler = xmlSerializer.asContentHandler();
-        
-        buildXmlView(path, viewId, null, null);
-        
-        return null;
+        View view = new View();
+        view.setResponse(false); // this resource writes the response itself 
+        return view;
     }
 
     public ViewDescriptor[] getViewDescriptors() {

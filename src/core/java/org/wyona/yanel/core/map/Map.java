@@ -19,7 +19,7 @@ package org.wyona.yanel.core.map;
 import org.wyona.yanel.core.Path;
 
 /**
- *
+ * Mapping from urls to realms/paths.
  */
 public interface Map {
 
@@ -29,17 +29,39 @@ public interface Map {
     public String getUUID();
 
     /**
-     *
+     * @deprecated
      */
     public String getResourceTypeIdentifier(Path path);
 
     /**
-     *
+     * @deprecated
      */
     public Realm[] getRealms();
 
     /**
-     *
+     * @deprecated
      */
     public Realm getRealm(Path path);
+
+    
+
+    public void setRealmConfiguration(RealmConfiguration realmConfig);
+
+    /**
+     * Gets the realm for the given url, according to the configuration in realms.xml.
+     * 
+     * @param url url without context path prefix
+     * @return the first realm whose mount-point is a matching prefix of the given url.
+     * @throws Exception
+     */
+    public Realm getRealm(String url) throws Exception;
+    
+    /**
+     * Maps the given url to a path in the given realm. A path is relative to the realm.
+     * @param realm
+     * @param url
+     * @return
+     * @throws Exception
+     */
+    public Path getPath(Realm realm, String url) throws Exception;
 }

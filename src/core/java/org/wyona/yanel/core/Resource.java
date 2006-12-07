@@ -16,13 +16,22 @@
 
 package org.wyona.yanel.core;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.wyona.yanel.core.map.Realm;
+
 /**
  *
  */
 public abstract class Resource {
 
     protected ResourceTypeDefinition rtd;
+    protected ResourceTypeIdentifier rti;
     protected Yanel yanel;
+    protected Path path;
+    protected Realm realm;
+    protected HttpServletRequest request;
+    protected HttpServletResponse response;
 
     /**
      *
@@ -79,4 +88,45 @@ public abstract class Resource {
     public String getResourceTypeNamespace() {
         return rtd.getResourceTypeNamespace();
     }
+    
+    public Path getPath() {
+        return path;
+    }
+
+    public void setPath(Path path) {
+        this.path = path;
+    }
+
+    public Realm getRealm() {
+        return realm;
+    }
+
+    public void setRealm(Realm realm) {
+        this.realm = realm;
+    }
+
+    public ResourceTypeIdentifier getRTI() {
+        return rti;
+    }
+
+    public void setRTI(ResourceTypeIdentifier rti) {
+        this.rti = rti;
+    }
+
+    public HttpServletRequest getRequest() {
+        return request;
+    }
+
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
+
+    public HttpServletResponse getResponse() {
+        return response;
+    }
+
+    public void setResponse(HttpServletResponse response) {
+        this.response = response;
+    }
+
 }

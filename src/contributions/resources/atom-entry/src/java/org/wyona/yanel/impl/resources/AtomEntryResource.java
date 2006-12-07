@@ -19,9 +19,8 @@ package org.wyona.yanel.impl.resources;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.Topic;
-import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
-import org.wyona.yanel.core.api.attributes.ViewableV1;
+import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
@@ -53,7 +52,7 @@ import org.apache.log4j.Category;
 /**
  *
  */
-public class AtomEntryResource extends Resource implements ViewableV1, ModifiableV1, ModifiableV2 {
+public class AtomEntryResource extends Resource implements ViewableV2, ModifiableV2 {
 
     private static Category log = Category.getInstance(AtomEntryResource.class);
 
@@ -73,7 +72,7 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
     /**
      *
      */
-    public View getView(Path path, String viewId) {
+    public View getView(String viewId) {
         View defaultView = new View();
         String mimeType = getMimeType(path, viewId);
         defaultView.setMimeType(mimeType);
@@ -164,14 +163,7 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
     /**
      *
      */
-    public View getView(HttpServletRequest request, String viewId) {
-        return getView(new Path(request.getServletPath()), viewId);
-    }
-
-    /**
-     *
-     */
-    public Reader getReader(Path path) throws Exception {
+    public Reader getReader() throws Exception {
         RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
         return rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString()));
     }
@@ -179,7 +171,7 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
     /**
      *
      */
-    public InputStream getInputStream(Path path) throws Exception {
+    public InputStream getInputStream() throws Exception {
         // TODO: Reuse stuff from getReader ...
         RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
         return rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
@@ -188,7 +180,7 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
     /**
      *
      */
-    public Reader getReader(Topic topic) throws Exception {
+    public Writer getWriter() {
         log.error("Not implemented yet!");
         return null;
     }
@@ -196,75 +188,42 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
     /**
      *
      */
-    public Writer getWriter(Path path) {
-        log.error("Not implemented yet!");
-        return null;
+    public OutputStream getOutputStream() throws Exception {
+        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
+        return rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
     }
 
     /**
      *
      */
-    public Writer getWriter(Topic topic) {
-        log.error("Not implemented yet!");
-        return null;
-    }
-
-    /**
-     *
-     */
-    public OutputStream getOutputStream(Path path) {
-        try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-            return rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
-        } catch(Exception e) {
-            log.error(e);
+    public void write(InputStream in) throws Exception {
+        org.apache.abdera.Abdera abdera = new org.apache.abdera.Abdera();
+        Parser parser = abdera.getParser();
+        Document doc = parser.parse(in);
+        Entry entry = (Entry) doc.getRoot();
+        java.util.Date date = new java.util.Date();
+        entry.setUpdated(date);
+        java.util.Date publishedDate = entry.getPublished();
+        if (publishedDate == null) {
+            log.error("No published date!");
+            entry.setPublished(date);
         }
-        return null;
+
+        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
+        OutputStream out = rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+
+        org.apache.abdera.writer.Writer writer = abdera.getWriter();
+        writer.writeTo(entry, out);
+
+        log.error("DEBUG: Atom entry has been written: " + path);
     }
 
     /**
      *
      */
-    public Path write(Path path, InputStream in) throws Exception {
-        try {
-            org.apache.abdera.Abdera abdera = new org.apache.abdera.Abdera();
-            Parser parser = abdera.getParser();
-            Document doc = parser.parse(in);
-            Entry entry = (Entry) doc.getRoot();
-            java.util.Date date = new java.util.Date();
-            entry.setUpdated(date);
-            java.util.Date publishedDate = entry.getPublished();
-            if (publishedDate == null) {
-                log.error("No published date!");
-                entry.setPublished(date);
-            }
-
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-            OutputStream out = rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
-
-            org.apache.abdera.writer.Writer writer = abdera.getWriter();
-            writer.writeTo(entry, out);
-
-            log.error("DEBUG: Atom entry has been written: " + path);
-        } catch(Exception e) {
-            log.error(e);
-            throw e;
-        }
-        return path;
-    }
-
-    /**
-     *
-     */
-    public long getLastModified(Path path) {
-        try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-            return rp.getRepo().getLastModified(new org.wyona.yarep.core.Path(rp.getPath().toString()));
-        } catch(Exception e) {
-            log.error(e);
-        }
-        // TODO: Does that actually make sense?!
-        return -1;
+    public long getLastModified() throws Exception {
+        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
+        return rp.getRepo().getLastModified(new org.wyona.yarep.core.Path(rp.getPath().toString()));
     }
 
     /**
@@ -314,19 +273,19 @@ public class AtomEntryResource extends Resource implements ViewableV1, Modifiabl
     /**
      *
      */
-    public boolean delete(Path path) {
-        try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-            return rp.getRepo().delete(new org.wyona.yarep.core.Path(rp.getPath().toString()));
-        } catch(Exception e) {
-            log.error(e);
-            return false;
-        }
+    public boolean delete() throws Exception {
+        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
+        return rp.getRepo().delete(new org.wyona.yarep.core.Path(rp.getPath().toString()));
     }
     
     protected RepositoryFactory getRepositoryFactory() {
         return yanel.getRepositoryFactory("DefaultRepositoryFactory");
     }
     
+    public boolean exists() throws Exception {
+        log.warn("Not implemented yet!");
+        return true;
+    }
+
 
 }

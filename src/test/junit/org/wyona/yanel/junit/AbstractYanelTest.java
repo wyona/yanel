@@ -71,6 +71,7 @@ public abstract class AbstractYanelTest extends TestCase {
         this.logger = log;
 
         this.yanel = Yanel.getInstance();
+        yanel.init();
     }
 
     /*

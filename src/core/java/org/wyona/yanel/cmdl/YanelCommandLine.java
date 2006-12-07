@@ -16,6 +16,8 @@
 
 package org.wyona.yanel.cmdl;
 
+import org.wyona.yanel.cmdl.communication.CommandLineRequest;
+import org.wyona.yanel.cmdl.communication.CommandLineResponse;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
@@ -118,9 +120,13 @@ public class YanelCommandLine {
 
 
         Resource res = null;
+        CommandLineRequest request = new CommandLineRequest(path.toString());
+        CommandLineResponse response = new CommandLineResponse();
         try {
             res = rtr.newResource(rti);
             res.setYanel(yanel);
+            res.setRequest(request);
+            res.setResponse(response);
         } catch(Exception e) {
             System.err.println("Exception 435435: " + e);
             return;
