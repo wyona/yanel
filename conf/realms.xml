@@ -2,6 +2,12 @@
 
 <realms xmlns="http://www.wyona.org/yanel/1.0">
 
+<!-- 
+  Incoming requests will be matched to a realm using the information in this file.
+  The first realm with a matching mount-point will be used, so the order of the 
+  realms matters.
+-->
+
 <!-- ROOT realm -->
 <realm id="yanel-website" mount-point="/yanel-website/" root="false">
   <name>Yanel Website</name>
@@ -26,10 +32,6 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
 
 <realm id="javadoc" mount-point="/javadoc/">
   <name>Yanel Javadoc</name>
-</realm>
-
-<realm id="welcome" mount-point="/" root="true">
-  <name>Yanel Welcome and General Administration</name>
 </realm>
 
 <!--
@@ -67,5 +69,9 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
   </reverse-proxy>
 </realm>
 -->
+
+<realm id="welcome" mount-point="/" root="true">
+  <name>Yanel Welcome and General Administration</name>
+</realm>
 
 </realms>
