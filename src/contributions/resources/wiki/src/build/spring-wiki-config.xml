@@ -4,7 +4,5 @@
 
 <beans>
   <bean id="jspWikiParser" class="org.wyona.jspwiki.WikiParser"/>
-<!--
-  <bean id="javaccWikiParser" class="..."/>
--->
+  <bean id="javaccWikiParser" class="org.wyona.wiki.Wiki2XML"/>
 </beans>
