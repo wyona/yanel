@@ -73,6 +73,9 @@
         <xsl:if test="last-modified">
           <li>Last Modified: <xsl:value-of select="last-modified"/></li>
         </xsl:if>
+        <xsl:if test="size">
+          <li>Size: <xsl:value-of select="size"/></li>
+        </xsl:if>
         <xsl:if test="revisions">
           <li>Revisions: <xsl:apply-templates select="revisions"/></li>
          </xsl:if>
