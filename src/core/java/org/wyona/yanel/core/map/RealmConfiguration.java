@@ -155,6 +155,13 @@ public class RealmConfiguration {
     }
 
     /**
+     * Add new realm (e.g. third party realm)
+     */
+    public void addRealm() {
+        log.error("Not implemented yet!");
+    }
+
+    /**
      *
      */
     private void inheritRootRealmProperties() {
