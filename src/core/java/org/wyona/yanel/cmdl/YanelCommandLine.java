@@ -52,12 +52,13 @@ public class YanelCommandLine {
         System.out.println("Welcome to the Yanel command line interface!\n");
 
         Yanel yanel = Yanel.getInstance();
+        yanel.init();
         Map map = (Map) yanel.getBeanFactory().getBean("map");
 
         ResourceTypeRegistry rtr = new ResourceTypeRegistry();
 
         System.out.println("The following realms have been configured:");
-        Realm[] realms = map.getRealms();
+        Realm[] realms = yanel.getRealmConfiguration().getRealms();
         for (int i = 0; i < realms.length; i++) {
             System.out.println("Realm: " + realms[i]);
         }

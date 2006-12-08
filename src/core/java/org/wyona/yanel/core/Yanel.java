@@ -86,6 +86,10 @@ public class Yanel {
         return resourceManager;
     }
     
+    public RealmConfiguration getRealmConfiguration() {
+        return realmConfig;
+    }
+    
     /**
      * @deprecated
      * use getResourceManager().getResource() instead 
