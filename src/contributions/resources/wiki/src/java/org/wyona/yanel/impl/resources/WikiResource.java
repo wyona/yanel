@@ -362,12 +362,20 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
             RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
 
             repository = rpRTI.getRepo();
-            org.wyona.yarep.core.Path newPath = new org.wyona.yarep.core.Path(rpRTI.getPath().getParent() + "/" + createName);
+            org.wyona.yarep.core.Path newPath = null;
+            if (rpRTI.getPath().getParent().equals("null")) {
+                newPath = new org.wyona.yarep.core.Path("/" + createName);
+            } else {
+                newPath = new org.wyona.yarep.core.Path(rpRTI.getPath().getParent() + "/" + createName);
+            }
+
+            String content = "<{http://www.wyona.org/yanel/resource/1.0}wiki/>";
 
             // TODO: Do not hardcode xslt ...
-            String content = "<{http://www.wyona.org/yanel/resource/1.0}wiki/>\nxslt: /xslt/global.xsl";
-            // TODO: Make mime-type configurable
-            //String content = "<{http://www.wyona.org/yanel/resource/1.0}wiki/>\nmime-type: application/xhtml+xml\nxslt: /xslt/global.xsl";
+            //content = content + "\nxslt: /xslt/global.xsl";
+
+            // TODO: Make mime-type configurable (depending on global XSLT) ...
+            content = content + "\nmime-type: application/xhtml+xml";
 
             log.info("Writing content to repository " + repository.getName() + " with content:\n" + content + "\nto path: " + newPath);
 
