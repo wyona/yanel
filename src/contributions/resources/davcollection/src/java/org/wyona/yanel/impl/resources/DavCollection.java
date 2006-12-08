@@ -18,13 +18,6 @@ import org.xml.sax.SAXException;
 
 public class DavCollection extends XmlViewResource implements ViewableV2 {
 
-    public boolean exists() throws Exception {
-        // TODO Auto-generated method stub
-        log.warn("Not implemented yet!");
-        return false;
-    }
-
-    
     private static Category log = Category.getInstance(DavCollection.class);
     
     // WebDAV namespace definition
@@ -180,9 +173,16 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
         endElement(WEBDAV_NS_URI, WEBDAV_EL_RESPONSE, WEBDAV_PREFIX + WEBDAV_EL_RESPONSE);        
     }
     
-    public boolean exists(Path path) {
-        //TODO not implemented yet
-        log.error("Method is not implemented yet");
+    public boolean exists() throws Exception {
+        // TODO Auto-generated method stub
+        log.warn("Not implemented yet!");
         return false;
     }
+
+    public long getSize() throws Exception {
+        // TODO not implemented yet
+        log.error("Method is not implemented yet");
+        return -1;
+    }
+
 }

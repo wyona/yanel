@@ -231,6 +231,7 @@ public class YanelServlet extends HttpServlet {
         //String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
         Resource res = null;
         long lastModified = -1;
+        long size = -1;
         if (rti != null) {
             ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti.getUniversalName());
             if (rtd == null) {
@@ -286,6 +287,11 @@ public class YanelServlet extends HttpServlet {
                     } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
                         log.error("DEBUG: Resource is viewable V2");
                         String viewId = request.getParameter("yanel.resource.viewid");
+                        Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
+                        viewElement.appendChild(doc.createTextNode("View Descriptors: " + ((ViewableV2) res).getViewDescriptors()));
+                        size = ((ViewableV2) res).getSize();
+                        Element sizeElement = (Element) resourceElement.appendChild(doc.createElement("size"));
+                        sizeElement.appendChild(doc.createTextNode(String.valueOf(size)));
                         view = ((ViewableV2) res).getView(viewId);
                     } else {
                          Element noViewElement = (Element) resourceElement.appendChild(doc.createElement("no-view"));

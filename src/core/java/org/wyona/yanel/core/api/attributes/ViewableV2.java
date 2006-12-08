@@ -42,4 +42,9 @@ public interface ViewableV2 {
      * 
      */
     public boolean exists() throws Exception;
+    
+    /**
+     * 
+     */
+    public long getSize() throws Exception;
 }

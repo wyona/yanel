@@ -292,4 +292,9 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         return true; 
     }
 
+    public long getSize() throws Exception {
+        // TODO not implemented yet
+        log.error("Method is not implemented yet");
+        return -1;
+    }
 }
