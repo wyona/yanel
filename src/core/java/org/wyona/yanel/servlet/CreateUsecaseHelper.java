@@ -69,6 +69,10 @@ public class CreateUsecaseHelper {
                 w.print(doCreate(resourceType, request, createName, yanel));
             }
         }
+
+        // TODO: Should this really be set here ...
+        response.setContentType("text/html");
+        response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
         return response;
     }
 
