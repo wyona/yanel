@@ -1,5 +1,6 @@
 package org.wyona.yanel.servlet;
 
+import java.io.File;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.IOException;
@@ -16,6 +17,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
@@ -1208,8 +1212,10 @@ public class YanelServlet extends HttpServlet {
     private void setYanelOutput(HttpServletResponse response, Document doc) throws ServletException {
         response.setContentType("application/xml");
         try {
-            javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
-
+            File xsltFile = org.wyona.commons.io.FileUtil.file(config.getServletContext().getRealPath("/"), "xslt" + File.separator + "xmlInfo2xhtml.xsl");
+            Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
+            transformer.transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
+             
 /*
             OutputStream out = response.getOutputStream();
             javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
