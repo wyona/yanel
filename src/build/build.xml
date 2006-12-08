@@ -17,6 +17,7 @@
   <import file="dependencies.xml"/>
   <import file="continuous-integration.xml"/>
   <import file="install-tomcat.xml"/>
+  <import file="targets/add-third-party-realm.xml"/>
   
   <target name="ask-to-reconfigure-tomcat-cluster-node1" description="reconfigure Tomcat cluster node 1" if="isTomcat1PortsSet">
     <input message="Do you want to reconfigure tomcat cluster node 1 in order to support SSL? (YES/no):" defaultvalue="NO" addproperty="answerReconfigureTomcat1"/>
@@ -413,8 +414,8 @@
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" value="${yanel.home.dir.forward.slashes}/src/realms">
       <replacetoken>../src/realms</replacetoken>
     </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" value="yanel-website,${yanel.home.dir.forward.slashes}/src/realms/yanel-website/config/">
-      <replacetoken>yanel-website,../src/realms/yanel-website/config/</replacetoken>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" value="${yanel.home.dir.forward.slashes}/src/realms/">
+      <replacetoken>../src/realms/</replacetoken>
     </replace>
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.file.forward.slashes}">
