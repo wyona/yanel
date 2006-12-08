@@ -13,10 +13,12 @@
     Getting Started
     ---------------
 
-    1) Run "configure" (NOTE: Will also ask for SSL configuration)
-    2) Run "build" (NOTE: You might have to configure a proxy. Please see below for more details)
+    NOTE: You might have to configure a proxy. Please see below for more details
+
+    1) Run "configure"
+    2) Run "build"
     3) Run "yanel start/stop" to start or stop Tomcat resp. run "yanel /hello/world.html" from the command line resp. run "yanel start-jetty" to start Jetty
-    4) Browse to http://127.0.0.1:8080
+    4) Browse to http://127.0.0.1:8080/yanel/
     5) Run "build test"
 
 
@@ -29,10 +31,17 @@
     Deploy third-party resources
     ----------------------------
 
-    1) Register resource by adding resource.xml path to conf/(local.)yanel.xml
+    1) Register resource by adding resource.xml path to conf/local/local.yanel.xml
     2) Build Yanel and Resources: ./build.sh (OPTIONAL: ./build.sh clean)
     3) Test resource: ./yanel.sh
     4) Restart Tomcat
+
+
+    Add third-party realm
+    ---------------------
+
+    1) ./build.sh add-realm -Drealm-config=src/realms/from-scratch-realm-template/yanel/config/yanel-realm-config.xml
+    2) Restart Tomcat
 
 
     Proxy Configuration
