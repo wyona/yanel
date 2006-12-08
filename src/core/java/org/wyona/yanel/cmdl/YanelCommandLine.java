@@ -138,7 +138,7 @@ public class YanelCommandLine {
         } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Creatable", "2")) {
             System.out.println(((CreatableV2) res).getPropertyType("name"));
         } else {
-            System.out.println(res.getClass().getName() + " does not implement creatable interface!");
+            System.out.println(res.getClass().getName() + " does not implement creatable interface, neither V1 nor V2!");
         }
 
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
@@ -159,7 +159,7 @@ public class YanelCommandLine {
                 System.err.println(e);
             }
         } else {
-            System.out.println(res.getClass().getName() + " does not implement viewable interface!");
+            System.out.println(res.getClass().getName() + " does not implement viewable V1 interface!");
         }
 
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
@@ -169,7 +169,7 @@ public class YanelCommandLine {
                 System.err.println(e.getMessage());
             }
         } else {
-            System.out.println(res.getClass().getName() + " does not implement writable interface!");
+            System.out.println(res.getClass().getName() + " does not implement modifiable V1 interface!");
         }
 
 
