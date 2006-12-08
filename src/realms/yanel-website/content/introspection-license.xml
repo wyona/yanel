@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<introspection xmlns="http://www.wyona.org/neutron/1.0">
+<edit mime-type="application/xhtml+xml" name="License">
+<checkout url="license.xhtml?yanel.resource.usecase=checkout" method="GET"/>
+<checkin  url="license.xhtml?yanel.resource.usecase=checkin"  method="PUT"/>
+</edit>
+</introspection>
