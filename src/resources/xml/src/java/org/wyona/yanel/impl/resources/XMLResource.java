@@ -109,13 +109,15 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML(repo, yanelPath))), new StreamResult(baos));
                 
                 InputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
+
+                // TODO: Seems to have problems accessing remote DTDs when being offline
 /*
                 I18nTransformer i18nTransformer = new I18nTransformer("global", language);
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 saxParser.parse(inputStream, i18nTransformer);
-
                 defaultView.setInputStream(i18nTransformer.getInputStream());
 */
+
                 defaultView.setInputStream(inputStream);
 
                 return defaultView;
@@ -130,14 +132,17 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         return defaultView;
     }
 
-   /**
-    *
-    */
-   public View getView(HttpServletRequest request, HttpServletResponse response, String viewid) {
-       return getView(viewid);
+    /**
+     *
+     */
+    public View getView(HttpServletRequest request, HttpServletResponse response, String viewid) {
+        return getView(viewid);
    
-   }
+    }
 
+    /**
+     *
+     */
     private String getLanguage() {
         String language = "en";
         try {
@@ -292,9 +297,12 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         return true; 
     }
 
+    /**
+     * Get size of generated page
+     */
     public long getSize() throws Exception {
-        // TODO not implemented yet
-        log.error("Method is not implemented yet");
+        // TODO: not implemented yet
+        log.warn("TODO: Method is not implemented yet");
         return -1;
     }
 }
