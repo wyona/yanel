@@ -285,7 +285,7 @@ public class YanelServlet extends HttpServlet {
                             return;
                         }
                     } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
-                        log.error("DEBUG: Resource is viewable V2");
+                        log.info("Resource is viewable V2");
                         String viewId = request.getParameter("yanel.resource.viewid");
                         Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
                         viewElement.appendChild(doc.createTextNode("View Descriptors: " + ((ViewableV2) res).getViewDescriptors()));
@@ -323,7 +323,6 @@ public class YanelServlet extends HttpServlet {
             } catch(Exception e) {
                 log.error(e.getMessage(), e);
                 String message = e.toString();
-                log.error(e.getMessage(), e);
                 Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
                 exceptionElement.appendChild(doc.createTextNode(message));
                 setYanelOutput(response, doc);
