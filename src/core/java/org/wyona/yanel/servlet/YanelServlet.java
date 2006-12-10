@@ -257,6 +257,7 @@ public class YanelServlet extends HttpServlet {
 
                     Element resourceElement = (Element) rootElement.appendChild(doc.createElement("resource"));
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
+                        log.info("Resource is viewable V1");
                         Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
                         viewElement.appendChild(doc.createTextNode("View Descriptors: " + ((ViewableV1) res).getViewDescriptors()));
                         String viewId = request.getParameter("yanel.resource.viewid");
