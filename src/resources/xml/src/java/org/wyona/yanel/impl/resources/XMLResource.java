@@ -135,14 +135,6 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     /**
      *
      */
-    public View getView(HttpServletRequest request, HttpServletResponse response, String viewid) {
-        return getView(viewid);
-   
-    }
-
-    /**
-     *
-     */
     private String getLanguage() {
         String language = "en";
         try {

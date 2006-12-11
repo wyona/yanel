@@ -129,13 +129,6 @@ public class FileResource extends Resource implements ViewableV2, ModifiableV2, 
     /**
      *
      */
-    public View getView(HttpServletRequest request, String viewId) throws Exception {
-        return getView(viewId);
-    }
-
-    /**
-     *
-     */
     public Reader getReader() throws Exception {
         return getRealm().getRepository().getReader(path);
     }
