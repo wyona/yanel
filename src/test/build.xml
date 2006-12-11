@@ -8,6 +8,7 @@
   <property name="junit.src.dir" value="junit"/>
   <property name="htmlunit.src.dir" value="htmlunit"/>
   <property name="test.results.dir" value="test-results"/>
+  <property name="test.results.archive.dir" value="test-results-archive"/>
   <property name="yanel.home.dir" location="../../"/>
   <property name="conf.dir" value="${yanel.home.dir}/conf"/>
   <property name="local.conf.dir" value="${yanel.home.dir}/${local.config.dir}"/>
@@ -110,11 +111,24 @@
   </target>
 
   <target name="test" depends="build" description="Run all tests">
-    <mkdir dir="${test.results.dir}" />
-    <echo>Running the tests</echo>
+    <echo>Delete old Test-Results</echo>
+    <delete>
+      <fileset dir="${test.results.dir}"/>
+    </delete>
+    <tstamp>
+      <format property="test.exec.time" pattern="yyyy-MM-dd-HH-mm-ss"/>
+    </tstamp>
+    <echo>Running the tests at ${test.exec.time}</echo>
     <echo>NOTE: Running the tests might take a while. Thanks for your patience ...</echo>
-    <antcall target="junit"/>
-    <antcall target="htmlunit"/>
+    <antcall target="result"/>
+  </target>
+  
+  <target name="archive-tests">
+    <junitreport todir="${test.results.archive.dir}"  tofile="${test.exec.time}-tests.xml">
+      <fileset dir="${test.results.dir}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+    </junitreport>
   </target>
   
   <target name="junit" depends="build" description="Run junit tests">
@@ -129,7 +143,6 @@
       <classpath refid="classpath" />
       <jvmarg value="-Djunit.base.dir=${basedir}/junit"/>
     </junit>
-    <fail if="junit.tests.failed"  message="One or more junit tests failed."/>
   </target>
 
   <target name="htmlunit" depends="build" description="Run htmlunit tests">
@@ -143,7 +156,11 @@
       <classpath refid="classpath" />
       <jvmarg value="-Dhtmlunit.base.dir=${basedir}/htmlunit"/>
     </junit>
-    <fail if="htmlunit.tests.failed"  message="One or more htmlunit tests failed."/>
   </target>
-
+  
+  <target name="result" depends="junit, htmlunit">  
+    <antcall target="archive-tests"/>
+    <fail if="htmlunit.tests.failed" message="One or more tests failed."/>
+    <fail if="junit.tests.failed" message="One or more tests failed."/>
+  </target>
 </project>
