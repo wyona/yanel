@@ -5,8 +5,5 @@
   <rti>rti-repository.xml</rti>
   <data>data-repository.xml</data>
   <ac-policies>ac-policies-repository.xml</ac-policies>
-
-<!--
-  <ac-identities/>
--->
+  <ac-identities>ac-identities-repository.xml</ac-identities>
 </realm-config>
