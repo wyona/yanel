@@ -57,10 +57,7 @@ import org.wyona.yarep.util.YarepUtil;
  */
 public class ShowRealms extends Resource implements ViewableV1 {
 
-
-
     private static Category log = Category.getInstance(ShowRealms.class);
-
 
     /**
      * 
@@ -108,28 +105,40 @@ public class ShowRealms extends Resource implements ViewableV1 {
         contentRepo = rp.getRepo();
         
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-        sb.append("<head>");
-        sb.append("<title>Example Resource</title>");
-        sb.append("</head>");
-        sb.append("<body>");
-        sb.append("<div id=\"contenBody\">");
-        sb.append("<h1>The following realms have been registered:</h1>");
-        sb.append("<ul>");
+        sb.append("<yanel-info>");
+        sb.append("<realms>");
         
         Yanel yanel = Yanel.getInstance();
         yanel.init();
         Realm[] realms = yanel.getRealmConfiguration().getRealms();
         for (int i = 0; i < realms.length; i++) {
-            sb.append("<li>" + realms[i].getName() + " (ID: "+realms[i].getID()+", Mount-Point: <a href=\"."+realms[i].getMountPoint()+"\">"+realms[i].getMountPoint()+"</a>)</li>");
+            sb.append("<realm>");
+            sb.append("<name>" + realms[i].getName() + "</name>");
+            sb.append("<id>" + realms[i].getID() + "</id>");
+            sb.append("<mountpoint>" + realms[i].getMountPoint() + "</mountpoint>");
+            sb.append("</realm>");
         }
         
-        sb.append("</ul>");
-        sb.append("</div>");
-        sb.append("</body>");
-        sb.append("</html>");
+        sb.append("</realms>");
+        sb.append("<resourcetypes>");
+        
+        ResourceTypeRegistry rtr = new ResourceTypeRegistry();
+        ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
+        for (int i = 0; i < rtds.length; i++) {
+            sb.append("<resourcetype>");
+            try {
+                Resource resource = rtr.newResource(rtds[i].getResourceTypeUniversalName());
+                sb.append("<localname>" + rtds[i].getResourceTypeLocalName() + "</localname>");
+            } catch(Exception e) {
+                log.error(e);
+            }
+            sb.append("</resourcetype>");
+        }
+        
+        sb.append("</resourcetypes>");
+        sb.append("</yanel-info>");
 
-/*
+
         Transformer transformer = TransformerFactory.newInstance()
                 .newTransformer(getXSLTStreamSource(path, contentRepo));
         transformer.setParameter("yanel.path.name", path.getName());
@@ -145,10 +154,8 @@ public class ShowRealms extends Resource implements ViewableV1 {
         defaultView.setMimeType(getMimeType(path));
         defaultView.setInputStream(new java.io.ByteArrayInputStream(baos
                 .toByteArray()));
-*/
-        defaultView.setMimeType("application/xhtml+xml");
-        defaultView.setInputStream(new java.io.StringBufferInputStream(sb.toString()));
 
+        defaultView.setMimeType("application/xhtml+xml");
         return defaultView;
     }
 
@@ -190,7 +197,7 @@ public class ShowRealms extends Resource implements ViewableV1 {
         } else {
             File xsltFile = org.wyona.commons.io.FileUtil.file(rtd
                     .getConfigFile().getParentFile().getAbsolutePath(), "xslt"
-                    + File.separator + "showrealms2xhtml.xsl");
+                    + File.separator + "info2xhtml.xsl");
             log.error("DEBUG: XSLT file: " + xsltFile);
             return new StreamSource(xsltFile);
         }
@@ -295,4 +302,18 @@ public class ShowRealms extends Resource implements ViewableV1 {
       if (path.toString().equals(File.separator)) return true;
       return false;
   }
+  
+  private String getTime(){
+      Calendar cal = Calendar.getInstance(java.util.TimeZone.getDefault());
+      
+      String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+      java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(DATE_FORMAT);
+
+      sdf.setTimeZone(java.util.TimeZone.getDefault());          
+            
+      String time = sdf.format(cal.getTime());
+      return time;
+      
+  }
+  
 }
