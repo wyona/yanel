@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<config>
+  <yanel-home-dir>@YANELHOMEDIR@</yanel-home-dir>
+</config>

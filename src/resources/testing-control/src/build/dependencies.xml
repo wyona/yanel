@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<project name="test-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <target name="dependencies" description="Dependencies">
+    <!-- INFO: http://maven.apache.org/ant-tasks.html -->
+    <artifact:remoteRepository id="wyona.remote.repository" url="http://www.wyona.org/maven2/"/>
+
+    <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3"
+        scope="provided"/>
+      <dependency groupId="log4j" artifactId="log4j" version="1.2.8"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-core"
+        version="${yanel.source.version}"/>
+      <dependency groupId="yarep" artifactId="yarep" version="0.0.1-dev-r17381"/>
+      <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
+        version="0.0.1-dev-r17376"/>
+    </artifact:dependencies>
+
+    <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-codec" version="1.3"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-collections" version="3.2"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-configuration" version="1.1"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-httpclient" version="3.0.1"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-io" version="1.2"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-lang" version="2.1"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-logging" version="1.0.4"/>
+      <dependency groupId="htmlunit" artifactId="htmlunit" version="1.10"/>
+      <dependency groupId="junit" artifactId="junit" version="3.8.1"/>
+      <dependency groupId="jaxen" artifactId="jaxen" version="1.1-beta-10"/>
+      <dependency groupId="rhino" artifactId="rhino" version="1.6R2"/>
+      <dependency groupId="nekohtml" artifactId="nekohtml" version="0.9.5"/>
+      <dependency groupId="avalon-framework" artifactId="avalon-framework-impl" version="4.1.5"/>
+      <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.1.5"/>
+      <dependency groupId="ant" artifactId="ant" version="1.6.5"/>
+      <dependency groupId="ant" artifactId="ant-launcher" version="1.6.5"/>
+      <dependency groupId="ant" artifactId="ant-junit" version="1.6.5"/>
+    </artifact:dependencies>
+
+    <property name="maven2.cp" refid="maven2.classpath"/>
+    <!--<echo>Maven2 classpath: ${maven2.cp}</echo>-->
+     <property name="maven2.resource.cp" refid="maven2.resource.classpath"/>
+  </target>
+
+</project>
