@@ -10,7 +10,7 @@
   <resource src="../src/resources/tape/"                        compile="true"/>
   <resource src="../src/resources/odt/"                         compile="true"/>
   <resource src="../src/resources/xml/"                         compile="true"/>
-  <resource src="../src/resources/show-realms/"                 compile="true"/>
+  <resource src="../src/realms/welcome-admin/yanel/resources/show-realms/"                 compile="true"/>
   <resource src="../src/resources/invoice/"                     compile="true"/>
   <resource src="../src/contributions/resources/atom/"          compile="true"/>
   <resource src="../src/contributions/resources/atom-entry/"    compile="true"/>
