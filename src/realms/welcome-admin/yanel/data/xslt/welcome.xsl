@@ -6,6 +6,10 @@
   
   <xsl:output method="html"/>
   
+<!--
+  <xsl:param name="servlet.context"/>
+-->
+  
   <xsl:template match="/">
     <html>
       <head>
@@ -76,10 +80,12 @@
   
   <xsl:template match="realm">
     <li>
-      <a>
+      <a href=".{mountpoint}">
+<!--
         <xsl:attribute name="href">
-          <xsl:value-of select="./mountpoint" />
+          <xsl:value-of select="$servlet.context"/><xsl:value-of select="./mountpoint" />
         </xsl:attribute> 
+-->
         <xsl:value-of select="./name"/>
       </a>
     </li>
