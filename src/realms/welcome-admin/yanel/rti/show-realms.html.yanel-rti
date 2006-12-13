@@ -1,2 +1,3 @@
 <{http://www.wyona.org/yanel/resource/1.0}show-realms/>
 #mime-type: application/xhtml+xml
+#xslt: /xslt/welcome.xsl
