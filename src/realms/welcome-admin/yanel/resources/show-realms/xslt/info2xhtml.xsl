@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns="http://www.w3.org/1999/xhtml"
   >
   
   <xsl:output method="html"/>
+  
+<!--
+  <xsl:param name="servlet.context"/>  
+-->
   
   <xsl:template match="/">
     <html>
@@ -14,9 +19,9 @@
       </head>
       <body>
         <h1>Yanel Info</h1>
-        <h2>Realms</h2>
+        <h2>Registered Realms</h2>
         <xsl:apply-templates select="/yanel-info/realms"/>
-        <h2>Resources</h2>
+        <h2>Registered Resources</h2>
         <xsl:apply-templates select="/yanel-info/resourcetypes"/>
       </body>
     </html>
@@ -30,12 +35,14 @@
   
   <xsl:template match="realm">
     <li>
-      <a>
+      <a href=".{mountpoint}">
+<!--
         <xsl:attribute name="href">
-          <xsl:value-of select="./mountpoint" />index.html
-        </xsl:attribute> 
+          <xsl:value-of select="$servlet.context"/><xsl:value-of select="./mountpoint" />
+        </xsl:attribute>
+-->
         <xsl:value-of select="./name"/>
-      </a> ID: <xsl:value-of select="./id"/></li>
+      </a> (ID: <xsl:value-of select="./id"/>)</li>
   </xsl:template>
   
   <xsl:template match="resourcetypes">
