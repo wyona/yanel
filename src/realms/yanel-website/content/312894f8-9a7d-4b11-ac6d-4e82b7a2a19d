@@ -1,0 +1,43 @@
+!!Roadmap
+
+!Release 0.0.1-dev (Status 2006.12.12)
+* Neutron Spec v0 implemented (done)
+* RSS Feed
+* ...
+
+!Release 1.0
+* Creator (in progress)
+* Simple Workflow: Submit, Review, Publish/Reject (in planning)
+* Navigation Framework (in planning)
+* Nutch (mostly done)
+* Wiki (mostly done)
+** Creator: Realm specific XSLT (in planning)
+* XHTML resource out-of-the-box (in planning)
+* Versioning (Yarep) (in progress)
+* Asset Upload (Image, PDF, ...) (in progress)
+* Lookup (Yulup) (in progress)
+* Create a realm from scratch (in progress)
+* Import an existing website as a new realm (in planning)
+* Register third-party realm (in planning)
+* Binary installer/Dependency manager (in planning)
+* Calendar resource (in progress)
+* Testing Environment: Functional, Performance, Scalability (mostly done)
+* RTI as XML
+* Versioned configuration
+* Contact form resource
+
+!Release 1.1
+* Archive URL resource
+* FOP/PDF resource
+* Access Control User Interface
+* Diffs of Versions
+* Pipeline resource ("Mini-Cocoon")
+* Dynamic introspection
+* Form Framework
+
+!Release 1.2
+* Generic Workflow
+* Notifications
+* Celtx resource
+* Alternative (e.g. AJAX based) User Interface (not just Firefox users ...)
+ 
