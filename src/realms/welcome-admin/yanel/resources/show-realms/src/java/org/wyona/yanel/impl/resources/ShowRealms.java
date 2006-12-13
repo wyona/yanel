@@ -91,12 +91,13 @@ public class ShowRealms extends Resource implements ViewableV1 {
     public View getView(HttpServletRequest request, String viewId)
             throws Exception {
         Path path = new Path(request.getServletPath());
+        String servletContext =  request.getContextPath();
         View defaultView = new View();
-        return plainRequest(path, defaultView);
+        return plainRequest(path, defaultView, servletContext);
 
     }
 
-    private View plainRequest(Path path, View defaultView) throws Exception,
+    private View plainRequest(Path path, View defaultView, String servletContext) throws Exception,
             TransformerConfigurationException,
             TransformerFactoryConfigurationError, NoSuchNodeException,
             TransformerException {
@@ -142,6 +143,7 @@ public class ShowRealms extends Resource implements ViewableV1 {
         Transformer transformer = TransformerFactory.newInstance()
                 .newTransformer(getXSLTStreamSource(path, contentRepo));
         transformer.setParameter("yanel.path.name", path.getName());
+        transformer.setParameter("servlet.context", servletContext);
         transformer.setParameter("yanel.path", path.toString());
         transformer.setParameter("yanel.back2context", backToRoot(path, ""));
         transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
