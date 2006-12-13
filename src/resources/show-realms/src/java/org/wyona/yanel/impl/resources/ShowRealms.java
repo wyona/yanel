@@ -295,18 +295,4 @@ public class ShowRealms extends Resource implements ViewableV1 {
       if (path.toString().equals(File.separator)) return true;
       return false;
   }
-  
-  private String getTime(){
-      Calendar cal = Calendar.getInstance(java.util.TimeZone.getDefault());
-      
-      String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-      java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(DATE_FORMAT);
-
-      sdf.setTimeZone(java.util.TimeZone.getDefault());          
-            
-      String time = sdf.format(cal.getTime());
-      return time;
-      
-  }
-  
 }
