@@ -17,7 +17,7 @@
 * Asset Upload (Image, PDF, ...) (in progress)
 * Lookup (Yulup) (in progress)
 * Create a realm from scratch (in progress)
-* Import an existing website as a new realm (in planning)
+* [Import an existing website as a new realm|specification/import-site-feature.html] (in progress)
 * Register third-party realm (in planning)
 * Binary installer/Dependency manager (in planning)
 * Calendar resource (in progress)
