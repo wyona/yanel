@@ -44,9 +44,9 @@
             <li>Add an existing third-party resource.</li>
           </ul>
         </p>
-        <h2>Realms</h2>
+        <h2>Registered Realms</h2>
         <xsl:apply-templates select="/yanel-info/realms"/>
-        <h2>Resources</h2>
+        <h2>Registered Resources</h2>
         <xsl:apply-templates select="/yanel-info/resourcetypes"/>
       </body>
     </html>
@@ -55,8 +55,10 @@
   <xsl:template match="realms">
     <ul>
       <xsl:apply-templates select="realm"/>
-      <li>Add another realm: <ul>
-          <li>
+    </ul>
+
+    <p>
+    Add another realm: <ul><li>
             <a
               href="http://svn.wyona.com/repos/public/yulup/website/yanel/config/yanel-realm-config.xml">Yulup
             Website</a> (U: anonymous, P: anonymous)</li>
@@ -73,9 +75,7 @@
               href="http://svn.wyona.com/repos/public/yanel/trunk/src/realms/from-scratch-realm-template/yanel/config/yanel-realm-config.xml">Yanel
               from Scratch Realm</a> (U: anonymous, P: anonymous)</li>
           <li>...</li>
-        </ul>
-      </li>
-    </ul>
+        </ul></p>
   </xsl:template>
   
   <xsl:template match="realm">
