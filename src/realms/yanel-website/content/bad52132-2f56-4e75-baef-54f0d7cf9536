@@ -1,5 +1,7 @@
 !Import Site Feature Specification
 
+[Task 4991|http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=4991]
+
 The input screen (default) shall contain the following text inputs:
 
 * Name of new realm, e.g. Apache Website
@@ -16,7 +18,7 @@ is being finished a "import completed" message.
 TODO:
 * Create importsite resource and implement ViewableV2
 * Implement the input and status screen
-* Implement logic of the new realm creation (e.g. use the from scratch template)
-* Implement the crawling/dumping/importing of the pages from remote
+* Implement logic of the new realm creation (e.g. copy and patch the from scratch template)
+* Implement the crawling/dumping/importing of the pages from remote (e.g. use crawler from Apache Lenya 1.2.x)
 * - Add neutron introspection link to (X)HTML head
-* - Create introspection for each page
+* - Create introspection for each imported page
