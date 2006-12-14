@@ -22,13 +22,13 @@
 * Binary installer/Dependency manager (in planning)
 * Calendar resource (in progress)
 * Testing Environment: Functional, Performance, Scalability (mostly done)
-* RTI as XML
-* Versioned configuration
-* Contact form resource
+* RTI as XML (in planning)
+* Versioned configuration (in planning)
+* Contact form resource (mostly done)
 
 !Release 1.1
 * Archive URL resource
-* FOP/PDF resource
+* [FOP/PDF resource|specification/pdf-fop-resource.html]
 * Access Control User Interface
 * Diffs of Versions
 * Pipeline resource ("Mini-Cocoon")
@@ -42,4 +42,5 @@
 * Alternative (e.g. AJAX based) User Interface (not just Firefox users ...)
 * Caching
 * Link Checker
+* LDAP integration
  
