@@ -14,11 +14,11 @@
   <xsl:output method="html"/>
   -->
   
-  <xsl:param name="language" select="/yanel:nutch/@yanel:language"/>
+  <xsl:param name="yanel.meta.language" select="/yanel:nutch/@yanel:language"/>
   
-  <xsl:variable name="query"><xsl:value-of select="/yanel:nutch/yanel:query"/></xsl:variable>
-  <xsl:variable name="totalHits" select="/yanel:nutch/yanel:results/@yanel:totalHits" />
-  <xsl:variable name="hitsPerPage" select="/yanel:nutch/yanel:results/@yanel:hitsPerPage" />
+  <xsl:param name="query" select="/yanel:nutch/yanel:query"/>
+  <xsl:param name="totalHits" select="/yanel:nutch/yanel:results/@yanel:totalHits" />
+  <xsl:param name="hitsPerPage" select="/yanel:nutch/yanel:results/@yanel:hitsPerPage" />
   <xsl:variable name="currentPageNo" select="/yanel:nutch/yanel:results/@yanel:currentPageNo" />
   <xsl:variable name="numberOfPagesShown" select="/yanel:nutch/yanel:results/@yanel:numberOfPagesShown" />
   <xsl:variable name="range" select="number($numberOfPagesShown div 2)" />
@@ -33,13 +33,13 @@
     </head>
     
     <body>
-    
-    <form>
+    <span id="pageInfo" itemsPerPage="{$hitsPerPage}"/>
+    <form name="search">
     <p>
       <input type="text" name="query" value="{$query}"/>
-      <input type="hidden" name="hitsPerPage" value="{$hitsPerPage}"/>
-      <input type="hidden" name="language" value="{$language}"/>
-      <input type="submit" value="i18n:attr key=search"/>
+      <input type="hidden" name="yanel.meta.language" value="{$yanel.meta.language}"/>
+      <input type="hidden" name="totalHits" value="{$totalHits}"/>
+      <input type="submit" name="submit" value="i18n:attr key=search"/>
     </p>
     </form>
     
@@ -70,33 +70,45 @@
   </xsl:template>
   
   <xsl:template match="yanel:results">
-    <xsl:apply-templates select="yanel:exception"/>
-    <table border="0">
+    <div id="resultHits" hits="{$totalHits}"/>
+    <table width="100%" id="exception">
+      <tr>
+        <td>
+          <xsl:apply-templates select="yanel:exception"/>
+        </td>
+      </tr>
+    </table>
+    
+    <xsl:if test="number(@yanel:totalHits) > 0">
+      <table width="100%" id="tableHeadline">
+        <tr>
+          <td colspan="2"><hr/></td>
+        </tr>
+        <tr>
+          <td width="50%"></td>
+          <td align="right">
+            <font size="-1">
+              <i18n:message key="results"/>&#160;<b><xsl:value-of select="number(@yanel:start + 1)"/></b>- 
+              
+              <xsl:variable name="maxHit">
+                <xsl:choose>
+                  <xsl:when test="number(@yanel:start + $hitsPerPage) &gt; number(@yanel:totalHits)"><xsl:value-of select="number(@yanel:totalHits)" /></xsl:when>
+                  <xsl:otherwise><xsl:value-of select="number(@yanel:start + $hitsPerPage)" /></xsl:otherwise>
+                </xsl:choose>
+              </xsl:variable>
+              <b><xsl:value-of select="$maxHit"/></b>&#160;<i18n:message key="ofAbout"/>&#160;
+              <b><xsl:value-of select="number(@yanel:totalHits)"/></b>&#160;<i18n:message key="for"/>&#160; 
+              <b><xsl:value-of select="$query"/></b><br/>
+              <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(@yanel:start)}&amp;yanel.resource.viewid=source"><i18n:message key="viewResultsAsXml"/></a>
+            </font>
+          </td>
+        </tr>
+      </table>
+    </xsl:if>
+    
+    <table border="0" id="results">
       <xsl:choose>
         <xsl:when test="number(@yanel:totalHits) > 0">
-          <tr>
-            <td colspan="2"><hr/></td>
-          </tr>
-          <tr>
-            <td width="50%"></td>
-            <td align="right">
-              <font size="-1">
-                <i18n:message key="results"/>&#160;<b><xsl:value-of select="number(@yanel:start + 1)"/></b>- 
-                
-                <xsl:variable name="maxHit">
-                  <xsl:choose>
-                    <xsl:when test="number(@yanel:start + @yanel:hitsPerPage) &gt; number(@yanel:totalHits)"><xsl:value-of select="number(@yanel:totalHits)" /></xsl:when>
-                    <xsl:otherwise><xsl:value-of select="number(@yanel:start + @yanel:hitsPerPage)" /></xsl:otherwise>
-                  </xsl:choose>
-                </xsl:variable>
-                <b><xsl:value-of select="$maxHit"/></b>&#160;<i18n:message key="ofAbout"/>&#160;
-                <b><xsl:value-of select="number(@yanel:totalHits)"/></b>&#160;<i18n:message key="for"/>&#160; 
-                <b><xsl:value-of select="$query"/></b><br/>
-                <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(@yanel:start)}&amp;yanel.resource.viewid=source"><i18n:message key="viewResultsAsXml"/></a>
-              </font>
-            </td>
-          </tr>
-          
           <tr>
             <td colspan="2">
               <xsl:for-each select="yanel:result">
@@ -104,25 +116,6 @@
               </xsl:for-each>
             </td>
           </tr>
-          
-          <tr>
-            <td colspan="2">
-          <table width="100%" border="0">
-            <tr>
-              <td></td>
-     	        <td align="center">
-                <font size="-2">
-                  <xsl:call-template name="makeLinksForPagening">
-     	              <xsl:with-param name="pageNo">1</xsl:with-param>
-     	            </xsl:call-template>
-                </font>
-     	        </td>
-     	        <td></td>
-     	      </tr>
-          </table>
-            </td>
-          </tr>
-          
         </xsl:when>
         <xsl:when test="$query = ''"><!-- if no query inserted show empty form --></xsl:when>
         <xsl:otherwise>
@@ -134,6 +127,22 @@
         </xsl:otherwise>
       </xsl:choose>
     </table>
+    
+    <xsl:if test="number(@yanel:totalHits) > 0">
+      <table width="100%" border="0" id="pagening">
+        <tr>
+          <td></td>
+          <td align="center">
+            <font size="-2">
+              <xsl:call-template name="makeLinksForPagening">
+                <xsl:with-param name="pageNo">1</xsl:with-param>
+              </xsl:call-template>
+            </font>
+          </td>
+          <td></td>
+        </tr>
+      </table>
+    </xsl:if>
   </xsl:template>
   
   <xsl:template name="makeLinksForPagening">
@@ -153,7 +162,7 @@
           <xsl:otherwise>
             <xsl:if test="number($pageNo) &gt; number($minPage)">
               <xsl:if test="number($pageNo) &lt; number($maxPage)">
-                <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(number($pageNo - 1) * $hitsPerPage)}"><xsl:value-of select="$pageNo" /></a>&#0160;
+                <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(number($pageNo - 1) * $hitsPerPage)}&amp;yanel.meta.language={$yanel.meta.language}"><xsl:value-of select="$pageNo" /></a>&#0160;
               </xsl:if>
             </xsl:if>
           </xsl:otherwise>
@@ -174,7 +183,7 @@
             <xsl:attribute name="href">
               <xsl:value-of select="yanel:url"/>
             </xsl:attribute>
-            <xsl:value-of select="yanel:title"/>
+            <b><xsl:value-of select="yanel:title"/></b>
           </a>
         </td>
       </tr>
@@ -189,27 +198,46 @@
         </td>
       </tr>
       
+      <xsl:variable name="idx"><xsl:value-of select="yanel:hitIndexNo"/></xsl:variable>
+      <xsl:variable name="id"><xsl:value-of select="yanel:hitIndexDocNo"/></xsl:variable>
+      
       <tr>
-        <td clospan="2"><font size="-2" color="green"><xsl:value-of select="yanel:url"/></font></td>
+        <td clospan="2">
+          <font size="-2" color="green"><xsl:value-of select="yanel:url"/></font>
+          <font size="-2">
+            <xsl:text>&#0160;(</xsl:text><a href="?show=cache&amp;idx={$idx}&amp;id={$id}"><i18n:message key="cached"/></a><xsl:text>)</xsl:text>
+            <xsl:text>&#0160;(</xsl:text><a href="?show=explain&amp;query={$query}&amp;yanel.meta.language={$yanel.meta.language}&amp;idx={$idx}&amp;id={$id}"><i18n:message key="explain"/></a><xsl:text>)</xsl:text>
+            <xsl:text>&#0160;(</xsl:text><a href="?show=anchors&amp;idx={$idx}&amp;id={$id}"><i18n:message key="anchors"/></a><xsl:text>)</xsl:text>
+          </font>
+        </td>
       </tr>
       
     </table>
   </xsl:template>
   
   <xsl:template match="yanel:fragment">
-    <xsl:choose>
+    <!-- <xsl:choose>
       <xsl:when test="@yanel:highlight = 'true'"><b><xsl:value-of select="."/></b></xsl:when>
       <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
-    </xsl:choose>
+    </xsl:choose> -->
   </xsl:template>
   
   <xsl:template match="yanel:exception">
-    <p>
+    <tr>
+        <td colspan="2">
+          <div style="color: red; font-size: 24px;"><i18n:message key="exception"/></div> 
+          <xsl:variable name="message"><xsl:value-of select="substring-before(string(.), '#')"/></xsl:variable>
+          <xsl:variable name="directory"><xsl:value-of select="substring-after(string(.), '#')"/></xsl:variable>
+          <i18n:message key="{$message}"/><xsl:value-of select="$directory"/>
+          <xsl:value-of select="."/>
+        </td>
+      </tr>
+  <!--   <p>
        <div style="color: red; font-size: 24px;"><i18n:message key="exception"/></div> 
        <xsl:variable name="message"><xsl:value-of select="substring-before(string(.), '#')"/></xsl:variable>
        <xsl:variable name="directory"><xsl:value-of select="substring-after(string(.), '#')"/></xsl:variable>
        <i18n:message key="{$message}"/><xsl:value-of select="$directory"/>
-    </p>
+    </p> -->
   </xsl:template>
 
 </xsl:stylesheet>

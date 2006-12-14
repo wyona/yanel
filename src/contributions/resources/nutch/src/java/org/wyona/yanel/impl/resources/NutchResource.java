@@ -19,7 +19,9 @@ package org.wyona.yanel.impl.resources;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringBufferInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -37,6 +39,10 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Category;
+
+import org.apache.nutch.html.Entities;
+import org.apache.nutch.metadata.Metadata;
+
 import org.apache.nutch.searcher.Hit;
 import org.apache.nutch.searcher.HitDetails;
 import org.apache.nutch.searcher.Hits;
@@ -56,6 +62,8 @@ import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
+
+import javax.servlet.ServletContext;
 /**
  * 
  */
@@ -75,15 +83,21 @@ public class NutchResource extends Resource implements ViewableV1 {
     private int hitsPerPage = 10;
     private int numberOfPagesShown = 20;
     private int totalHitCount = 100;
+    private long totalHits = 0;
     private String defaultFile = "nutch-default.xml";
     private String localFile = "nutch-local.xml";
     private Path path = null;
     private Repository repository  = null;
     private String language = "en";
-    //messages is the name of the ResourceBundle
-    private String messages = "nutch";
+    private String show = "";//default is empty, else show either CACHE, EXPLAIN, ANCHORS
+    private String resourceBundle = "nutch";
     private RepoPath rp = null;
-
+    private NutchBean nutchBean = null;
+    private ServletContext servletContext = null;
+    private String cachedMimeType = null;
+    private Transformer transformer = null;
+    private I18nTransformer i18nTransformer = null;
+    
     /**
      * 
      */
@@ -101,13 +115,13 @@ public class NutchResource extends Resource implements ViewableV1 {
      * 
      */
     public View getView(Path path, String viewId) {
-        return getView(path, viewId, "NO_SEARCH_TERM", start, hitsPerPage, language);
+        return getView(path, viewId, "NO_SEARCH_TERM", start, hitsPerPage, language, show, 0, 0);
     }
 
     /**
      * 
      */
-    public View getView(Path path, String viewId, String searchTerm, int start, int hitsPerPage, String language) {
+    public View getView(Path path, String viewId, String searchTerm, int start, int hitsPerPage, String language, String show, int idx, int id) {
         View nutchView = null;
         this.path = path;
         this.language = language;
@@ -115,13 +129,20 @@ public class NutchResource extends Resource implements ViewableV1 {
             rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
                     getRepositoryFactory());
             repository = rp.getRepo();
-
+            resourceBundle = getMessageBundle(path);
             nutchView = new View();
-            nutchView.setInputStream(getInputStream(searchTerm, start, hitsPerPage, viewId, language));
-            if (viewId != null && viewId.equals("source")) {
-                nutchView.setMimeType(XML_MIME_TYPE);
+            nutchView.setInputStream(getInputStream(searchTerm, start, hitsPerPage, viewId, language, show, idx, id));
+            if("cache".equals(show)) {
+                nutchView.setMimeType(cachedMimeType);
+            } else if("explain".equals(show) || "anchors".equals(show))  {
+                log.error("show is " + show);
+                nutchView.setMimeType("text/html");
             } else {
-                nutchView.setMimeType(XHTML_MIME_TYPE);
+                if (viewId != null && viewId.equals("source")) {
+                    nutchView.setMimeType(XML_MIME_TYPE);
+                } else {
+                    nutchView.setMimeType(XHTML_MIME_TYPE);
+                }    
             }
         } catch (Exception e) {
             log.error(e, e);
@@ -133,7 +154,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * 
      */
     public View getView(HttpServletRequest request, String viewId) {
-        
+        servletContext = request.getSession().getServletContext();
         int _start = 0;
         try {
             _start = Integer.parseInt(request.getParameter("start"));
@@ -153,50 +174,62 @@ public class NutchResource extends Resource implements ViewableV1 {
             //use fallback language
             _language = language;
         }
+        int idx = 0;
+        try {
+            idx = Integer.parseInt(request.getParameter("idx"));
+        } catch(Exception e) {
+            idx = 0;
+        }
+        int id = 0;
+        try {
+            id = Integer.parseInt(request.getParameter("id"));
+        } catch(Exception e) {
+            id = 0;
+        }
         if(_language == null || ("").equals(_language)) _language = language;
-        return getView(new Path(request.getServletPath()), viewId, request.getParameter("query"), _start, _hitsPerPage, _language);
+        return getView(new Path(request.getServletPath()), viewId, request.getParameter("query"), _start, _hitsPerPage, _language, request.getParameter("show"), idx, id);
     }
 
     /**
-     * Generate result XML
+     * 
+     *
      */
-    private InputStream getInputStream(String searchTerm, int start, int hitsPerPage, String viewId, String language) {
+    private void setupConfiguration() {
+        configuration = new Configuration();
+        try {
+            String confDir = "file:" + rtd.getConfigFile().getParentFile().getAbsolutePath()
+                    + File.separator + "conf";
+            log.debug("Conf Dir: " + confDir);
+            URL defaultResource = new URL(confDir + File.separator + defaultFile);
+            configuration.addDefaultResource(defaultResource);
+            URL finalResource = new URL(confDir + File.separator + localFile);
+            configuration.addFinalResource(finalResource);
+        } catch (MalformedURLException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * 
+     * @param searchTerm
+     */
+    private void setupDocument(String searchTerm) {
+        setupConfiguration();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         try {
             DocumentBuilder parser = dbf.newDocumentBuilder();
-/*
-            DOMImplementation impl = parser.getDOMImplementation();
-            DocumentType doctype = null;
-            document = impl.createDocument(NAME_SPACE, "nutch", doctype);
-*/
             document = parser.parse(new java.io.StringBufferInputStream("<nutch:nutch xmlns:nutch=\""+NAME_SPACE+"\" xmlns=\""+NAME_SPACE+"\"/>"));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        // create root element
         Element rootElement = document.getDocumentElement();
         rootElement.setAttributeNS(NAME_SPACE, "language", language);
-        // Generate results
         if (searchTerm != null && searchTerm.length() > 0) {
             Element queryElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "query"));
             queryElement.appendChild(document.createTextNode(searchTerm));
             resultsElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "results"));
             resultsElement.setAttributeNS(NAME_SPACE, "start", "" + start);
-            configuration = new Configuration();
-    
-            try {
-                String confDir = "file:" + rtd.getConfigFile().getParentFile().getAbsolutePath()
-                        + File.separator + "conf";
-                log.debug("Conf Dir: " + confDir);
-                URL defaultResource = new URL(confDir + File.separator + defaultFile);
-                configuration.addDefaultResource(defaultResource);
-                URL finalResource = new URL(confDir + File.separator + localFile);
-                configuration.addFinalResource(finalResource);
-            } catch (MalformedURLException e) {
-                log.error(e.getMessage(), e);
-            }
-    
             try {
                 crawlDir = new File(configuration.get("searcher.dir"));
             } catch (Exception e) {
@@ -204,63 +237,216 @@ public class NutchResource extends Resource implements ViewableV1 {
                 exceptionElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "exception"));
                 exceptionElement.appendChild(document.createTextNode(e.getMessage()));
             }
-    
-            if (crawlDir != null) 
+            if (crawlDir != null) {
                 createDocument4SearchResult(searchTerm, start, hitsPerPage);
-
+            }
         } else {
             rootElement.appendChild(document.createElementNS(NAME_SPACE, "no-query"));
         }
+    }
+    
+    /**
+     * Generate result XML
+     */
+    private InputStream getInputStream(String searchTerm, int start, int hitsPerPage, String viewId, String language, String show, int idx, int id) {
+        setupDocument(searchTerm);
+        if("cache".equals(show)){
+            return new StringBufferInputStream(createCachedDocument4SearchResult(idx, id));
+        } else if("explain".equals(show)) {
+            return createExplanationDocument4SearchResult(idx, id, searchTerm, language);
+        } else if("anchors".equals(show)) {
+            return createAnchorsDocument4SearchResult(idx, id, searchTerm, language);
+        } else {/*will not do anything special cause our document is already created*/}
+        return transformedInputStream(viewId, searchTerm);
+    }
 
-        // Generate InputStream from DOM document
+    /**
+     * 
+     * @param viewId
+     * @param searchTerm
+     * @return
+     */
+    private InputStream transformedInputStream(String viewId, String searchTerm) {
         try {
-            Transformer transformer = null;
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             if (viewId != null && viewId.equals("source")) {
                 transformer = TransformerFactory.newInstance().newTransformer();
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
                 return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-                
             } else {
-                File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "result2xhtml.xsl");
+                File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile()
+                        .getAbsolutePath(), "xslt" + File.separator + "result2xhtml.xsl");
                 transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
                 transformer.setParameter("yanel.path.name", path.getName());
                 transformer.setParameter("yanel.path", path.toString());
                 transformer.setParameter("yanel.back2context", backToRoot(path, ""));
                 transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
-                
-                
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
-                
                 InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-                I18nTransformer i18nTransformer = new I18nTransformer(messages, language);
+                i18nTransformer = new I18nTransformer(resourceBundle, language);
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 saxParser.parse(inputStream, i18nTransformer);
-                
-                transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
-                transformer.setParameter("yanel.path.name", path.getName());
-                transformer.setParameter("yanel.path", path.toString());
-                transformer.setParameter("yanel.back2context", backToRoot(path, ""));
-                transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
-                byteArrayOutputStream = new ByteArrayOutputStream();
-                transformer.transform(new StreamSource(i18nTransformer.getInputStream()), new StreamResult(byteArrayOutputStream));
-     
-                inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-                i18nTransformer = new I18nTransformer("global", language);
-                saxParser = SAXParserFactory.newInstance().newSAXParser();
-                saxParser.parse(inputStream, i18nTransformer);
-                
-                return i18nTransformer.getInputStream();
+                return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm);
             }
-            
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
         return null;
     }
-
+    
     /**
-     *
+     * 
+     * @param inputStream
+     * @param searchTerm
+     * @return
+     */
+    private InputStream applyGlobalXslIfExists(InputStream inputStream, String searchTerm) {
+        StreamSource streamSource = null;
+        try {
+            streamSource = getXSLTStreamSource(path, repository);
+            log.error("streamSource: " + streamSource);
+            if(streamSource != null) {
+                transformer = TransformerFactory.newInstance().newTransformer(streamSource);
+                transformer.setParameter("yanel.path.name", path.getName());
+                transformer.setParameter("yanel.path", path.toString());
+                transformer.setParameter("yanel.back2context", backToRoot(path, ""));
+                transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+                transformer.setParameter("hitsPerPage", "" + hitsPerPage);
+                transformer.setParameter("totalHits", "" + totalHits);
+                transformer.setParameter("query", "" + searchTerm);
+                transformer.setParameter("start", "" + start);
+                transformer.setParameter("yanel.meta.lanugage", language);
+                transformer.setParameter("show", show);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                transformer.transform(new StreamSource(inputStream), new StreamResult(byteArrayOutputStream));
+                inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+                i18nTransformer = new I18nTransformer(resourceBundle, language);
+                SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
+                saxParser.parse(inputStream, i18nTransformer);
+                return i18nTransformer.getInputStream(); 
+            } else {
+                return inputStream;
+            }     
+        } catch(Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return null;
+    }
+    
+    /**
+     * 
+     * @param idx
+     * @param id
+     * @return
+     */
+    private String createCachedDocument4SearchResult(int idx, int id) {
+        String content = null;
+        try {
+            nutchBean = NutchBean.get(servletContext, configuration);
+            Hit hit = new Hit(idx, id); 
+            HitDetails details = nutchBean.getDetails(hit);
+            Metadata metaData = nutchBean.getParseData(details).getContentMeta();
+            content = null;
+            String contentType = (String) metaData.get(Metadata.CONTENT_TYPE);
+            log.debug("contentType: " + contentType);
+            cachedMimeType = contentType;
+            if (contentType.startsWith("text/html")) {
+                String encoding = (String) metaData.get("CharEncodingForConversion");
+                log.debug("encoding: " + encoding);
+                if (encoding != null) {
+                    try {
+                        content = new String(nutchBean.getContent(details), encoding);
+                    } catch (Exception e) {
+                        content = new String(nutchBean.getContent(details), "windows-1252");
+                    }
+                } else {
+                    content = new String(nutchBean.getContent(details));
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        log.debug("content:\n" + content);
+        return content;
+    }
+    
+    /**
+     * 
+     * @param idx
+     * @param id
+     * @param searchTerm
+     * @param language
+     * @return
+     */
+    private InputStream createExplanationDocument4SearchResult(int idx, int id, String searchTerm, String language) {
+        try {
+            nutchBean = NutchBean.get(servletContext, configuration);
+            Hit hit = new Hit(idx, id);
+            Query query = Query.parse(searchTerm, language, configuration);
+            String content = "<html xmlns:xhtml=\"http://www.w3.org/1999/xhtml\" " +
+                    "xmlns=\"http://www.w3.org/1999/xhtml\">" +
+                    "<head><title><i18n:message key=\"scoreExplanation\"/>: " + searchTerm + "</title></head>" +
+                    "<body><table id=\"results\"><tr><td>" +
+                    "<h3><i18n:message key=\"page\"/></h3>" +
+                    replaceAmpersand(nutchBean.getDetails(hit).toHtml()) + 
+                    "<h3><i18n:message key=\"scoreForQuery\"/>" + query + "</h3>" + 
+                    nutchBean.getExplanation(query, hit) + 
+                    "</td></tr></table></body></html>"; 
+            I18nTransformer i18nTransformer = new I18nTransformer(resourceBundle, language);
+            SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
+            saxParser.parse(new StringBufferInputStream(content), i18nTransformer);
+            return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return null;
+    }
+    
+    /**
+     * 
+     * @param idx
+     * @param id
+     * @param searchTerm
+     * @param language
+     * @return
+     */
+    private InputStream createAnchorsDocument4SearchResult(int idx, int id, String searchTerm, String language) {
+        try {
+            nutchBean = NutchBean.get(servletContext, configuration);
+            Hit hit = new Hit(idx, id);
+            HitDetails details = nutchBean.getDetails(hit);
+            String listItems = "";
+            String[] anchors = nutchBean.getAnchors(details);
+            if(anchors != null) {
+                for(int i=0; i<anchors.length; i++) {
+                    listItems += "<li>" + Entities.encode(anchors[i]) + "</li>";
+                }
+            }
+            String content = "<html xmlns:xhtml=\"http://www.w3.org/1999/xhtml\" " +
+                    "xmlns=\"http://www.w3.org/1999/xhtml\">" +
+                    "<head><title><i18n:message key=\"anchors\"/>: " + searchTerm + "</title></head>" +
+                    "<body><table id=\"results\"><tr><td><h3><i18n:message key=\"anchors\"/></h3>" +
+                    replaceAmpersand(details.getValue("url")) + 
+                    "<ul>" + 
+                    listItems +
+                    "</ul>" +
+                    "</td></tr></table></body></html>"; 
+            log.error("content:\n" + content);
+            I18nTransformer i18nTransformer = new I18nTransformer(resourceBundle, language);
+            SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
+            saxParser.parse(new StringBufferInputStream(content), i18nTransformer);
+            return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return null;
+    }
+    
+    /**
+     * 
+     * @param path
+     * @param backToRoot
+     * @return
      */
     private String backToRoot(Path path, String backToRoot) {
         org.wyona.commons.io.Path parent = path.getParent();
@@ -271,7 +457,9 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
 
     /**
-     *
+     * 
+     * @param path
+     * @return
      */
     private boolean isRoot(org.wyona.commons.io.Path path) {
         if (path.toString().equals(File.separator)) return true;
@@ -288,25 +476,22 @@ public class NutchResource extends Resource implements ViewableV1 {
         try {
             if (!crawlDir.isDirectory()) {
                 exceptionElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "exception"));
-                
                 exceptionMessage = "noSuchCrawlDirectory#" + crawlDir;
                 exceptionElement.appendChild(document.createTextNode(exceptionMessage));
-                
                 log.warn(exceptionMessage);
                 return;
             } else {
-                NutchBean nutchBean = new NutchBean(configuration);
+                nutchBean = new NutchBean(configuration);
                 Query query = Query.parse(searchTerm, configuration);
                 Hits hits = nutchBean.search(query, totalHitCount);
-                
+                totalHits = hits.getTotal();
                 int range = (int) Math.min(hits.getTotal() - start, hitsPerPage);
                 resultsElement.setAttributeNS(NAME_SPACE, "hitsPerPage", "" + hitsPerPage);
-                resultsElement.setAttributeNS(NAME_SPACE, "totalHits", "" + hits.getTotal());
+                resultsElement.setAttributeNS(NAME_SPACE, "totalHits", "" + totalHits);
                 resultsElement.setAttributeNS(NAME_SPACE, "currentPageNo", "" + ((start / hitsPerPage) + 1));
                 resultsElement.setAttributeNS(NAME_SPACE, "numberOfPagesShown", "" + numberOfPagesShown);
                 Hit[] show = hits.getHits(start, range);
                 HitDetails[] details = nutchBean.getDetails(show);
-
                 Summary[] summaries = nutchBean.getSummary(details, query);
                 Element fetchedDateElement = null;
                 Element segmentElement = null;
@@ -351,11 +536,9 @@ public class NutchResource extends Resource implements ViewableV1 {
                         fragmentElement.setAttributeNS(NAME_SPACE, "highlight", "" + fragments[j].isHighlight());
                         fragmentElement.setAttributeNS(NAME_SPACE, "ellipsis", "" + fragments[j].isEllipsis());
                         // Also see org.apache.nutch.searcher.Summary.toHtml()
-                        
                         String fragmentValue = replaceAmpersand(fragments[j].toString());
                         fragmentValue = fragmentValue.replaceAll("<", "&lt;");
                         fragmentValue = fragmentValue.replaceAll(">", "&gt;");
-                        
                         fragmentElement.appendChild(document.createCDATASection(fragmentValue));
                         // TODO: Why does this not work for all cases? ...
                         //fragmentElement.appendChild(document.createCDATASection(replaceAmpersand(fragments[j].getText())));
@@ -369,22 +552,24 @@ public class NutchResource extends Resource implements ViewableV1 {
 
     /**
      * 
+     * @param path
+     * @param repo
+     * @return
+     * @throws RepositoryException
      */
     private StreamSource getXSLTStreamSource(Path path, Repository repo) throws RepositoryException {
         Path xsltPath = getXSLTPath(path);
         if (xsltPath != null) {
             return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString())));
         } else {
-            File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
-                    .getParentFile()
-                    .getAbsolutePath(), "xslt" + File.separator + "result2xhtml.xsl");
-            log.debug("XSLT file: " + xsltFile);
-            return new StreamSource(xsltFile);
+            return null;
         }
     }
 
     /**
      * 
+     * @param path
+     * @return
      */
     private Path getXSLTPath(Path path) {
         String xsltPath = null;
@@ -396,11 +581,10 @@ public class NutchResource extends Resource implements ViewableV1 {
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo()
                     .getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath()
                             .toString())));
-
             while ((xsltPath = br.readLine()) != null) {
                 if (xsltPath.indexOf("xslt:") == 0) {
                     xsltPath = xsltPath.substring(6);
-                    log.debug("XSLT Path: " + xsltPath);
+                    log.error("XSLT Path: " + xsltPath);
                     return new Path(xsltPath);
                 }
             }
@@ -408,12 +592,42 @@ public class NutchResource extends Resource implements ViewableV1 {
         } catch (Exception e) {
             log.warn(e);
         }
-
         return null;
     }
 
     /**
      * 
+     * @param path
+     * @return
+     */
+    private String getMessageBundle(Path path) {
+        String xsltPath = null;
+        try {
+            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory
+            // ...!
+            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
+                    yanel.getRepositoryFactory("RTIRepositoryFactory"));
+            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo()
+                    .getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath()
+                            .toString())));
+            while ((xsltPath = br.readLine()) != null) {
+                if (xsltPath.indexOf("messageBundle:") == 0) {
+                    xsltPath = xsltPath.substring(15);
+                    log.error("messageBundle: " + xsltPath);
+                    return xsltPath;
+                }
+            }
+            log.error("messageBundle within rti: " + rpRTI.getPath());
+        } catch (Exception e) {
+            log.warn(e);
+        }
+        return null;
+    }
+    
+    /**
+     * 
+     * @param path
+     * @return
      */
     private String getMimeType(Path path) {
         String mimeType = null;
@@ -425,7 +639,6 @@ public class NutchResource extends Resource implements ViewableV1 {
             java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo()
                     .getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath()
                             .toString())));
-
             while ((mimeType = br.readLine()) != null) {
                 if (mimeType.indexOf("mime-type:") == 0) {
                     mimeType = mimeType.substring(11);
@@ -437,7 +650,6 @@ public class NutchResource extends Resource implements ViewableV1 {
         } catch (Exception e) {
             log.warn(e);
         }
-
         // NOTE: Assuming fallback re dir2xhtml.xsl ...
         return "application/xhtml+xml";
     }
@@ -462,9 +674,29 @@ public class NutchResource extends Resource implements ViewableV1 {
         return replacedAmpersand;
     }
     
+    /**
+     * 
+     * @return
+     */
     protected RepositoryFactory getRepositoryFactory() {
         return yanel.getRepositoryFactory("DefaultRepositoryFactory");
     }
     
-
+    /**
+     * this method will display the input stream for debugging purposes
+     * @param inputStream
+     */
+    private void debugInputStream(InputStream inputStream) {
+        java.io.InputStreamReader inR = new java.io.InputStreamReader(inputStream) ; 
+        java.io.BufferedReader buf = new java.io.BufferedReader (inR) ; 
+        String line; 
+        try {
+            while((line = buf.readLine()) != null) {  
+                log.error("::::" + line) ; 
+            }
+            inputStream.close();   
+        } catch (IOException e) {
+            e.printStackTrace();
+        }  
+    }
 }
