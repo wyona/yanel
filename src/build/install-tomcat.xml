@@ -2,16 +2,18 @@
 
 <project name="install-default-tomcat" default="install-default-tomcat" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
   <description>Install Default Tomcat</description>
-
+  
   <target name="install-default-tomcat" description="Install Default Tomcat" depends="init" if="yes.install.default.tomcat">
     <echo>Install Default Tomcat ...</echo>
 
     <mkdir dir="${yanel.home.dir}/local"/>
     <unzip src="${yanel.home.dir}/tools/apache-tomcat/apache-tomcat-5.5.20.zip" dest="${yanel.home.dir}/local"/>
-
-    <!-- TODO: Only copy for Java 1.4! -->
-    <copy file="${yanel.home.dir}/tools/apache-tomcat/java-1.4/apache-tomcat-5.5.20/bin/jmx.jar" todir="${default.tomcat.home.dir}/bin"/>
-
+    
+    <condition property="isJava1.4">
+      <equals arg1="${ant.java.version}" arg2="1.4"/>
+    </condition>
+    <antcall target="copy-java1.4-libs"/>
+    
     <replace file="${yanel.home.dir}/src/build/local.build.properties" value="tomcat1.http.port=8080">
       <replacetoken>#tomcat1.http.port=9190</replacetoken>
     </replace>
@@ -19,4 +21,9 @@
       <replacetoken>#tomcat1.ssl.port=9143</replacetoken>
     </replace>
   </target>
+  
+  <target name="copy-java1.4-libs" if="isJava1.4" description="Copy jars specific to java 1.4" depends="init">
+    <copy file="${yanel.home.dir}/tools/apache-tomcat/java-1.4/apache-tomcat-5.5.20/bin/jmx.jar" todir="${default.tomcat.home.dir}/bin"/>
+  </target>
+    
 </project>
