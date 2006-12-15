@@ -35,12 +35,21 @@
     <body>
     <span id="pageInfo" itemsPerPage="{$hitsPerPage}"/>
     <form name="search">
-    <p>
-      <input type="text" name="query" value="{$query}"/>
-      <input type="hidden" name="yanel.meta.language" value="{$yanel.meta.language}"/>
-      <input type="hidden" name="totalHits" value="{$totalHits}"/>
-      <input type="submit" name="submit" value="i18n:attr key=search"/>
-    </p>
+      <table width="100%">
+        <tr>
+          <td>
+            <input type="text" name="query" value="{$query}"/>
+            <input type="hidden" name="yanel.meta.language" value="{$yanel.meta.language}"/>
+            <input type="hidden" name="totalHits" value="{$totalHits}"/>
+            <input type="submit" name="submit" value="i18n:attr key=search"/>
+          </td>
+          <td align="right">
+            <font size="-2">
+              <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(@yanel:start)}&amp;yanel.resource.viewid=source"><i18n:message key="viewResultsAsXml"/></a>
+            </font>
+          </td>
+        </tr>
+      </table>
     </form>
     
     <p>
@@ -66,7 +75,7 @@
   </xsl:template>
   
   <xsl:template match="yanel:no-query" mode="title">
-    <i18n:message key="resultsForQuery"/>
+    <i18n:message key="resultsForQuery"/><xsl:value-of select="."/>
   </xsl:template>
   
   <xsl:template match="yanel:results">
@@ -85,8 +94,7 @@
           <td colspan="2"><hr/></td>
         </tr>
         <tr>
-          <td width="50%"></td>
-          <td align="right">
+          <td align="right" colspan="2">
             <font size="-1">
               <i18n:message key="results"/>&#160;<b><xsl:value-of select="number(@yanel:start + 1)"/></b>- 
               
@@ -96,10 +104,7 @@
                   <xsl:otherwise><xsl:value-of select="number(@yanel:start + $hitsPerPage)" /></xsl:otherwise>
                 </xsl:choose>
               </xsl:variable>
-              <b><xsl:value-of select="$maxHit"/></b>&#160;<i18n:message key="ofAbout"/>&#160;
-              <b><xsl:value-of select="number(@yanel:totalHits)"/></b>&#160;<i18n:message key="for"/>&#160; 
-              <b><xsl:value-of select="$query"/></b><br/>
-              <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(@yanel:start)}&amp;yanel.resource.viewid=source"><i18n:message key="viewResultsAsXml"/></a>
+              <b><xsl:value-of select="$maxHit"/></b>&#160;<i18n:message key="ofAbout"/>&#160;<b><xsl:value-of select="number(@yanel:totalHits)"/></b>&#160;<i18n:message key="hitsFound"/>&#160;<i18n:message key="for"/>&#160;<b><xsl:value-of select="$query"/></b><br/>
             </font>
           </td>
         </tr>
@@ -117,7 +122,7 @@
             </td>
           </tr>
         </xsl:when>
-        <xsl:when test="$query = ''"><!-- if no query inserted show empty form --></xsl:when>
+        <xsl:when test="$query = ''"></xsl:when>
         <xsl:otherwise>
           <tr>
             <td colspan="2">
@@ -224,20 +229,14 @@
   
   <xsl:template match="yanel:exception">
     <tr>
-        <td colspan="2">
-          <div style="color: red; font-size: 24px;"><i18n:message key="exception"/></div> 
-          <xsl:variable name="message"><xsl:value-of select="substring-before(string(.), '#')"/></xsl:variable>
-          <xsl:variable name="directory"><xsl:value-of select="substring-after(string(.), '#')"/></xsl:variable>
-          <i18n:message key="{$message}"/><xsl:value-of select="$directory"/>
-          <xsl:value-of select="."/>
-        </td>
-      </tr>
-  <!--   <p>
-       <div style="color: red; font-size: 24px;"><i18n:message key="exception"/></div> 
-       <xsl:variable name="message"><xsl:value-of select="substring-before(string(.), '#')"/></xsl:variable>
-       <xsl:variable name="directory"><xsl:value-of select="substring-after(string(.), '#')"/></xsl:variable>
-       <i18n:message key="{$message}"/><xsl:value-of select="$directory"/>
-    </p> -->
+      <td colspan="2">
+        <div style="color: red; font-size: 24px;"><i18n:message key="exception"/></div>
+        <xsl:variable name="message"><xsl:value-of select="substring-before(string(.), '#')"/></xsl:variable>
+        <xsl:variable name="directory"><xsl:value-of select="substring-after(string(.), '#')"/></xsl:variable>
+        <i18n:message key="{$message}"/><xsl:value-of select="$directory"/>
+        <xsl:value-of select="."/>
+      </td>
+    </tr>
   </xsl:template>
 
 </xsl:stylesheet>

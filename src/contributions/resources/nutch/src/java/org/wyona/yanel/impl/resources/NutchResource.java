@@ -25,7 +25,10 @@ import java.io.StringBufferInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
@@ -88,7 +91,9 @@ public class NutchResource extends Resource implements ViewableV1 {
     private String localFile = "nutch-local.xml";
     private Path path = null;
     private Repository repository  = null;
-    private String language = "en";
+    private String language = "";
+    private String defaultLanguage = "en";
+    private String searchTerm = "";
     private String show = "";//default is empty, else show either CACHE, EXPLAIN, ANCHORS
     private String resourceBundle = "nutch";
     private RepoPath rp = null;
@@ -115,23 +120,22 @@ public class NutchResource extends Resource implements ViewableV1 {
      * 
      */
     public View getView(Path path, String viewId) {
-        return getView(path, viewId, "NO_SEARCH_TERM", start, hitsPerPage, language, show, 0, 0);
+        return getView(path, viewId, 0, 0);
     }
 
     /**
      * 
      */
-    public View getView(Path path, String viewId, String searchTerm, int start, int hitsPerPage, String language, String show, int idx, int id) {
+    public View getView(Path path, String viewId, int idx, int id) {
         View nutchView = null;
         this.path = path;
-        this.language = language;
         try {
             rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
                     getRepositoryFactory());
             repository = rp.getRepo();
             resourceBundle = getMessageBundle(path);
             nutchView = new View();
-            nutchView.setInputStream(getInputStream(searchTerm, start, hitsPerPage, viewId, language, show, idx, id));
+            nutchView.setInputStream(getInputStream(viewId, show, idx, id));
             if("cache".equals(show)) {
                 nutchView.setMimeType(cachedMimeType);
             } else if("explain".equals(show) || "anchors".equals(show))  {
@@ -157,22 +161,22 @@ public class NutchResource extends Resource implements ViewableV1 {
         servletContext = request.getSession().getServletContext();
         int _start = 0;
         try {
-            _start = Integer.parseInt(request.getParameter("start"));
+            start = Integer.parseInt(request.getParameter("start"));
         } catch(Exception e) {
-            _start = start;
+            start = _start;
         }
-        int _hitsPerPage = 0;
+        int _hitsPerPage = 10;
         try {
-            _hitsPerPage = Integer.parseInt(request.getParameter("hitsPerPage"));
+            hitsPerPage = Integer.parseInt(request.getParameter("hitsPerPage"));
         } catch(Exception e) {
-            _hitsPerPage = hitsPerPage;
+            hitsPerPage = _hitsPerPage;
         }
         String _language = language;
         try {
-            _language = request.getParameter("yanel.meta.language");
+            language = request.getParameter("yanel.meta.language");
         } catch(Exception e) {
             //use fallback language
-            _language = language;
+            language = _language;
         }
         int idx = 0;
         try {
@@ -186,8 +190,10 @@ public class NutchResource extends Resource implements ViewableV1 {
         } catch(Exception e) {
             id = 0;
         }
-        if(_language == null || ("").equals(_language)) _language = language;
-        return getView(new Path(request.getServletPath()), viewId, request.getParameter("query"), _start, _hitsPerPage, _language, request.getParameter("show"), idx, id);
+        show = request.getParameter("show");
+        searchTerm = request.getParameter("query");
+        if(language == null || ("").equals(language)) language = defaultLanguage;
+        return getView(new Path(request.getServletPath()), viewId, idx, id);
     }
 
     /**
@@ -248,7 +254,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     /**
      * Generate result XML
      */
-    private InputStream getInputStream(String searchTerm, int start, int hitsPerPage, String viewId, String language, String show, int idx, int id) {
+    private InputStream getInputStream(String viewId, String show, int idx, int id) {
         setupDocument(searchTerm);
         if("cache".equals(show)){
             return new StringBufferInputStream(createCachedDocument4SearchResult(idx, id));
@@ -304,7 +310,6 @@ public class NutchResource extends Resource implements ViewableV1 {
         StreamSource streamSource = null;
         try {
             streamSource = getXSLTStreamSource(path, repository);
-            log.error("streamSource: " + streamSource);
             if(streamSource != null) {
                 transformer = TransformerFactory.newInstance().newTransformer(streamSource);
                 transformer.setParameter("yanel.path.name", path.getName());
@@ -320,6 +325,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 transformer.transform(new StreamSource(inputStream), new StreamResult(byteArrayOutputStream));
                 inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+                log.error("language: " + language);
                 i18nTransformer = new I18nTransformer(resourceBundle, language);
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 saxParser.parse(inputStream, i18nTransformer);
@@ -386,12 +392,12 @@ public class NutchResource extends Resource implements ViewableV1 {
             String content = "<html xmlns:xhtml=\"http://www.w3.org/1999/xhtml\" " +
                     "xmlns=\"http://www.w3.org/1999/xhtml\">" +
                     "<head><title><i18n:message key=\"scoreExplanation\"/>: " + searchTerm + "</title></head>" +
-                    "<body><table id=\"results\"><tr><td>" +
+                    "<body><div id=\"results\">" +
                     "<h3><i18n:message key=\"page\"/></h3>" +
                     replaceAmpersand(nutchBean.getDetails(hit).toHtml()) + 
                     "<h3><i18n:message key=\"scoreForQuery\"/>" + query + "</h3>" + 
                     nutchBean.getExplanation(query, hit) + 
-                    "</td></tr></table></body></html>"; 
+                    "</div></body></html>"; 
             I18nTransformer i18nTransformer = new I18nTransformer(resourceBundle, language);
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new StringBufferInputStream(content), i18nTransformer);
@@ -425,12 +431,12 @@ public class NutchResource extends Resource implements ViewableV1 {
             String content = "<html xmlns:xhtml=\"http://www.w3.org/1999/xhtml\" " +
                     "xmlns=\"http://www.w3.org/1999/xhtml\">" +
                     "<head><title><i18n:message key=\"anchors\"/>: " + searchTerm + "</title></head>" +
-                    "<body><table id=\"results\"><tr><td><h3><i18n:message key=\"anchors\"/></h3>" +
-                    replaceAmpersand(details.getValue("url")) + 
-                    "<ul>" + 
-                    listItems +
-                    "</ul>" +
-                    "</td></tr></table></body></html>"; 
+                    "<body><div id=\"results\"><h3><i18n:message key=\"anchors\"/></h3>" +
+                    replaceAmpersand(details.getValue("url"));
+            if(anchors != null) {
+                content += "<ul>" + listItems + "</ul>"; 
+            }
+            content += "</div></body></html>"; 
             log.error("content:\n" + content);
             I18nTransformer i18nTransformer = new I18nTransformer(resourceBundle, language);
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
@@ -481,6 +487,11 @@ public class NutchResource extends Resource implements ViewableV1 {
                 log.warn(exceptionMessage);
                 return;
             } else {
+                /**FIXME: add owl as well */
+                
+                getRefineList();
+                
+                
                 nutchBean = new NutchBean(configuration);
                 Query query = Query.parse(searchTerm, configuration);
                 Hits hits = nutchBean.search(query, totalHitCount);
@@ -549,6 +560,37 @@ public class NutchResource extends Resource implements ViewableV1 {
             log.error(e.getMessage(), e);
         }
     }
+    
+    private List getRefineList() {
+        org.apache.nutch.ontology.Ontology ontology = null;
+        try {
+            // Configuration nutchConf = NutchConfiguration.get(application);
+            String urls = configuration.get("extension.ontology.urls");
+            log.error("URLS__> " + urls);
+            ontology = new org.apache.nutch.ontology.OntologyFactory(configuration).getOntology();
+            if (urls==null || urls.trim().equals("")) {
+                // ignored siliently
+            } else {
+                log.error("is ontology null? : " + ontology);
+                ontology.load(urls.split("\\s+"));
+            }
+        } catch (Exception e) {
+            // ignored siliently
+            log.error("BLOODCLOT: " + e.getMessage(), e);
+        }
+         
+        List refineList = new ArrayList();
+        if (ontology != null) {
+            Iterator iter = ontology.subclasses(searchTerm);
+            while (iter.hasNext()) {
+                String nextItem = (String)iter.next();
+                log.error("iterating: --> " + nextItem);  
+                // refineList.add((String)iter.next());
+                refineList.add(nextItem);
+            }
+        }
+        return refineList;
+    }
 
     /**
      * 
@@ -584,7 +626,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             while ((xsltPath = br.readLine()) != null) {
                 if (xsltPath.indexOf("xslt:") == 0) {
                     xsltPath = xsltPath.substring(6);
-                    log.error("XSLT Path: " + xsltPath);
+                    log.debug("XSLT Path: " + xsltPath);
                     return new Path(xsltPath);
                 }
             }
@@ -613,11 +655,11 @@ public class NutchResource extends Resource implements ViewableV1 {
             while ((xsltPath = br.readLine()) != null) {
                 if (xsltPath.indexOf("messageBundle:") == 0) {
                     xsltPath = xsltPath.substring(15);
-                    log.error("messageBundle: " + xsltPath);
+                    log.debug("messageBundle: " + xsltPath);
                     return xsltPath;
                 }
             }
-            log.error("messageBundle within rti: " + rpRTI.getPath());
+            log.debug("messageBundle within rti: " + rpRTI.getPath());
         } catch (Exception e) {
             log.warn(e);
         }
