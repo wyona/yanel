@@ -487,10 +487,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 log.warn(exceptionMessage);
                 return;
             } else {
-                /**FIXME: add owl as well */
-                
                 getRefineList();
-                
                 
                 nutchBean = new NutchBean(configuration);
                 Query query = Query.parse(searchTerm, configuration);
@@ -561,12 +558,16 @@ public class NutchResource extends Resource implements ViewableV1 {
         }
     }
     
+    /**
+     * Use OWL to refine query
+     */
     private List getRefineList() {
         org.apache.nutch.ontology.Ontology ontology = null;
         try {
             // Configuration nutchConf = NutchConfiguration.get(application);
             String urls = configuration.get("extension.ontology.urls");
             log.error("URLS__> " + urls);
+            // TODO: null is being returned!
             ontology = new org.apache.nutch.ontology.OntologyFactory(configuration).getOntology();
             if (urls==null || urls.trim().equals("")) {
                 // ignored siliently
