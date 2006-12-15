@@ -34,6 +34,7 @@
 * Pipeline resource ("Mini-Cocoon")
 * Dynamic introspection
 * Form Framework
+* [Simile Timeline|http://simile.mit.edu/timeline/] resource
 * [Annotations|specification/annotations.html]
 
 !Release 1.2
@@ -44,4 +45,3 @@
 * Caching
 * Link Checker
 * LDAP integration
- 
