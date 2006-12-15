@@ -34,6 +34,7 @@
 * Pipeline resource ("Mini-Cocoon")
 * Dynamic introspection
 * Form Framework
+* [Annotations|specification/annotations.html]
 
 !Release 1.2
 * Generic Workflow
