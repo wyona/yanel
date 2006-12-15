@@ -71,6 +71,10 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
 </realm>
 -->
 
+<realm id="test" mount-point="/test/">
+  <name>Tests</name>
+</realm>
+
 <realm id="welcome" mount-point="/" root="true">
   <name>Yanel Welcome and General Administration</name>
 </realm>
