@@ -80,7 +80,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <!-- CONTENT -->
 <td valign="top" width="100%">
   <div id="content">
-  <xsl:copy-of select="/xhtml:html/xhtml:body/*"/>
+    <xsl:copy-of select="/xhtml:html/xhtml:body/*"/>
   </div>
 </td>
 </tr>
