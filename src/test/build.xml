@@ -64,7 +64,6 @@
     <mkdir dir="${htmlunit.build.dir}"/>
     <mkdir dir="${test.results.dir}"/>
     <mkdir dir="${test.results.archive.dir}"/>
-    <copy file="${yanel.home.dir}/src/realms/test/yanel/data/index.xhtml" todir="${test.data.dir}"/>
     <javac srcdir="${junit.src.dir}" destdir="${junit.build.dir}">
       <classpath refid="classpath" />
     </javac>
