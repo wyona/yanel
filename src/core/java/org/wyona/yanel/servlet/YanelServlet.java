@@ -223,7 +223,7 @@ public class YanelServlet extends HttpServlet {
             Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
             exceptionElement.appendChild(doc.createTextNode(message));
 
-            setYanelOutput(response, doc);
+            setYanelOutput(request, response, doc);
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
@@ -240,7 +240,7 @@ public class YanelServlet extends HttpServlet {
                 Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
                 exceptionElement.appendChild(doc.createTextNode(message));
 
-                setYanelOutput(response, doc);
+                setYanelOutput(request, response, doc);
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 return;
             }
@@ -272,7 +272,7 @@ public class YanelServlet extends HttpServlet {
                             exceptionElement.appendChild(doc.createTextNode(message));
                             exceptionElement.setAttribute("status", "404");
                             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
-                            setYanelOutput(response, doc);
+                            setYanelOutput(request, response, doc);
                             return;
                         } catch(Exception e) {
                             log.error(e.getMessage(), e);
@@ -282,7 +282,7 @@ public class YanelServlet extends HttpServlet {
                             exceptionElement.appendChild(doc.createTextNode(message));
                             exceptionElement.setAttribute("status", "500");
                             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                            setYanelOutput(response, doc);
+                            setYanelOutput(request, response, doc);
                             return;
                         }
                     } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
@@ -326,7 +326,7 @@ public class YanelServlet extends HttpServlet {
                 String message = e.toString();
                 Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
                 exceptionElement.appendChild(doc.createTextNode(message));
-                setYanelOutput(response, doc);
+                setYanelOutput(request, response, doc);
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 return;
             }
@@ -353,7 +353,7 @@ public class YanelServlet extends HttpServlet {
                 log.error("DEBUG: Show all meta");
             }
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
-            setYanelOutput(response, doc);
+            setYanelOutput(request, response, doc);
             return;
         }
 
@@ -384,7 +384,7 @@ public class YanelServlet extends HttpServlet {
 
                     Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
                     exceptionElement.appendChild(doc.createTextNode(message));
-                    setYanelOutput(response, doc);
+                    setYanelOutput(request, response, doc);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     return;
                 }
@@ -413,7 +413,7 @@ public class YanelServlet extends HttpServlet {
             exceptionElement.appendChild(doc.createTextNode(message));
         }
 
-        setYanelOutput(response, doc);
+        setYanelOutput(request, response, doc);
         response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         return;
     }
@@ -1215,19 +1215,20 @@ public class YanelServlet extends HttpServlet {
     /**
      *
      */
-    private void setYanelOutput(HttpServletResponse response, Document doc) throws ServletException {
-        response.setContentType("application/xml");
+    private void setYanelOutput(HttpServletRequest request, HttpServletResponse response, Document doc) throws ServletException {
         try {
-            File xsltFile = org.wyona.commons.io.FileUtil.file(config.getServletContext().getRealPath("/"), "xslt" + File.separator + "xmlInfo2xhtml.xsl");
-            Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
-            transformer.transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
-             
-/*
-            OutputStream out = response.getOutputStream();
-            javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
-            out.close();
-*/
-
+            String yanelFormat = request.getParameter("yanel.format");
+            if(yanelFormat != null && yanelFormat.equals("xml")) {
+                response.setContentType("application/xml");
+                OutputStream out = response.getOutputStream();
+                javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
+                out.close();
+            } else {
+                response.setContentType("application/xhtml+xml");
+                File xsltFile = org.wyona.commons.io.FileUtil.file(config.getServletContext().getRealPath("/"), "xslt" + File.separator + "xmlInfo2xhtml.xsl");
+                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
+                transformer.transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage());

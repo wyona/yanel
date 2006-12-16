@@ -8,29 +8,59 @@
 >
 
   <xsl:output method="xhtml" encoding="UTF-8"/>
-  
+
   <xsl:template match="/">
-    <html>
-      <head>
-        <title>
-          Yanel 
-          <xsl:if test="child::node()/exception">
-            <i18n:text>- An error occurred</i18n:text>
-          </xsl:if>
-      </title>
-      </head>      
-      <body>
-        <xsl:if test="child::node()/exception">
-          <h1>Yanel: An error occurred</h1>
-          <h2>Debugging Information</h2>
-        </xsl:if>
-        <p>
-          <h4>Servlet Context Real Path</h4>
-          <xsl:value-of select="child::node()/@servlet-context-real-path"/>
-        </p>
-        <xsl:apply-templates select="child::node()"/>
-      </body>
-      </html>
+        <html>
+          <head>
+            <title>
+              Yanel
+              <xsl:choose>
+                <xsl:when test="child::node()/exception">
+                  <i18n:text>- An error occurred</i18n:text>
+                </xsl:when>
+                <xsl:otherwise>
+                  <i18n:text>- Page Info</i18n:text>
+                </xsl:otherwise>
+              </xsl:choose>
+            </title>
+          </head>
+          <body>
+
+              <h1>Yanel
+              <xsl:choose>
+                <xsl:when test="child::node()/exception">
+                  <i18n:text>- An error occurred</i18n:text>
+                </xsl:when>
+                <xsl:otherwise>
+                  <i18n:text>- Page Info</i18n:text>
+                </xsl:otherwise>
+              </xsl:choose>
+              </h1>
+
+              <xsl:choose>
+                <xsl:when test="child::node()/exception">
+                  <p><a href="?yanel.format=xml">Show XML source</a> </p>
+                </xsl:when>
+                <xsl:otherwise>
+                  <p><a href="?yanel.resource.meta&amp;yanel.format=xml">Show XML source</a> </p>
+                </xsl:otherwise>
+              </xsl:choose>
+
+              <xsl:apply-templates select="child::node()/exception"/>
+
+            <p>
+              <h4>Servlet Context Real Path</h4>
+              <xsl:value-of select="child::node()/@servlet-context-real-path"/>
+            </p>
+
+            <xsl:apply-templates select="child::node()/request"/>
+            <xsl:apply-templates select="child::node()/session"/>
+            <xsl:apply-templates select="child::node()/resource-type-identifier"/>
+            <xsl:apply-templates select="child::node()/no-resource-type-identifier"/>
+            <xsl:apply-templates select="child::node()/resource"/>
+            <xsl:apply-templates select="child::node()/revisions"/>
+          </body>
+        </html>
   </xsl:template>
   
   <xsl:template match="request">
