@@ -15,7 +15,10 @@
   </target>
 
   <target name="dependencies" description="Dependencies" depends="proxy">
-    <!-- INFO: http://maven.apache.org/ant-tasks.html -->
+    <!--
+      INFO: http://maven.apache.org/ant-tasks.html
+            http://marcus-christie.blogspot.com/2006/08/using-ant-with-maven-1-and-maven-2.html
+    -->
     <artifact:remoteRepository id="wyona.remote.repository" url="http://www.wyona.org/maven2/"/>
 
     <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
