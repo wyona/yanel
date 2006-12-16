@@ -2,7 +2,7 @@
 
 !Release 0.0.1-dev (Status 2006.12.12)
 * Neutron Spec v0 implemented (done)
-* RSS Feed
+* RSS Feed (done)
 * ...
 
 !Release 1.0
@@ -25,9 +25,10 @@
 * RTI as XML (in planning)
 * Versioned configuration (in planning)
 * Contact form resource (mostly done)
+* Locking of Write Access (in planning)
 
 !Release 1.1
-* Archive URL resource
+* Archive URL resource (in planning)
 * [FOP/PDF resource|specification/pdf-fop-resource.html] (mostly done)
 * Access Control User Interface
 * Diffs of Versions
