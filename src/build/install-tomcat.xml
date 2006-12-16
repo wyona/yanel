@@ -6,9 +6,19 @@
   <target name="install-default-tomcat" description="Install Default Tomcat" depends="init" if="yes.install.default.tomcat">
     <echo>Install Default Tomcat ...</echo>
 
+    <artifact:remoteRepository id="wyona.org.remote.repository" url="http://www.wyona.org/maven2/"/>
+
+    <artifact:dependencies pathId="maven2.tomcat.classpath" filesetId="maven2.tomcat.fileset">
+      <remoteRepository refid="wyona.org.remote.repository"/>
+      <dependency groupId="apache-org" artifactId="apache-tomcat" version="5.5.20" scope="provided"/>
+    </artifact:dependencies>
+
     <mkdir dir="${yanel.home.dir}/local"/>
-    <unzip src="${yanel.home.dir}/tools/apache-tomcat/apache-tomcat-5.5.20.zip" dest="${yanel.home.dir}/local"/>
-    
+    <unzip dest="${yanel.home.dir}/local">
+      <fileset refid="maven2.tomcat.fileset"/>
+    </unzip>
+    <delete dir="${yanel.home.dir}/local/META-INF"/>
+
     <condition property="isJava1.4">
       <equals arg1="${ant.java.version}" arg2="1.4"/>
     </condition>
