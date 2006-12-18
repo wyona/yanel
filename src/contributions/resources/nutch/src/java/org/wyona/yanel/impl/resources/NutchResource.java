@@ -191,6 +191,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             id = 0;
         }
         show = request.getParameter("show");
+        if (show == null) show = "";
         searchTerm = request.getParameter("query");
         if(language == null || ("").equals(language)) language = defaultLanguage;
         return getView(new Path(request.getServletPath()), viewId, idx, id);
