@@ -42,7 +42,6 @@ public class NutchResourceWebTest extends AbstractHtmlUnitTest {
     public void testNutchResource() throws Exception {
         loadHtmlPage("yanel-website/en/search.html");
         assertTitleEquals("Results for query: - Yanel");
-        System.err.println("\n\n\nAAAAAAAAAAAAAAAAa\n\n");
     }
     
 /*
