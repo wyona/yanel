@@ -100,6 +100,7 @@
   <xsl:template match="resourcetype">
     <li>
       <xsl:value-of select="./localname"/>
+      (<xsl:value-of select="./description"/>)
     </li>
   </xsl:template>
 
