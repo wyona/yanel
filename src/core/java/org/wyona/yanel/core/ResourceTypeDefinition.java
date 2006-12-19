@@ -32,6 +32,7 @@ public class ResourceTypeDefinition {
 
     private String uname;
     private String classname;
+    private String description;
 
     private File configFile;
 
@@ -48,9 +49,7 @@ public class ResourceTypeDefinition {
             String namespace= config.getAttribute("namespace", null);
             uname = "<{" + namespace + "}" + localName + "/>";
             classname = config.getAttribute("class", null);
-
-            Configuration descConfig = config.getChild("description", false);
-            // TODO: Set description ...
+            description = config.getChild("description").getValue();
         } catch(Exception e) {
             log.error(e);
         }
@@ -88,7 +87,7 @@ public class ResourceTypeDefinition {
      *
      */
     public String getResourceTypeDescription() {
-        return "DEBUG:description";
+        return description;
     }
 
     /**
