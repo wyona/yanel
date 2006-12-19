@@ -64,6 +64,10 @@
     <mkdir dir="${htmlunit.build.dir}"/>
     <mkdir dir="${test.results.dir}"/>
     <mkdir dir="${test.results.archive.dir}"/>
+    <copy todir="${test.data.dir}">
+      <fileset dir="${yanel.home.dir}/src/realms/test/yanel/data"/>
+    </copy>
+
     <javac srcdir="${junit.src.dir}" destdir="${junit.build.dir}">
       <classpath refid="classpath" />
     </javac>
