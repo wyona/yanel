@@ -41,14 +41,14 @@ public class XMLResourceTest extends AbstractYanelTest {
         super.setUp();
         this.testName = "Test for the XML Resource";
         
-        Realm realm = yanel.getMap().getRealm("/yanel-website/");
+        Realm realm = yanel.getMap().getRealm("/test/");
         Path path = new Path("/test-xml-resource.html");
         resource = new XMLResource();
         resource.setPath(path);
         resource.setRealm(realm);
         
         /*
-        String url = "/yanel-website/test-xml-resource.html";
+        String url = "/test/test-xml-resource.html";
         Map map = yanel.getMap();
         Realm realm = yanel.getMap().getRealm(url);
         Path path = yanel.getMap().getPath(realm, url);
