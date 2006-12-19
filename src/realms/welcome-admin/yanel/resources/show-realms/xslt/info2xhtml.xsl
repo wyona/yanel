@@ -42,7 +42,7 @@
         </xsl:attribute>
 -->
         <xsl:value-of select="./name"/>
-      </a> (ID: <xsl:value-of select="./id"/>)</li>
+      </a> (ID: <xsl:value-of select="./id"/>) (<xsl:value-of select="./description"/>)</li>
   </xsl:template>
   
   <xsl:template match="resourcetypes">

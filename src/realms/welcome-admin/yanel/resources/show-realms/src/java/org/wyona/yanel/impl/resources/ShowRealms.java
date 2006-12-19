@@ -117,6 +117,7 @@ public class ShowRealms extends Resource implements ViewableV1 {
             sb.append("<name>" + realms[i].getName() + "</name>");
             sb.append("<id>" + realms[i].getID() + "</id>");
             sb.append("<mountpoint>" + realms[i].getMountPoint() + "</mountpoint>");
+            //sb.append("<description>" + realms[i].getDescription() + "</description>");
             sb.append("</realm>");
         }
         
@@ -130,6 +131,7 @@ public class ShowRealms extends Resource implements ViewableV1 {
             try {
                 Resource resource = rtr.newResource(rtds[i].getResourceTypeUniversalName());
                 sb.append("<localname>" + rtds[i].getResourceTypeLocalName() + "</localname>");
+                sb.append("<description>" + rtds[i].getResourceTypeDescription() + "</description>");
             } catch(Exception e) {
                 log.error(e);
             }
