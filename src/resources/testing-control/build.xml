@@ -24,11 +24,7 @@
     <property name="testframework.dir" value="${yanel.home.dir}/src/test"/>
     <property name="junit.build.dir" value="${yanel.home.dir}/build/test/junit"/>
     <property name="htmlunit.build.dir" value="${yanel.home.dir}/build/test/htmlunit"/>
-    <property name="test.results.dir" value="${yanel.home.dir}/src/test/test-result"/>
-    
   </target>
-
-
 
   <target name="compile" description="Compile Java classes" depends="init">
 
@@ -44,20 +40,14 @@
   </target>
 
   <target name="build-testframework-test" description="builds tests" depends="init">
-    <ant dir="${testframework.dir}" target="build" inheritall="false"/>
+    <ant dir="${build.dir}/../src/test" target="build" inheritall="false"/>
   </target>
 
   <target name="test2webapp" depends="build-testframework-test">
-    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes">
-      <fileset dir="${junit.build.dir}"/>
-    </copy>
-    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes">
-      <fileset dir="${htmlunit.build.dir}"/>
-    </copy>
-    <copy file="test.config.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/test.config.xml" value="${yanel.home.dir}">
-      <replacetoken>@YANELHOMEDIR@</replacetoken>
-    </replace>
+    <jar destfile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/yanel-HtmlUnitTests.jar"
+      basedir="${build.dir}/test/htmlunit"/>
+    <jar destfile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/yanel-JunitTests.jar"
+      basedir="${build.dir}/test/junit"/>
   </target>
 
   <target name="clean" depends="init">
@@ -70,7 +60,5 @@
       <fileset refid="maven2.resource.fileset"/>
       <mapper type="flatten"/>
     </copy>
-    <!-- <antcall target="build-testframework-test"/>
-    <antcall target="test2webapp"/> -->
   </target>
 </project>

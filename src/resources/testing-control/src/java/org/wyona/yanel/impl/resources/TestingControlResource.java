@@ -21,14 +21,17 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.io.StringBufferInputStream;
 import java.io.StringReader;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.Calendar;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.Servlet;
@@ -52,11 +55,14 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.types.PatternSet;
 import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.taskdefs.optional.junit.*;
+import org.apache.tools.ant.types.ZipFileSet;
+import org.apache.tools.ant.taskdefs.optional.junit.JUnitTask;
+import org.apache.tools.ant.taskdefs.optional.junit.BatchTest;
+import org.apache.tools.ant.taskdefs.optional.junit.FormatterElement;
+import org.apache.tools.ant.taskdefs.optional.junit.AggregateTransformer.Format;
 import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.taskdefs.Tstamp;
 import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.optional.junit.AggregateTransformer.Format;
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
@@ -76,32 +82,26 @@ import org.wyona.yarep.util.RepoPath;
 import org.wyona.yarep.util.YarepUtil;
 import org.wyona.yanel.impl.resources.ResultAggregator;
 
+import org.apache.commons.io.FileUtils;
+
 /**
  * 
  */
 public class TestingControlResource extends Resource implements ViewableV1 {
 
-    private static final String DEFAULT_CONFIGURATION_FILE = "test.config.xml";
+    private static final String JUNIT_JAR = "yanel-JunitTests.jar";
+    private static final String HTMLUNIT_JAR = "yanel-HtmlUnitTests.jar";
     private static Category log = Category.getInstance(TestingControlResource.class);
-    private String YanelHomeDir;
+
+    private File JunitJarLocation;
+    private File HtmlunitJarLocation;
+    private File tmpResultDir;
+    private String errorMessage;
 
     /**
      * 
      */
     public TestingControlResource() {
-        URL propertiesURL = TestingControlResource.class.getClassLoader()
-                .getResource(DEFAULT_CONFIGURATION_FILE);
-        if (propertiesURL == null) {
-            log.error("No such resource: " + DEFAULT_CONFIGURATION_FILE);
-        }
-        try {
-            DefaultConfigurationBuilder configbuilder = new DefaultConfigurationBuilder();
-            File configfile = new File(propertiesURL.getFile());
-            Configuration config = configbuilder.buildFromFile(configfile);
-            YanelHomeDir = config.getChild("yanel-home-dir").getValue();
-        } catch (Exception e) {
-            log.error(e);
-        }
     }
 
     /**
@@ -128,22 +128,53 @@ public class TestingControlResource extends Resource implements ViewableV1 {
      */
     public View getView(HttpServletRequest request, String viewId) throws Exception {
         Path path = new Path(request.getServletPath());
-        String submit = request.getParameter("submit");
-        String type = request.getParameter("type");
-        String archive = request.getParameter("archive");
-        String[] testnames = request.getParameterValues("testnames");
-        View defaultView = new View();
-        if (submit == null) {
-            return plainRequest(path, defaultView);
-        } else {
-            if (type.equals("test")) {
-                return executeTests(path, defaultView, testnames);
-            }
-            if (type.equals("show")) {
-                return showArchive(path, defaultView, archive);
+
+        // the junit and htmlunit jars
+        String WEBINFPath = request.getSession().getServletContext().getRealPath("WEB-INF");
+        HtmlunitJarLocation = new File(WEBINFPath + File.separator + "lib" + File.separator
+                + HTMLUNIT_JAR);
+        JunitJarLocation = new File(WEBINFPath + File.separator + "lib" + File.separator
+                + JUNIT_JAR);
+
+        if (!HtmlunitJarLocation.exists()) {
+            errorMessage = errorMessage + "\n HtmlUnit-Tests not found.";
+        }
+        if (!JunitJarLocation.exists()) {
+            errorMessage = errorMessage + "\n JUnit-Tests not found.";
+        }
+
+        // create tmp-directroy to write the tests
+        if (!new File(request.getSession().getServletContext().getRealPath("tmp")).exists()) {
+            if (!new File(request.getSession().getServletContext().getRealPath("tmp")).mkdir()) {
+                errorMessage = errorMessage + "\n Creation of tmp directory faild.";
             }
         }
-        return null;
+
+        //prepare tmpResultDir
+        String uuid = new java.rmi.server.UID().toString();
+        tmpResultDir = new File(request.getSession().getServletContext().getRealPath("tmp"
+                + File.separator + "test-results-" + uuid));
+
+        String submit = request.getParameter("submit");
+        String type = request.getParameter("type");
+        String archivedResults = request.getParameter("archived-results");
+        String[] testnames = request.getParameterValues("testnames");
+
+        View defaultView = new View();
+        if (errorMessage != null) {
+            return error();
+        }
+        if (submit != null) {
+            if (testnames != null) {
+                return executeTests(path, defaultView, testnames);
+            }
+            if (archivedResults != null) {
+                return showArchive(path, defaultView, archivedResults);
+            }
+            return plainRequest(path, defaultView);
+        } else {
+            return plainRequest(path, defaultView);
+        }
     }
 
     private View plainRequest(Path path, View defaultView) throws Exception,
@@ -161,43 +192,55 @@ public class TestingControlResource extends Resource implements ViewableV1 {
         sb.append("<body>");
         sb.append("<div id=\"contenBody\">");
         sb.append("<h1>Testing Control</h1>");
-        sb.append("<form>");
+        sb.append("<form method=\"post\">");
         sb.append("<p>Following htmlunit tests are available:</p>");
-        sb.append("<p>Number of Test: " + getAllTestNames("htmlunit").length + "</p>");
 
-        for (int i = 0; i < this.getAllTestNames("htmlunit").length; i++) {
+        String[] allHtmlUnitTestNames = getAllTestNames("htmlunit");
+        sb.append("<p>Number of Test: " + allHtmlUnitTestNames.length + "</p>");
+
+        for (int i = 0; i < allHtmlUnitTestNames.length; i++) {
             sb.append("<p>"
-                    + this.getAllTestNames("htmlunit")[i].substring(this.getAllTestNames("htmlunit")[i].lastIndexOf("/") + 1));
+                    + allHtmlUnitTestNames[i].substring(allHtmlUnitTestNames[i].lastIndexOf("/") + 1));
             sb.append("<input type=\"checkbox\" name=\"testnames\" value=\""
-                    + this.getAllTestNames("htmlunit")[i] + "\"/></p>");
+                    + allHtmlUnitTestNames[i] + "\"/></p>");
         }
 
+        sb.append("<hr/>");
         sb.append("<p>Following junit tests are available:</p>");
-        sb.append("<p>Number of Test: " + getAllTestNames("junit").length + "</p>");
+        String[] allJUnitTestNames = getAllTestNames("junit");
+        sb.append("<p>Number of Test: " + allJUnitTestNames.length + "</p>");
 
-        for (int i = 0; i < this.getAllTestNames("junit").length; i++) {
+        for (int i = 0; i < allJUnitTestNames.length; i++) {
             sb.append("<p>"
-                    + this.getAllTestNames("junit")[i].substring(this.getAllTestNames("junit")[i].lastIndexOf("/") + 1));
-            sb.append("<input type=\"checkbox\" name=\"testnames\" value=\""
-                    + this.getAllTestNames("junit")[i] + "\"/></p>");
+                    + allJUnitTestNames[i].substring(allJUnitTestNames[i].lastIndexOf("/") + 1));
+            sb.append("<input type=\"checkbox\" name=\"testnames\" value=\"" + allJUnitTestNames[i]
+                    + "\"/></p>");
         }
 
-        sb.append("<input type=\"hidden\" name=\"type\" value=\"test\"/>");
         sb.append("<input type=\"submit\" name=\"submit\" value=\"Test\"/>");
         sb.append("</form>");
 
-        sb.append("<form>");
-        sb.append("<br/>Archived Test-Results: <select name=\"archive\">");
-        File testResultArchiveDir = new File(YanelHomeDir + "/src/test/test-results-archive");
-        String[] archivedTests = testResultArchiveDir.list();
-        for (int i = 0; i < archivedTests.length; i++) {
-            if (archivedTests[i].matches("[\\d]{4,4}[-][\\d]{2,2}[-][\\d]{2,2}[-][\\d]{2,2}[-][\\d]{2,2}[-][\\d]{2,2}[-]tests\\.xml")) {
-                sb.append("<option value=\"" + archivedTests[i] + "\">" + archivedTests[i]
-                        + "</option>");
+        sb.append("<form method=\"post\">");
+        sb.append("<br/>Archived Test-Results: <select name=\"archived-results\">");
+        try {
+            org.wyona.yarep.core.Path testResultArchivePath = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.getParent()
+                    .toString()
+                    + "/test-results-archive/"),
+                    getRepositoryFactory())
+                    .getPath();
+            org.wyona.yarep.core.Path[] children = contentRepo.getChildren(testResultArchivePath);
+            for (int i = 0; i < children.length; i++) {
+                if (contentRepo.isResource(children[i])
+                        && children[i].getName()
+                                .matches("[\\d]{4,4}[-][\\d]{2,2}[-][\\d]{2,2}[-][\\d]{2,2}[-][\\d]{2,2}[-][\\d]{2,2}[-]tests\\.xml")) {
+                    sb.append("<option value=\"" + children[i] + "\">" + children[i].getName()
+                            + "</option>");
+                }
             }
+        } catch (Exception e) {
+            log.error(e);
         }
         sb.append("</select>");
-        sb.append("<input type=\"hidden\" name=\"type\" value=\"show\"/>");
         sb.append("<input type=\"submit\" name=\"submit\" value=\"Show\"/>");
         sb.append("</form>");
 
@@ -230,45 +273,49 @@ public class TestingControlResource extends Resource implements ViewableV1 {
         contentRepo = rp.getRepo();
 
         // delete the resultdir before making new tests
-        emptyResultDir();
+        tmpResultDir.mkdir();
 
         // executing the tests
-        this.executeTests(testnames, "htmlunit");
-        this.executeTests(testnames, "junit");
+        executeTests(testnames);
 
         // geting the test results
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document result = builder.newDocument();
 
-        File testResultDir = new File(YanelHomeDir + "/src/test/test-results");
-        File testResultArchiveDir = new File(YanelHomeDir + "/src/test/test-results-archive");
-
         Project project = new Project();
-
+        
+        // aggregate all tests in the tmp dir
         try {
             ResultAggregator junitreport = new ResultAggregator();
             junitreport.setTaskName("JUnitReport");
             junitreport.setProject(project);
 
             FileSet fs_report = new FileSet();
-            fs_report.setDir(testResultDir);
+            fs_report.setDir(tmpResultDir);
             fs_report.setProject(project);
 
             PatternSet.NameEntry ne = fs_report.createInclude();
             ne.setName("**/TEST-*.xml");
             junitreport.addFileSet(fs_report);
 
-            junitreport.setTodir(testResultArchiveDir);
-            junitreport.setTofile(getTime() + "-tests.xml");
-
             junitreport.init();
-            // archives an aggregation of test-results in test-result-archives
-            junitreport.execute();
-            //get the result to show for this request
+            // get the result to show for this request
             result = junitreport.getDocument();
         } catch (Exception e) {
             log.error(e);
         }
+
+        //delete the test dir
+        FileUtils.deleteDirectory(tmpResultDir);
+
+        // write test result to repo
+        OutputStream out = contentRepo.getOutputStream(new Path("/test-results-archive/"
+                + getTime() + "-tests.xml"));
+        javax.xml.transform.TransformerFactory.newInstance()
+                .newTransformer()
+                .transform(new javax.xml.transform.dom.DOMSource(result),
+                        new javax.xml.transform.stream.StreamResult(out));
+        out.close();
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         File result2htmlXsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
@@ -295,14 +342,12 @@ public class TestingControlResource extends Resource implements ViewableV1 {
         return defaultView;
     }
 
-    private View showArchive(Path path, View defaultView, String archive) throws Exception,
+    private View showArchive(Path path, View defaultView, String archivedResults) throws Exception,
             TransformerConfigurationException, TransformerFactoryConfigurationError,
             NoSuchNodeException, TransformerException {
         Repository contentRepo;
         RepoPath rp = contentRepo(path);
         contentRepo = rp.getRepo();
-
-        File ResultArchive = new File(YanelHomeDir + "/src/test/test-results-archive/"+archive);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         File result2htmlXsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
@@ -310,9 +355,14 @@ public class TestingControlResource extends Resource implements ViewableV1 {
                 .getAbsolutePath(), "xslt" + File.separator + "result2html.xsl");
         Transformer transResult2html = TransformerFactory.newInstance()
                 .newTransformer(new StreamSource(result2htmlXsltFile));
-        
-        FileReader archfile = new FileReader(ResultArchive);
-        transResult2html.transform(new StreamSource(archfile), new StreamResult(byteArrayOutputStream));
+        transResult2html.setParameter("testing.result.title",
+                archivedResults.substring(archivedResults.lastIndexOf("/") + 1,
+                        archivedResults.length()));
+
+        InputStream inputStream = rp.getRepo()
+                .getInputStream(new org.wyona.yarep.core.Path(archivedResults));
+        transResult2html.transform(new StreamSource(inputStream),
+                new StreamResult(byteArrayOutputStream));
 
         Transformer transformer = TransformerFactory.newInstance()
                 .newTransformer(getXSLTStreamSource(path, contentRepo));
@@ -334,19 +384,6 @@ public class TestingControlResource extends Resource implements ViewableV1 {
     private RepoPath contentRepo(Path path) throws Exception {
         return new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
                 getRepositoryFactory());
-    }
-
-    private Transformer prepareTransformer(Path path) throws Exception,
-            TransformerConfigurationException, TransformerFactoryConfigurationError,
-            NoSuchNodeException {
-        Repository contentRepo;
-        RepoPath rp = contentRepo(path);
-        contentRepo = rp.getRepo();
-        Transformer transformer = TransformerFactory.newInstance()
-                .newTransformer(getXSLTStreamSource(path, contentRepo));
-        transformer.setParameter("yanel.path.name", path.getName());
-        transformer.setParameter("yanel.path", path.toString());
-        return transformer;
     }
 
     /**
@@ -436,32 +473,26 @@ public class TestingControlResource extends Resource implements ViewableV1 {
      * @return an array with the aviable tests.
      */
     private String[] getAllTestNames(String htmlOrJunit) {
-
-        File basedir = new File(YanelHomeDir + "/build/test/" + htmlOrJunit);
-        File resultdir = new File(YanelHomeDir + "/src/test/test-result");
-
         Project project = new Project();
-
         try {
             JUnitTask junit = new JUnitTask();
 
+            ZipFileSet zipfileset = new ZipFileSet();
+            zipfileset.setProject(project);
+            if (htmlOrJunit.equals("htmlunit")) {
+                zipfileset.setSrc(HtmlunitJarLocation);
+            } else {
+                zipfileset.setSrc(JunitJarLocation);
+            }
+            zipfileset.setIncludes("**/*Test.class");
+            zipfileset.setExcludes("**/Abstract*.class");
+
             BatchTest batchTest = junit.createBatchTest();
+            batchTest.addFileSet(zipfileset);
 
-            org.apache.tools.ant.types.FileSet fileset = new org.apache.tools.ant.types.FileSet();
+            DirectoryScanner directoryscanner = zipfileset.getDirectoryScanner(project);
 
-            fileset.setProject(project);
-            fileset.setDir(basedir);
-            fileset.setIncludes("**/*Test.class");
-            fileset.setExcludes("**/Abstract*.class");
-
-            batchTest.setTodir(resultdir);
-            batchTest.addFileSet(fileset);
-
-            DirectoryScanner directoryscanner = fileset.getDirectoryScanner(project);
-
-            String[] files = directoryscanner.getIncludedFiles();
-
-            return files;
+            return directoryscanner.getIncludedFiles();
         } catch (Exception e) {
             log.error(e);
         }
@@ -471,12 +502,8 @@ public class TestingControlResource extends Resource implements ViewableV1 {
     /**
      * Executes Tests.
      * @param testnames which should be executed.
-     * @param htmlOrJunit type of tests which should be executed. can be htmlunit or junit.
      */
-    private void executeTests(String[] testnames, String htmlOrJunit) throws Exception {
-
-        File basedir = new File(YanelHomeDir + "/build/test/" + htmlOrJunit);
-        File resultdir = new File(YanelHomeDir + "/src/test/test-results");
+    private void executeTests(String[] testnames) throws Exception {
 
         Project project = new Project();
         project.init();
@@ -485,22 +512,25 @@ public class TestingControlResource extends Resource implements ViewableV1 {
             JUnitTask junit = new JUnitTask();
             junit.setProject(project);
 
-            FileSet fileset = new FileSet();
-            fileset.setProject(project);
-            fileset.setDir(basedir);
+            ZipFileSet junitzipfileset = new ZipFileSet();
+            ZipFileSet htmlzipfileset = new ZipFileSet();
+            htmlzipfileset.setProject(project);
+            junitzipfileset.setProject(project);
+
+            htmlzipfileset.setSrc(HtmlunitJarLocation);
+            junitzipfileset.setSrc(JunitJarLocation);
 
             String includes = "";
             for (int i = 0; i < testnames.length; i++) {
                 includes = includes + testnames[i] + ",";
             }
-            fileset.setIncludes(includes);
+            htmlzipfileset.setIncludes(includes);
+            junitzipfileset.setIncludes(includes);
 
             BatchTest batchTest = junit.createBatchTest();
-            batchTest.setTodir(resultdir);
-            batchTest.addFileSet(fileset);
-
-            DirectoryScanner directoryscanner = fileset.getDirectoryScanner(project);
-            String[] files = directoryscanner.getIncludedFiles();
+            batchTest.setTodir(tmpResultDir);
+            batchTest.addFileSet(htmlzipfileset);
+            batchTest.addFileSet(junitzipfileset);
 
             FormatterElement formatter = new FormatterElement();
             formatter.setUseFile(true);
@@ -516,38 +546,12 @@ public class TestingControlResource extends Resource implements ViewableV1 {
             junit.setPrintsummary(summaryattr);
 
             org.apache.tools.ant.types.Commandline.Argument cmdline = junit.createJvmarg();
-            cmdline.setValue("-Djunit.base.dir=" + YanelHomeDir + "/build/test/" + htmlOrJunit);
 
             junit.setHaltonerror(false);
             junit.setHaltonfailure(false);
 
             junit.init();
             junit.execute();
-
-        } catch (Exception e) {
-            log.error(e);
-        }
-    }
-
-    /**
-     * remove old test from the result-dir
-     */
-    private void emptyResultDir() {
-        File testResultDir = new File(YanelHomeDir + "/src/test/test-results");
-
-        Project project = new Project();
-        project.init();
-
-        try {
-            FileSet fileset = new FileSet();
-            fileset.setProject(project);
-            fileset.setDir(testResultDir);
-
-            final Delete task = (Delete) project.createTask("delete");
-            task.setTaskName("delete old tests");
-            task.addFileset(fileset);
-            task.init();
-            task.execute();
 
         } catch (Exception e) {
             log.error(e);
@@ -565,5 +569,28 @@ public class TestingControlResource extends Resource implements ViewableV1 {
         sdf.setTimeZone(java.util.TimeZone.getDefault());
         String time = sdf.format(cal.getTime());
         return time;
+    }
+    /**
+     * get an error screen
+     * @return a view with an error screen
+     */
+    private View error() {
+        View defaultView = new View();
+        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+        sb.append("<head>");
+        sb.append("<title>Testing Control</title>");
+        sb.append("</head>");
+        sb.append("<body>");
+        sb.append("<div id=\"contenBody\">");
+        sb.append("<h1>Testing Control, something is wrong:</h1>");
+        sb.append(errorMessage);
+        sb.append("</div>");
+        sb.append("</body>");
+        sb.append("</html>");
+
+        defaultView.setMimeType("application/xhtml+xml");
+        defaultView.setInputStream(new java.io.StringBufferInputStream(sb.toString()));
+        return defaultView;
     }
 }
