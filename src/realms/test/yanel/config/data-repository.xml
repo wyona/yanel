@@ -10,9 +10,9 @@
     <content src="../../../../../local/test"/>
   </storage>
 -->
-  <paths src="../data-paths" fallback="true"/>
+  <paths src="../../../../../local/test/data-paths" fallback="true"/>
 
   <storage class="org.wyona.yarep.core.impl.fs.FileSystemStorage">
-    <content src="../../../../../local/test"/>
+    <content src="../../../../../local/test/data"/>
   </storage>
 </repository>
