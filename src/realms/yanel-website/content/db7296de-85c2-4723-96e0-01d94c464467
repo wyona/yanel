@@ -1,1 +1,6 @@
 !Nutch Resource
+
+__Configuration__:
+* URLs to start with: nutch-0.8.x/url/...
+* URLs to be parsed and followed: nutch-0.8.x/conf/crawl-urlfilter.txt, nutch-0.8.x/conf/regex-urlfilter.txt
+* Depth of Crawling: crawl.sh (e.g. -depth 10)
