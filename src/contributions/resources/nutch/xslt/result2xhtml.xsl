@@ -188,7 +188,7 @@
             <xsl:attribute name="href">
               <xsl:value-of select="yanel:url"/>
             </xsl:attribute>
-            <b><xsl:value-of select="yanel:title"/></b>
+            <b><xsl:if test="not(string(yanel:title))">No Title</xsl:if><xsl:value-of select="yanel:title"/></b>
           </a>
         </td>
       </tr>
