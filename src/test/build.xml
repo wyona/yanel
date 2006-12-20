@@ -63,8 +63,6 @@
     <mkdir dir="${build.dir}"/>
     <mkdir dir="${junit.build.dir}"/>
     <mkdir dir="${htmlunit.build.dir}"/>
-    <mkdir dir="${test.results.dir}"/>
-    <mkdir dir="${test.results.archive.dir}"/>
     <copy todir="${test.data.dir}">
       <fileset dir="${yanel.home.dir}/src/realms/test/yanel/data"/>
     </copy>
