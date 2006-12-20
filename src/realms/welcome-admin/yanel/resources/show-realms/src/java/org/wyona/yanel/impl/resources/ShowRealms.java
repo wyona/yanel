@@ -192,7 +192,7 @@ public class ShowRealms extends Resource implements ViewableV1 {
      * 
      */
     private StreamSource getXSLTStreamSource(Path path, Repository repo)
-            throws NoSuchNodeException {
+            throws Exception {
         Path xsltPath = getXSLTPath(path);
         if (xsltPath != null) {
             return new StreamSource(repo

@@ -389,7 +389,7 @@ public class TestingControlResource extends Resource implements ViewableV1 {
     /**
      * 
      */
-    private StreamSource getXSLTStreamSource(Path path, Repository repo) throws NoSuchNodeException {
+    private StreamSource getXSLTStreamSource(Path path, Repository repo) throws Exception {
         Path xsltPath = getXSLTPath(path);
         if (xsltPath != null) {
             return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString())));
