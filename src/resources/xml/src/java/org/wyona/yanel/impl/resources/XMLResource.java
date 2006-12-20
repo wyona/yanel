@@ -293,8 +293,6 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      * Get size of generated page
      */
     public long getSize() throws Exception {
-        // TODO: not implemented yet
-        log.warn("TODO: Method is not implemented yet");
-        return -1;
+        return getRealm().getRepository().getSize(path);
     }
 }

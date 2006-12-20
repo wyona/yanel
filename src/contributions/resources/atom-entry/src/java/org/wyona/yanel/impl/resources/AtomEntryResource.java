@@ -287,11 +287,11 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
         return true;
     }
 
-    public long getSize() throws Exception {
-        // TODO not implemented yet
-        log.error("Method is not implemented yet");
-        return -1;
-    }
-
-
+    /**
+     * 
+     */
+     public long getSize() throws Exception {
+         return getRealm().getRepository().getSize(path);
+     }
+       
 }
