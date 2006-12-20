@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>About</title>
+  <title>Roadmap</title>
 </head>
 <body>
 <h3>Roadmap</h3>
@@ -28,26 +28,23 @@
 <h4>Release 1.0</h4>
 <table border="1">
 <tbody><tr>
-<th>Feature</th><th>Status</th><th>Due Date</th>
+<th>Feature</th><th>Status</th><th>Due Date</th><th>Assigned To</th>
 </tr>
 <tr>
 <td>Creator</td><td>in progress</td><td>TBD</td>
 </tr>
 <tr>
 <td>Simple Workflow: Submit, Review, Publish/Reject</td><td>in planning</td><td>TBD</td>
-</tr>
+</tr><tr><td style="vertical-align: top;">Navigation Framework</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;"><a href="specification/nutch-resource.html">Nutch</a></td><td style="vertical-align: top;">mostly done</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;"><a href="specification/import-site-feature.html">Import an existing website as a new realm</a></td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Jonathan</td></tr>
 </tbody></table>
-<p>
-* Navigation Framework (in planning)
-* [Nutch|specification/nutch-resource.html] (mostly done)
-* Wiki (mostly done)
+<p>* Wiki (mostly done)
 ** Creator: Realm specific XSLT (in planning)
 * XHTML resource out-of-the-box (in planning)
 * Versioning (Yarep) (in progress)
 * Asset Upload (Image, PDF, ...) (in progress)
 * Lookup (Yulup) (in progress)
 * Create a realm from scratch (in progress)
-* [Import an existing website as a new realm|specification/import-site-feature.html] (in progress)
+* [|specification/import-site-feature.html] (in progress)
 * Register third-party realm (in planning)
 * Binary installer/Dependency manager (in planning)
 * Calendar resource (in progress)
