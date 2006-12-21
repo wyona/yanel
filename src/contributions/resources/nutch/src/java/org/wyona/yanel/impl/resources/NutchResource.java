@@ -124,18 +124,23 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
 
     /**
-     * 
+     * Generate view
      */
     public View getView(Path path, String viewId, int idx, int id) {
         View nutchView = null;
         this.path = path;
         try {
-            rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
-                    getRepositoryFactory());
+            // Get repository
+            rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
             repository = rp.getRepo();
+
+            getNutchConfiguration();
+
             resourceBundle = getMessageBundle(path);
             nutchView = new View();
             nutchView.setInputStream(getInputStream(viewId, show, idx, id));
+
+            // Set Mime Type
             if("cache".equals(show)) {
                 nutchView.setMimeType(cachedMimeType);
             } else if("explain".equals(show) || "anchors".equals(show))  {
@@ -198,10 +203,9 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
 
     /**
-     * 
-     *
+     *  Read Nutch configuration (default and local)
      */
-    private void setupConfiguration() {
+    private void getNutchConfiguration() {
         configuration = new Configuration();
         try {
             String confDir = "file:" + rtd.getConfigFile().getParentFile().getAbsolutePath()
@@ -217,11 +221,10 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
     
     /**
-     * 
+     * Create DOM document
      * @param searchTerm
      */
-    private void setupDocument(String searchTerm) {
-        setupConfiguration();
+    private void getDOMDocument(String searchTerm) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         try {
@@ -253,17 +256,21 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
     
     /**
-     * Generate result XML
+     * Generate content of response
      */
     private InputStream getInputStream(String viewId, String show, int idx, int id) {
-        setupDocument(searchTerm);
-        if("cache".equals(show)){
+        getDOMDocument(searchTerm);
+
+        // Please note that results are already being added during getDOMDocument!
+
+        if(show.equals("cache")){
             return new StringBufferInputStream(createCachedDocument4SearchResult(idx, id));
-        } else if("explain".equals(show)) {
+        } else if(show.equals("explain")) {
             return createExplanationDocument4SearchResult(idx, id, searchTerm, language);
-        } else if("anchors".equals(show)) {
+        } else if(show.equals("anchors")) {
             return createAnchorsDocument4SearchResult(idx, id, searchTerm, language);
-        } else {/*will not do anything special cause our document is already created*/}
+        }
+
         return transformedInputStream(viewId, searchTerm);
     }
 
@@ -474,7 +481,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
     
     /**
-     * this method creates a document for the given searchTerm starting at result <start> 
+     * This method creates a document for the given searchTerm starting at result <start> 
      * and stores the informations within a xml 
      * @param searchTerm 
      * @param start position of found results for searchTerm 
