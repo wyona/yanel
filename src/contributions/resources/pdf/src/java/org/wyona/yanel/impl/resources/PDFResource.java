@@ -76,11 +76,11 @@ public class PDFResource extends Resource implements ViewableV2 {
             driver.setRenderer(Driver.RENDER_PDF);
             driver.setOutputStream(baos);
             
-            Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path,repo));           
+            Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(getPath(),repo));           
             
             org.xml.sax.XMLReader xmlReader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
             xmlReader.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
-            Source src = new SAXSource(xmlReader, new org.xml.sax.InputSource(repo.getInputStream(path)));
+            Source src = new SAXSource(xmlReader, new org.xml.sax.InputSource(repo.getInputStream(getPath())));
             
             Result res = new SAXResult(driver.getContentHandler());
             
@@ -109,7 +109,7 @@ public class PDFResource extends Resource implements ViewableV2 {
      * 
      */
     public long getSize() throws Exception {
-        return getRealm().getRepository().getSize(path);
+        return getRealm().getRepository().getSize(getPath());
     }
       
   /**
