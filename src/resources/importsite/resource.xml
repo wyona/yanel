@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="importsite"
+  namespace="http://www.wyona.org/yanel/resource/1.0"
+  class="org.wyona.yanel.impl.resources.ImportSiteResource"
+  >
+<description>
+Import Site Resource
+</description>
+</resource>

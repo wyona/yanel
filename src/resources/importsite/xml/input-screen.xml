@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form name="importsite-input">
+  <inputfields>
+    <input required="true">realm</input>
+    <input required="true">url</input>
+    <input required="true">crawldepth</input>
+    <input required="true">maxpages</input>
+  </inputfields>
+</form>
