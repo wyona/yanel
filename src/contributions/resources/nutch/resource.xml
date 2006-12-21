@@ -6,10 +6,11 @@
   class="org.wyona.yanel.impl.resources.NutchResource"
   >
 <description>
-Getting Search results from a a Nutch crawl
+Getting Search results from a a Nutch crawl 0.8.x
 </description>
 
 <rtd>
   <property name="xslt"/>
+  <property name="messageBundle"/>
 </rtd>
 </resource>
