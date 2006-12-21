@@ -31,7 +31,7 @@
             <li>Create a realm from scratch.</li>
             <li>
               <a href="yanel-website/en/documentation/import-existing-website-as-new-realm.html">Import
-                an existing website as a new realm.</a> (<a href="import-site.html">Do it!</a>)
+                an existing website as a new realm.</a> (Work in progress: <a href="import-site.html">Do it!</a>)
             </li>
             <li>
               <a
