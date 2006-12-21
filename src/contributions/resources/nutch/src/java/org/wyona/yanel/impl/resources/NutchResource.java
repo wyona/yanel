@@ -134,7 +134,7 @@ public class NutchResource extends Resource implements ViewableV1 {
 
             getNutchConfiguration();
 
-            resourceBundle = getMessageBundle(path);
+            resourceBundle = getRTI().getProperty("messageBundle");
             nutchView = new View();
             nutchView.setInputStream(getInputStream(viewId, show, idx, id, repository));
 
@@ -212,6 +212,9 @@ public class NutchResource extends Resource implements ViewableV1 {
             configuration.addDefaultResource(defaultResource);
             URL finalResource = new URL(confDir + File.separator + localFile);
             configuration.addFinalResource(finalResource);
+
+            String nutchConfig = getRTI().getProperty("nutch-config");
+            log.error("DEBUG: nutch config: " + nutchConfig);
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
         }
@@ -600,111 +603,24 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
 
     /**
-     * 
+     * Get XSLT Stream Source of global xslt
      * @param path
      * @param repo
      * @return
      * @throws RepositoryException
      */
     private StreamSource getXSLTStreamSource(Path path, Repository repo) throws RepositoryException {
-        Path xsltPath = getXSLTPath(path);
+        String xsltPath = getRTI().getProperty("xslt");
+        log.error("DEBUG: XSLT: " + xsltPath);
         if (xsltPath != null) {
-            return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString())));
+            return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(xsltPath)));
         } else {
             return null;
         }
     }
 
     /**
-     * 
-     * @param path
-     * @return
-     */
-    private Path getXSLTPath(Path path) {
-        String xsltPath = null;
-        try {
-            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory
-            // ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
-                    yanel.getRepositoryFactory("RTIRepositoryFactory"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo()
-                    .getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath()
-                            .toString())));
-            while ((xsltPath = br.readLine()) != null) {
-                if (xsltPath.indexOf("xslt:") == 0) {
-                    xsltPath = xsltPath.substring(6);
-                    log.debug("XSLT Path: " + xsltPath);
-                    return new Path(xsltPath);
-                }
-            }
-            log.info("No XSLT Path within rti: " + rpRTI.getPath());
-        } catch (Exception e) {
-            log.warn(e);
-        }
-        return null;
-    }
-
-    /**
-     * 
-     * @param path
-     * @return
-     */
-    private String getMessageBundle(Path path) {
-        String xsltPath = null;
-        try {
-            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory
-            // ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
-                    yanel.getRepositoryFactory("RTIRepositoryFactory"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo()
-                    .getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath()
-                            .toString())));
-            while ((xsltPath = br.readLine()) != null) {
-                if (xsltPath.indexOf("messageBundle:") == 0) {
-                    xsltPath = xsltPath.substring(15);
-                    log.debug("messageBundle: " + xsltPath);
-                    return xsltPath;
-                }
-            }
-            log.debug("messageBundle within rti: " + rpRTI.getPath());
-        } catch (Exception e) {
-            log.warn(e);
-        }
-        return null;
-    }
-    
-    /**
-     * 
-     * @param path
-     * @return
-     */
-    private String getMimeType(Path path) {
-        String mimeType = null;
-        try {
-            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory
-            // ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
-                    yanel.getRepositoryFactory("RTIRepositoryFactory"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo()
-                    .getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath()
-                            .toString())));
-            while ((mimeType = br.readLine()) != null) {
-                if (mimeType.indexOf("mime-type:") == 0) {
-                    mimeType = mimeType.substring(11);
-                    log.info("*" + mimeType + "*");
-                    // TODO: Maybe validate mime-type ...
-                    return mimeType;
-                }
-            }
-        } catch (Exception e) {
-            log.warn(e);
-        }
-        // NOTE: Assuming fallback ...
-        return XHTML_MIME_TYPE;
-    }
-    
-    /**
-     * this method replaces all occurences of '&' but not '&amp;' with '&amp;'
+     * This method replaces all occurences of '&' but not '&amp;' with '&amp;'
      * @param inputString with or without '&'
      * @return replaced ampersands as string
      */
