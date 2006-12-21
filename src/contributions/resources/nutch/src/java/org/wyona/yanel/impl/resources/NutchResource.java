@@ -89,8 +89,6 @@ public class NutchResource extends Resource implements ViewableV1 {
     private long totalHits = 0;
     private String defaultFile = "nutch-default.xml";
     private String localFile = "nutch-local.xml";
-    private Path path = null;
-    private Repository repository  = null;
     private String language = "";
     private String defaultLanguage = "en";
     private String searchTerm = "";
@@ -132,13 +130,13 @@ public class NutchResource extends Resource implements ViewableV1 {
         try {
             // Get repository
             rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-            repository = rp.getRepo();
+            Repository repository = rp.getRepo();
 
             getNutchConfiguration();
 
             resourceBundle = getMessageBundle(path);
             nutchView = new View();
-            nutchView.setInputStream(getInputStream(viewId, show, idx, id));
+            nutchView.setInputStream(getInputStream(viewId, show, idx, id, repository));
 
             // Set Mime Type
             if("cache".equals(show)) {
@@ -258,7 +256,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     /**
      * Generate content of response
      */
-    private InputStream getInputStream(String viewId, String show, int idx, int id) {
+    private InputStream getInputStream(String viewId, String show, int idx, int id, Repository repository) {
         getDOMDocument(searchTerm);
 
         // Please note that results are already being added during getDOMDocument!
@@ -266,12 +264,12 @@ public class NutchResource extends Resource implements ViewableV1 {
         if(show.equals("cache")){
             return new StringBufferInputStream(createCachedDocument4SearchResult(idx, id));
         } else if(show.equals("explain")) {
-            return createExplanationDocument4SearchResult(idx, id, searchTerm, language);
+            return createExplanationDocument4SearchResult(idx, id, searchTerm, language, repository);
         } else if(show.equals("anchors")) {
-            return createAnchorsDocument4SearchResult(idx, id, searchTerm, language);
+            return createAnchorsDocument4SearchResult(idx, id, searchTerm, language, repository);
         }
 
-        return transformedInputStream(viewId, searchTerm);
+        return transformedInputStream(viewId, searchTerm, repository);
     }
 
     /**
@@ -280,7 +278,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @param searchTerm
      * @return
      */
-    private InputStream transformedInputStream(String viewId, String searchTerm) {
+    private InputStream transformedInputStream(String viewId, String searchTerm, Repository repository) {
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             if (viewId != null && viewId.equals("source")) {
@@ -300,7 +298,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 i18nTransformer = new I18nTransformer(resourceBundle, language);
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 saxParser.parse(inputStream, i18nTransformer);
-                return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm);
+                return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm, repository);
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -314,7 +312,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @param searchTerm
      * @return
      */
-    private InputStream applyGlobalXslIfExists(InputStream inputStream, String searchTerm) {
+    private InputStream applyGlobalXslIfExists(InputStream inputStream, String searchTerm, Repository repository) {
         StreamSource streamSource = null;
         try {
             streamSource = getXSLTStreamSource(path, repository);
@@ -392,7 +390,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @param language
      * @return
      */
-    private InputStream createExplanationDocument4SearchResult(int idx, int id, String searchTerm, String language) {
+    private InputStream createExplanationDocument4SearchResult(int idx, int id, String searchTerm, String language, Repository repository) {
         try {
             nutchBean = NutchBean.get(servletContext, configuration);
             Hit hit = new Hit(idx, id);
@@ -409,7 +407,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             I18nTransformer i18nTransformer = new I18nTransformer(resourceBundle, language);
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new StringBufferInputStream(content), i18nTransformer);
-            return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm);
+            return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm, repository);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -424,7 +422,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @param language
      * @return
      */
-    private InputStream createAnchorsDocument4SearchResult(int idx, int id, String searchTerm, String language) {
+    private InputStream createAnchorsDocument4SearchResult(int idx, int id, String searchTerm, String language, Repository repository) {
         try {
             nutchBean = NutchBean.get(servletContext, configuration);
             Hit hit = new Hit(idx, id);
@@ -449,7 +447,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             I18nTransformer i18nTransformer = new I18nTransformer(resourceBundle, language);
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new StringBufferInputStream(content), i18nTransformer);
-            return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm);
+            return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm, repository);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -701,8 +699,8 @@ public class NutchResource extends Resource implements ViewableV1 {
         } catch (Exception e) {
             log.warn(e);
         }
-        // NOTE: Assuming fallback re dir2xhtml.xsl ...
-        return "application/xhtml+xml";
+        // NOTE: Assuming fallback ...
+        return XHTML_MIME_TYPE;
     }
     
     /**
