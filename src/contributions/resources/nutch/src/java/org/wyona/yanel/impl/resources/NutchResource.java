@@ -139,10 +139,9 @@ public class NutchResource extends Resource implements ViewableV1 {
             nutchView.setInputStream(getInputStream(viewId, show, idx, id, repository));
 
             // Set Mime Type
-            if("cache".equals(show)) {
+            if(show.equals("cache")) {
                 nutchView.setMimeType(cachedMimeType);
-            } else if("explain".equals(show) || "anchors".equals(show))  {
-                log.error("show is " + show);
+            } else if(show.equals("explain") || show.equals("anchors"))  {
                 nutchView.setMimeType("text/html");
             } else {
                 if (viewId != null && viewId.equals("source")) {
@@ -254,26 +253,24 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
     
     /**
-     * Generate content of response
+     * Generate response depending on show parameter
+     * @param show cache, explain, anchors and actual search results
      */
     private InputStream getInputStream(String viewId, String show, int idx, int id, Repository repository) {
-        getDOMDocument(searchTerm);
-
-        // Please note that results are already being added during getDOMDocument!
-
         if(show.equals("cache")){
-            return new StringBufferInputStream(createCachedDocument4SearchResult(idx, id));
+            return new StringBufferInputStream(getCachedContent(idx, id));
         } else if(show.equals("explain")) {
             return createExplanationDocument4SearchResult(idx, id, searchTerm, language, repository);
         } else if(show.equals("anchors")) {
             return createAnchorsDocument4SearchResult(idx, id, searchTerm, language, repository);
+        } else {
+            getDOMDocument(searchTerm);
+            return transformedInputStream(viewId, searchTerm, repository);
         }
-
-        return transformedInputStream(viewId, searchTerm, repository);
     }
 
     /**
-     * 
+     * Generate results page as XHTML
      * @param viewId
      * @param searchTerm
      * @return
@@ -346,21 +343,22 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
     
     /**
-     * 
+     * Get cached content for a specific search result
      * @param idx
      * @param id
      * @return
      */
-    private String createCachedDocument4SearchResult(int idx, int id) {
-        String content = null;
+    private String getCachedContent(int idx, int id) {
+        log.debug("idx: " + idx);
+        log.debug("id: " + id);
+        String content = "NULL";
         try {
             nutchBean = NutchBean.get(servletContext, configuration);
             Hit hit = new Hit(idx, id); 
             HitDetails details = nutchBean.getDetails(hit);
             Metadata metaData = nutchBean.getParseData(details).getContentMeta();
-            content = null;
             String contentType = (String) metaData.get(Metadata.CONTENT_TYPE);
-            log.debug("contentType: " + contentType);
+            log.error("contentType: " + contentType);
             cachedMimeType = contentType;
             if (contentType.startsWith("text/html")) {
                 String encoding = (String) metaData.get("CharEncodingForConversion");
@@ -374,6 +372,8 @@ public class NutchResource extends Resource implements ViewableV1 {
                 } else {
                     content = new String(nutchBean.getContent(details));
                 }
+            } else {
+                content = new String(nutchBean.getContent(details));
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -415,7 +415,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
     
     /**
-     * 
+     * Generate anchors page
      * @param idx
      * @param id
      * @param searchTerm
@@ -443,7 +443,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 content += "<ul>" + listItems + "</ul>"; 
             }
             content += "</div></body></html>"; 
-            log.error("content:\n" + content);
+            log.debug("content:\n" + content);
             I18nTransformer i18nTransformer = new I18nTransformer(resourceBundle, language);
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new StringBufferInputStream(content), i18nTransformer);
@@ -572,7 +572,7 @@ public class NutchResource extends Resource implements ViewableV1 {
         try {
             // Configuration nutchConf = NutchConfiguration.get(application);
             String urls = configuration.get("extension.ontology.urls");
-            log.error("URLS__> " + urls);
+            log.error("DEBUG: URLS__> " + urls);
             // TODO: null is being returned!
             ontology = new org.apache.nutch.ontology.OntologyFactory(configuration).getOntology();
             if (urls==null || urls.trim().equals("")) {
