@@ -64,7 +64,7 @@ public class FileResource extends Resource implements ViewableV2, ModifiableV2, 
     public View getView(String viewId) throws Exception {
         View defaultView = new View();
         
-        defaultView.setInputStream(getRealm().getRepository().getInputStream(path));
+        defaultView.setInputStream(getRealm().getRepository().getInputStream(getPath()));
         defaultView.setMimeType(getMimeType(viewId));
 
         return defaultView;
@@ -80,7 +80,7 @@ public class FileResource extends Resource implements ViewableV2, ModifiableV2, 
         if (mimeType != null) return mimeType;
 
         // TODO: Load config mime.types ...
-        String suffix = path.getSuffix();
+        String suffix = getPath().getSuffix();
         if (suffix != null) {
             log.debug("SUFFIX: " + suffix);
             if (suffix.equals("html")) {
@@ -120,7 +120,7 @@ public class FileResource extends Resource implements ViewableV2, ModifiableV2, 
                 mimeType = "application/octet-stream";
             }
         } else {
-            log.warn("mime-type will be set to application/octet-stream, because no suffix for " + path);
+            log.warn("mime-type will be set to application/octet-stream, because no suffix for " + getPath());
             mimeType = "application/octet-stream";
         }
         return mimeType;
@@ -130,14 +130,14 @@ public class FileResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public Reader getReader() throws Exception {
-        return getRealm().getRepository().getReader(path);
+        return getRealm().getRepository().getReader(getPath());
     }
 
     /**
      *
      */
     public InputStream getInputStream() throws Exception {
-        return getRealm().getRepository().getInputStream(path);
+        return getRealm().getRepository().getInputStream(getPath());
     }
 
     /**
@@ -152,7 +152,7 @@ public class FileResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public OutputStream getOutputStream() throws Exception {
-        return getRealm().getRepository().getOutputStream(path);
+        return getRealm().getRepository().getOutputStream(getPath());
     }
 
     /**
@@ -166,21 +166,21 @@ public class FileResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public long getLastModified() throws Exception {
-        return getRealm().getRepository().getLastModified(path);
+        return getRealm().getRepository().getLastModified(getPath());
     }
 
     /**
      *
      */
     public boolean delete() throws Exception {
-        return getRealm().getRepository().delete(path);
+        return getRealm().getRepository().delete(getPath());
     }
     
     /**
      *
      */
     public String[] getRevisions() throws Exception {
-        return getRealm().getRepository().getRevisions(path);
+        return getRealm().getRepository().getRevisions(getPath());
     }
     
     public boolean exists() throws Exception {
@@ -192,6 +192,6 @@ public class FileResource extends Resource implements ViewableV2, ModifiableV2, 
      * 
      */
      public long getSize() throws Exception {
-         return getRealm().getRepository().getSize(path);
+         return getRealm().getRepository().getSize(getPath());
      }    
 }

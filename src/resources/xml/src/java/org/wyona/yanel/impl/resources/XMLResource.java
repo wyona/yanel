@@ -82,13 +82,13 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      */
     public View getView(String viewId) {
         View defaultView = new View();
-        String mimeType = getMimeType(path, viewId);
+        String mimeType = getMimeType(getPath(), viewId);
         defaultView.setMimeType(mimeType);
 
         String yanelPath = getRTI().getProperty("yanel-path");
         //if (yanelPath == null) yanelPath = path.toString();
 
-        Path xsltPath = getXSLTPath(path);
+        Path xsltPath = getXSLTPath(getPath());
 
         try {
             Repository repo = getRealm().getRepository();
@@ -97,10 +97,11 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 TransformerFactory tf = TransformerFactory.newInstance();
                 //tf.setURIResolver(null);
                 Transformer transformer = tf.newTransformer(new StreamSource(repo.getInputStream(xsltPath)));
-                transformer.setParameter("yanel.path.name", path.getName());
-                transformer.setParameter("yanel.path", path.toString());
-                transformer.setParameter("yanel.back2context", backToRoot(path, ""));
-                transformer.setParameter("yarep.back2realm", backToRoot(path, ""));
+                transformer.setParameter("yanel.path.name", getPath().getName());
+                transformer.setParameter("yanel.path", getPath().toString());
+                //TODO: There seems to be a bug re back2context ...
+                transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
+                transformer.setParameter("yarep.back2realm", backToRoot(getPath(), ""));
                 // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
 
@@ -165,14 +166,14 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                     // TODO: Shall the mime-type be transfered?
                     return view.getInputStream();
                 } else {
-                    log.warn("No XML like mime-type: " + path);
+                    log.warn("No XML like mime-type: " + getPath());
                 }
             } else {
-                log.warn("Resource is not ViewableV1: " + path);
+                log.warn("Resource is not ViewableV1: " + getPath());
             }
         }
         
-        return repo.getInputStream(path);
+        return repo.getInputStream(getPath());
     }
 
     /**
@@ -205,14 +206,14 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public Reader getReader() throws Exception {
-        return getRealm().getRepository().getReader(path);
+        return getRealm().getRepository().getReader(getPath());
     }
 
     /**
      *
      */
     public InputStream getInputStream() throws Exception {
-        return getRealm().getRepository().getInputStream(path);
+        return getRealm().getRepository().getInputStream(getPath());
     }
 
     /**
@@ -227,7 +228,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public OutputStream getOutputStream() throws Exception {
-        return getRealm().getRepository().getOutputStream(path);
+        return getRealm().getRepository().getOutputStream(getPath());
     }
 
     /**
@@ -241,7 +242,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public long getLastModified() throws Exception {
-        return getRealm().getRepository().getLastModified(path);
+        return getRealm().getRepository().getLastModified(getPath());
     }
 
     /**
@@ -277,11 +278,11 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public boolean delete() throws Exception {
-        return getRealm().getRepository().delete(path);
+        return getRealm().getRepository().delete(getPath());
     }
 
     public String[] getRevisions() throws Exception {
-        return getRealm().getRepository().getRevisions(path);
+        return getRealm().getRepository().getRevisions(getPath());
     }
 
     public boolean exists() throws Exception {
@@ -293,6 +294,6 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      * Get size of generated page
      */
     public long getSize() throws Exception {
-        return getRealm().getRepository().getSize(path);
+        return getRealm().getRepository().getSize(getPath());
     }
 }
