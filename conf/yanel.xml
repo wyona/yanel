@@ -22,6 +22,7 @@
   <resource src="../src/resources/websearch/"                   compile="true"/>
   <resource src="../src/contributions/resources/nutch/"         compile="true"/>
   <resource src="../src/contributions/resources/davcollection/" compile="true"/>
+  <resource src="../src/contributions/resources/pdf/"           compile="true"/> 
 </resources>
 
 # Realms configuration

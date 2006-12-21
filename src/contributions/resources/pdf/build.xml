@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<project name="yanel-resource" default="compile">
+
+  <import file="src/build/dependencies.xml"/>
+
+  <target name="init" description="Initialize build" depends="dependencies">
+    <echo>Initialize build</echo>
+
+    <dirname property="resource.home.dir" file="${ant.file}"/>
+    <echo>Resource Home Directory: ${resource.home.dir}</echo>
+
+    <property file="${resource.home.dir}/src/build/local.build.properties"/>
+    <property file="${resource.home.dir}/src/build/build.properties"/>
+
+    <path id="classpath">
+      <pathelement path="${maven2.cp}"/>
+      <pathelement path="${maven2.resource.cp}"/>
+    </path>
+    <property name="resource.build.dir" value="${resource.home.dir}/build"/>
+    <property name="resource.classes.dir" value="${resource.build.dir}/classes"/>
+    <property name="resource.lib.dir" value="${resource.build.dir}/lib"/>
+    <property name="resource.java.dir" value="${resource.home.dir}/src/java"/>
+  </target>
+
+  <target name="compile" description="Compile Java classes" depends="init">
+
+    <mkdir dir="${resource.classes.dir}"/>
+    <javac srcdir="${resource.java.dir}" destdir="${resource.classes.dir}"
+      classpathref="classpath"
+      debug="true"
+    />
+    <mkdir dir="${resource.lib.dir}"/>
+    <jar destfile="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}.jar"
+      basedir="${resource.classes.dir}"
+    />
+  </target>
+
+  <target name="clean" depends="init">
+    <delete dir="${resource.build.dir}"/>
+  </target>
+
+  <target name="copy-dependencies" depends="init">
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
+      <fileset refid="maven2.resource.fileset"/>
+      <mapper type="flatten"/>
+    </copy>
+  </target>
+</project>
