@@ -28,7 +28,7 @@ public abstract class Resource {
     protected ResourceTypeDefinition rtd;
     protected ResourceTypeIdentifier rti;
     protected Yanel yanel;
-    protected Path path;
+    private Path path;
     protected Realm realm;
     protected HttpServletRequest request;
     protected HttpServletResponse response;
