@@ -23,8 +23,14 @@
   <xsl:variable name="numberOfPagesShown" select="/yanel:nutch/yanel:results/@yanel:numberOfPagesShown" />
   <xsl:variable name="range" select="number($numberOfPagesShown div 2)" />
   
+              <xsl:variable name="maxHit">
+                <xsl:choose>
+                  <xsl:when test="number(/yanel:nutch/yanel:results/@yanel:start + $hitsPerPage) &gt; number(/yanel:nutch/yanel:results/@yanel:totalHits)"><xsl:value-of select="number(/yanel:nutch/yanel:results/@yanel:totalHits)" /></xsl:when>
+                  <xsl:otherwise><xsl:value-of select="number(/yanel:nutch/yanel:results/@yanel:start + $hitsPerPage)" /></xsl:otherwise>
+                </xsl:choose>
+              </xsl:variable>
+
   <xsl:template match="/">
-    
     <html>
     
     <head>
@@ -65,17 +71,17 @@
   </xsl:template>
   
   <xsl:template match="yanel:no-query">
-<!--
+  <!--
   <p>No query yet.</p>
--->
+  -->
   </xsl:template>
 
   <xsl:template match="yanel:query" mode="title">
-    <i18n:message key="resultsForQuery"/><xsl:value-of select="."/>
+    <i18n:message key="resultsForQuery"/><xsl:text> </xsl:text><xsl:value-of select="."/>
   </xsl:template>
   
   <xsl:template match="yanel:no-query" mode="title">
-    <i18n:message key="resultsForQuery"/><xsl:value-of select="."/>
+    Search
   </xsl:template>
   
   <xsl:template match="yanel:results">
@@ -98,13 +104,7 @@
             <font size="-1">
               <i18n:message key="results"/>&#160;<b><xsl:value-of select="number(@yanel:start + 1)"/></b>- 
               
-              <xsl:variable name="maxHit">
-                <xsl:choose>
-                  <xsl:when test="number(@yanel:start + $hitsPerPage) &gt; number(@yanel:totalHits)"><xsl:value-of select="number(@yanel:totalHits)" /></xsl:when>
-                  <xsl:otherwise><xsl:value-of select="number(@yanel:start + $hitsPerPage)" /></xsl:otherwise>
-                </xsl:choose>
-              </xsl:variable>
-              <b><xsl:value-of select="$maxHit"/></b>&#160;<i18n:message key="ofAbout"/>&#160;<b><xsl:value-of select="number(@yanel:totalHits)"/></b>&#160;<i18n:message key="hitsFound"/>&#160;<i18n:message key="for"/>&#160;<b><xsl:value-of select="$query"/></b><br/>
+              <b><xsl:value-of select="$maxHit"/></b>&#160;<i18n:message key="ofAbout"/>&#160;<b><xsl:value-of select="number(@yanel:totalHits)"/></b><!--&#160;<i18n:message key="hitsFound"/>-->&#160;<i18n:message key="for"/>&#160;<b><xsl:value-of select="$query"/></b><br/>
             </font>
           </td>
         </tr>
