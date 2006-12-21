@@ -77,7 +77,7 @@ public abstract class XmlViewResource extends Resource implements ViewableV2, Co
         
         this.contentHandler = xmlSerializer.asContentHandler();
         
-        buildXmlView(path, viewId);
+        buildXmlView(getPath(), viewId);
         
         View view = new View();
         view.setResponse(false); // this resource writes the response itself 

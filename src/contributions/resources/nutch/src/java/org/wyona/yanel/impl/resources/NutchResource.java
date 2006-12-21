@@ -94,7 +94,6 @@ public class NutchResource extends Resource implements ViewableV1 {
     private String searchTerm = "";
     private String show = "";//default is empty, else show either CACHE, EXPLAIN, ANCHORS
     private String resourceBundle = "nutch";
-    private RepoPath rp = null;
     private NutchBean nutchBean = null;
     private ServletContext servletContext = null;
     private String cachedMimeType = null;
@@ -126,17 +125,12 @@ public class NutchResource extends Resource implements ViewableV1 {
      */
     public View getView(Path path, String viewId, int idx, int id) {
         View nutchView = null;
-        this.path = path;
         try {
-            // Get repository
-            rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-            Repository repository = rp.getRepo();
-
             getNutchConfiguration();
 
             resourceBundle = getRTI().getProperty("messageBundle");
             nutchView = new View();
-            nutchView.setInputStream(getInputStream(viewId, show, idx, id, repository));
+            nutchView.setInputStream(getInputStream(viewId, show, idx, id));
 
             // Set Mime Type
             if(show.equals("cache")) {
@@ -259,16 +253,16 @@ public class NutchResource extends Resource implements ViewableV1 {
      * Generate response depending on show parameter
      * @param show cache, explain, anchors and actual search results
      */
-    private InputStream getInputStream(String viewId, String show, int idx, int id, Repository repository) {
+    private InputStream getInputStream(String viewId, String show, int idx, int id) {
         if(show.equals("cache")){
             return new StringBufferInputStream(getCachedContent(idx, id));
         } else if(show.equals("explain")) {
-            return createExplanationDocument4SearchResult(idx, id, searchTerm, language, repository);
+            return createExplanationDocument4SearchResult(idx, id, searchTerm, language);
         } else if(show.equals("anchors")) {
-            return createAnchorsDocument4SearchResult(idx, id, searchTerm, language, repository);
+            return createAnchorsDocument4SearchResult(idx, id, searchTerm, language);
         } else {
             getDOMDocument(searchTerm);
-            return transformedInputStream(viewId, searchTerm, repository);
+            return transformedInputStream(viewId, searchTerm);
         }
     }
 
@@ -278,7 +272,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @param searchTerm
      * @return
      */
-    private InputStream transformedInputStream(String viewId, String searchTerm, Repository repository) {
+    private InputStream transformedInputStream(String viewId, String searchTerm) {
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             if (viewId != null && viewId.equals("source")) {
@@ -289,16 +283,20 @@ public class NutchResource extends Resource implements ViewableV1 {
                 File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile()
                         .getAbsolutePath(), "xslt" + File.separator + "result2xhtml.xsl");
                 transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
-                transformer.setParameter("yanel.path.name", path.getName());
-                transformer.setParameter("yanel.path", path.toString());
-                transformer.setParameter("yanel.back2context", backToRoot(path, ""));
-                transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+                transformer.setParameter("yanel.path.name", getPath().getName());
+                // TODO: Remove the trailing slash ...
+                transformer.setParameter("yanel.path", getRealm().getMountPoint() + getPath().toString());
+                log.debug("Yanel Path: " + getRealm().getMountPoint() + getPath());
+                transformer.setParameter("yanel.back2context", backToRoot(new Path(getRealm().getMountPoint().toString() + getPath().toString()), ""));
+                log.debug("Back 2 context: " + getRealm().getMountPoint() + getPath() + ", " + backToRoot(new Path(getRealm().getMountPoint().toString() + getPath().toString()), ""));
+                transformer.setParameter("yarep.back2realm", backToRoot(getPath(), ""));
+                log.debug("Back 2 realm: " + getPath() + ", " + backToRoot(getPath(), ""));
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
                 InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
                 i18nTransformer = new I18nTransformer(resourceBundle, language);
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 saxParser.parse(inputStream, i18nTransformer);
-                return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm, repository);
+                return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm);
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -312,16 +310,16 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @param searchTerm
      * @return
      */
-    private InputStream applyGlobalXslIfExists(InputStream inputStream, String searchTerm, Repository repository) {
+    private InputStream applyGlobalXslIfExists(InputStream inputStream, String searchTerm) {
         StreamSource streamSource = null;
         try {
-            streamSource = getXSLTStreamSource(path, repository);
+            streamSource = getXSLTStreamSource();
             if(streamSource != null) {
                 transformer = TransformerFactory.newInstance().newTransformer(streamSource);
-                transformer.setParameter("yanel.path.name", path.getName());
-                transformer.setParameter("yanel.path", path.toString());
-                transformer.setParameter("yanel.back2context", backToRoot(path, ""));
-                transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+                transformer.setParameter("yanel.path.name", getPath().getName());
+                transformer.setParameter("yanel.path", getPath().toString());
+                transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
+                transformer.setParameter("yarep.back2realm", backToRoot(getPath(), ""));
                 transformer.setParameter("hitsPerPage", "" + hitsPerPage);
                 transformer.setParameter("totalHits", "" + totalHits);
                 transformer.setParameter("query", "" + searchTerm);
@@ -393,7 +391,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @param language
      * @return
      */
-    private InputStream createExplanationDocument4SearchResult(int idx, int id, String searchTerm, String language, Repository repository) {
+    private InputStream createExplanationDocument4SearchResult(int idx, int id, String searchTerm, String language) {
         try {
             nutchBean = NutchBean.get(servletContext, configuration);
             Hit hit = new Hit(idx, id);
@@ -410,7 +408,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             I18nTransformer i18nTransformer = new I18nTransformer(resourceBundle, language);
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new StringBufferInputStream(content), i18nTransformer);
-            return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm, repository);
+            return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -425,7 +423,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @param language
      * @return
      */
-    private InputStream createAnchorsDocument4SearchResult(int idx, int id, String searchTerm, String language, Repository repository) {
+    private InputStream createAnchorsDocument4SearchResult(int idx, int id, String searchTerm, String language) {
         try {
             nutchBean = NutchBean.get(servletContext, configuration);
             Hit hit = new Hit(idx, id);
@@ -450,7 +448,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             I18nTransformer i18nTransformer = new I18nTransformer(resourceBundle, language);
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new StringBufferInputStream(content), i18nTransformer);
-            return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm, repository);
+            return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -606,14 +604,13 @@ public class NutchResource extends Resource implements ViewableV1 {
      * Get XSLT Stream Source of global xslt
      * @param path
      * @param repo
-     * @return
-     * @throws RepositoryException
+     * @return StreamSource
      */
-    private StreamSource getXSLTStreamSource(Path path, Repository repo) throws RepositoryException {
+    private StreamSource getXSLTStreamSource() throws Exception {
         String xsltPath = getRTI().getProperty("xslt");
         log.error("DEBUG: XSLT: " + xsltPath);
         if (xsltPath != null) {
-            return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(xsltPath)));
+            return new StreamSource(getRealm().getRepository().getInputStream(new org.wyona.yarep.core.Path(xsltPath)));
         } else {
             return null;
         }
