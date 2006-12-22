@@ -204,11 +204,14 @@ public class NutchResource extends Resource implements ViewableV1 {
             log.debug("Conf Dir: " + confDir);
             URL defaultResource = new URL(confDir + File.separator + defaultFile);
             configuration.addDefaultResource(defaultResource);
-            URL finalResource = new URL(confDir + File.separator + localFile);
-            configuration.addFinalResource(finalResource);
 
+            URL finalResource = new URL(confDir + File.separator + localFile);
             String nutchConfig = getRTI().getProperty("nutch-config");
             log.error("DEBUG: nutch config: " + nutchConfig);
+            if(nutchConfig != null) {
+                finalResource = new URL("file:" + nutchConfig);
+            }
+            configuration.addFinalResource(finalResource);
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
         }
