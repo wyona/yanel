@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<configuration>
+
+  <property>
+    <name>searcher.dir</name>
+    <value>/home/michi/src/wyona/extra/ipi/nutch/trunk/build/crawl</value>
+    <description>
+    Path to root of crawl.  This directory is searched (in
+    order) for either the file search-servers.txt, containing a list of
+    distributed search servers, or the directory "index" containing
+    merged indexes, or the directory "segments" containing segment
+    indexes.
+    </description>
+  </property>
+  
+  <property>
+    <name>plugin.includes</name> 
+     <value>nutch-extensionpoints|protocol-file|protocol-http|ontology|languageidentifier|analysis-(fr|en|de)|urlfilter-regex|parse-(text|pdf|mspowerpoint|msword|msexcel|rtf|rss|html|zip)|index-basic|query-(basic|site|url)|lib-jakarta-poi|lib-lucene-analyzers|scoring-opic</value>
+  </property>
+  
+  <property>
+    <name>extension.ontology.extension-name</name>
+    <value>org.apache.nutch.ontology.jena.OntologyImpl</value>
+    <description>Loads the Ontology plugin</description>
+  </property>
+  
+  <property>
+    <name>extension.ontology.urls</name>
+    <value>file:/home/USER/src/yanel/trunk/src/contributions/resources/nutch/conf/synonymously.owl</value>
+    <description>Shows the owl file (synonymously map)</description>
+  </property>
+</configuration>
