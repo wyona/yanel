@@ -332,7 +332,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 transformer.transform(new StreamSource(inputStream), new StreamResult(byteArrayOutputStream));
                 inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-                log.error("language: " + language);
+                log.error("DEBUG: language: " + language);
                 i18nTransformer = new I18nTransformer(resourceBundle, language);
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 saxParser.parse(inputStream, i18nTransformer);
@@ -576,7 +576,9 @@ public class NutchResource extends Resource implements ViewableV1 {
         try {
             // Configuration nutchConf = NutchConfiguration.get(application);
             String urls = configuration.get("extension.ontology.urls");
-            log.error("DEBUG: URLS__> " + urls);
+            log.error("DEBUG: extension.ontology.urls: " + urls);
+
+/*
             // TODO: null is being returned!
             ontology = new org.apache.nutch.ontology.OntologyFactory(configuration).getOntology();
             if (urls==null || urls.trim().equals("")) {
@@ -585,9 +587,9 @@ public class NutchResource extends Resource implements ViewableV1 {
                 log.error("is ontology null? : " + ontology);
                 ontology.load(urls.split("\\s+"));
             }
+*/
         } catch (Exception e) {
-            // ignored siliently
-            log.error("BLOODCLOT: " + e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
          
         List refineList = new ArrayList();
@@ -599,6 +601,8 @@ public class NutchResource extends Resource implements ViewableV1 {
                 // refineList.add((String)iter.next());
                 refineList.add(nextItem);
             }
+        } else {
+            log.warn("Ontology is null");
         }
         return refineList;
     }
@@ -611,7 +615,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      */
     private StreamSource getXSLTStreamSource() throws Exception {
         String xsltPath = getRTI().getProperty("xslt");
-        log.error("DEBUG: XSLT: " + xsltPath);
+        log.debug("XSLT: " + xsltPath);
         if (xsltPath != null) {
             return new StreamSource(getRealm().getRepository().getInputStream(new org.wyona.yarep.core.Path(xsltPath)));
         } else {
