@@ -212,7 +212,11 @@ public class NutchResource extends Resource implements ViewableV1 {
             String nutchConfig = getRTI().getProperty("nutch-config");
             log.debug("Local nutch config: " + nutchConfig);
             if(nutchConfig != null) {
-                finalResource = new URL("file:" + nutchConfig);
+                if(nutchConfig.indexOf("file:") == 0) {
+                    finalResource = new URL(nutchConfig);
+                } else {
+                    log.error("file: protocol is missing: " + nutchConfig);
+                }
             }
             configuration.addFinalResource(finalResource);
         } catch (MalformedURLException e) {
@@ -335,7 +339,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 transformer.transform(new StreamSource(inputStream), new StreamResult(byteArrayOutputStream));
                 inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-                log.error("DEBUG: language: " + language);
+                log.debug("Language: " + language);
                 i18nTransformer = new I18nTransformer(resourceBundle, language);
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 saxParser.parse(inputStream, i18nTransformer);
