@@ -170,8 +170,12 @@ public class NutchResource extends Resource implements ViewableV1 {
         String language = request.getParameter("yanel.meta.language");
         if (language == null) {
             language = request.getHeader("Accept-Language");
-            log.debug("Use Accept-Language from Request Header: " + language);
-            language = language.substring(0, language.indexOf(","));
+            if (language != null) {
+                log.debug("Use Accept-Language from Request Header: " + language);
+                if (language.indexOf(",") > 0) {
+                    language = language.substring(0, language.indexOf(","));
+                }
+            }
         }
         if (language == null) {
             language = defaultLanguage;
