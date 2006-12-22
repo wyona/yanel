@@ -40,7 +40,7 @@ import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
-import org.wyona.yanel.core.api.attributes.ViewableV1;
+import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.map.Realm;
@@ -55,7 +55,7 @@ import org.wyona.yarep.util.YarepUtil;
 /**
  * 
  */
-public class ShowRealms extends Resource implements ViewableV1 {
+public class ShowRealms extends Resource implements ViewableV2 {
 
     private static Category log = Category.getInstance(ShowRealms.class);
 
@@ -75,42 +75,19 @@ public class ShowRealms extends Resource implements ViewableV1 {
     /**
      * 
      */
-    public View getView(Path path, String viewId) {
+    public View getView(String viewId) throws Exception {
         View defaultView = new View();
         defaultView.setMimeType("application/xml");
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         defaultView.setInputStream(new java.io.StringBufferInputStream(sb
                 .toString()));
-        return defaultView;
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public View getView(HttpServletRequest request, String viewId)
-            throws Exception {
-        Path path = new Path(request.getServletPath());
         String servletContext =  request.getContextPath();
-        View defaultView = new View();
-        return plainRequest(path, defaultView, servletContext);
-
-    }
-
-    private View plainRequest(Path path, View defaultView, String servletContext) throws Exception,
-            TransformerConfigurationException,
-            TransformerFactoryConfigurationError, NoSuchNodeException,
-            TransformerException {
-        Repository contentRepo;
-        RepoPath rp = contentRepo(path);
-        contentRepo = rp.getRepo();
         
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        Repository contentRepo = getRealm().getRepository();
+        
         sb.append("<yanel-info>");
         sb.append("<realms>");
         
-        Yanel yanel = Yanel.getInstance();
-        yanel.init();
         Realm[] realms = yanel.getRealmConfiguration().getRealms();
         for (int i = 0; i < realms.length; i++) {
             sb.append("<realm>");
@@ -143,19 +120,19 @@ public class ShowRealms extends Resource implements ViewableV1 {
 
 
         Transformer transformer = TransformerFactory.newInstance()
-                .newTransformer(getXSLTStreamSource(path, contentRepo));
-        transformer.setParameter("yanel.path.name", path.getName());
+                .newTransformer(getXSLTStreamSource(getPath(), contentRepo));
+        transformer.setParameter("yanel.path.name", getPath().getName());
         transformer.setParameter("servlet.context", servletContext);
-        transformer.setParameter("yanel.path", path.toString());
-        transformer.setParameter("yanel.back2context", backToRoot(path, ""));
-        transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+        transformer.setParameter("yanel.path", getPath().toString());
+        transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
+        transformer.setParameter("yarep.back2realm", backToRoot(getPath(), ""));
         // TODO: Is this the best way to generate an InputStream from an
         // OutputStream?
         java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
         transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
         defaultView.setInputStream(new java.io.ByteArrayInputStream(baos
                 .toByteArray()));
-        defaultView.setMimeType(getMimeType(path));
+        defaultView.setMimeType(getMimeType(getPath()));
         defaultView.setInputStream(new java.io.ByteArrayInputStream(baos
                 .toByteArray()));
 
@@ -163,41 +140,15 @@ public class ShowRealms extends Resource implements ViewableV1 {
         return defaultView;
     }
 
-    private RepoPath contentRepo(Path path) throws Exception {
-        return new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(
-                path.toString()), getRepositoryFactory());
-    }
-
-    private String getMimeType(Path path, String viewId) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-
-    private Transformer prepareTransformer(Path path) throws Exception,
-            TransformerConfigurationException,
-            TransformerFactoryConfigurationError, NoSuchNodeException {
-        Repository contentRepo;
-        RepoPath rp = contentRepo(path);
-        contentRepo = rp.getRepo();
-        Transformer transformer = TransformerFactory.newInstance()
-                .newTransformer(getXSLTStreamSource(path, contentRepo));
-        transformer.setParameter("yanel.path.name", path.getName());
-        transformer.setParameter("yanel.path", path.toString());
-        return transformer;
-    }
-
-
     /**
      * 
      */
     private StreamSource getXSLTStreamSource(Path path, Repository repo)
             throws Exception {
-        Path xsltPath = getXSLTPath(path);
+        Path xsltPath = getXSLTPath();
         if (xsltPath != null) {
             return new StreamSource(repo
-                    .getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(
-                            path).toString())));
+                    .getInputStream(new org.wyona.yarep.core.Path(getXSLTPath().toString())));
         } else {
             File xsltFile = org.wyona.commons.io.FileUtil.file(rtd
                     .getConfigFile().getParentFile().getAbsolutePath(), "xslt"
@@ -210,82 +161,17 @@ public class ShowRealms extends Resource implements ViewableV1 {
     /**
      * 
      */
-    private Path getXSLTPath(Path path) {
-        String xsltPath = null;
-        try {
-            // TODO: Get yanel RTI yarep properties file name from framework
-            // resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil()
-                    .getRepositoryPath(new org.wyona.yarep.core.Path(path
-                            .toString()), getRTIRepositoryFactory());
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI
-                    .getRepo().getReader(
-                            new org.wyona.yarep.core.Path(new Path(rpRTI
-                                    .getPath().toString()).getRTIPath()
-                                    .toString())));
-
-            while ((xsltPath = br.readLine()) != null) {
-                if (xsltPath.indexOf("xslt:") == 0) {
-                    xsltPath = xsltPath.substring(6);
-                    log.debug("XSLT Path: " + xsltPath);
-                    return new Path(xsltPath);
-                }
-            }
-            log.error("No XSLT Path within: " + rpRTI.getPath());
-        } catch (Exception e) {
-            log.warn(e);
-        }
-
-        return null;
+    private Path getXSLTPath() {
+        return new Path(getRTI().getProperty("xslt"));
     }
 
      /**
      * 
      */
     private String getMimeType(Path path) {
-        String mimeType = null;
-        try {
-            // TODO: Get yanel RTI yarep properties file name from framework
-            // resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil()
-                    .getRepositoryPath(new org.wyona.yarep.core.Path(path
-                            .toString()), getRTIRepositoryFactory());
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI
-                    .getRepo().getReader(
-                            new org.wyona.yarep.core.Path(new Path(rpRTI
-                                    .getPath().toString()).getRTIPath()
-                                    .toString())));
-
-            while ((mimeType = br.readLine()) != null) {
-                if (mimeType.indexOf("mime-type:") == 0) {
-                    mimeType = mimeType.substring(11);
-                    log.info("*" + mimeType + "*");
-                    // TODO: Maybe validate mime-type ...
-                    return mimeType;
-                }
-            }
-        } catch (Exception e) {
-            log.warn(e);
-        }
-
-        // NOTE: Assuming fallback re dir2xhtml.xsl ...
-        return "application/xhtml+xml";
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    protected RepositoryFactory getRepositoryFactory() {
-        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    protected RepositoryFactory getRTIRepositoryFactory() {
-        return yanel.getRepositoryFactory("RTIRepositoryFactory");
+        String mimeType = getRTI().getProperty("mime-type");
+        if (mimeType == null) mimeType = "application/xhtml+xml";
+        return mimeType;
     }
     
    /**
@@ -299,25 +185,22 @@ public class ShowRealms extends Resource implements ViewableV1 {
        return backToRoot;
    }
    
-  /**
-   *
-   */
-  private boolean isRoot(org.wyona.commons.io.Path path) {
-      if (path.toString().equals(File.separator)) return true;
-      return false;
-  }
+    /**
+     *
+     */
+    private boolean isRoot(org.wyona.commons.io.Path path) {
+        if (path.toString().equals(File.separator)) return true;
+        return false;
+    } 
   
-  private String getTime(){
-      Calendar cal = Calendar.getInstance(java.util.TimeZone.getDefault());
-      
-      String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-      java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(DATE_FORMAT);
-
-      sdf.setTimeZone(java.util.TimeZone.getDefault());          
-            
-      String time = sdf.format(cal.getTime());
-      return time;
-      
-  }
+    public boolean exists() throws Exception {
+        // TODO Auto-generated method stub
+        return false;
+    }
+    
+    public long getSize() throws Exception {
+        // TODO Auto-generated method stub
+        return 0;
+    }
   
 }
