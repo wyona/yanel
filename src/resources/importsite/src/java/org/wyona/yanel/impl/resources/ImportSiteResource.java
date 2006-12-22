@@ -5,17 +5,18 @@
 package org.wyona.yanel.impl.resources;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.StringReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+//import java.io.UnsupportedEncodingException;
+//import java.io.StringReader;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+//import java.util.HashMap;
+//import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -30,14 +31,19 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.log4j.Category;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.api.attributes.ViewableV1;
+import org.wyona.yanel.core.ResourceTypeDefinition;
+import org.wyona.yanel.core.ResourceTypeRegistry;
+import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.core.util.ResourceAttributeHelper;
 import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yanel.core.transformation.I18nTransformer;
+import org.wyona.yanel.core.Yanel;
 import org.wyona.yarep.util.RepoPath;
 import org.wyona.yarep.util.YarepUtil;
 import org.wyona.yanel.core.util.HttpServletRequestHelper;
@@ -45,7 +51,7 @@ import org.wyona.yanel.core.util.HttpServletRequestHelper;
 /**
  *
  */
-public class ImportSiteResource extends Resource implements ViewableV1 {
+public class ImportSiteResource extends Resource implements ViewableV2 {
 
     private static Category log = Category.getInstance(ImportSiteResource.class);
     private Repository repository  = null;
@@ -77,12 +83,14 @@ public class ImportSiteResource extends Resource implements ViewableV1 {
     /**
      * 
      */
-    public View getView(HttpServletRequest request, String viewId) throws Exception {
-        // Get repository
+    public View getView(String viewId) throws Exception {
+
+        /*
         path = new Path(request.getServletPath());
         rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
         repository = rp.getRepo();
-
+        */
+        
         // Get language
         try {
             language = request.getParameter("yanel.meta.language");
@@ -113,7 +121,8 @@ public class ImportSiteResource extends Resource implements ViewableV1 {
                 File statusXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "importsite.xsl");
                 File statusXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "input-screen.xml");
                 transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(statusXSLTFile));
-                transformer.setParameter("realm", HttpServletRequestHelper.getParameter(request, "realm"));
+                transformer.setParameter("realmid", HttpServletRequestHelper.getParameter(request, "realmid"));
+                transformer.setParameter("realmname", HttpServletRequestHelper.getParameter(request, "realmname"));
                 transformer.setParameter("url", HttpServletRequestHelper.getParameter(request, "url"));
                 transformer.setParameter("crawldepth", HttpServletRequestHelper.getParameter(request, "crawldepth"));
                 transformer.setParameter("maxpages", HttpServletRequestHelper.getParameter(request, "maxpages"));
@@ -174,6 +183,34 @@ public class ImportSiteResource extends Resource implements ViewableV1 {
     private String getMimeType(Path path, String viewId) {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    /**
+     * 
+     * @param path
+     * @return
+     */
+    private String getMimeType(String viewId) {
+        String mimeType = null;
+        try {
+            java.io.BufferedReader br = new java.io.BufferedReader(rp
+                    .getRepo().getReader(
+                            new org.wyona.yarep.core.Path(new Path(rp
+                                    .getPath().toString()).getRTIPath()
+                                    .toString())));
+
+            while ((mimeType = br.readLine()) != null) {
+                if (mimeType.indexOf("mime-type:") == 0) {
+                    mimeType = mimeType.substring(11);
+                    log.info("*" + mimeType + "*");
+                    return mimeType;
+                }
+            }
+        } catch (Exception e) {
+            log.warn(e);
+        }
+        // NOTE: Assuming fallback re importsite.xsl ...
+        return "application/xhtml+xml";
     }
     
     /**
@@ -247,34 +284,6 @@ public class ImportSiteResource extends Resource implements ViewableV1 {
         }
         return null;
     }
-    
-    /**
-     * 
-     * @param path
-     * @return
-     */
-    private String getMimeType(Path path) {
-        String mimeType = null;
-        try {
-            java.io.BufferedReader br = new java.io.BufferedReader(rp
-                    .getRepo().getReader(
-                            new org.wyona.yarep.core.Path(new Path(rp
-                                    .getPath().toString()).getRTIPath()
-                                    .toString())));
-
-            while ((mimeType = br.readLine()) != null) {
-                if (mimeType.indexOf("mime-type:") == 0) {
-                    mimeType = mimeType.substring(11);
-                    log.info("*" + mimeType + "*");
-                    return mimeType;
-                }
-            }
-        } catch (Exception e) {
-            log.warn(e);
-        }
-        // NOTE: Assuming fallback re importsite.xsl ...
-        return "application/xhtml+xml";
-    }
    
    /**
     * 
@@ -284,29 +293,17 @@ public class ImportSiteResource extends Resource implements ViewableV1 {
        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
    }
    
-   /**
-    * 
-    * @param path
-    * @param backToRoot
-    * @return
-    */
-   private String backToRoot(Path path, String backToRoot) {
-       org.wyona.commons.io.Path parent = path.getParent();
-       if (parent != null && !isRoot(parent)) {
-           return backToRoot(new Path(parent.toString()), backToRoot + "../");
-       }
-       return backToRoot;
+   public boolean exists() throws Exception {
+       log.warn("Not implemented yet!");
+       return true; 
    }
 
    /**
     * 
-    * @param path
-    * @return
     */
-   private boolean isRoot(org.wyona.commons.io.Path path) {
-       if (path.toString().equals(File.separator)) return true;
-       return false;
-   }
+    public long getSize() throws Exception {
+        return getRealm().getRepository().getSize(getPath());
+    }
 
     
 }

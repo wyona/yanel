@@ -9,12 +9,11 @@
 
   <xsl:output method="xhtml" encoding="UTF-8"/>
 
-  <xsl:param name="company" select="''"/>
-  <xsl:param name="firstName" select="''"/>
-  <xsl:param name="lastName" select="''"/>
-  <xsl:param name="email" select="''"/>
-  <xsl:param name="address" select="''"/>
-  <xsl:param name="zipCity" select="''"/>
+  <xsl:param name="realmid" select="''"/>
+  <xsl:param name="realmname" select="''"/>
+  <xsl:param name="url" select="''"/>
+  <xsl:param name="crawldepth" select="''"/>
+  <xsl:param name="maxpages" select="''"/>
   <xsl:param name="message" select="''"/>
   <xsl:param name="error" select="''"/>
   
@@ -23,14 +22,13 @@
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title><i18n:message key="contact"/></title>
+        <title><i18n:message key="importsite"/></title>
       </head>
       
       <body>
-        <h3><i18n:message key="contact"/></h3>
-        <p><i18n:message key="generalInquiriesPleaseContact"/><a href="mailto:contact@wyona.com">contact@wyona.com</a>.</p>
-        <p><i18n:message key="mailingAddressCanBeFound"/><a href="http://www.wyona.com/contact.html"><i18n:message key="corporateContactPage"/></a>.</p>
-        <div id="contenBody">
+        <h3><i18n:message key="importsite"/></h3>
+        
+        <div id="contentBody">
         
           <xsl:choose>
             <xsl:when test="$error != ''">
@@ -50,7 +48,7 @@
   </xsl:template>
 
   <xsl:template match="form" mode="init">
-    <form name="contact-form" method="post" action="#">
+    <form name="importsite-form" method="post" action="#">
       <table cellpadding="0" cellspacing="0" border="0">
         <xsl:for-each select="inputfields/input">
           <xsl:variable name="inputName"><xsl:value-of select="."/></xsl:variable>
@@ -95,53 +93,39 @@
           <td colspan="3" align="left" valign="top" class="contentfield"><font color="red"><i18n:message key="{$error}"/></font></td>
         </tr>
         <tr>
-          <td align="right" valign="top" class="contentfield"><i18n:message key="company"/>&#0160;</td>
+          <td align="right" valign="top" class="contentfield"><i18n:message key="realmid"/>&#0160;</td>
           <td>
-            <input type="text" name="company" class="box" size="40" value="{$company}"/>
+            <input type="text" name="realmid" class="box" size="40" value="{$realmid}"/>
           </td>
           <td></td>
         </tr>
         <tr>
-          <td align="right" valign="top" class="contentfield"><i18n:message key="firstName"/>:&#0160;</td>
+          <td align="right" valign="top" class="contentfield"><i18n:message key="realmname"/>:&#0160;</td>
           <td>
-            <input type="text" name="firstName" class="box" size="40" value="{$firstName}"/>
+            <input type="text" name="realmname" class="box" size="40" value="{$realmname}"/>
           </td>
           <td></td>
         </tr>
         <tr>
-          <td align="right" valign="top" class="contentfield"><i18n:message key="lastName"/>:&#0160;</td>
+          <td align="right" valign="top" class="contentfield"><i18n:message key="url"/>:&#0160;</td>
           <td>
-            <input type="text" name="lastName" class="box" size="40" value="{$lastName}"/>
+            <input type="text" name="url" class="box" size="40" value="{$url}"/>
           </td>
           <td></td>
         </tr>
         <tr>
-          <td align="right" valign="top" class="contentfield"><i18n:message key="address"/>:&#0160;</td>
+          <td align="right" valign="top" class="contentfield"><i18n:message key="crawldepth"/>:&#0160;</td>
           <td>
-            <input type="text" name="address" class="box" size="40" value="{$address}"/>
+            <input type="text" name="crawldepth" class="box" size="40" value="{$crawldepth}"/>
           </td>
           <td></td>
         </tr>
         <tr>
-          <td align="right" valign="top" class="contentfield"><i18n:message key="zipCity"/>:&#0160;</td>
+          <td align="right" valign="top" class="contentfield"><i18n:message key="maxpages"/>:&#0160;</td>
           <td>
-            <input type="text" name="zipCity" class="box" size="40" value="{$zipCity}"/>
+            <input type="text" name="maxpages" class="box" size="40" value="{$maxpages}"/>
           </td>
           <td></td>
-        </tr>
-        <tr>
-          <td align="right" valign="top" class="contentfield">
-            <xsl:if test="starts-with($error, 'email')">
-              <font color="#FF0000"><i18n:message key="email"/>:&#0160;</font>
-            </xsl:if>
-            <xsl:if test="not(starts-with($error, 'email'))">
-              <i18n:message key="email"/>:&#0160;
-            </xsl:if>
-          </td>
-          <td>
-            <input type="text" name="email" class="box" size="40" value="{$email}"/>
-          </td>
-          <td>*</td>
         </tr>
         <tr>
           <td align="right" valign="top" class="contentfield"><i18n:message key="message"/>:&#0160;</td>
@@ -174,28 +158,28 @@
       </tr>
       
       <tr>
-        <td align="right" valign="top" class="contentfield"><i18n:message key="company"/>:&#0160;</td>
-        <td><xsl:value-of select="$company"/></td>
+        <td align="right" valign="top" class="contentfield"><i18n:message key="realmid"/>:&#0160;</td>
+        <td><xsl:value-of select="$realmid"/></td>
         <td></td>
       </tr>
       <tr>
-        <td align="right" valign="top" class="contentfield"><i18n:message key="firstName"/>:&#0160;</td>
-        <td><xsl:value-of select="$firstName"/></td>
+        <td align="right" valign="top" class="contentfield"><i18n:message key="realmname"/>:&#0160;</td>
+        <td><xsl:value-of select="$realmname"/></td>
         <td></td>
       </tr>
       <tr>
-        <td align="right" valign="top" class="contentfield"><i18n:message key="lastName"/>:&#0160;</td>
-        <td><xsl:value-of select="$lastName"/></td>
+        <td align="right" valign="top" class="contentfield"><i18n:message key="url"/>:&#0160;</td>
+        <td><xsl:value-of select="$url"/></td>
         <td></td>
       </tr>
       <tr>
-        <td align="right" valign="top" class="contentfield"><i18n:message key="address"/>:&#0160;</td>
-        <td><xsl:value-of select="$address"/></td>
+        <td align="right" valign="top" class="contentfield"><i18n:message key="crawldepth"/>:&#0160;</td>
+        <td><xsl:value-of select="$crawldepth"/></td>
         <td></td>
       </tr>
       <tr>
-        <td align="right" valign="top" class="contentfield"><i18n:message key="zipCity"/>:&#0160;</td>
-        <td><xsl:value-of select="$zipCity"/></td>
+        <td align="right" valign="top" class="contentfield"><i18n:message key="maxpages"/>:&#0160;</td>
+        <td><xsl:value-of select="$maxpages"/></td>
         <td></td>
       </tr>
       <tr>
