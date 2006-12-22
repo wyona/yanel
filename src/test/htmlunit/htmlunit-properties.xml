@@ -12,6 +12,9 @@
     -->
     <debugLevel>4</debugLevel>
     <baseUrl>http://localhost:8080/yanel/</baseUrl>
+    <language>en</language>
+<!--
     <language>en-us</language>
+-->
   </htmlunit>
 </config>
