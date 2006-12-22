@@ -36,6 +36,8 @@
     <head>
       <title><xsl:apply-templates select="/yanel:nutch/yanel:no-query" mode="title"/><xsl:apply-templates select="/yanel:nutch/yanel:query" mode="title"/></title>
       <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
+      <!-- No Introspection! -->
+      <link rel="neutron-introspection"/>
     </head>
     
     <body>
