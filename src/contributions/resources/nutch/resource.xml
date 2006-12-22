@@ -12,5 +12,6 @@ Getting Search results from a a Nutch crawl 0.8.x
 <rtd>
   <property name="xslt"/>
   <property name="messageBundle"/>
+  <property name="nutch-config"/>
 </rtd>
 </resource>
