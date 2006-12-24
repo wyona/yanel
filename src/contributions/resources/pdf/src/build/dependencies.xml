@@ -8,20 +8,8 @@
 
     <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
-      <dependency groupId="javax.servlet" artifactId="servlet-api" 
-                  version="2.3" scope="provided" />
-      <dependency groupId="log4j" artifactId="log4j"
-                  version="1.2.8"/>
       <dependency groupId="wyona-org-yanel" artifactId="yanel-core"
                   version="${yanel.source.version}"/>
-      <dependency groupId="yarep" artifactId="yarep"
-                  version="0.0.1-dev-r21033"/>
-      <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
-                  version="0.0.1-dev-r19469"/>
-      <dependency groupId="xml-resolver" artifactId="xml-resolver"
-                  version="1.1"/>
-      <dependency groupId="fop" artifactId="fop"
-                  version="0.20.5"/>
      </artifact:dependencies>
 
 
@@ -47,6 +35,7 @@
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
+    <property name="maven2.resource.cp" refid="maven2.resource.classpath"/>
     <!--<echo>Maven2 classpath: ${maven2.cp}</echo>-->
   </target>
 
