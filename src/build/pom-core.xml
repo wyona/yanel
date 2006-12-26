@@ -13,8 +13,8 @@
     </dependency>
     <dependency>
       <groupId>yarep</groupId>
-      <artifactId>yarep</artifactId>
-      <version>0.0.1-dev-r21033</version>
+      <artifactId>yarep-core</artifactId>
+      <version>0.0.1-dev-r21160</version>
     </dependency>
     <dependency>
       <groupId>wyona-org-commons</groupId>
