@@ -44,21 +44,21 @@ public class Realm {
     }
 
     /**
-     *
+     * Name of realm
      */
     public String getName() {
         return name;
     }
 
     /**
-     *
+     * Id of realm
      */
     public String getID() {
         return id;
     }
 
     /**
-     *
+     * Mount point of realm
      */
     public Path getMountPoint() {
         return mountPoint;
@@ -111,6 +111,9 @@ public class Realm {
         return descr;
     }
     
+    /**
+     * Get data repository of realm
+     */
     public Repository getRepository() throws Exception {
         return repository;
     }
@@ -119,6 +122,9 @@ public class Realm {
         this.repository = repository;
     }
 
+    /**
+     * Get RTI (Resource Type Identifier) repository of realm
+     */
     public Repository getRTIRepository() throws Exception {
         return rtiRepository;
     }
