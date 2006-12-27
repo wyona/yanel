@@ -10,6 +10,8 @@ From Scratch Resource Template
 </description>
 
 <rtd>
+<!--
   <property name="foo" default-value="bar"/>
+-->
 </rtd>
 </resource>
