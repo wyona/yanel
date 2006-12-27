@@ -196,8 +196,16 @@ public class CreateUsecaseHelper {
         try {
             org.wyona.yanel.core.map.Realm realm = yanel.getMap().getRealm(request.getServletPath());
             Path pathFromWhereCreateUsecaseHasBeenIssued = yanel.getMap().getPath(realm, request.getServletPath());
+            org.wyona.commons.io.Path parent = pathFromWhereCreateUsecaseHasBeenIssued.getParent();
+            Path newPath = null;
+            if(parent.equals("null")) {
+                // if pathFromWhereCreateUsecaseHasBeenIssued is ROOT
+                newPath = new Path("/" + createName);
+            } else {
+                newPath = new Path(parent + "/" + createName);
+            }
 
-            Resource newResource = yanel.getResourceManager().getResource(request, response, realm, pathFromWhereCreateUsecaseHasBeenIssued, new ResourceTypeRegistry().getResourceTypeDefinition(newResourceType), new org.wyona.yanel.core.ResourceTypeIdentifier(newResourceType, null));
+            Resource newResource = yanel.getResourceManager().getResource(request, response, realm, newPath, new ResourceTypeRegistry().getResourceTypeDefinition(newResourceType), new org.wyona.yanel.core.ResourceTypeIdentifier(newResourceType, null));
             if (newResource != null) {
                 if (ResourceAttributeHelper.hasAttributeImplemented(newResource, "Creatable", "2")) {
                     PropertyNames = ((CreatableV2) newResource).getPropertyNames();
