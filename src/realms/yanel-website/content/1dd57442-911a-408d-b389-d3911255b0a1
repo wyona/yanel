@@ -7,4 +7,4 @@
 * Your new resource should be listed now at http://127.0.0.1:8080/yanel/
 
 __Getting started with your new resource:__
-* ...
+* Implement the most recent [Viewable|http://yanel.wyona.org/javadoc/org/wyona/yanel/core/api/attributes/package-summary.html] interface. A very simple implementation example is the [World Time Resource|http://svn.wyona.com/repos/public/yanel/contributions/resources/world-time/src/java/org/wyona/yanel/impl/resources/ExampleResource.java].
