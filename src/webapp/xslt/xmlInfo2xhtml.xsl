@@ -99,35 +99,43 @@
     <p>
       <h4>Resource:</h4>
       <ul>
-        <li>View: <xsl:value-of select="view"/></li>
-        <xsl:if test="last-modified">
-          <li>Last Modified: <xsl:value-of select="last-modified"/></li>
-        </xsl:if>
-        <xsl:if test="size">
-          <li>Size: <xsl:value-of select="size"/></li>
-        </xsl:if>
-        <xsl:if test="revisions">
-          <li>Revisions: <xsl:apply-templates select="revisions"/></li>
-         </xsl:if>
-      </ul>
       <xsl:apply-templates/>
+      </ul>
     </p>    
   </xsl:template>
   
   <xsl:template match="not-viewable">
-    <p>
-      Resource is not viewable: <xsl:apply-templates/>
-    </p>
+    <li>Resource is not viewable: <xsl:apply-templates/></li>
+  </xsl:template>
+  
+  <xsl:template match="not-versionable">
+    <li>Resource has no versions</li>
+  </xsl:template>
+  
+  <xsl:template match="no-last-modified">
+    <li>Resource has no last modified</li>
+  </xsl:template>
+  
+  <xsl:template match="size">
+    <li>Size: <xsl:apply-templates/></li>
+  </xsl:template>
+  
+  <xsl:template match="view">
+    <li>View: <xsl:apply-templates/></li>
+  </xsl:template>
+  
+  <xsl:template match="last-modified">
+    <li>Last modified: <xsl:apply-templates/></li>
   </xsl:template>
 
   <xsl:template match="revisions">
-    <p>
+    <li>Revisions:
       <ul>
         <xsl:for-each select="revision">
           <li>Revision: <xsl:value-of select="."/></li>
         </xsl:for-each>
       </ul>
-    </p>
+    </li>
   </xsl:template>
   
   <xsl:template match="no-resource-type-identifier">
