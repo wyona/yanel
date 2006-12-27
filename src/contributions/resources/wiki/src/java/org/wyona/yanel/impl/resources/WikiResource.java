@@ -358,6 +358,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
      *
      */
     public void writeRti(Path path, String createName){
+        //TODO: Move the major part of the following code into Yanel core
         try {
             RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
 
