@@ -1,4 +1,4 @@
-!Create new Resource
+!Create a new resource from scratch
 
 * ./build.sh new-resource
 * Add new resource path to conf/yanel.xml resp. conf/local/local.yanel.xml
