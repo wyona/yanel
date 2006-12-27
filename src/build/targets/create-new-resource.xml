@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<project name="create-new-resource" default="new-resource">
+  <description>Create new resource</description>
+
+  <target name="new-resource" description="Create a new resource" depends="init">
+    <echo>Create new resource from scratch ${yanel.home.dir}/src/resources/from-scratch-resource-template</echo>
+    <property name="new.realm.name" value="hugo"/>
+    <property name="new.realm.namespace" value="http://hugo.foo.bar/yanel/resource/1.0"/>
+    <property name="new.realm.description" value="Description of new resource ${new.realm.name}"/>
+
+    <copy todir="${yanel.home.dir}/src/contributions/resources/${new.realm.name}">
+      <fileset dir="${yanel.home.dir}/src/resources/from-scratch-resource-template" excludes="build/**"/>
+    </copy>
+    <replace file="${yanel.home.dir}/src/contributions/resources/${new.realm.name}/resource.xml" value="${new.realm.name}">
+      <replacetoken>from-scratch</replacetoken>
+    </replace>
+    <replace file="${yanel.home.dir}/src/contributions/resources/${new.realm.name}/resource.xml" value="${new.realm.namespace}">
+      <replacetoken>http://foo.bar/yanel/resource/1.0</replacetoken>
+    </replace>
+    <replace file="${yanel.home.dir}/src/contributions/resources/${new.realm.name}/resource.xml" value="${new.realm.description}">
+      <replacetoken>From Scratch Resource Template</replacetoken>
+    </replace>
+  </target>
+</project>
