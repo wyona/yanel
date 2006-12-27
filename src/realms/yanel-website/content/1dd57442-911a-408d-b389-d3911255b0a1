@@ -4,3 +4,7 @@
 * Add new resource path to conf/yanel.xml resp. conf/local/local.yanel.xml
 * Rebuild Yanel
 * Restart Yanel
+* Your new resource should be listed now at http://127.0.0.1:8080/yanel/
+
+__Getting started with your new resource:__
+* ...
