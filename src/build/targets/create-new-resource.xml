@@ -5,12 +5,18 @@
 
   <target name="new-resource" description="Create a new resource" depends="init">
     <echo>Create new resource from scratch ${yanel.home.dir}/src/resources/from-scratch-resource-template</echo>
-    <property name="new.resource.name" value="hugo"/>
-    <property name="new.resource.namespace" value="http://hugo.foo.bar/yanel/resource/1.0"/>
-    <property name="new.resource.description" value="Description of new resource ${new.resource.name}"/>
+
+
+    <input message="Please enter the resource name (e.g. calendar):" defaultvalue="null" addproperty="new.resource.name"/>
+    <input message="Please enter the namespace of this new resource (e.g. http://foo.bar/yanel/resource/1.0):" defaultvalue="null" addproperty="new.resource.namespace"/>
+    <input message="Please enter a short description of this resource:" defaultvalue="null" addproperty="new.resource.description"/>
     <property name="new.resource.java.class" value="foo.bar.hugo.yanel.impl.resources.HugoResource"/>
     <property name="new.resource.java.class.package" value="foo.bar.hugo.yanel.impl.resources"/>
     <property name="new.resource.java.class.name" value="HugoResource"/>
+    <property name="new.resource.java.class.location" location="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/java/bar/foo/hugo/yanel/impl/resources/HugoResource.java"/>
+
+
+
 
     <copy todir="${yanel.home.dir}/src/contributions/resources/${new.resource.name}">
       <fileset dir="${yanel.home.dir}/src/resources/from-scratch-resource-template" excludes="build/**,src/java/**"/>
@@ -35,7 +41,6 @@
       <replacetoken>from-scratch</replacetoken>
     </replace>
 
-    <property name="new.resource.java.class.location" location="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/java/bar/foo/hugo/yanel/impl/resources/HugoResource.java"/>
     <echo>${new.resource.java.class}</echo>
     <copy file="${yanel.home.dir}/src/resources/from-scratch-resource-template/src/java/bar/foo/yanel/impl/resources/FromScratchResource.java" tofile="${new.resource.java.class.location}"/>
     <replace file="${new.resource.java.class.location}" value="${new.resource.java.class.name}">
