@@ -16,7 +16,7 @@
 
   <import file="dependencies.xml"/>
   <import file="continuous-integration.xml"/>
-  <import file="install-tomcat.xml"/>
+  <import file="targets/install-tomcat.xml"/>
   <import file="targets/add-third-party-realm.xml"/>
   <import file="targets/create-new-resource.xml"/>
   
