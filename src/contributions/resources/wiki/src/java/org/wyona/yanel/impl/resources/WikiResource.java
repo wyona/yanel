@@ -324,7 +324,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
         String title = request.getParameter("title");
         writeContentAndIntrospection(new Path(request.getServletPath()), createName, getEmptyWiki(title), title);
 
-        writeRti(new Path(request.getServletPath()), createName);
+        writeRti();
     }
  
     /**
@@ -357,18 +357,10 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     /**
      *
      */
-    public void writeRti(Path path, String createName){
+    public void writeRti() {
         //TODO: Move the major part of the following code into Yanel core
         try {
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
-
-            repository = rpRTI.getRepo();
-            org.wyona.yarep.core.Path newPath = null;
-            if (rpRTI.getPath().getParent().equals("null")) {
-                newPath = new org.wyona.yarep.core.Path("/" + createName);
-            } else {
-                newPath = new org.wyona.yarep.core.Path(rpRTI.getPath().getParent() + "/" + createName);
-            }
+            org.wyona.yarep.core.Path newPath = getPath();
 
             String content = "<{http://www.wyona.org/yanel/resource/1.0}wiki/>";
 
@@ -384,7 +376,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
             writer.write(content);
             writer.close();
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
         }
     }
             
