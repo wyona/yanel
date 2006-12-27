@@ -66,7 +66,7 @@ public class CreateUsecaseHelper {
                     w.print(createResourceScreen(createName, resourceType));
                 }
             } else{
-                w.print(doCreate(resourceType, request, createName, yanel));
+                w.print(doCreate(resourceType, request, response, createName, yanel));
             }
         }
 
@@ -189,22 +189,21 @@ public class CreateUsecaseHelper {
     /**
      *
      */
-    public String doCreate(String resourceType, HttpServletRequest request, String createName, org.wyona.yanel.core.Yanel yanel) {
+    public String doCreate(String newResourceType, HttpServletRequest request, HttpServletResponse response, String createName, org.wyona.yanel.core.Yanel yanel) {
         String responseAfterCreationScreen = null;
-        ResourceTypeRegistry rtr = new ResourceTypeRegistry();
         String[] PropertyNames = null;
         
         try {
-            Resource resource = rtr.newResource(resourceType);
-            if (resource != null) {
-                resource.setYanel(yanel);
-                resource.setRequest(request);
-                //resource.setRDT();
-                if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Creatable", "2")) {
-                    PropertyNames = ((CreatableV2) resource).getPropertyNames();
+            org.wyona.yanel.core.map.Realm realm = yanel.getMap().getRealm(request.getServletPath());
+            Path pathFromWhereCreateUsecaseHasBeenIssued = yanel.getMap().getPath(realm, request.getServletPath());
+
+            Resource newResource = yanel.getResourceManager().getResource(request, response, realm, pathFromWhereCreateUsecaseHasBeenIssued, new ResourceTypeRegistry().getResourceTypeDefinition(newResourceType), new org.wyona.yanel.core.ResourceTypeIdentifier(newResourceType, null));
+            if (newResource != null) {
+                if (ResourceAttributeHelper.hasAttributeImplemented(newResource, "Creatable", "2")) {
+                    PropertyNames = ((CreatableV2) newResource).getPropertyNames();
                     
 
-                        ((CreatableV2) resource).create(request, createName);
+                        ((CreatableV2) newResource).create(request, createName);
                         
                         //response after creation, better would be a redirect to the fresh created resource
                         StringBuffer form = new StringBuffer();
@@ -226,7 +225,6 @@ public class CreateUsecaseHelper {
                     }
                 return responseAfterCreationScreen;
                 }
-
             }
          catch (Exception e) {
             log.error(e.getMessage(), e);
