@@ -198,6 +198,7 @@ public class CreateUsecaseHelper {
             Resource resource = rtr.newResource(resourceType);
             if (resource != null) {
                 resource.setYanel(yanel);
+                resource.setRequest(request);
                 //resource.setRDT();
                 if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Creatable", "2")) {
                     PropertyNames = ((CreatableV2) resource).getPropertyNames();
