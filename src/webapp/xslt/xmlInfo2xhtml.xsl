@@ -110,9 +110,16 @@
           <li>Revisions: <xsl:apply-templates select="revisions"/></li>
          </xsl:if>
       </ul>
+      <xsl:apply-templates/>
     </p>    
   </xsl:template>
   
+  <xsl:template match="not-viewable">
+    <p>
+      Resource is not viewable: <xsl:apply-templates/>
+    </p>
+  </xsl:template>
+
   <xsl:template match="revisions">
     <p>
       <ul>
