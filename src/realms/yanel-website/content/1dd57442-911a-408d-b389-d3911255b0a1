@@ -1,0 +1,6 @@
+!Create new Resource
+
+* ./build.sh new-resource
+* Add new resource path to conf/yanel.xml resp. conf/local/local.yanel.xml
+* Rebuild Yanel
+* Restart Yanel
