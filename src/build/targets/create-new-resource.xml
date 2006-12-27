@@ -5,21 +5,44 @@
 
   <target name="new-resource" description="Create a new resource" depends="init">
     <echo>Create new resource from scratch ${yanel.home.dir}/src/resources/from-scratch-resource-template</echo>
-    <property name="new.realm.name" value="hugo"/>
-    <property name="new.realm.namespace" value="http://hugo.foo.bar/yanel/resource/1.0"/>
-    <property name="new.realm.description" value="Description of new resource ${new.realm.name}"/>
+    <property name="new.resource.name" value="hugo"/>
+    <property name="new.resource.namespace" value="http://hugo.foo.bar/yanel/resource/1.0"/>
+    <property name="new.resource.description" value="Description of new resource ${new.resource.name}"/>
+    <property name="new.resource.java.class" value="foo.bar.hugo.yanel.impl.resources.HugoResource"/>
+    <property name="new.resource.java.class.package" value="foo.bar.hugo.yanel.impl.resources"/>
+    <property name="new.resource.java.class.name" value="HugoResource"/>
 
-    <copy todir="${yanel.home.dir}/src/contributions/resources/${new.realm.name}">
-      <fileset dir="${yanel.home.dir}/src/resources/from-scratch-resource-template" excludes="build/**"/>
+    <copy todir="${yanel.home.dir}/src/contributions/resources/${new.resource.name}">
+      <fileset dir="${yanel.home.dir}/src/resources/from-scratch-resource-template" excludes="build/**,src/java/**"/>
     </copy>
-    <replace file="${yanel.home.dir}/src/contributions/resources/${new.realm.name}/resource.xml" value="${new.realm.name}">
+
+    <!-- Patch resource.xml -->
+    <replace file="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/resource.xml" value="${new.resource.name}">
       <replacetoken>from-scratch</replacetoken>
     </replace>
-    <replace file="${yanel.home.dir}/src/contributions/resources/${new.realm.name}/resource.xml" value="${new.realm.namespace}">
+    <replace file="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/resource.xml" value="${new.resource.namespace}">
       <replacetoken>http://foo.bar/yanel/resource/1.0</replacetoken>
     </replace>
-    <replace file="${yanel.home.dir}/src/contributions/resources/${new.realm.name}/resource.xml" value="${new.realm.description}">
+    <replace file="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/resource.xml" value="${new.resource.description}">
       <replacetoken>From Scratch Resource Template</replacetoken>
+    </replace>
+    <replace file="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/resource.xml" value="${new.resource.java.class}">
+      <replacetoken>bar.foo.yanel.impl.resources.FromScratchResource</replacetoken>
+    </replace>
+
+    <!-- Patch build.properties -->
+    <replace file="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/build/build.properties" value="${new.resource.name}">
+      <replacetoken>from-scratch</replacetoken>
+    </replace>
+
+    <property name="new.resource.java.class.location" location="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/java/bar/foo/hugo/yanel/impl/resources/HugoResource.java"/>
+    <echo>${new.resource.java.class}</echo>
+    <copy file="${yanel.home.dir}/src/resources/from-scratch-resource-template/src/java/bar/foo/yanel/impl/resources/FromScratchResource.java" tofile="${new.resource.java.class.location}"/>
+    <replace file="${new.resource.java.class.location}" value="${new.resource.java.class.name}">
+      <replacetoken>FromScratchResource</replacetoken>
+    </replace>
+    <replace file="${new.resource.java.class.location}" value="${new.resource.java.class.package}">
+      <replacetoken>bar.foo.yanel.impl.resources</replacetoken>
     </replace>
   </target>
 </project>
