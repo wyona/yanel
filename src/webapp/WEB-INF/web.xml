@@ -19,6 +19,11 @@
   <servlet>
     <servlet-name>YanelServlet</servlet-name>
     <servlet-class>org.wyona.yanel.servlet.YanelServlet</servlet-class>
+
+    <init-param>
+      <param-name>exception-and-info-screen-xslt</param-name>
+      <param-value>xslt/xmlInfo2xhtml.xsl</param-value>
+    </init-param>
   </servlet>
 
   <servlet-mapping>

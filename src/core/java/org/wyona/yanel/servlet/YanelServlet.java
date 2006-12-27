@@ -70,6 +70,8 @@ public class YanelServlet extends HttpServlet {
     Map map;
     Yanel yanel;
 
+    File xsltFile;
+
     private static String IDENTITY_KEY = "identity";
 
     private static final String METHOD_PROPFIND = "PROPFIND";
@@ -85,6 +87,8 @@ public class YanelServlet extends HttpServlet {
      */
     public void init(ServletConfig config) throws ServletException {
         this.config = config;
+
+        xsltFile = org.wyona.commons.io.FileUtil.file(config.getServletContext().getRealPath("/"), config.getInitParameter("exception-and-info-screen-xslt"));
         
         try {
             yanel = Yanel.getInstance();
@@ -295,7 +299,7 @@ public class YanelServlet extends HttpServlet {
                         sizeElement.appendChild(doc.createTextNode(String.valueOf(size)));
                         view = ((ViewableV2) res).getView(viewId);
                     } else {
-                         Element noViewElement = (Element) resourceElement.appendChild(doc.createElement("no-view"));
+                         Element noViewElement = (Element) resourceElement.appendChild(doc.createElement("not-viewable"));
                          noViewElement.appendChild(doc.createTextNode(res.getClass().getName() + " is not viewable!"));
                     }
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
@@ -315,8 +319,12 @@ public class YanelServlet extends HttpServlet {
                                     Element revisionElement = (Element) revisionsElement.appendChild(doc.createElement("revision"));
                                     revisionElement.appendChild(doc.createTextNode(revisions[i]));
                                 }
+                            } else {
+                                Element noRevisionsYetElement = (Element) resourceElement.appendChild(doc.createElement("no-revisions-yet"));
                             }
                         }
+                    } else {
+                        Element notVersionableElement = (Element) resourceElement.appendChild(doc.createElement("not-versionable"));
                     }
                 } else {
                         Element resourceIsNullElement = (Element) rootElement.appendChild(doc.createElement("resource-is-null"));
@@ -1225,7 +1233,6 @@ public class YanelServlet extends HttpServlet {
                 out.close();
             } else {
                 response.setContentType("application/xhtml+xml");
-                File xsltFile = org.wyona.commons.io.FileUtil.file(config.getServletContext().getRealPath("/"), "xslt" + File.separator + "xmlInfo2xhtml.xsl");
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
                 transformer.transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
             }
