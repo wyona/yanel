@@ -149,9 +149,7 @@ public class CreateUsecaseHelper {
                     form.append("<input type=\"hidden\" name=\"create.name\" value=\""+createName+"\"/>");
                     form.append("<input type=\"hidden\" name=\"create\" value=\"create.resource\"/>");
 
-                    if (PropertyNames.length == 0) {
-                        form.append("<p>No resource specific properties!</p>");
-                    } else {
+                    if (PropertyNames != null && PropertyNames.length > 0) {
                         form.append("<p>Resource specific properties:</p>");
                         for (int i = 0; i < PropertyNames.length; i++) {
                             form.append(PropertyNames[i] + ": <input name=\"" + PropertyNames[i]
@@ -159,6 +157,8 @@ public class CreateUsecaseHelper {
                                 + ((CreatableV2) resource).getProperty(PropertyNames[i])
                                 + "\" size=\"60\">");
                         }
+                    } else {
+                        form.append("<p>No resource specific properties!</p>");
                     }
 
                     form.append("<br/><br/><input type=\"submit\" value=\"Create Resource\"/>");
