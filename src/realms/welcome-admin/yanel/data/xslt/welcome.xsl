@@ -39,7 +39,7 @@
                 an existing third-party realm.</a>
             </li>
             <li>What is a resource?</li>
-            <li>Create a resource from scratch.</li>
+            <li><a href="yanel-website/en/documentation/create-new-resource.html">Create a resource from scratch.</a></li>
             <li>Add an existing third-party resource.</li>
           </ul>
         </p>
