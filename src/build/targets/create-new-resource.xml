@@ -10,12 +10,14 @@
     <input message="Please enter the resource name (e.g. calendar):" defaultvalue="null" addproperty="new.resource.name"/>
     <input message="Please enter the namespace of this new resource (e.g. http://foo.bar/yanel/resource/1.0):" defaultvalue="null" addproperty="new.resource.namespace"/>
     <input message="Please enter a short description of this resource:" defaultvalue="null" addproperty="new.resource.description"/>
-    <property name="new.resource.java.class" value="foo.bar.hugo.yanel.impl.resources.HugoResource"/>
-    <property name="new.resource.java.class.package" value="foo.bar.hugo.yanel.impl.resources"/>
-    <property name="new.resource.java.class.name" value="HugoResource"/>
-    <property name="new.resource.java.class.location" location="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/java/bar/foo/hugo/yanel/impl/resources/HugoResource.java"/>
+    <input message="Please enter java package of this resource (e.g. org.wyona.yanel.impl.resources):" defaultvalue="null" addproperty="new.resource.java.class.package"/>
+    <input message="Please enter java class name of this resource (e.g. CalendarResource):" defaultvalue="null" addproperty="new.resource.java.class.name"/>
 
+    <!-- TODO: Generate this path from package and class name! -->
+    <input message="Please enter java class filesystem path of this resource (e.g. org/wyona/yanel/impl/resources/CalendarResource.java):" defaultvalue="null" addproperty="new.resource.java.class.fs.path"/>
 
+    <property name="new.resource.java.class.location" location="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/java/${new.resource.java.class.fs.path}"/>
+    <property name="new.resource.java.class" value="${new.resource.java.class.package}.${new.resource.java.class.name}"/>
 
 
     <copy todir="${yanel.home.dir}/src/contributions/resources/${new.resource.name}">
