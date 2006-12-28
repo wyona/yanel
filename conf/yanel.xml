@@ -19,6 +19,7 @@
   <resource src="../src/contributions/resources/contact-form/"  compile="true"/>
   <resource src="../src/contributions/resources/wiki/"          compile="true"/>
   <resource src="../src/contributions/resources/zip/"           compile="true"/>
+  <resource src="../src/contributions/resources/calendar/"      compile="true"/>
   <resource src="../src/resources/websearch/"                   compile="true"/>
   <resource src="../src/contributions/resources/nutch/"         compile="true"/>
   <resource src="../src/contributions/resources/davcollection/" compile="true"/>
