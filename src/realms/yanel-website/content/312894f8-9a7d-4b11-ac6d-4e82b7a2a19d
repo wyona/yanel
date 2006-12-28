@@ -95,20 +95,39 @@
 
 </tr>
 <tr>
-
               <td>Generic Workflow</td>
-
-              <td>not started<br/></td>
-
+              <td>not started</td>
+              <td>TBD</td>
+              <td>TBD</td>
             </tr>
 
             <tr>
-
               <td>Notification</td>
-
               <td>not started</td>
+              <td>TBD</td>
+              <td>TBD</td>
+            </tr>
 
-            </tr><tr><td style="vertical-align: top;">Celtx resource</td><td style="vertical-align: top;">not started</td></tr><tr><td style="vertical-align: top;">Alternative (e.g. AJAX based) User Interface (not just Firefox users ...)</td><td style="vertical-align: top;">not started</td></tr><tr><td style="vertical-align: top;">Caching</td><td style="vertical-align: top;">not started</td></tr><tr><td style="vertical-align: top;">Link Checker</td><td style="vertical-align: top;">not started</td></tr><tr><td style="vertical-align: top;">LDAP Integration</td><td style="vertical-align: top;">not started yet</td><td>TBD</td><td>TBD</td></tr>
+<tr>
+  <td style="vertical-align: top;">Celtx resource</td>
+  <td style="vertical-align: top;">not started</td>
+              <td>TBD</td>
+              <td>TBD</td>
+</tr>
+<tr><td style="vertical-align: top;">Alternative (e.g. AJAX based) User Interface (not just Firefox users ...)</td><td style="vertical-align: top;">not started</td>
+              <td>TBD</td>
+              <td>TBD</td>
+</tr>
+<tr><td style="vertical-align: top;">Caching</td><td style="vertical-align: top;">not started</td>
+              <td>TBD</td>
+              <td>TBD</td>
+</tr>
+<tr><td style="vertical-align: top;">Link Checker</td><td style="vertical-align: top;">not started</td>
+              <td>TBD</td>
+              <td>TBD</td>
+</tr>
+<tr><td style="vertical-align: top;">LDAP Integration</td><td style="vertical-align: top;">not started yet</td><td>TBD</td><td>TBD</td></tr>
+
 
           </tbody></table>
 
