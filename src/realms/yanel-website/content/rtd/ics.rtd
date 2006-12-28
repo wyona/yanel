@@ -1,4 +1,4 @@
 <{http://www.wyona.org/yanel/resource/1.0}calendar/>
-#<{http://www.wyona.org/yanel/resource/1.0}directory/>
-#xslt: /xslt/dir2ics.xsl
-#mime-type: text/plain
+categories: vacation
+classes: public 
+user-ids: michi
