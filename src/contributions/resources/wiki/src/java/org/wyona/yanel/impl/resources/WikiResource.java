@@ -59,7 +59,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     private static Category log = Category.getInstance(WikiResource.class);
     private final String XML_MIME_TYPE = "application/xml";
     private DocumentBuilderFactory dbf = null;
-    private Repository repository  = null;
+    //private Repository repository  = null;
     private HashMap properties = new HashMap();
     private String defaultWikiParserBeanId = "jspWikiParser";
     
@@ -88,7 +88,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
         View defaultView = new View();
         try {
             RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-            repository = rp.getRepo();
+            Repository repository = rp.getRepo();
             
             
             String path2Resource = path.toString();
@@ -320,9 +320,9 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     /**
      *
      */
-    public void create(HttpServletRequest request ,String createName){
+    public void create(HttpServletRequest request){
         String title = request.getParameter("title");
-        writeContentAndIntrospection(new Path(request.getServletPath()), createName, getEmptyWiki(title), title);
+        writeContentAndIntrospection(getEmptyWiki(title), title);
 
         writeRti();
     }
@@ -330,23 +330,22 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     /**
      * Write new content into data repository
      */
-    public void writeContentAndIntrospection(Path path, String createName, String content, String title) {
+    public void writeContentAndIntrospection(String content, String title) {
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), new RepositoryFactory());
-            repository = rp.getRepo();
-            org.wyona.yarep.core.Path newPath = new org.wyona.yarep.core.Path(rp.getPath().getParent() + "/" + createName);
+            org.wyona.yarep.core.Path newPath = new org.wyona.yarep.core.Path(getPath().toString());
+            Repository dataRepo = getRealm().getRepository();
 
-            log.info("Writing content into repository \"" + repository.getName() + "\" with content:\n" + content + "\nto path: " + newPath);
-            Writer writer = repository.getWriter(newPath);
+            log.info("Writing content into repository \"" + dataRepo.getName() + "\" with content:\n" + content + "\nto path: " + newPath);
+            Writer writer = dataRepo.getWriter(newPath);
             writer.write(content);
             writer.close();
 
-            repository.addSymbolicLink(newPath, new org.wyona.yarep.core.Path(newPath.toString() + ".txt"));
+            dataRepo.addSymbolicLink(newPath, new org.wyona.yarep.core.Path(newPath.toString() + ".txt"));
 
-            org.wyona.yarep.core.Path introspectionPath = new org.wyona.yarep.core.Path(rp.getPath().getParent() + "/introspection-" + createName + ".xml");
-            String introspectionContent = getWikiIntrospection(title, createName);
-            log.info("Writing introspection into repository \"" + repository.getName() + "\" with content:\n" + introspectionContent + "\nto path: " + introspectionPath);
-            writer = repository.getWriter(introspectionPath);
+            org.wyona.yarep.core.Path introspectionPath = new org.wyona.yarep.core.Path(newPath.getParent() + "/introspection-" + newPath.getName() + ".xml");
+            String introspectionContent = getWikiIntrospection(title, newPath.getName());
+            log.info("Writing introspection into repository \"" + dataRepo.getName() + "\" with content:\n" + introspectionContent + "\nto path: " + introspectionPath);
+            writer = dataRepo.getWriter(introspectionPath);
             writer.write(introspectionContent);
             writer.close();
         } catch (Exception e) {
@@ -370,9 +369,10 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
             // TODO: Make mime-type configurable (depending on global XSLT) ...
             content = content + "\nmime-type: application/xhtml+xml";
 
-            log.info("Writing content to repository " + repository.getName() + " with content:\n" + content + "\nto path: " + newPath);
+            Repository rtiRepo = getRealm().getRTIRepository();
+            log.info("Writing content to repository " + rtiRepo.getName() + " with content:\n" + content + "\nto path: " + newPath);
 
-            Writer writer = repository.getWriter(new org.wyona.yarep.core.Path(new Path(newPath.toString()).getRTIPath().toString()));
+            Writer writer = rtiRepo.getWriter(new org.wyona.yarep.core.Path(new Path(newPath.toString()).getRTIPath().toString()));
             writer.write(content);
             writer.close();
         } catch (Exception e) {

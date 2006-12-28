@@ -211,7 +211,7 @@ public class CreateUsecaseHelper {
                     PropertyNames = ((CreatableV2) newResource).getPropertyNames();
                     
 
-                        ((CreatableV2) newResource).create(request, createName);
+                        ((CreatableV2) newResource).create(request);
                         
                         //response after creation, better would be a redirect to the fresh created resource
                         StringBuffer form = new StringBuffer();
