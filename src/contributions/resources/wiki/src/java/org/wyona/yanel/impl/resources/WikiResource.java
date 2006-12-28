@@ -59,7 +59,6 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     private static Category log = Category.getInstance(WikiResource.class);
     private final String XML_MIME_TYPE = "application/xml";
     private DocumentBuilderFactory dbf = null;
-    //private Repository repository  = null;
     private HashMap properties = new HashMap();
     private String defaultWikiParserBeanId = "jspWikiParser";
     
@@ -87,15 +86,16 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     public View getView(Path path, String viewId) {
         View defaultView = new View();
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-            Repository repository = rp.getRepo();
-            
+            //RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
+            //Repository repository = rp.getRepo();
+
+            Repository dataRepo = getRealm().getRepository();
             
             String path2Resource = path.toString();
             path2Resource = path2Resource.substring(0, path2Resource.lastIndexOf("/") + 1);
             
             String wikiParserBeanId = getWikiSyntax(path);
-            InputStream inputStream = rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+            InputStream inputStream = dataRepo.getInputStream(new org.wyona.yarep.core.Path(getPath().toString()));
             IWikiParser wikiParser = (IWikiParser) yanel.getBeanFactory().getBean(wikiParserBeanId);
             wikiParser.parse(inputStream);
             
@@ -104,7 +104,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
                 transformer = TransformerFactory.newInstance().newTransformer();
                 defaultView.setMimeType(XML_MIME_TYPE);
             } else {
-                transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(null, repository));
+                transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(null, dataRepo));
                 transformer.setParameter("yanel.path.name", path.getName());
                 transformer.setParameter("yanel.path", path.toString());
                 defaultView.setMimeType("application/xhtml+xml");
@@ -120,9 +120,9 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
             if(getXSLTPath(path) != null) {
                 inputStream = new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray());
                 
-                transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
+                transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, dataRepo));
                 transformer.setParameter("yanel.back2context", backToRoot(path, ""));
-                transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+                transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(getPath().toString()), ""));
                 
                 byteArrayOutputStream = new ByteArrayOutputStream();
                 transformer.transform(new StreamSource(inputStream), new StreamResult(byteArrayOutputStream));    
