@@ -10,8 +10,8 @@ Calendar resource based on ICS format
 </description>
 
 <rtd>
-<!--
-  <property name="foo" default-value="bar"/>
--->
+  <property name="classes"/>
+  <property name="categories"/>
+  <property name="user-ids"/>
 </rtd>
 </resource>
