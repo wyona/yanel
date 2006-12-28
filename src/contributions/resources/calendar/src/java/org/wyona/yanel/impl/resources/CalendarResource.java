@@ -41,15 +41,21 @@ public class CalendarResource extends Resource implements ViewableV2 {
     }
 
     /**
-     *
+     * Generate view
+     * @param viewId xml, ics, xhtml
      */
     public View getView(String viewId) throws Exception {
+        String categories = getRTI().getProperty("categories");
+        String classes = getRTI().getProperty("classes");
+        String userIds = getRTI().getProperty("user-ids");
+        log.error("DEBUG: " + categories + " " + classes + " " + userIds);
+
         org.wyona.yarep.core.Repository dataRepo = getRealm().getRepository();
         org.wyona.yarep.core.Path[] children = dataRepo.getChildren(new org.wyona.yarep.core.Path(getPath().toString()));
+        //org.wyona.yarep.core.Path[] children = dataRepo.search("categories", categories);
 
         StringBuffer calendar = new StringBuffer("<?xml version=\"1.0\"?>\n<calendar>");
         for (int i = 0; i < children.length; i++) {
-            log.error("DEBUG: Child: " + children[i]);
             if (dataRepo.isResource(children[i])) {
                 java.io.InputStream in = dataRepo.getInputStream(children[i]);
                 java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
@@ -63,7 +69,6 @@ public class CalendarResource extends Resource implements ViewableV2 {
                 }
 
                 String event = baos.toString();
-                log.error("DEBUG: Event: " + event);
                 int endOfProcessingInstruction = event.indexOf("?>");
                 if (endOfProcessingInstruction > 0) {
                     calendar.append(event.toString().substring(endOfProcessingInstruction + 2));
@@ -83,6 +88,8 @@ public class CalendarResource extends Resource implements ViewableV2 {
 	    view.setInputStream(new java.io.StringBufferInputStream(calendar.toString()));
             return view;
         } else {
+            String xslt = getRTD().getConfigFile().getParent();
+            log.error("DEBUG: XSLT: " + xslt);
             //response.getOutputStream();
 
             View view = new View();
