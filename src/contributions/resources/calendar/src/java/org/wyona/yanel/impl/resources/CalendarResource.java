@@ -52,14 +52,17 @@ public class CalendarResource extends Resource implements ViewableV2 {
             log.error("DEBUG: Child: " + children[i]);
             if (dataRepo.isResource(children[i])) {
                 java.io.InputStream in = dataRepo.getInputStream(children[i]);
-                StringBuffer event = new StringBuffer();
+                java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
+                //StringBuffer event = new StringBuffer();
             
                 byte[] buffer = new byte[8192];
                 int bytesRead;
                 while ((bytesRead = in.read(buffer)) != -1) {
-                    event.append(new String(buffer));
+                    //event.append(new String(buffer));
+                    baos.write(buffer, 0, bytesRead);
                 }
 
+                String event = baos.toString();
                 log.error("DEBUG: Event: " + event);
                 int endOfProcessingInstruction = event.indexOf("?>");
                 if (endOfProcessingInstruction > 0) {
@@ -71,13 +74,23 @@ public class CalendarResource extends Resource implements ViewableV2 {
         }
         calendar.append("</calendar>");
 
-        //response.getOutputStream();
+        if(viewId != null && viewId.equals("xml")) {
+            //response.getOutputStream();
 
-        View view = new View();
-        //view.setResponse(false);
-	view.setMimeType("application/xml");
-	view.setInputStream(new java.io.StringBufferInputStream(calendar.toString()));
-        return view;
+            View view = new View();
+            //view.setResponse(false);
+	    view.setMimeType("application/xml");
+	    view.setInputStream(new java.io.StringBufferInputStream(calendar.toString()));
+            return view;
+        } else {
+            //response.getOutputStream();
+
+            View view = new View();
+            //view.setResponse(false);
+	    view.setMimeType("application/xml");
+	    view.setInputStream(new java.io.StringBufferInputStream(calendar.toString()));
+            return view;
+        }
     }
 
     /**
