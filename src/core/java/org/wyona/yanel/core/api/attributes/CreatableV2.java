@@ -33,7 +33,7 @@ public interface CreatableV2 extends CreatableV1 {
 
     
     /**
-     * creates the resource
+     * Creates the resource
      */
-    public void create(HttpServletRequest request, String createName);
+    public void create(HttpServletRequest request);
 }
