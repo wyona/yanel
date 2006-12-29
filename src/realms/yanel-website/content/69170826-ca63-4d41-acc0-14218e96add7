@@ -14,3 +14,11 @@ __RTI Configuration:__
 * user-ids, e.g. jack
 * classes, e.g. public
 * categories, e.g. conference
+
+__Usage with Sunbird:__
+*Click on "File" menu
+*Click on "Subscribe to Remote Calendar..." menu item
+*Choose "On the Network" and click "Next"
+*Enter URL, e.g. http://127.0.0.1:8080/yanel/yanel-website/calendar.ics and click "Next"
+*Enter a Name (e.g. "My Yanel Calendar"), choose a color (e.g. red) and click "Next"
+*Click Finish
