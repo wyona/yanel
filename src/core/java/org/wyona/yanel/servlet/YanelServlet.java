@@ -1000,16 +1000,36 @@ public class YanelServlet extends HttpServlet {
      * Also maybe interesting http://sourceforge.net/projects/openharmonise
      */
     public void doPropfind(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //log.warn("Not Implemented yet!");
-        //response.sendError(response.SC_NOT_IMPLEMENTED);
-        //response.setStatus(javax.servlet.http.HttpServletResponse.SC_MULTI_STATUS);
-        response.setStatus(207, "Multi-Status");
+        String depth = request.getHeader("Depth");
+        log.error("DEBUG: Depth: " + depth);
 
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<multistatus xmlns=\"DAV:\">");
-        sb.append("<response>");
-        sb.append("</response>");
+        sb.append("  <response>");
+        sb.append("    <href>"+request.getRequestURI()+"</href>");
+        sb.append("    <propstat>");
+        sb.append("      <prop>");
+        sb.append("        <resourcetype><collection/></resourcetype>");
+        sb.append("        <getcontenttype>http/unix-directory</getcontenttype>");
+        sb.append("      </prop>");
+        sb.append("      <status>HTTP/1.1 200 OK</status>");
+        sb.append("    </propstat>");
+        sb.append("  </response>");
+/*
+        sb.append("  <response>");
+        sb.append("    <href>/yanel/yanel-website/roadmap.html</href>");
+        sb.append("    <propstat>");
+        sb.append("      <prop>");
+        sb.append("        <resourcetype/>");
+        sb.append("      </prop>");
+        sb.append("    </propstat>");
+        sb.append("  </response>");
+*/
         sb.append("</multistatus>");
+
+        //response.setStatus(javax.servlet.http.HttpServletResponse.SC_MULTI_STATUS);
+        response.setStatus(207, "Multi-Status");
+
         PrintWriter w = response.getWriter();
         w.print(sb);
     }
