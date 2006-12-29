@@ -171,8 +171,8 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
      *
      */
     public OutputStream getOutputStream() throws Exception {
-        log.warn("Not implemented yet!");
-        return null;
+        log.warn("TODO: Parse ICS and write events as XML into repository ...");
+        return getRealm().getRepository().getOutputStream(new org.wyona.yarep.core.Path("/calendarTODO.ics"));
     }
 
     /**
