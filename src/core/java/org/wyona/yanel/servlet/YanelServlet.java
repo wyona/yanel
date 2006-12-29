@@ -1000,8 +1000,18 @@ public class YanelServlet extends HttpServlet {
      * Also maybe interesting http://sourceforge.net/projects/openharmonise
      */
     public void doPropfind(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.warn("Not Implemented yet!");
-        response.sendError(response.SC_NOT_IMPLEMENTED);
+        //log.warn("Not Implemented yet!");
+        //response.sendError(response.SC_NOT_IMPLEMENTED);
+        //response.setStatus(javax.servlet.http.HttpServletResponse.SC_MULTI_STATUS);
+        response.setStatus(207, "Multi-Status");
+
+        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        sb.append("<multistatus xmlns=\"DAV:\">");
+        sb.append("<response>");
+        sb.append("</response>");
+        sb.append("</multistatus>");
+        PrintWriter w = response.getWriter();
+        w.print(sb);
     }
 
     /**
