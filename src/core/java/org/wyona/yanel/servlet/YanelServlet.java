@@ -787,7 +787,11 @@ public class YanelServlet extends HttpServlet {
             log.debug("Checkout data ...");
             role = new Role("open");
         } else if (contentType != null && contentType.indexOf("application/atom+xml") >= 0 && (method.equals(METHOD_PUT) || method.equals(METHOD_POST))) {
+            // TODO: Is posting atom entries different from a general post (see below)?!
             log.error("DEBUG: Write/Checkin Atom entry ...");
+            role = new Role("write");
+        } else if (method.equals(METHOD_PUT) || method.equals(METHOD_POST)) {
+            log.error("DEBUG: Upload data ...");
             role = new Role("write");
         } else if (method.equals(METHOD_DELETE)) {
             log.error("DEBUG: Delete resource ...");
