@@ -1008,8 +1008,8 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.warn("Not Implemented yet!");
-        response.sendError(response.SC_NOT_IMPLEMENTED);
+        response.setHeader("DAV", "1");
+        // TODO: Is there anything else to do?!
     }
 
     /**
