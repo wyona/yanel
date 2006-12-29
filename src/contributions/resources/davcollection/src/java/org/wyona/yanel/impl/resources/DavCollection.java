@@ -52,7 +52,7 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
 
     public void buildXmlView(Path path, String viewId) throws SAXException {
 
-        response.setStatus(207, "Multi Status");
+        response.setStatus(207, "Multi-Status");
         
         startDocument();          
         startPrefixMapping(WEBDAV_NS_PREFIX, WEBDAV_NS_URI);      
