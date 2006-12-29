@@ -19,10 +19,7 @@ CREATED:<xsl:value-of select="@created"/>
 LAST-MODIFIED:<xsl:value-of select="@last-modified"/>
 DTSTAMP:<xsl:value-of select="@dtstamp"/>
 UID:<xsl:value-of select="@uid"/>
-SUMMARY:<xsl:value-of select="cal:summary"/>
-CLASS:PUBLIC<xsl:apply-templates select="cal:dtstart"/><xsl:apply-templates select="cal:dtend"/>
-LOCATION:<xsl:value-of select="cal:location"/>
-CATEGORIES:Customer
+<xsl:apply-templates select="cal:summary"/><xsl:apply-templates select="@class"/><xsl:apply-templates select="cal:dtstart"/><xsl:apply-templates select="cal:dtend"/><xsl:apply-templates select="cal:location"/><xsl:apply-templates select="@categories"/>
 END:VEVENT
 </xsl:template>
 
@@ -31,5 +28,17 @@ DTSTART;TZID=<xsl:value-of select="@tzid"/></xsl:template>
 
 <xsl:template match="cal:dtend">
 DTEND;TZID=<xsl:value-of select="@tzid"/></xsl:template>
+
+<xsl:template match="cal:location">
+LOCATION:<xsl:value-of select="."/></xsl:template>
+
+<xsl:template match="cal:summary">
+SUMMARY:<xsl:value-of select="."/></xsl:template>
+
+<xsl:template match="@class">
+CLASS:<xsl:value-of select="."/></xsl:template>
+
+<xsl:template match="@categories">
+CATEGORIES:<xsl:value-of select="."/></xsl:template>
 
 </xsl:stylesheet>
