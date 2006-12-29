@@ -11,7 +11,7 @@
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.1//EN
-<xsl:apply-templates select="/calendar/cal:event"/>
+<xsl:apply-templates select="/calendar/cal:event"/>END:VCALENDAR
 </xsl:template>
 
 <xsl:template match="cal:event">BEGIN:VEVENT
