@@ -13,5 +13,12 @@ Calendar resource based on ICS format
   <property name="classes"/>
   <property name="categories"/>
   <property name="user-ids"/>
+
+  <property name="events-path"/>
+<!--
+  <property name="yarep-repository-id"/>
+-->
+
+  <property name="mime-type" default-value="text/calendar"/>
 </rtd>
 </resource>
