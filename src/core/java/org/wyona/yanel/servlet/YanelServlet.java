@@ -528,7 +528,7 @@ public class YanelServlet extends HttpServlet {
                     }
 */
 
-                    log.error("DEBUG: Atom entry has been saved: " + entryPath);
+                    log.info("Atom entry has been saved: " + entryPath);
 
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
                     return;
@@ -862,7 +862,7 @@ public class YanelServlet extends HttpServlet {
 
             if(!request.isSecure()) {
                 if(sslPort != null) {
-                    log.error("DEBUG: Redirect to SSL ...");
+                    log.info("Redirect to SSL ...");
                     try {
                     URL url = new URL(getRequestURLQS(request, null, false).toString());
                         url = new URL("https", url.getHost(), new Integer(sslPort).intValue(), url.getFile());
