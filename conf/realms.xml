@@ -9,6 +9,7 @@
   realms matters.
 -->
 
+<!-- WARNING: Access Control does not work properly for nested realms -->
 <realm id="javadoc" mount-point="/yanel-website/javadoc/">
   <name>Yanel Javadoc</name>
 </realm>
