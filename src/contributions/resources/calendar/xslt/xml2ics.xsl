@@ -10,11 +10,14 @@
 <xsl:template match="/">
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.1//EN<xsl:apply-templates select="/calendar/cal:event"/>
+PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.1//EN
+<xsl:apply-templates select="/calendar/cal:event"/>
 </xsl:template>
 
 <xsl:template match="cal:event">BEGIN:VEVENT
 CREATED:<xsl:value-of select="@created"/>
+LAST-MODIFIED:<xsl:value-of select="@last-modified"/>
+DTSTAMP:<xsl:value-of select="@dtstamp"/>
 UID:<xsl:value-of select="@uid"/>
 SUMMARY:<xsl:value-of select="cal:summary"/>
 LOCATION:<xsl:value-of select="cal:location"/>
