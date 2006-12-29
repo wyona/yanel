@@ -929,31 +929,11 @@ public class YanelServlet extends HttpServlet {
                 response.setContentType("application/xml");
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                 response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
+                PrintWriter w = response.getWriter();
+                w.print(sb);
             } else {
-                // Custom HTML Form authentication
-
-                // TODO: Use configurable XSLT for layout, whereas each realm should be able to overwrite ...
-                sb.append("<?xml version=\"1.0\"?>");
-                sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-                sb.append("<body>");
-                sb.append("<p>Authorization denied: " + getRequestURLQS(request, null, true) + "</p>");
-                sb.append("<p>Enter username and password for realm \"" +  realm.getName()  + "\" at \"" + realm.getMountPoint() + "\" (Context Path: " + request.getContextPath() + ")</p>");
-                sb.append("<form method=\"POST\">");
-                sb.append("<p>");
-                sb.append("<table>");
-                sb.append("<tr><td>Username:</td><td>&#160;</td><td><input type=\"text\" name=\"yanel.login.username\"/></td></tr>");
-                sb.append("<tr><td>Password:</td><td>&#160;</td><td><input type=\"password\" name=\"yanel.login.password\"/></td></tr>");
-                sb.append("<tr><td colspan=\"2\">&#160;</td><td align=\"right\"><input type=\"submit\" value=\"Login\"/></td></tr>");
-                sb.append("</table>");
-                sb.append("</p>");
-                sb.append("</form>");
-                sb.append("</body>");
-                sb.append("</html>");
-                response.setContentType("application/xhtml+xml");
-                response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                getXHTMLAuthenticationForm(request, response, realm, null);
             }
-            PrintWriter w = response.getWriter();
-            w.print(sb);
             return response;
         } else {
             log.info("Access granted: " + getRequestURLQS(request, null, false));
@@ -1020,6 +1000,7 @@ public class YanelServlet extends HttpServlet {
      * Also maybe interesting http://sourceforge.net/projects/openharmonise
      */
     public void doPropfind(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.warn("Not Implemented yet!");
         response.sendError(response.SC_NOT_IMPLEMENTED);
     }
 
@@ -1027,6 +1008,7 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.warn("Not Implemented yet!");
         response.sendError(response.SC_NOT_IMPLEMENTED);
     }
 
@@ -1047,9 +1029,11 @@ public class YanelServlet extends HttpServlet {
                 return null;
             } else {
                 log.warn("Login failed: " + loginUsername);
-                // TODO: Implement form based response ...
+                getXHTMLAuthenticationForm(request, response, realm, "Login failed!");
+/*
                 response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
                 response.sendError(response.SC_UNAUTHORIZED);
+*/
                 return response;
             }
         }
@@ -1255,5 +1239,36 @@ public class YanelServlet extends HttpServlet {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage());
         }
+    }
+
+    /**
+     * Custom XHTML Form for authentication
+     */
+    public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message) throws ServletException, IOException {
+        // TODO: Use configurable XSLT for layout, whereas each realm should be able to overwrite ...
+        StringBuffer sb = new StringBuffer();
+        sb.append("<?xml version=\"1.0\"?>");
+        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+        sb.append("<body>");
+        if (message != null) {
+            sb.append("<p>NOTE: " + message + "</p>");
+        }
+        sb.append("<p>Authorization denied: " + getRequestURLQS(request, null, true) + "</p>");
+        sb.append("<p>Enter username and password for realm \"" +  realm.getName()  + "\" at \"" + realm.getMountPoint() + "\" (Context Path: " + request.getContextPath() + ")</p>");
+        sb.append("<form method=\"POST\">");
+        sb.append("<p>");
+        sb.append("<table>");
+        sb.append("<tr><td>Username:</td><td>&#160;</td><td><input type=\"text\" name=\"yanel.login.username\"/></td></tr>");
+        sb.append("<tr><td>Password:</td><td>&#160;</td><td><input type=\"password\" name=\"yanel.login.password\"/></td></tr>");
+        sb.append("<tr><td colspan=\"2\">&#160;</td><td align=\"right\"><input type=\"submit\" value=\"Login\"/></td></tr>");
+        sb.append("</table>");
+        sb.append("</p>");
+        sb.append("</form>");
+        sb.append("</body>");
+        sb.append("</html>");
+        response.setContentType("application/xhtml+xml");
+        response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+        PrintWriter w = response.getWriter();
+        w.print(sb);
     }
 }
