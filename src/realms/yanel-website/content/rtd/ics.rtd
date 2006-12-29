@@ -2,3 +2,5 @@
 categories: vacation
 classes: public 
 user-ids: michi
+#mime-type: text/plain
+events-path: /calendar
