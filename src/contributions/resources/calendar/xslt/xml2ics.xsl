@@ -20,7 +20,11 @@ LAST-MODIFIED:<xsl:value-of select="@last-modified"/>
 DTSTAMP:<xsl:value-of select="@dtstamp"/>
 UID:<xsl:value-of select="@uid"/>
 SUMMARY:<xsl:value-of select="cal:summary"/>
+CLASS:PUBLIC
+DTSTART;TZID=/mozilla.org/20050126_1/Africa/Ceuta:20061130T110000
+DTEND;TZID=/mozilla.org/20050126_1/Africa/Ceuta:20061130T130000
 LOCATION:<xsl:value-of select="cal:location"/>
+CATEGORIES:Customer
 END:VEVENT
 </xsl:template>
 
