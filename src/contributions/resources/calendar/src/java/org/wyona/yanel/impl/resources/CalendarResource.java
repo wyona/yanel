@@ -58,7 +58,11 @@ public class CalendarResource extends Resource implements ViewableV2 {
         log.error("DEBUG: " + categories + " " + classes + " " + userIds);
 
         org.wyona.yarep.core.Repository dataRepo = getRealm().getRepository();
-        org.wyona.yarep.core.Path[] children = dataRepo.getChildren(new org.wyona.yarep.core.Path(getPath().toString()));
+        String eventsPath = getRTI().getProperty("events-path");
+        if (eventsPath == null) {
+            eventsPath = getPath().toString();
+        }
+        org.wyona.yarep.core.Path[] children = dataRepo.getChildren(new org.wyona.yarep.core.Path(eventsPath));
         //org.wyona.yarep.core.Path[] children = dataRepo.search("categories", categories);
 
         StringBuffer calendar = new StringBuffer("<?xml version=\"1.0\"?>\n<calendar>");
@@ -96,7 +100,6 @@ public class CalendarResource extends Resource implements ViewableV2 {
             return view;
         } else {
             String xslt = getRTD().getConfigFile().getParent() + File.separator + "xslt" + File.separator + "xml2ics.xsl";
-            log.error("DEBUG: XSLT: " + xslt);
             java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
             try {
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(new File(xslt)));
@@ -109,7 +112,12 @@ public class CalendarResource extends Resource implements ViewableV2 {
 
             View view = new View();
             //view.setResponse(false);
-	    view.setMimeType("text/plain");
+            String mimeType = getRTI().getProperty("mime-type");
+            if (mimeType != null) {
+	        view.setMimeType(mimeType);
+	    } else {
+	        view.setMimeType("text/calendar");
+            }
 	    view.setInputStream(new java.io.ByteArrayInputStream(out.toByteArray()));
             return view;
         }
