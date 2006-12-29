@@ -11,6 +11,13 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.apache.log4j.Category;
 
+import java.io.File;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
+
 /**
  *
  */
@@ -88,14 +95,22 @@ public class CalendarResource extends Resource implements ViewableV2 {
 	    view.setInputStream(new java.io.StringBufferInputStream(calendar.toString()));
             return view;
         } else {
-            String xslt = getRTD().getConfigFile().getParent();
+            String xslt = getRTD().getConfigFile().getParent() + File.separator + "xslt" + File.separator + "xml2ics.xsl";
             log.error("DEBUG: XSLT: " + xslt);
+            java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+            try {
+                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(new File(xslt)));
+		transformer.transform(new StreamSource(new java.io.StringBufferInputStream(calendar.toString())), new StreamResult(out));
+            } catch(Exception e) {
+                log.error(e.getMessage(), e);
+            }
+
             //response.getOutputStream();
 
             View view = new View();
             //view.setResponse(false);
-	    view.setMimeType("application/xml");
-	    view.setInputStream(new java.io.StringBufferInputStream(calendar.toString()));
+	    view.setMimeType("text/plain");
+	    view.setInputStream(new java.io.ByteArrayInputStream(out.toByteArray()));
             return view;
         }
     }
