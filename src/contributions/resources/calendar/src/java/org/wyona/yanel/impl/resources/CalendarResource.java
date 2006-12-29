@@ -6,12 +6,17 @@ package org.wyona.yanel.impl.resources;
 
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
+import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.apache.log4j.Category;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -21,7 +26,7 @@ import javax.xml.transform.stream.StreamResult;
 /**
  *
  */
-public class CalendarResource extends Resource implements ViewableV2 {
+public class CalendarResource extends Resource implements ViewableV2, ModifiableV2 {
 
     private static Category log = Category.getInstance(CalendarResource.class);
 
@@ -68,7 +73,7 @@ public class CalendarResource extends Resource implements ViewableV2 {
         StringBuffer calendar = new StringBuffer("<?xml version=\"1.0\"?>\n<calendar>");
         for (int i = 0; i < children.length; i++) {
             if (dataRepo.isResource(children[i])) {
-                java.io.InputStream in = dataRepo.getInputStream(children[i]);
+                InputStream in = dataRepo.getInputStream(children[i]);
                 java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
                 //StringBuffer event = new StringBuffer();
             
@@ -127,6 +132,61 @@ public class CalendarResource extends Resource implements ViewableV2 {
      *
      */
     public ViewDescriptor[] getViewDescriptors() {
+        log.warn("Not implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public boolean delete() throws Exception {
+        log.warn("Not implemented yet!");
+        return false;
+    }
+
+    /**
+     *
+     */
+    public long getLastModified() throws Exception {
+        log.warn("Not implemented yet!");
+        return -1;
+    }
+
+    /**
+     *
+     */
+    public void write(InputStream in) throws Exception {
+        log.warn("Not implemented yet!");
+    }
+
+    /**
+     *
+     */
+    public InputStream getInputStream() throws Exception {
+        log.warn("Not implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public OutputStream getOutputStream() throws Exception {
+        log.warn("Not implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public Reader getReader() throws Exception {
+        log.warn("Not implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public Writer getWriter() throws Exception {
         log.warn("Not implemented yet!");
         return null;
     }
