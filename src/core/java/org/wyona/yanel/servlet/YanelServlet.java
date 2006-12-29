@@ -887,10 +887,9 @@ public class YanelServlet extends HttpServlet {
             //if(doAuthenticate(request, response) != null) return response;
 
             // HTTP Authorization/Authentication
-            // TODO: Ulysses has not HTTP BASIC or DIGEST implemented yet!
 /*
             response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
-        response.sendError(response.SC_UNAUTHORIZED);
+            response.sendError(response.SC_UNAUTHORIZED);
 */
             // Custom Authorization/Authentication
             // ...
@@ -947,6 +946,7 @@ public class YanelServlet extends HttpServlet {
                 sb.append("</body>");
                 sb.append("</html>");
                 response.setContentType("application/xhtml+xml");
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
             }
             PrintWriter w = response.getWriter();
             w.print(sb);
