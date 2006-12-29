@@ -75,6 +75,7 @@ public class YanelServlet extends HttpServlet {
     private static String IDENTITY_KEY = "identity";
 
     private static final String METHOD_PROPFIND = "PROPFIND";
+    private static final String METHOD_OPTIONS = "OPTIONS";
     private static final String METHOD_GET = "GET";
     private static final String METHOD_POST = "POST";
     private static final String METHOD_PUT = "PUT";
@@ -145,8 +146,11 @@ public class YanelServlet extends HttpServlet {
             doPut(request, response);
         } else if (method.equals(METHOD_DELETE)) {
             doDelete(request, response);
+        } else if (method.equals(METHOD_OPTIONS)) {
+            doOptions(request, response);
         } else {
             log.error("No such method implemented: " + method);
+            response.sendError(response.SC_NOT_IMPLEMENTED);
         }
     }
 
@@ -1016,7 +1020,14 @@ public class YanelServlet extends HttpServlet {
      * Also maybe interesting http://sourceforge.net/projects/openharmonise
      */
     public void doPropfind(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        getContent(request, response);
+        response.sendError(response.SC_NOT_IMPLEMENTED);
+    }
+
+    /**
+     *
+     */
+    public void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.sendError(response.SC_NOT_IMPLEMENTED);
     }
 
     /**
@@ -1038,7 +1049,7 @@ public class YanelServlet extends HttpServlet {
                 log.warn("Login failed: " + loginUsername);
                 // TODO: Implement form based response ...
                 response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
-            response.sendError(response.SC_UNAUTHORIZED);
+                response.sendError(response.SC_UNAUTHORIZED);
                 return response;
             }
         }
