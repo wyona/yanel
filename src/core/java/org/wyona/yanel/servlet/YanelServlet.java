@@ -811,8 +811,10 @@ public class YanelServlet extends HttpServlet {
         }
 
         boolean authorized = false;
+        Realm realm = map.getRealm(new Path(request.getServletPath()));
 
-        // HTTP BASIC Authorization (For clients without session handling, e.g. OpenOffice or cadaver)
+        // HTTP BASIC Authorization (For clients such as for instance Sunbird, OpenOffice or cadaver)
+        // IMPORT NOTE: BASIC Authentication needs to be checked on every request, because clients often do not support session handling
         String authorization = request.getHeader("Authorization");
         log.debug("Checking for Authorization Header: " + authorization);
         if (authorization != null) {
@@ -824,26 +826,35 @@ public class YanelServlet extends HttpServlet {
                 sun.misc.BASE64Decoder dec = new sun.misc.BASE64Decoder();
                 String userpassDecoded = new String(dec.decodeBuffer(userpassEncoded));
                 log.error("DEBUG: userpassDecoded: " + userpassDecoded);
-                // TODO: Use security package and remove hardcoded ...
-        // Authenticate every request ...
-                //if (im.authenticate(...)) {
-                if (userpassDecoded.equals("lenya:levi")) {
-                    //return pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), new Identity(...), new Role("view"));
-                    authorized = true;
-                    return null;
+                String[] up = userpassDecoded.split(":");
+                String username = up[0];
+                String password = up[1];
+                log.error("DEBUG: username: " + username + ", password: " + password);
+                if (im.authenticate(username, password, realm.getID())) {
+                    authorized = pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), new Identity(username, null), new Role("view"));
+                    if(authorized) {
+                        return null;
+                    } else {
+                        log.warn("HTTP BASIC Authorization failed for " + username + "!");
+                        response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
+                        response.sendError(response.SC_UNAUTHORIZED);
+                        PrintWriter writer = response.getWriter();
+                        writer.print("BASIC Authorization Failed!");
+                        return response;
+                    }
+                } else {
+                    log.warn("HTTP BASIC Authentication failed for " + username + "!");
+                    response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
+                    response.sendError(response.SC_UNAUTHORIZED);
+                    PrintWriter writer = response.getWriter();
+                    writer.print("BASIC Authentication Failed!");
+                    return response;
                 }
-                authorized = false;
-
-                response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
-                response.sendError(response.SC_UNAUTHORIZED);
-                PrintWriter writer = response.getWriter();
-                writer.print("BASIC Authorization/Authentication Failed!");
-                return response;
             } else if (authorization.toUpperCase().startsWith("DIGEST")) {
                 log.error("DIGEST is not implemented");
                 authorized = false;
                 response.sendError(response.SC_UNAUTHORIZED);
-                response.setHeader("WWW-Authenticate", "DIGEST realm=\"yanel\"");
+                response.setHeader("WWW-Authenticate", "DIGEST realm=\"" + realm.getName() + "\"");
                 PrintWriter writer = response.getWriter();
                 writer.print("DIGEST is not implemented!");
                 return response;
@@ -896,7 +907,6 @@ public class YanelServlet extends HttpServlet {
             StringBuffer sb = new StringBuffer("");
             String neutronVersions = request.getHeader("Neutron");
             String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
-            Realm realm = map.getRealm(new Path(request.getServletPath()));
             if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
                 log.debug("Neutron Versions supported by client: " + neutronVersions);
                 log.debug("Authentication Scheme supported by client: " + clientSupportedAuthScheme);
@@ -1050,6 +1060,7 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Authentication
+     * @return null when authentication successful, otherwise return response
      */
     public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -1066,10 +1077,6 @@ public class YanelServlet extends HttpServlet {
             } else {
                 log.warn("Login failed: " + loginUsername);
                 getXHTMLAuthenticationForm(request, response, realm, "Login failed!");
-/*
-                response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
-                response.sendError(response.SC_UNAUTHORIZED);
-*/
                 return response;
             }
         }
