@@ -1005,16 +1005,18 @@ public class YanelServlet extends HttpServlet {
 
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<multistatus xmlns=\"DAV:\">");
-        sb.append("  <response>");
-        sb.append("    <href>"+request.getRequestURI()+"</href>");
-        sb.append("    <propstat>");
-        sb.append("      <prop>");
-        sb.append("        <resourcetype><collection/></resourcetype>");
-        sb.append("        <getcontenttype>http/unix-directory</getcontenttype>");
-        sb.append("      </prop>");
-        sb.append("      <status>HTTP/1.1 200 OK</status>");
-        sb.append("    </propstat>");
-        sb.append("  </response>");
+        if (depth.equals("0")) {
+            // TODO: decide if the requested node is a collection or a resource
+            sb.append("  <response>");
+            sb.append("    <href>"+request.getRequestURI()+"</href>");
+            sb.append("    <propstat>");
+            sb.append("      <prop>");
+            sb.append("        <resourcetype><collection/></resourcetype>");
+            sb.append("        <getcontenttype>http/unix-directory</getcontenttype>");
+            sb.append("      </prop>");
+            sb.append("      <status>HTTP/1.1 200 OK</status>");
+            sb.append("    </propstat>");
+            sb.append("  </response>");
 /*
         sb.append("  <response>");
         sb.append("    <href>/yanel/yanel-website/roadmap.html</href>");
@@ -1025,6 +1027,13 @@ public class YanelServlet extends HttpServlet {
         sb.append("    </propstat>");
         sb.append("  </response>");
 */
+        } else if (depth.equals("1")) {
+             log.warn("TODO: List childen of this node");
+        } else if (depth.equals("infinity")) {
+             log.warn("TODO: List childen and their children and their childre ...");
+        } else {
+             log.error("No such depth: " + depth);
+        }
         sb.append("</multistatus>");
 
         //response.setStatus(javax.servlet.http.HttpServletResponse.SC_MULTI_STATUS);
