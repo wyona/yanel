@@ -775,7 +775,7 @@ public class YanelServlet extends HttpServlet {
      */
     private HttpServletResponse doAuthorize(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-    Role role = null;
+        Role role = null;
 
         // TODO: Replace hardcoded roles by mapping between roles amd query strings ...
         String value = request.getParameter("yanel.resource.usecase");
@@ -890,18 +890,11 @@ public class YanelServlet extends HttpServlet {
             // TODO: Shouldn't this be here instead at the beginning of service() ...?
             //if(doAuthenticate(request, response) != null) return response;
 
-            // HTTP Authorization/Authentication
-/*
-            response.setHeader("WWW-Authenticate", "BASIC realm=\"yanel\"");
-            response.sendError(response.SC_UNAUTHORIZED);
-*/
-            // Custom Authorization/Authentication
-            // ...
 
-            // TODO: Check if this is a neutron request or just a common GET request
+            // Check if this is a neutron request, a Sunbird/Calendar request or just a common GET request
+            // Also see e-mail about recognizing a WebDAV request: http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
             StringBuffer sb = new StringBuffer("");
             String neutronVersions = request.getHeader("Neutron");
-            // http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
             String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
             Realm realm = map.getRealm(new Path(request.getServletPath()));
             if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
@@ -931,6 +924,10 @@ public class YanelServlet extends HttpServlet {
                 response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
                 PrintWriter w = response.getWriter();
                 w.print(sb);
+            } else if (request.getRequestURI().endsWith(".ics")) {
+                log.warn("Somebody seems to ask for a Calendar (ICS) ...");
+                response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
+                response.sendError(response.SC_UNAUTHORIZED);
             } else {
                 getXHTMLAuthenticationForm(request, response, realm, null);
             }
@@ -1052,7 +1049,7 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Authentication
      */
     public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
