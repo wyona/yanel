@@ -771,7 +771,7 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Authorize request
+     * Authorize request (and also authenticate for HTTP BASIC)
      */
     private HttpServletResponse doAuthorize(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -825,11 +825,11 @@ public class YanelServlet extends HttpServlet {
                 // Decode it, using any base 64 decoder
                 sun.misc.BASE64Decoder dec = new sun.misc.BASE64Decoder();
                 String userpassDecoded = new String(dec.decodeBuffer(userpassEncoded));
-                log.error("DEBUG: userpassDecoded: " + userpassDecoded);
+                log.debug("Username and Password Decoded: " + userpassDecoded);
                 String[] up = userpassDecoded.split(":");
                 String username = up[0];
                 String password = up[1];
-                log.error("DEBUG: username: " + username + ", password: " + password);
+                log.debug("username: " + username + ", password: " + password);
                 if (im.authenticate(username, password, realm.getID())) {
                     authorized = pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), new Identity(username, null), new Role("view"));
                     if(authorized) {
