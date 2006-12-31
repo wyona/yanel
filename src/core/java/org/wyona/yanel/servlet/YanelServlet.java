@@ -701,25 +701,14 @@ public class YanelServlet extends HttpServlet {
             StringBuffer sb = new StringBuffer();
 
             // TODO: Differentiate between Neutron based and other clients ...
-/*
-            sb.append("<?xml version=\"1.0\"?>");
-            sb.append("<html>");
-            sb.append("<body>");
-            sb.append("<resource>" + message + "</resource>");
-            sb.append("</body>");
-            sb.append("</html>");
-            response.setContentType("application/xhtml+xml");
-*/
-
             sb.append("<?xml version=\"1.0\"?>");
             sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"neutron\">");
             sb.append("<message>" + message + "</message>");
             sb.append("</exception>");
             response.setContentType("application/xml");
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             PrintWriter w = response.getWriter();
             w.print(sb);
-
-            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
 
