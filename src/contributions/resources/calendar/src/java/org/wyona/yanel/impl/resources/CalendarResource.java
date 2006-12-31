@@ -10,6 +10,8 @@ import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
+import org.wyona.yanel.impl.resources.CalendarEvent;
+
 import org.apache.log4j.Category;
 
 import java.io.File;
@@ -160,17 +162,21 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         log.warn("TODO: Parse ICS and write events as XML into repository ...");
         java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(in));
         String line;
+        CalendarEvent event = null;
         while ((line = br.readLine()) != null) {
-            log.error("DEBUG: Line: " + line);
+            if (line.startsWith("BEGIN:VEVENT")) {
+                event = new CalendarEvent();
+            } else if (line.startsWith("END:VEVENT")) {
+                log.error("DEBUG: Write event " + event);
+                event = null;
+            } else if (line.startsWith("UID:")) {
+                if (event != null) event.setUID(line.split(":")[1]);
+            } else if (line.startsWith("SUMMARY:")) {
+                if (event != null) event.setSummary(line.split(":")[1]);
+            } else {
+                log.warn("Not implemented yet: " + line);
+            }
         }
-    }
-
-    /**
-     *
-     */
-    public InputStream getInputStream() throws Exception {
-        log.warn("Not implemented yet!");
-        return null;
     }
 
     /**
@@ -180,6 +186,14 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         log.warn("Do not use this method but rather write(InputStream)!");
         return null;
         //return getRealm().getRepository().getOutputStream(new org.wyona.yarep.core.Path("/calendarTODO.ics"));
+    }
+
+    /**
+     *
+     */
+    public InputStream getInputStream() throws Exception {
+        log.warn("Not implemented yet!");
+        return null;
     }
 
     /**
