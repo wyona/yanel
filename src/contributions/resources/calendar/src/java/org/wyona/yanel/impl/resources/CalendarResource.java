@@ -153,11 +153,16 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
     }
 
     /**
-     *
+     * Parse ICS and write events as XML into repository
      */
     public void write(InputStream in) throws Exception {
         log.warn("Not implemented yet!");
         log.warn("TODO: Parse ICS and write events as XML into repository ...");
+        java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(in));
+        String line;
+        while ((line = br.readLine()) != null) {
+            log.error("DEBUG: Line: " + line);
+        }
     }
 
     /**
