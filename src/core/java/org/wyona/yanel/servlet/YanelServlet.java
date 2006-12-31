@@ -598,7 +598,7 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Save data
      */
     private void save(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.debug("Save data ...");
@@ -673,23 +673,25 @@ public class YanelServlet extends HttpServlet {
                 log.info("No well-formedness check required for content type: " + contentType);
             }
 
-/*
-        if (bytesRead == -1) {
-                response.setContentType("text/plain");
-                PrintWriter writer = response.getWriter();
-                writer.print("No content!");
-                return;
-            }
-*/
+        java.io.ByteArrayInputStream memIn = new java.io.ByteArrayInputStream(memBuffer);
+
 
         // IMPORTANT TODO: Use ModifiableV2.write(InputStream in) such that resource can modify data during saving resp. check if getOutputStream is equals null and then use write ....
         OutputStream out = null;
         Resource res = getResource(request, response);
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
             out = ((ModifiableV1) res).getOutputStream(new Path(request.getServletPath()));
+            write(memIn, out, request, response);
+            return;
         } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
             try {
                 out = ((ModifiableV2) res).getOutputStream();
+                if (out != null) {
+                    write(memIn, out, request, response);
+                } else {
+                    ((ModifiableV2) res).write(memIn);
+                }
+                return;
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 throw new ServletException(e.getMessage(), e);
@@ -709,53 +711,6 @@ public class YanelServlet extends HttpServlet {
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             PrintWriter w = response.getWriter();
             w.print(sb);
-            return;
-        }
-
-        if (out != null) {
-            log.debug("Content-Type: " + contentType);
-            // TODO: Compare mime-type from response with mime-type of resource
-            //if (contentType.equals("text/xml")) { ... }
-
-            byte[] buffer = new byte[8192];
-            int bytesRead;
-            java.io.ByteArrayInputStream memIn = new java.io.ByteArrayInputStream(memBuffer);
-            while ((bytesRead = memIn.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
-            }
-            out.flush();
-            out.close();
-
-            StringBuffer sb = new StringBuffer();
-            sb.append("<?xml version=\"1.0\"?>");
-            sb.append("<html>");
-            sb.append("<body>");
-            sb.append("<p>Data has been saved ...</p>");
-            sb.append("</body>");
-            sb.append("</html>");
-
-
-            response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
-            response.setContentType("application/xhtml+xml");
-            PrintWriter w = response.getWriter();
-            w.print(sb);
-
-            log.info("Data has been saved ...");
-            return;
-        } else {
-            log.error("OutputStream is null!");
- 
-            StringBuffer sb = new StringBuffer();
-            sb.append("<?xml version=\"1.0\"?>");
-            sb.append("<html>");
-            sb.append("<body>");
-            sb.append("<p>Exception: OutputStream is null!</p>");
-            sb.append("</body>");
-            sb.append("</html>");
-            PrintWriter w = response.getWriter();
-            w.print(sb);
-            response.setContentType("application/xhtml+xml");
-            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
     }
@@ -1303,5 +1258,56 @@ public class YanelServlet extends HttpServlet {
         response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
         PrintWriter w = response.getWriter();
         w.print(sb);
+    }
+
+    /**
+     * Write to output stream of modifiable resource
+     */
+    private void write(InputStream in, OutputStream out, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (out != null) {
+            log.debug("Content-Type: " + request.getContentType());
+            // TODO: Compare mime-type from response with mime-type of resource
+            //if (contentType.equals("text/xml")) { ... }
+
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+            out.flush();
+            out.close();
+
+            StringBuffer sb = new StringBuffer();
+            sb.append("<?xml version=\"1.0\"?>");
+            sb.append("<html>");
+            sb.append("<body>");
+            sb.append("<p>Data has been saved ...</p>");
+            sb.append("</body>");
+            sb.append("</html>");
+
+
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+            response.setContentType("application/xhtml+xml");
+            PrintWriter w = response.getWriter();
+            w.print(sb);
+
+            log.info("Data has been saved ...");
+            return;
+        } else {
+            log.error("OutputStream is null!");
+ 
+            StringBuffer sb = new StringBuffer();
+            sb.append("<?xml version=\"1.0\"?>");
+            sb.append("<html>");
+            sb.append("<body>");
+            sb.append("<p>Exception: OutputStream is null!</p>");
+            sb.append("</body>");
+            sb.append("</html>");
+            PrintWriter w = response.getWriter();
+            w.print(sb);
+            response.setContentType("application/xhtml+xml");
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
     }
 }
