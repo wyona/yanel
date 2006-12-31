@@ -682,6 +682,7 @@ public class YanelServlet extends HttpServlet {
             }
 */
 
+        // IMPORTANT TODO: Use ModifiableV2.write(InputStream in) such that resource can modify data during saving resp. check if getOutputStream is equals null and then use write ....
         OutputStream out = null;
         Resource res = getResource(request, response);
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
