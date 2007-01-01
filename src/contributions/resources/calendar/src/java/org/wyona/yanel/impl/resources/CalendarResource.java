@@ -5,8 +5,9 @@
 package org.wyona.yanel.impl.resources;
 
 import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.api.attributes.ViewableV2;
+import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
+import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
@@ -28,7 +29,7 @@ import javax.xml.transform.stream.StreamResult;
 /**
  *
  */
-public class CalendarResource extends Resource implements ViewableV2, ModifiableV2 {
+public class CalendarResource extends Resource implements ViewableV2, ModifiableV2, CreatableV2 {
 
     private static Category log = Category.getInstance(CalendarResource.class);
 
@@ -211,6 +212,44 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
      *
      */
     public Writer getWriter() throws Exception {
+        log.warn("Not implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public void create(javax.servlet.http.HttpServletRequest request) {
+        log.warn("Not implemented yet!");
+    }
+
+    /**
+     *
+     */
+    public String getPropertyType(String propertyName) {
+        log.warn("Not implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public Object getProperty(String name) {
+        log.warn("Not implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public void setProperty(String name, Object value) {
+        log.warn("Not implemented yet!");
+    }
+
+    /**
+     *
+     */
+    public String[] getPropertyNames() {
         log.warn("Not implemented yet!");
         return null;
     }
