@@ -167,14 +167,17 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
             if (line.startsWith("BEGIN:VEVENT")) {
                 event = new CalendarEvent();
             } else if (line.startsWith("END:VEVENT")) {
-                log.error("DEBUG: Write event " + event);
+                log.error("DEBUG: Write event " + event.getUID() + ", " + event.toXML());
+                Writer out = getRealm().getRepository().getWriter(new org.wyona.yarep.core.Path(getRTI().getProperty("events-path") + "/" + event.getUID() + ".xml"));
+                out.write(event.toXML());
+                out.close();
                 event = null;
-            } else if (line.startsWith("UID:")) {
-                if (event != null) event.setUID(line.split(":")[1]);
-            } else if (line.startsWith("SUMMARY:")) {
-                if (event != null) event.setSummary(line.split(":")[1]);
             } else {
-                log.warn("Not implemented yet: " + line);
+                if (event != null) {
+                    event.setProperty(line);
+                } else {
+                    log.warn("Not implemented yet: " + line);
+                }
             }
         }
     }
