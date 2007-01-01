@@ -107,12 +107,15 @@ public class CalendarEvent {
      *
      */
     public String toXML() {
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        sb.append("<cal:event xmlns:cal=\"http://...\" created=\"" + created + "\" last-modified=\"" + lastModified + "\" dtstamp=\"" + dtstamp + "\" uid=\"" + uid + "\" class=\"" + _class + "\" categories=\"" + categories + "\">");
-        sb.append("  <cal:summary>" + summary + "</cal:summary>");
-        if(location != null) sb.append("  <cal:location>" + location + "</cal:location>");
-        sb.append("  <cal:dtstart value=\"DATE\" tzid=\"" + start + "\"/>");
-        sb.append("  <cal:dtend value=\"DATE\" tzid=\"" + end + "\"/>");
+        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>\n\n");
+        sb.append("<cal:event xmlns:cal=\"http://...\" created=\"" + created + "\" last-modified=\"" + lastModified + "\" dtstamp=\"" + dtstamp + "\" uid=\"" + uid + "\"");
+	if (_class != null) sb.append(" class=\"" + _class + "\"");
+	if (categories != null) sb.append(" categories=\"" + categories + "\"");
+	sb.append(">\n");
+        sb.append("  <cal:summary>" + summary + "</cal:summary>\n");
+        if (location != null) sb.append("  <cal:location>" + location + "</cal:location>\n");
+        sb.append("  <cal:dtstart value=\"DATE\" tzid=\"" + start + "\"/>\n");
+        sb.append("  <cal:dtend value=\"DATE\" tzid=\"" + end + "\"/>\n");
         sb.append("</cal:event>");
         return sb.toString();
     }
