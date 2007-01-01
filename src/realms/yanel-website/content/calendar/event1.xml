@@ -3,7 +3,6 @@
 <cal:event xmlns:cal="http://..." created="20061205T225120Z" last-modified="20061205T225120Z" dtstamp="20061205T225120Z" uid="3d05ae36-b8a3-4149-9f8b-fcf0203b52b9" class="PUBLIC" categories="Conference">
   <cal:summary>Yulup/Neutron Presentation at XML Conference 2006</cal:summary>
   <cal:location>Sheraton Boston Hotel</cal:location>
-
   <cal:dtstart value="DATE" tzid="/mozilla.org/20050126_1/Europe/Zurich:20061206T133000"/>
   <cal:dtend value="DATE" tzid="/mozilla.org/20050126_1/Europe/Zurich:20061206T143000"/>
 </cal:event>
