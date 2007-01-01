@@ -93,7 +93,7 @@ public class CalendarEvent {
      *
      */
     public void setEnd(String end) {
-        this.start = end;
+        this.end = end;
     }
 
     /**
@@ -110,7 +110,7 @@ public class CalendarEvent {
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<cal:event xmlns:cal=\"http://...\" created=\"" + created + "\" last-modified=\"" + lastModified + "\" dtstamp=\"" + dtstamp + "\" uid=\"" + uid + "\" class=\"" + _class + "\" categories=\"" + categories + "\">");
         sb.append("  <cal:summary>" + summary + "</cal:summary>");
-        sb.append("  <cal:location>" + location + "</cal:location>");
+        if(location != null) sb.append("  <cal:location>" + location + "</cal:location>");
         sb.append("  <cal:dtstart value=\"DATE\" tzid=\"" + start + "\"/>");
         sb.append("  <cal:dtend value=\"DATE\" tzid=\"" + end + "\"/>");
         sb.append("</cal:event>");
