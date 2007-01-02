@@ -38,7 +38,7 @@
 </tr>
 <tr>
 <td style="vertical-align: top;">Navigation Framework</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td>TBD</td></tr>
-<tr><td style="vertical-align: top;"><a href="specification/nutch-resource.html">Nutch</a></td><td style="vertical-align: top;">mostly done</td><td style="vertical-align: top;">TBD</td><td>Michael</td>
+<tr><td style="vertical-align: top;"><a href="specification/nutch-resource.html">Nutch</a></td><td style="vertical-align: top;">mostly done</td><td style="vertical-align: top;">2007.01.05</td><td>Michael</td>
 </tr><tr><td style="vertical-align: top;"><a href="specification/import-site-feature.html">Import an existing website as a new realm</a></td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Jonathan</td></tr><tr><td style="vertical-align: top;">Wiki </td><td style="vertical-align: top;">mostly done</td><td style="vertical-align: top;">TBD</td><td>TBD</td></tr>
 <tr><td style="vertical-align: top;">Creator: Realm specific XSLT</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td>Simon</td></tr>
 <tr><td style="vertical-align: top;">XHTML resource out-of-the-box</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td>TBD</td></tr>
