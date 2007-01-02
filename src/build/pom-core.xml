@@ -14,7 +14,7 @@
     <dependency>
       <groupId>yarep</groupId>
       <artifactId>yarep-core</artifactId>
-      <version>0.0.1-dev-r21160</version>
+      <version>0.0.1-dev-r21335</version>
     </dependency>
     <dependency>
       <groupId>wyona-org-commons</groupId>
