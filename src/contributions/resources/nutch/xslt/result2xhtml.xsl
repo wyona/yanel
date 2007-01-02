@@ -233,10 +233,16 @@
     <tr>
       <td colspan="2">
         <div style="color: red; font-size: 24px;"><i18n:message key="exception"/></div>
-        <xsl:variable name="message"><xsl:value-of select="substring-before(string(.), '#')"/></xsl:variable>
-        <xsl:variable name="directory"><xsl:value-of select="substring-after(string(.), '#')"/></xsl:variable>
-        <i18n:message key="{$message}"/><xsl:value-of select="$directory"/>
-        <xsl:value-of select="."/>
+        <xsl:choose>
+          <xsl:when test="contains(string(.), '#')">
+            <xsl:variable name="message"><xsl:value-of select="substring-before(string(.), '#')"/></xsl:variable>
+            <xsl:variable name="directory"><xsl:value-of select="substring-after(string(.), '#')"/></xsl:variable>
+            <i18n:message key="{$message}"/><xsl:value-of select="$directory"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="."/>
+          </xsl:otherwise>
+        </xsl:choose>
       </td>
     </tr>
   </xsl:template>
