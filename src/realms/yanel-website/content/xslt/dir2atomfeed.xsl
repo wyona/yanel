@@ -13,11 +13,6 @@
 
   <title>Yanel Website News</title>
   <link rel="self" href="{/dir:directory/@yanel:path}"/>
-<!--
-<xsl:comment>
-  <link rel="self" href="news-feed.xml"/>
-</xsl:comment>
--->
   <updated>2003-12-13T18:30:02Z</updated>
   <author><name>Yanel</name></author>
   <id>urn:uuid:TODO</id>
