@@ -12,6 +12,7 @@
 
   <role id="write">
     <user id="lenya" permission="true"/>
+    <world permission="true"/>
   </role>
 
   <role id="create">
