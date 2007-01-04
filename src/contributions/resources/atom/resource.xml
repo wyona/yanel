@@ -10,11 +10,15 @@ Atom Feed Generator
 </description>
 
 <rtd>
+  <!-- Alternative XSLT (otherwise xslt/atomfeed2xhtml.xsl will be used) -->
   <property name="xslt"/>
   <property name="mime-type"/>
   <property name="feed-title"/>
+  <!-- Yarep path of entries -->
   <property name="entries-path"/>
+  <!-- URL of this feed (proxy ...) -->
   <property name="self-url"/>
+  <!-- Base URL of entries (proxy ..) -->
   <property name="entries-url"/>
   <property name="author"/>
 </rtd>
