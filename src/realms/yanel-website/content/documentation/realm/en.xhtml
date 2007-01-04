@@ -3,13 +3,7 @@
 
 
 
-
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
-
-
 
 
 
@@ -18,15 +12,18 @@
 
 
 
-<head>
 
+<head>
 
 
   <title>How a request is being processed</title>
 
 
-
 </head>
+
+
+
+
 
 
 
@@ -40,20 +37,10 @@ as $YANEL_HOME and $YULUP_WEBSITE .
 <ul>
 <li>Download the Yulup Website from Wyona's repository using subversion:<br/>
                  svn co <a href="http://svn.wyona.com/repos/public/yulup/website">http://svn.wyona.com/repos/public/yulup/website<br/></a> (Username: anonymous, Password: anonymous)</li>
-<li>Copy the file conf/realms.xml to conf/local/local.realms.xml and add the following entry<br/>
+<li>Copy the file $YANEL_HOME/conf/realms.xml to $YANEL_HOME/conf/local/local.realms.xml and add the following entry<br/>
     &lt;realm id=&quot;yulup&quot; mount-point=&quot;/yulup/&quot;&gt;<br/>
        &lt;name&gt;Yulup Website&lt;/name&gt;<br/>
+       &lt;config src=&quot;$YULUP_HOME/yanel/config/yanel-realm-config.xml&quot;/&gt;<br/>
     &lt;/realm&gt;
-</li>
-<li>RTI: Copy the file conf/yanel-rti-yarep.properties to
-conf/local/local.yanel-rti-yarep.properties and add the following entry to the
-configurations property<br/>
-     configurations=...,yulup,$YULUP_WEBSITE/yulup-website/yanel/config/yanel-rti-repository.xml</li><li>DATA: Copy the file conf/yarep.properties to conf/local/local.yarep.properties and add the following entry to the     configurations property<br/>
-     configurations=...,yulup,$YULUP_WEBSITE/yulup-website/yanel/config/data-repository.xml</li><li>AC-IDENTITIES: Copy the file conf/ac-identities-yarep.properties to
-conf/local/local.ac-identities-yarep.properties and add the following entry to the
-configurations property<br/>
-    configurations=...,yulup,$YULUP_WEBSITE/yulup-website/yanel/config/ac-identities-repository.xml</li><li>AC-POLICIES: Copy the file conf/ac-policies-yarep.properties to
-conf/local/local.ac-policies-yarep.properties and add the following entry to the
-configurations property<br/>
-   configurations=...,yulup,$YULUP_WEBSITE/yulup-website/yanel/config/ac-policies-repository.xml</li><li>Rebuild Yanel</li></ul></body>
+</li><li>Re-build Yanel</li><li>Re-start Yanel</li></ul></body>
 </html>
