@@ -9,6 +9,14 @@
 Atom Feed Generator
 </description>
 
+<!--
+viewid:
+  source:  application/xml
+  atom:    application/atom+xml
+  rss2.0:  text/xml
+  DEFAULT: application/xhtml+xml
+-->
+
 <rtd>
   <!-- Alternative XSLT (otherwise xslt/atomfeed2xhtml.xsl will be used) -->
   <property name="xslt"/>
