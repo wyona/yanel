@@ -104,7 +104,8 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
         }
 
         Transformer transformer = null;
-        I18nTransformer i18nTransformer = null;
+        //I18nTransformer i18nTransformer = null;
+        I18nTransformer i18nTransformer = new I18nTransformer("global", language);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         View defaultView = new View();
 
@@ -119,12 +120,15 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
             }
             if(submit) {
                 File statusXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "importsite.xsl");
-                File statusXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "input-screen.xml");
+                File statusXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "status-screen.xml");
                 transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(statusXSLTFile));
                 transformer.setParameter("realmid", HttpServletRequestHelper.getParameter(request, "realmid"));
                 transformer.setParameter("realmname", HttpServletRequestHelper.getParameter(request, "realmname"));
                 transformer.setParameter("url", HttpServletRequestHelper.getParameter(request, "url"));
-                transformer.setParameter("crawldepth", HttpServletRequestHelper.getParameter(request, "crawldepth"));
+                String crawldepth = null;
+                if ((crawldepth = request.getParameter("crawldepth")) != null) {
+                    transformer.setParameter("crawldepth", crawldepth);
+                }
                 transformer.setParameter("maxpages", HttpServletRequestHelper.getParameter(request, "maxpages"));
             } else {
                 File inputXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "importsite.xsl");
@@ -154,12 +158,16 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
             saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), i18nTransformer);
 */
+            
+            SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
+            saxParser.parse(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), i18nTransformer);
+            
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
 
-        defaultView.setInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
-        //defaultView.setInputStream(i18nTransformer.getInputStream());
+        //defaultView.setInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
+        defaultView.setInputStream(i18nTransformer.getInputStream());
         return defaultView;
     }
 
