@@ -17,6 +17,8 @@
 package org.wyona.yanel.core.map;
 
 import org.wyona.commons.io.Path;
+import org.wyona.security.core.api.IdentityManager;
+import org.wyona.security.core.api.PolicyManager;
 import org.wyona.yarep.core.Repository;
 
 /**
@@ -29,6 +31,8 @@ public class Realm {
     private Path mountPoint;
     private Repository repository;
     private Repository rtiRepository;
+    private PolicyManager policyManager;
+    private IdentityManager identityManager;
 
     private String proxyHostName;
     private String proxyPort;
@@ -133,5 +137,20 @@ public class Realm {
         this.rtiRepository = repository;
     }
 
+    public IdentityManager getIdentityManager() {
+        return identityManager;
+    }
+
+    public void setIdentityManager(IdentityManager identityManager) {
+        this.identityManager = identityManager;
+    }
+
+    public PolicyManager getPolicyManager() {
+        return policyManager;
+    }
+
+    public void setPolicyManager(PolicyManager policyManager) {
+        this.policyManager = policyManager;
+    }
 
 }

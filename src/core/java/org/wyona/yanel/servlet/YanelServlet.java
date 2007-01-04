@@ -41,6 +41,7 @@ import org.wyona.yanel.servlet.communication.HttpRequest;
 import org.wyona.yanel.servlet.communication.HttpResponse;
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
+import org.wyona.security.core.AuthenticationException;
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.PolicyManager;
@@ -65,8 +66,8 @@ public class YanelServlet extends HttpServlet {
 
     ResourceTypeRegistry rtr;
 
-    PolicyManager pm;
-    IdentityManager im;
+    //PolicyManager pm;
+    //IdentityManager im;
     Map map;
     Yanel yanel;
 
@@ -97,9 +98,9 @@ public class YanelServlet extends HttpServlet {
             
             rtr = yanel.getResourceTypeRegistry();
 
-            pm = (PolicyManager) yanel.getBeanFactory().getBean("policyManager");
+            //pm = (PolicyManager) yanel.getBeanFactory().getBean("policyManager");
 
-            im = (IdentityManager) yanel.getBeanFactory().getBean("identityManager");
+            //im = (IdentityManager) yanel.getBeanFactory().getBean("identityManager");
           
             map = (Map) yanel.getBeanFactory().getBean("map");
 
@@ -756,7 +757,16 @@ public class YanelServlet extends HttpServlet {
         }
 
         boolean authorized = false;
-        Realm realm = map.getRealm(new Path(request.getServletPath()));
+        Realm realm;
+        Path path;
+        try {
+            realm = map.getRealm(request.getServletPath());
+            path = map.getPath(realm, request.getServletPath());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new ServletException(e.getMessage(), e);
+        }
+
 
         // HTTP BASIC Authorization (For clients such as for instance Sunbird, OpenOffice or cadaver)
         // IMPORT NOTE: BASIC Authentication needs to be checked on every request, because clients often do not support session handling
@@ -775,8 +785,9 @@ public class YanelServlet extends HttpServlet {
                 String username = up[0];
                 String password = up[1];
                 log.debug("username: " + username + ", password: " + password);
-                if (im.authenticate(username, password, realm.getID())) {
-                    authorized = pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), new Identity(username, null), new Role("view"));
+                try {
+                if (realm.getIdentityManager().authenticate(username, password)) {
+                    authorized = realm.getPolicyManager().authorize(path, new Identity(username, null), new Role("view"));
                     if(authorized) {
                         return null;
                     } else {
@@ -794,6 +805,10 @@ public class YanelServlet extends HttpServlet {
                     PrintWriter writer = response.getWriter();
                     writer.print("BASIC Authentication Failed!");
                     return response;
+                }
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    throw new ServletException(e.getMessage(), e);
                 }
             } else if (authorization.toUpperCase().startsWith("DIGEST")) {
                 log.error("DIGEST is not implemented");
@@ -819,7 +834,19 @@ public class YanelServlet extends HttpServlet {
             log.debug("Identity is WORLD");
             identity = new Identity();
         }
-        authorized = pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, role);
+        
+        
+        //authorized = pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, role);
+        
+        try {
+            log.error("authorize: realm: " + realm + ", path: " + path + ", identity: " + identity.getUsername() + ", role: " + role.getName());
+            authorized = realm.getPolicyManager().authorize(path, identity, role);
+            log.error("authorize result: " + authorized);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new ServletException(e.getMessage(), e);
+        }
+
 
         if(!authorized) {
             log.warn("Access denied: " + getRequestURLQS(request, null, false));
@@ -852,6 +879,7 @@ public class YanelServlet extends HttpServlet {
             StringBuffer sb = new StringBuffer("");
             String neutronVersions = request.getHeader("Neutron");
             String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
+            
             if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
                 log.debug("Neutron Versions supported by client: " + neutronVersions);
                 log.debug("Authentication Scheme supported by client: " + clientSupportedAuthScheme);
@@ -897,17 +925,19 @@ public class YanelServlet extends HttpServlet {
      *
      */
     private String getRequestURLQS(HttpServletRequest request, String addQS, boolean xml) {
-        Realm realm = map.getRealm(new Path(request.getServletPath()));
-        // TODO: Handle this exception more gracefully!
-        if (realm == null) log.error("No realm found for path " + new Path(request.getServletPath()));
-        String proxyHostName = realm.getProxyHostName();
-        String proxyPort = realm.getProxyPort();
-        String proxyPrefix = realm.getProxyPrefix();
-
-        URL url = null;
-    
+        //Realm realm = map.getRealm(new Path(request.getServletPath()));
         try {
-        url = new URL(request.getRequestURL().toString());
+            Realm realm = map.getRealm(request.getServletPath());
+    
+            // TODO: Handle this exception more gracefully!
+            if (realm == null) log.error("No realm found for path " + new Path(request.getServletPath()));
+            String proxyHostName = realm.getProxyHostName();
+            String proxyPort = realm.getProxyPort();
+            String proxyPrefix = realm.getProxyPrefix();
+    
+            URL url = null;
+        
+            url = new URL(request.getRequestURL().toString());
 
             if (proxyHostName != null) {
                 url = new URL(url.getProtocol(), proxyHostName, url.getPort(), url.getFile());
@@ -928,23 +958,24 @@ public class YanelServlet extends HttpServlet {
             if(proxyHostName != null || proxyPort != null || proxyPrefix != null) {
                 log.debug("Proxy enabled request: " + url);
             }
+
+            String urlQS = url.toString();
+            if (request.getQueryString() != null) {
+                urlQS = urlQS + "?" + request.getQueryString();
+                if (addQS != null) urlQS = urlQS + "&" + addQS;
+            } else {
+                if (addQS != null) urlQS = urlQS + "?" + addQS;
+            }
+    
+            if (xml) urlQS = urlQS.replaceAll("&", "&amp;");
+    
+            log.debug("Request: " + urlQS);
+
+            return urlQS;
         } catch (Exception e) {
             log.error(e);
+            return null;
         }
-
-        String urlQS = url.toString();
-        if (request.getQueryString() != null) {
-            urlQS = urlQS + "?" + request.getQueryString();
-            if (addQS != null) urlQS = urlQS + "&" + addQS;
-        } else {
-            if (addQS != null) urlQS = urlQS + "?" + addQS;
-        }
-
-        if (xml) urlQS = urlQS.replaceAll("&", "&amp;");
-
-        log.debug("Request: " + urlQS);
-
-        return urlQS;
     }
 
     /**
@@ -1009,13 +1040,16 @@ public class YanelServlet extends HttpServlet {
      */
     public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        Realm realm = map.getRealm(new Path(request.getServletPath()));
+        try {
+            Realm realm = map.getRealm(request.getServletPath());
+            Path path = map.getPath(realm, request.getServletPath());
+            //Realm realm = map.getRealm(new Path(request.getServletPath()));
 
         // HTML Form based authentication
         String loginUsername = request.getParameter("yanel.login.username");
         if(loginUsername != null) {
             HttpSession session = request.getSession(true);
-            if (im.authenticate(loginUsername, request.getParameter("yanel.login.password"), realm.getID())) {
+            if (realm.getIdentityManager().authenticate(loginUsername, request.getParameter("yanel.login.password"))) {
                 log.debug("Realm: " + realm);
                 session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
                 return null;
@@ -1026,62 +1060,100 @@ public class YanelServlet extends HttpServlet {
             }
         }
 
-        // Neutron-Auth based authentication
-        String yanelUsecase = request.getParameter("yanel.usecase");
-        if(yanelUsecase != null && yanelUsecase.equals("neutron-auth")) {
-            log.debug("Neutron Authentication ...");
+            // Neutron-Auth based authentication
+            String yanelUsecase = request.getParameter("yanel.usecase");
+            if(yanelUsecase != null && yanelUsecase.equals("neutron-auth")) {
+                log.debug("Neutron Authentication ...");
 
-            String username = null;
-            String password = null;
-            String originalRequest = null;
-            DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
-            try {
-                Configuration config = builder.build(request.getInputStream());
+                String username = null;
+                String password = null;
+                String originalRequest = null;
+                DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+                try {
+                    Configuration config = builder.build(request.getInputStream());
 
-                Configuration originalRequestConfig = config.getChild("original-request");
-                originalRequest = originalRequestConfig.getAttribute("url", null);
+                    Configuration originalRequestConfig = config.getChild("original-request");
+                    originalRequest = originalRequestConfig.getAttribute("url", null);
 
-                Configuration[] paramConfig = config.getChildren("param");
-                for (int i = 0; i < paramConfig.length; i++) {
-                    String paramName = paramConfig[i].getAttribute("name", null);
-                    if (paramName != null) {
-                        if (paramName.equals("username")) {
-                            username = paramConfig[i].getValue();
-                        } else if (paramName.equals("password")) {
-                            password = paramConfig[i].getValue();
+                    Configuration[] paramConfig = config.getChildren("param");
+                    for (int i = 0; i < paramConfig.length; i++) {
+                        String paramName = paramConfig[i].getAttribute("name", null);
+                        if (paramName != null) {
+                            if (paramName.equals("username")) {
+                                username = paramConfig[i].getValue();
+                            } else if (paramName.equals("password")) {
+                                password = paramConfig[i].getValue();
+                            }
                         }
                     }
+                } catch(Exception e) {
+                    log.warn(e);
                 }
-            } catch(Exception e) {
-                log.warn(e);
-            }
 
-            log.debug("Username: " + username);
+                log.debug("Username: " + username);
 
-            if (username != null) {
-                HttpSession session = request.getSession(true);
-                log.debug("Realm ID: " + realm.getID());
-                if (im.authenticate(username, password, realm.getID())) {
-                    log.info("Authentication successful: " + username);
-                    session.setAttribute(IDENTITY_KEY, new Identity(username, null));
+                if (username != null) {
+                    HttpSession session = request.getSession(true);
+                    log.debug("Realm ID: " + realm.getID());
+                    if (realm.getIdentityManager().authenticate(username, password)) {
+                        log.info("Authentication successful: " + username);
+                        session.setAttribute(IDENTITY_KEY, new Identity(username, null));
 
-                    // TODO: send some XML content, e.g. <authentication-successful/>
-                    response.setContentType("text/plain");
-                    response.setStatus(response.SC_OK);
+                        // TODO: send some XML content, e.g. <authentication-successful/>
+                        response.setContentType("text/plain");
+                        response.setStatus(response.SC_OK);
 
-                    PrintWriter writer = response.getWriter();
-                    writer.print("Neutron Authentication Successful!");
-                    return response;
+                        PrintWriter writer = response.getWriter();
+                        writer.print("Neutron Authentication Successful!");
+                        return response;
+                    } else {
+                        log.warn("Neutron Authentication failed: " + username);
+
+                        // TODO: Refactor this code with the one from doAuthenticate ...
+                        log.debug("Original Request: " + originalRequest);
+
+                        StringBuffer sb = new StringBuffer("");
+                        sb.append("<?xml version=\"1.0\"?>");
+                        sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authentication\">");
+                        sb.append("<message>Authentication failed!</message>");
+                        sb.append("<authentication>");
+                        // TODO: ...
+                        sb.append("<original-request url=\"" + originalRequest + "\"/>");
+                        //sb.append("<original-request url=\"" + getRequestURLQS(request, null, true) + "\"/>");
+                        //TODO: Also support https ...
+                        // TODO: ...
+                        sb.append("<login url=\"" + originalRequest + "&amp;yanel.usecase=neutron-auth" + "\" method=\"POST\">");
+                        //sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
+                        sb.append("<form>");
+                        sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
+                        sb.append("<param description=\"Username\" name=\"username\"/>");
+                        sb.append("<param description=\"Password\" name=\"password\"/>");
+                        sb.append("</form>");
+                        sb.append("</login>");
+                        // NOTE: Needs to be a full URL, because user might switch the server ...
+                        // TODO: ...
+                        sb.append("<logout url=\"" + originalRequest + "&amp;yanel.usecase=logout" + "\" realm=\"" + realm.getName() + "\"/>");
+                        sb.append("</authentication>");
+                        sb.append("</exception>");
+
+                        log.debug("Neutron-Auth response: " + sb);
+
+                        response.setContentType("application/xml");
+                        response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
+
+                        PrintWriter w = response.getWriter();
+                        w.print(sb);
+                        return response;
+                    }
                 } else {
-                    log.warn("Neutron Authentication failed: " + username);
-
-                    // TODO: Refactor this code with the one from doAuthenticate ...
-                    log.debug("Original Request: " + originalRequest);
+                    // TODO: Refactor resp. reuse response from above ...
+                    log.warn("Neutron Authentication failed because username is NULL!");
 
                     StringBuffer sb = new StringBuffer("");
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authentication\">");
-                    sb.append("<message>Authentication failed!</message>");
+                    sb.append("<message>Authentication failed because no username was sent!</message>");
                     sb.append("<authentication>");
                     // TODO: ...
                     sb.append("<original-request url=\"" + originalRequest + "\"/>");
@@ -1102,55 +1174,21 @@ public class YanelServlet extends HttpServlet {
                     sb.append("</authentication>");
                     sb.append("</exception>");
 
-                    log.debug("Neutron-Auth response: " + sb);
-
                     response.setContentType("application/xml");
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                     response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
 
-                    PrintWriter w = response.getWriter();
-                    w.print(sb);
+                    PrintWriter writer = response.getWriter();
+                    writer.print(sb);
                     return response;
                 }
             } else {
-                // TODO: Refactor resp. reuse response from above ...
-                log.warn("Neutron Authentication failed because username is NULL!");
-
-                StringBuffer sb = new StringBuffer("");
-                sb.append("<?xml version=\"1.0\"?>");
-                sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authentication\">");
-                sb.append("<message>Authentication failed because no username was sent!</message>");
-                sb.append("<authentication>");
-                // TODO: ...
-                sb.append("<original-request url=\"" + originalRequest + "\"/>");
-                //sb.append("<original-request url=\"" + getRequestURLQS(request, null, true) + "\"/>");
-                //TODO: Also support https ...
-                // TODO: ...
-                sb.append("<login url=\"" + originalRequest + "&amp;yanel.usecase=neutron-auth" + "\" method=\"POST\">");
-                //sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
-                sb.append("<form>");
-                sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
-                sb.append("<param description=\"Username\" name=\"username\"/>");
-                sb.append("<param description=\"Password\" name=\"password\"/>");
-                sb.append("</form>");
-                sb.append("</login>");
-                // NOTE: Needs to be a full URL, because user might switch the server ...
-                // TODO: ...
-                sb.append("<logout url=\"" + originalRequest + "&amp;yanel.usecase=logout" + "\" realm=\"" + realm.getName() + "\"/>");
-                sb.append("</authentication>");
-                sb.append("</exception>");
-
-                response.setContentType("application/xml");
-                response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
-                response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
-
-                PrintWriter writer = response.getWriter();
-                writer.print(sb);
-                return response;
+                log.debug("Neutron Authentication successful.");
+                return null;
             }
-        } else {
-            log.debug("Neutron Authentication successful.");
-            return null;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new ServletException(e.getMessage(), e);
         }
     }
 

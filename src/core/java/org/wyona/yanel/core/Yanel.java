@@ -16,9 +16,12 @@
 
 package org.wyona.yanel.core;
 
+import org.wyona.security.core.api.IdentityManager;
+import org.wyona.security.core.api.PolicyManager;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.map.RealmConfiguration;
+import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -34,6 +37,7 @@ public class Yanel {
     private ApplicationContext applicationContext;
     private RealmConfiguration realmConfig;
     private ResourceManager resourceManager;
+    private boolean isInitialized = false;
     
     private static final String SPRING_CONFIG_FILE = "spring-*-config.xml"; 
 
@@ -47,6 +51,12 @@ public class Yanel {
    } 
    
    public void init() throws Exception {
+       if (isInitialized) {
+           return;
+       } else {
+           isInitialized = true;
+       }
+       
        map = (Map) applicationContext.getBean("map");
        realmConfig = new RealmConfiguration();
        map.setRealmConfiguration(realmConfig);
@@ -54,6 +64,18 @@ public class Yanel {
        rtr = new ResourceTypeRegistry();
        resourceManager = new ResourceManager();
        resourceManager.setResourceTypeRegistry(rtr);
+       
+       /*PolicyManager pm = (PolicyManager) yanel.getBeanFactory().getBean("policyManager");
+       IdentityManager im = (IdentityManager) yanel.getBeanFactory().getBean("identityManager");
+       
+       Realm[] realms = realmConfig.getRealms();
+       for (int i=0; i<realms.length; i++) {
+           pm.addPoliciesRepository(realms[i].getPoliciesRepository());
+           im.addIdentitiesRepository(realms[i].getIdentitiesRepository());
+       }
+
+       im = (IdentityManager) yanel.getBeanFactory().getBean("identityManager");*/
+
     }
    
     public static Yanel getInstance() throws Exception {

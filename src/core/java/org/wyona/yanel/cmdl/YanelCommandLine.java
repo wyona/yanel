@@ -71,10 +71,8 @@ public class YanelCommandLine {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        Path path = null;
-        if (args.length == 1 && args[0].length() > 0) {
-            path = new Path(args[0]);
-        } else {
+        String url = null;
+        if (args.length != 1 || args[0].length() == 0) {
             System.out.println("\nPlease enter a path (e.g. /index.html):");
             try {
                 String value = br.readLine();
@@ -83,25 +81,29 @@ public class YanelCommandLine {
                    return;
                 }
                 System.out.println("The following value has been entered: " + value);
-                path = new Path(value);
+                url = value;
             } catch (Exception e) {
                 System.err.println(e);
             }
         }
 
       
-        PolicyManager pm = (PolicyManager) yanel.getBeanFactory().getBean("policyManager");
+        Realm realm = map.getRealm(url);
+        Path path = map.getPath(realm, url);
+        //PolicyManager pm = (PolicyManager) yanel.getBeanFactory().getBean("policyManager");
+        PolicyManager pm = realm.getPolicyManager();
     
 
         String[] groupnames = {"admin", "accounting"};
-        if (pm.authorize(new org.wyona.commons.io.Path(path.toString()), new Identity("lenya", groupnames), new Role("view"))) {
+        if (pm.authorize(path, new Identity("lenya", groupnames), new Role("view"))) {
             System.out.println("Access granted: " + path);
         } else {
             // TODO: Deny access resp. start login process!
             System.out.println("Access denied: " + path);
         }
 
-        String rti = map.getResourceTypeIdentifier(path);
+        String rti = yanel.getResourceManager().getResourceTypeIdentifier(realm, path).getUniversalName();
+        //String rti = map.getResourceTypeIdentifier(path);
         System.out.println("Resource Type Identifier: " + rti);
 
         if (rti == null) {
@@ -121,7 +123,7 @@ public class YanelCommandLine {
 
 
         Resource res = null;
-        CommandLineRequest request = new CommandLineRequest(path.toString());
+        CommandLineRequest request = new CommandLineRequest(url);
         CommandLineResponse response = new CommandLineResponse();
         try {
             res = rtr.newResource(rti);
@@ -145,7 +147,7 @@ public class YanelCommandLine {
             System.out.println("View Descriptors: " + ((ViewableV1) res).getViewDescriptors());
             String viewId = null;
             try {
-                View view = ((ViewableV1) res).getView(path, viewId);
+                View view = ((ViewableV1) res).getView(new Path(url), viewId);
                 System.out.println("mime-type: " + view.getMimeType());
 
                 BufferedReader bReader = new BufferedReader(new java.io.InputStreamReader(view.getInputStream()));
@@ -164,7 +166,7 @@ public class YanelCommandLine {
 
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
             try {
-                java.io.Reader reader = ((ModifiableV1) res).getReader(path);
+                java.io.Reader reader = ((ModifiableV1) res).getReader(new Path(url));
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
