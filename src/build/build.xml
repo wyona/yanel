@@ -190,10 +190,6 @@
 
     <copy file="${yanel.home.dir}/conf/yanel.xml" tofile="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/realms.xml" tofile="${yanel.home.dir}/${local.config.dir}/local.realms.xml" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/yanel-rti-yarep.properties" tofile="${yanel.home.dir}/${local.config.dir}/local.yanel-rti-yarep.properties" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/yarep.properties" tofile="${yanel.home.dir}/${local.config.dir}/local.yarep.properties" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/ac-policies-yarep.properties" tofile="${yanel.home.dir}/${local.config.dir}/local.ac-policies-yarep.properties" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/ac-identities-yarep.properties" tofile="${yanel.home.dir}/${local.config.dir}/local.ac-identities-yarep.properties" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/log4j.properties" tofile="${yanel.home.dir}/${local.config.dir}/local.log4j.properties" overwrite="false"/>
 
     <echo>Customize the ${local.config.dir}/local.* files and run build.sh OR run build.sh first and then customize the config files within build/webapps/yanel/WEB-INF/classes</echo>
@@ -377,11 +373,6 @@
     <copy file="${yanel.home.dir}/conf/spring-yanel-config.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/realms.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/log4j.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/yanel-rti-yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/ac-policies-yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/ac-identities-yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/yarep.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-
     <!-- Create yanel.properties -->
     <condition property="local.yanel.config.exists">
       <available file="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" type="file"/>
@@ -391,32 +382,19 @@
 
     <!-- Overwrite default by local properties -->
     <!-- TODO: Make the patching selectable within the build.properties of the build ... -->
-    <copy file="${yanel.home.dir}/${local.config.dir}/local.yanel-rti-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" overwrite="true" failonerror="false"/>
-    <copy file="${yanel.home.dir}/${local.config.dir}/local.yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" overwrite="true" failonerror="false"/>
-    <copy file="${yanel.home.dir}/${local.config.dir}/local.ac-identities-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" overwrite="true" failonerror="false"/>
-    <copy file="${yanel.home.dir}/${local.config.dir}/local.ac-policies-yarep.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" overwrite="true" failonerror="false"/>
     <copy file="${yanel.home.dir}/${local.config.dir}/local.log4j.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" overwrite="true" failonerror="false"/>
     <copy file="${yanel.home.dir}/${local.config.dir}/local.realms.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" overwrite="true" failonerror="false"/>
     <antcall target="patch-with-local-yanel-config"/>
 
 
     <!-- Patch properties ... -->
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yarep.properties" value="${yanel.home.dir.forward.slashes}/src/realms/">
-      <replacetoken>../src/realms/</replacetoken>
-    </replace>
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="${yanel.home.dir.forward.slashes}">
       <replacetoken>..</replacetoken>
     </replace>
 
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel-rti-yarep.properties" value="${yanel.home.dir.forward.slashes}/src/realms/">
-      <replacetoken>../src/realms/</replacetoken>
-    </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-policies-yarep.properties" value="${yanel.home.dir.forward.slashes}/src/realms">
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" value="${yanel.home.dir.forward.slashes}/src/realms">
       <replacetoken>../src/realms</replacetoken>
-    </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/ac-identities-yarep.properties" value="${yanel.home.dir.forward.slashes}/src/realms/">
-      <replacetoken>../src/realms/</replacetoken>
     </replace>
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.file.forward.slashes}">
