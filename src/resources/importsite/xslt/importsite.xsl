@@ -12,7 +12,7 @@
   <xsl:param name="realmid" select="''"/>
   <xsl:param name="realmname" select="''"/>
   <xsl:param name="url" select="''"/>
-  <xsl:param name="crawldepth" select="''"/>
+  <xsl:param name="crawldepth" select="'100'"/>
   <xsl:param name="maxpages" select="''"/>
   <xsl:param name="message" select="''"/>
   <xsl:param name="error" select="''"/>
@@ -27,6 +27,8 @@
       
       <body>
         <h3><i18n:message key="importsite"/></h3>
+
+<p>Crawl Depth: <xsl:value-of select="$crawldepth"/></p>
         
         <div id="contentBody">
         
@@ -48,7 +50,7 @@
   </xsl:template>
 
   <xsl:template match="form" mode="init">
-    <form name="importsite-form" method="post" action="#">
+    <form name="importsite-form" method="post">
       <table cellpadding="0" cellspacing="0" border="0">
         <xsl:for-each select="inputfields/input">
           <xsl:variable name="inputName"><xsl:value-of select="."/></xsl:variable>
@@ -80,14 +82,14 @@
           </td>
         </tr>
         <tr>
-          <td align="right" valign="top" class="contentfield" colspan="3"><br/><i18n:message key="requiredFields"/></td>
+          <td align="right" valign="top" class="contentfield" colspan="3"><br/><i18n:message key="requiredFields"/> (*)</td>
         </tr>
       </table>
     </form>
   </xsl:template>
 
   <xsl:template match="form" mode="error">
-    <form name="contact-form" method="post" action="#">
+    <form name="contact-form" method="post">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td colspan="3" align="left" valign="top" class="contentfield"><font color="red"><i18n:message key="{$error}"/></font></td>
@@ -117,6 +119,7 @@
           <td align="right" valign="top" class="contentfield"><i18n:message key="crawldepth"/>:&#0160;</td>
           <td>
             <input type="text" name="crawldepth" class="box" size="40" value="{$crawldepth}"/>
+            H<xsl:value-of select="$crawldepth"/>H
           </td>
           <td></td>
         </tr>
