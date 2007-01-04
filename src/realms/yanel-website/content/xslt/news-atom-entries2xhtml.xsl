@@ -21,7 +21,10 @@
 <head>
   <link rel="introspection" href="introspection-atom.xml" type="application/atomserv+xml"/>
 
+  <link rel="alternate" title="Yanel News" href="news-atom-entries/?yanel.resource.viewid=source" type="application/atom+xml"/>
+<!--
   <link rel="alternate" title="Yanel News" href="news-atom-entries/?yanel.resource.viewid=atom" type="application/atom+xml"/>
+-->
 
   <title>News</title>
 </head>
