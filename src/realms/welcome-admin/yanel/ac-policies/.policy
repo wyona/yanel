@@ -6,6 +6,10 @@
     <world permission="true"/>
   </role>
 
+  <role id="write">
+    <world permission="true"/>
+  </role>
+
 <!--
   <role id="open">
     <user id="lenya" permission="true"/>
