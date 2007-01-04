@@ -28,7 +28,9 @@
       
       <body>
         <h3><i18n:message key="contact"/></h3>
+<!--
         <p><i18n:message key="generalInquiriesPleaseContact"/><a href="mailto:contact@wyona.com">contact@wyona.com</a>.</p>
+-->
         <p><i18n:message key="mailingAddressCanBeFound"/><a href="http://www.wyona.com/contact.html"><i18n:message key="corporateContactPage"/></a>.</p>
         <div id="contenBody">
         
