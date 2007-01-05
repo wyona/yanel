@@ -12,8 +12,8 @@
   <xsl:param name="realmid" select="''"/>
   <xsl:param name="realmname" select="''"/>
   <xsl:param name="url" select="''"/>
-  <xsl:param name="crawldepth" select="'100'"/>
-  <xsl:param name="maxpages" select="''"/>
+  <xsl:param name="crawldepth" select="'3'"/>
+  <xsl:param name="maxpages" select="'100'"/>
   <xsl:param name="message" select="''"/>
   <xsl:param name="error" select="''"/>
   
@@ -27,8 +27,6 @@
       
       <body>
         <h3><i18n:message key="importsite"/></h3>
-
-<p>Crawl Depth: <xsl:value-of select="$crawldepth"/></p>
         
         <div id="contentBody">
         
@@ -55,9 +53,9 @@
         <xsl:for-each select="inputfields/input">
           <xsl:variable name="inputName"><xsl:value-of select="."/></xsl:variable>
           <tr>
-            <td align="right" valign="top" class="contentfield"><i18n:message><xsl:attribute name="key"><xsl:value-of select="$inputName"/></xsl:attribute></i18n:message>:&#0160;</td>
+            <td align="right" valign="top" class="contentfield" width="150"><i18n:message><xsl:attribute name="key"><xsl:value-of select="$inputName"/></xsl:attribute></i18n:message>:&#0160;</td>
             <td>
-              <input type="text" name="{$inputName}" class="box" size="40"/>
+              <input type="text" name="{$inputName}" class="box" size="30"/>
             </td>
             <td><xsl:if test="@required = 'true'">*</xsl:if></td>
           </tr>
@@ -75,14 +73,14 @@
         </xsl:for-each>
         
         <tr>
-          <td colspan="2">&#160;
+          <td>&#160;
           </td>
-          <td>
-            <input type="submit" name="submit" value="i18n:attr key=send"/>
+          <td align="right">
+            <input type="submit" name="submit" value="i18n:attr key=import site"/>
           </td>
         </tr>
         <tr>
-          <td align="right" valign="top" class="contentfield" colspan="3"><br/><i18n:message key="requiredFields"/> (*)</td>
+          <td align="right" valign="top" class="contentfield" colspan="2"><br/><i18n:message key="requiredFields"/></td>
         </tr>
       </table>
     </form>
