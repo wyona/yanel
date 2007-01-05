@@ -1,30 +1,12 @@
 <?xml version="1.0"?>
 
-
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
-
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 
-
-
-
 <head>
-
-
   <title>How a request is being processed</title>
-
-
 </head>
-
-
-
-
-
 
 
 <body><h1>How a new realm is being added</h1>
@@ -41,6 +23,7 @@ as $YANEL_HOME and $YULUP_WEBSITE .
     &lt;realm id=&quot;yulup&quot; mount-point=&quot;/yulup/&quot;&gt;<br/>
        &lt;name&gt;Yulup Website&lt;/name&gt;<br/>
        &lt;config src=&quot;$YULUP_WEBSITE/yanel/config/yanel-realm-config.xml&quot;/&gt;<br/>
-    &lt;/realm&gt;
+    &lt;/realm&gt;<br/><b>
+    NOTE for Windows users:</b> Also use forward slashes, e.g. D:/realms/foo/yanel/config/yanel-realm-config.xml
 </li><li>Re-build Yanel</li><li>Re-start Yanel</li></ul></body>
 </html>
