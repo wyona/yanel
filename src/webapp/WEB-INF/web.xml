@@ -24,6 +24,11 @@
       <param-name>exception-and-info-screen-xslt</param-name>
       <param-value>xslt/xmlInfo2xhtml.xsl</param-value>
     </init-param>
+
+    <init-param>
+     <param-name>login-screen-xslt</param-name>
+     <param-value>xslt/login-screen.xsl</param-value>
+    </init-param>
   </servlet>
 
   <servlet-mapping>
