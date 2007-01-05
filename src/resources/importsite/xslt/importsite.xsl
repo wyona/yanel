@@ -9,12 +9,13 @@
 
   <xsl:output method="xhtml" encoding="UTF-8"/>
 
+  <!-- TODO: I think these parameters should not be passed as XSLT parameters but rather within the XML where this XSLT is being applied to! -->
   <xsl:param name="realmid" select="''"/>
   <xsl:param name="realmname" select="''"/>
   <xsl:param name="url" select="''"/>
   <xsl:param name="fs-location" select="''"/>
-  <xsl:param name="crawldepth" select="'10'"/>
-  <xsl:param name="maxpages" select="'1000'"/>
+  <xsl:param name="crawldepth" select="''"/>
+  <xsl:param name="maxpages" select="''"/>
   <xsl:param name="message" select="''"/>
   <xsl:param name="error" select="''"/>
   
