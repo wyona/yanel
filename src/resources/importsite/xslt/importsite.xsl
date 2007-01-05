@@ -12,8 +12,9 @@
   <xsl:param name="realmid" select="''"/>
   <xsl:param name="realmname" select="''"/>
   <xsl:param name="url" select="''"/>
-  <xsl:param name="crawldepth" select="'3'"/>
-  <xsl:param name="maxpages" select="'100'"/>
+  <xsl:param name="fs-location" select="''"/>
+  <xsl:param name="crawldepth" select="'10'"/>
+  <xsl:param name="maxpages" select="'1000'"/>
   <xsl:param name="message" select="''"/>
   <xsl:param name="error" select="''"/>
   
@@ -48,27 +49,22 @@
   </xsl:template>
 
   <xsl:template match="form" mode="init">
-    <form name="importsite-form" method="post">
+    <form method="post">
       <table cellpadding="0" cellspacing="0" border="0">
         <xsl:for-each select="inputfields/input">
-          <xsl:variable name="inputName"><xsl:value-of select="."/></xsl:variable>
           <tr>
-            <td align="right" valign="top" class="contentfield" width="150"><i18n:message><xsl:attribute name="key"><xsl:value-of select="$inputName"/></xsl:attribute></i18n:message>:&#0160;</td>
+            <td align="right" valign="top" class="contentfield" width="150"><i18n:message key="{.}"/>:&#0160;</td>
             <td>
-              <input type="text" name="{$inputName}" class="box" size="30"/>
+              <input type="text" name="{.}" class="box" size="30"/>
             </td>
             <td><xsl:if test="@required = 'true'">*</xsl:if></td>
           </tr>
-        </xsl:for-each>
-        
-        <xsl:for-each select="textAreas">
-          <xsl:variable name="inputName"><xsl:value-of select="textArea"/></xsl:variable>
           <tr>
-            <td align="right" valign="top" class="contentfield"><i18n:message><xsl:attribute name="key"><xsl:value-of select="$inputName"/></xsl:attribute></i18n:message>:&#0160;</td>
+            <td>&#160;</td>
             <td>
-              <textarea rows="8" name="{$inputName}" cols="30" class="box"></textarea>
+              (i.e. <xsl:value-of select="@samplevalue"/>)
             </td>
-            <td><xsl:if test="@required = 'true'">*</xsl:if></td>
+            <td>&#160;</td>
           </tr>
         </xsl:for-each>
         
@@ -76,15 +72,23 @@
           <td>&#160;
           </td>
           <td align="right">
-            <input type="submit" name="submit" value="i18n:attr key=import site"/>
+            <input type="submit" name="submit" value="i18n:attr key=importsite"/>
           </td>
         </tr>
+
         <tr>
           <td align="right" valign="top" class="contentfield" colspan="2"><br/><i18n:message key="requiredFields"/></td>
         </tr>
       </table>
     </form>
   </xsl:template>
+
+
+
+
+
+
+
 
   <xsl:template match="form" mode="error">
     <form name="contact-form" method="post">

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form name="importsite-input">
+
+<form>
   <inputfields>
-    <input required="true">realmid</input>
-    <input required="true">realmname</input>
-    <input required="true">url</input>
-    <input required="true">crawldepth</input>
-    <input required="true">maxpages</input>
+    <input required="true" samplevalue="my-realm">realmid</input>
+    <input required="true" samplevalue="My Realm">realmname</input>
+    <input required="true" samplevalue="http://www.foo.bar">url</input>
+    <input required="true" samplevalue="D:/realms">fs-location</input>
+    <input required="true" samplevalue="3">crawldepth</input>
+    <input required="true" samplevalue="100">maxpages</input>
   </inputfields>
 </form>
