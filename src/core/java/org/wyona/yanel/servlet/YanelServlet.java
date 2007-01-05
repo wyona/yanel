@@ -71,7 +71,8 @@ public class YanelServlet extends HttpServlet {
     Map map;
     Yanel yanel;
 
-    File xsltFile;
+    File xsltInfoAndException;
+    File xsltLoginScreen;
 
     private static String IDENTITY_KEY = "identity";
 
@@ -90,8 +91,8 @@ public class YanelServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         this.config = config;
 
-        xsltFile = org.wyona.commons.io.FileUtil.file(config.getServletContext().getRealPath("/"), config.getInitParameter("exception-and-info-screen-xslt"));
-        
+        xsltInfoAndException = org.wyona.commons.io.FileUtil.file(config.getServletContext().getRealPath("/"), config.getInitParameter("exception-and-info-screen-xslt"));
+        xsltLoginScreen = org.wyona.commons.io.FileUtil.file(config.getServletContext().getRealPath("/"), config.getInitParameter("login-screen-xslt"));
         try {
             yanel = Yanel.getInstance();
             yanel.init();
@@ -1049,12 +1050,18 @@ public class YanelServlet extends HttpServlet {
         String loginUsername = request.getParameter("yanel.login.username");
         if(loginUsername != null) {
             HttpSession session = request.getSession(true);
-            if (realm.getIdentityManager().authenticate(loginUsername, request.getParameter("yanel.login.password"))) {
-                log.debug("Realm: " + realm);
-                session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
-                return null;
-            } else {
-                log.warn("Login failed: " + loginUsername);
+            try {
+                if (realm.getIdentityManager().authenticate(loginUsername, request.getParameter("yanel.login.password"))) {
+                    log.debug("Realm: " + realm);
+                    session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
+                    return null;
+                } else {
+                    log.warn("Login failed: " + loginUsername);
+                    getXHTMLAuthenticationForm(request, response, realm, "Login failed!");
+                    return response;
+                }
+            } catch (Exception e) {
+                log.warn("Login failed: " + loginUsername + " " + e);
                 getXHTMLAuthenticationForm(request, response, realm, "Login failed!");
                 return response;
             }
@@ -1258,7 +1265,7 @@ public class YanelServlet extends HttpServlet {
                 out.close();
             } else {
                 response.setContentType("application/xhtml+xml");
-                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
+                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltInfoAndException));
                 transformer.transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
             }
         } catch (Exception e) {
@@ -1271,31 +1278,39 @@ public class YanelServlet extends HttpServlet {
      * Custom XHTML Form for authentication
      */
     public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message) throws ServletException, IOException {
-        // TODO: Use configurable XSLT for layout, whereas each realm should be able to overwrite ...
-        StringBuffer sb = new StringBuffer();
-        sb.append("<?xml version=\"1.0\"?>");
-        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-        sb.append("<body>");
-        if (message != null) {
-            sb.append("<p>NOTE: " + message + "</p>");
-        }
-        sb.append("<p>Authorization denied: " + getRequestURLQS(request, null, true) + "</p>");
-        sb.append("<p>Enter username and password for realm \"" +  realm.getName()  + "\" at \"" + realm.getMountPoint() + "\" (Context Path: " + request.getContextPath() + ")</p>");
-        sb.append("<form method=\"POST\">");
-        sb.append("<p>");
-        sb.append("<table>");
-        sb.append("<tr><td>Username:</td><td>&#160;</td><td><input type=\"text\" name=\"yanel.login.username\"/></td></tr>");
-        sb.append("<tr><td>Password:</td><td>&#160;</td><td><input type=\"password\" name=\"yanel.login.password\"/></td></tr>");
-        sb.append("<tr><td colspan=\"2\">&#160;</td><td align=\"right\"><input type=\"submit\" value=\"Login\"/></td></tr>");
-        sb.append("</table>");
-        sb.append("</p>");
-        sb.append("</form>");
-        sb.append("</body>");
-        sb.append("</html>");
-        response.setContentType("application/xhtml+xml");
-        response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
-        PrintWriter w = response.getWriter();
-        w.print(sb);
+        
+        org.w3c.dom.Document doc = null;
+        javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
+        try {
+            javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
+            org.w3c.dom.DOMImplementation impl = parser.getDOMImplementation();
+            org.w3c.dom.DocumentType doctype = null;
+            doc = impl.createDocument("http://www.wyona.org/yanel/1.0", "yanel", doctype);            
+            
+            Element rootElement = doc.getDocumentElement();
+            
+            if (message != null) {
+                Element messageElement = (Element) rootElement.appendChild(doc.createElement("message"));
+                messageElement.appendChild(doc.createTextNode(message)); 
+            }
+            
+            Element requestElement = (Element) rootElement.appendChild(doc.createElement("request"));
+            requestElement.setAttribute("urlqs", getRequestURLQS(request, null, true));
+            
+            Element realmElement = (Element) rootElement.appendChild(doc.createElement("realm"));
+            realmElement.setAttribute("name", realm.getName());
+            realmElement.setAttribute("mount-point", realm.getMountPoint().toString());            
+            
+            response.setContentType("application/xhtml+xml; charset=UTF-8");
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);            
+            Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltLoginScreen));            
+            transformer.transform(new javax.xml.transform.dom.DOMSource(doc), 
+                    new javax.xml.transform.stream.StreamResult(response.getWriter()));
+            
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new ServletException(e.getMessage());
+        }        
     }
 
     /**
