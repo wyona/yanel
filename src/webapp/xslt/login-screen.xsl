@@ -11,9 +11,7 @@
   <xsl:template match="/">
     <html>
       <head>
-        <title>
-          Yanel <i18n:text>- Login</i18n:text>
-        </title>
+        <title>Yanel - Login</title>
       </head>
       <body>
         <h1>Login to realm <xsl:value-of select="child::node()/realm/@name"/></h1>
