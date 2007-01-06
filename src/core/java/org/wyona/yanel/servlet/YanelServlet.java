@@ -840,9 +840,9 @@ public class YanelServlet extends HttpServlet {
         //authorized = pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, role);
         
         try {
-            log.error("authorize: realm: " + realm + ", path: " + path + ", identity: " + identity.getUsername() + ", role: " + role.getName());
+            log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity.getUsername() + ", role: " + role.getName());
             authorized = realm.getPolicyManager().authorize(path, identity, role);
-            log.error("authorize result: " + authorized);
+            log.debug("Check authorization result: " + authorized);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);
