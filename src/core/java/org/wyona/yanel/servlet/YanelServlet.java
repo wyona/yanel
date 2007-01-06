@@ -1013,6 +1013,28 @@ public class YanelServlet extends HttpServlet {
 */
         } else if (depth.equals("1")) {
              log.warn("TODO: List childen of this node");
+            sb.append("  <response>");
+            sb.append("    <href>"+request.getRequestURI()+"/directory/</href>");
+            sb.append("    <propstat>");
+            sb.append("      <prop>");
+            sb.append("        <displayname>A Directory</displayname>");
+            sb.append("        <resourcetype><collection/></resourcetype>");
+            sb.append("        <getcontenttype>http/unix-directory</getcontenttype>");
+            sb.append("      </prop>");
+            sb.append("      <status>HTTP/1.1 200 OK</status>");
+            sb.append("    </propstat>");
+            sb.append("  </response>");
+            sb.append("  <response>");
+            sb.append("    <href>"+request.getRequestURI()+"/file.txt</href>");
+            sb.append("    <propstat>");
+            sb.append("      <prop>");
+            sb.append("        <displayname>A File</displayname>");
+            sb.append("        <resourcetype/>");
+            sb.append("        <getcontenttype>http/unix-directory</getcontenttype>");
+            sb.append("      </prop>");
+            sb.append("      <status>HTTP/1.1 200 OK</status>");
+            sb.append("    </propstat>");
+            sb.append("  </response>");
         } else if (depth.equals("infinity")) {
              log.warn("TODO: List childen and their children and their childre ...");
         } else {
