@@ -39,7 +39,7 @@
 <tr>
 <td style="vertical-align: top;">Navigation Framework</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td>TBD</td></tr>
 <tr><td style="vertical-align: top;"><a href="specification/nutch-resource.html">Nutch</a></td><td style="vertical-align: top;">mostly done</td><td style="vertical-align: top;">2007.01.05</td><td>Michael</td>
-</tr><tr><td style="vertical-align: top;"><a href="specification/import-site-feature.html">Import an existing website as a new realm</a></td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.01.10</td><td style="vertical-align: top;">Jonathan</td></tr><tr><td style="vertical-align: top;">Wiki </td><td style="vertical-align: top;">mostly done</td><td style="vertical-align: top;">TBD</td><td>TBD</td></tr>
+</tr><tr><td style="vertical-align: top;"><a href="specification/import-site-feature.html">Import an existing website as a new realm</a></td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.01.10</td><td style="vertical-align: top;">Jonathan</td></tr><tr><td style="vertical-align: top;">Wiki </td><td style="vertical-align: top;">mostly done</td><td style="vertical-align: top;">TBD</td><td>Michael</td></tr>
 <tr><td style="vertical-align: top;">Creator: Realm specific XSLT</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">2007.01.12</td><td>Simon</td></tr>
 <tr><td style="vertical-align: top;">XHTML resource out-of-the-box</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td>TBD</td></tr>
 <tr><td style="vertical-align: top;">Versioning (Yarep)</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">TBD</td><td>Josias</td></tr>
@@ -50,7 +50,7 @@
 <tr><td style="vertical-align: top;">RTI as XML </td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">2007.01.12</td><td>Josias</td></tr>
 <tr><td style="vertical-align: top;">Versioned configuration</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td>TBD</td></tr>
 <tr><td style="vertical-align: top;">Contact form resource</td><td style="vertical-align: top;">mostly done</td><td style="vertical-align: top;">2007.01.10</td><td>Paloma</td></tr>
-<tr><td style="vertical-align: top;">Locking of Write Access</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td>TBD</td></tr>
+<tr><td style="vertical-align: top;">Locking of Write Access</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td>Josias</td></tr>
 <tr><td style="vertical-align: top;">Standard and Custom Meta Data</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td>TBD</td></tr>
 </tbody>
 </table>
@@ -68,11 +68,11 @@
 <th>Assiged To</th>
 
 </tr>
-            <tr><td style="vertical-align: top;">Archive URL resource</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr>
+            <tr><td style="vertical-align: top;">Archive URL resource</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></tr>
 <tr>
 <td style="vertical-align: top;"><a href="specification/pdf-fop-resource.html">FOP/PDF resource</a></td><td style="vertical-align: top;">mostly done</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Paloma</td>
 </tr>
-<tr><td style="vertical-align: top;"><a href="specification/access-control-user-interface.html">Access Control User Interface</a></td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">2007.01.31</td><td style="vertical-align: top;">Paloma</td></tr><tr><td style="vertical-align: top;">Diffs of Versions</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;">Pipeline resource (&quot;Mini-Cocoon&quot;)</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;">Dynamic introspection</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;">Form Framework</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;"><a href="http://simile.mit.edu/timeline/">Simile Timeline</a></td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;"><a href="specification/annotations.html">Annotations</a></td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">2007.02.28</td><td style="vertical-align: top;">Florian, Ilhan</td></tr><tr><td style="vertical-align: top;">Personalization</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></tr><tr><td style="vertical-align: top;">Related Search</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></tr>
+<tr><td style="vertical-align: top;"><a href="specification/access-control-user-interface.html">Access Control User Interface</a></td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">2007.01.31</td><td style="vertical-align: top;">Paloma</td></tr><tr><td style="vertical-align: top;">Diffs of Versions</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Josias</td></tr><tr><td style="vertical-align: top;">Pipeline resource (&quot;Mini-Cocoon&quot;)</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;">Dynamic introspection</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;">Form Framework</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;"><a href="http://simile.mit.edu/timeline/">Simile Timeline</a></td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;"><a href="specification/annotations.html">Annotations</a></td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">2007.02.28</td><td style="vertical-align: top;">Florian, Ilhan</td></tr><tr><td style="vertical-align: top;">Personalization</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></tr><tr><td style="vertical-align: top;">Related Search</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></tr>
 
 
 
@@ -116,7 +116,7 @@
 </tr>
 <tr><td style="vertical-align: top;">Alternative (e.g. AJAX based) User Interface (not just Firefox users ...)</td><td style="vertical-align: top;">not started</td>
               <td>TBD</td>
-              <td>TBD</td>
+              <td>Paloma</td>
 </tr>
 <tr><td style="vertical-align: top;">Caching</td><td style="vertical-align: top;">not started</td>
               <td>TBD</td>
@@ -126,7 +126,7 @@
               <td>TBD</td>
               <td>TBD</td>
 </tr>
-<tr><td style="vertical-align: top;">LDAP Integration</td><td style="vertical-align: top;">not started yet</td><td>TBD</td><td>TBD</td></tr><tr><td style="vertical-align: top;">WebDAV</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></tr>
+<tr><td style="vertical-align: top;">LDAP Integration</td><td style="vertical-align: top;">not started yet</td><td>TBD</td><td>Simon</td></tr><tr><td style="vertical-align: top;">WebDAV</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></tr>
 
 
           </tbody></table>
