@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.api.attributes.CreatableV1;
 
+import java.util.HashMap;
+
 /**
  * DEV (not released yet), please be aware that this interface still might change ...
  */
@@ -30,10 +32,14 @@ public interface CreatableV2 extends CreatableV1 {
      *
      */
     public String getPropertyType(String propertyName);
-
     
     /**
      * Creates the resource
      */
     public void create(HttpServletRequest request);
+    
+    /**
+     * Creates RTI properties
+     */
+    public HashMap createRTIProperties(HttpServletRequest request);
 }

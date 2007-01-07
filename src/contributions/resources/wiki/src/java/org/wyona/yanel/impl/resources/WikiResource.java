@@ -356,6 +356,13 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     /**
      *
      */
+    public HashMap createRTIProperties(HttpServletRequest request) {
+        return null;
+    }
+
+    /**
+     *
+     */
     public void writeRti() {
         //TODO: Move the major part of the following code into Yanel core
         try {

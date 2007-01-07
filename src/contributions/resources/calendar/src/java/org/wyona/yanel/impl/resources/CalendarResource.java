@@ -20,11 +20,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.HashMap;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -219,7 +222,19 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
     /**
      *
      */
-    public void create(javax.servlet.http.HttpServletRequest request) {
+    public HashMap createRTIProperties(HttpServletRequest request) {
+        HashMap map = new HashMap();
+        map.put("events-path","/new-calendar");
+        map.put("categories","none");
+        map.put("class","none");
+        map.put("user-ids","none");
+        return map;
+    }
+
+    /**
+     *
+     */
+    public void create(HttpServletRequest request) {
         // TODO: Move the major part of the following code into Yanel Core
         // Create RTI ...
         org.wyona.yanel.core.Path newPath = getPath();

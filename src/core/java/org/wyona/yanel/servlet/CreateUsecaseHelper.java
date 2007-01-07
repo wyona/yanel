@@ -209,32 +209,36 @@ public class CreateUsecaseHelper {
             if (newResource != null) {
                 if (ResourceAttributeHelper.hasAttributeImplemented(newResource, "Creatable", "2")) {
                     PropertyNames = ((CreatableV2) newResource).getPropertyNames();
-                    
 
-                        ((CreatableV2) newResource).create(request);
-                        
-                        //response after creation, better would be a redirect to the fresh created resource
-                        StringBuffer form = new StringBuffer();
-                        form.append("<?xml version=\"1.0\"?>");
-                        form.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-                        form.append("<body>");
-                        form.append("New resource has been created successfully: <a href=\"" + createName + "\">" + createName + "</a>");
-                        form.append("</body>");
-                        responseAfterCreationScreen = form.toString();
-                    }else{
-                        //response after creation failed
-                        StringBuffer form = new StringBuffer();
-                        form.append("<?xml version=\"1.0\"?>");
-                        form.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-                        form.append("<body>");
-                        form.append("creation NOT successfull!");
-                        form.append("</body>");
-                        responseAfterCreationScreen = form.toString();
+                    ((CreatableV2) newResource).create(request);
+                    java.util.HashMap rtiProperties = ((CreatableV2) newResource).createRTIProperties(request);
+                    if (rtiProperties != null) {
+                        log.error("DEBUG: " + rtiProperties + " " + newResource.getPath().getRTIPath());
+                    } else {
+                        log.warn("No RTI properties: " + newResource.getPath());
                     }
-                return responseAfterCreationScreen;
+                        
+                    //response after creation, better would be a redirect to the fresh created resource
+                    StringBuffer form = new StringBuffer();
+                    form.append("<?xml version=\"1.0\"?>");
+                    form.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+                    form.append("<body>");
+                    form.append("New resource has been created successfully: <a href=\"" + createName + "\">" + createName + "</a>");
+                    form.append("</body>");
+                    responseAfterCreationScreen = form.toString();
+                } else {
+                    //response after creation failed
+                    StringBuffer form = new StringBuffer();
+                    form.append("<?xml version=\"1.0\"?>");
+                    form.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+                    form.append("<body>");
+                    form.append("creation NOT successfull!");
+                    form.append("</body>");
+                    responseAfterCreationScreen = form.toString();
                 }
+                return responseAfterCreationScreen;
             }
-         catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             String message = e.toString();
             log.error(e.getMessage(), e);
@@ -247,5 +251,4 @@ public class CreateUsecaseHelper {
         }
         return responseAfterCreationScreen;
     }
-
 }
