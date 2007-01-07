@@ -638,9 +638,6 @@
 
   <target name="clean" description="Clean build" depends="init, clean-resources">
     <delete dir="${build.dir}"/>
-<!--
-    <antcall target="clean-resources"/>
--->
 
     <condition property="yes-delete-tomcat-cluster-node1">
       <and>
