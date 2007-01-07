@@ -72,7 +72,15 @@
       <echo>INFO: Do not clean: <xsl:value-of select="@src"/>build</echo>
     </xsl:when>
     <xsl:otherwise>
-    <delete dir="${{build.dir}}/{@src}/build"/>
+      <xsl:choose>
+        <!-- TODO: What about Windows, e.g. D:/foo/bar ...! -->
+        <xsl:when test="starts-with(@src, '/')">
+          <delete dir="{@src}/build"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <delete dir="${{build.dir}}/{@src}/build"/>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:for-each>
