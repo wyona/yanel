@@ -235,25 +235,8 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
      *
      */
     public void create(HttpServletRequest request) {
-        // TODO: Move the major part of the following code into Yanel Core
-        // Create RTI ...
         org.wyona.yanel.core.Path newPath = getPath();
         log.error("DEBUG: New path: " + newPath);
-
-        try {
-            org.wyona.yarep.core.Repository rtiRepo = getRealm().getRTIRepository();
-
-            StringBuffer content = new StringBuffer("<{http://www.wyona.org/yanel/resource/1.0}calendar/>\n");
-            content.append("events-path: /new-calendar\n");
-            content.append("categories: none\n");
-            content.append("class: none\n");
-            content.append("user-ids: none\n");
-            java.io.Writer writer = rtiRepo.getWriter(new org.wyona.yarep.core.Path(newPath.getRTIPath().toString()));
-            writer.write(content.toString());
-            writer.close();
-        } catch(Exception e) {
-            log.error(e.getMessage(), e);
-        }
     }
 
     /**

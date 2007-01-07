@@ -211,12 +211,26 @@ public class CreateUsecaseHelper {
                     PropertyNames = ((CreatableV2) newResource).getPropertyNames();
 
                     ((CreatableV2) newResource).create(request);
+
+                    // Create RTI
+                    StringBuffer rtiContent = new StringBuffer(newResource.getResourceTypeUniversalName() + "\n");
                     java.util.HashMap rtiProperties = ((CreatableV2) newResource).createRTIProperties(request);
                     if (rtiProperties != null) {
                         log.error("DEBUG: " + rtiProperties + " " + newResource.getPath().getRTIPath());
+                        java.util.Iterator iterator = rtiProperties.keySet().iterator();
+                        while (iterator.hasNext()) {
+                            String property = (String) iterator.next();
+                            String value = (String) rtiProperties.get(property);
+                            rtiContent.append(property + ": " + value + "\n");
+                            log.error("DEBUG: " + property + ", " + value);
+                        }
                     } else {
                         log.warn("No RTI properties: " + newResource.getPath());
                     }
+                    java.io.Writer writer = newResource.getRealm().getRTIRepository().getWriter(new org.wyona.yarep.core.Path(newResource.getPath().getRTIPath().toString()));
+                    writer.write(rtiContent.toString());
+                    writer.close();
+
                         
                     //response after creation, better would be a redirect to the fresh created resource
                     StringBuffer form = new StringBuffer();

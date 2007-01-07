@@ -323,8 +323,6 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     public void create(HttpServletRequest request){
         String title = request.getParameter("title");
         writeContentAndIntrospection(getEmptyWiki(title), title);
-
-        writeRti();
     }
  
     /**
@@ -357,34 +355,12 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
      *
      */
     public HashMap createRTIProperties(HttpServletRequest request) {
-        return null;
+        HashMap map = new HashMap();
+        // TODO: Do not hardcode xslt ...
+        map.put("#xslt", "/xslt/global.xsl");
+
+        // TODO: Make mime-type configurable (depending on global XSLT) ...
+        map.put("mime-type", "application/xhtml+xml");
+        return map;
     }
-
-    /**
-     *
-     */
-    public void writeRti() {
-        //TODO: Move the major part of the following code into Yanel core
-        try {
-            org.wyona.yarep.core.Path newPath = getPath();
-
-            String content = "<{http://www.wyona.org/yanel/resource/1.0}wiki/>";
-
-            // TODO: Do not hardcode xslt ...
-            //content = content + "\nxslt: /xslt/global.xsl";
-
-            // TODO: Make mime-type configurable (depending on global XSLT) ...
-            content = content + "\nmime-type: application/xhtml+xml";
-
-            Repository rtiRepo = getRealm().getRTIRepository();
-            log.info("Writing content to repository " + rtiRepo.getName() + " with content:\n" + content + "\nto path: " + newPath);
-
-            Writer writer = rtiRepo.getWriter(new org.wyona.yarep.core.Path(new Path(newPath.toString()).getRTIPath().toString()));
-            writer.write(content);
-            writer.close();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-    }
-            
 }
