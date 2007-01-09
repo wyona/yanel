@@ -131,5 +131,23 @@
 
           </tbody></table>
 
+
+<h4>Release 1.3</h4>
+
+<table width="100%" cellspacing="1" cellpadding="1" border="1">
+            <tbody><tr>
+              <th>Feature</th>
+              <th>Status</th>
+              <th>Due Date</th>
+              <th>Assigned To</th>
+            </tr>
+            <tr>
+              <td>Statistics (e.g. Integration of webalizer)<br/></td>
+              <td>not started<br/></td>
+<td>TBD<br/></td>
+              <td>TBD<br/></td>
+            </tr>
+          </tbody></table><br/>
+
 </body>
 </html>
