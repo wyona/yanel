@@ -108,7 +108,8 @@ public class NodeRTIImpl implements Node {
             Path[] children = repo.getChildren(path);
             for (int i = 0; i < children.length; i++) {
                 if (children[i].getName().indexOf(".yanel-rti") > 0) {
-                    c.add(children[i]);
+                    String cp = children[i].toString().substring(0, children[i].toString().indexOf(".yanel-rti"));
+                    c.add(cp);
                 }
             }
         } catch(Exception e) {
@@ -116,7 +117,7 @@ public class NodeRTIImpl implements Node {
         }
         Node[] nodes = new Node[c.size()];
         for (int i = 0; i < c.size(); i++) {
-            nodes[i] = new NodeRTIImpl(repo, new org.wyona.yanel.core.Path(((Path) c.elementAt(i)).toString()));
+            nodes[i] = new NodeRTIImpl(repo, new org.wyona.yanel.core.Path((String) c.elementAt(i)));
         }
         return nodes;
     }
