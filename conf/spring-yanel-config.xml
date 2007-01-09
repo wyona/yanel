@@ -19,4 +19,6 @@
   -->
   <bean id="PolicyManagerFactory" class="org.wyona.security.impl.PolicyManagerFactoryImpl"/>
   <bean id="IdentityManagerFactory" class="org.wyona.security.impl.IdentityManagerFactoryImpl"/>
+
+  <bean id="nav-sitetree" class="org.wyona.yanel.impl.navigation.SitetreeRTIImpl"/>
 </beans>
