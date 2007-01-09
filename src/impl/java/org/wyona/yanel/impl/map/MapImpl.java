@@ -166,8 +166,9 @@ public class MapImpl implements Map {
      * E.g. if the url is /yanel-website/foo/bar.html, it will return /foo/bar.html.
      */
     public Path getPath(Realm realm, String url) throws Exception {
-        log.debug("getPath(): URL: " + url);
-        /*Realm[] realms = realmConfig.getRealms();
+        log.debug("URL: " + url);
+/*
+        Realm[] realms = realmConfig.getRealms();
         
         for (int i=0; i<realms.length; i++) {
             String mountPoint = realms[i].getMountPoint().toString();
@@ -177,7 +178,9 @@ public class MapImpl implements Map {
                 return new Path("/" + url.substring(mountPoint.length()));
             }
         }
-        log.debug("nothing matched! - > return url as path");*/
+        log.debug("nothing matched! - > return url as path");
+*/
+
         String mountPoint = realm.getMountPoint().toString();
         if (!url.startsWith(mountPoint)) {
             throw new Exception("Cannot map url [" + url + "] to path because the url does not " + 
