@@ -18,6 +18,9 @@ package org.wyona.yanel.impl.navigation;
 
 import org.wyona.yanel.core.navigation.Node;
 
+import org.wyona.yarep.core.Path;
+import org.wyona.yarep.core.Repository;
+
 import org.apache.log4j.Category;
 
 /**
@@ -27,14 +30,15 @@ public class NodeRTIImpl implements Node {
 
     private static Category log = Category.getInstance(NodeRTIImpl.class);
 
-    org.wyona.yarep.core.Path path;
+    Path path;
+    Repository repo;
 
     /**
      *
      */
     public NodeRTIImpl(org.wyona.yarep.core.Repository repo, org.wyona.yanel.core.Path path) {
-        this.path = new org.wyona.yarep.core.Path(path.toString());
-        log.error("Path: " + path);
+        this.path = new Path(path.toString());
+        this.repo = repo;
     }
 
     /**
@@ -74,6 +78,7 @@ public class NodeRTIImpl implements Node {
      *
      */
     public boolean isResource() {
+        if (isCollection()) return false;
         return true;
     }
 
@@ -81,14 +86,39 @@ public class NodeRTIImpl implements Node {
      *
      */
     public boolean isCollection() {
-        return true;
+        try {
+            Path[] children = repo.getChildren(path);
+            for (int i = 0; i < children.length; i++) {
+                if (children[i].getName().indexOf(".yanel-rti") > 0) {
+                    return true;
+                }
+            }
+        } catch(Exception e) {
+            log.error(e);
+        }
+        return false;
     }
 
     /**
      *
      */
     public Node[] getChildren() {
-        return null;
+        java.util.Vector c = new java.util.Vector();
+        try {
+            Path[] children = repo.getChildren(path);
+            for (int i = 0; i < children.length; i++) {
+                if (children[i].getName().indexOf(".yanel-rti") > 0) {
+                    c.add(children[i]);
+                }
+            }
+        } catch(Exception e) {
+            log.error(e);
+        }
+        Node[] nodes = new Node[c.size()];
+        for (int i = 0; i < c.size(); i++) {
+            nodes[i] = new NodeRTIImpl(repo, new org.wyona.yanel.core.Path(((Path) c.elementAt(i)).toString()));
+        }
+        return nodes;
     }
 
     /**
@@ -110,5 +140,12 @@ public class NodeRTIImpl implements Node {
      */
     public Node getPreviousSibling() {
         return null;
+    }
+
+    /**
+     *
+     */
+    public org.wyona.yanel.core.Path getPath() {
+        return new org.wyona.yanel.core.Path(path.toString());
     }
 }

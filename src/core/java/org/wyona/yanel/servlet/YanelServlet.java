@@ -987,7 +987,7 @@ public class YanelServlet extends HttpServlet {
         Resource resource = getResource(request, response);
         //Node node = resource.getRealm().getSitetree().getNode(resource.getPath());
         Node node = sitetree.getNode(resource.getRealm(),resource.getPath());
-        log.error("DEBUG: Node: " + node);
+        log.error("DEBUG: Node: " + node + ", " + resource.getPath());
 
         String depth = request.getHeader("Depth");
         log.error("DEBUG: Depth: " + depth);
@@ -995,53 +995,69 @@ public class YanelServlet extends HttpServlet {
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<multistatus xmlns=\"DAV:\">");
         if (depth.equals("0")) {
-            // TODO: decide if the requested node is a collection or a resource
-            sb.append("  <response>");
-            sb.append("    <href>"+request.getRequestURI()+"</href>");
-            sb.append("    <propstat>");
-            sb.append("      <prop>");
-            sb.append("        <resourcetype><collection/></resourcetype>");
-            sb.append("        <getcontenttype>http/unix-directory</getcontenttype>");
-            sb.append("      </prop>");
-            sb.append("      <status>HTTP/1.1 200 OK</status>");
-            sb.append("    </propstat>");
-            sb.append("  </response>");
-/*
-        sb.append("  <response>");
-        sb.append("    <href>/yanel/yanel-website/roadmap.html</href>");
-        sb.append("    <propstat>");
-        sb.append("      <prop>");
-        sb.append("        <resourcetype/>");
-        sb.append("      </prop>");
-        sb.append("    </propstat>");
-        sb.append("  </response>");
-*/
+            if (node.isCollection()) {
+                sb.append("  <response>");
+                sb.append("    <href>"+request.getRequestURI()+"</href>");
+                sb.append("    <propstat>");
+                sb.append("      <prop>");
+                sb.append("        <resourcetype><collection/></resourcetype>");
+                sb.append("        <getcontenttype>http/unix-directory</getcontenttype>");
+                sb.append("      </prop>");
+                sb.append("      <status>HTTP/1.1 200 OK</status>");
+                sb.append("    </propstat>");
+                sb.append("  </response>");
+            } else if (node.isResource()) {
+                sb.append("  <response>");
+                sb.append("    <href>"+request.getRequestURI()+"</href>");
+                sb.append("    <propstat>");
+                sb.append("      <prop>");
+                sb.append("        <resourcetype/>");
+                // TODO: Does getcontenttype also be set for resources?
+                sb.append("        <getcontenttype>http/unix-directory</getcontenttype>");
+                sb.append("      </prop>");
+                sb.append("      <status>HTTP/1.1 200 OK</status>");
+                sb.append("    </propstat>");
+                sb.append("  </response>");
+            } else {
+                log.error("Neither collection nor resource!");
+            }
         } else if (depth.equals("1")) {
-            log.warn("TODO: List children of this node");
-            sb.append("  <response>");
-            sb.append("    <href>"+request.getRequestURI()+"/directory/</href>");
-            sb.append("    <propstat>");
-            sb.append("      <prop>");
-            sb.append("        <displayname>A Directory</displayname>");
-            sb.append("        <resourcetype><collection/></resourcetype>");
-            sb.append("        <getcontenttype>http/unix-directory</getcontenttype>");
-            sb.append("      </prop>");
-            sb.append("      <status>HTTP/1.1 200 OK</status>");
-            sb.append("    </propstat>");
-            sb.append("  </response>");
-            sb.append("  <response>");
-            sb.append("    <href>"+request.getRequestURI()+"/file.txt</href>");
-            sb.append("    <propstat>");
-            sb.append("      <prop>");
-            sb.append("        <displayname>A File</displayname>");
-            sb.append("        <resourcetype/>");
-            sb.append("        <getcontenttype>http/unix-directory</getcontenttype>");
-            sb.append("      </prop>");
-            sb.append("      <status>HTTP/1.1 200 OK</status>");
-            sb.append("    </propstat>");
-            sb.append("  </response>");
+            Node[] children = node.getChildren();
+            if (children != null) {
+                for (int i = 0; i < children.length; i++) {
+                    if (children[i].isCollection()) {
+                        sb.append("  <response>\n");
+                        sb.append("    <href>" + request.getRequestURI() + children[i].getPath() + "/</href>\n");
+                        sb.append("    <propstat>\n");
+                        sb.append("      <prop>\n");
+                        sb.append("        <displayname>A Directory</displayname>\n");
+                        sb.append("        <resourcetype><collection/></resourcetype>\n");
+                        sb.append("        <getcontenttype>http/unix-directory</getcontenttype>\n");
+                        sb.append("      </prop>\n");
+                        sb.append("      <status>HTTP/1.1 200 OK</status>\n");
+                        sb.append("    </propstat>\n");
+                        sb.append("  </response>\n");
+                    } else if(children[i].isResource()) {
+                        sb.append("  <response>\n");
+                        sb.append("    <href>"+request.getRequestURI()+children[i].getPath()+"</href>\n");
+                        sb.append("    <propstat>\n");
+                        sb.append("      <prop>\n");
+                        sb.append("        <displayname>A File</displayname>\n");
+                        sb.append("        <resourcetype/>\n");
+                        sb.append("        <getcontenttype>http/unix-directory</getcontenttype>\n");
+                        sb.append("      </prop>\n");
+                        sb.append("      <status>HTTP/1.1 200 OK</status>\n");
+                        sb.append("    </propstat>\n");
+  		        sb.append("  </response>\n");
+                    } else {
+                        log.error("Neither collection nor resource: " + children[i].getPath());
+                    }
+                }
+            } else {
+                log.warn("No children!");
+            }
         } else if (depth.equals("infinity")) {
-             log.warn("TODO: List childen and their children and their childre ...");
+             log.warn("TODO: List children and their children and their children ...");
         } else {
              log.error("No such depth: " + depth);
         }

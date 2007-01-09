@@ -16,6 +16,8 @@
 
 package org.wyona.yanel.core.navigation;
 
+import org.wyona.yanel.core.Path;
+
 /**
  * Also see org.w3c.dom.Node
  */
@@ -74,4 +76,9 @@ public interface Node {
      *
      */
     public Node getPreviousSibling();
+
+    /**
+     *
+     */
+    public Path getPath();
 }
