@@ -987,10 +987,8 @@ public class YanelServlet extends HttpServlet {
         Resource resource = getResource(request, response);
         //Node node = resource.getRealm().getSitetree().getNode(resource.getPath());
         Node node = sitetree.getNode(resource.getRealm(),resource.getPath());
-        log.error("DEBUG: Node: " + node + ", " + resource.getPath());
 
         String depth = request.getHeader("Depth");
-        log.error("DEBUG: Depth: " + depth);
 
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<multistatus xmlns=\"DAV:\">");
