@@ -33,6 +33,8 @@ import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
+import org.wyona.yanel.core.navigation.Node;
+import org.wyona.yanel.core.navigation.Sitetree;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 
@@ -70,6 +72,7 @@ public class YanelServlet extends HttpServlet {
     //IdentityManager im;
     Map map;
     Yanel yanel;
+    Sitetree sitetree;
 
     File xsltInfoAndException;
     File xsltLoginScreen;
@@ -99,13 +102,10 @@ public class YanelServlet extends HttpServlet {
             
             rtr = yanel.getResourceTypeRegistry();
 
-            //pm = (PolicyManager) yanel.getBeanFactory().getBean("policyManager");
-
-            //im = (IdentityManager) yanel.getBeanFactory().getBean("identityManager");
-          
             map = (Map) yanel.getBeanFactory().getBean("map");
 
-            //sslPort = "8443";
+            sitetree = (Sitetree) yanel.getBeanFactory().getBean("nav-sitetree");
+
             sslPort = config.getInitParameter("ssl-port");
         } catch (Exception e) {
             log.error(e);
@@ -984,6 +984,11 @@ public class YanelServlet extends HttpServlet {
      * Also maybe interesting http://sourceforge.net/projects/openharmonise
      */
     public void doPropfind(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Resource resource = getResource(request, response);
+        //Node node = resource.getRealm().getSitetree().getNode(resource.getPath());
+        Node node = sitetree.getNode(resource.getRealm(),resource.getPath());
+        log.error("DEBUG: Node: " + node);
+
         String depth = request.getHeader("Depth");
         log.error("DEBUG: Depth: " + depth);
 
@@ -1012,7 +1017,7 @@ public class YanelServlet extends HttpServlet {
         sb.append("  </response>");
 */
         } else if (depth.equals("1")) {
-             log.warn("TODO: List childen of this node");
+            log.warn("TODO: List children of this node");
             sb.append("  <response>");
             sb.append("    <href>"+request.getRequestURI()+"/directory/</href>");
             sb.append("    <propstat>");

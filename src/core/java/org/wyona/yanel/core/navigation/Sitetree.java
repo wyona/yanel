@@ -16,6 +16,9 @@
 
 package org.wyona.yanel.core.navigation;
 
+import org.wyona.yanel.core.Path;
+import org.wyona.yanel.core.map.Realm;
+
 /**
  *
  */
@@ -25,6 +28,11 @@ public interface Sitetree {
      *
      */
     public Node getSitetreeNode();
+
+    /**
+     *
+     */
+    public Node getNode(Realm realm, Path path);
 
     /**
      *
