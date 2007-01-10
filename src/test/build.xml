@@ -9,7 +9,6 @@
   <property name="htmlunit.src.dir" value="htmlunit"/>
   <property name="yanel.home.dir" location="../../"/>
   <property name="test.data.dir" value="${yanel.home.dir}/local/test/data"/>
-  <property name="test.data-paths.dir" value="${yanel.home.dir}/local/test/data-paths"/>
   <property name="test.results.dir" value="${test.data.dir}/test-results"/>
   <property name="test.results.archive.dir" value="${test.data.dir}/test-results-archive"/>  
   <property name="conf.dir" value="${yanel.home.dir}/conf"/>
@@ -65,10 +64,6 @@
     <mkdir dir="${htmlunit.build.dir}"/>
     <copy todir="${test.data.dir}">
       <fileset dir="${yanel.home.dir}/src/realms/test/yanel/data"/>
-    </copy>
-    <mkdir dir="${test.data-paths.dir}"/>
-    <copy todir="${test.data-paths.dir}">
-      <fileset dir="${yanel.home.dir}/src/realms/test/yanel/data-paths"/>
     </copy>
 
     <javac srcdir="${junit.src.dir}" destdir="${junit.build.dir}">
