@@ -14,6 +14,7 @@
   <resource src="../src/realms/welcome-admin/yanel/resources/show-realms/"                 compile="true"/>
   <resource src="../src/resources/invoice/"                     compile="true"/>
   <resource src="../src/resources/testing-control/"             compile="true"/>
+  <resource src="../src/resources/testing-times/"               compile="true"/>
   <resource src="../src/contributions/resources/atom/"          compile="true"/>
   <resource src="../src/contributions/resources/atom-entry/"    compile="true"/>
   <resource src="../src/contributions/resources/contact-form/"  compile="true"/>
