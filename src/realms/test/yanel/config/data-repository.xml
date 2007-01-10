@@ -3,16 +3,10 @@
 <repository>
   <name>Test Data Repository</name>
 
-<!--
-  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../../../../../local/test"/>
+  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../../../../../local/test/data"/>
 
   <storage class="org.wyona.yarep.core.impl.vfs.VFileSystemStorage">
-    <content src="../../../../../local/test"/>
-  </storage>
--->
-  <paths src="../../../../../local/test/data-paths" fallback="true"/>
-
-  <storage class="org.wyona.yarep.core.impl.fs.FileSystemStorage">
     <content src="../../../../../local/test/data"/>
+    <directory alternative="index.html" mime-type="application/xhtml+xml"/>
   </storage>
 </repository>

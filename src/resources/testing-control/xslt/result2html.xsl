@@ -5,6 +5,7 @@
   <xsl:output method="html"/>
   
   <xsl:param name="testing.result.title" select="'current test'"/>
+  <xsl:param name="testing.number.requested.tests"/>
   
   <xsl:variable name="testsuite.list" select="//testsuite"/>
   <xsl:variable name="testcase.list" select="$testsuite.list/testcase"/>
@@ -14,12 +15,31 @@
   <xsl:template match="/">
     <html>
       <head>
+        <xsl:if test="$testing.result.title = 'stillTesting'">
+          <meta http-equiv="refresh" content="5; URL="/>
+        </xsl:if>
         <title>Testing Results</title>
       </head>
       <body>
         <div id="contenBody">
-          <h1>Testing results of <xsl:value-of select="$testing.result.title"/></h1>
-          <p>Executed Testcases: <xsl:value-of select="count($testcase.list)"/></p>
+          <h1>
+          <xsl:choose>
+            <xsl:when test="$testing.result.title = 'stillTesting'">
+              Tests are running...
+            </xsl:when>
+            <xsl:when test="$testing.result.title = 'testDone'">
+              Tests are done.
+            </xsl:when>
+            <xsl:otherwise>
+              Testing results of <xsl:value-of select="$testing.result.title"/>
+            </xsl:otherwise>
+          </xsl:choose>
+          </h1>
+          <p>Executed Testcases: <xsl:value-of select="count($testcase.list)"/>
+            <xsl:if test="$testing.result.title = 'stillTesting'">
+              of <xsl:value-of select="$testing.number.requested.tests"/>
+            </xsl:if>
+          </p>
           <p>Successful: <xsl:value-of select="count($testcase.list) - count($testcase.failure.list) - count($testcase.error.list)"/>,
           Failures: <xsl:value-of select="count($testcase.failure.list)"/>,
           Errors: <xsl:value-of select="count($testcase.error.list)"/></p>
