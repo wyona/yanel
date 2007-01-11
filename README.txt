@@ -17,7 +17,9 @@
 
     1) Run "configure"
     2) Run "build"
-    3) Run "yanel start/stop" to start or stop Tomcat resp. run "yanel /hello/world.html" from the command line resp. run "yanel start-jetty" to start Jetty
+    3.1) Run "yanel start/stop" to start or stop Tomcat
+    3.2) Run "yanel /hello/world.html" from the command line
+    3.3) Run "yanel start-jetty" to start Jetty
     4) Browse to http://127.0.0.1:8080/yanel/
     5) Run "build test"
 
