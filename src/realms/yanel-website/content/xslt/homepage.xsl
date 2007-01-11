@@ -9,6 +9,10 @@
 
 <xsl:output method="xhtml" encoding="UTF-8" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"/>
 
+<xsl:param name="os" select="'OS_NULL'"/>
+<xsl:param name="client" select="'CLIENT_NULL'"/>
+<xsl:param name="language" select="'LANGUAGE_NULL'"/>
+
 <xsl:template match="/">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -30,6 +34,13 @@
   </style>
 </head>
 <body>
+<!--
+<p>
+Operating System: <xsl:value-of select="$os"/><br/>
+Client: <xsl:value-of select="$client"/><br/>
+Language: <xsl:value-of select="$language"/>
+</p>
+-->
 <xsl:copy-of select="/xhtml:html/xhtml:body"/>
 </body>
 </html>
