@@ -18,7 +18,7 @@ package org.wyona.yanel.impl.resources;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.api.attributes.ViewableV1;
+import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
@@ -42,7 +42,7 @@ import javax.xml.transform.stream.StreamResult;
 /**
  * 
  */
-public class DirectoryResource extends Resource implements ViewableV1 {
+public class DirectoryResource extends Resource implements ViewableV2 {
 
     private static Category log = Category.getInstance(DirectoryResource.class);
 
@@ -62,7 +62,7 @@ public class DirectoryResource extends Resource implements ViewableV1 {
     /**
      * 
      */
-    public View getView(Path path, String viewId) {
+    public View getView(String viewId) {
         View defaultView = new View();
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
 
@@ -71,10 +71,8 @@ public class DirectoryResource extends Resource implements ViewableV1 {
 
         Repository contentRepo = null;
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path
-                    .toString()), getRepositoryFactory());
-            contentRepo = rp.getRepo();
-            org.wyona.yarep.core.Path p = rp.getPath();
+            contentRepo = getRealm().getRepository();
+            org.wyona.yarep.core.Path p = new org.wyona.yarep.core.Path(getPath().toString());
 
             // TODO: This doesn't seem to work ... (check on Yarep ...)
             if (contentRepo.isResource(p)) {
@@ -93,7 +91,7 @@ public class DirectoryResource extends Resource implements ViewableV1 {
             // NOTE: The schema is according to
             // http://cocoon.apache.org/2.1/userdocs/directory-generator.html
             sb.append("<dir:directory yanel:path=\""
-                            + path
+                            + getPath()
                             + "\" dir:name=\""
                             + p.getName()
                             + "\" dir:path=\""
@@ -125,15 +123,13 @@ public class DirectoryResource extends Resource implements ViewableV1 {
         }
 
         try {
-            Transformer transformer = TransformerFactory.newInstance().newTransformer(
-                    getXSLTStreamSource(path, contentRepo));
-            // TODO: Is this the best way to generate an InputStream from an
-            // OutputStream?
+            Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(getPath(), contentRepo));
+
+            // TODO: Is this the best way to generate an InputStream from an OutputStream?
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-            transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())),
-                    new StreamResult(baos));
+            transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
             defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
-            defaultView.setMimeType(getMimeType(path));
+            defaultView.setMimeType(getMimeType());
             defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
         } catch (Exception e) {
             log.error(e);
@@ -145,17 +141,27 @@ public class DirectoryResource extends Resource implements ViewableV1 {
     /**
      * 
      */
-    public View getView(HttpServletRequest request, String viewId) {
-        return getView(new Path(request.getServletPath()), viewId);
+    public boolean exists() throws Exception {
+        log.warn("Not implemented yet!");
+        return true; 
+    }
+    
+    /**
+     * 
+     */
+    public long getSize() throws Exception {
+        // TODO: not implemented yet
+        log.warn("TODO: Method is not implemented yet");
+        return -1;
     }
 
     /**
      * 
      */
     private StreamSource getXSLTStreamSource(Path path, Repository repo) throws RepositoryException {
-        Path xsltPath = getXSLTPath(path);
+        Path xsltPath = getXSLTPath();
         if (xsltPath != null) {
-            return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString())));
+            return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath().toString())));
         } else {
             File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(),
                     "xslt" + File.separator + "dir2xhtml.xsl");
@@ -165,65 +171,22 @@ public class DirectoryResource extends Resource implements ViewableV1 {
     }
 
     /**
-     * 
+     * Get XSLT
      */
-    private Path getXSLTPath(Path path) {
-        String xsltPath = null;
-        try {
-            // TODO: Get yanel RTI yarep properties file name from framework
-            // resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path
-                    .toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(
-                    new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
-
-            while ((xsltPath = br.readLine()) != null) {
-                if (xsltPath.indexOf("xslt:") == 0) {
-                    xsltPath = xsltPath.substring(6);
-                    log.debug("XSLT Path: " + xsltPath);
-                    return new Path(xsltPath);
-                }
-            }
-            log.error("No XSLT Path within: " + rpRTI.getPath());
-        } catch (Exception e) {
-            log.warn(e);
-        }
-
+    private Path getXSLTPath() {
+        String xslt =getRTI().getProperty("xslt");
+        if (xslt != null) new Path(xslt);
         return null;
     }
 
     /**
-     * 
+     * Get mime type
      */
-    private String getMimeType(Path path) {
-        String mimeType = null;
-        try {
-            // TODO: Get yanel RTI yarep properties file name from framework
-            // resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path
-                    .toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(
-                    new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
-
-            while ((mimeType = br.readLine()) != null) {
-                if (mimeType.indexOf("mime-type:") == 0) {
-                    mimeType = mimeType.substring(11);
-                    log.info("*" + mimeType + "*");
-                    // TODO: Maybe validate mime-type ...
-                    return mimeType;
-                }
-            }
-        } catch (Exception e) {
-            log.warn(e);
-        }
+    private String getMimeType() {
+        String mimeType = getRTI().getProperty("mime-type");
+        if (mimeType != null) return mimeType;
 
         // NOTE: Assuming fallback re dir2xhtml.xsl ...
         return "application/xhtml+xml";
     }
-    
-    protected RepositoryFactory getRepositoryFactory() {
-        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
-    }
-    
-
 }
