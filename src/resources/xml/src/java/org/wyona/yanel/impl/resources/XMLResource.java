@@ -103,8 +103,10 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
                 transformer.setParameter("yarep.back2realm", backToRoot(getPath(), ""));
                 String userAgent = getRequest().getHeader("User-Agent");
-                transformer.setParameter("os", getOS(userAgent));
-                transformer.setParameter("client", getClient(userAgent));
+                String os = getOS(userAgent);
+                if (os != null) transformer.setParameter("os", os);
+                String client = getClient(userAgent);
+                if (client != null) transformer.setParameter("client", client);
                 transformer.setParameter("language", getLanguage());
 
                 // TODO: Is this the best way to generate an InputStream from an OutputStream?
