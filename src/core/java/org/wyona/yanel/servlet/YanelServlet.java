@@ -406,7 +406,7 @@ public class YanelServlet extends HttpServlet {
                 // TODO: Compare If-Modified-Since with lastModified and return 304 without content resp. check on ETag
                 String ifModifiedSince = request.getHeader("If-Modified-Since");
                 if (ifModifiedSince != null) {
-                    log.error("DEBUG: TODO: Implement 304 ...");
+                    log.warn("TODO: Implement 304 ...");
                 }
 
                 java.io.OutputStream os = response.getOutputStream();
@@ -1267,7 +1267,7 @@ public class YanelServlet extends HttpServlet {
         String httpAcceptMediaTypes = request.getHeader("Accept");
         log.debug("HTTP Accept Media Types: " + httpAcceptMediaTypes);
         if (contentType != null && contentType.equals("application/xhtml+xml") && httpAcceptMediaTypes != null && httpAcceptMediaTypes.indexOf("application/xhtml+xml") < 0) {
-            log.error("DEBUG: Patch contentType with text/html because client (" + request.getHeader("User-Agent") + ") does not seem to understand application/xhtml+xml");
+            log.info("Patch contentType with text/html because client (" + request.getHeader("User-Agent") + ") does not seem to understand application/xhtml+xml");
             return "text/html";
         }
         return contentType;
