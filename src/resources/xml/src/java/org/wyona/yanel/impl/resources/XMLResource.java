@@ -102,6 +102,11 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 //TODO: There seems to be a bug re back2context ...
                 transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
                 transformer.setParameter("yarep.back2realm", backToRoot(getPath(), ""));
+                String userAgent = getRequest().getHeader("User-Agent");
+                transformer.setParameter("os", getOS(userAgent));
+                transformer.setParameter("client", getClient(userAgent));
+                transformer.setParameter("language", getLanguage());
+
                 // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
 
@@ -134,17 +139,17 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     }
 
     /**
-     *
+     * Get language with the following priorization: 1) yanel.meta.language query string parameter, 2) Accept-Language header, 3) Default en
      */
     private String getLanguage() {
-        String language = "en";
-        try {
-            language = getRequest().getParameter("yanel.meta.language");
-        } catch(Exception e) {
-            //use fallback language
-            language = "en";
+        String language = getRequest().getParameter("yanel.meta.language");
+        log.warn("DEBUG: Parameter: " + language);
+        if (language == null) {
+            language = getRequest().getParameter("Accept-Language");
+            log.warn("DEBUG: Accept-Language: " + language);
         }
         if(language != null && language.length() > 0) return language;
+        log.warn("DEBUG: Default: en");
         return "en";
     }
 
@@ -295,5 +300,33 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      */
     public long getSize() throws Exception {
         return getRealm().getRepository().getSize(getPath());
+    }
+
+    /**
+     * Get operating system
+     */
+    public String getOS(String userAgent) {
+        if (userAgent.indexOf("Linux") > 0) {
+            return "unix";
+        } else if (userAgent.indexOf("Windows") > 0) {
+            return "windows";
+        } else {
+            log.warn("Operating System could not be recognized: " + userAgent);
+            return null;
+        }
+    }
+
+    /**
+     * Get client
+     */
+    public String getClient(String userAgent) {
+        if (userAgent.indexOf("Firefox") > 0) {
+            return "firefox";
+        } else if (userAgent.indexOf("MSIE") > 0) {
+            return "msie";
+        } else {
+            log.warn("Client could not be recognized: " + userAgent);
+            return null;
+        }
     }
 }
