@@ -4,6 +4,7 @@
 
 package org.wyona.yanel.impl.resources;
 
+import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
@@ -59,6 +60,9 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
      */
     public View getView(String viewId) throws Exception {
         
+        Path path = getPath();
+        HttpServletRequest request = getRequest();
+        
         // Get language
         try {
             language = request.getParameter("yanel.meta.language");
@@ -70,6 +74,13 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
             log.debug("language param is empty or null : " + language);
             language = defaultLanguage;
         }
+        
+        /* create tmp status file
+        if (!new File(request.getSession().getServletContext().getRealPath("tmp")).exists()) {
+            if (!new File(request.getSession().getServletContext().getRealPath("tmp")).mkdir()) {
+                errorMessage = errorMessage + "\n Creation of tmp directory faild.";
+            }
+        }*/
 
         Transformer transformer = null;
         I18nTransformer i18nTransformer = new I18nTransformer("importsite", language);
@@ -89,14 +100,30 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
                 File statusXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "importsite.xsl");
                 File statusXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "status-screen.xml");
                 transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(statusXSLTFile));
-                transformer.setParameter("realmid", HttpServletRequestHelper.getParameter(request, "realmid"));
-                transformer.setParameter("realmname", HttpServletRequestHelper.getParameter(request, "realmname"));
-                transformer.setParameter("url", HttpServletRequestHelper.getParameter(request, "url"));
-                String crawldepth = null;
-                if ((crawldepth = request.getParameter("crawldepth")) != null) {
-                    transformer.setParameter("crawldepth", crawldepth);
+                
+                String parameterName = "";
+                String parameter = "";
+                String parameterErrorName = "";
+                String parameterError = "";
+                String[] parameters = { "realmid", "realmname", "url", "fs-location", "crawldepth", "maxpages" };
+                for (int i=0; i<parameters.length; i++){
+                    parameterName = parameters[i];
+                    parameter = HttpServletRequestHelper.getParameter(request, parameterName);
+                    transformer.setParameter(parameterName, parameter);
+                    
+                    if (parameter == null || ("").equals(parameter)) {
+                        parameterErrorName = "error-" + parameterName;
+                        parameterError = "Please enter correct value for '" + parameterName + "'";
+                        transformer.setParameter(parameterErrorName, parameterError);
+                    }
                 }
-                transformer.setParameter("maxpages", HttpServletRequestHelper.getParameter(request, "maxpages"));
+                
+                if (parameterError == null || ("").equals(parameterError)) {
+                    transformer.setParameter("submitted", "true");
+                }
+                
+                transformer.transform(new javax.xml.transform.stream.StreamSource(statusXMLFile), new StreamResult(byteArrayOutputStream));
+                
             } else {
                 File inputXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "importsite.xsl");
                 File inputXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "input-screen.xml");
@@ -104,8 +131,6 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
 
                 transformer.transform(new javax.xml.transform.stream.StreamSource(inputXMLFile), new StreamResult(byteArrayOutputStream));
             }
-
-            defaultView.setMimeType("application/xhtml+xml");
             
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), i18nTransformer);
@@ -113,7 +138,8 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-
+        
+        defaultView.setMimeType("application/xhtml+xml");
         defaultView.setInputStream(i18nTransformer.getInputStream());
         return defaultView;
    }
