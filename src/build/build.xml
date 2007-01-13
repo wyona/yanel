@@ -799,5 +799,10 @@
   <target name="test" description="Run tests">
     <ant dir="../test" target="test" inheritall="false"/>
   </target>
+  
+  <target name="source-snapshot" description="Create a source code snapshot" depends="init">
+    <mkdir dir="${build.dir}/snapshots"/>
+    <zip destfile="${build.dir}/snapshots/wyona-yanel-SNAPSHOT-r${yanel.revision}-src.zip" basedir="${yanel.home.dir}/src"/>
+  </target>
 
 </project>
