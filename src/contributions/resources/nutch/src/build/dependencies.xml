@@ -15,13 +15,24 @@
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
       <dependency groupId="apache-org-nutch" artifactId="nutch"
-                  version="0.8"/>
+                  version="0.8.2-dev"/>
       <dependency groupId="apache-org-lucene" artifactId="hadoop"
                   version="0.5.0"/>
       <dependency groupId="apache-org-lucene" artifactId="lucene-core"
                   version="1.9.1"/>
       <dependency groupId="apache-org-lucene" artifactId="lucene-misc"
                   version="1.9.1"/>
+
+      <!-- Ontology plugin libs -->
+      <!-- http://jena.sourceforge.net/ -->
+      <dependency groupId="jena" artifactId="jena"
+                  version="2.1"/>
+      <!-- http://icu.sourceforge.net/ -->
+      <dependency groupId="icu4j" artifactId="icu4j"
+                  version="2.6.1"/>
+      <!-- Ontology implementation -->
+      <dependency groupId="apache-org-nutch" artifactId="ontology"
+                  version="0.8.2-dev-r21043"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
