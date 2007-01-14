@@ -45,7 +45,7 @@ import org.apache.log4j.Category;
 
 import org.apache.nutch.html.Entities;
 import org.apache.nutch.metadata.Metadata;
-
+import org.apache.nutch.ontology.Ontology;
 import org.apache.nutch.searcher.Hit;
 import org.apache.nutch.searcher.HitDetails;
 import org.apache.nutch.searcher.Hits;
@@ -98,6 +98,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     private String cachedMimeType = null;
     private Transformer transformer = null;
     private I18nTransformer i18nTransformer = null;
+    Ontology ontology = null;
     
     /**
      * 
@@ -256,7 +257,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 exceptionElement.appendChild(document.createTextNode(e.getMessage()));
             }
             if (crawlDir != null) {
-                createDocument4SearchResult(searchTerm, start, hitsPerPage);
+                getSearchResults(rootElement, searchTerm, start, hitsPerPage);
             }
         } else {
             rootElement.appendChild(document.createElementNS(NAME_SPACE, "no-query"));
@@ -499,7 +500,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @param searchTerm 
      * @param start position of found results for searchTerm 
      */
-    private void createDocument4SearchResult(String searchTerm, int start, int hitsPerPage) {
+    private void getSearchResults(Element rootElement, String searchTerm, int start, int hitsPerPage) {
         try {
             if (!crawlDir.isDirectory()) {
                 exceptionElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "exception"));
@@ -508,7 +509,21 @@ public class NutchResource extends Resource implements ViewableV1 {
                 log.warn(exceptionMessage);
                 return;
             } else {
-                getRefineList();
+
+
+        loadOntology(); 
+        if (ontology != null) {
+            Iterator refinedQueryIterator = ontology.subclasses(searchTerm);
+            if (refinedQueryIterator.hasNext()) {
+                Element refinedQueryElement = (Element) document.createElementNS(NAME_SPACE, "refined-query-terms");
+                rootElement.appendChild(refinedQueryElement);
+                while (refinedQueryIterator.hasNext()) {
+                    Element term = (Element) document.createElementNS(NAME_SPACE, "term");
+                    term.appendChild(document.createTextNode((String) refinedQueryIterator.next()));
+                    refinedQueryElement.appendChild(term);
+                }
+            }
+        }
                 
                 nutchBean = new NutchBean(configuration);
                 Query query = Query.parse(searchTerm, configuration);
@@ -532,6 +547,9 @@ public class NutchResource extends Resource implements ViewableV1 {
                 Element hitIndexNoElement = null;
                 Element fragmentsElement = null;
                 Element fragmentElement = null;
+                if (show.length == 0) {
+                    rootElement.appendChild((Element) document.createElementNS(NAME_SPACE, "no-results"));
+                }
                 for (int i = 0; i < show.length; i++) {
                     Element resultElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "result"));
                     resultElement.setAttributeNS(NAME_SPACE, "index", "" + (i + 1));
@@ -580,14 +598,22 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
     
     /**
-     * Use OWL to refine query
+     * Load Ontology
      */
-    private List getRefineList() {
-        org.apache.nutch.ontology.Ontology ontology = null;
+    private void loadOntology() {
         try {
             // Configuration nutchConf = NutchConfiguration.get(application);
             String urls = configuration.get("extension.ontology.urls");
-            log.error("DEBUG: extension.ontology.urls: " + urls);
+            log.debug("extension.ontology.urls: " + urls);
+
+            if (urls != null) {
+                ontology = (Ontology) Class.forName(configuration.get("extension.ontology.extension-name")).newInstance();
+                //ontology = (Ontology) Class.forName("org.apache.nutch.ontology.jena.OntologyImpl").newInstance();
+                //ontology = new org.apache.nutch.ontology.OntologyFactory(configuration).getOntology();
+                if (ontology != null) {
+                    ontology.load(urls.split("\\s+"));
+                }
+            }
 
 /*
             // TODO: null is being returned!
@@ -602,20 +628,6 @@ public class NutchResource extends Resource implements ViewableV1 {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-         
-        List refineList = new ArrayList();
-        if (ontology != null) {
-            Iterator iter = ontology.subclasses(searchTerm);
-            while (iter.hasNext()) {
-                String nextItem = (String)iter.next();
-                log.error("iterating: --> " + nextItem);  
-                // refineList.add((String)iter.next());
-                refineList.add(nextItem);
-            }
-        } else {
-            log.warn("Ontology is null");
-        }
-        return refineList;
     }
 
     /**
