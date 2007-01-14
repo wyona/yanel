@@ -78,8 +78,6 @@ public class NutchResource extends Resource implements ViewableV1 {
     private final String NAME_SPACE = "http://www.wyona.org/yanel/1.0";
     private Configuration configuration = null;
     private File crawlDir = null;
-    private Element exceptionElement = null;
-    private Element resultsElement = null;
     private String exceptionMessage = null;
     private Document document = null;
     private int start = 0;
@@ -247,17 +245,36 @@ public class NutchResource extends Resource implements ViewableV1 {
         if (searchTerm != null && searchTerm.length() > 0) {
             Element queryElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "query"));
             queryElement.appendChild(document.createTextNode(searchTerm));
-            resultsElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "results"));
-            resultsElement.setAttributeNS(NAME_SPACE, "start", "" + start);
+
+            loadOntology(); 
+            if (ontology != null) {
+                Iterator refinedQueryIterator = ontology.subclasses(searchTerm);
+                if (refinedQueryIterator.hasNext()) {
+                    Element refinedQueryElement = (Element) document.createElementNS(NAME_SPACE, "refined-query-terms");
+                    rootElement.appendChild(refinedQueryElement);
+                    while (refinedQueryIterator.hasNext()) {
+                        Element term = (Element) document.createElementNS(NAME_SPACE, "term");
+                        term.appendChild(document.createTextNode((String) refinedQueryIterator.next()));
+                        refinedQueryElement.appendChild(term);
+                    }
+                }
+            }
+
             try {
                 crawlDir = new File(configuration.get("searcher.dir"));
+                if (crawlDir != null && crawlDir.isDirectory()) {
+                    getSearchResults(rootElement, searchTerm, start, hitsPerPage);
+                } else {
+                    Element exceptionElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "exception"));
+                    exceptionMessage = "noSuchCrawlDirectory#" + crawlDir;
+                    exceptionElement.appendChild(document.createTextNode(exceptionMessage));
+                    log.error(exceptionMessage);
+                return;
+                }
             } catch (Exception e) {
                 log.error(e);
-                exceptionElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "exception"));
+                Element exceptionElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "exception"));
                 exceptionElement.appendChild(document.createTextNode(e.getMessage()));
-            }
-            if (crawlDir != null) {
-                getSearchResults(rootElement, searchTerm, start, hitsPerPage);
             }
         } else {
             rootElement.appendChild(document.createElementNS(NAME_SPACE, "no-query"));
@@ -502,38 +519,11 @@ public class NutchResource extends Resource implements ViewableV1 {
      */
     private void getSearchResults(Element rootElement, String searchTerm, int start, int hitsPerPage) {
         try {
-            if (!crawlDir.isDirectory()) {
-                exceptionElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "exception"));
-                exceptionMessage = "noSuchCrawlDirectory#" + crawlDir;
-                exceptionElement.appendChild(document.createTextNode(exceptionMessage));
-                log.warn(exceptionMessage);
-                return;
-            } else {
-
-
-        loadOntology(); 
-        if (ontology != null) {
-            Iterator refinedQueryIterator = ontology.subclasses(searchTerm);
-            if (refinedQueryIterator.hasNext()) {
-                Element refinedQueryElement = (Element) document.createElementNS(NAME_SPACE, "refined-query-terms");
-                rootElement.appendChild(refinedQueryElement);
-                while (refinedQueryIterator.hasNext()) {
-                    Element term = (Element) document.createElementNS(NAME_SPACE, "term");
-                    term.appendChild(document.createTextNode((String) refinedQueryIterator.next()));
-                    refinedQueryElement.appendChild(term);
-                }
-            }
-        }
-                
                 nutchBean = new NutchBean(configuration);
                 Query query = Query.parse(searchTerm, configuration);
                 Hits hits = nutchBean.search(query, totalHitCount);
                 totalHits = hits.getTotal();
                 int range = (int) Math.min(hits.getTotal() - start, hitsPerPage);
-                resultsElement.setAttributeNS(NAME_SPACE, "hitsPerPage", "" + hitsPerPage);
-                resultsElement.setAttributeNS(NAME_SPACE, "totalHits", "" + totalHits);
-                resultsElement.setAttributeNS(NAME_SPACE, "currentPageNo", "" + ((start / hitsPerPage) + 1));
-                resultsElement.setAttributeNS(NAME_SPACE, "numberOfPagesShown", "" + numberOfPagesShown);
                 Hit[] show = hits.getHits(start, range);
                 HitDetails[] details = nutchBean.getDetails(show);
                 Summary[] summaries = nutchBean.getSummary(details, query);
@@ -547,8 +537,18 @@ public class NutchResource extends Resource implements ViewableV1 {
                 Element hitIndexNoElement = null;
                 Element fragmentsElement = null;
                 Element fragmentElement = null;
+
+                Element resultsElement = null;
                 if (show.length == 0) {
                     rootElement.appendChild((Element) document.createElementNS(NAME_SPACE, "no-results"));
+                    return;
+                } else {
+                    resultsElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "results"));
+                    resultsElement.setAttributeNS(NAME_SPACE, "start", "" + start);
+                    resultsElement.setAttributeNS(NAME_SPACE, "hitsPerPage", "" + hitsPerPage);
+                    resultsElement.setAttributeNS(NAME_SPACE, "totalHits", "" + totalHits);
+                    resultsElement.setAttributeNS(NAME_SPACE, "currentPageNo", "" + ((start / hitsPerPage) + 1));
+                resultsElement.setAttributeNS(NAME_SPACE, "numberOfPagesShown", "" + numberOfPagesShown);
                 }
                 for (int i = 0; i < show.length; i++) {
                     Element resultElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "result"));
@@ -591,7 +591,6 @@ public class NutchResource extends Resource implements ViewableV1 {
                         //fragmentElement.appendChild(document.createCDATASection(replaceAmpersand(fragments[j].getText())));
                     }
                 }
-            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
