@@ -87,7 +87,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     private long totalHits = 0;
     private String defaultFile = "nutch-default.xml";
     private String localFile = "nutch-local.xml";
-    private String defaultLanguage = "en";
+    private String DEFAULT_LANGUAGE = "en";
     private String searchTerm = "";
     private String show = ""; //default is empty, else show either CACHE, EXPLAIN, ANCHORS
     private String resourceBundle = "nutch";
@@ -115,7 +115,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * 
      */
     public View getView(Path path, String viewId) {
-        return getView(path, viewId, 0, 0, defaultLanguage);
+        return getView(path, viewId, 0, 0, DEFAULT_LANGUAGE);
     }
 
     /**
@@ -166,20 +166,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             hitsPerPage = _hitsPerPage;
         }
 
-        String language = request.getParameter("yanel.meta.language");
-        if (language == null) {
-            language = request.getHeader("Accept-Language");
-            if (language != null) {
-                log.debug("Use Accept-Language from Request Header: " + language);
-                if (language.indexOf(",") > 0) {
-                    language = language.substring(0, language.indexOf(","));
-                }
-            }
-        }
-        if (language == null) {
-            language = defaultLanguage;
-        }
-        log.debug("Language: " + language);
+        String language = getLanguage();
 
         int idx = 0;
         try {
@@ -689,5 +676,33 @@ public class NutchResource extends Resource implements ViewableV1 {
         } catch (IOException e) {
             e.printStackTrace();
         }  
+    }
+
+    /**
+     * Get language
+     */
+    private String getLanguage() {
+        String language = getRTI().getProperty("language");
+
+        if (language == null) {
+	    language = getRequest().getParameter("yanel.meta.language");
+        }
+
+        if (language == null) {
+            language = getRequest().getHeader("Accept-Language");
+            if (language != null) {
+                log.debug("Use Accept-Language from Request Header: " + language);
+                if (language.indexOf(",") > 0) {
+                    language = language.substring(0, language.indexOf(","));
+                }
+            }
+        }
+
+        if (language == null) {
+            language = DEFAULT_LANGUAGE;
+        }
+
+        log.debug("Language: " + language);
+        return language;
     }
 }
