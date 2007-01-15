@@ -801,8 +801,43 @@
   </target>
   
   <target name="source-snapshot" description="Create a source code snapshot" depends="init">
-    <mkdir dir="${build.dir}/snapshots"/>
-    <zip destfile="${build.dir}/snapshots/wyona-yanel-SNAPSHOT-r${yanel.revision}-src.zip" basedir="${yanel.home.dir}/src"/>
+    <delete dir="${build.dir}/snapshots"/>
+    <property name="snapshot.dir" value="${build.dir}/snapshots/wyona-yanel-SNAPSHOT-r${yanel.revision}-src"/>
+    <mkdir dir="${snapshot.dir}/src"/>
+    <copy file="${yanel.home.dir}/README.txt" todir="${snapshot.dir}"/>
+    <copy file="${yanel.home.dir}/configure.sh" todir="${snapshot.dir}"/>
+    <chmod file="${snapshot.dir}/configure.sh" perm="755"/>
+    <copy file="${yanel.home.dir}/configure.bat" todir="${snapshot.dir}"/>
+    <copy file="${yanel.home.dir}/build.sh" todir="${snapshot.dir}"/>
+    <chmod file="${snapshot.dir}/build.sh" perm="755"/>
+    <copy file="${yanel.home.dir}/build.bat" todir="${snapshot.dir}"/>
+    <copy file="${yanel.home.dir}/yanel.sh" todir="${snapshot.dir}"/>
+    <chmod file="${snapshot.dir}/yanel.sh" perm="755"/>
+    <copy file="${yanel.home.dir}/yanel.bat" todir="${snapshot.dir}"/>
+    <copy todir="${snapshot.dir}/src">
+      <fileset dir="${yanel.home.dir}/src" excludes="build/local.build.properties, contributions/resources/nutch/conf/nutch-local.xml"/>
+    </copy>
+    <copy todir="${snapshot.dir}/tools">
+      <fileset dir="${yanel.home.dir}/tools"/>
+    </copy>
+    <chmod dir="${snapshot.dir}/tools/apache-ant-1.6.5/bin" perm="755" includes="*"/>
+    <copy todir="${snapshot.dir}/conf">
+      <fileset dir="${yanel.home.dir}/conf" excludes="local/**"/>
+    </copy>
+    <zip destfile="${build.dir}/snapshots/wyona-yanel-SNAPSHOT-r${yanel.revision}-src.zip" basedir="${build.dir}/snapshots"/>
+  </target>
+  
+  <target name="bin-snapshot" description="Create a binary snapshot" depends="init, webapp">
+    <delete dir="${build.dir}/bin-snapshots"/>
+    <property name="snapshot.dir" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin"/>
+    <mkdir dir="${snapshot.dir}"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/README.txt" todir="${snapshot.dir}"/>
+    <copy todir="${snapshot.dir}/${servlet.context.prefix}">
+      <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
+    </copy>
+    <jar jarfile="${snapshot.dir}/${servlet.context.prefix}.war" basedir="${snapshot.dir}/${servlet.context.prefix}"/>
+    <delete dir="${snapshot.dir}/${servlet.context.prefix}"/>
+    <zip destfile="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin.zip" basedir="${build.dir}/bin-snapshots"/>
   </target>
 
 </project>
