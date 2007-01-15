@@ -835,6 +835,15 @@
     <copy todir="${snapshot.dir}/${servlet.context.prefix}">
       <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
     </copy>
+    <copy todir="${snapshot.dir}/${servlet.context.prefix}/realms">
+      <fileset dir="${yanel.home.dir}/src/realms"/>
+    </copy>
+    <copy todir="${snapshot.dir}/${servlet.context.prefix}/resources">
+      <fileset dir="${yanel.home.dir}/src/resources"/>
+    </copy>
+    <copy todir="${snapshot.dir}/${servlet.context.prefix}/resources">
+      <fileset dir="${yanel.home.dir}/src/contributions/resources"/>
+    </copy>
     <jar jarfile="${snapshot.dir}/${servlet.context.prefix}.war" basedir="${snapshot.dir}/${servlet.context.prefix}"/>
     <delete dir="${snapshot.dir}/${servlet.context.prefix}"/>
     <zip destfile="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin.zip" basedir="${build.dir}/bin-snapshots"/>
