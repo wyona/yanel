@@ -12,6 +12,9 @@
 <xsl:template match="/">
 # NOTE: This file has been generated automatically from conf/yanel.xml!
 
+# Version
+version=1.0-dev-r21728
+
 # Registered resources
 resources=<xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource"><xsl:value-of select="@src"/>resource.xml<xsl:if test="position() != last()">,</xsl:if></xsl:for-each>
 
