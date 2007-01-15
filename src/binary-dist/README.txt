@@ -13,7 +13,8 @@
     Getting Started
     ---------------
 
-    ...
+    1) Copy war file (yanel.war) into Tomcat webapps directory
+    2) ...
 
 
     More Information
