@@ -523,6 +523,12 @@
     <copy todir="${tomcat1.webapps.dir}/${servlet.context.prefix}">
       <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
     </copy>
+
+    <replace file="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="log4j-cnode1.log">
+      <replacetoken>log4j.log</replacetoken>
+    </replace>
+    <touch file="${log4j.path}/log4j-cnode1.log"/>
+
     <antcall target="patch-tomcat-cluster-node-1-ssl-port"/>
     
     <condition property="ask-to-copy-endorsed-xerces-to-node1">
@@ -571,6 +577,12 @@
     <copy todir="${tomcat2.webapps.dir}/${servlet.context.prefix}">
       <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
     </copy>
+
+    <replace file="${tomcat2.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="log4j-cnode2.log">
+      <replacetoken>log4j.log</replacetoken>
+    </replace>
+    <touch file="${log4j.path}/log4j-cnode2.log"/>
+
     <antcall target="patch-tomcat-cluster-node-2-ssl-port"/>
 
     <condition property="ask-to-copy-endorsed-xerces-node2">
