@@ -190,7 +190,6 @@ public class RealmConfiguration {
      * If dir is in fact a file, the resolving will use the parent dir of that file.  
      * @param file
      * @param dir
-     * @return
      */
     protected File resolveFile(File file, File dir) {
         if (!file.isAbsolute()) {
@@ -226,7 +225,7 @@ public class RealmConfiguration {
     }
 
     /**
-     * Add new realm (e.g. third party realm)
+     * Add new realm
      */
     public void addRealm() {
         log.error("Not implemented yet!");
