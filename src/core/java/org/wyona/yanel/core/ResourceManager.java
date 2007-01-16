@@ -47,6 +47,8 @@ public class ResourceManager {
 
     /**
      * Creates a new resource object in the given realm with the given path and the given type.
+     *
+     * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
      */
     public Resource getResource(HttpServletRequest request, HttpServletResponse response, 
             Realm realm, Path path, ResourceTypeDefinition rtd, ResourceTypeIdentifier rti) 
@@ -72,6 +74,8 @@ public class ResourceManager {
 
     /**
      * Creates a new resource object in the given realm and with the given path.
+     *
+     * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
      */
     public Resource getResource(HttpServletRequest request, HttpServletResponse response, 
             Realm realm, Path path) throws Exception {
