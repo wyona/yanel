@@ -455,6 +455,7 @@ public class YanelServlet extends HttpServlet {
             String contentType = request.getContentType();
             if (contentType.indexOf("application/atom+xml") >= 0) {
                 InputStream in = intercept(request.getInputStream());
+                // Create new Atom entry
                 try {
                     String atomEntryUniversalName = "<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>";
                     org.wyona.yanel.core.map.Realm realm = yanel.getMap().getRealm(request.getServletPath());
@@ -512,16 +513,18 @@ public class YanelServlet extends HttpServlet {
             String contentType = request.getContentType();
             if (contentType.indexOf("application/atom+xml") >= 0) {
                 InputStream in = intercept(request.getInputStream());
+                // Overwrite existing atom entry
                 try {
-                    Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>");
-                    atomEntry.setYanel(yanel);
-                    log.error("DEBUG: Atom Entry: " + request.getServletPath() + " " + request.getRequestURI());
-                    Path entryPath = new Path(request.getServletPath());
-                    
-                    atomEntry.setPath(entryPath);
+                    String atomEntryUniversalName = "<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>";
+                    org.wyona.yanel.core.map.Realm realm = yanel.getMap().getRealm(request.getServletPath());
+                    Path entryPath = yanel.getMap().getPath(realm, request.getServletPath());
+
+                    log.error("DEBUG: Realm and Path of new Atom entry: " + realm + " " + entryPath);
+
+                    Resource atomEntryResource = yanel.getResourceManager().getResource(request, response, realm, entryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new org.wyona.yanel.core.ResourceTypeIdentifier(atomEntryUniversalName, null));
                     
                     // TODO: There seems to be a problem ...
-                    ((ModifiableV2)atomEntry).write(in);
+                    ((ModifiableV2)atomEntryResource).write(in);
 
                     // NOTE: This method does not update updated date
 /*
