@@ -149,17 +149,14 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
      *
      */
     public Reader getReader() throws Exception {
-        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(getPath().toString()), getRepositoryFactory());
-        return rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+        return getRealm().getRepository().getReader(new org.wyona.yarep.core.Path(getPath().toString()));
     }
 
     /**
      *
      */
     public InputStream getInputStream() throws Exception {
-        // TODO: Reuse stuff from getReader ...
-        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(getPath().toString()), getRepositoryFactory());
-        return rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+        return getRealm().getRepository().getInputStream(new org.wyona.yarep.core.Path(getPath().toString()));
     }
 
     /**
@@ -193,8 +190,7 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
             entry.setPublished(date);
         }
 
-        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(getPath().toString()), getRepositoryFactory());
-        OutputStream out = rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+        OutputStream out = getRealm().getRepository().getOutputStream(new org.wyona.yarep.core.Path(getPath().toString()));
 
         org.apache.abdera.writer.Writer writer = abdera.getWriter();
         writer.writeTo(entry, out);
@@ -245,8 +241,7 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
      *
      */
     public boolean delete() throws Exception {
-        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(getPath().toString()), getRepositoryFactory());
-        return rp.getRepo().delete(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+        return getRealm().getRepository().delete(new org.wyona.yarep.core.Path(getPath().toString()));
     }
     
     protected RepositoryFactory getRepositoryFactory() {
