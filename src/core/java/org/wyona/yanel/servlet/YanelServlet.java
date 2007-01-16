@@ -561,7 +561,6 @@ public class YanelServlet extends HttpServlet {
     public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             Resource res = getResource(request, response);
-            res.setPath(new Path(request.getServletPath()));
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
                 if (((ModifiableV2) res).delete()) {
                     log.debug("Resource has been deleted: " + res);
