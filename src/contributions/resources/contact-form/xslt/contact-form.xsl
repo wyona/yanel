@@ -201,6 +201,11 @@
         <td></td>
       </tr>
       <tr>
+        <td align="right" valign="top" class="contentfield"><i18n:message key="email"/>:&#0160;</td>
+        <td><xsl:value-of select="$email"/></td>
+        <td></td>
+      </tr>
+      <tr>
         <td align="right" valign="top" class="contentfield"><i18n:message key="message"/>:&#0160;</td>
         <td><xsl:value-of select="$message"/></td>
         <td></td>
