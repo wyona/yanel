@@ -39,7 +39,7 @@ import java.io.Writer;
 import org.apache.log4j.Category;
 
 /**
- *
+ * Generic Node Resource
  */
 public class FileResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2 {
 
@@ -170,7 +170,7 @@ public class FileResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     /**
-     *
+     * Delete data of node resource
      */
     public boolean delete() throws Exception {
         return getRealm().getRepository().delete(getPath());
