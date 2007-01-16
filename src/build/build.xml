@@ -649,7 +649,9 @@
   </target>
 
   <target name="clean" description="Clean build" depends="init, clean-resources">
-    <delete dir="${build.dir}"/>
+    <delete includeemptydirs="true">
+      <fileset dir="${build.dir}" excludes="logs/**, javadoc/**"/>
+    </delete>
 
     <condition property="yes-delete-tomcat-cluster-node1">
       <and>
