@@ -78,33 +78,31 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
         defaultView.setMimeType(mimeType);
 
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(getPath().toString()), getRepositoryFactory());
-
             if (mimeType.equals("application/xml")) {
-                defaultView.setInputStream(getContentXML(rp));
+                defaultView.setInputStream(getContentXML());
                 return defaultView;
 	    } else if (mimeType.equals("application/xhtml+xml") || mimeType.equals("text/html")) {
                 TransformerFactory tf = TransformerFactory.newInstance();
                 //tf.setURIResolver(null);
-                Transformer transformer = tf.newTransformer(new StreamSource(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(getPath()).toString()))));
+                Transformer transformer = tf.newTransformer(new StreamSource(getRealm().getRepository().getInputStream(new org.wyona.yarep.core.Path(getXSLTPath().toString()))));
                 transformer.setParameter("yanel.path.name", getPath().getName());
                 transformer.setParameter("yanel.path", getPath().toString());
                 // TODO: There seems to be a bug re back2context
                 transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
-                transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+                transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(getPath().toString()), ""));
                 // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
 
 
                 org.xml.sax.XMLReader xmlReader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
                 xmlReader.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
-                transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML(rp))), new StreamResult(baos));
+                transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML())), new StreamResult(baos));
                 defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
 
                 return defaultView;
             } else {
                 log.debug("Mime-Type: " + mimeType);
-                defaultView.setInputStream(getContentXML(rp));
+                defaultView.setInputStream(getContentXML());
                 //defaultView.setInputStream(rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString())));
             }
         } catch(Exception e) {
@@ -117,30 +115,16 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
     /**
      *
      */
-    private InputStream getContentXML(RepoPath rp) throws Exception {
-        return rp.getRepo().getInputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+    private InputStream getContentXML() throws Exception {
+        return getRealm().getRepository().getInputStream(new org.wyona.yarep.core.Path(getPath().toString()));
     }
 
     /**
      *
      */
     private String getMimeType(Path path, String viewId) {
-        String mimeType = null;
-        try {
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
-
-            while ((mimeType = br.readLine()) != null) {
-                if (mimeType.indexOf("mime-type:") == 0) {
-                    mimeType = mimeType.substring(11);
-                    log.info("*" + mimeType + "*");
-                    // TODO: Maybe validate mime-type ...
-                    return mimeType;
-                }
-            }
-        } catch(Exception e) {
-            log.warn(e);
-        }
+        String mimeType = getRTI().getProperty("mime-type");
+        if (mimeType != null) return mimeType;
 
         String suffix = path.getSuffix();
         if (suffix != null) {
@@ -190,8 +174,7 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
      *
      */
     public OutputStream getOutputStream() throws Exception {
-        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(getPath().toString()), getRepositoryFactory());
-        return rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+        return getRealm().getRepository().getOutputStream(new org.wyona.yarep.core.Path(getPath().toString()));
     }
 
     /**
@@ -220,36 +203,23 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
     }
 
     /**
-     *
+     * Get last modified
      */
     public long getLastModified() throws Exception {
-        RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(getPath().toString()), getRepositoryFactory());
-        return rp.getRepo().getLastModified(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+        return getRealm().getRepository().getLastModified(new org.wyona.yarep.core.Path(getPath().toString()));
     }
 
     /**
      *
      */
-    private Path getXSLTPath(Path path) {
-        String xsltPath = null;
-        try {
-            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
-
-            while((xsltPath = br.readLine()) != null) {
-                if (xsltPath.indexOf("xslt:") == 0) {
-                    xsltPath = xsltPath.substring(6);
-                    log.debug("XSLT Path: " + xsltPath);
-                    return new Path(xsltPath);
-                }
-            }
-            log.error("No XSLT Path within: " +rpRTI.getPath());
-        } catch(Exception e) {
-            log.warn(e);
+    private Path getXSLTPath() {
+        String xslt = getRTI().getProperty("xslt");
+        if (xslt != null) {
+            return new Path(xslt);
+        } else {
+            log.error("No XSLT Path within: " + getPath().getRTIPath());
+            return null;
         }
-
-        return null;
     }
 
     /**
