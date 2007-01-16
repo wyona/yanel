@@ -187,7 +187,7 @@ public class CreateUsecaseHelper {
     }
     
     /**
-     *
+     * @param newResourceType Universal Name of Resource Type
      */
     public String doCreate(String newResourceType, HttpServletRequest request, HttpServletResponse response, String createName, org.wyona.yanel.core.Yanel yanel) {
         String responseAfterCreationScreen = null;
@@ -205,6 +205,7 @@ public class CreateUsecaseHelper {
                 newPath = new Path(parent + "/" + createName);
             }
 
+            log.debug("New Path: " + newPath);
             Resource newResource = yanel.getResourceManager().getResource(request, response, realm, newPath, new ResourceTypeRegistry().getResourceTypeDefinition(newResourceType), new org.wyona.yanel.core.ResourceTypeIdentifier(newResourceType, null));
             if (newResource != null) {
                 if (ResourceAttributeHelper.hasAttributeImplemented(newResource, "Creatable", "2")) {
