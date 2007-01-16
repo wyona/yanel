@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<repository>
+  <name>Yanel from Scratch Access Control Identities</name>
+
+  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../ac-identities"/>
+
+  <storage class="org.wyona.yarep.core.impl.vfs.VFileSystemStorage">
+    <content src="../ac-identities"/>
+  </storage>
+</repository>
