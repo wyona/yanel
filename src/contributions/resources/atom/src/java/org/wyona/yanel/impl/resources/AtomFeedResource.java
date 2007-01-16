@@ -69,18 +69,18 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
     /**
      *
      */
-    public View getView(Path path, String viewId, String requestURL, String queryString) {
+    public View getView(String viewId, String requestURL, String queryString) {
         View defaultView = new View();
 	StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
 
 	//sb.append("<?xml-stylesheet type=\"text/xsl\" href=\"yanel/resources/directory/xslt/dir2xhtml.xsl\"?>");
 
+        Path path = getPath();
         org.wyona.yarep.core.Path entriesPath = getEntriesPath(path);
 
         Repository contentRepo = null;
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-            contentRepo = rp.getRepo();
+            contentRepo = getRealm().getRepository();
 
             // TODO: Do not show the children with suffix .yanel-rti resp. make this configurable!
 	    // NOTE: Do not hardcode the .yanel-rti, but rather use Path.getRTIPath ...
@@ -230,14 +230,14 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
      *
      */
     public View getView(Path path, String viewId) {
-        return getView(path, viewId, null, null);
+        return getView(viewId, null, null);
     }
 
     /**
      *
      */
     public View getView(HttpServletRequest request, String viewId) {
-        return getView(new Path(request.getServletPath()), viewId, request.getRequestURL().toString(), request.getQueryString());
+        return getView(viewId, request.getRequestURL().toString(), request.getQueryString());
     }
 
     /**
@@ -288,9 +288,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
     private String getProperty(Path path, String name, String defaultValue) {
         String propertyValue = defaultValue;
         try {
-            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
+            java.io.BufferedReader br = new java.io.BufferedReader(getRealm().getRTIRepository().getReader(new org.wyona.yarep.core.Path(getPath().getRTIPath().toString())));
 
             String property = null;
             while ((property = br.readLine()) != null) {
@@ -308,7 +306,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
     }
 
     /**
-     *
+     * Get path to entries
      */
     private org.wyona.yarep.core.Path getEntriesPath(Path feedPath) {
         String entriesPathString = getProperty(feedPath, "entries-path", null);
@@ -317,23 +315,22 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
             return new org.wyona.yarep.core.Path(entriesPathString);
         } else {
             try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(feedPath.toString()), getRepositoryFactory());
-            Repository repo = rp.getRepo();
-            org.wyona.yarep.core.Path entriesPath = rp.getPath();
+                Repository repo = getRealm().getRepository();
+                org.wyona.yarep.core.Path entriesPath = new org.wyona.yarep.core.Path(feedPath.toString());
 
-            // TODO: This doesn't seem to work ... (check on Yarep ...)
-            if (repo.isResource(entriesPath)) {
-                log.warn("Path is a resource instead of a collection: " + entriesPath);
-                //entriesPath = entriesPath.getParent();
-            }
+                // TODO: This doesn't seem to work ... (check on Yarep ...)
+                if (repo.isResource(entriesPath)) {
+                    log.warn("Path is a resource instead of a collection: " + entriesPath);
+                    //entriesPath = entriesPath.getParent();
+                }
 
-            // TODO: Implement org.wyona.yarep.core.Path.getParent()
-            if (!repo.isCollection(entriesPath)) {
-                log.warn("Path is not a collection: " + entriesPath);
-                entriesPath = new org.wyona.yarep.core.Path(new org.wyona.commons.io.Path(entriesPath.toString()).getParent().toString());
-                log.warn("Use parent of path: " + entriesPath);
-            }
-            return entriesPath;
+                // TODO: Implement org.wyona.yarep.core.Path.getParent()
+                if (!repo.isCollection(entriesPath)) {
+                    log.warn("Path is not a collection: " + entriesPath);
+                    entriesPath = new org.wyona.yarep.core.Path(new org.wyona.commons.io.Path(entriesPath.toString()).getParent().toString());
+                    log.warn("Use parent of path: " + entriesPath);
+                }
+                return entriesPath;
             } catch(Exception e) {
                 log.error(e);
                 return null;
@@ -349,10 +346,8 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
      */
     public Path createEntry(Path path, java.io.InputStream in) {
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-
             org.wyona.yarep.core.Path entryPath = new org.wyona.yarep.core.Path(getEntriesPath(path).toString() + "/" + new Date().getTime() + ".xml");
-            java.io.OutputStream out = rp.getRepo().getOutputStream(entryPath);
+            java.io.OutputStream out = getRealm().getRepository().getOutputStream(entryPath);
             byte buffer[] = new byte[8192];
             int bytesRead;
             while ((bytesRead = in.read(buffer)) != -1) {
