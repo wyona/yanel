@@ -60,7 +60,6 @@ public interface Map {
      * Maps the given url to a path in the given realm. A path is relative to the realm.
      * @param realm
      * @param url
-     * @return
      * @throws Exception
      */
     public Path getPath(Realm realm, String url) throws Exception;
