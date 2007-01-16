@@ -456,26 +456,25 @@ public class YanelServlet extends HttpServlet {
             if (contentType.indexOf("application/atom+xml") >= 0) {
                 InputStream in = intercept(request.getInputStream());
                 try {
-                    Resource atomEntry = rtr.newResource("<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>");
-                    atomEntry.setYanel(yanel);
-                    // TODO: Initiate Atom Feed Resource Type to get actual path for saving ...
-                    log.error("DEBUG: Atom Feed: " + request.getServletPath() + " " + request.getRequestURI());
-                    Path entryPath = new Path(request.getServletPath() + "/" + new java.util.Date().getTime() + ".xml");
+                    String atomEntryUniversalName = "<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>";
+                    org.wyona.yanel.core.map.Realm realm = yanel.getMap().getRealm(request.getServletPath());
+                    Path newEntryPath = yanel.getMap().getPath(realm, request.getServletPath() + "/" + new java.util.Date().getTime() + ".xml");
 
-                    atomEntry.setPath(entryPath);
+                    log.error("DEBUG: Realm and Path of new Atom entry: " + realm + " " + newEntryPath);
+                    Resource atomEntryResource = yanel.getResourceManager().getResource(request, response, realm, newEntryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new org.wyona.yanel.core.ResourceTypeIdentifier(atomEntryUniversalName, null));
                     
-                    ((ModifiableV2)atomEntry).write(in);
+                    ((ModifiableV2)atomEntryResource).write(in);
 
                     byte buffer[] = new byte[8192];
                     int bytesRead;
-                    InputStream resourceIn = ((ModifiableV2)atomEntry).getInputStream();
+                    InputStream resourceIn = ((ModifiableV2)atomEntryResource).getInputStream();
                     OutputStream responseOut = response.getOutputStream();
                     while ((bytesRead = resourceIn.read(buffer)) != -1) {
                         responseOut.write(buffer, 0, bytesRead);
                     }
 
                     // TODO: Fix Location ...
-                    response.setHeader("Location", "http://ulysses.wyona.org" + entryPath);
+                    response.setHeader("Location", "http://ulysses.wyona.org" + newEntryPath);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_CREATED);
                     return;
                 } catch (Exception e) {
