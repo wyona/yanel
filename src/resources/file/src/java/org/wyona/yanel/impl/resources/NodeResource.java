@@ -41,14 +41,14 @@ import org.apache.log4j.Category;
 /**
  * Generic Node Resource
  */
-public class FileResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2 {
+public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2 {
 
-    private static Category log = Category.getInstance(FileResource.class);
+    private static Category log = Category.getInstance(NodeResource.class);
 
     /**
      *
      */
-    public FileResource() {
+    public NodeResource() {
     }
 
     /**
