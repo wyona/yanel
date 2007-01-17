@@ -815,8 +815,8 @@
   </target>
   
   <target name="source-snapshot" description="Create a source code snapshot" depends="init">
-    <delete dir="${build.dir}/snapshots"/>
-    <property name="snapshot.dir" value="${build.dir}/snapshots/wyona-yanel-SNAPSHOT-r${yanel.revision}-src"/>
+    <delete dir="${build.dir}/source-snapshots"/>
+    <property name="snapshot.dir" value="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-r${yanel.revision}-src"/>
     <mkdir dir="${snapshot.dir}/src"/>
     <copy file="${yanel.home.dir}/README.txt" todir="${snapshot.dir}"/>
     <copy file="${yanel.home.dir}/configure.sh" todir="${snapshot.dir}"/>
@@ -838,7 +838,9 @@
     <copy todir="${snapshot.dir}/conf">
       <fileset dir="${yanel.home.dir}/conf" excludes="local/**"/>
     </copy>
-    <zip destfile="${build.dir}/snapshots/wyona-yanel-SNAPSHOT-r${yanel.revision}-src.zip" basedir="${build.dir}/snapshots"/>
+    <zip destfile="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-r${yanel.revision}-src.zip">
+      <zipfileset dir="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-r${yanel.revision}-src" prefix="wyona-yanel-SNAPSHOT-r${yanel.revision}-src" filemode="755"/>
+    </zip>
   </target>
   
   <target name="bin-snapshot" description="Create a binary snapshot" depends="init, webapp">
