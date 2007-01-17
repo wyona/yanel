@@ -303,7 +303,20 @@ public class YanelServlet extends HttpServlet {
                         size = ((ViewableV2) res).getSize();
                         Element sizeElement = (Element) resourceElement.appendChild(doc.createElement("size"));
                         sizeElement.appendChild(doc.createTextNode(String.valueOf(size)));
-                        view = ((ViewableV2) res).getView(viewId);
+                        try {
+                            view = ((ViewableV2) res).getView(viewId);
+                        } catch(org.wyona.yarep.core.NoSuchNodeException e) {
+                            // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
+                            String message = "No such node exception: " + e;
+                            log.warn(e);
+                            //log.error(e.getMessage(), e);
+                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+                            exceptionElement.appendChild(doc.createTextNode(message));
+                            exceptionElement.setAttribute("status", "404");
+                            response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
+                            setYanelOutput(request, response, doc);
+                            return;
+                        }
                     } else {
                          Element noViewElement = (Element) resourceElement.appendChild(doc.createElement("not-viewable"));
                          noViewElement.appendChild(doc.createTextNode(res.getClass().getName() + " is not viewable!"));
