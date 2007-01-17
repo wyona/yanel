@@ -353,7 +353,7 @@ public class YanelServlet extends HttpServlet {
             } catch(Exception e) {
                 log.error(e.getMessage(), e);
                 String message = e.toString();
-                Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+                Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
                 exceptionElement.appendChild(doc.createTextNode(message));
                 setYanelOutput(request, response, doc);
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
