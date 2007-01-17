@@ -15,6 +15,9 @@
             <title>
               Yanel
               <xsl:choose>
+                <xsl:when test="/yanel/exception/@status = '404'">
+                  - 404
+                </xsl:when>
                 <xsl:when test="child::node()/exception">
                   <i18n:text>- An error occurred</i18n:text>
                 </xsl:when>
@@ -149,6 +152,11 @@
   
   <xsl:template match="exception">
     <p>
+      <xsl:choose>
+        <xsl:when test="@status = '404'">
+        No such page:  <xsl:value-of select="../request/@uri"/>
+        </xsl:when>
+        <xsl:otherwise>
       <h4>Exception</h4>
       <ul>
         <xsl:if test="@status"><li>Status: <xsl:value-of select="@status"/></li></xsl:if>
@@ -158,6 +166,8 @@
           </ul>
         </li>
       </ul>
+        </xsl:otherwise>
+      </xsl:choose>
     </p>
   </xsl:template> 
 
