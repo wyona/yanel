@@ -78,9 +78,9 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     }
 
     /**
-     *
+     * Generates view
      */
-    public View getView(String viewId) {
+    public View getView(String viewId) throws Exception {
         View defaultView = new View();
         String mimeType = getMimeType(getPath(), viewId);
         defaultView.setMimeType(mimeType);
@@ -134,7 +134,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 defaultView.setInputStream(getContentXML(repo, yanelPath));
             }
         } catch(Exception e) {
-            log.error(e);
+            log.error(e + " (" + getPath() + ", " + getRealm() + ")");
+            throw new Exception(e);
         }
 
         return defaultView;
@@ -145,13 +146,10 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      */
     private String getLanguage() {
         String language = getRequest().getParameter("yanel.meta.language");
-        log.warn("DEBUG: Parameter: " + language);
         if (language == null) {
             language = getRequest().getParameter("Accept-Language");
-            log.warn("DEBUG: Accept-Language: " + language);
         }
         if(language != null && language.length() > 0) return language;
-        log.warn("DEBUG: Default: en");
         return "en";
     }
 
