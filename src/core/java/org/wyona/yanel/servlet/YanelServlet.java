@@ -78,6 +78,7 @@ public class YanelServlet extends HttpServlet {
     File xsltLoginScreen;
 
     private static String IDENTITY_KEY = "identity";
+    private static String NAMESPACE = "http://www.wyona.org/yanel/1.0";
 
     private static final String METHOD_PROPFIND = "PROPFIND";
     private static final String METHOD_OPTIONS = "OPTIONS";
@@ -179,11 +180,12 @@ public class YanelServlet extends HttpServlet {
 
         org.w3c.dom.Document doc = null;
         javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
         try {
             javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
             org.w3c.dom.DOMImplementation impl = parser.getDOMImplementation();
             org.w3c.dom.DocumentType doctype = null;
-            doc = impl.createDocument("http://www.wyona.org/yanel/1.0", "yanel", doctype);
+            doc = impl.createDocument(NAMESPACE, "yanel", doctype);
         } catch(Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage());
@@ -200,9 +202,9 @@ public class YanelServlet extends HttpServlet {
         //log.debug("contextPath: " + request.getContextPath());
         //log.debug("servletPath: " + request.getServletPath());
         
-        Element requestElement = (Element) rootElement.appendChild(doc.createElement("request"));
-        requestElement.setAttribute("uri", request.getRequestURI());
-        requestElement.setAttribute("servlet-path", request.getServletPath());
+        Element requestElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "request"));
+        requestElement.setAttributeNS(NAMESPACE, "uri", request.getRequestURI());
+        requestElement.setAttributeNS(NAMESPACE, "servlet-path", request.getServletPath());
 
         HttpSession session = request.getSession(true);
         Element sessionElement = (Element) rootElement.appendChild(doc.createElement("session"));
@@ -310,9 +312,9 @@ public class YanelServlet extends HttpServlet {
                             String message = "No such node exception: " + e;
                             log.warn(e);
                             //log.error(e.getMessage(), e);
-                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
                             exceptionElement.appendChild(doc.createTextNode(message));
-                            exceptionElement.setAttribute("status", "404");
+                            exceptionElement.setAttributeNS(NAMESPACE, "status", "404");
                             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
                             setYanelOutput(request, response, doc);
                             return;
@@ -1340,7 +1342,7 @@ public class YanelServlet extends HttpServlet {
             javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
             org.w3c.dom.DOMImplementation impl = parser.getDOMImplementation();
             org.w3c.dom.DocumentType doctype = null;
-            doc = impl.createDocument("http://www.wyona.org/yanel/1.0", "yanel", doctype);            
+            doc = impl.createDocument(NAMESPACE, "yanel", doctype);            
             
             Element rootElement = doc.getDocumentElement();
             
