@@ -126,7 +126,7 @@
               <td>TBD</td>
               <td>TBD</td>
 </tr>
-<tr><td style="vertical-align: top;">LDAP Integration</td><td style="vertical-align: top;">not started yet</td><td>TBD</td><td>Simon</td></tr><tr><td style="vertical-align: top;">WebDAV</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></tr><tr><td style="vertical-align: top;">References between translations</td><td style="vertical-align: top;">not started yet</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Paloma</td></tr><tr><td style="vertical-align: top;">EBPP (Electronic Billing Presentation and Payment) Resource</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Donat</td></tr>
+<tr><td style="vertical-align: top;">LDAP Integration</td><td style="vertical-align: top;">not started yet</td><td>TBD</td><td>Simon</td></tr><tr><td style="vertical-align: top;"><a href="specification/webdav.html">WebDAV</a></td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></tr><tr><td style="vertical-align: top;">References between translations</td><td style="vertical-align: top;">not started yet</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Paloma</td></tr><tr><td style="vertical-align: top;">EBPP (Electronic Billing Presentation and Payment) Resource</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Donat</td></tr>
 
 
           </tbody></table>
