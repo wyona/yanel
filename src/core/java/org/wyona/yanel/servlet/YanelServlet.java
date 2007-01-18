@@ -163,12 +163,20 @@ public class YanelServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Check if a new resource shall be created ...
         String yanelUsecase = request.getParameter("yanel.usecase");
-
         if(yanelUsecase != null && yanelUsecase.equals("create")) {
             CreateUsecaseHelper creator = new CreateUsecaseHelper();
             creator.create(request, response, yanel);
             return;
         }
+
+        String yanelWebDAV = request.getParameter("yanel.webdav");
+        if(yanelWebDAV != null && yanelWebDAV.equals("edit")) {
+            Resource resource = getResource(request, response);
+            String userAgent = request.getHeader("User-Agent");
+            log.error("DEBUG: WebDAV client (" + userAgent + ") requests to edit a resource: " + resource.getRealm() + ", " + resource.getPath());
+            //return;
+        }
+
         getContent(request, response);
     }
 
@@ -1053,7 +1061,7 @@ public class YanelServlet extends HttpServlet {
                         sb.append("  </response>\n");
                     } else if(children[i].isResource()) {
                         sb.append("  <response>\n");
-                        sb.append("    <href>"+request.getRequestURI()+children[i].getPath()+"</href>\n");
+                        sb.append("    <href>" + request.getRequestURI() + children[i].getPath() + "?yanel.webdav=edit</href>\n");
                         sb.append("    <propstat>\n");
                         sb.append("      <prop>\n");
                         sb.append("        <displayname>A File</displayname>\n");
