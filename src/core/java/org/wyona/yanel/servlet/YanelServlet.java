@@ -120,8 +120,7 @@ public class YanelServlet extends HttpServlet {
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String httpAcceptMediaTypes = request.getHeader("Accept");
         log.debug("HTTP Accept Media Types: " + httpAcceptMediaTypes);
-        String httpUserAgent = request.getHeader("User-Agent");
-        log.debug("HTTP User Agent: " + httpUserAgent);
+        log.debug("HTTP User Agent: " + request.getHeader("User-Agent"));
         String httpAcceptLanguage = request.getHeader("Accept-Language");
         log.debug("HTTP Accept Language: " + httpAcceptLanguage);
 
@@ -172,8 +171,7 @@ public class YanelServlet extends HttpServlet {
         String yanelWebDAV = request.getParameter("yanel.webdav");
         if(yanelWebDAV != null && yanelWebDAV.equals("edit")) {
             Resource resource = getResource(request, response);
-            String userAgent = request.getHeader("User-Agent");
-            log.error("DEBUG: WebDAV client (" + userAgent + ") requests to edit a resource: " + resource.getRealm() + ", " + resource.getPath());
+            log.error("DEBUG: WebDAV client (" + request.getHeader("User-Agent") + ") requests to edit a resource: " + resource.getRealm() + ", " + resource.getPath());
             //return;
         }
 
@@ -534,7 +532,7 @@ public class YanelServlet extends HttpServlet {
             log.warn("No parameter yanel.resource.usecase!");
 
             String contentType = request.getContentType();
-            if (contentType.indexOf("application/atom+xml") >= 0) {
+            if (contentType != null && contentType.indexOf("application/atom+xml") >= 0) {
                 InputStream in = intercept(request.getInputStream());
                 // Overwrite existing atom entry
                 try {
@@ -568,12 +566,10 @@ public class YanelServlet extends HttpServlet {
                     throw new IOException(e.getMessage());
                 }
             } else {
+                Resource resource = getResource(request, response);
+                log.error("DEBUG: Client (" + request.getHeader("User-Agent") + ") requests to save a resource: " + resource.getRealm() + ", " + resource.getPath());
                 save(request, response);
-/*
-                log.warn("TODO: WebDAV PUT ...");
-                response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_IMPLEMENTED);
                 return;
-*/
             }
         }
     }
