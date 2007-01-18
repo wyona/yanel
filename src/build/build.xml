@@ -430,7 +430,7 @@
     <jar jarfile="${yanel.home.dir}/build/webapps/${servlet.context.prefix}.war" basedir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
   </target>
 
-  <target name="deploy" description="Deploy war file" depends="init, war">
+  <target name="deploy" description="Deploy war file" depends="init, webapp">
     <condition property="property-tomcat-cluster-node1-is-set">
       <isset property="tomcat1.home.dir"/>
     </condition>
