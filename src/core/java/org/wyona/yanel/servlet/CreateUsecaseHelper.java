@@ -47,18 +47,18 @@ public class CreateUsecaseHelper {
     private static Logger log = Logger.getLogger(CreateUsecaseHelper.class);
 
     /**
-     *
+     * Creator web interface
      */
     public HttpServletResponse create(HttpServletRequest request, HttpServletResponse response, org.wyona.yanel.core.Yanel yanel) throws IOException {
 
         String createName = request.getParameter("create.name");
         String resourceType = request.getParameter("resource.type");
-        String create = request.getParameter("create");
 
         PrintWriter w = response.getWriter();
         if (resourceType == null || createName == null) {
             w.print(resourcesTypeSelectScreen(createName));
         } else {
+            String create = request.getParameter("create");
             if(create == null){
                 if (resourceType.equals("") || createName.equals("")) {
                     w.print(resourcesTypeSelectScreen(createName));
@@ -118,7 +118,7 @@ public class CreateUsecaseHelper {
     /**
      * @return a html page with the resource selction screen as a string
      */
-    public String createResourceScreen(String createName, String rti) {
+    private String createResourceScreen(String createName, String rti) {
 
         String resourcesCreateScreen = null;
         String[] PropertyNames = null;
@@ -189,7 +189,7 @@ public class CreateUsecaseHelper {
     /**
      * @param newResourceType Universal Name of Resource Type
      */
-    public String doCreate(String newResourceType, HttpServletRequest request, HttpServletResponse response, String createName, org.wyona.yanel.core.Yanel yanel) {
+    private String doCreate(String newResourceType, HttpServletRequest request, HttpServletResponse response, String createName, org.wyona.yanel.core.Yanel yanel) {
         String responseAfterCreationScreen = null;
         String[] PropertyNames = null;
         
