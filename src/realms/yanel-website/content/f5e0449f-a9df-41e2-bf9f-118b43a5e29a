@@ -16,7 +16,7 @@
 
 <body>
 <h3>Unique Selling Proposition</h3>
-<h3>Main Features</h3>
+
 <p>
 </p><ul>
   <li>Resource Framework with <a href="../javadoc/org/wyona/yanel/core/api/attributes/package-summary.html">versioned published interfaces</a> which allow continuous development and integration. Therefore Yanel is backwards and forwards compatible at any time.<br/></li>
