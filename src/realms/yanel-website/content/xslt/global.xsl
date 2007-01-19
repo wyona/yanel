@@ -103,6 +103,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <b>All You Need</b><br/>
 &#160;<a href="{$yarep.back2realm}{$yanel.meta.language}/about.html">About</a><br/>
 &#160;<a href="{$yarep.back2realm}en/download/index.html">Download</a><br/>
+&#160;<a href="{$yarep.back2realm}{$yanel.meta.language}/usp.html">Unique Selling Proposition</a><br/>
 &#160;<a href="{$yarep.back2realm}license.html">License</a><br/>
 &#160;<a href="{$yarep.back2realm}{$yanel.meta.language}/getting-started.html">Getting Started</a><br/>
 &#160;Features<br/>
