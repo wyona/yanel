@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Unique Selling Proposition</title>
+</head>
+<body>
+<h3>Unique Selling Proposition</h3>
+<h3>Main Features</h3>
+<p>
+</p><ul>
+  <li>Resource Framework with <a href="../javadoc/org/wyona/yanel/core/api/attributes/package-summary.html">versioned published interfaces</a> which allow continuous development and integration<br/></li>
+  <li>Supports the <a href="http://neutron.wyona.org">Neutron protocol</a>, <a href="http://bitworking.org/projects/atom/">Atom Publishing Protocol</a> and <a href="http://www.webdav.org">WebDAV</a></li>
+  <li><a href="http://svn.wyona.com/repos/public/tomcat-cluster/">Clusterable<br/></a></li>
+  <li>Arbitrary Content Repositories (e.g. File System, Subversion, Relational DB, ...)<br/></li>
+  <li>Separation of Content and Layout</li>
+  <li>Multiple Sites</li>
+  <li>Reverse Proxy Support</li>
+  <li>Cross-Platform (Continuously tested on Linux, Mac OS X, Windows)</li>
+</ul>
+</body>
+</html>
