@@ -2,7 +2,7 @@
 
 <introspection xmlns="http://www.wyona.org/neutron/1.0">
 
-  <edit mime-type="text/plain" name="Unique Selling Proposition">
+  <edit mime-type="application/xhtml+xml" name="Unique Selling Proposition">
     <checkout url="usp.xhtml?yanel.resource.usecase=checkout" method="GET"/>
     <checkin  url="usp.xhtml?yanel.resource.usecase=checkin" method="PUT"/>
   </edit>
