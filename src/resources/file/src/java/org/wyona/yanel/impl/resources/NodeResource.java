@@ -19,6 +19,7 @@ package org.wyona.yanel.impl.resources;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.Topic;
+import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
@@ -42,6 +43,7 @@ import org.apache.log4j.Category;
  * Generic Node Resource
  */
 public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2 {
+//public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2 {
 
     private static Category log = Category.getInstance(NodeResource.class);
 
@@ -191,7 +193,53 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     /**
      * 
      */
-     public long getSize() throws Exception {
+    public long getSize() throws Exception {
          return getRealm().getRepository().getSize(getPath());
-     }    
+    }
+
+    /**
+     *
+     */
+    public Object getProperty(String name) {
+        log.warn("No implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public String[] getPropertyNames() {
+        log.warn("No implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public void setProperty(String name, Object value) {
+        log.warn("No implemented yet!");
+    }
+
+    /**
+     *
+     */
+    public void create(HttpServletRequest request) {
+        log.warn("No implemented yet!");
+    }
+
+    /**
+     *
+     */
+    public java.util.HashMap createRTIProperties(HttpServletRequest request) {
+        log.warn("No implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public String getPropertyType(String name) {
+        log.warn("No implemented yet!");
+        return null;
+    }
 }
