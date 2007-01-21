@@ -15,6 +15,10 @@ import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
 import org.apache.log4j.Category;
 
+import java.util.Enumeration;
+
+import javax.servlet.http.HttpServletRequest;
+
 /**
  *
  */
@@ -71,13 +75,15 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
         sb.append("<body>");
 
-        javax.servlet.http.HttpServletRequest request = getRequest();
-        java.util.Enumeration parameters = request.getParameterNames();
+        HttpServletRequest request = getRequest();
+        Enumeration parameters = request.getParameterNames();
         if (!parameters.hasMoreElements()) {
             getSelectResourceTypeScreen(sb);
         } else {
             if (request.getParameter("resource-type") != null) {
                 getResourceScreen(sb);
+            } else if (request.getParameter("save-as") != null) {
+                getSaveAsScreen(sb);
             } else {
                 getNoSuchScreen(sb);
             }
@@ -125,6 +131,33 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     /**
      *
      */
+    private void getSaveAsScreen(StringBuffer sb) {
+        sb.append("<h4>Create resource (step 3)</h4>");
+        sb.append("<h2>Save As</h2>");
+
+        HttpServletRequest request = getRequest();
+        Enumeration parameters = request.getParameterNames();
+        while (parameters.hasMoreElements()) {
+            String parameter = (String) parameters.nextElement();
+            if (parameter.indexOf("rp.") == 0) {
+                sb.append("<li>"+parameter+": "+request.getParameter(parameter)+"</li>");
+            }
+        }
+
+        String createName = request.getParameter("create-name");
+        sb.append("<form>");
+        if (createName != null) {
+            sb.append("Name: <input type=\"text\" name=\"create.name\" value=\"" + createName + "\"/>");
+        } else {
+            sb.append("Name: <input type=\"text\" name=\"create.name\"/>");
+        }
+        sb.append("<br/><input type=\"submit\" value=\"Save\" name=\"create\"/>");
+        sb.append("</form>");
+    }
+
+    /**
+     *
+     */
     private void getResourceScreen(StringBuffer sb) {
         String rtps = getRequest().getParameter("resource-type");
         String resNamespace = rtps.substring(0, rtps.indexOf("::"));
@@ -148,7 +181,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     if (propertyNames != null && propertyNames.length > 0) {
                         sb.append("<p>Resource specific properties:</p>");
                         for (int i = 0; i < propertyNames.length; i++) {
-                            sb.append(propertyNames[i] + ": <input name=\"" + propertyNames[i]
+                            sb.append(propertyNames[i] + ": <input name=\"rp." + propertyNames[i]
                                 + "\" value=\""
                                 + ((CreatableV2) resource).getProperty(propertyNames[i])
                                 + "\" size=\"60\"/><br/>");
@@ -157,7 +190,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                         sb.append("<p>No resource specific properties!</p>");
                     }
 
-                    sb.append("<br/><br/><input type=\"submit\" value=\"Save As\" name=\"save.as\"/>");
+                    sb.append("<br/><br/><input type=\"submit\" value=\"Save As\" name=\"save-as\"/>");
                     sb.append("</form>");
                 }
             }
