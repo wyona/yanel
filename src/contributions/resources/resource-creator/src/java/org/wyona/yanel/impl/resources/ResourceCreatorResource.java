@@ -80,12 +80,12 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         if (!parameters.hasMoreElements()) {
             getSelectResourceTypeScreen(sb);
         } else {
-            if (request.getParameter("resource-type") != null) {
-                getResourceScreen(sb);
-            } else if (request.getParameter("save-as") != null) {
+            if (request.getParameter("save-as") != null) {
                 getSaveAsScreen(sb);
             } else if (request.getParameter("save") != null) {
                 getSaveScreen(sb);
+	    } else if (request.getParameter("resource-type") != null) {
+                getResourceScreen(sb);
             } else {
                 getNoSuchScreen(sb);
             }
@@ -134,6 +134,17 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      *
      */
     private void getSaveAsScreen(StringBuffer sb) {
+        String rtps = getRequest().getParameter("resource-type");
+        String resNamespace = rtps.substring(0, rtps.indexOf("::"));
+        String resName = rtps.substring(rtps.indexOf("::") + 2);
+        ResourceTypeRegistry rtr = new ResourceTypeRegistry();
+
+        String universalName = "<{"+ resNamespace +"}"+ resName +"/>";
+        log.debug("Universal Name: " + universalName);
+        try {
+            Resource resource = rtr.newResource(universalName);
+            if (resource != null) {
+
         sb.append("<h4>Create resource (step 3)</h4>");
         sb.append("<h2>Save As</h2>");
 
@@ -141,18 +152,35 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         Enumeration parameters = request.getParameterNames();
         if (parameters.hasMoreElements()) {
             sb.append("<ul>");
-        while (parameters.hasMoreElements()) {
-            String parameter = (String) parameters.nextElement();
-            if (parameter.indexOf("rp.") == 0) {
-                sb.append("<li>"+parameter+": "+request.getParameter(parameter)+"</li>");
+            while (parameters.hasMoreElements()) {
+                String parameter = (String) parameters.nextElement();
+                if (parameter.indexOf("rp.") == 0) {
+                    sb.append("<li>"+parameter+": "+request.getParameter(parameter)+"</li>");
+                }
             }
-        }
             sb.append("</ul>");
         }
 
         String createName = request.getParameter("create-name");
         sb.append("<p>");
         sb.append("<form>");
+        //sb.append("<form method=\"post\" enctype=\"multipart/form-data\">");
+        // TODO: Add this parameter to the continuation within the session!
+        sb.append("<input type=\"hidden\" name=\"resource-type\" value=\""+rtps+"\"/>");
+
+        parameters = request.getParameterNames();
+        while (parameters.hasMoreElements()) {
+            String parameter = (String) parameters.nextElement();
+            if (parameter.indexOf("rp.") == 0) {
+                            String propertyType = ((CreatableV2) resource).getPropertyType(parameter.substring(3));
+                            if (propertyType != null && propertyType.equals(CreatableV2.TYPE_UPLOAD)) {
+                sb.append("<input type=\"file\" name=\""+parameter+"\" value=\""+request.getParameter(parameter)+"\"/><br/>");
+                            } else {
+                sb.append("<input type=\"hidden\" name=\""+parameter+"\" value=\""+request.getParameter(parameter)+"\"/>");
+                }
+            }
+        }
+
         if (createName != null) {
             sb.append("Name: <input type=\"text\" name=\"create-name\" value=\"" + createName + "\"/>");
         } else {
@@ -161,6 +189,11 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         sb.append("<br/><input type=\"submit\" value=\"Save\" name=\"save\"/>");
         sb.append("</form>");
         sb.append("</p>");
+        }
+        } catch (Exception e) {
+            sb.append("<p>Exception: "+e+"</p>");
+            log.error(e);
+        }
     }
 
     /**
@@ -196,6 +229,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     sb.append("<h2>Enter/Select resource specific parameters</h2>");
                     sb.append("<p>Resource Type: " + resName + " ("+resNamespace+")</p>");
                     sb.append("<form>");
+                    // TODO: Add this parameter to the continuation within the session!
+                    sb.append("<input type=\"hidden\" name=\"resource-type\" value=\""+rtps+"\"/>");
 
                     if (propertyNames != null && propertyNames.length > 0) {
                         sb.append("<p>Resource specific properties:</p>");
