@@ -209,8 +209,8 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public String[] getPropertyNames() {
-        log.warn("No implemented yet!");
-        return null;
+        String[] props = {"data"};
+        return props;
     }
 
     /**
@@ -239,7 +239,6 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public String getPropertyType(String name) {
-        log.warn("No implemented yet!");
-        return null;
+        return CreatableV2.TYPE_UPLOAD;
     }
 }
