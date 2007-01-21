@@ -133,7 +133,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 
         try {
             String universalName = "<{"+ resNamespace +"}"+ resName +"/>";
-            log.error("DEBUG: Universal Name: " + universalName);
+            log.debug("Universal Name: " + universalName);
             Resource resource = rtr.newResource(universalName);
             if (resource != null) {
                 if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Creatable", "2")) {
