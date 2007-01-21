@@ -205,10 +205,12 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                             if (propertyType != null && propertyType.equals(CreatableV2.TYPE_UPLOAD)) {
                                 sb.append("<input type=\"file\" name=\"rp."+propertyNames[i]+"\"/>");
                             } else {
-                            sb.append("<input name=\"rp." + propertyNames[i]
-                                + "\" value=\""
-                                + ((CreatableV2) resource).getProperty(propertyNames[i])
-                                + "\" size=\"60\"/><br/>");
+                                Object value = ((CreatableV2) resource).getProperty(propertyNames[i]);
+                                if (value == null) {
+                                    sb.append("<input name=\"rp." + propertyNames[i] + "\" value=\"\" size=\"60\"/><br/>");
+                                } else {
+                                    sb.append("<input name=\"rp." + propertyNames[i] + "\" value=\"" + value + "\" size=\"60\"/><br/>");
+                                }
                             }
                         }
                     } else {
