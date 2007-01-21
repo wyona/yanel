@@ -269,9 +269,12 @@ public class YanelServlet extends HttpServlet {
             rtiElement.setAttribute("local-name",  rtd.getResourceTypeLocalName());
 
             try {
+/*
                 HttpRequest httpRequest = new HttpRequest(request);
                 HttpResponse httpResponse = new HttpResponse(response);
                 res = yanel.getResourceManager().getResource(httpRequest, httpResponse, realm, path, rtd, rti);
+*/
+                res = getResource(request, response);
                 if (res != null) {
 
                     Element resourceElement = (Element) rootElement.appendChild(doc.createElement("resource"));
@@ -313,7 +316,9 @@ public class YanelServlet extends HttpServlet {
                         ViewDescriptor[] vd = ((ViewableV2) res).getViewDescriptors();
                         if (vd != null) {
                             for (int i = 0; i < vd.length; i++) {
-                                viewElement.appendChild(doc.createTextNode("View Descriptor: " + vd[i].getMimeType()));
+                                Element descriptorElement = (Element) viewElement.appendChild(doc.createElement("descriptor"));
+                                descriptorElement.appendChild(doc.createTextNode(vd[i].getMimeType()));
+                                descriptorElement.setAttributeNS(NAMESPACE, "id", vd[i].getId());
                             }
                         } else {
                             viewElement.appendChild(doc.createTextNode("No View Descriptors!"));
