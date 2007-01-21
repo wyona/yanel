@@ -7,6 +7,7 @@ package org.wyona.yanel.impl.resources;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
+import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
@@ -91,7 +92,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      *
      */
     private void getSelectResourceTypeScreen(StringBuffer sb) {
-        sb.append("<p>Select resource type:</p>");
+        sb.append("<h4>Create resource (step 1)</h4>");
+        sb.append("<h2>Select resource type</h2>");
         sb.append("<form>");
         sb.append("Resource Type: <select name=\"resource-type\">");
 
@@ -124,6 +126,44 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      *
      */
     private void getResourceScreen(StringBuffer sb) {
-        sb.append("<p>Resource Type: " + getRequest().getParameter("resource-type") + "</p>");
+        String rtps = getRequest().getParameter("resource-type");
+        String resNamespace = rtps.substring(0, rtps.indexOf("::"));
+        String resName = rtps.substring(rtps.indexOf("::") + 2);
+        ResourceTypeRegistry rtr = new ResourceTypeRegistry();
+
+        try {
+            String universalName = "<{"+ resNamespace +"}"+ resName +"/>";
+            log.error("DEBUG: Universal Name: " + universalName);
+            Resource resource = rtr.newResource(universalName);
+            if (resource != null) {
+                if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Creatable", "2")) {
+                    String[] propertyNames = ((CreatableV2) resource).getPropertyNames();
+                    //((CreatableV2) resource).setProperty("Name", createName);
+
+                    sb.append("<h4>Create resource (step 2)</h4>");
+                    sb.append("<h2>Enter/Select resource specific parameters</h2>");
+                    sb.append("<p>Resource Type: " + resName + " ("+resNamespace+")</p>");
+                    sb.append("<form>");
+
+                    if (propertyNames != null && propertyNames.length > 0) {
+                        sb.append("<p>Resource specific properties:</p>");
+                        for (int i = 0; i < propertyNames.length; i++) {
+                            sb.append(propertyNames[i] + ": <input name=\"" + propertyNames[i]
+                                + "\" value=\""
+                                + ((CreatableV2) resource).getProperty(propertyNames[i])
+                                + "\" size=\"60\"/><br/>");
+                        }
+                    } else {
+                        sb.append("<p>No resource specific properties!</p>");
+                    }
+
+                    sb.append("<br/><br/><input type=\"submit\" value=\"Save As\" name=\"save.as\"/>");
+                    sb.append("</form>");
+                }
+            }
+        } catch (Exception e) {
+            sb.append("<p>Exception: "+e+"</p>");
+            log.error(e);
+        }
     }
 }
