@@ -5,14 +5,20 @@
 package org.wyona.yanel.impl.resources;
 
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.ResourceTypeDefinition;
+import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.util.ResourceAttributeHelper;
+
+import org.apache.log4j.Category;
 
 /**
  *
  */
 public class ResourceCreatorResource extends Resource implements ViewableV2{
+    private static Category log = Category.getInstance(ResourceCreatorResource.class);
 
     /**
      *
@@ -86,6 +92,25 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      */
     private void getSelectResourceTypeScreen(StringBuffer sb) {
         sb.append("<p>Select resource type:</p>");
+        sb.append("<form>");
+        sb.append("Resource Type: <select name=\"resource-type\">");
+
+        ResourceTypeRegistry rtr = new ResourceTypeRegistry();
+        ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
+        for (int i = 0; i < rtds.length; i++) {
+            try {
+                Resource resource = rtr.newResource(rtds[i].getResourceTypeUniversalName());
+                if (resource != null && ResourceAttributeHelper.hasAttributeImplemented(resource, "Creatable", "2")) {
+                    sb.append("<option value=\"" + rtds[i].getResourceTypeNamespace() + "::" + rtds[i].getResourceTypeLocalName() + "\">" + rtds[i].getResourceTypeLocalName() + "</option>");
+                }
+            } catch(Exception e) {
+                log.error(e);
+            }
+        }
+
+        sb.append("</select>");
+        sb.append("<br/><input type=\"submit\" value=\"Next\"/>");
+        sb.append("</form>");
     }
 
     /**
@@ -99,6 +124,6 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      *
      */
     private void getResourceScreen(StringBuffer sb) {
-        sb.append("<p>Resource Screen ...</p>");
+        sb.append("<p>Resource Type: " + getRequest().getParameter("resource-type") + "</p>");
     }
 }
