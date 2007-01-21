@@ -39,8 +39,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      */
     public View getView(String viewId) {
         View view = new View();
-        view.setMimeType("text/plain");
-        view.setInputStream(new java.io.StringBufferInputStream("Hello World"));
+        view.setMimeType("application/xhtml+xml");
+        view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
         return view;
     }
 
@@ -54,5 +54,51 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         vd[1] = new ViewDescriptor("source");
         vd[1].setMimeType("application/xml");
         return vd;
+    }
+
+    /**
+     *
+     */
+    private String getScreen() {
+        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+        sb.append("<body>");
+
+        javax.servlet.http.HttpServletRequest request = getRequest();
+        java.util.Enumeration parameters = request.getParameterNames();
+        if (!parameters.hasMoreElements()) {
+            getSelectResourceTypeScreen(sb);
+        } else {
+            if (request.getParameter("resource-type") != null) {
+                getResourceScreen(sb);
+            } else {
+                getNoSuchScreen(sb);
+            }
+        }
+
+        sb.append("</body>");
+        sb.append("</html>");
+        return sb.toString();
+    }
+
+    /**
+     *
+     */
+    private void getSelectResourceTypeScreen(StringBuffer sb) {
+        sb.append("<p>Select resource type:</p>");
+    }
+
+    /**
+     *
+     */
+    private void getNoSuchScreen(StringBuffer sb) {
+        sb.append("<p>No such screen!</p>");
+    }
+
+    /**
+     *
+     */
+    private void getResourceScreen(StringBuffer sb) {
+        sb.append("<p>Resource Screen ...</p>");
     }
 }
