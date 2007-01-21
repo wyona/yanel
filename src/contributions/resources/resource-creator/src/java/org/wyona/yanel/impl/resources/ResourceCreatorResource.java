@@ -200,10 +200,16 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     if (propertyNames != null && propertyNames.length > 0) {
                         sb.append("<p>Resource specific properties:</p>");
                         for (int i = 0; i < propertyNames.length; i++) {
-                            sb.append(propertyNames[i] + ": <input name=\"rp." + propertyNames[i]
+                            sb.append(propertyNames[i] + ": ");
+                            String propertyType = ((CreatableV2) resource).getPropertyType(propertyNames[i]);
+                            if (propertyType != null && propertyType.equals(CreatableV2.TYPE_UPLOAD)) {
+                                sb.append("<input type=\"file\" name=\"rp."+propertyNames[i]+"\"/>");
+                            } else {
+                            sb.append("<input name=\"rp." + propertyNames[i]
                                 + "\" value=\""
                                 + ((CreatableV2) resource).getProperty(propertyNames[i])
                                 + "\" size=\"60\"/><br/>");
+                            }
                         }
                     } else {
                         sb.append("<p>No resource specific properties!</p>");
