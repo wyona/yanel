@@ -68,7 +68,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     }
 
     /**
-     *
+     * Flow
      */
     private String getScreen() {
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
@@ -84,6 +84,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 getResourceScreen(sb);
             } else if (request.getParameter("save-as") != null) {
                 getSaveAsScreen(sb);
+            } else if (request.getParameter("save") != null) {
+                getSaveScreen(sb);
             } else {
                 getNoSuchScreen(sb);
             }
@@ -137,22 +139,39 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 
         HttpServletRequest request = getRequest();
         Enumeration parameters = request.getParameterNames();
+        if (parameters.hasMoreElements()) {
+            sb.append("<ul>");
         while (parameters.hasMoreElements()) {
             String parameter = (String) parameters.nextElement();
             if (parameter.indexOf("rp.") == 0) {
                 sb.append("<li>"+parameter+": "+request.getParameter(parameter)+"</li>");
             }
         }
+            sb.append("</ul>");
+        }
 
         String createName = request.getParameter("create-name");
+        sb.append("<p>");
         sb.append("<form>");
         if (createName != null) {
-            sb.append("Name: <input type=\"text\" name=\"create.name\" value=\"" + createName + "\"/>");
+            sb.append("Name: <input type=\"text\" name=\"create-name\" value=\"" + createName + "\"/>");
         } else {
-            sb.append("Name: <input type=\"text\" name=\"create.name\"/>");
+            sb.append("Name: <input type=\"text\" name=\"create-name\"/>");
         }
-        sb.append("<br/><input type=\"submit\" value=\"Save\" name=\"create\"/>");
+        sb.append("<br/><input type=\"submit\" value=\"Save\" name=\"save\"/>");
         sb.append("</form>");
+        sb.append("</p>");
+    }
+
+    /**
+     *
+     */
+    private void getSaveScreen(StringBuffer sb) {
+        sb.append("<h4>Create resource (step 4)</h4>");
+        sb.append("<h2>Resource has been created</h2>");
+
+        String createName = request.getParameter("create-name");
+        sb.append("<p>New resource can be accessed at: <a href=\""+createName+"\">"+createName+"</a></p>");
     }
 
     /**
