@@ -21,7 +21,21 @@ package org.wyona.yanel.core.attributes.viewable;
  */
 public class ViewDescriptor {
 
+    private String id;
     private String mt;
+
+    /**
+     *
+     */
+    public ViewDescriptor() {
+    }
+
+    /**
+     *
+     */
+    public ViewDescriptor(String id) {
+        this.id = id;
+    }
 
     /**
      *
@@ -35,5 +49,12 @@ public class ViewDescriptor {
      */
     public String getMimeType() {
         return mt;
+    }
+
+    /**
+     *
+     */
+    public String getId() {
+        return id;
     }
 }
