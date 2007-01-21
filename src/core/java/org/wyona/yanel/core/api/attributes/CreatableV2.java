@@ -28,6 +28,10 @@ import java.util.HashMap;
  */
 public interface CreatableV2 extends CreatableV1 {
 
+    public static String TYPE_UPLOAD = "type_upload";
+    public static String TYPE_STRING = "type_string";
+    public static String TYPE_SELECT = "type_select";
+
     /**
      *
      */
