@@ -49,9 +49,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      */
     public ViewDescriptor[] getViewDescriptors() {
         ViewDescriptor[] vd = new ViewDescriptor[2];
-        vd[0] = new ViewDescriptor();
+        vd[0] = new ViewDescriptor("default");
         vd[0].setMimeType("application/xhtml+xml");
-        vd[1] = new ViewDescriptor();
+        vd[1] = new ViewDescriptor("source");
         vd[1].setMimeType("application/xml");
         return vd;
     }
