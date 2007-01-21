@@ -33,6 +33,7 @@ import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
+import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.navigation.Node;
 import org.wyona.yanel.core.navigation.Sitetree;
 import org.wyona.yanel.core.map.Map;
@@ -275,8 +276,9 @@ public class YanelServlet extends HttpServlet {
 
                     Element resourceElement = (Element) rootElement.appendChild(doc.createElement("resource"));
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
-                        log.info("Resource is viewable V1");
+                        log.debug("Resource is viewable V1");
                         Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
+                        viewElement.setAttributeNS(NAMESPACE, "version", "1");
                         viewElement.appendChild(doc.createTextNode("View Descriptors: " + ((ViewableV1) res).getViewDescriptors()));
                         String viewId = request.getParameter("yanel.resource.viewid");
                         try {
@@ -304,10 +306,18 @@ public class YanelServlet extends HttpServlet {
                             return;
                         }
                     } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
-                        log.info("Resource is viewable V2");
+                        log.debug("Resource is viewable V2");
                         String viewId = request.getParameter("yanel.resource.viewid");
                         Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
-                        viewElement.appendChild(doc.createTextNode("View Descriptors: " + ((ViewableV2) res).getViewDescriptors()));
+                        viewElement.setAttributeNS(NAMESPACE, "version", "2");
+                        ViewDescriptor[] vd = ((ViewableV2) res).getViewDescriptors();
+                        if (vd != null) {
+                            for (int i = 0; i < vd.length; i++) {
+                                viewElement.appendChild(doc.createTextNode("View Descriptor: " + vd[i].getMimeType()));
+                            }
+                        } else {
+                            viewElement.appendChild(doc.createTextNode("No View Descriptors!"));
+                        }
                         size = ((ViewableV2) res).getSize();
                         Element sizeElement = (Element) resourceElement.appendChild(doc.createElement("size"));
                         sizeElement.appendChild(doc.createTextNode(String.valueOf(size)));
@@ -383,9 +393,9 @@ public class YanelServlet extends HttpServlet {
         String meta = request.getParameter("yanel.resource.meta");
         if (meta != null) {
             if (meta.length() > 0) {
-                log.error("DEBUG: meta length: " + meta.length());
+                log.warn("TODO: meta: " + meta);
             } else {
-                log.error("DEBUG: Show all meta");
+                log.debug("Show all meta");
             }
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             setYanelOutput(request, response, doc);
