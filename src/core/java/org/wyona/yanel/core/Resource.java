@@ -27,6 +27,7 @@ public abstract class Resource {
 
     protected ResourceTypeDefinition rtd;
     protected ResourceTypeIdentifier rti;
+    protected ResourceConfiguration rc;
     protected Yanel yanel;
     private Path path;
     protected Realm realm;
@@ -111,6 +112,10 @@ public abstract class Resource {
 
     public void setRTI(ResourceTypeIdentifier rti) {
         this.rti = rti;
+    }
+
+    public void setConfiguration(ResourceConfiguration rc) {
+        this.rc = rc;
     }
 
     public HttpServletRequest getRequest() {

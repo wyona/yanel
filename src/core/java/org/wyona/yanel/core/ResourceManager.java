@@ -73,16 +73,48 @@ public class ResourceManager {
     }
 
     /**
+     * Creates a new resource object in the given realm with the given path and the given type.
+     *
+     * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
+     */
+    public Resource getResource(HttpServletRequest request, HttpServletResponse response, Realm realm, Path path, ResourceConfiguration rc) throws Exception {
+        ResourceTypeDefinition rtd = rtRegistry.getResourceTypeDefinition(rc.getUniversalName());
+
+        String universalName = rtd.getResourceTypeUniversalName();
+        if (rtd != null) {
+            Resource resource = (Resource) Class.forName(rtd.getResourceTypeClassname()).newInstance();
+
+            resource.setRTD(rtd);
+            resource.setYanel(Yanel.getInstance());
+            resource.setRealm(realm);
+            resource.setPath(path);
+            resource.setConfiguration(rc);
+            resource.setRequest(request);
+            resource.setResponse(response);
+            
+            return resource;
+        } else {
+            log.error("No such resource type registered: " + universalName);
+            return null;
+        }
+    }
+
+    /**
      * Creates a new resource object in the given realm and with the given path.
      *
      * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
      */
-    public Resource getResource(HttpServletRequest request, HttpServletResponse response, 
-            Realm realm, Path path) throws Exception {
+    public Resource getResource(HttpServletRequest request, HttpServletResponse response, Realm realm, Path path) throws Exception {
+        if (realm.getRTIRepository().exists(path.getRCPath())) {
+        ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getReader(path.getRCPath()));
+        if (rc != null) return getResource(request, response, realm, path, rc);
+        }
+
+        // Fallback to deprecated RTI
+        log.warn("DEPRECATED: RTI should be replaced by ResourceConfiguration: " + realm + ", " + path);
         ResourceTypeIdentifier rti = getResourceTypeIdentifier(realm, path);
         ResourceTypeDefinition rtd = rtRegistry.getResourceTypeDefinition(rti.getUniversalName());
-        Resource resource = getResource(request, response, realm, path, rtd, rti);
-        return resource;
+        return getResource(request, response, realm, path, rtd, rti);
     }
 
     /**
@@ -100,6 +132,4 @@ public class ResourceManager {
             return new ResourceTypeIdentifier("<{http://www.wyona.org/yanel/resource/1.0}file/>", null);
         } 
     }
-    
-
 }
