@@ -22,6 +22,9 @@
   <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-homepage.xml"/>
   <link rel="stylesheet" href="css/global.css" type="text/css"/>
   <style>
+#body {
+  text-align:left;
+}
 #download-download {
   color: #000;
   font-weight: bold; 
@@ -48,14 +51,14 @@ Client: <xsl:value-of select="$client"/><br/>
 Language: <xsl:value-of select="$language"/>
 </p>
 -->
-
-<xsl:copy-of select="/yh:homepage/yh:header/xhtml:body"/>
+<div id="body">
+<xsl:copy-of select="/yh:homepage/yh:header/xhtml:body/*"/>
 
 <p>
 <!--
 <table background="img/download-star.gif" width="189px" height="187px">
 -->
-<table background="img/download-flower.gif" width="185px" height="185px">
+<table background="img/download-flower.gif" width="185px" height="185px" style="margin-left:100px">
 <tr>
 <td>
 <center>
@@ -97,7 +100,9 @@ English (5.0 MB)
 </table>
 </p>
 
-<xsl:copy-of select="/yh:homepage/yh:footer/xhtml:body"/>
+<xsl:copy-of select="/yh:homepage/yh:footer/xhtml:body/*"/>
+
+</div>
 </body>
 </html>
 </xsl:template>
