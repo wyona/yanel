@@ -56,13 +56,18 @@ WARNING: This content has been generated dynamically. All changes will be lost.
   </xsl:choose>
 </head>
 
-<body bgcolor="#ffffff">
+<body>
 
-<center>
-<table width="800" border="0" bgcolor="#f7f7f7" cellpadding="0" cellspacing="0">
+
+<table id="bodytable" cellpadding="0" cellspacing="0">
 <tr>
   <td colspan="3">
-<h1 id="header"><a href="{$yarep.back2realm}index.html" style="text-decoration: none; color: #ffffff"><img src="{$yarep.back2realm}img/yanel.gif" border="0"/></a></h1>
+    <h1 id="header">
+      <a href="{$yarep.back2realm}index.html">
+        <img id="logo" src="{$yarep.back2realm}img/yanel.png"/>
+      </a>
+      <img id="lead" src="{$yarep.back2realm}img/everything_is_content.png"/>
+    </h1>
   </td>
 </tr>
 
@@ -74,8 +79,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 </div>
 </td>
 
-<!-- SEPARATOR -->
-<td>&#160;&#160;</td>
+
 
 <!-- CONTENT -->
 <td valign="top" width="100%">
@@ -86,14 +90,14 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 </tr>
 <tr>
   <td colspan="3" id="footer">
-  <p>
-    <font size="-1"><i18n:message key="poweredBy"/><xsl:text> </xsl:text><a href="http://yanel.wyona.org">Wyona Yanel</a>, <a href="https://svn.wyona.org/repos/public/tomcat-cluster/">Wyona Balancer</a>, <a href="http://tomcat.apache.org">Apache Tomcat</a>, <a href="http://httpd.apache.org">Apache HTTP Server</a></font><br/>
+
+    <i18n:message key="poweredBy"/><xsl:text> </xsl:text><a href="http://yanel.wyona.org">Wyona Yanel</a> | <a href="https://svn.wyona.org/repos/public/tomcat-cluster/">Wyona Balancer</a> | <a href="http://tomcat.apache.org">Apache Tomcat</a> | <a href="http://httpd.apache.org">Apache HTTP Server</a><br/>
     Copyright &#169; 2006 <a href="http://www.wyona.com">Wyona</a>. <i18n:message key="allRightsReserved"/>. - <a href="?yanel.resource.meta"><i18n:message key="pageInfo"/></a>
-  </p>
+
   </td>
 </tr>
 </table>
-</center>
+
 
 </body>
 </html>
