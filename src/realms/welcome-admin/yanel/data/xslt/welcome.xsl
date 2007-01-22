@@ -38,9 +38,9 @@
                 href="yanel-website/en/documentation/how-to-add-a-new-realm.html">Add
                 an existing third-party realm.</a>
             </li>
-            <li>What is a resource?</li>
-            <li><a href="yanel-website/en/documentation/create-new-resource.html">Create a resource from scratch.</a></li>
-            <li>Add an existing third-party resource.</li>
+            <li>What is a resource resp. resource type?</li>
+            <li><a href="yanel-website/en/documentation/create-new-resource.html">Create a new resource type from scratch.</a></li>
+            <li>Add an existing third-party resource type.</li>
           </ul>
         </p>
         <h2>Registered Realms</h2>
