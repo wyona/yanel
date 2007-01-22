@@ -42,4 +42,15 @@ public class Path extends org.wyona.yarep.core.Path {
         }
         return new Path(path + ".yanel-rti");
     }
+
+    /**
+     *
+     */
+    public Path getRCPath() {
+        // Remove trailing slash except for ROOT ...
+        if (path.length() > 1 && path.charAt(path.length() - 1) == '/') {
+            return new Path(path.substring(0, path.length() - 1) + ".yanel-rc");
+        }
+        return new Path(path + ".yanel-rc");
+    }
 }
