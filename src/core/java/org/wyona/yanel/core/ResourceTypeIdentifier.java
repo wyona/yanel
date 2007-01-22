@@ -33,6 +33,9 @@ import org.apache.log4j.Category;
  * - lines which don't contain a ':' are ignored
  *        
  * TODO: this class should be renamed
+ *
+ * @deprecated
+ * @see org.wyona.yanel.core.ResourceConfiguration
  */
 public class ResourceTypeIdentifier {
 
@@ -58,6 +61,9 @@ public class ResourceTypeIdentifier {
         }
     }
     
+    /**
+     * Create RTI from scratch
+     */
     public ResourceTypeIdentifier(String universalName, Map properties) {
         if (properties == null) {
             this.properties = new HashMap();
@@ -67,6 +73,9 @@ public class ResourceTypeIdentifier {
         this.universalName = universalName;
     }
     
+    /**
+     * Get universal name of resource type
+     */
     public String getUniversalName() {
         return universalName;
     }
@@ -79,9 +88,10 @@ public class ResourceTypeIdentifier {
         return (String)properties.get(key);
     }
     
+    /**
+     * Check if property exists
+     */
     public boolean containsKey(String key) {
         return properties.containsKey(key);
     }
-
-
 }
