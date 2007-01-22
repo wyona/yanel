@@ -80,8 +80,8 @@ public class ResourceManager {
     public Resource getResource(HttpServletRequest request, HttpServletResponse response, Realm realm, Path path, ResourceConfiguration rc) throws Exception {
         ResourceTypeDefinition rtd = rtRegistry.getResourceTypeDefinition(rc.getUniversalName());
 
-        String universalName = rtd.getResourceTypeUniversalName();
         if (rtd != null) {
+            String universalName = rtd.getResourceTypeUniversalName();
             Resource resource = (Resource) Class.forName(rtd.getResourceTypeClassname()).newInstance();
 
             resource.setRTD(rtd);
@@ -94,7 +94,7 @@ public class ResourceManager {
             
             return resource;
         } else {
-            log.error("No such resource type registered: " + universalName);
+            log.error("Resource Type Definition cannot be determined for: " + realm + ", " + path);
             return null;
         }
     }
