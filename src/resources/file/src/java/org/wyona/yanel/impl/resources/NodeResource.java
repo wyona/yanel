@@ -18,6 +18,7 @@ package org.wyona.yanel.impl.resources;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.Topic;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
@@ -77,7 +78,14 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      */
     private String getMimeType(String viewId) throws Exception {
         
-        String mimeType = getRTI().getProperty("mime-type");
+        String mimeType = null;
+        ResourceConfiguration resConfig = getConfiguration();
+        if (resConfig != null) {
+            mimeType = resConfig.getProperty("mime-type");
+        } else {
+            log.warn("Depracted: " + getPath());
+            mimeType = getRTI().getProperty("mime-type");
+        }
         
         if (mimeType != null) return mimeType;
 
