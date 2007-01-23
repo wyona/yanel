@@ -31,7 +31,7 @@ import org.wyona.yarep.core.NoSuchNodeException;
  */
 public class ResourceManager {
 
-    private static Category log = Category.getInstance(ResourceTypeRegistry.class);
+    private static Category log = Category.getInstance(ResourceManager.class);
     
     protected ResourceTypeRegistry rtRegistry;
     
