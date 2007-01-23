@@ -17,6 +17,8 @@
 package org.wyona.yanel.impl.map;
 
 import org.wyona.yanel.core.Path;
+import org.wyona.yanel.core.ResourceConfiguration;
+import org.wyona.yanel.core.ResourceTypeIdentifier;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
@@ -67,21 +69,25 @@ public class MapImpl implements Map {
      */
     public String getResourceTypeIdentifier(Path path) {
         log.debug("Original path: " + path);
-        try {
-            RepoPath rp = new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),getRepositoryFactory());
-            Repository repo = rp.getRepo();
-            log.debug("Repo Name: " + repo.getName());
-            log.debug("New path: " + rp.getPath());
 
-            java.io.BufferedReader br = new java.io.BufferedReader(repo.getReader(new org.wyona.yarep.core.Path(new Path(rp.getPath().toString()).getRTIPath().toString())));
-            return br.readLine();
-        } catch(NoSuchNodeException e) {
-            log.warn(e.getMessage());
-            log.warn("TODO: Implement chain of responsibility ...");
-            return "<{http://www.wyona.org/yanel/resource/1.0}file/>";
-        } catch(Exception e) {
+        try {
+            Repository repo = getRealm(path.toString()).getRTIRepository();
+            Path rPath = getPath(getRealm(path.toString()), path.toString());
+            log.debug("Repo Name: " + repo.getName());
+            log.debug("New path: " + rPath);
+
+            log.debug("Resource Configuration Path: " + rPath.getRCPath());
+            if (repo.exists(rPath.getRCPath())) {
+                return new ResourceConfiguration(repo.getInputStream(rPath.getRCPath())).getUniversalName();
+            } else if (repo.exists(rPath.getRTIPath())) {
+                log.warn("DEPRECATED: " + rPath);
+                return new ResourceTypeIdentifier(repo.getReader(rPath.getRTIPath())).getUniversalName();
+            } else {
+                log.warn("TODO: Implement chain of responsibility ...");
+                return "<{http://www.wyona.org/yanel/resource/1.0}file/>";
+            }
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
-            log.warn("No resource type identifier for path: " + path);
             return null;
         }
     }
@@ -120,6 +126,7 @@ public class MapImpl implements Map {
      * @deprecated
      */
     public Realm getRealm(Path path) {
+        log.warn("DEPRECATED");
         try {
             RepositoryFactory repoFactory = getRepositoryFactory();
             RepoPath rp = new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), repoFactory);
@@ -144,9 +151,10 @@ public class MapImpl implements Map {
     
     /* (non-Javadoc)
      * @see org.wyona.yanel.core.map.Map#getRealm(java.lang.String)
+     * @param url URL of request but without servlet context
      */
     public Realm getRealm(String url) throws Exception {
-        log.debug("getRealm(): URL: " + url);
+        log.debug("URL: " + url);
         Realm[] realms = realmConfig.getRealms();
         
         for (int i=0; i<realms.length; i++) {
@@ -164,22 +172,10 @@ public class MapImpl implements Map {
      * Maps the given url to a path. This default implementation does a one-to-one mapping,
      * but removes the realm prefix (mount-point).
      * E.g. if the url is /yanel-website/foo/bar.html, it will return /foo/bar.html.
+     * @param url URL of request but without servlet context
      */
     public Path getPath(Realm realm, String url) throws Exception {
         log.debug("URL: " + url);
-/*
-        Realm[] realms = realmConfig.getRealms();
-        
-        for (int i=0; i<realms.length; i++) {
-            String mountPoint = realms[i].getMountPoint().toString();
-            log.debug("checking realm : " + realms[i].getID() + " with mountpoint: " + mountPoint);
-            if (url.startsWith(mountPoint)) {
-                log.debug("matched!");
-                return new Path("/" + url.substring(mountPoint.length()));
-            }
-        }
-        log.debug("nothing matched! - > return url as path");
-*/
 
         String mountPoint = realm.getMountPoint().toString();
         if (!url.startsWith(mountPoint)) {
@@ -188,5 +184,4 @@ public class MapImpl implements Map {
         }
         return new Path("/" + url.substring(mountPoint.length()));
     }
-
 }
