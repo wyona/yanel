@@ -94,9 +94,11 @@ public class ResourceConfiguration {
      */
     public String getProperty(String key) throws Exception {
         //return (String)properties.get(key);
-        Configuration[] props = config.getChildren("property");
-        for (int i = 0; i < props.length; i++) {
-            if (props[i].getAttribute("name") != null && props[i].getAttribute("name").equals(key)) return props[i].getAttribute("value");
+        if (config != null) {
+            Configuration[] props = config.getChildren("property");
+            for (int i = 0; i < props.length; i++) {
+                if (props[i].getAttribute("name") != null && props[i].getAttribute("name").equals(key)) return props[i].getAttribute("value");
+            }
         }
         return null;
     }
@@ -106,9 +108,11 @@ public class ResourceConfiguration {
      */
     public boolean containsKey(String key) throws Exception {
         //return properties.containsKey(key);
-        Configuration[] props = config.getChildren("property");
-        for (int i = 0; i < props.length; i++) {
-            if (props[i].getAttribute("name") != null && props[i].getAttribute("name").equals(key)) return true;
+        if (config != null) {
+            Configuration[] props = config.getChildren("property");
+            for (int i = 0; i < props.length; i++) {
+                if (props[i].getAttribute("name") != null && props[i].getAttribute("name").equals(key)) return true;
+            }
         }
         return false;
     }
