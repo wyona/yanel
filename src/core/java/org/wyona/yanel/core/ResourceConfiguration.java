@@ -16,10 +16,12 @@
 
 package org.wyona.yanel.core;
 
-import java.io.BufferedReader;
-import java.io.Reader;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
 import org.apache.log4j.Category;
 
@@ -32,25 +34,19 @@ public class ResourceConfiguration {
 
     protected Map properties;
     protected String universalName;
+    Configuration config;
     
     /**
      *
      */
-    public ResourceConfiguration(Reader reader) throws Exception {
-        BufferedReader br = new BufferedReader(reader);
+    public ResourceConfiguration(InputStream in) throws Exception {
+        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder(true);
+        config = builder.build(in);
+        Configuration rtiConfig = config.getChild("rti");
+	universalName = "<{"+rtiConfig.getAttribute("namespace")+"}" + rtiConfig.getAttribute("name") + "/>";
+        log.debug("Universal Name: " + universalName);
 
-        this.universalName = br.readLine();
-        this.properties = new HashMap();
-        
-        String property;
-        while ((property = br.readLine()) != null) {
-            int colonIndex = property.indexOf(":");
-            if (colonIndex > 0 && !property.trim().startsWith("#")) {
-                String name = property.substring(0, colonIndex).trim();
-                String value = property.substring(colonIndex + 1).trim();
-                this.properties.put(name, value);
-            }
-        }
+        // TODO: Read properties and set this.properties
     }
     
     /**
@@ -76,14 +72,24 @@ public class ResourceConfiguration {
      * @param key
      * @return value for this key or null if no value exists for this key.
      */
-    public String getProperty(String key) {
-        return (String)properties.get(key);
+    public String getProperty(String key) throws Exception {
+        //return (String)properties.get(key);
+        Configuration[] props = config.getChildren("property");
+        for (int i = 0; i < props.length; i++) {
+            if (props[i].getAttribute("name") != null && props[i].getAttribute("name").equals(key)) return props[i].getAttribute("value");
+        }
+        return null;
     }
     
     /**
      * Check if property exists
      */
-    public boolean containsKey(String key) {
-        return properties.containsKey(key);
+    public boolean containsKey(String key) throws Exception {
+        //return properties.containsKey(key);
+        Configuration[] props = config.getChildren("property");
+        for (int i = 0; i < props.length; i++) {
+            if (props[i].getAttribute("name") != null && props[i].getAttribute("name").equals(key)) return true;
+        }
+        return false;
     }
 }

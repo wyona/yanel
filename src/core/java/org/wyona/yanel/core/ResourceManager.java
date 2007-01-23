@@ -106,8 +106,8 @@ public class ResourceManager {
      */
     public Resource getResource(HttpServletRequest request, HttpServletResponse response, Realm realm, Path path) throws Exception {
         if (realm.getRTIRepository().exists(path.getRCPath())) {
-        ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getReader(path.getRCPath()));
-        if (rc != null) return getResource(request, response, realm, path, rc);
+            ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getInputStream(path.getRCPath()));
+            if (rc != null) return getResource(request, response, realm, path, rc);
         }
 
         // Fallback to deprecated RTI
