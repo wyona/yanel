@@ -120,6 +120,7 @@ public class ResourceManager {
     /**
      * Returns the abstraction of the rti file for the given path in the realm.
      * TODO: move this method to some RTIManager class ?
+     * @deprecated
      */
     public ResourceTypeIdentifier getResourceTypeIdentifier(Realm realm, Path path) throws Exception {
         log.debug("Original path: " + path);
