@@ -39,7 +39,7 @@ import org.apache.log4j.Category;
  */
 public class ResourceTypeIdentifier {
 
-    private Category log = Category.getInstance(ResourceTypeDefinition.class);
+    private Category log = Category.getInstance(ResourceTypeIdentifier.class);
 
     protected Map properties;
     protected String universalName;
