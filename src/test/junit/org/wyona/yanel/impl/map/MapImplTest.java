@@ -29,7 +29,7 @@ public class MapImplTest extends AbstractYanelTest {
     public void setUp() throws Exception {
         super.setUp();
         this.testName = "Test for the Map Implementation";
-        this.map = new MapImpl();
+        this.map = (Map) yanel.getBeanFactory().getBean("map");
     }
 
     /**
@@ -38,8 +38,7 @@ public class MapImplTest extends AbstractYanelTest {
     public void testRTI() throws Exception {
         Path path = new Path("/yanel-website/en/about.html");
         String rti = map.getResourceTypeIdentifier(path);
-        assertEquals("Incorrect RTI for path: " + path.toString(),
-                "<{http://www.wyona.org/yanel/resource/1.0}xml/>", rti);
+        assertEquals("Incorrect RTI for path: " + path.toString(), "<{http://www.wyona.org/yanel/resource/1.0}xml/>", rti);
     }
 
 }
