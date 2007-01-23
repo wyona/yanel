@@ -65,7 +65,7 @@ public class LinkChecker extends DefaultHandler {
                             }
                         }
                         if(!externalLink && !resourceExists(aValue)) {
-                            log.error("Resource : [" + aValue + "] does not exist");
+                            log.warn("Link : [" + aValue + "] does not exist");
                             transformedXmlAsBuffer.append(" exist=\"false\"");
                         }
                     }
