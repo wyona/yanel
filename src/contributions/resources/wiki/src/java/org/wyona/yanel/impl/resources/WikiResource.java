@@ -40,6 +40,7 @@ import org.wyona.wikiparser.IWikiParser;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
@@ -60,7 +61,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     private final String XML_MIME_TYPE = "application/xml";
     private DocumentBuilderFactory dbf = null;
     private HashMap properties = new HashMap();
-    private String defaultWikiParserBeanId = "jspWikiParser";
+    private final String DEFAULT_WIKI_PARSER_BEAN_ID = "jspWikiParser";
     
     private String language = "en";
     
@@ -86,9 +87,6 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     public View getView(Path path, String viewId) {
         View defaultView = new View();
         try {
-            //RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-            //Repository repository = rp.getRepo();
-
             Repository dataRepo = getRealm().getRepository();
             
             String path2Resource = path.toString();
@@ -104,7 +102,9 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
                 transformer = TransformerFactory.newInstance().newTransformer();
                 defaultView.setMimeType(XML_MIME_TYPE);
             } else {
-                transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(null, dataRepo));
+                File xsltFile = org.wyona.commons.io.FileUtil.file(getRTD().getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "wiki2xhtml.xsl");
+                log.debug("XSLT file: " + xsltFile);
+                transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
                 transformer.setParameter("yanel.path.name", path.getName());
                 transformer.setParameter("yanel.path", path.toString());
                 defaultView.setMimeType("application/xhtml+xml");
@@ -116,11 +116,17 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
             java.io.ByteArrayOutputStream byteArrayOutputStream = new java.io.ByteArrayOutputStream();
             
             transformer.transform(new StreamSource(linkChecker.getInputStream()), new StreamResult(byteArrayOutputStream));
+
+            if(viewId != null && viewId.equals("source")) {
+                defaultView.setInputStream(new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
+                return defaultView;
+            }
             
-            if(getXSLTPath(path) != null) {
+            // Apply global XSLT
+            if(getXSLTPath() != null) {
                 inputStream = new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray());
                 
-                transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, dataRepo));
+                transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath().toString()))));
                 transformer.setParameter("yanel.back2context", backToRoot(path, ""));
                 transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(getPath().toString()), ""));
                 
@@ -182,42 +188,22 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
     public View getView(HttpServletRequest request, OutputStream outputStream, String viewId) {
         return null;
     }
+
     /**
-     * 
+     * Get path of global XSLT
      */
-    private StreamSource getXSLTStreamSource(Path path, Repository repo) throws RepositoryException {
-        Path xsltPath = getXSLTPath(path);
-        if (xsltPath != null) {
-            return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString())));
+    private Path getXSLTPath() throws Exception {
+        ResourceConfiguration resConfig = getConfiguration();
+        String xslt = null;
+        if (resConfig != null) {
+            xslt = resConfig.getProperty("xslt");
         } else {
-            File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
-                    .getParentFile()
-                    .getAbsolutePath(), "xslt" + File.separator + "wiki2xhtml.xsl");
-            log.debug("XSLT file: " + xsltFile);
-            return new StreamSource(xsltFile);
+            // Fallback to deprecated RTI
+            xslt= getRTI().getProperty("xslt");
         }
-    }
 
-    /**
-     * 
-     */
-    private Path getXSLTPath(Path path) {
-        String xsltPath = null;
-        try {
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
-
-            while ((xsltPath = br.readLine()) != null) {
-                if (xsltPath.indexOf("xslt:") == 0) {
-                    xsltPath = xsltPath.substring(6);
-                    log.info("XSLT Path: " + xsltPath);
-                    return new Path(xsltPath);
-                }
-            }
-            log.info("No XSLT Path within: " + rpRTI.getPath());
-        } catch (Exception e) {
-            log.warn(e);
-        }
+        if (xslt != null) return new Path(xslt);
+        log.info("No XSLT Path for: " + getPath());
         return null;
     }
     
@@ -229,22 +215,24 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
      */
     private String getWikiSyntax(Path path) {
         String wikiParserBeanId = null;
-        try {
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
 
-            while ((wikiParserBeanId = br.readLine()) != null) {
-                if (wikiParserBeanId.indexOf("wiki-syntax:") == 0) {
-                    wikiParserBeanId = wikiParserBeanId.substring(13);
-                    log.debug("found wiki-syntax in rti file: " + wikiParserBeanId);
-                    return wikiParserBeanId;
-                }
+        try {
+            // Check on Resource config resp. RTI
+            ResourceConfiguration resConfig = getConfiguration();
+            if (resConfig != null) {
+                wikiParserBeanId = resConfig.getProperty("wiki-syntax");
+            } else {
+                // Fallback to deprecated RTI
+                wikiParserBeanId = getRTI().getProperty("wiki-syntax");
             }
-            File configFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
+            if (wikiParserBeanId != null) return wikiParserBeanId;
+
+            // Check within resource type itself
+            File configFile = org.wyona.commons.io.FileUtil.file(getRTD().getConfigFile()
                     .getParentFile()
                     .getAbsolutePath(), "config" + File.separator + "wikiParser.config");
             log.debug("configFile : " + configFile.getAbsolutePath());
-            br = new java.io.BufferedReader(new java.io.FileReader(configFile));
+            java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(configFile));
             while ((wikiParserBeanId = br.readLine()) != null) {
                 if (wikiParserBeanId.indexOf("wiki-syntax:") == 0) {
                     wikiParserBeanId = wikiParserBeanId.substring(13);
@@ -257,10 +245,10 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
         } catch (Exception e) {
             log.error("Exception" + e);//was warn
         } finally {
-            wikiParserBeanId = defaultWikiParserBeanId;    
+            wikiParserBeanId = DEFAULT_WIKI_PARSER_BEAN_ID;    
         }
-        log.debug("using fallback default wikiParser!");
-        return wikiParserBeanId;
+        log.warn("Using fallback default wiki parser: " + DEFAULT_WIKI_PARSER_BEAN_ID);
+        return DEFAULT_WIKI_PARSER_BEAN_ID;
     }
     
 
