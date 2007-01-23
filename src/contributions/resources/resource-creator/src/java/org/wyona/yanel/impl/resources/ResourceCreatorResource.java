@@ -82,8 +82,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         } else {
             if (request.getParameter("save-as") != null) {
                 // NOTE: Save as has been merged with getResourceScreen because otherwise uploading of data would be rather cumbersome.
-                getNoSuchScreen(sb);
                 //getSaveAsScreen(sb);
+                getNoSuchScreen(sb);
             } else if (request.getParameter("save") != null) {
                 getSaveScreen(sb);
 	    } else if (request.getParameter("resource-type") != null) {
@@ -258,11 +258,16 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                             if (propertyType != null && propertyType.equals(CreatableV2.TYPE_UPLOAD)) {
                                 sb.append("<input type=\"file\" name=\"rp." + propertyNames[i] + "\"/><br/>");
 		            } else if (propertyType != null && propertyType.equals(CreatableV2.TYPE_SELECT)) {
-                                sb.append("<select name=\"rp." + propertyNames[i] + "\">");
-                                sb.append("  <option value=\"*\">*</option>");
-                                sb.append("  <option value=\"public\">public</option>");
-                                sb.append("  <option value=\"private\">private</option>");
-                                sb.append("</select><br/>");
+                                Object defaultValues = ((CreatableV2) resource).getProperty(propertyNames[i]);
+                                if (defaultValues instanceof java.util.HashMap) {
+                                    sb.append("<select name=\"rp." + propertyNames[i] + "\">");
+                                    sb.append("  <option value=\"*\">*</option>");
+                                    sb.append("  <option value=\"public\">public</option>");
+                                    sb.append("  <option value=\"private\">private</option>");
+                                    sb.append("</select><br/>");
+                                } else {
+                                    sb.append("Exception: Parameter doesn't seem to be a of type SELECT: " + propertyNames[i]);
+                                }
                             } else {
                                 Object value = ((CreatableV2) resource).getProperty(propertyNames[i]);
                                 if (value == null) {
