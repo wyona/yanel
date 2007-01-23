@@ -23,6 +23,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeIdentifier;
 import org.wyona.yanel.core.ResourceTypeRegistry;
@@ -228,14 +229,18 @@ public class YanelServlet extends HttpServlet {
             sessionAttributeElement.appendChild(doc.createTextNode(value));
         }
 
+
+
+
+/*
         Realm realm;
         Path path;
-        ResourceTypeIdentifier rti;
+        //ResourceTypeIdentifier rti;
         
         try {
             realm = map.getRealm(request.getServletPath());
             path = map.getPath(realm, request.getServletPath());
-            rti = yanel.getResourceManager().getResourceTypeIdentifier(realm, path);
+            //rti = yanel.getResourceManager().getResourceTypeIdentifier(realm, path);
         } catch (Exception e) {
             String message = "URL could not be mapped to realm/path " + e.getMessage();
             log.error(message, e);
@@ -246,38 +251,23 @@ public class YanelServlet extends HttpServlet {
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
+*/
         
-        //String rti = map.getResourceTypeIdentifier(new Path(request.getServletPath()));
         Resource res = null;
         long lastModified = -1;
         long size = -1;
-        if (rti != null) {
-            ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti.getUniversalName());
-            if (rtd == null) {
-                String message = "No such resource type registered: " + rti.getUniversalName() + ", check " + rtr.getConfigurationFile();
-                log.error(message);
-                Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
-                exceptionElement.appendChild(doc.createTextNode(message));
-
-                setYanelOutput(request, response, doc);
-                response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return;
-            }
-
-            Element rtiElement = (Element) rootElement.appendChild(doc.createElement("resource-type-identifier"));
-            rtiElement.setAttribute("namespace",  rtd.getResourceTypeNamespace());
-            rtiElement.setAttribute("local-name",  rtd.getResourceTypeLocalName());
-
             try {
-/*
-                HttpRequest httpRequest = new HttpRequest(request);
-                HttpResponse httpResponse = new HttpResponse(response);
-                res = yanel.getResourceManager().getResource(httpRequest, httpResponse, realm, path, rtd, rti);
-*/
                 res = getResource(request, response);
                 if (res != null) {
 
                     Element resourceElement = (Element) rootElement.appendChild(doc.createElement("resource"));
+                    ResourceConfiguration resConfig = res.getConfiguration();
+                    if (resConfig != null) {
+                        Element resConfigElement = (Element) resourceElement.appendChild(doc.createElementNS(NAMESPACE, "config"));
+                        resConfigElement.setAttributeNS(NAMESPACE, "rti-name", "hugo");
+                        resConfigElement.setAttributeNS(NAMESPACE, "rti-namespace", "http://....");
+                    } else {
+                    }
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                         log.debug("Resource is viewable V1");
                         Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
@@ -380,10 +370,11 @@ public class YanelServlet extends HttpServlet {
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 return;
             }
-        } else {
-            Element noRTIFoundElement = (Element) rootElement.appendChild(doc.createElement("no-resource-type-identifier-found"));
-            noRTIFoundElement.setAttribute("servlet-path", request.getServletPath());
-        }
+
+
+
+
+
 
 
         String usecase = request.getParameter("yanel.resource.usecase");
