@@ -264,9 +264,10 @@ public class YanelServlet extends HttpServlet {
                     ResourceConfiguration resConfig = res.getConfiguration();
                     if (resConfig != null) {
                         Element resConfigElement = (Element) resourceElement.appendChild(doc.createElementNS(NAMESPACE, "config"));
-                        resConfigElement.setAttributeNS(NAMESPACE, "rti-name", "hugo");
-                        resConfigElement.setAttributeNS(NAMESPACE, "rti-namespace", "http://....");
+                        resConfigElement.setAttributeNS(NAMESPACE, "rti-name", resConfig.getName());
+                        resConfigElement.setAttributeNS(NAMESPACE, "rti-namespace", resConfig.getNamespace());
                     } else {
+                        Element noResConfigElement = (Element) resourceElement.appendChild(doc.createElementNS(NAMESPACE, "no-config"));
                     }
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                         log.debug("Resource is viewable V1");
