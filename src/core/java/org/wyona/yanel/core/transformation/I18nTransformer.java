@@ -16,6 +16,7 @@ public class I18nTransformer extends DefaultHandler {
     private ResourceBundle messageBundle = null;
     private ByteArrayInputStream byteArrayInputStream = null;
     private StringBuffer transformedXmlAsBuffer = null;
+    private String cachedEname;
 
     public I18nTransformer(String messages, String language) {
         currentLocale = new Locale(language);
@@ -49,7 +50,7 @@ public class I18nTransformer extends DefaultHandler {
             
             log.debug("TAG [key] " + key + " [message]" + i18nText);
             char[] i18nMessage = i18nText.toCharArray(); 
-            characters(i18nMessage, 0, i18nMessage.length);
+            characters(i18nMessage, 0, i18nMessage.length-1);
         } else {
             transformedXmlAsBuffer.append("<" + eName);
             for(int i = 0; i < attrs.getLength(); i++) {
@@ -74,6 +75,7 @@ public class I18nTransformer extends DefaultHandler {
                 transformedXmlAsBuffer.append(" " + aName + "=\"" + aValue + "\"");
             }
             transformedXmlAsBuffer.append(">");
+            cachedEname = eName;
         }
     }
 
@@ -81,12 +83,17 @@ public class I18nTransformer extends DefaultHandler {
         String eName = ("".equals(localName)) ? qName : localName;
         if ((eName.equals("message")) || (eName.equals("i18n:message"))) {
             /*ignore these tags*/
+        } else if(cachedEname != null && cachedEname.equals(cachedEname)){
+            transformedXmlAsBuffer.deleteCharAt(transformedXmlAsBuffer.length()-1);
+            transformedXmlAsBuffer.append("/>");
+            cachedEname = null;
         } else {
             transformedXmlAsBuffer.append("</" + eName + ">");
         }
     }
 
     public void characters(char[] buf, int offset, int len) throws SAXException {
+        cachedEname = null;
         String s = new String(buf, offset, len);
         s =  replaceAmpersand(s);
         transformedXmlAsBuffer.append(s);
