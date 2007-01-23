@@ -278,8 +278,11 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
      *
      */
     public String getPropertyType(String propertyName) {
-        log.warn("Not implemented yet!");
-        return null;
+        if (propertyName.equals("classes")) {
+            return CreatableV2.TYPE_SELECT;
+        } else {
+            return null;
+        }
     }
 
     /**
