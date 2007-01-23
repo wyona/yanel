@@ -33,7 +33,8 @@ public class ResourceConfiguration {
     private Category log = Category.getInstance(ResourceConfiguration.class);
 
     protected Map properties;
-    protected String universalName;
+    protected String name;
+    protected String namespace;
     Configuration config;
     
     /**
@@ -43,29 +44,48 @@ public class ResourceConfiguration {
         DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder(true);
         config = builder.build(in);
         Configuration rtiConfig = config.getChild("rti");
-	universalName = "<{"+rtiConfig.getAttribute("namespace")+"}" + rtiConfig.getAttribute("name") + "/>";
-        log.debug("Universal Name: " + universalName);
+	name = rtiConfig.getAttribute("name");
+	namespace = rtiConfig.getAttribute("namespace");
+        log.debug("Universal Name: " + getUniversalName());
 
         // TODO: Read properties and set this.properties
     }
     
     /**
      * Create a resource from scratch
+     * @param name Resource Type Name
+     * @param name Resource Type Namespace
      */
-    public ResourceConfiguration(String universalName, Map properties) {
+    public ResourceConfiguration(String name, String namespace, Map properties) {
+        this.name = name;
+        this.namespace = namespace;
+
         if (properties == null) {
             this.properties = new HashMap();
         } else {
             this.properties = properties;
         }
-        this.universalName = universalName;
     }
     
     /**
      * Get universal name of resource type
      */
     public String getUniversalName() {
-        return universalName;
+	return "<{" + namespace + "}" + name + "/>";
+    }
+    
+    /**
+     * Get resource type name
+     */
+    public String getName() {
+        return name;
+    }
+    
+    /**
+     * Get resource type namespace
+     */
+    public String getNamespace() {
+        return namespace;
     }
     
     /**
