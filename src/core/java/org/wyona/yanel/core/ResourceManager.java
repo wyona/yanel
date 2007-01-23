@@ -110,11 +110,15 @@ public class ResourceManager {
             if (rc != null) return getResource(request, response, realm, path, rc);
         }
 
-        // Fallback to deprecated RTI
-        log.warn("DEPRECATED: RTI should be replaced by ResourceConfiguration: " + realm + ", " + path);
-        ResourceTypeIdentifier rti = getResourceTypeIdentifier(realm, path);
-        ResourceTypeDefinition rtd = rtRegistry.getResourceTypeDefinition(rti.getUniversalName());
-        return getResource(request, response, realm, path, rtd, rti);
+        if (realm.getRTIRepository().exists(path.getRTIPath())) {
+            // Fallback to deprecated RTI
+            log.warn("DEPRECATED: RTI should be replaced by ResourceConfiguration: " + realm + ", " + path);
+            ResourceTypeIdentifier rti = getResourceTypeIdentifier(realm, path);
+            ResourceTypeDefinition rtd = rtRegistry.getResourceTypeDefinition(rti.getUniversalName());
+            return getResource(request, response, realm, path, rtd, rti);
+        } else {
+            return getResource(request, response, realm, path, new ResourceConfiguration("file", "http://www.wyona.org/yanel/resource/1.0", null));
+        }
     }
 
     /**
