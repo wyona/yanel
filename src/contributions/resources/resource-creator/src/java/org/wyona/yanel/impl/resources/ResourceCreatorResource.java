@@ -133,7 +133,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     }
 
     /**
-     *
+     * OBSOLETE
      */
     private void getSaveAsScreen(StringBuffer sb) {
         String rtps = getRequest().getParameter("resource-type");
@@ -173,11 +173,14 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         while (parameters.hasMoreElements()) {
             String parameter = (String) parameters.nextElement();
             if (parameter.indexOf("rp.") == 0) {
-                            String propertyType = ((CreatableV2) resource).getPropertyType(parameter.substring(3));
-                            if (propertyType != null && propertyType.equals(CreatableV2.TYPE_UPLOAD)) {
-                sb.append("<input type=\"file\" name=\""+parameter+"\" value=\""+request.getParameter(parameter)+"\"/><br/>");
-                            } else {
-                sb.append("<input type=\"hidden\" name=\""+parameter+"\" value=\""+request.getParameter(parameter)+"\"/>");
+                String propertyType = ((CreatableV2) resource).getPropertyType(parameter.substring(3));
+                if (propertyType != null && propertyType.equals(CreatableV2.TYPE_UPLOAD)) {
+                    sb.append("<input type=\"file\" name=\""+parameter+"\" value=\""+request.getParameter(parameter)+"\"/><br/>");
+		} else if (propertyType != null && propertyType.equals(CreatableV2.TYPE_SELECT)) {
+                    sb.append("<select name=\"parameter\">");
+                    sb.append("</select>");
+                } else {
+                    sb.append("<input type=\"hidden\" name=\""+parameter+"\" value=\""+request.getParameter(parameter)+"\"/>");
                 }
             }
         }
@@ -253,7 +256,13 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                             sb.append(propertyNames[i] + ": ");
                             String propertyType = ((CreatableV2) resource).getPropertyType(propertyNames[i]);
                             if (propertyType != null && propertyType.equals(CreatableV2.TYPE_UPLOAD)) {
-                                sb.append("<input type=\"file\" name=\"rp."+propertyNames[i]+"\"/>");
+                                sb.append("<input type=\"file\" name=\"rp." + propertyNames[i] + "\"/><br/>");
+		            } else if (propertyType != null && propertyType.equals(CreatableV2.TYPE_SELECT)) {
+                                sb.append("<select name=\"rp." + propertyNames[i] + "\">");
+                                sb.append("  <option value=\"*\">*</option>");
+                                sb.append("  <option value=\"public\">public</option>");
+                                sb.append("  <option value=\"private\">private</option>");
+                                sb.append("</select><br/>");
                             } else {
                                 Object value = ((CreatableV2) resource).getProperty(propertyNames[i]);
                                 if (value == null) {
