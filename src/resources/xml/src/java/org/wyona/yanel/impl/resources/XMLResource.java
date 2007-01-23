@@ -18,6 +18,7 @@ package org.wyona.yanel.impl.resources;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.Topic;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
@@ -85,7 +86,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         String mimeType = getMimeType(getPath(), viewId);
         defaultView.setMimeType(mimeType);
 
-        String yanelPath = getRTI().getProperty("yanel-path");
+        String yanelPath = getProperty("yanel-path");
         //if (yanelPath == null) yanelPath = path.toString();
 
         Path xsltPath = getXSLTPath(getPath());
@@ -184,8 +185,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     /**
      * Get mime type
      */
-    private String getMimeType(Path path, String viewId) {
-        String mimeType = getRTI().getProperty("mime-type");
+    private String getMimeType(Path path, String viewId) throws Exception {
+        String mimeType = getProperty("mime-type");
         if (mimeType != null) return mimeType;
 
         String suffix = path.getSuffix();
@@ -253,8 +254,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     /**
      * Get XSLT path
      */
-    private Path getXSLTPath(Path path) {
-        String xsltPath = getRTI().getProperty("xslt");
+    private Path getXSLTPath(Path path) throws Exception {
+        String xsltPath = getProperty("xslt");
         if (xsltPath != null) return new Path(xsltPath);
         log.info("No XSLT Path within: " + path);
         return null;
@@ -328,5 +329,14 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
             log.warn("Client could not be recognized: " + userAgent);
             return null;
         }
+    }
+
+    /**
+     * Get property value from resource configuration
+     */
+    private String getProperty(String name) throws Exception {
+        ResourceConfiguration rc = getConfiguration();
+        if (rc != null) return rc.getProperty(name);
+        return getRTI().getProperty(name);
     }
 }
