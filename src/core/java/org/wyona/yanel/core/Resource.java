@@ -20,10 +20,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.wyona.yanel.core.map.Realm;
 
+import org.apache.log4j.Category;
+
 /**
  *
  */
 public abstract class Resource {
+
+    private static Category log = Category.getInstance(Resource.class);
 
     protected ResourceTypeDefinition rtd;
     protected ResourceTypeIdentifier rti;
@@ -106,16 +110,36 @@ public abstract class Resource {
         this.realm = realm;
     }
 
+    /**
+     * @deprecated
+     * @see #getConfiguration
+     */
     public ResourceTypeIdentifier getRTI() {
+        log.warn("DEPRECATED: see #getConfiguration");
         return rti;
     }
 
+    /**
+     * @deprecated
+     * @see #setConfiguration
+     */
     public void setRTI(ResourceTypeIdentifier rti) {
+        log.warn("DEPRECATED: see #setConfiguration");
         this.rti = rti;
     }
 
+    /**
+     * Set resource configuration
+     */
     public void setConfiguration(ResourceConfiguration rc) {
         this.rc = rc;
+    }
+
+    /**
+     * Get resource configuration
+     */
+    public ResourceConfiguration getConfiguration() {
+        return rc;
     }
 
     public HttpServletRequest getRequest() {
