@@ -283,7 +283,7 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
      */
     protected void assertTitleEquals(String expectedTitle) {
         String title = currentPage.getTitleText();
-        assertEquals("Wrong page title: ", expectedTitle, title);
+        assertEquals("Expected page title \"" + expectedTitle + "\" does not match title \"" + title + "\"", expectedTitle, title);
     }
 
     /**
