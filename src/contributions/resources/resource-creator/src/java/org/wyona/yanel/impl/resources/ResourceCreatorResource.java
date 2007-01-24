@@ -4,7 +4,9 @@
 
 package org.wyona.yanel.impl.resources;
 
+import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
@@ -202,10 +204,18 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     }
 
     /**
-     *
+     * Save screen
      */
     private void getSaveScreen(StringBuffer sb) {
         sb.append("<h4>Create resource (step 3)</h4>");
+
+        try {
+            create();
+        } catch(Exception e) {
+            sb.append("<p>Exception: "+e.getMessage()+"</p>");
+            return;
+        }
+
         sb.append("<h2>Resource has been created</h2>");
 
         HttpServletRequest request = getRequest();
@@ -299,5 +309,63 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             sb.append("<p>Exception: "+e+"</p>");
             log.error(e);
         }
+    }
+    
+    /**
+     * Creates new resource
+     */
+    private void create() throws Exception {
+        org.wyona.yanel.core.map.Realm realm = getRealm();
+        Path pathOfResourceCreator = getPath();
+
+        org.wyona.commons.io.Path parent = new org.wyona.commons.io.Path(pathOfResourceCreator.toString()).getParent();
+
+        Path pathOfNewResource = null;
+        String createName = getRequest().getParameter("create-name");
+        if(parent.equals("null")) {
+            // if pathOfResourceCreator is ROOT
+            pathOfNewResource = new Path("/" + createName);
+        } else {
+            pathOfNewResource = new Path(parent + "/" + createName);
+        }
+
+        log.error("DEBUG: Path of new resource: " + pathOfNewResource);
+
+        String rtps = getRequest().getParameter("resource-type");
+        String resNamespace = rtps.substring(0, rtps.indexOf("::"));
+        String resName = rtps.substring(rtps.indexOf("::") + 2);
+        Resource newResource = yanel.getResourceManager().getResource(request, response, realm, pathOfNewResource, new ResourceConfiguration(resName, resNamespace, null));
+
+        if (newResource != null) {
+            if (ResourceAttributeHelper.hasAttributeImplemented(newResource, "Creatable", "2")) {
+                ((CreatableV2) newResource).create(request);
+                createConfiguration(newResource);
+            } else {
+                throw new Exception("creation NOT successfull!");
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private void createConfiguration(Resource newResource) throws Exception {
+                    StringBuffer rtiContent = new StringBuffer(newResource.getResourceTypeUniversalName() + "\n");
+                    java.util.HashMap rtiProperties = ((CreatableV2) newResource).createRTIProperties(request);
+                    if (rtiProperties != null) {
+                        log.error("DEBUG: " + rtiProperties + " " + newResource.getPath().getRTIPath());
+                        java.util.Iterator iterator = rtiProperties.keySet().iterator();
+                        while (iterator.hasNext()) {
+                            String property = (String) iterator.next();
+                            String value = (String) rtiProperties.get(property);
+                            rtiContent.append(property + ": " + value + "\n");
+                            log.error("DEBUG: " + property + ", " + value);
+                        }
+                    } else {
+                        log.warn("No RTI properties: " + newResource.getPath());
+                    }
+                    java.io.Writer writer = newResource.getRealm().getRTIRepository().getWriter(new org.wyona.yarep.core.Path(newResource.getPath().getRTIPath().toString()));
+                    writer.write(rtiContent.toString());
+                    writer.close();
     }
 }
