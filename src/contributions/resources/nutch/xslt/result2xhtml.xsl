@@ -90,9 +90,7 @@
     <i18n:message key="resultsForQuery"/><xsl:text> </xsl:text><xsl:value-of select="."/>
   </xsl:template>
   
-  <xsl:template match="yanel:no-query" mode="title">
-    Search
-  </xsl:template>
+  <xsl:template match="yanel:no-query" mode="title">Search</xsl:template>
   
   <xsl:template match="yanel:results">
     <div id="resultHits" hits="{$totalHits}"/>
