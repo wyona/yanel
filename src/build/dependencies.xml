@@ -29,11 +29,11 @@
                   version="1.2.8"/>
       <!-- TODO: Add checksum file to server -->
       <dependency groupId="yarep" artifactId="yarep-core"
-                  version="0.0.1-dev-r21478"/>
+                  version="0.0.1-dev-r22097"/>
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
                   version="0.0.1-dev-r19469"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core"
-                  version="0.0.1-dev-r21754"/>
+                  version="0.0.1-dev-r22100"/>
 
       <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api"
@@ -57,9 +57,9 @@
       <dependency groupId="xalan" artifactId="xalan"
                   version="2.7.0"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl"
-                  version="0.0.1-dev-r21754"/>
+                  version="0.0.1-dev-r22100"/>
       <dependency groupId="yarep" artifactId="yarep-impl"
-                  version="0.0.1-dev-r21478"/>
+                  version="0.0.1-dev-r22097"/>
                   
       <dependency groupId="spring" artifactId="spring"
                   version="2.0"/>
