@@ -50,7 +50,7 @@ public class I18nTransformer extends DefaultHandler {
             
             log.debug("TAG [key] " + key + " [message]" + i18nText);
             char[] i18nMessage = i18nText.toCharArray(); 
-            characters(i18nMessage, 0, i18nMessage.length-1);
+            characters(i18nMessage, 0, i18nMessage.length);
         } else {
             transformedXmlAsBuffer.append("<" + eName);
             for(int i = 0; i < attrs.getLength(); i++) {
