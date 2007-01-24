@@ -54,7 +54,7 @@ public class ResourceConfiguration {
     /**
      * Create a resource from scratch
      * @param name Resource Type Name
-     * @param name Resource Type Namespace
+     * @param namespace Resource Type Namespace
      */
     public ResourceConfiguration(String name, String namespace, Map properties) {
         this.name = name;
