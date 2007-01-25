@@ -130,7 +130,7 @@
   </xsl:template>
   
   <xsl:template match="view">
-    <li>View: <xsl:apply-templates/></li>
+    <li>View (Version <xsl:value-of select="@yanel:version"/>): <xsl:apply-templates/></li>
   </xsl:template>
   
   <xsl:template match="last-modified">
@@ -175,6 +175,10 @@
         </xsl:otherwise>
       </xsl:choose>
     </p>
+  </xsl:template> 
+
+  <xsl:template match="descriptor">
+    <br/>Descriptor: <a href="?yanel.resource.viewid={@yanel:id}"><xsl:value-of select="."/></a>
   </xsl:template> 
 
 </xsl:stylesheet>
