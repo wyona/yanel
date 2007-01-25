@@ -152,7 +152,7 @@ public class CreateUsecaseHelper {
                     if (PropertyNames != null && PropertyNames.length > 0) {
                         form.append("<p>Resource specific properties:</p>");
                         for (int i = 0; i < PropertyNames.length; i++) {
-                            form.append(PropertyNames[i] + ": <input name=\"" + PropertyNames[i]
+                            form.append(PropertyNames[i] + ": <input name=\"rp." + PropertyNames[i]
                                 + "\" value=\""
                                 + ((CreatableV2) resource).getProperty(PropertyNames[i])
                                 + "\" size=\"60\"><br/>");
