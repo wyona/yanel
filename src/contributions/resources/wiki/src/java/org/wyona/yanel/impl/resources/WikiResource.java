@@ -78,15 +78,30 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
      * 
      */
     public ViewDescriptor[] getViewDescriptors() {
-        return null;
+        ViewDescriptor[] vd = new ViewDescriptor[3];
+        vd[0] = new ViewDescriptor("default");
+        vd[0].setMimeType("application/xhtml+xml");
+        vd[1] = new ViewDescriptor("source");
+        vd[1].setMimeType("application/xml");
+        vd[2] = new ViewDescriptor("txt");
+        vd[2].setMimeType("text/plain");
+        return vd;
     }
     
     /**
      *
      */
     public View getView(Path path, String viewId) {
-        View defaultView = new View();
+
         try {
+        if (viewId != null && viewId.equals("txt")) {
+            View view = new View();
+            view.setInputStream(getRealm().getRepository().getInputStream(new org.wyona.yarep.core.Path(getPath().toString())));
+            view.setMimeType("text/plain");
+            return view;
+        }
+
+        View defaultView = new View();
             Repository dataRepo = getRealm().getRepository();
             
             String path2Resource = path.toString();
@@ -273,8 +288,12 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
         emptyWikiPageContent.append("\n<introspection xmlns=\"http://www.wyona.org/neutron/1.0\">");
         emptyWikiPageContent.append("\n");
         emptyWikiPageContent.append("\n  <edit mime-type=\"text/plain\" name=\"" + title + "\">");
+        emptyWikiPageContent.append("\n    <checkout url=\"" + createName + "?yanel.resource.viewid=txt&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
+        emptyWikiPageContent.append("\n    <checkin  url=\"" + createName + "?yanel.resource.usecase=checkin\" method=\"PUT\"/>");
+/*
         emptyWikiPageContent.append("\n    <checkout url=\"" + createName + ".txt?yanel.resource.usecase=checkout\" method=\"GET\"/>");
         emptyWikiPageContent.append("\n    <checkin  url=\"" + createName + ".txt?yanel.resource.usecase=checkin\" method=\"PUT\"/>");
+*/
         emptyWikiPageContent.append("\n  </edit>");
         emptyWikiPageContent.append("\n</introspection>");
         
@@ -309,7 +328,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
      *
      */
     public void create(HttpServletRequest request){
-        String title = request.getParameter("title");
+        String title = getRequest().getParameter("rp.title");
         writeContentAndIntrospection(getEmptyWiki(title), title);
     }
  
@@ -326,16 +345,16 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
             writer.write(content);
             writer.close();
 
-            dataRepo.addSymbolicLink(newPath, new org.wyona.yarep.core.Path(newPath.toString() + ".txt"));
-
             org.wyona.yarep.core.Path introspectionPath = new org.wyona.yarep.core.Path(newPath.getParent() + "/introspection-" + newPath.getName() + ".xml");
             String introspectionContent = getWikiIntrospection(title, newPath.getName());
-            log.info("Writing introspection into repository \"" + dataRepo.getName() + "\" with content:\n" + introspectionContent + "\nto path: " + introspectionPath);
+            log.error("DEBUG: Writing introspection into repository \"" + dataRepo.getName() + "\" with content:\n" + introspectionContent + "\nto path: " + introspectionPath);
             writer = dataRepo.getWriter(introspectionPath);
             writer.write(introspectionContent);
             writer.close();
+
+            dataRepo.addSymbolicLink(newPath, new org.wyona.yarep.core.Path(newPath.toString() + ".txt"));
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
         }
     }
 
