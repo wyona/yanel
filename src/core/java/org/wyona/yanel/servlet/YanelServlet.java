@@ -273,7 +273,19 @@ public class YanelServlet extends HttpServlet {
                         log.debug("Resource is viewable V1");
                         Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
                         viewElement.setAttributeNS(NAMESPACE, "version", "1");
-                        viewElement.appendChild(doc.createTextNode("View Descriptors: " + ((ViewableV1) res).getViewDescriptors()));
+
+                        // TODO: The same as for ViewableV2 ...
+                        ViewDescriptor[] vd = ((ViewableV1) res).getViewDescriptors();
+                        if (vd != null) {
+                            for (int i = 0; i < vd.length; i++) {
+                                Element descriptorElement = (Element) viewElement.appendChild(doc.createElement("descriptor"));
+                                descriptorElement.appendChild(doc.createTextNode(vd[i].getMimeType()));
+                                descriptorElement.setAttributeNS(NAMESPACE, "id", vd[i].getId());
+                            }
+                        } else {
+                            viewElement.appendChild(doc.createTextNode("No View Descriptors!"));
+                        }
+
                         String viewId = request.getParameter("yanel.resource.viewid");
                         try {
                             view = ((ViewableV1) res).getView(request, viewId);
@@ -314,6 +326,7 @@ public class YanelServlet extends HttpServlet {
                         } else {
                             viewElement.appendChild(doc.createTextNode("No View Descriptors!"));
                         }
+
                         size = ((ViewableV2) res).getSize();
                         Element sizeElement = (Element) resourceElement.appendChild(doc.createElement("size"));
                         sizeElement.appendChild(doc.createTextNode(String.valueOf(size)));
