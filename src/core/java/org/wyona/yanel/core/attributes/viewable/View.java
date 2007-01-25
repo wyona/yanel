@@ -24,6 +24,7 @@ import java.io.InputStream;
 public class View {
 
     private String mt;
+    private String encoding = null;
     private InputStream is;
     private boolean isResponse = true;
 
@@ -39,6 +40,20 @@ public class View {
      */
     public String getMimeType() {
         return mt;
+    }
+
+    /**
+     *
+     */
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    /**
+     *
+     */
+    public String getEncoding() {
+        return encoding;
     }
 
     /**
