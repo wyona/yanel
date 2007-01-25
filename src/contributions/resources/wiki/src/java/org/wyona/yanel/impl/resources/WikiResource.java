@@ -41,8 +41,9 @@ import org.wyona.wikiparser.IWikiParser;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
-import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
+import org.wyona.yanel.core.api.attributes.ModifiableV2;
+import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.transformation.I18nTransformer;
@@ -55,7 +56,7 @@ import org.wyona.yarep.util.RepoPath;
 /**
  * 
  */
-public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
+public class WikiResource extends Resource implements ViewableV1, CreatableV2, ModifiableV2 {
 
     private static Category log = Category.getInstance(WikiResource.class);
     private final String XML_MIME_TYPE = "application/xml";
@@ -369,5 +370,59 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2 {
         // TODO: Make mime-type configurable (depending on global XSLT) ...
         map.put("mime-type", "application/xhtml+xml");
         return map;
+    }
+
+    /**
+     *
+     */
+    public boolean delete() {
+        log.warn("No implemented yet!");
+        return false;
+    }
+
+    /**
+     *
+     */
+    public InputStream getInputStream() {
+        log.warn("No implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public java.io.Reader getReader() {
+        log.warn("No implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public OutputStream getOutputStream() throws Exception {
+        return getRealm().getRepository().getOutputStream(getPath());
+    }
+
+    /**
+     *
+     */
+    public Writer getWriter() {
+        log.warn("No implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public long getLastModified() {
+        log.warn("No implemented yet!");
+        return -1;
+    }
+
+    /**
+     *
+     */
+    public void write(InputStream in) {
+        log.warn("No implemented yet!");
     }
 }
