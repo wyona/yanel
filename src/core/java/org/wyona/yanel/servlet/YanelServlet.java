@@ -384,7 +384,13 @@ public class YanelServlet extends HttpServlet {
             // Check if the view contains the response, otherwise assume that the resource wrote the response, and just return.
             if (!view.isResponse()) return;
             
-            response.setContentType(patchContentType(view.getMimeType(), request));
+            if (view.getEncoding() != null) {
+                response.setContentType(patchContentType(view.getMimeType() + "; charset=" + view.getEncoding(), request));
+            } else if (res.getConfiguration() != null && res.getConfiguration().getEncoding() != null) {
+                response.setContentType(patchContentType(view.getMimeType() + "; charset=" + res.getConfiguration().getEncoding(), request));
+            } else {
+                response.setContentType(patchContentType(view.getMimeType(), request));
+            }
 
             InputStream is = view.getInputStream();
 
