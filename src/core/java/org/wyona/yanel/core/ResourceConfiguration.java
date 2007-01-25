@@ -35,6 +35,7 @@ public class ResourceConfiguration {
     protected Map properties;
     protected String name;
     protected String namespace;
+    private String encoding = null;
     Configuration config;
     
     /**
@@ -47,6 +48,9 @@ public class ResourceConfiguration {
 	name = rtiConfig.getAttribute("name");
 	namespace = rtiConfig.getAttribute("namespace");
         log.debug("Universal Name: " + getUniversalName());
+
+        Configuration encodingConfig = config.getChild("encoding", false);
+        if (encodingConfig != null) encoding = encodingConfig.getValue();
 
         // TODO: Read properties and set this.properties
     }
@@ -86,6 +90,13 @@ public class ResourceConfiguration {
      */
     public String getNamespace() {
         return namespace;
+    }
+    
+    /**
+     * Get encoding resp. charset
+     */
+    public String getEncoding() {
+        return encoding;
     }
     
     /**
