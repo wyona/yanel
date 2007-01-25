@@ -181,7 +181,7 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Get view of resource
      */
     private void getContent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         View view = null;
@@ -201,15 +201,9 @@ public class YanelServlet extends HttpServlet {
 
         Element rootElement = doc.getDocumentElement();
 
-
         String servletContextRealPath = config.getServletContext().getRealPath("/");
         rootElement.setAttribute("servlet-context-real-path", servletContextRealPath);
 
-        
-        //log.deubg("servletContextRealPath: " + servletContextRealPath);
-        //log.debug("contextPath: " + request.getContextPath());
-        //log.debug("servletPath: " + request.getServletPath());
-        
         Element requestElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "request"));
         requestElement.setAttributeNS(NAMESPACE, "uri", request.getRequestURI());
         requestElement.setAttributeNS(NAMESPACE, "servlet-path", request.getServletPath());
@@ -230,29 +224,6 @@ public class YanelServlet extends HttpServlet {
         }
 
 
-
-
-/*
-        Realm realm;
-        Path path;
-        //ResourceTypeIdentifier rti;
-        
-        try {
-            realm = map.getRealm(request.getServletPath());
-            path = map.getPath(realm, request.getServletPath());
-            //rti = yanel.getResourceManager().getResourceTypeIdentifier(realm, path);
-        } catch (Exception e) {
-            String message = "URL could not be mapped to realm/path " + e.getMessage();
-            log.error(message, e);
-            Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
-            exceptionElement.appendChild(doc.createTextNode(message));
-
-            setYanelOutput(request, response, doc);
-            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return;
-        }
-*/
-        
         Resource res = null;
         long lastModified = -1;
         long size = -1;
@@ -387,10 +358,6 @@ public class YanelServlet extends HttpServlet {
 
 
 
-
-
-
-
         String usecase = request.getParameter("yanel.resource.usecase");
 
         if (usecase != null && usecase.equals("checkout")) {
@@ -414,19 +381,12 @@ public class YanelServlet extends HttpServlet {
 
 
         if (view != null) {
-            // check if the view contatins the response (otherwise assume that the resource 
-            // wrote the response, and just return).
+            // Check if the view contains the response, otherwise assume that the resource wrote the response, and just return.
             if (!view.isResponse()) return;
             
             response.setContentType(patchContentType(view.getMimeType(), request));
-            InputStream is = view.getInputStream();
-            
-            
-            //BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            //String line;
-            //System.out.println("getContentXML: "+path);
-            //while ((line = reader.readLine()) != null) System.out.println(line);
 
+            InputStream is = view.getInputStream();
 
             byte buffer[] = new byte[8192];
             int bytesRead;
