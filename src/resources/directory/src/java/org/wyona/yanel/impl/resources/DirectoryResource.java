@@ -112,7 +112,7 @@ public class DirectoryResource extends Resource implements ViewableV2 {
                 }
             }
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
         }
         sb.append("</dir:directory>");
 
