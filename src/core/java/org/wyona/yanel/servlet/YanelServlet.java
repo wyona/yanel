@@ -794,7 +794,7 @@ public class YanelServlet extends HttpServlet {
                 log.debug("username: " + username + ", password: " + password);
                 try {
                 if (realm.getIdentityManager().authenticate(username, password)) {
-                    authorized = realm.getPolicyManager().authorize(new Path(path), new Identity(username, null), new Role("view"));
+                    authorized = realm.getPolicyManager().authorize(path, new Identity(username, null), new Role("view"));
                     if(authorized) {
                         return null;
                     } else {
@@ -847,7 +847,7 @@ public class YanelServlet extends HttpServlet {
         
         try {
             log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity.getUsername() + ", role: " + role.getName());
-            authorized = realm.getPolicyManager().authorize(new Path(path), identity, role);
+            authorized = realm.getPolicyManager().authorize(path, identity, role);
             log.debug("Check authorization result: " + authorized);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
