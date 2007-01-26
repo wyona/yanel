@@ -28,6 +28,7 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.util.PathUtil;
 
+import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
@@ -35,6 +36,7 @@ import org.wyona.yarep.util.RepoPath;
 import javax.servlet.http.HttpServletRequest;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
@@ -68,7 +70,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     public View getView(String viewId) throws Exception {
         View defaultView = new View();
         
-        defaultView.setInputStream(getRealm().getRepository().getInputStream(new Path(getPath())));
+        defaultView.setInputStream(getRealm().getRepository().getNode(getPath()).getInputStream());
         defaultView.setMimeType(getMimeType(viewId));
 
         return defaultView;
@@ -141,14 +143,14 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public Reader getReader() throws Exception {
-        return getRealm().getRepository().getReader(new Path(getPath()));
+        return new InputStreamReader(getInputStream(), "UTF-8");
     }
 
     /**
      *
      */
     public InputStream getInputStream() throws Exception {
-        return getRealm().getRepository().getInputStream(new Path(getPath()));
+        return getRealm().getRepository().getNode(getPath()).getInputStream();
     }
 
     /**
@@ -163,7 +165,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public OutputStream getOutputStream() throws Exception {
-        return getRealm().getRepository().getOutputStream(new Path(getPath()));
+        return getRealm().getRepository().getNode(getPath()).getOutputStream();
     }
 
     /**
@@ -177,21 +179,32 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public long getLastModified() throws Exception {
-        return getRealm().getRepository().getLastModified(new Path(getPath()));
-    }
+       Node node = getRealm().getRepository().getNode(getPath());
+       long lastModified;
+       if (node.isResource()) {
+           lastModified = node.getLastModified();
+       } else {
+           lastModified = 0;
+       }
+
+       return lastModified;
+   }
 
     /**
      * Delete data of node resource
      */
     public boolean delete() throws Exception {
-        return getRealm().getRepository().delete(new Path(getPath()));
+        getRealm().getRepository().getNode(getPath()).remove();
+        return true;
     }
     
     /**
      *
      */
     public String[] getRevisions() throws Exception {
-        return getRealm().getRepository().getRevisions(new Path(getPath()));
+        log.warn("Not implemented yet!");
+        return null; 
+        //return getRealm().getRepository().getRevisions(new Path(getPath()));
     }
     
     public boolean exists() throws Exception {
@@ -203,7 +216,14 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      * 
      */
     public long getSize() throws Exception {
-         return getRealm().getRepository().getSize(new Path(getPath()));
+        Node node = getRealm().getRepository().getNode(getPath());
+        long size;
+        if (node.isResource()) {
+            size = node.getSize();
+        } else {
+            size = 0;
+        }
+        return size;
     }
 
     /**

@@ -32,6 +32,7 @@ import org.wyona.yanel.core.transformation.I18nTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
+import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
@@ -51,6 +52,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
@@ -98,7 +100,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
             if (xsltPath != null) {
                 TransformerFactory tf = TransformerFactory.newInstance();
                 //tf.setURIResolver(null);
-                Transformer transformer = tf.newTransformer(new StreamSource(repo.getInputStream(new Path(xsltPath))));
+                Transformer transformer = tf.newTransformer(new StreamSource(repo.getNode(xsltPath).getInputStream()));
                 transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
                 transformer.setParameter("yanel.path", getPath());
                 //TODO: There seems to be a bug re back2context ...
@@ -180,7 +182,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
             }
         }
         
-        return repo.getInputStream(new Path(getPath()));
+        return repo.getNode(getPath()).getInputStream();
     }
 
     /**
@@ -213,14 +215,14 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public Reader getReader() throws Exception {
-        return getRealm().getRepository().getReader(new Path(getPath()));
+        return new InputStreamReader(getInputStream(), "UTF-8");
     }
 
     /**
      *
      */
     public InputStream getInputStream() throws Exception {
-        return getRealm().getRepository().getInputStream(new Path(getPath()));
+        return getRealm().getRepository().getNode(getPath()).getInputStream();
     }
 
     /**
@@ -235,7 +237,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public OutputStream getOutputStream() throws Exception {
-        return getRealm().getRepository().getOutputStream(new Path(getPath()));
+        return getRealm().getRepository().getNode(getPath()).getOutputStream();
     }
 
     /**
@@ -249,7 +251,15 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public long getLastModified() throws Exception {
-        return getRealm().getRepository().getLastModified(new Path(getPath()));
+        Node node = getRealm().getRepository().getNode(getPath());
+        long lastModified;
+        if (node.isResource()) {
+            lastModified = node.getLastModified();
+        } else {
+            lastModified = 0;
+        }
+
+        return lastModified;
     }
 
     /**
@@ -285,11 +295,14 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public boolean delete() throws Exception {
-        return getRealm().getRepository().delete(new Path(getPath()));
+        getRealm().getRepository().getNode(getPath()).remove();
+        return true;
     }
 
     public String[] getRevisions() throws Exception {
-        return getRealm().getRepository().getRevisions(new Path(getPath()));
+        //return getRealm().getRepository().getRevisions(getPath());
+        log.warn("Not implemented yet!");
+        return null; 
     }
 
     public boolean exists() throws Exception {
@@ -301,7 +314,14 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      * Get size of generated page
      */
     public long getSize() throws Exception {
-        return getRealm().getRepository().getSize(new Path(getPath()));
+        Node node = getRealm().getRepository().getNode(getPath());
+        long size;
+        if (node.isResource()) {
+            size = node.getSize();
+        } else {
+            size = 0;
+        }
+        return size;
     }
 
     /**
