@@ -58,14 +58,10 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
         startPrefixMapping(WEBDAV_NS_PREFIX, WEBDAV_NS_URI);      
         startElement(WEBDAV_NS_PREFIX, WEBDAV_EL_MSTATUS, WEBDAV_PREFIX + WEBDAV_EL_MSTATUS, null);
         
-        // copyied from DirectoryResource.java, modified to use a ContentHandler
-        // instead of a StringBuffer for the XML view 
-        
         Repository contentRepo = null;
         try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("DefaultRepositoryFactory"));
-            contentRepo = rp.getRepo();
-            org.wyona.yarep.core.Path p = rp.getPath();
+            contentRepo = getRealm().getRepository();
+            org.wyona.yarep.core.Path p = new org.wyona.yarep.core.Path(getPath().toString());
 
             // TODO: This doesn't seem to work ... (check on Yarep ...)
             if (contentRepo.isResource(p)) {
@@ -77,36 +73,28 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
             if (!contentRepo.isCollection(p)) {
                 log.warn("Path is not a collection: " + p);
                 p = new org.wyona.yarep.core.Path(new org.wyona.commons.io.Path(p.toString()).getParent().toString());
-                log.warn("Use parent of path: " + p);
+                log.warn("Parent of path will be used: " + p);
             }
-         
-            // TODO: Do not show the children with suffix .yanel-rti resp. make
-            // this configurable!
-            // NOTE: Do not hardcode the .yanel-rti, but rather use
-            // Path.getRTIPath ...
-            
+
+            //p = new org.wyona.yarep.core.Path(getRequest().getParameter("collection", p.toString()));
+            if (getRequest().getParameter("collection") != null) {
+                p = new org.wyona.yarep.core.Path(getRequest().getParameter("collection"));
+                log.warn("Collection request parameter will be used: " + p);
+            }
+
             org.wyona.yarep.core.Path[] children = contentRepo.getChildren(p);
             for (int i = 0; i < children.length; i++) {
                 if (contentRepo.isResource(children[i])) {
-                    this.propfindAddResource(request.getContextPath() + "/" + contentRepo.getID() + children[i].toString(), 
-                            children[i].getName(), 
-                            WEBDAV_EL_RES,
-                            "httpd/unix-directory",
-                            new Date(contentRepo.getLastModified(children[i])).toGMTString());
+                    this.propfindAddResource(request.getContextPath() + "/" + getRealm().getMountPoint() + children[i].toString(), "R: " + children[i].getName(), WEBDAV_EL_RES, "httpd/unix-directory", new Date(contentRepo.getLastModified(children[i])).toGMTString());
                     
                 } else if (contentRepo.isCollection(children[i])) {
-                    this.propfindAddResource(request.getContextPath() + "/" + contentRepo.getID() + children[i].toString(),
-                            children[i].getName(), 
-                            WEBDAV_EL_COLL,
-                            "httpd/unix-directory",
-                            new Date(contentRepo.getLastModified(children[i])).toGMTString());
+                    this.propfindAddResource(request.getContextPath() + "/" + getRealm().getMountPoint() + children[i].toString(), "C: " + children[i].getName(), WEBDAV_EL_COLL, "httpd/unix-directory", new Date(contentRepo.getLastModified(children[i])).toGMTString());
                 } else {
-                    log.debug("####### neither collection nor resource");
+                    log.warn("Neither collection nor resource: " + children[i]);
                 }
             }
-            
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
         }
         
         endElement(WEBDAV_NS_URI, WEBDAV_EL_MSTATUS, WEBDAV_PREFIX + WEBDAV_EL_MSTATUS);
