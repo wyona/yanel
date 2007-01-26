@@ -32,7 +32,7 @@
       <dependency groupId="yarep" artifactId="yarep-core"
                   version="0.0.1-dev-r22116"/>
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
-                  version="0.0.1-dev-r19469"/>
+                  version="0.0.1-dev-r22019"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core"
                   version="0.0.1-dev-r22100"/>
 
