@@ -223,6 +223,7 @@ public class YanelServlet extends HttpServlet {
             sessionAttributeElement.appendChild(doc.createTextNode(value));
         }
 
+        String usecase = request.getParameter("yanel.resource.usecase");
 
         Resource res = null;
         long lastModified = -1;
@@ -302,7 +303,12 @@ public class YanelServlet extends HttpServlet {
                         Element sizeElement = (Element) resourceElement.appendChild(doc.createElement("size"));
                         sizeElement.appendChild(doc.createTextNode(String.valueOf(size)));
                         try {
-                            view = ((ViewableV2) res).getView(viewId);
+                            String revisionName = request.getParameter("yanel.resource.revision");
+                            if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2") && revisionName != null) {
+                                view = ((VersionableV2) res).getView(viewId, revisionName);
+                            } else {
+                                view = ((ViewableV2) res).getView(viewId);
+                            }
                         } catch(org.wyona.yarep.core.NoSuchNodeException e) {
                             // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
                             String message = "No such node exception: " + e;
@@ -343,6 +349,22 @@ public class YanelServlet extends HttpServlet {
                     } else {
                         Element notVersionableElement = (Element) resourceElement.appendChild(doc.createElement("not-versionable"));
                     }
+                    
+                    
+                    if (usecase != null && usecase.equals("checkout")) {
+                        log.debug("Checkout data ...");
+                        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
+                            // note: this will throw an exception if the document is checked out already
+                            // by another user.
+                            Identity identity = (Identity) request.getSession().getAttribute("identity");
+                            ((VersionableV2)res).checkout(identity.getUsername());
+                        }
+                        
+                        log.warn("Acquire lock has not been implemented yet ...!");
+                        // acquireLock();
+                    }
+
+
                 } else {
                         Element resourceIsNullElement = (Element) rootElement.appendChild(doc.createElement("resource-is-null"));
                 }
@@ -357,15 +379,6 @@ public class YanelServlet extends HttpServlet {
             }
 
 
-
-        String usecase = request.getParameter("yanel.resource.usecase");
-
-        if (usecase != null && usecase.equals("checkout")) {
-            log.debug("Checkout data ...");
-            // TODO: Implement checkout ...
-            log.warn("Acquire lock has not been implemented yet ...!");
-            // acquireLock();
-        }
 
         String meta = request.getParameter("yanel.resource.meta");
         if (meta != null) {
@@ -452,7 +465,17 @@ public class YanelServlet extends HttpServlet {
         } else if (value != null && value.equals("checkin")) {
             log.debug("Checkin data ...");
             save(request, response);
-            // TODO: Implement checkin ...
+
+            Resource resource = getResource(request, response);
+            if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
+                try {
+                    ((VersionableV2)resource).checkin();
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    throw new ServletException(e.getMessage(), e);
+                }
+            }
+
             log.warn("Release lock has not been implemented yet ...");
             // releaseLock();
             return;
@@ -510,7 +533,17 @@ public class YanelServlet extends HttpServlet {
         } else if (value != null && value.equals("checkin")) {
             log.debug("Checkin data ...");
             save(request, response);
-            // TODO: Implement checkin ...
+            
+            Resource resource = getResource(request, response);
+            if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
+                try {
+                    ((VersionableV2)resource).checkin();
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    throw new ServletException(e.getMessage(), e);
+                }
+            }
+            
             log.warn("Release lock has not been implemented yet ...!");
             // releaseLock();
             return;

@@ -35,6 +35,7 @@ import org.wyona.yanel.core.util.ResourceAttributeHelper;
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
+import org.wyona.yarep.core.Revision;
 import org.wyona.yarep.util.RepoPath;
 
 import javax.servlet.http.HttpServletRequest;
@@ -81,10 +82,14 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         return null;
     }
 
+    public View getView(String viewId) throws Exception {
+        return getView(viewId, null);
+    }
+
     /**
      * Generates view
      */
-    public View getView(String viewId) throws Exception {
+    public View getView(String viewId, String revisionName) throws Exception {
         View defaultView = new View();
         String mimeType = getMimeType(getPath(), viewId);
         defaultView.setMimeType(mimeType);
@@ -118,7 +123,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
 
                 org.xml.sax.XMLReader xmlReader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
                 xmlReader.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
-                transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML(repo, yanelPath))), new StreamResult(baos));
+                transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML(repo, yanelPath, revisionName))), new StreamResult(baos));
                 
                 InputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
 
@@ -135,7 +140,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 return defaultView;
             } else {
                 log.debug("Mime-Type: " + mimeType);
-                defaultView.setInputStream(getContentXML(repo, yanelPath));
+                defaultView.setInputStream(getContentXML(repo, yanelPath, revisionName));
             }
         } catch(Exception e) {
             log.error(e + " (" + getPath() + ", " + getRealm() + ")");
@@ -161,7 +166,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     /**
      *
      */
-    private InputStream getContentXML(Repository repo, String yanelPath) throws Exception {
+    private InputStream getContentXML(Repository repo, String yanelPath, String revisionName) throws Exception {
         if (yanelPath != null) {
             log.debug("Yanel Path: " + yanelPath);
             Resource res = yanel.getResourceManager().getResource(getRequest(), getResponse(), 
@@ -182,7 +187,13 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
             }
         }
         
-        return repo.getNode(getPath()).getInputStream();
+        Node node;
+        if (revisionName != null) {
+            node = repo.getNode(getPath()).getRevision(revisionName);
+        } else {
+            node = repo.getNode(getPath());
+        }
+        return node.getInputStream();
     }
 
     /**
@@ -300,10 +311,37 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     }
 
     public String[] getRevisions() throws Exception {
-        //return getRealm().getRepository().getRevisions(getPath());
-        log.warn("Not implemented yet!");
-        return null; 
+        Revision[] revisions = getRealm().getRepository().getNode(getPath()).getRevisions();
+        String[] revisionNames = new String[revisions.length];
+        
+        for (int i=0; i<revisions.length; i++) {
+            revisionNames[i] = revisions[i].getRevisionName();
+        }
+        return revisionNames; 
     }
+    
+    public void checkin() throws Exception {
+        getRealm().getRepository().getNode(getPath()).checkin();
+    }
+
+    public void checkout(String userID) throws Exception {
+        Node node = getRealm().getRepository().getNode(getPath()); 
+        if (node.isCheckedOut()) {
+            String checkoutUserID = node.getCheckoutUserID(); 
+            if (checkoutUserID.equals(userID)) {
+                log.warn("Resource " + getPath() + " is already checked out by this user: " + checkoutUserID);
+            } else {
+                throw new Exception("Resource is already checked out by another user: " + checkoutUserID);
+            }
+        } else {
+            node.checkout(userID);
+        }
+    }
+
+    public void restore(String revisionName) throws Exception {
+        getRealm().getRepository().getNode(getPath()).restore(revisionName);
+    }
+
 
     public boolean exists() throws Exception {
         log.warn("Not implemented yet!");

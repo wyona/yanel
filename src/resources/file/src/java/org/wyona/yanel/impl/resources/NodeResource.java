@@ -31,6 +31,7 @@ import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
+import org.wyona.yarep.core.Revision;
 import org.wyona.yarep.util.RepoPath;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,6 +63,16 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      */
     public ViewDescriptor[] getViewDescriptors() {
         return null;
+    }
+
+    public View getView(String viewId, String revisionName) throws Exception {
+        View defaultView = new View();
+        
+        defaultView.setInputStream(getRealm().getRepository().getNode(getPath())
+                .getRevision(revisionName).getInputStream());
+        defaultView.setMimeType(getMimeType(viewId));
+
+        return defaultView;
     }
 
     /**
@@ -202,11 +213,37 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public String[] getRevisions() throws Exception {
-        log.warn("Not implemented yet!");
-        return null; 
-        //return getRealm().getRepository().getRevisions(new Path(getPath()));
+        Revision[] revisions = getRealm().getRepository().getNode(getPath()).getRevisions();
+        String[] revisionNames = new String[revisions.length];
+        
+        for (int i=0; i<revisions.length; i++) {
+            revisionNames[i] = revisions[i].getRevisionName();
+        }
+        return revisionNames; 
     }
     
+    public void checkin() throws Exception {
+        getRealm().getRepository().getNode(getPath()).checkin();
+    }
+
+    public void checkout(String userID) throws Exception {
+        Node node = getRealm().getRepository().getNode(getPath()); 
+        if (node.isCheckedOut()) {
+            String checkoutUserID = node.getCheckoutUserID(); 
+            if (checkoutUserID.equals(userID)) {
+                log.warn("Resource " + getPath() + " is already checked out by this user: " + checkoutUserID);
+            } else {
+                throw new Exception("Resource is already checked out by another user: " + checkoutUserID);
+            }
+        } else {
+            node.checkout(userID);
+        }
+    }
+
+    public void restore(String revisionName) throws Exception {
+        getRealm().getRepository().getNode(getPath()).restore(revisionName);
+    }
+
     public boolean exists() throws Exception {
         log.warn("Not implemented yet!");
         return true; 

@@ -16,12 +16,6 @@
 
 package org.wyona.yanel.core.api.attributes;
 
-import java.io.OutputStream;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.attributes.viewable.View;
 
 /**
@@ -29,16 +23,50 @@ import org.wyona.yanel.core.attributes.viewable.View;
  */
 public interface VersionableV2 {
 
+    /**
+     * Gets an array of revision names.
+     * @return
+     * @throws Exception
+     */
     public String[] getRevisions() throws Exception;
+    
+    /**
+     * Gets the view of a certain revision.
+     * @param viewId
+     * @param revisionName
+     * @return
+     * @throws Exception
+     */
+    public View getView(String viewId, String revisionName) throws Exception;
+    
+    /**
+     * Restores an old revision with the given revision number.
+     * @param revisionName
+     * @throws Exception
+     */
+    public void restore(String revisionName) throws Exception;
+    
+    /**
+     * Checks out this resource. Noone else will be able to check it out afterwards.
+     * @param userID
+     * @throws Exception
+     */
+    public void checkout(String userID) throws Exception;
+    
+    /**
+     * Checks in this resource, and creates a new revision.
+     * @throws Exception
+     */
+    public void checkin() throws Exception;
+    
     
     /*
      * Methods which could be added to this interface:
      * 
-     * public View getView(Path path, OutputStream out, String viewId, String revision) throws Exception;
-     * public void getView(HttpServletRequest request, HttpServletResponse response, String viewId, String revision) throws Exception;
-     * public void rollback(String revision) throws Exception;
      *
-     * getDiff(Path path, String rev1, String rev2) throws Exception;
+     * public boolean isCheckedOut() throws Exception;
+     * public String getCheckoutUserID() throws Exception;
+     * getDiff(String rev1, String rev2) throws Exception;
      * getHeadRevisionNumber() ?
      * 
      * open questions:
