@@ -61,6 +61,7 @@ import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.transformation.I18nTransformer;
+import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
@@ -302,14 +303,14 @@ public class NutchResource extends Resource implements ViewableV1 {
                 File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile()
                         .getAbsolutePath(), "xslt" + File.separator + "result2xhtml.xsl");
                 transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
-                transformer.setParameter("yanel.path.name", getPath().getName());
+                transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
                 // TODO: Remove the trailing slash ...
-                transformer.setParameter("yanel.path", getRealm().getMountPoint() + getPath().toString());
+                transformer.setParameter("yanel.path", getRealm().getMountPoint() + getPath());
                 log.debug("Yanel Path: " + getRealm().getMountPoint() + getPath());
-                transformer.setParameter("yanel.back2context", backToRoot(new Path(getRealm().getMountPoint().toString() + getPath().toString()), ""));
-                log.debug("Back 2 context: " + getRealm().getMountPoint() + getPath() + ", " + backToRoot(new Path(getRealm().getMountPoint().toString() + getPath().toString()), ""));
-                transformer.setParameter("yarep.back2realm", backToRoot(getPath(), ""));
-                log.debug("Back 2 realm: " + getPath() + ", " + backToRoot(getPath(), ""));
+                transformer.setParameter("yanel.back2context", backToRoot(new Path(getRealm().getMountPoint() + getPath()), ""));
+                log.debug("Back 2 context: " + getRealm().getMountPoint() + getPath() + ", " + backToRoot(new Path(getRealm().getMountPoint() + getPath()), ""));
+                transformer.setParameter("yarep.back2realm", backToRoot(new Path(getPath()), ""));
+                log.debug("Back 2 realm: " + getPath() + ", " + backToRoot(new Path(getPath()), ""));
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
                 InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
                 i18nTransformer = new I18nTransformer(resourceBundle, language);
@@ -335,10 +336,10 @@ public class NutchResource extends Resource implements ViewableV1 {
             streamSource = getXSLTStreamSource();
             if(streamSource != null) {
                 transformer = TransformerFactory.newInstance().newTransformer(streamSource);
-                transformer.setParameter("yanel.path.name", getPath().getName());
+                transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
                 transformer.setParameter("yanel.path", getPath().toString());
-                transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
-                transformer.setParameter("yarep.back2realm", backToRoot(getPath(), ""));
+                transformer.setParameter("yanel.back2context", backToRoot(new Path(getPath()), ""));
+                transformer.setParameter("yarep.back2realm", backToRoot(new Path(getPath()), ""));
                 transformer.setParameter("hitsPerPage", "" + hitsPerPage);
                 transformer.setParameter("totalHits", "" + totalHits);
                 transformer.setParameter("query", "" + searchTerm);

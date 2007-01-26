@@ -28,7 +28,7 @@ public class Realm {
 
     private String name;
     private String id;
-    private Path mountPoint;
+    private String mountPoint;
     private Repository repository;
     private Repository rtiRepository;
     private PolicyManager policyManager;
@@ -41,7 +41,7 @@ public class Realm {
     /**
      *
      */
-    public Realm(String name, String id, Path mountPoint) {
+    public Realm(String name, String id, String mountPoint) {
         this.name = name;
         this.id = id;
         this.mountPoint = mountPoint;
@@ -64,7 +64,7 @@ public class Realm {
     /**
      * Mount point of realm
      */
-    public Path getMountPoint() {
+    public String getMountPoint() {
         return mountPoint;
     }
 

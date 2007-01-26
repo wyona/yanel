@@ -72,7 +72,7 @@ public class MapImpl implements Map {
 
         try {
             Repository repo = getRealm(path.toString()).getRTIRepository();
-            Path rPath = getPath(getRealm(path.toString()), path.toString());
+            Path rPath = new Path(getPath(getRealm(path.toString()), path.toString()));
             log.debug("Repo Name: " + repo.getName());
             log.debug("New path: " + rPath);
 
@@ -111,7 +111,7 @@ public class MapImpl implements Map {
                     realms[i] = realmConfig.getRealm(repo.getID());
                     if (realms[i] == null) {
                         log.warn("No such realm defined: " + repo.getID() + " (fallback to repo configuration ...)");
-                        realms[i] = new Realm(repo.getName(), repo.getID(), new Path("/" + repoIds[i] + "/"));
+                        realms[i] = new Realm(repo.getName(), repo.getID(), "/" + repoIds[i] + "/");
                     }
                 }
             }
@@ -174,7 +174,7 @@ public class MapImpl implements Map {
      * E.g. if the url is /yanel-website/foo/bar.html, it will return /foo/bar.html.
      * @param url URL of request but without servlet context
      */
-    public Path getPath(Realm realm, String url) throws Exception {
+    public String getPath(Realm realm, String url) throws Exception {
         log.debug("URL: " + url);
 
         String mountPoint = realm.getMountPoint().toString();
@@ -182,6 +182,6 @@ public class MapImpl implements Map {
             throw new Exception("Cannot map url [" + url + "] to path because the url does not " + 
                     "belong to the given realm : " + realm.getID() + ": " + mountPoint);
         }
-        return new Path("/" + url.substring(mountPoint.length()));
+        return "/" + url.substring(mountPoint.length());
     }
 }

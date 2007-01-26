@@ -80,7 +80,7 @@ public class PDFResource extends Resource implements ViewableV2 {
             
             org.xml.sax.XMLReader xmlReader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
             xmlReader.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
-            Source src = new SAXSource(xmlReader, new org.xml.sax.InputSource(repo.getInputStream(getPath())));
+            Source src = new SAXSource(xmlReader, new org.xml.sax.InputSource(repo.getInputStream(new Path(getPath()))));
             
             Result res = new SAXResult(driver.getContentHandler());
             
@@ -109,16 +109,16 @@ public class PDFResource extends Resource implements ViewableV2 {
      * 
      */
     public long getSize() throws Exception {
-        return getRealm().getRepository().getSize(getPath());
+        return getRealm().getRepository().getSize(new Path(getPath()));
     }
       
   /**
   *
   */
- private StreamSource getXSLTStreamSource(Path path, Repository repo) throws RepositoryException {
-     Path xsltPath = getXSLTPath(path);
+ private StreamSource getXSLTStreamSource(String path, Repository repo) throws RepositoryException {
+     String xsltPath = getXSLTPath(path);
      if(xsltPath != null) {
-         return new StreamSource(repo.getInputStream(xsltPath));
+         return new StreamSource(repo.getInputStream(new Path(xsltPath)));
      } else {
          File xsltFile = org.wyona.commons.io.FileUtil.file(
                  rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "xml2fo.xsl");
@@ -130,9 +130,9 @@ public class PDFResource extends Resource implements ViewableV2 {
  /**
   * 
   */
- private Path getXSLTPath(Path path) {
+ private String getXSLTPath(String path) {
      String xsltPath = getRTI().getProperty("xslt");
-     if (xsltPath != null) return new Path(xsltPath);
+     if (xsltPath != null) return xsltPath;
      log.info("No XSLT Path within: " + path);
      return null;
  }

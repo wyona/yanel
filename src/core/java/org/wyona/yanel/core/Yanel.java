@@ -116,7 +116,7 @@ public class Yanel {
      * @deprecated
      * use getResourceManager().getResource() instead 
      */
-    public Resource getResource(Realm realm, Path path) throws Exception {
+    public Resource getResource(Realm realm, String path) throws Exception {
         return resourceManager.getResource(null, null, realm, path);
     }
 

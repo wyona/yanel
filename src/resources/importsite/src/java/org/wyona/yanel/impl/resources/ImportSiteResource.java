@@ -60,7 +60,7 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
      */
     public View getView(String viewId) throws Exception {
         
-        Path path = getPath();
+        String path = getPath();
         HttpServletRequest request = getRequest();
         
         // Get language
@@ -153,7 +153,7 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
     * 
     */
     public long getSize() throws Exception {
-        return getRealm().getRepository().getSize(getPath());
+        return getRealm().getRepository().getSize(new Path(getPath()));
     }
 
 }

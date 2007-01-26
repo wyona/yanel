@@ -29,6 +29,7 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.wyona.yanel.core.transformation.I18nTransformer;
+import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
 import org.wyona.yarep.core.Repository;
@@ -89,7 +90,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         String yanelPath = getProperty("yanel-path");
         //if (yanelPath == null) yanelPath = path.toString();
 
-        Path xsltPath = getXSLTPath(getPath());
+        String xsltPath = getXSLTPath(getPath());
 
         try {
             Repository repo = getRealm().getRepository();
@@ -97,9 +98,9 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
             if (xsltPath != null) {
                 TransformerFactory tf = TransformerFactory.newInstance();
                 //tf.setURIResolver(null);
-                Transformer transformer = tf.newTransformer(new StreamSource(repo.getInputStream(xsltPath)));
-                transformer.setParameter("yanel.path.name", getPath().getName());
-                transformer.setParameter("yanel.path", getPath().toString());
+                Transformer transformer = tf.newTransformer(new StreamSource(repo.getInputStream(new Path(xsltPath))));
+                transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+                transformer.setParameter("yanel.path", getPath());
                 //TODO: There seems to be a bug re back2context ...
                 transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
                 transformer.setParameter("yarep.back2realm", backToRoot(getPath(), ""));
@@ -162,7 +163,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         if (yanelPath != null) {
             log.debug("Yanel Path: " + yanelPath);
             Resource res = yanel.getResourceManager().getResource(getRequest(), getResponse(), 
-                    getRealm(), new Path(yanelPath));
+                    getRealm(), yanelPath);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                 // TODO: Pass the request ...
                 String viewV1path = getRealm().getMountPoint() + yanelPath.substring(1);
@@ -179,17 +180,17 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
             }
         }
         
-        return repo.getInputStream(getPath());
+        return repo.getInputStream(new Path(getPath()));
     }
 
     /**
      * Get mime type
      */
-    private String getMimeType(Path path, String viewId) throws Exception {
+    private String getMimeType(String path, String viewId) throws Exception {
         String mimeType = getProperty("mime-type");
         if (mimeType != null) return mimeType;
 
-        String suffix = path.getSuffix();
+        String suffix = PathUtil.getSuffix(path);
         if (suffix != null) {
             log.debug("SUFFIX: " + suffix);
             if (suffix.equals("html")) {
@@ -212,14 +213,14 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public Reader getReader() throws Exception {
-        return getRealm().getRepository().getReader(getPath());
+        return getRealm().getRepository().getReader(new Path(getPath()));
     }
 
     /**
      *
      */
     public InputStream getInputStream() throws Exception {
-        return getRealm().getRepository().getInputStream(getPath());
+        return getRealm().getRepository().getInputStream(new Path(getPath()));
     }
 
     /**
@@ -234,7 +235,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public OutputStream getOutputStream() throws Exception {
-        return getRealm().getRepository().getOutputStream(getPath());
+        return getRealm().getRepository().getOutputStream(new Path(getPath()));
     }
 
     /**
@@ -248,15 +249,15 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public long getLastModified() throws Exception {
-        return getRealm().getRepository().getLastModified(getPath());
+        return getRealm().getRepository().getLastModified(new Path(getPath()));
     }
 
     /**
      * Get XSLT path
      */
-    private Path getXSLTPath(Path path) throws Exception {
+    private String getXSLTPath(String path) throws Exception {
         String xsltPath = getProperty("xslt");
-        if (xsltPath != null) return new Path(xsltPath);
+        if (xsltPath != null) return xsltPath;
         log.info("No XSLT Path within: " + path);
         return null;
     }
@@ -264,10 +265,10 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     /**
      *
      */
-    private String backToRoot(Path path, String backToRoot) {
-        org.wyona.commons.io.Path parent = path.getParent();
+    private String backToRoot(String path, String backToRoot) {
+        String parent = PathUtil.getParent(path);
         if (parent != null && !isRoot(parent)) {
-            return backToRoot(new Path(parent.toString()), backToRoot + "../");
+            return backToRoot(parent, backToRoot + "../");
         }
         return backToRoot;
     }
@@ -275,8 +276,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     /**
      *
      */
-    private boolean isRoot(org.wyona.commons.io.Path path) {
-        if (path.toString().equals(File.separator)) return true;
+    private boolean isRoot(String path) {
+        if (path.equals(File.separator)) return true;
         return false;
     }
 
@@ -284,11 +285,11 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public boolean delete() throws Exception {
-        return getRealm().getRepository().delete(getPath());
+        return getRealm().getRepository().delete(new Path(getPath()));
     }
 
     public String[] getRevisions() throws Exception {
-        return getRealm().getRepository().getRevisions(getPath());
+        return getRealm().getRepository().getRevisions(new Path(getPath()));
     }
 
     public boolean exists() throws Exception {
@@ -300,7 +301,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      * Get size of generated page
      */
     public long getSize() throws Exception {
-        return getRealm().getRepository().getSize(getPath());
+        return getRealm().getRepository().getSize(new Path(getPath()));
     }
 
     /**

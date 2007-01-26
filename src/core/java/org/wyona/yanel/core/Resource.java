@@ -33,7 +33,7 @@ public abstract class Resource {
     protected ResourceTypeIdentifier rti;
     protected ResourceConfiguration rc;
     protected Yanel yanel;
-    private Path path;
+    private String path;
     protected Realm realm;
     protected HttpServletRequest request;
     protected HttpServletResponse response;
@@ -94,11 +94,11 @@ public abstract class Resource {
         return rtd.getResourceTypeNamespace();
     }
     
-    public Path getPath() {
+    public String getPath() {
         return path;
     }
 
-    public void setPath(Path path) {
+    public void setPath(String path) {
         this.path = path;
     }
 

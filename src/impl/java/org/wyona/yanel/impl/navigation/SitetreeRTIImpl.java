@@ -40,7 +40,7 @@ public class SitetreeRTIImpl implements Sitetree {
     /**
      *
      */
-    public Node getNode(Realm realm, Path path) {
+    public Node getNode(Realm realm, String path) {
         org.wyona.yarep.core.Repository repo = null;
         try {
             repo = realm.getRTIRepository();

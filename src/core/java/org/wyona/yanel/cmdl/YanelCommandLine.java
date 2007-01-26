@@ -89,13 +89,13 @@ public class YanelCommandLine {
 
       
         Realm realm = map.getRealm(url);
-        Path path = map.getPath(realm, url);
+        String path = map.getPath(realm, url);
         //PolicyManager pm = (PolicyManager) yanel.getBeanFactory().getBean("policyManager");
         PolicyManager pm = realm.getPolicyManager();
     
 
         String[] groupnames = {"admin", "accounting"};
-        if (pm.authorize(path, new Identity("lenya", groupnames), new Role("view"))) {
+        if (pm.authorize(new Path(path), new Identity("lenya", groupnames), new Role("view"))) {
             System.out.println("Access granted: " + path);
         } else {
             // TODO: Deny access resp. start login process!

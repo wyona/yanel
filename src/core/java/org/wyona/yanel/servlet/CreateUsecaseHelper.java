@@ -32,6 +32,7 @@ import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
+import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 import org.wyona.yanel.core.Path;
 
@@ -195,14 +196,14 @@ public class CreateUsecaseHelper {
         
         try {
             org.wyona.yanel.core.map.Realm realm = yanel.getMap().getRealm(request.getServletPath());
-            Path pathFromWhereCreateUsecaseHasBeenIssued = yanel.getMap().getPath(realm, request.getServletPath());
-            org.wyona.commons.io.Path parent = pathFromWhereCreateUsecaseHasBeenIssued.getParent();
-            Path newPath = null;
+            String pathFromWhereCreateUsecaseHasBeenIssued = yanel.getMap().getPath(realm, request.getServletPath());
+            String parent = PathUtil.getParent(pathFromWhereCreateUsecaseHasBeenIssued);
+            String newPath = null;
             if(parent.equals("null")) {
                 // if pathFromWhereCreateUsecaseHasBeenIssued is ROOT
-                newPath = new Path("/" + createName);
+                newPath = "/" + createName;
             } else {
-                newPath = new Path(parent + "/" + createName);
+                newPath = parent + "/" + createName;
             }
 
             log.debug("New Path: " + newPath);
@@ -217,7 +218,7 @@ public class CreateUsecaseHelper {
                     StringBuffer rtiContent = new StringBuffer(newResource.getResourceTypeUniversalName() + "\n");
                     java.util.HashMap rtiProperties = ((CreatableV2) newResource).createRTIProperties(request);
                     if (rtiProperties != null) {
-                        log.error("DEBUG: " + rtiProperties + " " + newResource.getPath().getRTIPath());
+                        log.error("DEBUG: " + rtiProperties + " " + PathUtil.getRTIPath(newResource.getPath()));
                         java.util.Iterator iterator = rtiProperties.keySet().iterator();
                         while (iterator.hasNext()) {
                             String property = (String) iterator.next();
@@ -228,7 +229,7 @@ public class CreateUsecaseHelper {
                     } else {
                         log.warn("No RTI properties: " + newResource.getPath());
                     }
-                    java.io.Writer writer = newResource.getRealm().getRTIRepository().getWriter(new org.wyona.yarep.core.Path(newResource.getPath().getRTIPath().toString()));
+                    java.io.Writer writer = newResource.getRealm().getRTIRepository().getWriter(new Path(PathUtil.getRTIPath(newResource.getPath())));
                     writer.write(rtiContent.toString());
                     writer.close();
 

@@ -21,6 +21,7 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.util.PathUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -75,8 +76,8 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
 
 	//sb.append("<?xml-stylesheet type=\"text/xsl\" href=\"yanel/resources/directory/xslt/dir2xhtml.xsl\"?>");
 
-        Path path = getPath();
-        org.wyona.yarep.core.Path entriesPath = getEntriesPath(path);
+        String path = getPath();
+        String entriesPath = getEntriesPath(path);
 
         Repository contentRepo = null;
         try {
@@ -84,7 +85,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
 
             // TODO: Do not show the children with suffix .yanel-rti resp. make this configurable!
 	    // NOTE: Do not hardcode the .yanel-rti, but rather use Path.getRTIPath ...
-            org.wyona.yarep.core.Path[] children = contentRepo.getChildren(entriesPath);
+            org.wyona.yarep.core.Path[] children = contentRepo.getChildren(new Path(entriesPath));
 
             Vector orderedEntries = new Vector();
             org.apache.abdera.Abdera abdera = new org.apache.abdera.Abdera();
@@ -117,7 +118,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
 
             // TODO: Add realm prefix, e.g. realm-prefix="ulysses-demo"
             // NOTE: The schema is according to http://cocoon.apache.org/2.1/userdocs/directory-generator.html
-	    sb.append("<atom:feed yanel:path=\"" + path + "\" dir:name=\"" + entriesPath.getName() + "\" dir:path=\"" + entriesPath + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
+	    sb.append("<atom:feed yanel:path=\"" + path + "\" dir:name=\"" + PathUtil.getName(entriesPath) + "\" dir:path=\"" + entriesPath + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
 
             sb.append("<atom:title>" + getFeedTitle(path) + "</atom:title>");
 
@@ -209,7 +210,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
 
         try {
             Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, contentRepo));
-            transformer.setParameter("yanel.path.name", path.getName());
+            transformer.setParameter("yanel.path.name", PathUtil.getName(path));
             transformer.setParameter("yanel.path", path.toString());
             //transformer.setParameter("yanel.back2context", backToRoot(path, ""));
             //transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
@@ -243,10 +244,10 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
     /**
      *
      */
-    private StreamSource getXSLTStreamSource(Path path, Repository repo) throws RepositoryException {
-        Path xsltPath = getXSLTPath(path);
+    private StreamSource getXSLTStreamSource(String path, Repository repo) throws RepositoryException {
+        String xsltPath = getXSLTPath(path);
         if(xsltPath != null) {
-            return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path).toString())));
+            return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path))));
         } else {
             File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "atomfeed2xhtml.xsl");
             log.debug("XSLT file: " + xsltFile);
@@ -257,9 +258,9 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
     /**
      *
      */
-    private Path getXSLTPath(Path path) {
+    private String getXSLTPath(String path) {
         String xsltPath = getProperty(path, "xslt", null);
-        if (xsltPath != null) return new Path(xsltPath);
+        if (xsltPath != null) return xsltPath;
         log.info("No XSLT Path within: " + path);
         return null;
     }
@@ -267,7 +268,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
     /**
      *
      */
-    private String getMimeType(Path path) {
+    private String getMimeType(String path) {
         String mimeType = getProperty(path, "mime-type", null);
         if (mimeType != null) return mimeType;
 
@@ -278,17 +279,17 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
     /**
      *
      */
-    private String getFeedTitle(Path path) {
+    private String getFeedTitle(String path) {
         return getProperty(path, "feed-title", "WARNING: No feed title specified!");
     }
 
     /**
      * Get property from RTI
      */
-    private String getProperty(Path path, String name, String defaultValue) {
+    private String getProperty(String path, String name, String defaultValue) {
         String propertyValue = defaultValue;
         try {
-            java.io.BufferedReader br = new java.io.BufferedReader(getRealm().getRTIRepository().getReader(new org.wyona.yarep.core.Path(getPath().getRTIPath().toString())));
+            java.io.BufferedReader br = new java.io.BufferedReader(getRealm().getRTIRepository().getReader(new org.wyona.yarep.core.Path(PathUtil.getRTIPath(getPath()))));
 
             String property = null;
             while ((property = br.readLine()) != null) {
@@ -308,15 +309,15 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
     /**
      * Get path to entries
      */
-    private org.wyona.yarep.core.Path getEntriesPath(Path feedPath) {
+    private String getEntriesPath(String feedPath) {
         String entriesPathString = getProperty(feedPath, "entries-path", null);
 
 	if (entriesPathString != null) {
-            return new org.wyona.yarep.core.Path(entriesPathString);
+            return entriesPathString;
         } else {
             try {
                 Repository repo = getRealm().getRepository();
-                org.wyona.yarep.core.Path entriesPath = new org.wyona.yarep.core.Path(feedPath.toString());
+                org.wyona.yarep.core.Path entriesPath = new org.wyona.yarep.core.Path(feedPath);
 
                 // TODO: This doesn't seem to work ... (check on Yarep ...)
                 if (repo.isResource(entriesPath)) {
@@ -330,7 +331,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
                     entriesPath = new org.wyona.yarep.core.Path(new org.wyona.commons.io.Path(entriesPath.toString()).getParent().toString());
                     log.warn("Use parent of path: " + entriesPath);
                 }
-                return entriesPath;
+                return entriesPath.toString();
             } catch(Exception e) {
                 log.error(e);
                 return null;
@@ -344,9 +345,9 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
      * @param in entry content
      * @return entry path
      */
-    public Path createEntry(Path path, java.io.InputStream in) {
+    public String createEntry(String path, java.io.InputStream in) {
         try {
-            org.wyona.yarep.core.Path entryPath = new org.wyona.yarep.core.Path(getEntriesPath(path).toString() + "/" + new Date().getTime() + ".xml");
+            org.wyona.yarep.core.Path entryPath = new org.wyona.yarep.core.Path(getEntriesPath(path) + "/" + new Date().getTime() + ".xml");
             java.io.OutputStream out = getRealm().getRepository().getOutputStream(entryPath);
             byte buffer[] = new byte[8192];
             int bytesRead;
@@ -355,7 +356,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
             }
             log.info("Atom entry has been created: " + entryPath);
 
-            return new Path(entryPath.toString());
+            return entryPath.toString();
         } catch(Exception e) {
             log.error(e);
         }
@@ -397,7 +398,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
     /**
      *
      */
-    String getEntriesURL(Path path) {
+    String getEntriesURL(String path) {
         return getProperty(path, "entries-url", null);
     }
     

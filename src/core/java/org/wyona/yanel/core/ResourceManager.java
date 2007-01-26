@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Category;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yarep.core.NoSuchNodeException;
 
 /**
@@ -51,7 +52,7 @@ public class ResourceManager {
      * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
      */
     public Resource getResource(HttpServletRequest request, HttpServletResponse response, 
-            Realm realm, Path path, ResourceTypeDefinition rtd, ResourceTypeIdentifier rti) 
+            Realm realm, String path, ResourceTypeDefinition rtd, ResourceTypeIdentifier rti) 
     throws Exception {
         String universalName = rtd.getResourceTypeUniversalName();
         if (rtd != null) {
@@ -77,7 +78,7 @@ public class ResourceManager {
      *
      * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
      */
-    public Resource getResource(HttpServletRequest request, HttpServletResponse response, Realm realm, Path path, ResourceConfiguration rc) throws Exception {
+    public Resource getResource(HttpServletRequest request, HttpServletResponse response, Realm realm, String path, ResourceConfiguration rc) throws Exception {
         ResourceTypeDefinition rtd = rtRegistry.getResourceTypeDefinition(rc.getUniversalName());
 
         if (rtd != null) {
@@ -104,13 +105,13 @@ public class ResourceManager {
      *
      * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
      */
-    public Resource getResource(HttpServletRequest request, HttpServletResponse response, Realm realm, Path path) throws Exception {
-        if (realm.getRTIRepository().exists(path.getRCPath())) {
-            ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getInputStream(path.getRCPath()));
+    public Resource getResource(HttpServletRequest request, HttpServletResponse response, Realm realm, String path) throws Exception {
+        if (realm.getRTIRepository().exists(new Path(PathUtil.getRCPath(path)))) {
+            ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getInputStream(new Path(PathUtil.getRCPath(path))));
             if (rc != null) return getResource(request, response, realm, path, rc);
         }
 
-        if (realm.getRTIRepository().exists(path.getRTIPath())) {
+        if (realm.getRTIRepository().exists(new Path(PathUtil.getRTIPath(path)))) {
             // Fallback to deprecated RTI
             log.warn("DEPRECATED: RTI should be replaced by ResourceConfiguration: " + realm + ", " + path);
             ResourceTypeIdentifier rti = getResourceTypeIdentifier(realm, path);
@@ -126,10 +127,10 @@ public class ResourceManager {
      * TODO: move this method to some RTIManager class ?
      * @deprecated
      */
-    public ResourceTypeIdentifier getResourceTypeIdentifier(Realm realm, Path path) throws Exception {
+    public ResourceTypeIdentifier getResourceTypeIdentifier(Realm realm, String path) throws Exception {
         log.debug("Original path: " + path);
         try {
-            Reader reader = realm.getRTIRepository().getReader(path.getRTIPath());
+            Reader reader = realm.getRTIRepository().getReader(new Path(PathUtil.getRTIPath(path)));
             return new ResourceTypeIdentifier(reader);
         } catch(NoSuchNodeException e) {
             log.warn(e.getMessage());

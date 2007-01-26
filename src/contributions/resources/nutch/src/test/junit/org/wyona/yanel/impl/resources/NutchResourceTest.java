@@ -46,7 +46,7 @@ public class NutchResourceTest extends AbstractYanelTest {
         String url = "/yanel-website/en/search.html";
         Map map = yanel.getMap();
         Realm realm = yanel.getMap().getRealm(url);
-        Path path = yanel.getMap().getPath(realm, url);
+        String path = yanel.getMap().getPath(realm, url);
         this.resource = (NutchResource)yanel.getResourceManager().getResource(null, null, realm, path);
         confDir = this.resource.getRTD().getConfigFile().getParentFile().getAbsolutePath() + 
                     File.separator + "conf" + File.separator;

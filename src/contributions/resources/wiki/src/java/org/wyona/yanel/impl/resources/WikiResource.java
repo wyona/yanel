@@ -97,7 +97,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
         try {
         if (viewId != null && viewId.equals("txt")) {
             View view = new View();
-            view.setInputStream(getRealm().getRepository().getInputStream(new org.wyona.yarep.core.Path(getPath().toString())));
+            view.setInputStream(getRealm().getRepository().getInputStream(new org.wyona.yarep.core.Path(getPath())));
             view.setMimeType("text/plain");
             return view;
         }
@@ -109,7 +109,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
             path2Resource = path2Resource.substring(0, path2Resource.lastIndexOf("/") + 1);
             
             String wikiParserBeanId = getWikiSyntax(path);
-            InputStream inputStream = dataRepo.getInputStream(new org.wyona.yarep.core.Path(getPath().toString()));
+            InputStream inputStream = dataRepo.getInputStream(new org.wyona.yarep.core.Path(getPath()));
             IWikiParser wikiParser = (IWikiParser) yanel.getBeanFactory().getBean(wikiParserBeanId);
             wikiParser.parse(inputStream);
             
@@ -400,7 +400,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
      *
      */
     public OutputStream getOutputStream() throws Exception {
-        return getRealm().getRepository().getOutputStream(getPath());
+        return getRealm().getRepository().getOutputStream(new Path(getPath()));
     }
 
     /**

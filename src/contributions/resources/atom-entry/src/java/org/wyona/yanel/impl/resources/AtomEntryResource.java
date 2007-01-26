@@ -23,6 +23,7 @@ import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.util.PathUtil;
 
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
@@ -85,11 +86,11 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
                 TransformerFactory tf = TransformerFactory.newInstance();
                 //tf.setURIResolver(null);
                 Transformer transformer = tf.newTransformer(new StreamSource(getRealm().getRepository().getInputStream(new org.wyona.yarep.core.Path(getXSLTPath().toString()))));
-                transformer.setParameter("yanel.path.name", getPath().getName());
-                transformer.setParameter("yanel.path", getPath().toString());
+                transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+                transformer.setParameter("yanel.path", getPath());
                 // TODO: There seems to be a bug re back2context
                 transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
-                transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(getPath().toString()), ""));
+                transformer.setParameter("yarep.back2realm", backToRoot(getPath(), ""));
                 // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
 
@@ -122,11 +123,11 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
     /**
      *
      */
-    private String getMimeType(Path path, String viewId) {
+    private String getMimeType(String path, String viewId) {
         String mimeType = getRTI().getProperty("mime-type");
         if (mimeType != null) return mimeType;
 
-        String suffix = path.getSuffix();
+        String suffix = PathUtil.getSuffix(path);
         if (suffix != null) {
             log.debug("SUFFIX: " + suffix);
             if (suffix.equals("html")) {
@@ -149,14 +150,14 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
      *
      */
     public Reader getReader() throws Exception {
-        return getRealm().getRepository().getReader(new org.wyona.yarep.core.Path(getPath().toString()));
+        return getRealm().getRepository().getReader(new org.wyona.yarep.core.Path(getPath()));
     }
 
     /**
      *
      */
     public InputStream getInputStream() throws Exception {
-        return getRealm().getRepository().getInputStream(new org.wyona.yarep.core.Path(getPath().toString()));
+        return getRealm().getRepository().getInputStream(new org.wyona.yarep.core.Path(getPath()));
     }
 
     /**
@@ -171,7 +172,7 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
      *
      */
     public OutputStream getOutputStream() throws Exception {
-        return getRealm().getRepository().getOutputStream(new org.wyona.yarep.core.Path(getPath().toString()));
+        return getRealm().getRepository().getOutputStream(new org.wyona.yarep.core.Path(getPath()));
     }
 
     /**
@@ -190,7 +191,7 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
             entry.setPublished(date);
         }
 
-        OutputStream out = getRealm().getRepository().getOutputStream(new org.wyona.yarep.core.Path(getPath().toString()));
+        OutputStream out = getRealm().getRepository().getOutputStream(new org.wyona.yarep.core.Path(getPath()));
 
         org.apache.abdera.writer.Writer writer = abdera.getWriter();
         writer.writeTo(entry, out);
@@ -202,18 +203,18 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
      * Get last modified
      */
     public long getLastModified() throws Exception {
-        return getRealm().getRepository().getLastModified(new org.wyona.yarep.core.Path(getPath().toString()));
+        return getRealm().getRepository().getLastModified(new org.wyona.yarep.core.Path(getPath()));
     }
 
     /**
      *
      */
-    private Path getXSLTPath() {
+    private String getXSLTPath() {
         String xslt = getRTI().getProperty("xslt");
         if (xslt != null) {
-            return new Path(xslt);
+            return xslt;
         } else {
-            log.error("No XSLT Path within: " + getPath().getRTIPath());
+            log.error("No XSLT Path within: " + PathUtil.getRTIPath(getPath()));
             return null;
         }
     }
@@ -221,10 +222,10 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
     /**
      *
      */
-    private String backToRoot(Path path, String backToRoot) {
-        org.wyona.commons.io.Path parent = path.getParent();
+    private String backToRoot(String path, String backToRoot) {
+        String parent = PathUtil.getParent(path);
         if (parent != null && !isRoot(parent)) {
-            return backToRoot(new Path(parent.toString()), backToRoot + "../");
+            return backToRoot(parent, backToRoot + "../");
         }
         return backToRoot;
     }
@@ -232,7 +233,7 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
     /**
      *
      */
-    private boolean isRoot(org.wyona.commons.io.Path path) {
+    private boolean isRoot(String path) {
         if (path.toString().equals("/")) return true;
         return false;
     }
@@ -241,7 +242,7 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
      *
      */
     public boolean delete() throws Exception {
-        return getRealm().getRepository().delete(new org.wyona.yarep.core.Path(getPath().toString()));
+        return getRealm().getRepository().delete(new org.wyona.yarep.core.Path(getPath()));
     }
     
     protected RepositoryFactory getRepositoryFactory() {
@@ -257,7 +258,7 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
      * 
      */
      public long getSize() throws Exception {
-         return getRealm().getRepository().getSize(getPath());
+         return getRealm().getRepository().getSize(new Path(getPath()));
      }
        
 }

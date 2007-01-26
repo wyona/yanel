@@ -32,7 +32,7 @@ public interface Sitetree {
     /**
      *
      */
-    public Node getNode(Realm realm, Path path);
+    public Node getNode(Realm realm, String path);
 
     /**
      *

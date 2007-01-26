@@ -36,8 +36,8 @@ public class NodeRTIImpl implements Node {
     /**
      *
      */
-    public NodeRTIImpl(org.wyona.yarep.core.Repository repo, org.wyona.yanel.core.Path path) {
-        this.path = new Path(path.toString());
+    public NodeRTIImpl(org.wyona.yarep.core.Repository repo, String path) {
+        this.path = new Path(path);
         this.repo = repo;
     }
 
@@ -117,7 +117,7 @@ public class NodeRTIImpl implements Node {
         }
         Node[] nodes = new Node[c.size()];
         for (int i = 0; i < c.size(); i++) {
-            nodes[i] = new NodeRTIImpl(repo, new org.wyona.yanel.core.Path((String) c.elementAt(i)));
+            nodes[i] = new NodeRTIImpl(repo, (String) c.elementAt(i));
         }
         return nodes;
     }
@@ -146,7 +146,7 @@ public class NodeRTIImpl implements Node {
     /**
      *
      */
-    public org.wyona.yanel.core.Path getPath() {
-        return new org.wyona.yanel.core.Path(path.toString());
+    public String getPath() {
+        return path.toString();
     }
 }

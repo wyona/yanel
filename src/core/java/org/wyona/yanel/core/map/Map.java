@@ -62,5 +62,5 @@ public interface Map {
      * @param url
      * @throws Exception
      */
-    public Path getPath(Realm realm, String url) throws Exception;
+    public String getPath(Realm realm, String url) throws Exception;
 }

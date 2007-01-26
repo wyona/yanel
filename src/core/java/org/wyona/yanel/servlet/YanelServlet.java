@@ -466,7 +466,7 @@ public class YanelServlet extends HttpServlet {
                 try {
                     String atomEntryUniversalName = "<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>";
                     org.wyona.yanel.core.map.Realm realm = yanel.getMap().getRealm(request.getServletPath());
-                    Path newEntryPath = yanel.getMap().getPath(realm, request.getServletPath() + "/" + new java.util.Date().getTime() + ".xml");
+                    String newEntryPath = yanel.getMap().getPath(realm, request.getServletPath() + "/" + new java.util.Date().getTime() + ".xml");
 
                     log.error("DEBUG: Realm and Path of new Atom entry: " + realm + " " + newEntryPath);
                     Resource atomEntryResource = yanel.getResourceManager().getResource(request, response, realm, newEntryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new org.wyona.yanel.core.ResourceTypeIdentifier(atomEntryUniversalName, null));
@@ -524,7 +524,7 @@ public class YanelServlet extends HttpServlet {
                 try {
                     String atomEntryUniversalName = "<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>";
                     org.wyona.yanel.core.map.Realm realm = yanel.getMap().getRealm(request.getServletPath());
-                    Path entryPath = yanel.getMap().getPath(realm, request.getServletPath());
+                    String entryPath = yanel.getMap().getPath(realm, request.getServletPath());
 
                     log.error("DEBUG: Realm and Path of new Atom entry: " + realm + " " + entryPath);
 
@@ -593,7 +593,7 @@ public class YanelServlet extends HttpServlet {
     private Resource getResource(HttpServletRequest request, HttpServletResponse response) {
         try {
             Realm realm = map.getRealm(request.getServletPath());
-            Path path = map.getPath(realm, request.getServletPath());
+            String path = map.getPath(realm, request.getServletPath());
             HttpRequest httpRequest = new HttpRequest(request);
             HttpResponse httpResponse = new HttpResponse(response);
             Resource res = yanel.getResourceManager().getResource(httpRequest, httpResponse, realm, path);
@@ -765,7 +765,7 @@ public class YanelServlet extends HttpServlet {
 
         boolean authorized = false;
         Realm realm;
-        Path path;
+        String path;
         try {
             realm = map.getRealm(request.getServletPath());
             path = map.getPath(realm, request.getServletPath());
@@ -794,7 +794,7 @@ public class YanelServlet extends HttpServlet {
                 log.debug("username: " + username + ", password: " + password);
                 try {
                 if (realm.getIdentityManager().authenticate(username, password)) {
-                    authorized = realm.getPolicyManager().authorize(path, new Identity(username, null), new Role("view"));
+                    authorized = realm.getPolicyManager().authorize(new Path(path), new Identity(username, null), new Role("view"));
                     if(authorized) {
                         return null;
                     } else {
@@ -847,7 +847,7 @@ public class YanelServlet extends HttpServlet {
         
         try {
             log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity.getUsername() + ", role: " + role.getName());
-            authorized = realm.getPolicyManager().authorize(path, identity, role);
+            authorized = realm.getPolicyManager().authorize(new Path(path), identity, role);
             log.debug("Check authorization result: " + authorized);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -937,7 +937,7 @@ public class YanelServlet extends HttpServlet {
             Realm realm = map.getRealm(request.getServletPath());
     
             // TODO: Handle this exception more gracefully!
-            if (realm == null) log.error("No realm found for path " + new Path(request.getServletPath()));
+            if (realm == null) log.error("No realm found for path " +request.getServletPath());
             String proxyHostName = realm.getProxyHostName();
             String proxyPort = realm.getProxyPort();
             String proxyPrefix = realm.getProxyPrefix();
@@ -1090,7 +1090,7 @@ public class YanelServlet extends HttpServlet {
 
         try {
             Realm realm = map.getRealm(request.getServletPath());
-            Path path = map.getPath(realm, request.getServletPath());
+            String path = map.getPath(realm, request.getServletPath());
             //Realm realm = map.getRealm(new Path(request.getServletPath()));
 
         // HTML Form based authentication

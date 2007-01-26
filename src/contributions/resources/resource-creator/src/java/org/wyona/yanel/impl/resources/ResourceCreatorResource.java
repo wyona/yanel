@@ -13,6 +13,7 @@ import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
 import org.apache.log4j.Category;
@@ -316,7 +317,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      */
     private void create() throws Exception {
         org.wyona.yanel.core.map.Realm realm = getRealm();
-        Path pathOfResourceCreator = getPath();
+        Path pathOfResourceCreator = new Path(getPath());
 
         org.wyona.commons.io.Path parent = new org.wyona.commons.io.Path(pathOfResourceCreator.toString()).getParent();
 
@@ -334,7 +335,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         String rtps = getRequest().getParameter("resource-type");
         String resNamespace = rtps.substring(0, rtps.indexOf("::"));
         String resName = rtps.substring(rtps.indexOf("::") + 2);
-        Resource newResource = yanel.getResourceManager().getResource(request, response, realm, pathOfNewResource, new ResourceConfiguration(resName, resNamespace, null));
+        Resource newResource = yanel.getResourceManager().getResource(request, response, realm, pathOfNewResource.toString(), new ResourceConfiguration(resName, resNamespace, null));
 
         if (newResource != null) {
             if (ResourceAttributeHelper.hasAttributeImplemented(newResource, "Creatable", "2")) {
@@ -353,7 +354,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     StringBuffer rtiContent = new StringBuffer(newResource.getResourceTypeUniversalName() + "\n");
                     java.util.HashMap rtiProperties = ((CreatableV2) newResource).createRTIProperties(request);
                     if (rtiProperties != null) {
-                        log.error("DEBUG: " + rtiProperties + " " + newResource.getPath().getRTIPath());
+                        log.error("DEBUG: " + rtiProperties + " " + PathUtil.getRTIPath(newResource.getPath()));
                         java.util.Iterator iterator = rtiProperties.keySet().iterator();
                         while (iterator.hasNext()) {
                             String property = (String) iterator.next();
@@ -364,7 +365,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     } else {
                         log.warn("No RTI properties: " + newResource.getPath());
                     }
-                    java.io.Writer writer = newResource.getRealm().getRTIRepository().getWriter(new org.wyona.yarep.core.Path(newResource.getPath().getRTIPath().toString()));
+                    java.io.Writer writer = newResource.getRealm().getRTIRepository().getWriter(new org.wyona.yarep.core.Path(PathUtil.getRTIPath(newResource.getPath())));
                     writer.write(rtiContent.toString());
                     writer.close();
     }

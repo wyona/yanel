@@ -44,6 +44,7 @@ import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Repository;
@@ -121,9 +122,9 @@ public class ShowRealms extends Resource implements ViewableV2 {
 
         Transformer transformer = TransformerFactory.newInstance()
                 .newTransformer(getXSLTStreamSource(getPath(), contentRepo));
-        transformer.setParameter("yanel.path.name", getPath().getName());
+        transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
         transformer.setParameter("servlet.context", servletContext);
-        transformer.setParameter("yanel.path", getPath().toString());
+        transformer.setParameter("yanel.path", getPath());
         transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
         transformer.setParameter("yarep.back2realm", backToRoot(getPath(), ""));
         // TODO: Is this the best way to generate an InputStream from an
@@ -143,12 +144,12 @@ public class ShowRealms extends Resource implements ViewableV2 {
     /**
      * 
      */
-    private StreamSource getXSLTStreamSource(Path path, Repository repo)
+    private StreamSource getXSLTStreamSource(String path, Repository repo)
             throws Exception {
-        Path xsltPath = getXSLTPath();
+        String xsltPath = getXSLTPath();
         if (xsltPath != null) {
             return new StreamSource(repo
-                    .getInputStream(new org.wyona.yarep.core.Path(getXSLTPath().toString())));
+                    .getInputStream(new org.wyona.yarep.core.Path(getXSLTPath())));
         } else {
             File xsltFile = org.wyona.commons.io.FileUtil.file(rtd
                     .getConfigFile().getParentFile().getAbsolutePath(), "xslt"
@@ -161,14 +162,14 @@ public class ShowRealms extends Resource implements ViewableV2 {
     /**
      * 
      */
-    private Path getXSLTPath() {
-        return new Path(getRTI().getProperty("xslt"));
+    private String getXSLTPath() {
+        return getRTI().getProperty("xslt");
     }
 
      /**
      * 
      */
-    private String getMimeType(Path path) {
+    private String getMimeType(String path) {
         String mimeType = getRTI().getProperty("mime-type");
         if (mimeType == null) mimeType = "application/xhtml+xml";
         return mimeType;
@@ -177,10 +178,10 @@ public class ShowRealms extends Resource implements ViewableV2 {
    /**
     *
     */
-   private String backToRoot(Path path, String backToRoot) {
-       org.wyona.commons.io.Path parent = path.getParent();
+   private String backToRoot(String path, String backToRoot) {
+       String parent = PathUtil.getParent(path);
        if (parent != null && !isRoot(parent)) {
-           return backToRoot(new Path(parent.toString()), backToRoot + "../");
+           return backToRoot(parent, backToRoot + "../");
        }
        return backToRoot;
    }
@@ -188,8 +189,8 @@ public class ShowRealms extends Resource implements ViewableV2 {
     /**
      *
      */
-    private boolean isRoot(org.wyona.commons.io.Path path) {
-        if (path.toString().equals(File.separator)) return true;
+    private boolean isRoot(String path) {
+        if (path.equals(File.separator)) return true;
         return false;
     } 
   

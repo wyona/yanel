@@ -125,7 +125,7 @@ public class RealmConfiguration {
                 String realmId = realmElements[i].getAttribute("id", null);
                 String rootFlag = realmElements[i].getAttribute("root", "false");
                 Configuration name = realmElements[i].getChild("name", false);
-                Realm realm = new Realm(name.getValue(), realmId, new org.wyona.commons.io.Path(mountPoint));
+                Realm realm = new Realm(name.getValue(), realmId, mountPoint);
                 Configuration proxy = realmElements[i].getChild("reverse-proxy", false);
                 if (proxy != null) {
                     realm.setProxy(proxy.getChild("host-name").getValue(), proxy.getChild("port").getValue(""), proxy.getChild("prefix").getValue());

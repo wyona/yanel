@@ -70,7 +70,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
 
         org.wyona.yarep.core.Repository dataRepo = getRealm().getRepository();
 
-        if (dataRepo.exists(new org.wyona.yarep.core.Path(getPath().toString()))) {
+        if (dataRepo.exists(new org.wyona.yarep.core.Path(getPath()))) {
             log.error("DEBUG: ICS exists!");
             if(viewId == null) {
                 View view = new View();
@@ -81,7 +81,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
 	        } else {
 	            view.setMimeType("text/calendar");
                 }
-	        view.setInputStream(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getPath().toString())));
+	        view.setInputStream(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getPath())));
                 log.error("DEBUG: Return ICS!");
                 return view;
             }
@@ -89,7 +89,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
 
         String eventsPath = getRTI().getProperty("events-path");
         if (eventsPath == null) {
-            eventsPath = getPath().toString();
+            eventsPath = getPath();
         }
         org.wyona.yarep.core.Path[] children = dataRepo.getChildren(new org.wyona.yarep.core.Path(eventsPath));
         //org.wyona.yarep.core.Path[] children = dataRepo.search("categories", categories);
@@ -211,7 +211,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
      * Save/Write the actual ICS
      */
     private InputStream writeICS(InputStream in) throws Exception {
-        org.wyona.yarep.core.Path path = new org.wyona.yarep.core.Path(getPath().toString());
+        org.wyona.yarep.core.Path path = new org.wyona.yarep.core.Path(getPath());
         OutputStream out = getRealm().getRepository().getOutputStream(path);
         byte[] buf = new byte[8192];
         int bytesR;
@@ -270,7 +270,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
      *
      */
     public void create(HttpServletRequest request) {
-        org.wyona.yanel.core.Path newPath = getPath();
+        String newPath = getPath();
         log.error("DEBUG: New path: " + newPath);
     }
 

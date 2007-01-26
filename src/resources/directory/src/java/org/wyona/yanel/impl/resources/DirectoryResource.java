@@ -72,7 +72,7 @@ public class DirectoryResource extends Resource implements ViewableV2 {
         Repository contentRepo = null;
         try {
             contentRepo = getRealm().getRepository();
-            org.wyona.yarep.core.Path p = new org.wyona.yarep.core.Path(getPath().toString());
+            org.wyona.yarep.core.Path p = new org.wyona.yarep.core.Path(getPath());
 
             // TODO: This doesn't seem to work ... (check on Yarep ...)
             if (contentRepo.isResource(p)) {
@@ -158,10 +158,10 @@ public class DirectoryResource extends Resource implements ViewableV2 {
     /**
      * 
      */
-    private StreamSource getXSLTStreamSource(Path path, Repository repo) throws RepositoryException {
-        Path xsltPath = getXSLTPath();
+    private StreamSource getXSLTStreamSource(String path, Repository repo) throws RepositoryException {
+        String xsltPath = getXSLTPath();
         if (xsltPath != null) {
-            return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath().toString())));
+            return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath())));
         } else {
             File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(),
                     "xslt" + File.separator + "dir2xhtml.xsl");
@@ -173,9 +173,9 @@ public class DirectoryResource extends Resource implements ViewableV2 {
     /**
      * Get XSLT
      */
-    private Path getXSLTPath() {
+    private String getXSLTPath() {
         String xslt =getRTI().getProperty("xslt");
-        if (xslt != null) new Path(xslt);
+        if (xslt != null) return xslt;
         return null;
     }
 

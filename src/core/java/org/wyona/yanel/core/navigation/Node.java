@@ -80,5 +80,5 @@ public interface Node {
     /**
      *
      */
-    public Path getPath();
+    public String getPath();
 }
