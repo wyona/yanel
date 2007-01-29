@@ -5,8 +5,12 @@
 <!-- 
   IMPORTANT NOTE:
   Incoming requests will be matched to a realm using the information in this file.
-  The first realm with a matching mount-point will be used, so the order of the 
-  realms matters.
+  The realm for a request will be determined by checking the realms sequentially 
+  as they appear in this file, whereas the first realm with a matching mount-point 
+  will be used.
+  This means that the order of the realms in this file matters, and the realm with 
+  mount-point '/' has to come last.
+  TODO: change this behaviour to "longest prefix matching"
 -->
 
 <!-- WARNING: Access Control does not work properly for nested realms (also the mount-point needs to match the id in order to make the access control work properly, e.g. id="zurich" and mount-point="/zurich/")! -->
