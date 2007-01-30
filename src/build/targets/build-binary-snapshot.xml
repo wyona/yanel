@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<project name="build-binary-snapshot" default="bin-snapshot" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <target name="bin-snapshot" description="Create a binary snapshot" depends="init, war">
+    <delete dir="${build.dir}/bin-snapshots"/>
+    <property name="snapshot.dir" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin"/>
+    <mkdir dir="${snapshot.dir}"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/README.txt" todir="${snapshot.dir}"/>
+    <copy todir="${snapshot.dir}/${servlet.context.prefix}">
+      <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
+    </copy>
+    <copy todir="${snapshot.dir}/${servlet.context.prefix}/realms">
+      <fileset dir="${yanel.home.dir}/src/realms"/>
+    </copy>
+    <copy todir="${snapshot.dir}/${servlet.context.prefix}/resources">
+      <fileset dir="${yanel.home.dir}/src/resources"/>
+    </copy>
+    <copy todir="${snapshot.dir}/${servlet.context.prefix}/resources">
+      <fileset dir="${yanel.home.dir}/src/contributions/resources"/>
+    </copy>
+    <jar jarfile="${snapshot.dir}/${servlet.context.prefix}.war" basedir="${snapshot.dir}/${servlet.context.prefix}"/>
+    <delete dir="${snapshot.dir}/${servlet.context.prefix}"/>
+    <zip destfile="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin.zip" basedir="${build.dir}/bin-snapshots"/>
+  </target>
+
+</project>
