@@ -45,8 +45,8 @@ public class ResourceConfiguration {
         DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder(true);
         config = builder.build(in);
         Configuration rtiConfig = config.getChild("rti");
-	name = rtiConfig.getAttribute("name");
-	namespace = rtiConfig.getAttribute("namespace");
+        name = rtiConfig.getAttribute("name");
+        namespace = rtiConfig.getAttribute("namespace");
         log.debug("Universal Name: " + getUniversalName());
 
         Configuration encodingConfig = config.getChild("encoding", false);
