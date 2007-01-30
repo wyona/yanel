@@ -40,6 +40,9 @@
   font-weight: bold; 
   font-size: 12px;
 }
+#downloadlink{
+  text-decoration:none;
+}
   </style>
 </head>
 <body>
@@ -62,7 +65,7 @@ Language: <xsl:value-of select="$language"/>
 <tr>
 <td>
 <center>
-<a>
+<a id="downloadlink">
 <xsl:attribute name="href">
 <xsl:choose>
 <xsl:when test="$os = 'OS_NULL'">
