@@ -67,6 +67,13 @@ body  {
 	margin-right:10px
 } 
 
+hr {
+  border: 0;
+  color:#4682B4;
+  background-color:#4682B4;
+  height: 1px;
+}
+
 a  { 
 	color:#0066cc; 
 	text-decoration:none
