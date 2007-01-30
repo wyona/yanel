@@ -7,15 +7,12 @@
   <title>How a request is being processed</title>
 </head>
 <body>
-<h1>How a request is being processed</h1>
-
+<h1>How a request is being processed</h1><br/>or how you can follow a request to debug it .<i>e.g. http://localhost:8080/yanel/yanel-website/en/documentation/how-a-request-is-being-processed.html</i>
 <p>
-<ul>
-<li>The Yanel servlet receives a request (e.g. <i>/yanel/en/documentation/how-a-request-is-being-processed.html</i>) and is dispatching it within the service method</li>
-<li>The resource type is being determined by looking up REQUEST.yanel-rti (e.g. <i>/yanel/en/documentation/how-a-request-is-being-processed.html.yanel-rti</i>)</li>
-<li>The determined resource type (e.g. <i>&lt;{http://www.wyona.org/yanel/resource/1.0}xml/></i>) is being loaded dynamically and is processing the request resp. generates the content</li>
-</ul>
 </p>
-
-</body>
+<ol>
+<li><b>Figure out the Realm.</b>
+<br/><i>http://localhost:8080</i> is the root context of the servlet engine
+<br/><i>/yanel</i> is the Yanel servlet context as configured in build.properties resp. local.build.properties
+<br/><i>/yanel-website</i> is the realm prefix as configured in conf/realms.xml resp. conf/local/local.realms.xml resp. WEB-INF/classes/realms.xml<br/>You will find out where the realm is configured e.g. ../src/realms/yanel-website/config/yanel-realm-config.xml</li><li><b>Figure out RTI/RC Repo</b><br/>Have a look ../src/realms/yanel-website/config/yanel-realm-config.xml where the rti-repository is configured. e.g ../src/realms/yanel-website/config/repository.xml</li><li><b>Get RTI/RC </b>(.yanel-rti, .yanel-rc)<br/>Follow the path and get the .yanel-rti or .yanel-rc in the content and you will get the Resource Type  (e.g. <i>&lt;{http://www.wyona.org/yanel/resource/1.0}xml/&gt;</i>) <br/></li><li><b>Get the Resource Type</b><br/>Have a look at conf/yanel.xml resp. conf/local/local.yanel.xml resp. WEB-INF/classes/yanel.properties to find out where the Resource Type is located. (e.g. /home/simon/src/yanel/src/resources/xml/resource.xml)</li><li><b>Get the Resource Type Class</b> (where the view is being generated)<br/>have a look at /home/simon/src/yanel/src/resources/xml/resource.xml to see where the class is located. (e.g. /home/simon/src/yanel/src/resources/xml/src/java/org/wyona/yanel/impl/resources/XMLResource.java)<br/><br/></li></ol></body>
 </html>
