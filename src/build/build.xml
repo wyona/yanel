@@ -19,6 +19,7 @@
   <import file="targets/install-tomcat.xml"/>
   <import file="targets/add-third-party-realm.xml"/>
   <import file="targets/create-new-resource.xml"/>
+  <import file="targets/build-binary-snapshot.xml"/>
   
   <target name="ask-to-reconfigure-tomcat-cluster-node1" description="reconfigure Tomcat cluster node 1" if="isTomcat1PortsSet">
     <input message="Do you want to reconfigure tomcat cluster node 1 in order to support SSL? (YES/no):" defaultvalue="NO" addproperty="answerReconfigureTomcat1"/>
@@ -841,28 +842,6 @@
     <zip destfile="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-r${yanel.revision}-src.zip">
       <zipfileset dir="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-r${yanel.revision}-src" prefix="wyona-yanel-SNAPSHOT-r${yanel.revision}-src" filemode="755"/>
     </zip>
-  </target>
-  
-  <target name="bin-snapshot" description="Create a binary snapshot" depends="init, war">
-    <delete dir="${build.dir}/bin-snapshots"/>
-    <property name="snapshot.dir" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin"/>
-    <mkdir dir="${snapshot.dir}"/>
-    <copy file="${yanel.home.dir}/src/binary-dist/README.txt" todir="${snapshot.dir}"/>
-    <copy todir="${snapshot.dir}/${servlet.context.prefix}">
-      <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
-    </copy>
-    <copy todir="${snapshot.dir}/${servlet.context.prefix}/realms">
-      <fileset dir="${yanel.home.dir}/src/realms"/>
-    </copy>
-    <copy todir="${snapshot.dir}/${servlet.context.prefix}/resources">
-      <fileset dir="${yanel.home.dir}/src/resources"/>
-    </copy>
-    <copy todir="${snapshot.dir}/${servlet.context.prefix}/resources">
-      <fileset dir="${yanel.home.dir}/src/contributions/resources"/>
-    </copy>
-    <jar jarfile="${snapshot.dir}/${servlet.context.prefix}.war" basedir="${snapshot.dir}/${servlet.context.prefix}"/>
-    <delete dir="${snapshot.dir}/${servlet.context.prefix}"/>
-    <zip destfile="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin.zip" basedir="${build.dir}/bin-snapshots"/>
   </target>
 
 </project>
