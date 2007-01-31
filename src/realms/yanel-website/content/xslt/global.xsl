@@ -126,6 +126,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 &#160;<a href="{$yarep.back2realm}testing.html">Continuous Integration</a><br/>
 &#160;<a href="{$yarep.back2realm}en/governance.html">Governance</a><br/>
 &#160;<a href="{$yarep.back2realm}principles.html">Principles</a><br/>
+&#160;<a href="{$yarep.back2realm}en/development/processes/index.html">Processes</a><br/>
 &#160;<a href="{$yarep.back2realm}acknowledgements.html">Acknowledgements</a><br/>
 &#160;<a href="{$yarep.back2realm}references.html">References</a><br/>
 <br/>
