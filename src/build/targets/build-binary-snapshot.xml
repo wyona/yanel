@@ -31,12 +31,17 @@
 
     <!-- Build WAR file -->
     <copy file="${yanel.home.dir}/src/binary-dist/README.txt" todir="${snapshot.dir}"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/start.sh" todir="${snapshot.dir}"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/stop.sh" todir="${snapshot.dir}"/>
     <copy todir="${snapshot.dir}/${servlet.context.prefix}">
       <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
     </copy>
     <copy todir="${snapshot.dir}/${servlet.context.prefix}/realms">
       <fileset dir="${yanel.home.dir}/src/realms"/>
     </copy>
+    <replace file="${snapshot.dir}/${servlet.context.prefix}/realms/javadoc/repository.xml" value="content">
+      <replacetoken>../../../build/javadoc</replacetoken>
+    </replace>
     <copy file="${yanel.home.dir}/conf/realms.xml" todir="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
     <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/realms.xml" value="../../realms">
       <replacetoken>../src/realms</replacetoken>
