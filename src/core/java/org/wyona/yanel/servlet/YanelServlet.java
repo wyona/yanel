@@ -1150,26 +1150,26 @@ public class YanelServlet extends HttpServlet {
             String path = map.getPath(realm, request.getServletPath());
             //Realm realm = map.getRealm(new Path(request.getServletPath()));
 
-        // HTML Form based authentication
-        String loginUsername = request.getParameter("yanel.login.username");
-        if(loginUsername != null) {
-            HttpSession session = request.getSession(true);
-            try {
-                if (realm.getIdentityManager().authenticate(loginUsername, request.getParameter("yanel.login.password"))) {
-                    log.debug("Realm: " + realm);
-                    session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
-                    return null;
-                } else {
-                    log.warn("Login failed: " + loginUsername);
+            // HTML Form based authentication
+            String loginUsername = request.getParameter("yanel.login.username");
+            if(loginUsername != null) {
+                HttpSession session = request.getSession(true);
+                try {
+                    if (realm.getIdentityManager().authenticate(loginUsername, request.getParameter("yanel.login.password"))) {
+                        log.debug("Realm: " + realm);
+                        session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
+                        return null;
+                    } else {
+                        log.warn("Login failed: " + loginUsername);
+                        getXHTMLAuthenticationForm(request, response, realm, "Login failed!");
+                        return response;
+                    }
+                } catch (Exception e) {
+                    log.warn("Login failed: " + loginUsername + " " + e);
                     getXHTMLAuthenticationForm(request, response, realm, "Login failed!");
                     return response;
                 }
-            } catch (Exception e) {
-                log.warn("Login failed: " + loginUsername + " " + e);
-                getXHTMLAuthenticationForm(request, response, realm, "Login failed!");
-                return response;
             }
-        }
 
             // Neutron-Auth based authentication
             String yanelUsecase = request.getParameter("yanel.usecase");
