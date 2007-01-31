@@ -10,7 +10,7 @@
 
     <artifact:dependencies pathId="maven2.tomcat.classpath" filesetId="maven2.tomcat.fileset">
       <remoteRepository refid="wyona.org.remote.repository"/>
-      <dependency groupId="apache-org" artifactId="apache-tomcat" version="5.5.20" scope="provided"/>
+      <dependency groupId="apache-org" artifactId="apache-tomcat" version="${tomcat.version}" scope="provided"/>
     </artifact:dependencies>
 
     <mkdir dir="${yanel.home.dir}/local"/>
@@ -33,7 +33,7 @@
   </target>
   
   <target name="copy-java1.4-libs" if="isJava1.4" description="Copy jars specific to java 1.4" depends="init">
-    <copy file="${yanel.home.dir}/tools/apache-tomcat/java-1.4/apache-tomcat-5.5.20/bin/jmx.jar" todir="${default.tomcat.home.dir}/bin"/>
+    <copy file="${yanel.home.dir}/tools/apache-tomcat/java-1.4/apache-tomcat-${tomcat.version}/bin/jmx.jar" todir="${default.tomcat.home.dir}/bin"/>
   </target>
     
 </project>
