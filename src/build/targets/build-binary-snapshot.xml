@@ -46,7 +46,9 @@
     <move file="${snapshot.dir}/${servlet.context.prefix}.war" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps"/>
 
     <!-- Create ZIP file -->
-    <zip destfile="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin.zip" basedir="${build.dir}/bin-snapshots"/>
+    <zip destfile="${snapshot.dir}.zip">
+      <zipfileset dir="${snapshot.dir}" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin" filemode="755"/>
+    </zip>
   </target>
 
 </project>
