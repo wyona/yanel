@@ -47,6 +47,21 @@
     <copy todir="${snapshot.dir}/${servlet.context.prefix}/resources">
       <fileset dir="${yanel.home.dir}/src/contributions/resources"/>
     </copy>
+    <copy todir="${snapshot.dir}/${servlet.context.prefix}/resources">
+      <fileset dir="${yanel.home.dir}/src/realms/welcome-admin/yanel/resources"/>
+    </copy>
+    <xslt in="${yanel.home.dir}/conf/yanel.xml" out="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl" force="true">
+      <!--<param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>-->
+    </xslt>
+    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="../../resources">
+      <replacetoken>../src/resources</replacetoken>
+    </replace>
+    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="../../resources">
+      <replacetoken>../src/contributions/resources</replacetoken>
+    </replace>
+    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="../../resources">
+      <replacetoken>../src/realms/welcome-admin/yanel/resources</replacetoken>
+    </replace>
     <jar jarfile="${snapshot.dir}/${servlet.context.prefix}.war" basedir="${snapshot.dir}/${servlet.context.prefix}"/>
     <delete dir="${snapshot.dir}/${servlet.context.prefix}"/>
 
