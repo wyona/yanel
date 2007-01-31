@@ -3,6 +3,13 @@
 <project name="build-binary-snapshot" default="bin-snapshot" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
   <target name="bin-snapshot" description="Create a binary snapshot" depends="init, war">
+    <artifact:remoteRepository id="wyona.org.remote.repository" url="http://www.wyona.org/maven2/"/>
+
+    <artifact:dependencies pathId="maven2.tomcat.classpath" filesetId="maven2.tomcat.fileset">
+      <remoteRepository refid="wyona.org.remote.repository"/>
+      <dependency groupId="apache-org" artifactId="apache-tomcat" version="${tomcat.version}" scope="provided"/>
+    </artifact:dependencies>
+
     <delete dir="${build.dir}/bin-snapshots"/>
     <property name="snapshot.dir" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin"/>
     <mkdir dir="${snapshot.dir}"/>
