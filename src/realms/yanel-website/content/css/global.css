@@ -1,26 +1,26 @@
 *{
-	font-family:"lucida grande", tahoma, verdana, arial, sans-serif;
-	font-size:13px
+  font-family:"lucida grande", tahoma, verdana, arial, sans-serif;
+  font-size:13px
 }
 body  { 
-	margin-top:10px; 
-	background-color:#ffffff;
-	text-align:center;
+  margin-top:10px; 
+  background-color:#ffffff;
+  text-align:center;
 } 
 
 #bodytable { 
   text-align:left;
-	background-color:#f7f7f7; 
-	border:0px;
-	width:90%;
-	margin-left: auto; margin-right: auto;
+  background-color:#f7f7f7; 
+  border:0px;
+  width:90%;
+  margin-left: auto; margin-right: auto;
 } 
 
 #header  { 
-	background-color:#4682B4; 
-	height:35px;
-	margin:0px; 
-	padding:0px
+  background-color:#4682B4; 
+  height:35px;
+  margin:0px; 
+  padding:0px
 } 
 
 #logo  { 
@@ -29,42 +29,42 @@ body  {
 } 
 
 #lead  { 
-	margin-bottom:4px; 
-	margin-left:10px;
-	border:0px
+  margin-bottom:4px; 
+  margin-left:10px;
+  border:0px
 } 
 
 #content  { 
-	border-style:solid; 
-	border-color:#d8dfea;
-	border-width:1px; 
+  border-style:solid; 
+  border-color:#d8dfea;
+  border-width:1px; 
   margin:5px; 
   padding:5px;
-	padding-left:10px; 
-	background-color:#ffffff;
-	height:100%;
-	font-size:12px
+  padding-left:10px; 
+  background-color:#ffffff;
+  height:100%;
+  font-size:12px
 } 
 
 #footer  { 
-	border-top:solid 1px #d8dfea;
-	border-bottom:solid 1px #d8dfea;
-	font-size:11px; 
-	padding-top:2px;
-	padding-bottom:4px;
-	padding-left:10px;
+  border-top:solid 1px #d8dfea;
+  border-bottom:solid 1px #d8dfea;
+  font-size:11px; 
+  padding-top:2px;
+  padding-bottom:4px;
+  padding-left:10px;
 } 
 
 #navigation  { 
-	margin:5px; 
-	padding:10px;
-	font-size:12px
+  margin:5px; 
+  padding:10px;
+  font-size:12px
 } 
 
 .searchbox  { 
-	vertical-align:middle;
-	border:solid 1px #999999; 
-	margin-right:10px
+  vertical-align:middle;
+  border:solid 1px #999999; 
+  margin-right:10px
 } 
 
 hr {
@@ -75,28 +75,28 @@ hr {
 }
 
 a  { 
-	color:#0066cc; 
-	text-decoration:none
+  color:#0066cc; 
+  text-decoration:none
 } 
 
 a:hover  { 
-	text-decoration:underline; 
-	color:#3366cc
+  text-decoration:underline; 
+  color:#3366cc
 } 
 
 a:visited  { 
-	text-decoration:none; 
-	color:#777777
+  text-decoration:none; 
+  color:#777777
 } 
 
 a:visited:hover  { 
-	text-decoration:underline; 
-	color:#777777
+  text-decoration:underline; 
+  color:#777777
 } 
 
 #content table  { 
-	border-collapse:collapse;
-	border-color:#999999
+  border-collapse:collapse;
+  border-color:#999999
 } 
 
 #content td { 
