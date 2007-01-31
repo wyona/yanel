@@ -168,7 +168,7 @@
   <target name="create-local-build-properties" if="local.build.properties.does.not.exist.yet" depends="init">
     <echo>Build configuration ${yanel.home.dir}/local.build.properties does not exist yet!</echo>
 
-    <input message="Do you have an existing Tomcat instance which you want to use as servlet engine for Yanel? If so, please enter the path of your Tomcat instance (e.g. /home/yanel/jakarta-tomcat-5.0.30), or otherwise just hit return (recommended to first time users :-) and Tomcat 5.5.20 will be installed at ${default.tomcat.home.dir} (You will always be able to change this setting at some later time within src/build/local.build.properties): " defaultvalue="${default.tomcat.home.dir.forward.slashes}" addproperty="pathOfUserSpecificTomcat"/>
+    <input message="Do you have an existing Tomcat instance which you want to use as servlet engine for Yanel? If so, please enter the path of your Tomcat instance (e.g. /home/yanel/jakarta-tomcat-5.0.30), or otherwise just hit return (recommended to first time users :-) and Tomcat ${tomcat.version} will be installed at ${default.tomcat.home.dir} (You will always be able to change this setting at some later time within src/build/local.build.properties): " defaultvalue="${default.tomcat.home.dir.forward.slashes}" addproperty="pathOfUserSpecificTomcat"/>
 
     <echo>User specific Tomcat: ${pathOfUserSpecificTomcat}</echo>
 
@@ -229,9 +229,9 @@
 -->
 
 <!--
-<property name="default.tomcat.home.dir" value="${yanel.home.dir}/local/apache-tomcat-5.5.20"/>
+<property name="default.tomcat.home.dir" value="${yanel.home.dir}/local/apache-tomcat-${tomcat.version}"/>
 -->
-    <property name="default.tomcat.home.dir" location="${yanel.home.dir}/local/apache-tomcat-5.5.20"/>
+    <property name="default.tomcat.home.dir" location="${yanel.home.dir}/local/apache-tomcat-${tomcat.version}"/>
     <path id="default.tomcat.home.dir.ref">
       <pathelement location="${default.tomcat.home.dir}"/>
     </path>
@@ -688,6 +688,15 @@
       </and>
     </condition>
     <antcall target="ask-to-clean-tomcat-cluster-node2"/>
+  </target>
+
+  <target name="clean-all" description="Clean All (including local configuration!)" depends="init, clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${yanel.home.dir}/local"/>
+<!--
+    <delete file="${yanel.home.dir}/src/build/local.build.properties"/>
+    <delete dir="${yanel.home.dir}/${local.config.dir}"/>
+-->
   </target>
 
   <target name="ask-to-clean-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Clean Tomcat cluster node 1">
