@@ -401,6 +401,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     public String getOS(String userAgent) {
         if (userAgent.indexOf("Linux") > 0) {
             return "unix";
+        } else if (userAgent.indexOf("Mac OS X") > 0) {
+            return "unix";
         } else if (userAgent.indexOf("Windows") > 0) {
             return "windows";
         } else {
