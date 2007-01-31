@@ -335,7 +335,7 @@ public class YanelServlet extends HttpServlet {
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
                         // retrieve the revisions, but only in the meta usecase (for performance reasons):
                         if (request.getParameter("yanel.resource.meta") != null) {
-                            String[] revisions = ((VersionableV2)res).getRevisions();
+                            String[] revisions = ((VersionableV2)res).getRevisionNames();
                             Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement("revisions"));
                             if (revisions != null) {
                                 for (int i=0; i<revisions.length; i++) {
@@ -353,11 +353,23 @@ public class YanelServlet extends HttpServlet {
                     
                     if (usecase != null && usecase.equals("checkout")) {
                         log.debug("Checkout data ...");
+                        
                         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
                             // note: this will throw an exception if the document is checked out already
                             // by another user.
                             Identity identity = (Identity) request.getSession().getAttribute("identity");
-                            ((VersionableV2)res).checkout(identity.getUsername());
+                            String userID = identity.getUsername();
+                            VersionableV2 versionable = (VersionableV2)res;
+                            if (versionable.isCheckedOut()) {
+                                String checkoutUserID = versionable.getCheckoutUserID(); 
+                                if (checkoutUserID.equals(userID)) {
+                                    log.warn("Resource " + res.getPath() + " is already checked out by this user: " + checkoutUserID);
+                                } else {
+                                    throw new Exception("Resource is already checked out by another user: " + checkoutUserID);
+                                }
+                            } else {
+                                versionable.checkout(userID);
+                            }
                         }
                         
                         log.warn("Acquire lock has not been implemented yet ...!");
@@ -460,21 +472,11 @@ public class YanelServlet extends HttpServlet {
 
         if (value != null && value.equals("save")) {
             log.debug("Save data ...");
-            save(request, response);
+            save(request, response, false);
             return;
         } else if (value != null && value.equals("checkin")) {
             log.debug("Checkin data ...");
-            save(request, response);
-
-            Resource resource = getResource(request, response);
-            if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
-                try {
-                    ((VersionableV2)resource).checkin();
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                    throw new ServletException(e.getMessage(), e);
-                }
-            }
+            save(request, response, true);
 
             log.warn("Release lock has not been implemented yet ...");
             // releaseLock();
@@ -528,21 +530,11 @@ public class YanelServlet extends HttpServlet {
 
         if (value != null && value.equals("save")) {
             log.debug("Save data ...");
-            save(request, response);
+            save(request, response, false);
             return;
         } else if (value != null && value.equals("checkin")) {
             log.debug("Checkin data ...");
-            save(request, response);
-            
-            Resource resource = getResource(request, response);
-            if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
-                try {
-                    ((VersionableV2)resource).checkin();
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                    throw new ServletException(e.getMessage(), e);
-                }
-            }
+            save(request, response, true);
             
             log.warn("Release lock has not been implemented yet ...!");
             // releaseLock();
@@ -587,7 +579,7 @@ public class YanelServlet extends HttpServlet {
             } else {
                 Resource resource = getResource(request, response);
                 log.error("DEBUG: Client (" + request.getHeader("User-Agent") + ") requests to save a resource: " + resource.getRealm() + ", " + resource.getPath());
-                save(request, response);
+                save(request, response, false);
                 return;
             }
         }
@@ -641,8 +633,30 @@ public class YanelServlet extends HttpServlet {
     /**
      * Save data
      */
-    private void save(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void save(HttpServletRequest request, HttpServletResponse response, boolean doCheckin) throws ServletException, IOException {
         log.debug("Save data ...");
+
+        Resource resource = getResource(request, response);
+        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
+            try {
+                // check the resource state:
+                Identity identity = (Identity) request.getSession().getAttribute("identity");
+                String userID = identity.getUsername(); 
+                VersionableV2 versionable  = (VersionableV2)resource;
+                if (versionable.isCheckedOut()) {
+                    String checkoutUserID = versionable.getCheckoutUserID(); 
+                    if (!checkoutUserID.equals(userID)) {
+                        throw new Exception("Resource is checked out by another user: " + checkoutUserID);
+                    }
+                } else {
+                    throw new Exception("Resource is not checked out.");
+                }
+
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                throw new ServletException(e.getMessage(), e);
+            }
+        }
 
         InputStream in = request.getInputStream();
         java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
@@ -723,7 +737,6 @@ public class YanelServlet extends HttpServlet {
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
             out = ((ModifiableV1) res).getOutputStream(new Path(request.getServletPath()));
             write(memIn, out, request, response);
-            return;
         } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
             try {
                 out = ((ModifiableV2) res).getOutputStream();
@@ -732,7 +745,6 @@ public class YanelServlet extends HttpServlet {
                 } else {
                     ((ModifiableV2) res).write(memIn);
                 }
-                return;
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 throw new ServletException(e.getMessage(), e);
@@ -752,7 +764,19 @@ public class YanelServlet extends HttpServlet {
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             PrintWriter w = response.getWriter();
             w.print(sb);
-            return;
+        }
+        
+        if (doCheckin) {
+            if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
+                VersionableV2 versionable  = (VersionableV2)resource;
+                try {
+                    versionable.checkin();
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    throw new ServletException("Could not check in resource: " + resource.getPath() 
+                            + " " + e.getMessage(), e);
+                }
+            }
         }
     }
 

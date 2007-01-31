@@ -16,6 +16,8 @@
 
 package org.wyona.yanel.core.api.attributes;
 
+import java.util.Date;
+
 import org.wyona.yanel.core.attributes.viewable.View;
 
 /**
@@ -28,7 +30,7 @@ public interface VersionableV2 {
      * @return
      * @throws Exception
      */
-    public String[] getRevisions() throws Exception;
+    public String[] getRevisionNames() throws Exception;
     
     /**
      * Gets the view of a certain revision.
@@ -47,25 +49,44 @@ public interface VersionableV2 {
     public void restore(String revisionName) throws Exception;
     
     /**
-     * Checks out this resource. Noone else will be able to check it out afterwards.
+     * Puts this resource into checked-out state. Noone else will be able to check it out afterwards.
      * @param userID
      * @throws Exception
      */
     public void checkout(String userID) throws Exception;
     
     /**
-     * Checks in this resource, and creates a new revision.
+     * Puts this resource into checked-in state, and creates a new revision.
      * @throws Exception
      */
     public void checkin() throws Exception;
     
     
+    /**
+     * Indicates whether this resource is checked out.
+     * @return
+     * @throws Exception
+     */
+    public boolean isCheckedOut() throws Exception;
+    
+    /**
+     * Returns the user id which was supplied when calling checkout()
+     * @return
+     * @throws Exception
+     */
+    public String getCheckoutUserID() throws Exception;
+    
+    /**
+     * Returns the date when this resource was checked out.
+     * @return
+     * @throws Exception
+     */
+    public Date getCheckoutDate() throws Exception;
+    
     /*
      * Methods which could be added to this interface:
      * 
      *
-     * public boolean isCheckedOut() throws Exception;
-     * public String getCheckoutUserID() throws Exception;
      * getDiff(String rev1, String rev2) throws Exception;
      * getHeadRevisionNumber() ?
      * 

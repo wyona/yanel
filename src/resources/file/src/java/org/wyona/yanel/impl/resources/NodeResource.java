@@ -41,6 +41,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Date;
 
 import org.apache.log4j.Category;
 
@@ -212,7 +213,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     /**
      *
      */
-    public String[] getRevisions() throws Exception {
+    public String[] getRevisionNames() throws Exception {
         Revision[] revisions = getRealm().getRepository().getNode(getPath()).getRevisions();
         String[] revisionNames = new String[revisions.length];
         
@@ -223,11 +224,26 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
     
     public void checkin() throws Exception {
-        getRealm().getRepository().getNode(getPath()).checkin();
+        Node node = getRealm().getRepository().getNode(getPath());
+        node.checkin();
+        /*
+        if (node.isCheckedOut()) {
+            String checkoutUserID = node.getCheckoutUserID(); 
+            if (checkoutUserID.equals(userID)) {
+                node.checkin();
+            } else {
+                throw new Exception("Resource is checked out by another user: " + checkoutUserID);
+            }
+        } else {
+            throw new Exception("Resource is not checked out.");
+        }
+        */
     }
 
     public void checkout(String userID) throws Exception {
-        Node node = getRealm().getRepository().getNode(getPath()); 
+        Node node = getRealm().getRepository().getNode(getPath());
+        node.checkout(userID);
+        /*
         if (node.isCheckedOut()) {
             String checkoutUserID = node.getCheckoutUserID(); 
             if (checkoutUserID.equals(userID)) {
@@ -238,10 +254,27 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         } else {
             node.checkout(userID);
         }
+        */
     }
 
     public void restore(String revisionName) throws Exception {
         getRealm().getRepository().getNode(getPath()).restore(revisionName);
+    }
+
+    public Date getCheckoutDate() throws Exception {
+        Node node = getRealm().getRepository().getNode(getPath());
+        // return node.getCheckoutDate();
+        return null;
+    }
+
+    public String getCheckoutUserID() throws Exception {
+        Node node = getRealm().getRepository().getNode(getPath());
+        return node.getCheckoutUserID();
+    }
+
+    public boolean isCheckedOut() throws Exception {
+        Node node = getRealm().getRepository().getNode(getPath());
+        return node.isCheckedOut();
     }
 
     public boolean exists() throws Exception {
