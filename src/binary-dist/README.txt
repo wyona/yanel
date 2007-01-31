@@ -13,8 +13,8 @@
     Getting Started
     ---------------
 
-    1) Copy war file (yanel.war) into Tomcat webapps directory
-    2) ...
+    1) Startup Tomcat by executing ./apache-tomcat-5.5.20/bin/startup.sh
+    2) Browse to http://localhost:8080/yanel/
 
 
     More Information
