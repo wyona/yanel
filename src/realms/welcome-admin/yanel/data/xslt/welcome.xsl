@@ -41,6 +41,7 @@
             <li>What is a resource resp. resource type?</li>
             <li><a href="yanel-website/en/documentation/create-new-resource.html">Create a new resource type from scratch.</a></li>
             <li>Add an existing third-party resource type.</li>
+            <li>Find Updates.</li>
           </ul>
         </p>
         <h2>Registered Realms</h2>
