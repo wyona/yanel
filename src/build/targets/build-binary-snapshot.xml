@@ -25,6 +25,9 @@
     <chmod dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/bin" perm="755" includes="*"/>
     <!-- TODO: Differentiate between Java 1.4 and higher (jmx.jar)! -->
     <copy file="${yanel.home.dir}/tools/apache-tomcat/java-1.4/apache-tomcat-5.5.20/bin/jmx.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/bin"/>
+    <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/common/endorsed"/>
+    <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/common/endorsed"/>
+
 
     <!-- Build WAR file -->
     <copy file="${yanel.home.dir}/src/binary-dist/README.txt" todir="${snapshot.dir}"/>
