@@ -1,7 +1,7 @@
 
 
-    Y A N E L (Yet Another Lenya)
-    =============================
+    Y A N E L
+    =========
 
 
     Prerequisites
