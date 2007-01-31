@@ -42,6 +42,9 @@
     <replace file="${snapshot.dir}/${servlet.context.prefix}/realms/javadoc/repository.xml" value="content">
       <replacetoken>../../../build/javadoc</replacetoken>
     </replace>
+    <copy todir="${snapshot.dir}/${servlet.context.prefix}/realms/javadoc/content">
+      <fileset dir="${yanel.home.dir}/build/javadoc"/>
+    </copy>
     <copy file="${yanel.home.dir}/conf/realms.xml" todir="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
     <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/realms.xml" value="../../realms">
       <replacetoken>../src/realms</replacetoken>
@@ -68,6 +71,7 @@
       <replacetoken>../src/realms/welcome-admin/yanel/resources</replacetoken>
     </replace>
     <jar jarfile="${snapshot.dir}/${servlet.context.prefix}.war" basedir="${snapshot.dir}/${servlet.context.prefix}"/>
+
     <delete dir="${snapshot.dir}/${servlet.context.prefix}"/>
 
     <move file="${snapshot.dir}/${servlet.context.prefix}.war" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps"/>
