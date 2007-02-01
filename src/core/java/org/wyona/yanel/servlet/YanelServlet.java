@@ -1426,11 +1426,20 @@ public class YanelServlet extends HttpServlet {
         	sslElement.setAttribute("status", "OFF");
             }
             
-            response.setContentType("application/xhtml+xml; charset=UTF-8");
-            response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);            
-            Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltLoginScreen));            
-            transformer.transform(new javax.xml.transform.dom.DOMSource(doc), 
-                    new javax.xml.transform.stream.StreamResult(response.getWriter()));
+            String yanelFormat = request.getParameter("yanel.format");
+            if(yanelFormat != null && yanelFormat.equals("xml")) {
+                response.setContentType("application/xml; charset=UTF-8");
+                OutputStream out = response.getOutputStream();
+                javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
+                out.close();
+            } else {
+                response.setContentType("application/xhtml+xml; charset=UTF-8");
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);            
+                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltLoginScreen));            
+                transformer.transform(new javax.xml.transform.dom.DOMSource(doc), 
+                        new javax.xml.transform.stream.StreamResult(response.getWriter()));
+            }
+
             
         } catch (Exception e) {
             log.error(e.getMessage(), e);

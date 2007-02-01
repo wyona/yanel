@@ -16,6 +16,7 @@
       <body>
         <h1>Login to realm <xsl:value-of select="child::node()/realm/@name"/></h1>
         <h4>Authorization was denied. Please, enter your username and password.</h4>
+        <p><a href="?yanel.usecase=create&amp;yanel.format=xml">Show XML source</a> </p>
         <table>
           <tr><td><p><ul><xsl:apply-templates/></ul></p></td></tr>
           <tr><td>
