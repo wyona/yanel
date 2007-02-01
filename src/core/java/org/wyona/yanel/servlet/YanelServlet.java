@@ -1105,7 +1105,7 @@ public class YanelServlet extends HttpServlet {
                         sb.append("    <href>" + request.getRequestURI() + children[i].getPath() + "/</href>\n");
                         sb.append("    <propstat>\n");
                         sb.append("      <prop>\n");
-                        sb.append("        <displayname>A Directory</displayname>\n");
+                        sb.append("        <displayname>C: " + children[i].getPath() + "</displayname>\n");
                         sb.append("        <resourcetype><collection/></resourcetype>\n");
                         sb.append("        <getcontenttype>http/unix-directory</getcontenttype>\n");
                         sb.append("      </prop>\n");
@@ -1117,7 +1117,7 @@ public class YanelServlet extends HttpServlet {
                         sb.append("    <href>" + request.getRequestURI() + children[i].getPath() + "?yanel.webdav=edit</href>\n");
                         sb.append("    <propstat>\n");
                         sb.append("      <prop>\n");
-                        sb.append("        <displayname>A File</displayname>\n");
+                        sb.append("        <displayname>R: " + children[i].getPath() + "</displayname>\n");
                         sb.append("        <resourcetype/>\n");
                         sb.append("        <getcontenttype>http/unix-directory</getcontenttype>\n");
                         sb.append("      </prop>\n");
