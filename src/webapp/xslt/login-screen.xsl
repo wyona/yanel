@@ -57,6 +57,19 @@
     </li>
   </xsl:template>
 
+  <xsl:template match="ssl">
+    <li>
+      <xsl:choose>
+        <xsl:when test="contains(@status, 'ON')">
+          <p>SSL support is ON</p>
+        </xsl:when>
+        <xsl:otherwise>
+          <h4>Warning: SSL support is OFF. Your username and password will be sent as plain text.</h4>
+        </xsl:otherwise>
+      </xsl:choose>
+    </li>
+  </xsl:template>
+
   <xsl:template match="realm">
     <li> Realm info:
       <ul> 

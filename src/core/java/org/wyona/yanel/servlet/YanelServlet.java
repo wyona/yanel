@@ -112,6 +112,7 @@ public class YanelServlet extends HttpServlet {
             sitetree = (Sitetree) yanel.getBeanFactory().getBean("nav-sitetree");
 
             sslPort = config.getInitParameter("ssl-port");
+            
         } catch (Exception e) {
             log.error(e);
             throw new ServletException(e.getMessage(), e);
@@ -1416,7 +1417,14 @@ public class YanelServlet extends HttpServlet {
             
             Element realmElement = (Element) rootElement.appendChild(doc.createElement("realm"));
             realmElement.setAttribute("name", realm.getName());
-            realmElement.setAttribute("mount-point", realm.getMountPoint().toString());            
+            realmElement.setAttribute("mount-point", realm.getMountPoint().toString());  
+            
+            Element sslElement = (Element) rootElement.appendChild(doc.createElement("ssl"));            
+            if(sslPort != null) {
+        	sslElement.setAttribute("status", "ON");   
+            } else {
+        	sslElement.setAttribute("status", "OFF");
+            }
             
             response.setContentType("application/xhtml+xml; charset=UTF-8");
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);            
