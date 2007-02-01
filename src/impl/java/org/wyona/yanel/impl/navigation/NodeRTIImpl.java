@@ -83,14 +83,19 @@ public class NodeRTIImpl implements Node {
     }
 
     /**
-     *
+     * Check if node is a collection
      */
     public boolean isCollection() {
         try {
-            Path[] children = repo.getChildren(path);
-            for (int i = 0; i < children.length; i++) {
-                if (children[i].getName().indexOf(".yanel-rti") > 0) {
-                    return true;
+            if (repo.isCollection(path)) {
+                Path[] children = repo.getChildren(path);
+                for (int i = 0; i < children.length; i++) {
+                    if (children[i].getName().indexOf(".yanel-rti") > 0) {
+                        return true;
+                    }
+                    if (children[i].getName().indexOf(".yanel-rc") > 0) {
+                        return true;
+                    }
                 }
             }
         } catch(Exception e) {
@@ -100,16 +105,22 @@ public class NodeRTIImpl implements Node {
     }
 
     /**
-     *
+     * Get children
      */
     public Node[] getChildren() {
         java.util.Vector c = new java.util.Vector();
         try {
-            Path[] children = repo.getChildren(path);
-            for (int i = 0; i < children.length; i++) {
-                if (children[i].getName().indexOf(".yanel-rti") > 0) {
-                    String cp = children[i].toString().substring(0, children[i].toString().indexOf(".yanel-rti"));
-                    c.add(cp);
+            if (repo.isCollection(path)) {
+                Path[] children = repo.getChildren(path);
+                for (int i = 0; i < children.length; i++) {
+                    if (children[i].getName().indexOf(".yanel-rti") > 0) {
+                        String cp = children[i].toString().substring(0, children[i].toString().indexOf(".yanel-rti"));
+                        c.add(cp);
+                    }
+                    if (children[i].getName().indexOf(".yanel-rc") > 0) {
+                        String cp = children[i].toString().substring(0, children[i].toString().indexOf(".yanel-rc"));
+                        c.add(cp);
+                    }
                 }
             }
         } catch(Exception e) {
