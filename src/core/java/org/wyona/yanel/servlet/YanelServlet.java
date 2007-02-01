@@ -1098,8 +1098,10 @@ public class YanelServlet extends HttpServlet {
             }
         } else if (depth.equals("1")) {
             Node[] children = node.getChildren();
+            log.error("DEBUG: Node: " + node.getPath());
             if (children != null) {
                 for (int i = 0; i < children.length; i++) {
+                    log.error("DEBUG: Child: " + children[i].getPath());
                     if (children[i].isCollection()) {
                         sb.append("  <response>\n");
                         sb.append("    <href>" + request.getRequestURI() + children[i].getPath() + "/</href>\n");
