@@ -18,6 +18,7 @@ package org.wyona.yanel.core.api.attributes;
 
 import java.util.Date;
 
+import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 
 /**
@@ -26,11 +27,11 @@ import org.wyona.yanel.core.attributes.viewable.View;
 public interface VersionableV2 {
 
     /**
-     * Gets an array of revision names.
+     * Gets an array of revision information objects.
      * @return
      * @throws Exception
      */
-    public String[] getRevisionNames() throws Exception;
+    public RevisionInformation[] getRevisions() throws Exception;
     
     /**
      * Gets the view of a certain revision.
@@ -59,7 +60,7 @@ public interface VersionableV2 {
      * Puts this resource into checked-in state, and creates a new revision.
      * @throws Exception
      */
-    public void checkin() throws Exception;
+    public void checkin(String comment) throws Exception;
     
     
     /**

@@ -33,10 +33,12 @@ import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
+import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.navigation.Node;
 import org.wyona.yanel.core.navigation.Sitetree;
+import org.wyona.yanel.core.util.DateUtil;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 
@@ -335,13 +337,21 @@ public class YanelServlet extends HttpServlet {
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
                         // retrieve the revisions, but only in the meta usecase (for performance reasons):
                         if (request.getParameter("yanel.resource.meta") != null) {
-                            String[] revisions = ((VersionableV2)res).getRevisionNames();
+                            RevisionInformation[] revisions = ((VersionableV2)res).getRevisions();
                             Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement("revisions"));
                             if (revisions != null) {
                                 for (int i=0; i<revisions.length; i++) {
                                     Element revisionElement = (Element) revisionsElement.appendChild(doc.createElement("revision"));
-                                    revisionElement.appendChild(doc.createTextNode(revisions[i]));
+                                    Element revisionNameElement = (Element) revisionElement.appendChild(doc.createElement("name"));
+                                    revisionNameElement.appendChild(doc.createTextNode(revisions[i].getName()));
+                                    Element revisionDateElement = (Element) revisionElement.appendChild(doc.createElement("date"));
+                                    revisionDateElement.appendChild(doc.createTextNode(DateUtil.format(revisions[i].getDate())));
+                                    Element revisionUserElement = (Element) revisionElement.appendChild(doc.createElement("user"));
+                                    revisionUserElement.appendChild(doc.createTextNode(revisions[i].getUser()));
+                                    Element revisionCommentElement = (Element) revisionElement.appendChild(doc.createElement("comment"));
+                                    revisionCommentElement.appendChild(doc.createTextNode(revisions[i].getComment()));
                                 }
+                                
                             } else {
                                 Element noRevisionsYetElement = (Element) resourceElement.appendChild(doc.createElement("no-revisions-yet"));
                             }
@@ -773,7 +783,7 @@ public class YanelServlet extends HttpServlet {
             if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
                 VersionableV2 versionable  = (VersionableV2)resource;
                 try {
-                    versionable.checkin();
+                    versionable.checkin("updated");
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
                     throw new ServletException("Could not check in resource: " + resource.getPath() 

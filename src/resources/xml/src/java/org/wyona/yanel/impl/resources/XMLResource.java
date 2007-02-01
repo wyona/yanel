@@ -25,6 +25,7 @@ import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
+import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
@@ -311,19 +312,22 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         return true;
     }
 
-    public String[] getRevisionNames() throws Exception {
+    /**
+     *
+     */
+    public RevisionInformation[] getRevisions() throws Exception {
         Revision[] revisions = getRealm().getRepository().getNode(getPath()).getRevisions();
-        String[] revisionNames = new String[revisions.length];
-        
+        RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
+       
         for (int i=0; i<revisions.length; i++) {
-            revisionNames[i] = revisions[i].getRevisionName();
+            revisionInfos[i] = new RevisionInformation(revisions[i]);
         }
-        return revisionNames; 
+        return revisionInfos; 
     }
     
-    public void checkin() throws Exception {
+    public void checkin(String comment) throws Exception {
         Node node = getRealm().getRepository().getNode(getPath());
-        node.checkin();
+        node.checkin(comment);
         /*
         if (node.isCheckedOut()) {
             String checkoutUserID = node.getCheckoutUserID(); 
