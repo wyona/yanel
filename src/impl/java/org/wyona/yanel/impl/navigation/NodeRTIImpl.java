@@ -88,6 +88,7 @@ public class NodeRTIImpl implements Node {
     public boolean isCollection() {
         try {
             if (repo.isCollection(path)) {
+                log.error("DEBUG: Is collection: " + path);
                 Path[] children = repo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
                     if (children[i].getName().indexOf(".yanel-rti") > 0) {
@@ -111,6 +112,7 @@ public class NodeRTIImpl implements Node {
         java.util.Vector c = new java.util.Vector();
         try {
             if (repo.isCollection(path)) {
+                log.error("DEBUG: Is collection: " + path);
                 Path[] children = repo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
                     if (children[i].getName().indexOf(".yanel-rti") > 0) {
@@ -121,7 +123,15 @@ public class NodeRTIImpl implements Node {
                         String cp = children[i].toString().substring(0, children[i].toString().indexOf(".yanel-rc"));
                         c.add(cp);
                     }
+// TODO: Collections are also children ...
+/*
+                    if (repo.isCollection(new Path(path + "/" + children[i]))) {
+                        c.add(children[i].getName());
+                    }
+*/
                 }
+            } else {
+                log.warn("Is not a collection: " + path);
             }
         } catch(Exception e) {
             log.error(e);
