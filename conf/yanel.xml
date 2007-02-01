@@ -7,12 +7,16 @@
   <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
   <resource src="../src/resources/file/"                        compile="true"/>
   <resource src="../src/resources/directory/"                   compile="true"/>
+<!--
   <resource src="../src/resources/tape/"                        compile="true"/>
+-->
   <resource src="../src/resources/importsite/"                  compile="true"/>
   <resource src="../src/resources/odt/"                         compile="true"/>
   <resource src="../src/resources/xml/"                         compile="true"/>
   <resource src="../src/realms/welcome-admin/yanel/resources/show-realms/"                 compile="true"/>
+<!--
   <resource src="../src/resources/invoice/"                     compile="true"/>
+-->
   <resource src="../src/resources/testing-control/"             compile="true"/>
   <resource src="../src/resources/testing-times/"               compile="true"/>
   <resource src="../src/contributions/resources/atom/"          compile="true"/>
@@ -22,7 +26,9 @@
   <resource src="../src/contributions/resources/zip/"           compile="true"/>
   <resource src="../src/contributions/resources/calendar/"      compile="true"/>
   <resource src="../src/contributions/resources/resource-creator/"      compile="true"/>
+<!--
   <resource src="../src/resources/websearch/"                   compile="true"/>
+-->
   <resource src="../src/contributions/resources/nutch/"         compile="true"/>
   <resource src="../src/contributions/resources/davcollection/" compile="true"/>
   <resource src="../src/contributions/resources/pdf/"           compile="true"/> 
