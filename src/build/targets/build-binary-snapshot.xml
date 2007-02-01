@@ -30,9 +30,6 @@
 
 
     <!-- Build WAR file -->
-    <copy file="${yanel.home.dir}/src/binary-dist/README.txt" todir="${snapshot.dir}"/>
-    <copy file="${yanel.home.dir}/src/binary-dist/start.sh" todir="${snapshot.dir}"/>
-    <copy file="${yanel.home.dir}/src/binary-dist/stop.sh" todir="${snapshot.dir}"/>
     <copy todir="${snapshot.dir}/${servlet.context.prefix}">
       <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
     </copy>
@@ -76,10 +73,30 @@
 
     <move file="${snapshot.dir}/${servlet.context.prefix}.war" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps"/>
 
+    <!-- Copy Windows specific files -->
+    <copy file="${yanel.home.dir}/src/binary-dist/README-WINDOWS.txt" tofile="${snapshot.dir}/README.txt"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/start.bat" todir="${snapshot.dir}"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/stop.bat" todir="${snapshot.dir}"/>
+
     <!-- Create ZIP file -->
     <zip destfile="${snapshot.dir}.zip">
       <zipfileset dir="${snapshot.dir}" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin" filemode="755"/>
     </zip>
+
+    <!-- Copy UNIX and Windows specific files -->
+    <copy file="${yanel.home.dir}/src/binary-dist/README-UNIX.txt" tofile="${snapshot.dir}/README.txt" overwrite="true"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/start.sh" todir="${snapshot.dir}"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/stop.sh" todir="${snapshot.dir}"/>
+    <delete file="${snapshot.dir}/start.bat"/>
+    <delete file="${snapshot.dir}/stop.bat"/>
+
+    <!-- Create TGZ file -->
+    <tar destfile="${snapshot.dir}.tar">
+      <tarfileset dir="${snapshot.dir}" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin" mode="775"/>
+    </tar>
+    <gzip src="${snapshot.dir}.tar" destfile="${snapshot.dir}.tar.gz"/>
+    <delete file="${snapshot.dir}.tar"/>
+    <delete dir="${snapshot.dir}"/>
   </target>
 
 </project>
