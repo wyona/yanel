@@ -73,6 +73,8 @@
 
     <move file="${snapshot.dir}/${servlet.context.prefix}.war" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps"/>
 
+    <copy file="${yanel.home.dir}/LICENSE.txt" todir="${snapshot.dir}"/>
+
     <!-- Copy Windows specific files -->
     <copy file="${yanel.home.dir}/src/binary-dist/README-WINDOWS.txt" tofile="${snapshot.dir}/README.txt"/>
     <copy file="${yanel.home.dir}/src/binary-dist/start.bat" todir="${snapshot.dir}"/>
