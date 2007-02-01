@@ -139,11 +139,22 @@
 
   <xsl:template match="revisions">
     <li>Revisions:
-      <ul>
+      <table border="1" cellspacing="0">
+        <tr>
+          <th>Revision</th>
+          <th>Date</th>
+          <th>User</th>
+          <th>Comment</th>
+        </tr>
         <xsl:for-each select="revision">
-          <li>Revision: <xsl:value-of select="."/></li>
+          <tr>
+            <td><xsl:value-of select="name"/></td>
+            <td><xsl:value-of select="date"/></td>
+            <td><xsl:value-of select="user"/></td>
+            <td><xsl:value-of select="comment"/></td>
+          </tr>
         </xsl:for-each>
-      </ul>
+      </table>
     </li>
   </xsl:template>
   
