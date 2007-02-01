@@ -637,6 +637,8 @@ public class YanelServlet extends HttpServlet {
         log.debug("Save data ...");
 
         Resource resource = getResource(request, response);
+        /*
+         -> commented because the current default repo implementation does not support versioning yet.
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
             try {
                 // check the resource state:
@@ -657,6 +659,7 @@ public class YanelServlet extends HttpServlet {
                 throw new ServletException(e.getMessage(), e);
             }
         }
+        */
 
         InputStream in = request.getInputStream();
         java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
