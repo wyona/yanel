@@ -6,7 +6,7 @@
   class="org.wyona.yanel.impl.resources.TestingTimes"
   >
 <description>
-shows a overview of executeion times of tests
+Generates a graphical overview of the execution times of the various tests
 </description>
 
 <rtd>
