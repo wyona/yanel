@@ -88,13 +88,16 @@ public class NodeRTIImpl implements Node {
     public boolean isCollection() {
         try {
             if (repo.isCollection(path)) {
-                log.error("DEBUG: Is collection: " + path);
+                log.debug("Is collection within repo: " + path);
                 Path[] children = repo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
                     if (children[i].getName().indexOf(".yanel-rti") > 0) {
                         return true;
                     }
                     if (children[i].getName().indexOf(".yanel-rc") > 0) {
+                        return true;
+                    }
+                    if (repo.isCollection(children[i])) {
                         return true;
                     }
                 }
@@ -112,23 +115,20 @@ public class NodeRTIImpl implements Node {
         java.util.Vector c = new java.util.Vector();
         try {
             if (repo.isCollection(path)) {
-                log.error("DEBUG: Is collection: " + path);
+                log.debug("Is collection within repo: " + path);
                 Path[] children = repo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
+                    if (repo.isCollection(children[i])) {
+                        c.add(children[i].toString());
+                    }
                     if (children[i].getName().indexOf(".yanel-rti") > 0) {
                         String cp = children[i].toString().substring(0, children[i].toString().indexOf(".yanel-rti"));
-                        c.add(cp);
+                        if (!repo.isCollection(new Path(cp))) c.add(cp);
                     }
                     if (children[i].getName().indexOf(".yanel-rc") > 0) {
                         String cp = children[i].toString().substring(0, children[i].toString().indexOf(".yanel-rc"));
-                        c.add(cp);
+                        if (!repo.isCollection(new Path(cp))) c.add(cp);
                     }
-// TODO: Collections are also children ...
-/*
-                    if (repo.isCollection(new Path(path + "/" + children[i]))) {
-                        c.add(children[i].getName());
-                    }
-*/
                 }
             } else {
                 log.warn("Is not a collection: " + path);
