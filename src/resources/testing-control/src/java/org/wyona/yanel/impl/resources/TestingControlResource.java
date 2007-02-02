@@ -121,12 +121,12 @@ public class TestingControlResource extends Resource implements ViewableV1 {
         if(request.getSession().getAttribute("tmpResultDir") != null){
             return showProgress(path, defaultView);
         }
+        if (archivedResults != null) {
+            return showArchive(path, defaultView, archivedResults);
+        }
         if (submit != null) {
             if (testnames != null) {
                 return executeTests(path, defaultView, testnames);
-            }
-            if (archivedResults != null) {
-                return showArchive(path, defaultView, archivedResults);
             }
             return plainRequest(path, defaultView);
         } else {
@@ -148,7 +148,6 @@ public class TestingControlResource extends Resource implements ViewableV1 {
         sb.append("<title>Testing Control</title>");
         sb.append("</head>");
         sb.append("<body>");
-
         sb.append("<ul id=\"htmlunit\">");
         String[] allHtmlUnitTestNames = getAllTestNames("htmlunit");
 
@@ -167,34 +166,6 @@ public class TestingControlResource extends Resource implements ViewableV1 {
                     + "\">" + allJUnitTestNames[i] + "</li>");
         }
         sb.append("</ul>");
-
-        // sb.append("<form method=\"post\">");
-        // sb.append("<br/>Archived Test-Results: <select name=\"archived-results\">");
-        // try {
-        // org.wyona.yarep.core.Path testResultArchivePath = new
-        // org.wyona.yarep.util.YarepUtil().getRepositoryPath(new
-        // org.wyona.yarep.core.Path(path.getParent()
-        // .toString()
-        // + "/test-results-archive/"),
-        // getRepositoryFactory())
-        // .getPath();
-        // org.wyona.yarep.core.Path[] children = contentRepo.getChildren(testResultArchivePath);
-        // for (int i = 0; i < children.length; i++) {
-        // if (contentRepo.isResource(children[i])
-        // && children[i].getName()
-        // .matches("[\\d]{4,4}[-][\\d]{2,2}[-][\\d]{2,2}[-][\\d]{2,2}[-][\\d]{2,2}[-][\\d]{2,2}[-]tests\\.xml"))
-        // {
-        // sb.append("<option value=\"" + children[i] + "\">" + children[i].getName()
-        // + "</option>");
-        // }
-        // }
-        // } catch (Exception e) {
-        // log.error(e);
-        // }
-        // sb.append("</select>");
-        // sb.append("<input type=\"submit\" name=\"submit\" value=\"Show\"/>");
-        // sb.append("</form>");
-
         sb.append("</body>");
         sb.append("</html>");
 
