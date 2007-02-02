@@ -92,6 +92,8 @@ public class YanelServlet extends HttpServlet {
     private static final String METHOD_DELETE = "DELETE";
 
     private String sslPort = null;
+    
+    public static final String DEFAULT_ENCODING = "UTF-8";
 
     /**
      *
@@ -421,11 +423,22 @@ public class YanelServlet extends HttpServlet {
             if (!view.isResponse()) return;
             
             if (view.getEncoding() != null) {
-                response.setContentType(patchContentType(view.getMimeType() + "; charset=" + view.getEncoding(), request));
+                response.setContentType(patchMimeType(view.getMimeType(), request) + "; charset=" + view.getEncoding());
             } else if (res.getConfiguration() != null && res.getConfiguration().getEncoding() != null) {
-                response.setContentType(patchContentType(view.getMimeType() + "; charset=" + res.getConfiguration().getEncoding(), request));
+                response.setContentType(patchMimeType(view.getMimeType(), request) + "; charset=" + res.getConfiguration().getEncoding());
             } else {
-                response.setContentType(patchContentType(view.getMimeType(), request));
+                // try to guess if we have to set the default encoding
+                String mimeType = view.getMimeType();
+                if (mimeType.startsWith("text") || 
+                    mimeType.equals("application/xml") || 
+                    mimeType.equals("application/xhtml+xml") || 
+                    mimeType.equals("application/atom+xml") || 
+                    mimeType.equals("application/x-javascript")) {
+                    response.setContentType(patchMimeType(mimeType, request) + "; charset=" + DEFAULT_ENCODING);
+                } else {
+                    // probably binary mime-type, don't set encoding
+                    response.setContentType(patchMimeType(mimeType, request));
+                }
             }
 
             InputStream is = view.getInputStream();
@@ -715,7 +728,7 @@ public class YanelServlet extends HttpServlet {
                     sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"data-not-well-formed\">");
                     sb.append("<message>Data is not well-formed: "+e.getMessage()+"</message>");
                     sb.append("</exception>");
-                    response.setContentType("application/xml");
+                    response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     PrintWriter w = response.getWriter();
                     w.print(sb);
@@ -730,7 +743,7 @@ public class YanelServlet extends HttpServlet {
                     //sb.append("<message>" + e.getMessage() + "</message>");
                     sb.append("<message>" + e + "</message>");
                     sb.append("</exception>");
-                    response.setContentType("application/xml");
+                    response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     PrintWriter w = response.getWriter();
                     w.print(sb);
@@ -774,7 +787,7 @@ public class YanelServlet extends HttpServlet {
             sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"neutron\">");
             sb.append("<message>" + message + "</message>");
             sb.append("</exception>");
-            response.setContentType("application/xml");
+            response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             PrintWriter w = response.getWriter();
             w.print(sb);
@@ -980,7 +993,7 @@ public class YanelServlet extends HttpServlet {
                 sb.append("</exception>");
 
                 log.debug("Neutron-Auth response: " + sb);
-                response.setContentType("application/xml");
+                response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                 response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
                 PrintWriter w = response.getWriter();
@@ -1226,7 +1239,7 @@ public class YanelServlet extends HttpServlet {
                         session.setAttribute(IDENTITY_KEY, new Identity(username, null));
 
                         // TODO: send some XML content, e.g. <authentication-successful/>
-                        response.setContentType("text/plain");
+                        response.setContentType("text/plain; charset=" + DEFAULT_ENCODING);
                         response.setStatus(response.SC_OK);
 
                         PrintWriter writer = response.getWriter();
@@ -1264,7 +1277,7 @@ public class YanelServlet extends HttpServlet {
 
                         log.debug("Neutron-Auth response: " + sb);
 
-                        response.setContentType("application/xml");
+                        response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                         response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                         response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
 
@@ -1300,7 +1313,7 @@ public class YanelServlet extends HttpServlet {
                     sb.append("</authentication>");
                     sb.append("</exception>");
 
-                    response.setContentType("application/xml");
+                    response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                     response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
 
@@ -1328,7 +1341,7 @@ public class YanelServlet extends HttpServlet {
         String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
         if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
             // TODO: send some XML content, e.g. <logout-successful/>
-            response.setContentType("text/plain");
+            response.setContentType("text/plain; charset=" + DEFAULT_ENCODING);
             response.setStatus(response.SC_OK);
             PrintWriter writer = response.getWriter();
             writer.print("Neutron Logout Successful!");
@@ -1338,17 +1351,18 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
+     * Patches the mimetype of the Content-Type response field because
      * Microsoft Internet Explorer does not understand application/xhtml+xml
      * See http://en.wikipedia.org/wiki/Criticisms_of_Internet_Explorer#XHTML
      */
-    public String patchContentType(String contentType, HttpServletRequest request) throws ServletException, IOException {
+    public String patchMimeType(String mimeType, HttpServletRequest request) throws ServletException, IOException {
         String httpAcceptMediaTypes = request.getHeader("Accept");
         log.debug("HTTP Accept Media Types: " + httpAcceptMediaTypes);
-        if (contentType != null && contentType.equals("application/xhtml+xml") && httpAcceptMediaTypes != null && httpAcceptMediaTypes.indexOf("application/xhtml+xml") < 0) {
+        if (mimeType != null && mimeType.equals("application/xhtml+xml") && httpAcceptMediaTypes != null && httpAcceptMediaTypes.indexOf("application/xhtml+xml") < 0) {
             log.info("Patch contentType with text/html because client (" + request.getHeader("User-Agent") + ") does not seem to understand application/xhtml+xml");
             return "text/html";
         }
-        return contentType;
+        return mimeType;
     }
 
     /**
@@ -1378,12 +1392,12 @@ public class YanelServlet extends HttpServlet {
         try {
             String yanelFormat = request.getParameter("yanel.format");
             if(yanelFormat != null && yanelFormat.equals("xml")) {
-                response.setContentType("application/xml");
+                response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                 OutputStream out = response.getOutputStream();
                 javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
                 out.close();
             } else {
-                response.setContentType("application/xhtml+xml");
+                response.setContentType("application/xhtml+xml; charset=" + DEFAULT_ENCODING);
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltInfoAndException));
                 transformer.transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
             }
@@ -1429,12 +1443,12 @@ public class YanelServlet extends HttpServlet {
             
             String yanelFormat = request.getParameter("yanel.format");
             if(yanelFormat != null && yanelFormat.equals("xml")) {
-                response.setContentType("application/xml; charset=UTF-8");
+                response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                 OutputStream out = response.getOutputStream();
                 javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
                 out.close();
             } else {
-                response.setContentType("application/xhtml+xml; charset=UTF-8");
+                response.setContentType("application/xhtml+xml; charset=" + DEFAULT_ENCODING);
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);            
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltLoginScreen));            
                 transformer.transform(new javax.xml.transform.dom.DOMSource(doc), 
@@ -1475,7 +1489,7 @@ public class YanelServlet extends HttpServlet {
 
 
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
-            response.setContentType("application/xhtml+xml");
+            response.setContentType("application/xhtml+xml; charset=" + DEFAULT_ENCODING);
             PrintWriter w = response.getWriter();
             w.print(sb);
 
@@ -1493,7 +1507,7 @@ public class YanelServlet extends HttpServlet {
             sb.append("</html>");
             PrintWriter w = response.getWriter();
             w.print(sb);
-            response.setContentType("application/xhtml+xml");
+            response.setContentType("application/xhtml+xml; charset=" + DEFAULT_ENCODING);
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
