@@ -65,20 +65,6 @@
     <ul>
       <xsl:apply-templates select="realm"/>
     </ul>
-
-<!--
-    <p>
-    Add another realm: <ul><li>
-            <a href="http://svn.wyona.com/repos/public/yulup/website/yanel/config/yanel-realm-config.xml">Yulup Website</a> (U: anonymous, P: anonymous)</li>
-          <li>
-            <a href="http://svn.wyona.com/repos/public/yulup/demo/yanel/config/yanel-realm-config.xml">Yulup Demo</a> (U: anonymous, P: anonymous)</li>
-          <li>
-            <a href="http://svn.wyona.com/repos/public/osr-101/trunk/yanel/config/yanel-realm-config.xml">OSR-101 (Neutron Protocol Website)</a> (U: anonymous, P: anonymous)</li>
-          <li>
-            <a href="http://svn.wyona.com/repos/public/yanel/trunk/src/realms/from-scratch-realm-template/yanel/config/yanel-realm-config.xml">Yanel from Scratch Realm</a> (U: anonymous, P: anonymous)</li>
-          <li>...</li>
-        </ul></p>
--->
   </xsl:template>
   
   <xsl:template match="realm">
