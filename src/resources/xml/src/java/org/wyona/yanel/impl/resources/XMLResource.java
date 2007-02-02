@@ -128,16 +128,16 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML(repo, yanelPath, revisionName))), new StreamResult(baos));
                 
                 InputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
+                defaultView.setInputStream(inputStream);
 
                 // TODO: Seems to have problems accessing remote DTDs when being offline
 /*
-                I18nTransformer i18nTransformer = new I18nTransformer("global", language);
+                I18nTransformer i18nTransformer = new I18nTransformer("global", getLanguage());
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 saxParser.parse(inputStream, i18nTransformer);
                 defaultView.setInputStream(i18nTransformer.getInputStream());
 */
 
-                defaultView.setInputStream(inputStream);
 
                 return defaultView;
             } else {
