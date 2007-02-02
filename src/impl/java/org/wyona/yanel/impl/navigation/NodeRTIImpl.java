@@ -75,7 +75,7 @@ public class NodeRTIImpl implements Node {
     }
 
     /**
-     *
+     * Check if node is a resource
      */
     public boolean isResource() {
         if (isCollection()) return false;
@@ -87,8 +87,10 @@ public class NodeRTIImpl implements Node {
      */
     public boolean isCollection() {
         try {
-            if (repo.isCollection(path)) {
-                log.debug("Is collection within repo: " + path);
+            log.error("DEBUG: Check if node is a collection: " + path);
+            if (repo.getNode(path.toString()).isCollection()) {
+            //if (repo.isCollection(path)) {
+                log.error("DEBUG: Is collection within repo: " + path);
                 Path[] children = repo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
                     if (children[i].getName().indexOf(".yanel-rti") > 0) {
@@ -169,5 +171,12 @@ public class NodeRTIImpl implements Node {
      */
     public String getPath() {
         return path.toString();
+    }
+
+    /**
+     *
+     */
+    public String getName() {
+        return path.getName();
     }
 }

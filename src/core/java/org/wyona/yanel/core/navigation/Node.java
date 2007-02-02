@@ -81,4 +81,9 @@ public interface Node {
      *
      */
     public String getPath();
+
+    /**
+     *
+     */
+    public String getName();
 }
