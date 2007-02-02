@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<realm-config xmlns="http://www.wyona.org/yanel/realm/1.0">
+  <name>Realm for Use-Cases</name>
+  <rti>rti-repository.xml</rti>
+  <data>data-repository.xml</data>
+  <ac-policies>ac-policies-repository.xml</ac-policies>
+  <ac-identities>ac-identities-repository.xml</ac-identities>
+</realm-config>

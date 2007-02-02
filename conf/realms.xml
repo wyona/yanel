@@ -81,6 +81,11 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
 </realm>
 -->
 
+<realm id="test-cases" mount-point="/test/use-cases">
+  <name>Use-Cases</name>
+  <config src="../src/realms/use-cases/yanel/config/yanel-realm-config.xml"/>
+</realm>
+
 <realm id="test" mount-point="/test/">
   <name>Tests</name>
   <config src="../src/realms/test/yanel/config/yanel-realm-config.xml"/>
