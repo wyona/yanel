@@ -34,8 +34,8 @@ public class DirectoryResourceWebTest extends AbstractHtmlUnitTest {
      * Load an XHTML page and verifies its title and content.
      */
     public void testXHTMLViewOfDirectoryResource() throws Exception {
-        loadHtmlPage("yanel-website/hello/");
-        assertTitleEquals("Collection: /hello/");
-        assertPageContainsText("/hello/odt-sample.xhtml");
+        loadHtmlPage("test/use-cases/hello/");
+        assertTitleEquals("Collection: /hello/ - Yanel");
+        assertPageContainsText("odt-sample.xhtml");
     }
 }
