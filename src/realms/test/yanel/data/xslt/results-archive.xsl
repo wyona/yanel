@@ -19,8 +19,8 @@
   </xsl:template>
   <xsl:template match="xhtml:a[@title='file']"> 
     Test: 
-    <a href="../testing-control.html?archived-results={.}">
-      <xsl:value-of select="substring-before(@href,'-test')"/>
+    <a href="../testing-control.html?archived-results=/test-results-archive/{.}">
+      <xsl:value-of select="."/>
     </a>
     <br/>
   </xsl:template>
