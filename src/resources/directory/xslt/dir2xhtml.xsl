@@ -43,10 +43,10 @@
 </xsl:template>
 
 <xsl:template match="dir:directory">
-Collection: <a href="{@name}/"><xsl:value-of select="@path"/>/</a><br/>
+Collection: <a href="{@name}/" title="directory"><xsl:value-of select="@path"/>/</a><br/>
 </xsl:template>
 
 <xsl:template match="dir:file">
-Resource: <a href="{@name}"><xsl:value-of select="@path"/></a><br/>
+Resource: <a href="{@name}" title="file"><xsl:value-of select="@path"/></a><br/>
 </xsl:template>
 </xsl:stylesheet>

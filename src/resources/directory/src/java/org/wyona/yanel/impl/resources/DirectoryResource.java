@@ -29,15 +29,26 @@ import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
+import org.wyona.yanel.core.util.PathUtil;
 
 import org.apache.log4j.Category;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
+
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXSource;
+
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 
 /**
  * 
@@ -123,12 +134,34 @@ public class DirectoryResource extends Resource implements ViewableV2 {
         }
 
         try {
-            Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(getPath(), contentRepo));
-
-            // TODO: Is this the best way to generate an InputStream from an OutputStream?
+            //Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(getPath(), contentRepo));
+            
+            TransformerFactory tfactory = TransformerFactory.newInstance();
+            String[] xsltTransformers = getXSLTprop();
+            
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-            transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
-            defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+            
+            
+            Transformer transformerIntern = tfactory.newTransformer(getXSLTStreamSource( contentRepo));
+            StreamSource orig = new StreamSource(new java.io.StringBufferInputStream(sb.toString()));
+            
+            transformerIntern.transform(orig, new StreamResult(baos));
+                
+            if (xsltTransformers != null) {
+                //StreamSource orig = new StreamSource(new java.io.StringBufferInputStream(sb.toString()));
+                for (int i = 0; i < xsltTransformers.length; i++) {
+                    orig = new StreamSource(new ByteArrayInputStream(baos.toByteArray()));
+                    baos = new java.io.ByteArrayOutputStream();
+                    Transformer transformer = tfactory.newTransformer(new StreamSource(contentRepo.getInputStream(new org.wyona.yarep.core.Path(new Path(xsltTransformers[i]).toString()))));
+                    transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+                    transformer.setParameter("yanel.path", getPath().toString());
+                    transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
+                    transformer.setParameter("yarep.back2realm", backToRoot(getPath(), "../"));
+                    transformer.transform(orig, new StreamResult(baos));
+                    
+                }
+            }
+            // TODO: Is this the best way to generate an InputStream from an OutputStream?
             defaultView.setMimeType(getMimeType());
             defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
         } catch (Exception e) {
@@ -158,24 +191,21 @@ public class DirectoryResource extends Resource implements ViewableV2 {
     /**
      * 
      */
-    private StreamSource getXSLTStreamSource(String path, Repository repo) throws RepositoryException {
-        String xsltPath = getXSLTPath();
-        if (xsltPath != null) {
-            return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath())));
-        } else {
+    private StreamSource getXSLTStreamSource(Repository repo) throws RepositoryException {
+
             File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(),
                     "xslt" + File.separator + "dir2xhtml.xsl");
             log.error("DEBUG: XSLT file: " + xsltFile);
             return new StreamSource(xsltFile);
-        }
+        
     }
 
     /**
      * Get XSLT
      */
-    private String getXSLTPath() {
+    private String[] getXSLTprop() {
         String xslt =getRTI().getProperty("xslt");
-        if (xslt != null) return xslt;
+        if (xslt != null) return xslt.split(",");
         return null;
     }
 
@@ -189,4 +219,24 @@ public class DirectoryResource extends Resource implements ViewableV2 {
         // NOTE: Assuming fallback re dir2xhtml.xsl ...
         return "application/xhtml+xml";
     }
+    
+    
+    /**
+    *
+    */
+   private String backToRoot(String path, String backToRoot) {
+       String parent = PathUtil.getParent(path);
+       if (parent != null && !isRoot(parent)) {
+           return backToRoot(parent, backToRoot + "../");
+       }
+       return backToRoot;
+   }
+
+   /**
+   *
+   */
+  private boolean isRoot(String path) {
+      if (path.equals(File.separator)) return true;
+      return false;
+  }
 }
