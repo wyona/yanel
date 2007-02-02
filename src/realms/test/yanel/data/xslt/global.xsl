@@ -86,6 +86,7 @@
   <xsl:template name="navigation">
     <b><a href="{$yarep.back2realm}">Testing</a></b>
     <br/> &#160;<a href="{$yarep.back2realm}testing-control.html">Testing&#160;Control</a>
+    <br/> &#160;<a href="{$yarep.back2realm}test-results-archive/">Test&#160;Results&#160;Archive</a>
     <br/> &#160;<a href="{$yarep.back2realm}testing-times.html">Time&#160;Analyze</a>
     <br/> &#160;<a href="{$yarep.back2realm}use-cases.html">Use&#160;Cases</a>
     <br/>
