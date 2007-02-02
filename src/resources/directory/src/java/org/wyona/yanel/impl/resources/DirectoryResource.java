@@ -134,19 +134,25 @@ public class DirectoryResource extends Resource implements ViewableV2 {
         }
 
         try {
-            //Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(getPath(), contentRepo));
+            String assetPath = "";
+            if (getPath().endsWith("/")) {
+                assetPath = "../";
+            }
             
             TransformerFactory tfactory = TransformerFactory.newInstance();
             String[] xsltTransformers = getXSLTprop();
             
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
             
-            
             Transformer transformerIntern = tfactory.newTransformer(getXSLTStreamSource( contentRepo));
             StreamSource orig = new StreamSource(new java.io.StringBufferInputStream(sb.toString()));
             
+            transformerIntern.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+            transformerIntern.setParameter("yanel.path", getPath().toString());
+            transformerIntern.setParameter("yanel.back2context", backToRoot(getPath(), assetPath));
+            transformerIntern.setParameter("yarep.back2realm", backToRoot(getPath(), assetPath));
             transformerIntern.transform(orig, new StreamResult(baos));
-                
+            
             if (xsltTransformers != null) {
                 //StreamSource orig = new StreamSource(new java.io.StringBufferInputStream(sb.toString()));
                 for (int i = 0; i < xsltTransformers.length; i++) {
@@ -155,10 +161,9 @@ public class DirectoryResource extends Resource implements ViewableV2 {
                     Transformer transformer = tfactory.newTransformer(new StreamSource(contentRepo.getInputStream(new org.wyona.yarep.core.Path(new Path(xsltTransformers[i]).toString()))));
                     transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
                     transformer.setParameter("yanel.path", getPath().toString());
-                    transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
-                    transformer.setParameter("yarep.back2realm", backToRoot(getPath(), "../"));
+                    transformer.setParameter("yanel.back2context", backToRoot(getPath(), assetPath));
+                    transformer.setParameter("yarep.back2realm", backToRoot(getPath(), assetPath));
                     transformer.transform(orig, new StreamResult(baos));
-                    
                 }
             }
             // TODO: Is this the best way to generate an InputStream from an OutputStream?

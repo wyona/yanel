@@ -13,6 +13,10 @@
 <!--
 <xsl:output method="html"/>
 -->
+<xsl:param name="yanel.path.name" select="'NAME_IS_NULL'"/>
+<xsl:param name="yanel.path" select="'PATH_IS_NULL'"/>
+<xsl:param name="yanel.back2context" select="'BACK2CONTEXT_IS_NULL'"/>
+<xsl:param name="yarep.back2realm" select="'BACK2REALM_IS_NULL'"/>
 
 <xsl:template match="/">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -43,10 +47,10 @@
 </xsl:template>
 
 <xsl:template match="dir:directory">
-Collection: <a href="{@name}/" title="directory"><xsl:value-of select="@path"/>/</a><br/>
+Collection: <a href="{$yarep.back2realm}.{@path}/" title="directory"><xsl:value-of select="@name"/>/</a><br/>
 </xsl:template>
 
 <xsl:template match="dir:file">
-Resource: <a href="{@name}" title="file"><xsl:value-of select="@path"/></a><br/>
+Resource: <a href="{$yarep.back2realm}.{@path}" title="file"><xsl:value-of select="@name"/></a><br/>
 </xsl:template>
 </xsl:stylesheet>
