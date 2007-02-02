@@ -1,0 +1,12 @@
+<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <atom:title type="text">Yulup 0.2.1 released</atom:title>
+  <atom:author>
+    <atom:name>Donat Grimm</atom:name>
+  </atom:author>
+  <atom:id>urn:yanel-wyona-org:yulup-0-2-1-released</atom:id>
+  <atom:content type="xhtml">
+    <xhtml:div>
+Yulup <xhtml:a href="http://www.yulup.org/download/index.html">0.2.1</xhtml:a> has been released
+    </xhtml:div>
+  </atom:content>
+<atom:updated>2007-02-02T15:58:51.569Z</atom:updated><atom:published>2007-02-02T15:57:26.458Z</atom:published></atom:entry>
