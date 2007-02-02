@@ -24,6 +24,20 @@
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <title><i18n:message key="contact"/></title>
+        <style>
+          table {
+            border-style:hidden !important;
+            border:0px hidden  !important;
+          }
+          td {
+            border-style:hidden !important;
+            border:0px hidden  !important;
+          }
+          tr {
+            border-style:hidden !important;
+            border:0px hidden  !important;
+          }
+        </style>        
       </head>
       
       <body>
@@ -70,7 +84,7 @@
           <tr>
             <td align="right" valign="top" class="contentfield"><i18n:message><xsl:attribute name="key"><xsl:value-of select="$inputName"/></xsl:attribute></i18n:message>:&#0160;</td>
             <td>
-              <textarea rows="8" name="{$inputName}" cols="30" class="box"></textarea>
+              <textarea rows="8" name="{$inputName}" cols="30" class="box">&#160;</textarea>
             </td>
             <td><xsl:if test="@required = 'true'">*</xsl:if></td>
           </tr>
@@ -148,7 +162,7 @@
         <tr>
           <td align="right" valign="top" class="contentfield"><i18n:message key="message"/>:&#0160;</td>
           <td>
-            <textarea rows="8" name="message" cols="30" class="box"><xsl:value-of select="$message"/></textarea>
+            <textarea rows="8" name="message" cols="30" class="box"><xsl:value-of select="$message"/>&#160;</textarea>
           </td>
           <td></td>
         </tr>

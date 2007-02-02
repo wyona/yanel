@@ -165,7 +165,7 @@ public class ContactResource extends Resource implements ViewableV1 {
             log.error(e.getMessage(), e);
         }
         View defaultView = new View();
-        defaultView.setMimeType("application/xml");
+        defaultView.setMimeType(getMimeType());
         defaultView.setInputStream(i18nTransformer.getInputStream());
         return defaultView;
     }
@@ -247,16 +247,6 @@ public class ContactResource extends Resource implements ViewableV1 {
                 path.toString()), getRepositoryFactory());
     }
 
-    /**
-     * 
-     * @param path
-     * @param viewId
-     * @return
-     */
-    private String getMimeType(Path path, String viewId) {
-        // TODO Auto-generated method stub
-        return null;
-    }
     
     /**
      * 
@@ -331,30 +321,12 @@ public class ContactResource extends Resource implements ViewableV1 {
     }
     
     /**
-     * 
-     * @param path
-     * @return
+     * Get mime type
      */
-    private String getMimeType(Path path) {
-        String mimeType = null;
-        try {
-            java.io.BufferedReader br = new java.io.BufferedReader(rp
-                    .getRepo().getReader(
-                            new org.wyona.yarep.core.Path(new Path(rp
-                                    .getPath().toString()).getRTIPath()
-                                    .toString())));
+    private String getMimeType() {
+        String mimeType = getRTI().getProperty("mime-type");
+        if (mimeType != null) return mimeType;
 
-            while ((mimeType = br.readLine()) != null) {
-                if (mimeType.indexOf("mime-type:") == 0) {
-                    mimeType = mimeType.substring(11);
-                    log.info("*" + mimeType + "*");
-                    return mimeType;
-                }
-            }
-        } catch (Exception e) {
-            log.warn(e);
-        }
-        // NOTE: Assuming fallback re dir2xhtml.xsl ...
         return "application/xhtml+xml";
     }
    
