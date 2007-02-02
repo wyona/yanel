@@ -24,7 +24,7 @@
         <h1>Welcome to Yanel</h1>
         <p> If you can see this, it means that the installation of Yanel
           software on this system was successful. Thanks for using Yanel!</p>
-        <h2>Getting Started ...</h2>
+        <h2>Getting Started</h2>
         <p>
           <ul>
             <li>What is a realm?</li>
@@ -38,15 +38,24 @@
                 href="yanel-website/en/documentation/how-to-add-a-new-realm.html">Add
                 an existing third-party realm.</a>
             </li>
+            <li>More information can be found within the Yanel <a href="yanel-website/en/documentation/index.html">documentation</a>.</li>
+
+<!--
             <li>What is a resource resp. resource type?</li>
             <li><a href="yanel-website/en/documentation/create-new-resource.html">Create a new resource type from scratch.</a></li>
             <li>Add an existing third-party resource type.</li>
+-->
+
+<!-- TODO: Move this into Yanel tool bar -->
+<!--
             <li>Find Updates.</li>
+-->
           </ul>
         </p>
-        <h2>Registered Realms</h2>
+        <h2>Registered Realms within this Yanel instance</h2>
         <xsl:apply-templates select="/yanel-info/realms"/>
-        <h2>Registered Resources</h2>
+
+        <h2>Registered Resources within this Yanel instance</h2>
         <xsl:apply-templates select="/yanel-info/resourcetypes"/>
       </body>
     </html>
@@ -57,25 +66,19 @@
       <xsl:apply-templates select="realm"/>
     </ul>
 
+<!--
     <p>
     Add another realm: <ul><li>
-            <a
-              href="http://svn.wyona.com/repos/public/yulup/website/yanel/config/yanel-realm-config.xml">Yulup
-            Website</a> (U: anonymous, P: anonymous)</li>
+            <a href="http://svn.wyona.com/repos/public/yulup/website/yanel/config/yanel-realm-config.xml">Yulup Website</a> (U: anonymous, P: anonymous)</li>
           <li>
-            <a
-              href="http://svn.wyona.com/repos/public/yulup/demo/yanel/config/yanel-realm-config.xml">Yulup
-            Demo</a> (U: anonymous, P: anonymous)</li>
+            <a href="http://svn.wyona.com/repos/public/yulup/demo/yanel/config/yanel-realm-config.xml">Yulup Demo</a> (U: anonymous, P: anonymous)</li>
           <li>
-            <a
-              href="http://svn.wyona.com/repos/public/osr-101/trunk/yanel/config/yanel-realm-config.xml">OSR-101
-              (Neutron Protocol Website)</a> (U: anonymous, P: anonymous)</li>
+            <a href="http://svn.wyona.com/repos/public/osr-101/trunk/yanel/config/yanel-realm-config.xml">OSR-101 (Neutron Protocol Website)</a> (U: anonymous, P: anonymous)</li>
           <li>
-            <a
-              href="http://svn.wyona.com/repos/public/yanel/trunk/src/realms/from-scratch-realm-template/yanel/config/yanel-realm-config.xml">Yanel
-              from Scratch Realm</a> (U: anonymous, P: anonymous)</li>
+            <a href="http://svn.wyona.com/repos/public/yanel/trunk/src/realms/from-scratch-realm-template/yanel/config/yanel-realm-config.xml">Yanel from Scratch Realm</a> (U: anonymous, P: anonymous)</li>
           <li>...</li>
         </ul></p>
+-->
   </xsl:template>
   
   <xsl:template match="realm">
