@@ -20,6 +20,7 @@
   <import file="targets/add-third-party-realm.xml"/>
   <import file="targets/create-new-resource.xml"/>
   <import file="targets/build-binary-snapshot.xml"/>
+  <import file="targets/execute-jmeter.xml"/>
   
   <target name="ask-to-reconfigure-tomcat-cluster-node1" description="reconfigure Tomcat cluster node 1" if="isTomcat1PortsSet">
     <input message="Do you want to reconfigure tomcat cluster node 1 in order to support SSL? (YES/no):" defaultvalue="NO" addproperty="answerReconfigureTomcat1"/>
