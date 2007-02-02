@@ -3,7 +3,9 @@
 <repository>
   <name>Use-Cases Realm Data Repository</name>
 
-  <paths src="../data-paths" fallback="true"/>
+  <paths src="../data-paths" fallback="true">
+    <ignore pattern=".*\.svn"/>
+  </paths>
 
   <storage class="org.wyona.yarep.core.impl.fs.FileSystemStorage">
     <content src="../data"/>

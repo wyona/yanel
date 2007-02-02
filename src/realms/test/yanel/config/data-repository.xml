@@ -3,7 +3,10 @@
 <repository>
   <name>Test Data Repository</name>
 
-  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../../../../../local/test/data"/>
+  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../../../../../local/test/data">
+    <ignore pattern=".*\.svn"/>
+  </paths>
+
 
   <storage class="org.wyona.yarep.core.impl.vfs.VFileSystemStorage">
     <content src="../../../../../local/test/data"/>
