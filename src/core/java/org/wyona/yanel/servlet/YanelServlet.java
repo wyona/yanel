@@ -1097,11 +1097,10 @@ public class YanelServlet extends HttpServlet {
                 log.error("Neither collection nor resource!");
             }
         } else if (depth.equals("1")) {
+            // TODO: Shouldn't one check with isCollection() first?!
             Node[] children = node.getChildren();
-            log.error("DEBUG: Node: " + node.getPath());
             if (children != null) {
                 for (int i = 0; i < children.length; i++) {
-                    log.error("DEBUG: Child: " + children[i].getPath());
                     if (children[i].isCollection()) {
                         sb.append("  <response>\n");
                         sb.append("    <href>" + request.getRequestURI() + children[i].getPath() + "/</href>\n");
