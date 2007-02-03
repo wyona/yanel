@@ -64,9 +64,12 @@
 
             <xsl:apply-templates select="child::node()/yanel:request"/>
             <xsl:apply-templates select="child::node()/session"/>
+
+<!-- OBSOLETE
             <xsl:apply-templates select="child::node()/resource-type-identifier"/>
             <xsl:apply-templates select="child::node()/no-resource-type-identifier"/>
-            <xsl:apply-templates select="child::node()/resource"/>
+-->
+            <xsl:apply-templates select="/yanel:yanel/resource"/>
             <xsl:apply-templates select="child::node()/revisions"/>
           </body>
         </html>
@@ -94,6 +97,7 @@
     </p>
   </xsl:template>
   
+<!-- OBSOLETE
   <xsl:template match="resource-type-identifier">
     <p>
       <h4> Resource Type Identifier:</h4>
@@ -103,6 +107,7 @@
       </ul>
     </p>   
   </xsl:template>
+-->
   
   <xsl:template match="resource">
     <p>
@@ -111,6 +116,14 @@
       <xsl:apply-templates/>
       </ul>
     </p>    
+  </xsl:template>
+  
+  <xsl:template match="yanel:config">
+    <li>Configuration: <xsl:value-of select="@yanel:rti-name"/> (<xsl:value-of select="@yanel:rti-namespace"/>)</li>
+  </xsl:template>
+  
+  <xsl:template match="yanel:no-config">
+    <li>No Configuration!</li>
   </xsl:template>
   
   <xsl:template match="not-viewable">
@@ -158,6 +171,7 @@
     </li>
   </xsl:template>
   
+<!-- OBSOLETE
   <xsl:template match="no-resource-type-identifier">
     <p>
       <h4>No Resource Type Identifier:</h4>
@@ -166,6 +180,7 @@
       </ul>
       </p>     
   </xsl:template>
+-->
   
   <xsl:template match="yanel:exception">
     <p>
