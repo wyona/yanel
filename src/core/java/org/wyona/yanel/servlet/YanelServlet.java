@@ -176,9 +176,9 @@ public class YanelServlet extends HttpServlet {
         }
 
         String yanelWebDAV = request.getParameter("yanel.webdav");
-        if(yanelWebDAV != null && yanelWebDAV.equals("edit")) {
+        if(yanelWebDAV != null && yanelWebDAV.equals("propfind1")) {
             Resource resource = getResource(request, response);
-            log.error("DEBUG: WebDAV client (" + request.getHeader("User-Agent") + ") requests to edit a resource: " + resource.getRealm() + ", " + resource.getPath());
+            log.error("DEBUG: WebDAV client (" + request.getHeader("User-Agent") + ") requests to \"edit\" a resource: " + resource.getRealm() + ", " + resource.getPath());
             //return;
         }
 
@@ -1102,6 +1102,12 @@ public class YanelServlet extends HttpServlet {
                 sb.append("        <resourcetype/>");
                 // TODO: Does getcontenttype also be set for resources?
                 sb.append("        <getcontenttype>http/unix-directory</getcontenttype>");
+                sb.append("        <source>\n");
+                sb.append("          <link>\n");
+                sb.append("            <src>" + request.getRequestURI() + "</src>\n");
+                sb.append("            <dst>" + request.getRequestURI() + "?yanel.resource.modifiable.source</dst>\n");
+                sb.append("          </link>\n");
+                sb.append("        </source>\n");
                 sb.append("      </prop>");
                 sb.append("      <status>HTTP/1.1 200 OK</status>");
                 sb.append("    </propstat>");
@@ -1128,12 +1134,19 @@ public class YanelServlet extends HttpServlet {
                         sb.append("  </response>\n");
                     } else if(children[i].isResource()) {
                         sb.append("  <response>\n");
-                        sb.append("    <href>" + request.getRequestURI() + "/" + children[i].getName() + "?yanel.webdav=edit</href>\n");
+                        sb.append("    <href>" + request.getRequestURI() + "/" + children[i].getName() + "?yanel.webdav=propfind1</href>\n");
                         sb.append("    <propstat>\n");
                         sb.append("      <prop>\n");
                         sb.append("        <displayname>R: " + children[i].getName() + "</displayname>\n");
                         sb.append("        <resourcetype/>\n");
                         sb.append("        <getcontenttype>http/unix-directory</getcontenttype>\n");
+                        // http://www.webdav.org/specs/rfc2518.html#PROPERTY_source, http://wiki.zope.org/HiperDom/RoundtripEditingDiscussion
+                        sb.append("        <source>\n");
+                        sb.append("          <link>\n");
+                        sb.append("            <src>" + request.getRequestURI() + "/" + children[i].getName() + "</src>\n");
+                        sb.append("            <dst>" + request.getRequestURI() + "/" + children[i].getName() + "?yanel.resource.modifiable.source</dst>\n");
+                        sb.append("          </link>\n");
+                        sb.append("        </source>\n");
                         sb.append("      </prop>\n");
                         sb.append("      <status>HTTP/1.1 200 OK</status>\n");
                         sb.append("    </propstat>\n");
