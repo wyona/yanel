@@ -105,7 +105,7 @@ public class NodeRTIImpl implements Node {
                 }
             }
         } catch(Exception e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
         }
         return false;
     }
