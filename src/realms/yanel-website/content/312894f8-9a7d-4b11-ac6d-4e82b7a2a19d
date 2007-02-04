@@ -18,22 +18,22 @@
 <td>Creator</td><td>mostly done<br/></td><td>2007.01.12</td><td>Simon</td>
 </tr>
 <tr><td style="vertical-align: top;">Creator: Realm specific XSLT</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.01.12</td><td style="vertical-align: top;">Simon</td></tr><tr><td style="vertical-align: top;">XHTML resource out-of-the-box</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.01.12</td><td style="vertical-align: top;">Simon</td></tr><tr>
-<td>Simple Workflow: Submit, Review, Publish/Reject</td><td>in planning</td><td>TBD</td><td>Michael</td>
+<td>Simple Workflow: Submit, Review, Publish/Reject</td><td>in planning</td><td>2007.02.16</td><td>Michael</td>
 </tr>
 <tr>
-<td style="vertical-align: top;">Navigation Framework</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td>Michael</td></tr>
+<td style="vertical-align: top;">Navigation Framework</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">2007.02.16</td><td>Michael</td></tr>
 <tr><td style="vertical-align: top;"><a href="specification/nutch-resource.html">Nutch</a></td><td style="vertical-align: top;">mostly done</td><td style="vertical-align: top;">2007.01.05</td><td>Michael</td>
 </tr><tr><td style="vertical-align: top;"><a href="specification/import-site-feature.html">Import an existing website as a new realm</a></td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.01.10</td><td style="vertical-align: top;">Jonathan</td></tr><tr><td style="vertical-align: top;">Wiki </td><td style="vertical-align: top;">mostly done</td><td style="vertical-align: top;">2007.01.31</td><td>Michael</td></tr>
-<tr><td style="vertical-align: top;">Versioning (Yarep)</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.01.31</td><td>Josias</td></tr>
-<tr><td style="vertical-align: top;">Asset Upload (Image, PDF, Movie, etc.<br/></td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.01.31</td><td style="vertical-align: top;">Andreas</td></tr><tr><td style="vertical-align: top;">Lookup (Yulup)</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">TBD</td><td>Andreas</td></tr>
+<tr><td style="vertical-align: top;">Versioning (Yarep)</td><td style="vertical-align: top;">done<br/></td><td style="vertical-align: top;">2007.01.31</td><td>Josias</td></tr>
+<tr><td style="vertical-align: top;">Asset Upload (Image, PDF, Movie, etc.<br/></td><td style="vertical-align: top;">mostly done<br/></td><td style="vertical-align: top;">2007.01.31</td><td style="vertical-align: top;">Andreas</td></tr><tr><td style="vertical-align: top;">Lookup (Yulup)</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">TBD</td><td>Andreas</td></tr>
 <tr><td style="vertical-align: top;">Create a realm from scratch</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.01.10</td><td style="vertical-align: top;">Jonathan</td></tr><tr><td style="vertical-align: top;">Register third-party realm </td><td style="vertical-align: top;">mostly done<br/></td><td style="vertical-align: top;">2007.01.11</td><td style="vertical-align: top;">Josias</td></tr><tr><td style="vertical-align: top;">Binary installer/Dependency manager</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.01.26</td><td style="vertical-align: top;">Michael</td></tr>
 <tr><td style="vertical-align: top;"><a href="specification/calendar-resource.html">Calendar (ICS) resource</a> </td><td style="vertical-align: top;">done<br/></td><td style="vertical-align: top;">2006.12.29</td><td>Michael</td></tr>
 <tr><td style="vertical-align: top;">Testing Environment: Functional, Performance, Scalability</td><td style="vertical-align: top;">mostly done</td><td style="vertical-align: top;">2007.01.19</td><td>Simon</td></tr>
 <tr><td style="vertical-align: top;">RTI as XML </td><td style="vertical-align: top;">mostly done<br/></td><td style="vertical-align: top;">2007.01.11</td><td>Michael, Josias</td></tr>
 <tr><td style="vertical-align: top;">Versioned configuration</td><td style="vertical-align: top;">in planning<br/></td><td style="vertical-align: top;">2007.01.31</td><td>Simon</td></tr>
 <tr><td style="vertical-align: top;">Contact form resource</td><td style="vertical-align: top;">mostly done</td><td style="vertical-align: top;">2007.01.10</td><td>Paloma</td></tr>
-<tr><td style="vertical-align: top;">Locking of Write Access</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.01.31</td><td>Josias</td></tr>
-<tr><td style="vertical-align: top;">Standard and Custom Meta Data</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td>Josias</td></tr><tr><td style="vertical-align: top;"><a href="http://yanel.wyona.org/specification/access-control-user-interface.html">Access Control User Interface</a></td><td style="vertical-align: top;">in progress<br/></td><td style="vertical-align: top;">2007.01.31</td><td style="vertical-align: top;">Paloma</td></tr>
+<tr><td style="vertical-align: top;">Locking of Write Access</td><td style="vertical-align: top;">mostly done<br/></td><td style="vertical-align: top;">2007.01.31</td><td>Josias</td></tr>
+<tr><td style="vertical-align: top;">Standard and Custom Meta Data</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td>Josias</td></tr><tr><td style="vertical-align: top;"><a href="http://yanel.wyona.org/specification/access-control-user-interface.html">Access Control User Interface</a></td><td style="vertical-align: top;">mostly done<br/></td><td style="vertical-align: top;">2007.01.31</td><td style="vertical-align: top;">Paloma</td></tr>
 </tbody>
 </table>
 <h4>Release 1.1</h4>
@@ -96,7 +96,7 @@
               <td>not started<br/></td>
 <td>TBD<br/></td>
               <td>TBD<br/></td>
-            </tr><tr><td style="vertical-align: top;">Validation re RelaxNG and XML Schema</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr>
+            </tr><tr><td style="vertical-align: top;">Validation re RelaxNG and XML Schema</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;">Page moved functionality</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></tr><tr><td style="vertical-align: top;"><a href="http://www.elml.ch">eLML</a> resource</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr>
           </tbody></table><br/>
 </body>
 </html>
