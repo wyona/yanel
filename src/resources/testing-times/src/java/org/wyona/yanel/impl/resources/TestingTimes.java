@@ -206,13 +206,18 @@ public class TestingTimes extends Resource implements ViewableV1 {
         return defaultView;
     }
     
-    private View showImage(View defaultView, String name) throws Exception, TransformerConfigurationException, TransformerFactoryConfigurationError, TransformerException{
+    private View showImage(View defaultView, String name) throws Exception,
+            TransformerConfigurationException, TransformerFactoryConfigurationError,
+            TransformerException {
         Document doc = getCombinedResults(name);
-        
-        JFreeChart chart = createChart(createTestTimeDataset(doc), name);
-        
+        boolean showCases = false;
+        if (!name.equals("all")) {
+            showCases = true;
+        }
+        JFreeChart chart = createChart(createTestTimeDataset(doc, showCases), name);
+
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ChartUtilities.writeChartAsPNG(byteArrayOutputStream, chart, chartWidth, chartHeight );
+        ChartUtilities.writeChartAsPNG(byteArrayOutputStream, chart, chartWidth, chartHeight);
 
         defaultView.setMimeType("image/png");
         defaultView.setInputStream(new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
@@ -242,15 +247,12 @@ public class TestingTimes extends Resource implements ViewableV1 {
             org.wyona.yarep.core.Path[] children = contentRepo.getChildren(testResultArchivePath);
             
             //to limit the aggregation
-            int iterator = 0;
-            if(!numberOfResults.equals("all")){
-                int omittedCildren = children.length - Integer.parseInt(numberOfResults);
-                if(omittedCildren > 0){
-                    iterator = omittedCildren;
-                }
+            int omittedChildren = 1;
+            if(!numberOfResults.equals("all") && children.length > Integer.parseInt(numberOfResults)){
+                omittedChildren = children.length / Integer.parseInt(numberOfResults);
             }
             
-            for (int i = iterator; i < children.length; i++) {
+            for (int i = 0; i < children.length; i = i + omittedChildren) {
                 if (contentRepo.isResource(children[i])) {
                     //get date from filename
                     String date = children[i].getName().substring(0,
@@ -310,9 +312,10 @@ public class TestingTimes extends Resource implements ViewableV1 {
      *
      * @return The dataset.
      */
-    private XYDataset createTestTimeDataset(Document doc) throws Exception{
+    private XYDataset createTestTimeDataset(Document doc, boolean showCases) throws Exception{
         
-        HashSet distinctNames = new HashSet();
+        HashSet distinctSuiteNames = new HashSet();
+        HashSet distinctCaseNames = new HashSet();
         TimeSeriesCollection dataset = new TimeSeriesCollection();
             
         Element rootElement = doc.getDocumentElement();
@@ -327,18 +330,31 @@ public class TestingTimes extends Resource implements ViewableV1 {
             String time = testSuiteAttributes.getNamedItem("time").getNodeValue();
             String name = testSuiteAttributes.getNamedItem("name").getNodeValue()+" Suite";
               
-            if(distinctNames.contains(name)){
+            if(distinctSuiteNames.contains(name)){
                 dataset.getSeries(name).add(new Second(Integer.parseInt(dateFields[5]),Integer.parseInt(dateFields[4]),Integer.parseInt(dateFields[3]),Integer.parseInt(dateFields[2]),Integer.parseInt(dateFields[1]),Integer.parseInt(dateFields[0])), java.lang.Double.parseDouble(time));
             } else {
-                distinctNames.add(name);
+                distinctSuiteNames.add(name);
                 dataset.addSeries( new TimeSeries(name, Second.class));
                 dataset.getSeries(name).add(new Second(Integer.parseInt(dateFields[5]),Integer.parseInt(dateFields[4]),Integer.parseInt(dateFields[3]),Integer.parseInt(dateFields[2]),Integer.parseInt(dateFields[1]),Integer.parseInt(dateFields[0])), java.lang.Double.parseDouble(time));
             }
-            //TODO add also testcases to the dataset if wished
-            //if(showCases){
-            //    Node testcaseNode = node.getFirstChild();
-            //    NamedNodeMap testCaseAttributes = testcaseNode.getAttributes();
-            //}
+
+            if(showCases){
+                Node testcaseNode = node.getFirstChild();
+                NamedNodeMap testCaseAttributes = testcaseNode.getAttributes();
+                String caseDate = testCaseAttributes.getNamedItem("date").getNodeValue();
+                //parse date
+                String[] caseDateFields = date.split("-");
+                String caseTime = testCaseAttributes.getNamedItem("time").getNodeValue();
+                String caseName = name+": "+testCaseAttributes.getNamedItem("name").getNodeValue()+" Case";
+                
+                if(distinctCaseNames.contains(caseName)){
+                    dataset.getSeries(caseName).add(new Second(Integer.parseInt(caseDateFields[5]),Integer.parseInt(caseDateFields[4]),Integer.parseInt(caseDateFields[3]),Integer.parseInt(caseDateFields[2]),Integer.parseInt(caseDateFields[1]),Integer.parseInt(caseDateFields[0])), java.lang.Double.parseDouble(caseTime));
+                } else {
+                    distinctCaseNames.add(caseName);
+                    dataset.addSeries( new TimeSeries(caseName, Second.class));
+                    dataset.getSeries(caseName).add(new Second(Integer.parseInt(caseDateFields[5]),Integer.parseInt(caseDateFields[4]),Integer.parseInt(caseDateFields[3]),Integer.parseInt(caseDateFields[2]),Integer.parseInt(caseDateFields[1]),Integer.parseInt(caseDateFields[0])), java.lang.Double.parseDouble(caseTime));
+                }
+            }
         }
         return dataset;
     }    
@@ -372,7 +388,7 @@ public class TestingTimes extends Resource implements ViewableV1 {
         plot.setDomainCrosshairVisible(true);
         plot.setRangeCrosshairVisible(true);
         DateAxis axis = (DateAxis) plot.getDomainAxis();
-        axis.setDateFormatOverride(new SimpleDateFormat("yy-MM.dd-hh"));
+        axis.setDateFormatOverride(new SimpleDateFormat("yy/MM/dd"));
         return chart;
 
     }

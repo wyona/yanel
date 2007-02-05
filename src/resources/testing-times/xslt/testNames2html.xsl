@@ -33,7 +33,7 @@
             <a href="?showTest=all">
             All Tests</a>
           </p>
-          <img src="?showImage={$testname}&amp;setNumberOfResults=5" alt="All Testsuites Execution Time"/>
+          <img src="?showImage={$testname}" alt="All Testsuites Execution Time"/>
         </div>
       </body>
     </html>
