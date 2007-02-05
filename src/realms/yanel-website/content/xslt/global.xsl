@@ -131,10 +131,10 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 &#160;<a href="{$yarep.back2realm}references.html">References</a><br/>
 <br/>
 <b>Professional Services</b><br/>
-&#160;Support<br/>
-&#160;Consulting<br/>
-&#160;Training<br/>
-&#160;Solutions<br/>
+&#160;<a href="{$yarep.back2realm}en/professional-services/support.html">Support</a><br/>
+&#160;<a href="{$yarep.back2realm}en/professional-services/consulting.html">Consulting</a><br/>
+&#160;<a href="{$yarep.back2realm}en/professional-services/training.html">Training</a><br/>
+&#160;<a href="{$yarep.back2realm}en/professional-services/solutions.html">Solutions</a><br/>
 &#160;<a href="{$yarep.back2realm}en/contact.html">Contact</a><br/>
 <br/>
 <b><i18n:message key="search"/></b>
