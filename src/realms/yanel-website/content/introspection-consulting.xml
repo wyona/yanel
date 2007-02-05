@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <introspection xmlns="http://www.wyona.org/neutron/1.0">
-<edit mime-type="application/xhtml+xml" name="i18n">
+<edit mime-type="application/xhtml+xml" name="Consulting">
   <checkout url="consulting.xhtml?yanel.resource.usecase=checkout" method="GET"/>
   <checkin  url="consulting.xhtml?yanel.resource.usecase=checkin"  method="PUT"/>
 </edit>
