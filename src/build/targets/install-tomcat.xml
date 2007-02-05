@@ -17,6 +17,11 @@
     <unzip dest="${yanel.home.dir}/local">
       <fileset refid="maven2.tomcat.fileset"/>
     </unzip>
+    <chmod perm="755">
+      <fileset dir="${default.tomcat.home.dir}/bin">
+        <include name="*.sh"/>
+      </fileset>
+    </chmod>
     <delete dir="${yanel.home.dir}/local/META-INF"/>
 
     <condition property="isJava1.4">
