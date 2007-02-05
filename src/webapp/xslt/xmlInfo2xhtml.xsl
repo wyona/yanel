@@ -80,7 +80,7 @@
     <h4>Request:</h4>
     <ul>
       <li>Servlet Path: <xsl:value-of select="@yanel:servlet-path"/></li>
-      <li>URI: <xsl:value-of select="@yanel:uri"/></li>
+      <li>URI: <a href="{@yanel:uri}"><xsl:value-of select="@yanel:uri"/></a></li>
     </ul>
     </p>
   </xsl:template>
@@ -161,7 +161,7 @@
         </tr>
         <xsl:for-each select="revision">
           <tr>
-            <td><xsl:value-of select="name"/></td>
+            <td><a href="?yanel.resource.revision={name}"><xsl:value-of select="name"/></a></td>
             <td><xsl:value-of select="date"/></td>
             <td><xsl:value-of select="user"/></td>
             <td><xsl:value-of select="comment"/></td>
