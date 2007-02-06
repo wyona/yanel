@@ -22,6 +22,7 @@ import java.lang.ClassNotFoundException;
 import java.lang.IllegalAccessException;
 import java.lang.InstantiationException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
@@ -79,7 +80,8 @@ public class RealmConfiguration {
         Properties props = new Properties();
         try {
             props.load(propertiesURL.openStream());
-            File propsFile = new File(propertiesURL.getFile());
+            // use URLDecoder to avoid problems when the filename contains spaces, see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5165
+            File propsFile = new File(URLDecoder.decode(propertiesURL.getFile()));
 
             realmsConfigFile = new File(props.getProperty("realms-config"));
             if (!realmsConfigFile.isAbsolute()) {
