@@ -68,13 +68,11 @@
       <replacetoken>../src/realms/welcome-admin/yanel/resources</replacetoken>
     </replace>
 
-    <copy file="${yanel.home.dir}/conf/log4j.properties" todir="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
-    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="log4j.appender.A1=org.apache.log4j.ConsoleAppender">
-      <replacetoken>#log4j.appender.A1=org.apache.log4j.ConsoleAppender</replacetoken>
+    <copy file="${yanel.home.dir}/src/binary-dist/log4j.properties" todir="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
+    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${servlet.context.prefix}">
+      <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace>
-    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="#log4j.appender.A1 = org.apache.log4j.RollingFileAppender">
-      <replacetoken>log4j.appender.A1 = org.apache.log4j.RollingFileAppender</replacetoken>
-    </replace>
+    <mkdir dir="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/logs"/>
 
     <jar jarfile="${snapshot.dir}/${servlet.context.prefix}.war" basedir="${snapshot.dir}/${servlet.context.prefix}"/>
 
