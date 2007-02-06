@@ -23,6 +23,8 @@ unset ANT_HOME
 ANT_HOME=$PWD/tools/apache-ant-1.6.5
 #echo $ANT_HOME
 
+unset CATALINA_HOME
+
 PATH=$PWD/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 #echo $PATH
 
