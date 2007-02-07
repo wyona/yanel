@@ -18,7 +18,7 @@
   <import file="continuous-integration.xml"/>
   <import file="targets/install-tomcat.xml"/>
   <import file="targets/add-third-party-realm.xml"/>
-  <import file="targets/create-new-resource.xml"/>
+  <import file="targets/create-new-resource-type.xml"/>
   <import file="targets/build-binary-snapshot.xml"/>
   <import file="targets/execute-jmeter.xml"/>
   
