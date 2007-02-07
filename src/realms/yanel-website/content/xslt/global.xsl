@@ -42,6 +42,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
   <meta name="DC.Creator" content="TODO"/>
   <meta name="DC.Language" content="TODO"/>
 
+  <link rel="shortcut icon" href="{$yarep.back2realm}favicon.ico" type="image/vnd.microsoft.icon" />
   <link rel="stylesheet" href="{$yarep.back2realm}css/global.css" type="text/css"/>
   <xsl:copy-of select="/xhtml:html/xhtml:head/*[name(.) != 'title']"/>
 

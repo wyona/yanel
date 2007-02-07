@@ -20,6 +20,7 @@
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
   <title>Welcome to Yanel</title>
   <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-homepage.xml"/>
+  <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
   <link rel="stylesheet" href="css/global.css" type="text/css"/>
   <style>
 #body {
