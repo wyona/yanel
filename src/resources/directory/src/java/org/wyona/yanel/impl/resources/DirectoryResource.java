@@ -135,7 +135,7 @@ public class DirectoryResource extends Resource implements ViewableV2 {
 
         try {
             String assetPath = "";
-            if (getPath().endsWith("/")) {
+            if (getPath().endsWith("/") && !isRoot(getPath())) {
                 assetPath = "../";
             }
             
