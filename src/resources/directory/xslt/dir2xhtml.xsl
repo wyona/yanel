@@ -27,15 +27,15 @@
 
 <body>
 <p>
-<b>Yanel Path:</b> <xsl:value-of select="/dir:directory/@yanel:path"/>
+<b>Yanel Path (with regard to realm):</b>&#160;<xsl:value-of select="/dir:directory/@yanel:path"/>
 </p>
 
 <p>
-<b>Collection Path:</b> <xsl:value-of select="/dir:directory/@dir:path"/> (<a href="?yanel.resource.viewid=source">XML view</a>)
+<b>Collection Path:</b>&#160;<xsl:value-of select="/dir:directory/@dir:path"/> (<a href="?yanel.resource.viewid=source">XML view</a>)
 </p>
 
 <p>
-<b>Parent:</b> <a href="../">..</a>
+<b>Parent:</b>&#160;<a href="../">..</a>
 </p>
 
 <p>
