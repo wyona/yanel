@@ -17,6 +17,7 @@
 <xsl:param name="yanel.path" select="'PATH_IS_NULL'"/>
 <xsl:param name="yanel.back2context" select="'BACK2CONTEXT_IS_NULL'"/>
 <xsl:param name="yarep.back2realm" select="'BACK2REALM_IS_NULL'"/>
+<xsl:param name="yarep.parent" select="'YAREPPARENT_IS_NULL'"/>
 
 <xsl:template match="/">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -35,7 +36,7 @@
 </p>
 
 <p>
-<b>Parent:</b>&#160;<a href="../">..</a>
+<b>Parent:</b>&#160;<a href="{$yarep.parent}">..</a>
 </p>
 
 <p>

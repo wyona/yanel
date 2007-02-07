@@ -81,9 +81,9 @@ public class DirectoryResource extends Resource implements ViewableV2 {
         // href=\"yanel/resources/directory/xslt/dir2xhtml.xsl\"?>");
 
         Repository contentRepo = null;
+        org.wyona.yarep.core.Path p = new org.wyona.yarep.core.Path(getPath());
         try {
             contentRepo = getRealm().getRepository();
-            org.wyona.yarep.core.Path p = new org.wyona.yarep.core.Path(getPath());
 
             // TODO: This doesn't seem to work ... (check on Yarep ...)
             if (contentRepo.isResource(p)) {
@@ -132,6 +132,11 @@ public class DirectoryResource extends Resource implements ViewableV2 {
             if (getPath().endsWith("/") && !isRoot(getPath())) {
                 assetPath = "../";
             }
+
+            String parentPath = "./";
+            if (p.toString().endsWith("/")) {
+                parentPath = "../";
+            }
             
             TransformerFactory tfactory = TransformerFactory.newInstance();
             String[] xsltTransformers = getXSLTprop();
@@ -145,6 +150,7 @@ public class DirectoryResource extends Resource implements ViewableV2 {
             transformerIntern.setParameter("yanel.path", getPath().toString());
             transformerIntern.setParameter("yanel.back2context", backToRoot(getPath(), assetPath));
             transformerIntern.setParameter("yarep.back2realm", backToRoot(getPath(), assetPath));
+            transformerIntern.setParameter("yarep.parent", parentPath);
             transformerIntern.transform(orig, new StreamResult(baos));
             
             if (xsltTransformers != null) {
@@ -157,6 +163,7 @@ public class DirectoryResource extends Resource implements ViewableV2 {
                     transformer.setParameter("yanel.path", getPath().toString());
                     transformer.setParameter("yanel.back2context", backToRoot(getPath(), assetPath));
                     transformer.setParameter("yarep.back2realm", backToRoot(getPath(), assetPath));
+                    transformer.setParameter("yarep.parent", parentPath);
                     transformer.transform(orig, new StreamResult(baos));
                 }
             }
