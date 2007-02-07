@@ -14,6 +14,7 @@
     <html>
       <head>
         <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
+        <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
         <title>Welcome to Yanel</title>
         <!-- TODO: This page should be generated dynamically! -->
         <!--
