@@ -1,20 +1,20 @@
 <?xml version="1.0"?>
 
-<project name="create-new-resource" default="new-resource">
-  <description>Create new resource</description>
+<project name="create-new-resource-type" default="new-resource-type">
+  <description>Create new resource-type</description>
 
-  <target name="new-resource" description="Create a new resource" depends="init">
-    <echo>Create new resource from scratch ${yanel.home.dir}/src/resources/from-scratch-resource-template</echo>
+  <target name="new-resource-type" description="Create a new resource-type" depends="init">
+    <echo>Create new resource-type from scratch ${yanel.home.dir}/src/resources/from-scratch-resource-template</echo>
 
 
-    <input message="Please enter the resource name (e.g. calendar):" defaultvalue="null" addproperty="new.resource.name"/>
-    <input message="Please enter the namespace of this new resource (e.g. http://foo.bar/yanel/resource/1.0):" defaultvalue="null" addproperty="new.resource.namespace"/>
-    <input message="Please enter a short description of this resource:" defaultvalue="null" addproperty="new.resource.description"/>
-    <input message="Please enter java package of this resource (e.g. org.wyona.yanel.impl.resources):" defaultvalue="null" addproperty="new.resource.java.class.package"/>
-    <input message="Please enter java class name of this resource (e.g. CalendarResource):" defaultvalue="null" addproperty="new.resource.java.class.name"/>
+    <input message="Please enter the resource-type name (e.g. calendar):" defaultvalue="null" addproperty="new.resource.name"/>
+    <input message="Please enter the namespace of this new resource-type (e.g. http://foo.bar/yanel/resource/1.0):" defaultvalue="null" addproperty="new.resource.namespace"/>
+    <input message="Please enter a short description of this resource-type:" defaultvalue="null" addproperty="new.resource.description"/>
+    <input message="Please enter java package of this resource-type (e.g. org.wyona.yanel.impl.resources):" defaultvalue="null" addproperty="new.resource.java.class.package"/>
+    <input message="Please enter java class name of this resource-type (e.g. CalendarResource):" defaultvalue="null" addproperty="new.resource.java.class.name"/>
 
     <!-- TODO: Generate this path from package and class name! -->
-    <input message="Please enter java class filesystem path of this resource (e.g. org/wyona/yanel/impl/resources/CalendarResource.java):" defaultvalue="null" addproperty="new.resource.java.class.fs.path"/>
+    <input message="Please enter java class filesystem path of this resource-type (e.g. org/wyona/yanel/impl/resources/CalendarResource.java):" defaultvalue="null" addproperty="new.resource.java.class.fs.path"/>
 
     <property name="new.resource.java.class.location" location="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/java/${new.resource.java.class.fs.path}"/>
     <property name="new.resource.java.class" value="${new.resource.java.class.package}.${new.resource.java.class.name}"/>
