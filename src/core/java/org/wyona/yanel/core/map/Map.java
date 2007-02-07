@@ -51,7 +51,7 @@ public interface Map {
      * Gets the realm for the given url, according to the configuration in realms.xml.
      * 
      * @param url url without context path prefix
-     * @return the first realm whose mount-point is a matching prefix of the given url.
+     * @return the realm with the longest mount-point matching the given url.
      * @throws Exception
      */
     public Realm getRealm(String url) throws Exception;

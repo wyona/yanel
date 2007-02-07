@@ -154,18 +154,39 @@ public class MapImpl implements Map {
      * @param url URL of request but without servlet context
      */
     public Realm getRealm(String url) throws Exception {
-        log.debug("URL: " + url);
+        if (log.isDebugEnabled()) {
+            log.debug("URL: " + url);
+        }
         Realm[] realms = realmConfig.getRealms();
         
+        Realm matchingRealm = null;
         for (int i=0; i<realms.length; i++) {
-            log.debug("checking realm : " + realms[i].getID() + " with mountpoint: " + realms[i].getMountPoint().toString());
-            if (url.startsWith(realms[i].getMountPoint().toString())) {
-                log.debug("matched!");
-                return realms[i];
+            if (log.isDebugEnabled()) {
+                log.debug("checking realm: " + realms[i].getID() + " with mountpoint: " 
+                        + realms[i].getMountPoint());
+            }
+            if (url.startsWith(realms[i].getMountPoint())) {
+                if (matchingRealm != null) {
+                    if (realms[i].getMountPoint().length() > matchingRealm.getMountPoint().length()) {
+                        matchingRealm = realms[i];
+                    }
+                } else {
+                    matchingRealm = realms[i];
+                }
             }
         }
-        log.debug("nothing matched! - > root realm");
-        return realmConfig.getRootRealm();
+        if (matchingRealm != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("found matching realm: " + matchingRealm + " with mountpoint: " 
+                        + matchingRealm.getMountPoint());
+            }
+            return matchingRealm;
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("nothing matched! - > root realm");
+            }
+            return realmConfig.getRootRealm();
+        }
     }
 
     /**
@@ -175,9 +196,11 @@ public class MapImpl implements Map {
      * @param url URL of request but without servlet context
      */
     public String getPath(Realm realm, String url) throws Exception {
-        log.debug("URL: " + url);
+        if (log.isDebugEnabled()) {
+            log.debug("URL: " + url);
+        }
 
-        String mountPoint = realm.getMountPoint().toString();
+        String mountPoint = realm.getMountPoint();
         if (!url.startsWith(mountPoint)) {
             throw new Exception("Cannot map url [" + url + "] to path because the url does not " + 
                     "belong to the given realm : " + realm.getID() + ": " + mountPoint);
