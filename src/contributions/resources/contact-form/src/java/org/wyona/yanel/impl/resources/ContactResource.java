@@ -45,6 +45,7 @@ import org.apache.log4j.Category;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
+import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yarep.core.NoSuchNodeException;
@@ -59,14 +60,15 @@ import org.wyona.yanel.core.util.HttpServletRequestHelper;;
 /**
  * 
  */
-public class ContactResource extends Resource implements ViewableV1 {
+public class ContactResource extends Resource implements ViewableV1, CreatableV2 {
 
     private static final String SMTP_HOST = "smtpHost:";
     private static final String SMTP_PORT = "smtpPort:";
     private static final String TO = "to:";
+    private static final String SUBJECT = "subject:";
     private static Category log = Category.getInstance(ContactResource.class);
     private String smtpHost = "";
-    private int smtpPort = 0;
+    private int smtpPort = 25;
     private String to = "";
     private String from = "";
     private String subject = "YANEL FEEDBACK";
@@ -75,6 +77,7 @@ public class ContactResource extends Resource implements ViewableV1 {
     private String defaultLanguage = "en";
     private String messageBundle = "contact-form";
     
+    private HashMap properties = new HashMap();
     private Repository repository  = null;
     private RepoPath rp = null;
     private Path path = null;
@@ -84,6 +87,11 @@ public class ContactResource extends Resource implements ViewableV1 {
      * 
      */
     public ContactResource() {
+	properties.put("smtpHost", smtpHost);
+	properties.put("to", to);
+	properties.put("smtpPort", String.valueOf(smtpPort));
+	properties.put("subject", subject);
+	
     }
 
     /**
@@ -170,7 +178,60 @@ public class ContactResource extends Resource implements ViewableV1 {
         return defaultView;
     }
 
-    
+    /**
+    *
+    */
+   public String getPropertyType(String propertyName){
+       //TODO not implemented yet
+       return null;
+   }
+
+   /**
+    * Creates the resource
+    */
+   public void create(HttpServletRequest request){
+       log.warn("Not implemented yet!");
+   }
+
+   /**
+    * Creates RTI properties
+    */
+   public HashMap createRTIProperties(HttpServletRequest request){
+       HashMap map = new HashMap();
+       // TODO: Do not hardcode xslt ...
+       map.put("#xslt", "/xslt/global.xsl");
+       // TODO: Make mime-type configurable (depending on global XSLT) ...
+       map.put("mime-type", "application/xhtml+xml");       
+       map.put("smtpHost",request.getParameter("rp.smtpHost"));
+       map.put("smtpPort",request.getParameter("rp.smtpPort"));
+       map.put("to",request.getParameter("rp.to"));
+       map.put("subject", request.getParameter("rp.subject"));
+       
+       return map;
+   }
+
+   /**
+     * 
+     */
+   public String[] getPropertyNames() {
+       String[] propertyNames = (String[])properties.keySet().toArray(new String[properties.keySet().size()]);
+       return propertyNames;
+   }
+
+   /**
+    * 
+    */
+   public void setProperty(String name, Object value){
+       properties.put(name, value);
+   }
+
+   /**
+    * 
+    */
+   public Object getProperty(String name){
+       Object property = properties.get(name);
+       return property;
+   }
 
 
     
@@ -187,15 +248,16 @@ public class ContactResource extends Resource implements ViewableV1 {
             transformer.setParameter("error", "emailNotValid");
         } else {
             contact = new ContactBean(request);
-            smtpHost = getProperty(SMTP_HOST);
+            smtpHost = getRTIProperty(SMTP_HOST);
             try {
-                smtpPort = Integer.parseInt(getProperty(SMTP_PORT));
+                smtpPort = Integer.parseInt(getRTIProperty(SMTP_PORT));
             } catch(NumberFormatException nfe) {
                 log.error(nfe);
                 transformer.setParameter("error", "smtpPortNotCorrect");
                 smtpPort = 0;
             }
-            to = getProperty(TO);
+            subject = getRTIProperty(SUBJECT);
+            to = getRTIProperty(TO);
             from = email;
             content = "Company: " + contact.getCompany() + "\n" + "Firstname: "
                     + contact.getFirstName() + "\n" + "Lastname: "
@@ -305,7 +367,7 @@ public class ContactResource extends Resource implements ViewableV1 {
      * @param key
      * @return value
      */
-    private String getProperty(String key) {
+    private String getRTIProperty(String key) {
         try {
             java.io.BufferedReader bufferedReader = new java.io.BufferedReader(rp.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rp.getPath().toString()).getRTIPath().toString())));
             String line = null;
