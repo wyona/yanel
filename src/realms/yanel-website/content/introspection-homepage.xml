@@ -2,7 +2,7 @@
 
 <introspection xmlns="http://www.wyona.org/neutron/1.0">
 <edit mime-type="application/xml" name="Homepage">
-  <checkout url="homepage.xhtml?yanel.resource.usecase=checkout" method="GET"/>
-  <checkin  url="homepage.xhtml?yanel.resource.usecase=checkin"  method="PUT"/>
+  <checkout url="homepage.xml?yanel.resource.usecase=checkout" method="GET"/>
+  <checkin  url="homepage.xml?yanel.resource.usecase=checkin"  method="PUT"/>
 </edit>
 </introspection>
