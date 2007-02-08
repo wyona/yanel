@@ -55,7 +55,8 @@ import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yanel.core.transformation.I18nTransformer;
 import org.wyona.yarep.util.RepoPath;
 import org.wyona.yarep.util.YarepUtil;
-import org.wyona.yanel.core.util.HttpServletRequestHelper;;
+import org.wyona.yanel.core.util.HttpServletRequestHelper;import org.wyona.yanel.core.util.PathUtil;
+;
 
 /**
  * 
@@ -159,8 +160,8 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
             transformer.setParameter("yanel.path.name", path.getName());
             transformer.setParameter("yanel.path", path.toString());
-            transformer.setParameter("yanel.back2context", backToRoot(path, ""));
-            transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
+            transformer.setParameter("yanel.back2context", backToContext()+backToRoot());
+            transformer.setParameter("yarep.back2realm", backToRoot());
  
             byteArrayOutputStream = new ByteArrayOutputStream();
             transformer.transform(new StreamSource(i18nTransformer.getInputStream()), new StreamResult(byteArrayOutputStream));
@@ -401,26 +402,33 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
    }
    
    /**
-    * 
-    * @param path
-    * @param backToRoot
-    * @return
+    * @return a String with as many ../ as it needs to go back to from current realm to context
     */
-   private String backToRoot(Path path, String backToRoot) {
-       org.wyona.commons.io.Path parent = path.getParent();
-       if (parent != null && !isRoot(parent)) {
-           return backToRoot(new Path(parent.toString()), backToRoot + "../");
+   private String backToContext() {
+       String backToContext = "";
+       int steps = realm.getMountPoint().split("/").length - 1;
+
+       for (int i = 0; i < steps; i++) {
+           backToContext = backToContext + "../";
+       }
+       return backToContext;
+   }
+    
+   /**
+    * @return a String with as many ../ as it needs to go back to from current resource to the realm-root
+    */
+   private String backToRoot() {
+       String backToRoot = "";
+       int steps;
+       
+       if (getPath().endsWith("/") && !getPath().equals("/")) {
+           steps =  getPath().split("/").length - 1;
+       } else {
+           steps =  getPath().split("/").length - 2;
+       }
+       for (int i = 0; i < steps; i++) {
+           backToRoot = backToRoot + "../";
        }
        return backToRoot;
-   }
-
-   /**
-    * 
-    * @param path
-    * @return
-    */
-   private boolean isRoot(org.wyona.commons.io.Path path) {
-       if (path.toString().equals(File.separator)) return true;
-       return false;
    }
 }

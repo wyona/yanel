@@ -47,6 +47,7 @@ import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.transformation.I18nTransformer;
+import org.wyona.yanel.core.util.PathUtil;
 
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
@@ -121,8 +122,8 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
                 File xsltFile = org.wyona.commons.io.FileUtil.file(getRTD().getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "wiki2xhtml.xsl");
                 log.debug("XSLT file: " + xsltFile);
                 transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
-                transformer.setParameter("yanel.path.name", path.getName());
-                transformer.setParameter("yanel.path", path.toString());
+                transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+                transformer.setParameter("yanel.path", getPath());
                 defaultView.setMimeType("application/xhtml+xml");
             }
             LinkChecker linkChecker = new LinkChecker(path2Resource);
@@ -143,8 +144,10 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
                 inputStream = new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray());
                 
                 transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath().toString()))));
-                transformer.setParameter("yanel.back2context", backToRoot(path, ""));
-                transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(getPath().toString()), ""));
+                transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+                transformer.setParameter("yanel.path", getPath());
+                transformer.setParameter("yanel.back2context", backToContext()+backToRoot());
+                transformer.setParameter("yarep.back2realm", backToRoot());
                 
                 byteArrayOutputStream = new ByteArrayOutputStream();
                 transformer.transform(new StreamSource(inputStream), new StreamResult(byteArrayOutputStream));    
@@ -163,24 +166,36 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
         return null;
     }
     
-   /**
-    *
-    */
-   private String backToRoot(Path path, String backToRoot) {
-       org.wyona.commons.io.Path parent = path.getParent();
-       if (parent != null && !isRoot(parent)) {
-           return backToRoot(new Path(parent.toString()), backToRoot + "../");
-       }
-       return backToRoot;
-   }
+    /**
+     * @return a String with as many ../ as it needs to go back to from current realm to context
+     */
+    private String backToContext() {
+        String backToContext = "";
+        int steps = realm.getMountPoint().split("/").length - 1;
 
-   /**
-    *
-    */
-   private boolean isRoot(org.wyona.commons.io.Path path) {
-       if (path.toString().equals(File.separator)) return true;
-       return false;
-   }
+        for (int i = 0; i < steps; i++) {
+            backToContext = backToContext + "../";
+        }
+        return backToContext;
+    }
+     
+    /**
+     * @return a String with as many ../ as it needs to go back to from current resource to the realm-root
+     */
+    private String backToRoot() {
+        String backToRoot = "";
+        int steps;
+        
+        if (getPath().endsWith("/") && !getPath().equals("/")) {
+            steps =  getPath().split("/").length - 1;
+        } else {
+            steps =  getPath().split("/").length - 2;
+        }
+        for (int i = 0; i < steps; i++) {
+            backToRoot = backToRoot + "../";
+        }
+        return backToRoot;
+    }
     
     /**
      * 

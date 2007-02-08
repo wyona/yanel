@@ -307,10 +307,10 @@ public class NutchResource extends Resource implements ViewableV1 {
                 // TODO: Remove the trailing slash ...
                 transformer.setParameter("yanel.path", getRealm().getMountPoint() + getPath());
                 log.debug("Yanel Path: " + getRealm().getMountPoint() + getPath());
-                transformer.setParameter("yanel.back2context", backToRoot(new Path(getRealm().getMountPoint() + getPath()), ""));
-                log.debug("Back 2 context: " + getRealm().getMountPoint() + getPath() + ", " + backToRoot(new Path(getRealm().getMountPoint() + getPath()), ""));
-                transformer.setParameter("yarep.back2realm", backToRoot(new Path(getPath()), ""));
-                log.debug("Back 2 realm: " + getPath() + ", " + backToRoot(new Path(getPath()), ""));
+                transformer.setParameter("yanel.back2context", backToContext()+backToRoot());
+                log.debug("Back 2 context: " + backToContext()+backToRoot());
+                transformer.setParameter("yarep.back2realm", backToRoot());
+                log.debug("Back 2 realm: " + getPath() + ", " + backToRoot());
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
                 InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
                 i18nTransformer = new I18nTransformer(resourceBundle, language);
@@ -338,8 +338,8 @@ public class NutchResource extends Resource implements ViewableV1 {
                 transformer = TransformerFactory.newInstance().newTransformer(streamSource);
                 transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
                 transformer.setParameter("yanel.path", getPath().toString());
-                transformer.setParameter("yanel.back2context", backToRoot(new Path(getPath()), ""));
-                transformer.setParameter("yarep.back2realm", backToRoot(new Path(getPath()), ""));
+                transformer.setParameter("yanel.back2context", backToContext()+backToRoot());
+                transformer.setParameter("yarep.back2realm", backToRoot());
                 transformer.setParameter("hitsPerPage", "" + hitsPerPage);
                 transformer.setParameter("totalHits", "" + totalHits);
                 transformer.setParameter("query", "" + searchTerm);
@@ -476,27 +476,34 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
     
     /**
-     * 
-     * @param path
-     * @param backToRoot
-     * @return
+     * @return a String with as many ../ as it needs to go back to from current realm to context
      */
-    private String backToRoot(Path path, String backToRoot) {
-        org.wyona.commons.io.Path parent = path.getParent();
-        if (parent != null && !isRoot(parent)) {
-            return backToRoot(new Path(parent.toString()), backToRoot + "../");
+    private String backToContext() {
+        String backToContext = "";
+        int steps = realm.getMountPoint().split("/").length - 1;
+
+        for (int i = 0; i < steps; i++) {
+            backToContext = backToContext + "../";
+        }
+        return backToContext;
+    }
+     
+    /**
+     * @return a String with as many ../ as it needs to go back to from current resource to the realm-root
+     */
+    private String backToRoot() {
+        String backToRoot = "";
+        int steps;
+        
+        if (getPath().endsWith("/") && !getPath().equals("/")) {
+            steps =  getPath().split("/").length - 1;
+        } else {
+            steps =  getPath().split("/").length - 2;
+        }
+        for (int i = 0; i < steps; i++) {
+            backToRoot = backToRoot + "../";
         }
         return backToRoot;
-    }
-
-    /**
-     * 
-     * @param path
-     * @return
-     */
-    private boolean isRoot(org.wyona.commons.io.Path path) {
-        if (path.toString().equals(File.separator)) return true;
-        return false;
     }
     
     /**
