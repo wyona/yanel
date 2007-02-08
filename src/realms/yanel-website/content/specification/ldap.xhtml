@@ -8,18 +8,16 @@
 </head>
 <body>
 <h2>LDAP</h2>
-
 <h3>Install LDAP server</h3>
 <p>
-<ul>
+</p><ul>
 <li>sudo apt-cache search openlda</li>
 <li>sudo apt-get install slapd</li>
 </ul>
-</p>
 
 <h3>Accessing LDAP server</h3>
 <p>
-<ul>
+</p><ul>
   <li>Startup server: sudo /etc/init.d/slapd start</li>
   <li>Default Port of LDAP server is 389 (netstat -nt -l)</li>
   <li>Use some LDAP client to connect to the server, e.g. <a href="http://www.jxplorer.org">JXplorer</a></li>
@@ -30,13 +28,12 @@
     </ul>
   </li>
 </ul>
-</p>
 
 <h3>Other Java implementations</h3>
 <p>
-<ul>
-  <li>Lenya 1.2.x: src/java/org/apache/lenya/ac/ldap/LDAPUser.java</li>
+</p><ul>
+  <li>Lenya 1.2.x: src/java/org/apache/lenya/ac/ldap/LDAPUser.java resp. src/webapp/lenya/pubs/default/config/ac/passwd/ldap.properties.sample<br/></li>
 </ul>
-</p>
+
 </body>
 </html>
