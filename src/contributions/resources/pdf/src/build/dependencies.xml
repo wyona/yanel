@@ -19,9 +19,9 @@
       <dependency groupId="fop" artifactId="fop"
                   version="0.20.5"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api"
-                  version="4.1.5"/>
+                  version="4.3"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-impl"
-                  version="4.1.5"/>
+                  version="4.3"/>
       <dependency groupId="batik" artifactId="batik-all"
                   version="1.6"/>
       <dependency groupId="xalan" artifactId="xalan"
