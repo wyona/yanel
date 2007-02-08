@@ -128,16 +128,6 @@ public class DirectoryResource extends Resource implements ViewableV2 {
         }
 
         try {
-            String assetPath = "";
-            if (getPath().endsWith("/") && !isRoot(getPath())) {
-                assetPath = "../";
-            }
-
-            String parentPath = "./";
-            if (p.toString().endsWith("/")) {
-                parentPath = "../";
-            }
-            
             TransformerFactory tfactory = TransformerFactory.newInstance();
             String[] xsltTransformers = getXSLTprop();
             
@@ -148,9 +138,9 @@ public class DirectoryResource extends Resource implements ViewableV2 {
             
             transformerIntern.setParameter("yanel.path.name", PathUtil.getName(getPath()));
             transformerIntern.setParameter("yanel.path", getPath().toString());
-            transformerIntern.setParameter("yanel.back2context", backToRoot(getPath(), assetPath));
-            transformerIntern.setParameter("yarep.back2realm", backToRoot(getPath(), assetPath));
-            transformerIntern.setParameter("yarep.parent", parentPath);
+            transformerIntern.setParameter("yanel.back2context", backToContext()+backToRoot());
+            transformerIntern.setParameter("yarep.back2realm", backToRoot());
+            transformerIntern.setParameter("yarep.parent", getParent(p.toString()));
             transformerIntern.transform(orig, new StreamResult(baos));
             
             if (xsltTransformers != null) {
@@ -161,9 +151,9 @@ public class DirectoryResource extends Resource implements ViewableV2 {
                     Transformer transformer = tfactory.newTransformer(new StreamSource(contentRepo.getInputStream(new org.wyona.yarep.core.Path(new Path(xsltTransformers[i]).toString()))));
                     transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
                     transformer.setParameter("yanel.path", getPath().toString());
-                    transformer.setParameter("yanel.back2context", backToRoot(getPath(), assetPath));
-                    transformer.setParameter("yarep.back2realm", backToRoot(getPath(), assetPath));
-                    transformer.setParameter("yarep.parent", parentPath);
+                    transformer.setParameter("yanel.back2context", backToContext()+backToRoot());
+                    transformer.setParameter("yarep.back2realm", backToRoot());
+                    transformer.setParameter("yarep.parent", getParent(p.toString()));
                     transformer.transform(orig, new StreamResult(baos));
                 }
             }
@@ -226,23 +216,45 @@ public class DirectoryResource extends Resource implements ViewableV2 {
         return "application/xhtml+xml";
     }
     
+    /**
+     * @return a String with as many ../ as it needs to go back to from current realm to context
+     */
+    private String backToContext() {
+        String backToContext = "";
+        int steps = realm.getMountPoint().split("/").length - 1;
+        for (int i = 0; i < steps; i++) {
+            backToContext = backToContext + "../";
+        }
+        return backToContext;
+    }
     
     /**
-    *
-    */
-   private String backToRoot(String path, String backToRoot) {
-       String parent = PathUtil.getParent(path);
-       if (parent != null && !isRoot(parent)) {
-           return backToRoot(parent, backToRoot + "../");
-       }
-       return backToRoot;
-   }
-
-   /**
-   *
-   */
-  private boolean isRoot(String path) {
-      if (path.equals(File.separator)) return true;
-      return false;
-  }
+     * @return a String with as many ../ as it needs to go back to from current resource to the realm-root
+     */
+    private String backToRoot() {
+        String backToRoot = "";
+        int steps;
+        
+        if (getPath().endsWith("/") && !getPath().equals("/")) {
+            steps = getPath().split("/").length - 1;
+        } else {
+            steps = getPath().split("/").length - 2;
+        }
+        
+        for (int i = 0; i < steps; i++) {
+            backToRoot = backToRoot + "../";
+        }
+        return backToRoot;
+    }
+    
+    /**
+     * @return a String ../ if path ends with a trailing slash. Otherwise a String ./ 
+     */
+    private String getParent(String path) {
+        String parentPath = "./";
+        if (path.endsWith("/")) {
+            parentPath = "../";
+        }
+        return parentPath;
+    }
 }
