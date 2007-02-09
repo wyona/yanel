@@ -112,6 +112,16 @@ a:visited:hover  {
   padding:2px;
 }
 
+#content h1 { 
+  font-size:x-large;
+}
+#content h2 { 
+  font-size:large;
+}
+#content h3 { 
+  font-size:medium;
+}
+
 div.language_choice{
   text-align:right;
   font-size:smaller;
