@@ -15,6 +15,7 @@
       <head>
         <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
         <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
+        <link rel="stylesheet" href="css/global.css" type="text/css"/>
         <title>Welcome to Yanel</title>
         <!-- TODO: This page should be generated dynamically! -->
         <!--
@@ -22,13 +23,15 @@
         -->
       </head>
       <body>
+        <img src="img/yanel.png" alt="yanel" id="yanellogo"/>
+        <img src="img/everything_is_content.png" alt="everything is content" id="everythingiscontent"/>
         <h1>Welcome to Yanel</h1>
         <p> If you can see this, it means that the installation of Yanel
           software on this system was successful. Thanks for using Yanel!</p>
         <h2>Getting Started</h2>
         <p>
           <ul>
-            <li>What is a realm?</li>
+            <li><a href="yanel-website/en/documentation/what-is-a-realm.html">What is a realm?</a></li>
             <li>Create a realm from scratch.</li>
             <li>
               <a href="yanel-website/en/documentation/import-existing-website-as-new-realm.html">Import

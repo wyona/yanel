@@ -1,0 +1,65 @@
+*{
+  font-family:"lucida grande", tahoma, verdana, arial, sans-serif;
+  font-size:13px
+}
+body  { 
+  margin-top:10px; 
+  background-color:#ffffff;
+} 
+
+#yanellogo {
+  top:10px;
+  right:0px;
+  background-color:white;
+  padding-right:10px;
+  padding-left:10px;
+  position:absolute;
+}
+
+#everythingiscontent {
+  top:47px;
+  right:0px;
+  background-color:white;
+  padding-right:8px;
+  padding-left:10px;
+  position:absolute;
+}
+
+h1 { 
+  font-size:x-large;
+}
+h2 { 
+  font-size:large;
+}
+h3 { 
+  font-size:medium;
+}
+
+hr {
+  border: 0;
+  color:#4682B4;
+  background-color:#4682B4;
+  height: 1px;
+}
+
+a  { 
+  color:#0066cc; 
+  text-decoration:none
+} 
+
+a:hover  { 
+  text-decoration:underline; 
+  color:#3366cc
+} 
+
+a:visited  { 
+  text-decoration:none; 
+  color:#777777
+} 
+
+a:visited:hover  { 
+  text-decoration:underline; 
+  color:#777777
+} 
+
+
