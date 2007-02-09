@@ -13,7 +13,7 @@
 <repository>
   <name>Yanel Website Repository</name>
 
-  <paths class="org.wyona.yarep.impl.DefaultMapImpl" src="../paths"/>
+  <paths class="org.wyona.yarep.impl.DefaultMapImpl" src="../paths"  fallback="true"/>
 
   <storage class="org.wyona.yarep.core.impl.fs.FileSystemStorage">
     <content src="../content"/>
