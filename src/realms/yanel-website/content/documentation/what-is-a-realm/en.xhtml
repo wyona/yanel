@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>What is a realm?</title>
+</head>
+
+
+<body>
+<h1>What is a realm?</h1>
+<p>
+A realm is a part of Yanel which has its own configuration and repository. 
+This allows you to run several subsites (which are independent of one another)
+in a single Yanel instance.  For example, each department in your company can
+have its own realm. This allows one department to use its database as a content
+repository and another to use the filesystem to provide the content to Yanel.
+</p>
+
+<p>
+Realms can also be nested, which allows you to have a subsite within a subsite.
+Continuing with the department example, one department could have its public
+file-based website within its realm and access its database for internal use in
+a subrealm.
+</p>
+</body>
+</html>
