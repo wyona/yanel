@@ -70,7 +70,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
 
         org.wyona.yarep.core.Repository dataRepo = getRealm().getRepository();
 
-        if (dataRepo.exists(new org.wyona.yarep.core.Path(getPath()))) {
+        if (dataRepo.exists(new org.wyona.yarep.core.Path(getPath())) && dataRepo.isResource(new org.wyona.yarep.core.Path(getPath()))) {
             log.error("DEBUG: ICS exists: " + new org.wyona.yarep.core.Path(getPath()));
             if(viewId == null) {
                 View view = new View();
