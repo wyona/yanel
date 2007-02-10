@@ -127,6 +127,21 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
 	    view.setMimeType("application/xml");
 	    view.setInputStream(new java.io.StringBufferInputStream(calendar.toString()));
             return view;
+        } else if (viewId != null && viewId.equals("xhtml")) {
+            String xslt = getRTD().getConfigFile().getParent() + File.separator + "xslt" + File.separator + "xml2xhtml.xsl";
+            java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+            try {
+                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(new File(xslt)));
+                transformer.transform(new StreamSource(new java.io.StringBufferInputStream(calendar.toString())), new StreamResult(out));
+            } catch(Exception e) {
+                log.error(e.getMessage(), e);
+            }
+
+            View view = new View();
+            view.setMimeType("application/xhtml+xml");
+
+            view.setInputStream(new java.io.ByteArrayInputStream(out.toByteArray()));
+            return view;
         } else {
             String xslt = getRTD().getConfigFile().getParent() + File.separator + "xslt" + File.separator + "xml2ics.xsl";
             java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
