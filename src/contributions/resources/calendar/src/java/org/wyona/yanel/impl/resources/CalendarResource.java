@@ -71,7 +71,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         org.wyona.yarep.core.Repository dataRepo = getRealm().getRepository();
 
         if (dataRepo.exists(new org.wyona.yarep.core.Path(getPath()))) {
-            log.error("DEBUG: ICS exists!");
+            log.error("DEBUG: ICS exists: " + new org.wyona.yarep.core.Path(getPath()));
             if(viewId == null) {
                 View view = new View();
                 //view.setResponse(false);
@@ -87,10 +87,13 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
             }
         }
 
+
         String eventsPath = getRTI().getProperty("events-path");
         if (eventsPath == null) {
             eventsPath = getPath();
         }
+        log.error("DEBUG: Generate calendar from XML based events: " + eventsPath);
+
         org.wyona.yarep.core.Path[] children = dataRepo.getChildren(new org.wyona.yarep.core.Path(eventsPath));
         //org.wyona.yarep.core.Path[] children = dataRepo.search("categories", categories);
 
