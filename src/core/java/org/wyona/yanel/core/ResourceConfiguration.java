@@ -127,4 +127,17 @@ public class ResourceConfiguration {
         }
         return false;
     }
+
+    /**
+     * Get yanel:custom-config
+     */
+    public org.w3c.dom.Document getCustomConfiguration() {
+        Configuration customConfig = config.getChild("custom-config");
+        if (customConfig != null) {
+            log.error("DEBUG: Custom Configuration: " + customConfig);
+        } else {
+            log.warn("No custom configuration: " + getUniversalName());
+        }
+        return null;
+    }
 }
