@@ -28,7 +28,7 @@ public interface VersionableV2 {
 
     /**
      * Gets an array of revision information objects.
-     * @return
+     * @return informations of the various revisions
      * @throws Exception
      */
     public RevisionInformation[] getRevisions() throws Exception;
@@ -37,7 +37,7 @@ public interface VersionableV2 {
      * Gets the view of a certain revision.
      * @param viewId
      * @param revisionName
-     * @return
+     * @return view of resource
      * @throws Exception
      */
     public View getView(String viewId, String revisionName) throws Exception;
@@ -65,21 +65,21 @@ public interface VersionableV2 {
     
     /**
      * Indicates whether this resource is checked out.
-     * @return
+     * @return boolean to indicate of resource is checked out nor not
      * @throws Exception
      */
     public boolean isCheckedOut() throws Exception;
     
     /**
      * Returns the user id which was supplied when calling checkout()
-     * @return
+     * @return user id who checked out resource
      * @throws Exception
      */
     public String getCheckoutUserID() throws Exception;
     
     /**
      * Returns the date when this resource was checked out.
-     * @return
+     * @return date
      * @throws Exception
      */
     public Date getCheckoutDate() throws Exception;
