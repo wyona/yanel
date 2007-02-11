@@ -13,6 +13,8 @@ import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.navigation.Node;
+import org.wyona.yanel.core.navigation.Sitetree;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
@@ -111,7 +113,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         sb.append("Resource Type: <select name=\"resource-type\">");
 
         ResourceTypeRegistry rtr = new ResourceTypeRegistry();
-        ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
+
+        ResourceTypeDefinition[] rtds = getResourceTypeDefinitions();
         for (int i = 0; i < rtds.length; i++) {
             try {
                 Resource resource = rtr.newResource(rtds[i].getResourceTypeUniversalName());
@@ -138,6 +141,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     /**
      * OBSOLETE
      */
+/*
     private void getSaveAsScreen(StringBuffer sb) {
         String rtps = getRequest().getParameter("resource-type");
         String resNamespace = rtps.substring(0, rtps.indexOf("::"));
@@ -203,6 +207,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             log.error(e);
         }
     }
+*/
 
     /**
      * Save screen
@@ -295,12 +300,32 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     //sb.append("<br/><br/><input type=\"submit\" value=\"Save As\" name=\"save-as\"/>");
 
 		    sb.append("<br/><br/>Save as:<br/>");
+		    sb.append("Look in: " + getPath() + "<br/>");
+                    // TODO: Display repository navigation of this path ...
+                    Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("nav-sitetree");
+                    Node node = sitetree.getNode(getRealm(), getPath());
+                    if (node.isCollection()) {
+                        log.error("DEBUG: Collection: " + node.getName());
+                    } else if (node.isResource()) {
+                        log.error("DEBUG: Resource: " + node.getName());
+                    } else {
+                        log.error("Neither collection nor resource: " + getPath());
+                    }
+		    sb.append("<table border=\"1\">");
+		    sb.append("<tr><th align=\"left\">Name</th><th align=\"left\">Resource Type</th></tr>");
+		    sb.append("<tr><td>Collection: foo2</td><td>bar</td></tr>");
+		    sb.append("<tr><td>Collection: foo1</td><td>bar</td></tr>");
+		    sb.append("<tr><td>Resource: foo.html</td><td>Wiki</td></tr>");
+		    sb.append("</table><br/>");
                     String createName = getRequest().getParameter("create-name");
                     if (createName != null) {
                         sb.append("Name: <input type=\"text\" name=\"create-name\" value=\"" + createName + "\"/>");
                     } else {
                         sb.append("Name: <input type=\"text\" name=\"create-name\"/>");
                     }
+
+                    // TODO: Display realm navigation (sitetree, topic map, ...)
+
                     sb.append("<br/><input type=\"submit\" value=\"Save\" name=\"save\"/>");
 
                     sb.append("</form>");
@@ -368,5 +393,20 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     java.io.Writer writer = newResource.getRealm().getRTIRepository().getWriter(new org.wyona.yarep.core.Path(PathUtil.getRTIPath(newResource.getPath())));
                     writer.write(rtiContent.toString());
                     writer.close();
+    }
+
+    /**
+     * Get resource type definitions
+     */
+    private ResourceTypeDefinition[] getResourceTypeDefinitions() {
+        ResourceConfiguration rc = getConfiguration();
+        org.w3c.dom.Document customConfig = rc.getCustomConfiguration();
+        if (customConfig != null) {
+            return null;
+        } else {
+            ResourceTypeRegistry rtr = new ResourceTypeRegistry();
+            ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
+            return rtds;
+        }
     }
 }
