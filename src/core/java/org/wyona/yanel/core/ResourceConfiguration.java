@@ -93,7 +93,7 @@ public class ResourceConfiguration {
     }
     
     /**
-     * Get encoding resp. charset
+     * Get encoding respectively charset
      */
     public String getEncoding() {
         return encoding;
