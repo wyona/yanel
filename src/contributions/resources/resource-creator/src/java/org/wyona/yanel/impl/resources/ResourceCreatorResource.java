@@ -24,6 +24,9 @@ import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.ConfigurationUtil;
+
 /**
  *
  */
@@ -110,11 +113,12 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         sb.append("<h4>Create resource (step 1)</h4>");
         sb.append("<h2>Select resource type</h2>");
         sb.append("<form>");
-        sb.append("Resource Type: <select name=\"resource-type\">");
 
         ResourceTypeRegistry rtr = new ResourceTypeRegistry();
 
         ResourceTypeDefinition[] rtds = getResourceTypeDefinitions();
+        if (rtds != null) {
+        sb.append("Resource Type: <select name=\"resource-type\">");
         for (int i = 0; i < rtds.length; i++) {
             try {
                 Resource resource = rtr.newResource(rtds[i].getResourceTypeUniversalName());
@@ -127,6 +131,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         }
 
         sb.append("</select>");
+        } else {
+        sb.append("<p>No resource types!</p>");
+        }
         sb.append("<br/><input type=\"submit\" value=\"Next\"/>");
         sb.append("</form>");
     }
@@ -400,13 +407,21 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      */
     private ResourceTypeDefinition[] getResourceTypeDefinitions() {
         ResourceConfiguration rc = getConfiguration();
-        org.w3c.dom.Document customConfig = rc.getCustomConfiguration();
-        if (customConfig != null) {
-            return null;
-        } else {
-            ResourceTypeRegistry rtr = new ResourceTypeRegistry();
-            ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
-            return rtds;
+        org.w3c.dom.Document customConfigDoc = rc.getCustomConfiguration();
+        if (customConfigDoc != null) {
+            Configuration config = ConfigurationUtil.toConfiguration(customConfigDoc.getDocumentElement());
+            log.error("DEBUG: Name: " + config.getName());
+            Configuration resourceTypesConfig = config.getChild("resource-types", false);
+            if (resourceTypesConfig != null) {
+                Configuration[] resourceTypeConfigs = resourceTypesConfig.getChildren("resource-type");
+                for (int i = 0; i < resourceTypeConfigs.length; i++) {
+                    log.error("DEBUG: Resource Type: " + resourceTypeConfigs[i].getName());
+                }
+                return null;
+            }
         }
+        ResourceTypeRegistry rtr = new ResourceTypeRegistry();
+        ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
+        return rtds;
     }
 }
