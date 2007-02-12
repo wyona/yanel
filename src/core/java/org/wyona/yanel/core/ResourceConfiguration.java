@@ -151,7 +151,6 @@ public class ResourceConfiguration {
                 if (children.length > 0) {
                     Element rootElement = doc.getDocumentElement();
                     for (int i = 0; i < children.length; i++) {
-                        log.error("DEBUG: child: " + children[i].getName());
                         rootElement.appendChild(createElement(children[i], doc));
                     }
                 }
