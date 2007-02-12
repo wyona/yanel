@@ -406,6 +406,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      * Get resource type definitions
      */
     private ResourceTypeDefinition[] getResourceTypeDefinitions() {
+        ResourceTypeRegistry rtr = new ResourceTypeRegistry();
         ResourceConfiguration rc = getConfiguration();
         org.w3c.dom.Document customConfigDoc = rc.getCustomConfiguration();
         if (customConfigDoc != null) {
@@ -415,12 +416,17 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             if (resourceTypesConfig != null) {
                 Configuration[] resourceTypeConfigs = resourceTypesConfig.getChildren("resource-type");
                 for (int i = 0; i < resourceTypeConfigs.length; i++) {
-                    log.error("DEBUG: Resource Type: " + resourceTypeConfigs[i].getName());
+                    try {
+                        String universalName = "<{"+resourceTypeConfigs[i].getAttribute("namespace")+"}"+resourceTypeConfigs[i].getAttribute("name")+"/>";
+                        rtr.getResourceTypeDefinition(universalName);
+                        log.error("DEBUG: Resource Type: " + universalName);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                    }
                 }
                 return null;
             }
         }
-        ResourceTypeRegistry rtr = new ResourceTypeRegistry();
         ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
         return rtds;
     }
