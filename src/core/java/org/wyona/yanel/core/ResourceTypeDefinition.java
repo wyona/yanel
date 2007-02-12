@@ -96,4 +96,11 @@ public class ResourceTypeDefinition {
     public File getConfigFile() {
         return configFile;
     }
+
+    /**
+     *
+     */
+    public String toString() {
+        return uname;
+    }
 }
