@@ -124,6 +124,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 Resource resource = rtr.newResource(rtds[i].getResourceTypeUniversalName());
                 if (resource != null && ResourceAttributeHelper.hasAttributeImplemented(resource, "Creatable", "2")) {
                     sb.append("<option value=\"" + rtds[i].getResourceTypeNamespace() + "::" + rtds[i].getResourceTypeLocalName() + "\">" + rtds[i].getResourceTypeLocalName() + "</option>");
+                } else {
+                    log.warn("Resource type: " + rtds[i] + " does not implement CreatableV2 interface!");
                 }
             } catch(Exception e) {
                 log.error(e);
@@ -411,20 +413,22 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         org.w3c.dom.Document customConfigDoc = rc.getCustomConfiguration();
         if (customConfigDoc != null) {
             Configuration config = ConfigurationUtil.toConfiguration(customConfigDoc.getDocumentElement());
-            log.error("DEBUG: Name: " + config.getName());
             Configuration resourceTypesConfig = config.getChild("resource-types", false);
             if (resourceTypesConfig != null) {
                 Configuration[] resourceTypeConfigs = resourceTypesConfig.getChildren("resource-type");
+                if (resourceTypeConfigs.length == 0) return null;
+                ResourceTypeDefinition[] rtds = new ResourceTypeDefinition[resourceTypeConfigs.length];
                 for (int i = 0; i < resourceTypeConfigs.length; i++) {
                     try {
                         String universalName = "<{"+resourceTypeConfigs[i].getAttribute("namespace")+"}"+resourceTypeConfigs[i].getAttribute("name")+"/>";
-                        rtr.getResourceTypeDefinition(universalName);
-                        log.error("DEBUG: Resource Type: " + universalName);
+                        rtds[i] = rtr.getResourceTypeDefinition(universalName);
+                        log.debug("Resource Type: " + universalName);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
+                        return null;
                     }
                 }
-                return null;
+                return rtds;
             }
         }
         ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
