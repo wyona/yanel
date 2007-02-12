@@ -26,6 +26,9 @@ import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
 import org.apache.log4j.Category;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 /**
  * Abstraction of a resource configuration.
  */
@@ -146,8 +149,10 @@ public class ResourceConfiguration {
 
                 Configuration[] children = customConfig.getChildren();
                 if (children.length > 0) {
+                    Element rootElement = doc.getDocumentElement();
                     for (int i = 0; i < children.length; i++) {
                         log.error("DEBUG: child: " + children[i].getName());
+                        rootElement.appendChild(createElement(children[i], doc));
                     }
                 }
             } catch(Exception e) {
@@ -168,5 +173,23 @@ public class ResourceConfiguration {
             log.warn("No custom configuration: " + getUniversalName());
         }
         return null;
+    }
+
+    /**
+     *
+     */
+    private Element createElement(Configuration config, Document doc) throws Exception {
+        Element element = doc.createElementNS(config.getNamespace(), config.getName());
+        String[] attrs = config.getAttributeNames();
+        for (int i = 0; i < attrs.length; i++) {
+            element.setAttributeNS(config.getNamespace(), attrs[i], config.getAttribute(attrs[i]));
+        }
+        Configuration[] children = config.getChildren();
+        if (children.length > 0) {
+            for (int i = 0; i < children.length; i++) {
+                element.appendChild(createElement(children[i], doc));
+            }
+        }
+        return element;
     }
 }
