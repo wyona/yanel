@@ -39,6 +39,9 @@
     <replace file="${snapshot.dir}/${servlet.context.prefix}/realms/javadoc/repository.xml" value="content">
       <replacetoken>../../../build/javadoc</replacetoken>
     </replace>
+    <replace file="${snapshot.dir}/${servlet.context.prefix}/realms/test/yanel/config/data-repository.xml" value="../data">
+      <replacetoken>../../../../../local/test/data</replacetoken>
+    </replace>
     <copy todir="${snapshot.dir}/${servlet.context.prefix}/realms/javadoc/content">
       <fileset dir="${yanel.home.dir}/build/javadoc"/>
     </copy>
