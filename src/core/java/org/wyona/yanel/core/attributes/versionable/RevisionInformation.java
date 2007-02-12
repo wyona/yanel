@@ -32,7 +32,7 @@ public class RevisionInformation {
     
     /**
      * Gets the revision name, which may be actually be a number in some repository implementations.
-     * @return
+     * @return revision name
      */
     public String getName() {
         return name;
@@ -48,7 +48,7 @@ public class RevisionInformation {
     
     /**
      * Gets the date when the revision was created.
-     * @return
+     * @return date
      */
     public Date getDate() {
         return date;
@@ -56,7 +56,7 @@ public class RevisionInformation {
     
     /**
      * Gets a string which identifies the person who created the revision.
-     * @return
+     * @return user id
      */
     public String getUser() {
         return user;
