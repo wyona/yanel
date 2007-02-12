@@ -17,6 +17,7 @@
 package org.wyona.yanel.core.util;
 
 import org.apache.log4j.Category;
+import org.wyona.yanel.core.map.Realm;
 
 /**
  *
@@ -46,4 +47,41 @@ public class PathUtil extends org.wyona.commons.io.PathUtil {
        }
        return path + ".yanel-rc";
    }
+   
+   /**
+    * @return a String with as many ../ as it needs to go back to from current realm to context
+    */
+   public static String backToContext(Realm realm) {
+       StringBuffer backToContext = new StringBuffer();
+       int steps = realm.getMountPoint().split("/").length - 1;
+       for (int i = 0; i < steps; i++) {
+           backToContext.append("../");
+       }
+       return backToContext.toString();
+   }
+   
+   /**
+    * @return a String with as many ../ as it needs to go back to from current resource to context
+    */
+   public static String backToContext(Realm realm, String path) {
+       return backToContext(realm) + backToRealm(path);
+   }
+   
+   /**
+    * @return a String with as many ../ as it needs to go back to from current resource to the realm-root
+    */
+   public static String backToRealm(String path) {
+       StringBuffer backToRealm = new StringBuffer();
+       int steps;
+       if (path.endsWith("/") && !path.equals("/")) {
+           steps =  path.split("/").length - 1;
+       } else {
+           steps =  path.split("/").length - 2;
+       }
+       for (int i = 0; i < steps; i++) {
+           backToRealm.append("../");
+       }
+       return backToRealm.toString();
+   }
+   
 }

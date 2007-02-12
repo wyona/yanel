@@ -385,8 +385,8 @@ public class TestingControlResource extends Resource implements ViewableV1 {
                     .newTransformer(new StreamSource(repo.getInputStream(getXSLTPath(path))));
             transformer.setParameter("yanel.path.name", path.getName());
             transformer.setParameter("yanel.path", path.toString());
-            transformer.setParameter("yanel.back2context", backToContext()+backToRoot());
-            transformer.setParameter("yarep.back2realm", backToRoot());
+            transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
+            transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
             return transformer;
         } else {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -411,37 +411,6 @@ public class TestingControlResource extends Resource implements ViewableV1 {
 
     protected RepositoryFactory getRTIRepositoryFactory() {
         return yanel.getRepositoryFactory("RTIRepositoryFactory");
-    }
-
-    /**
-     * @return a String with as many ../ as it needs to go back to from current realm to context
-     */
-    private String backToContext() {
-        String backToContext = "";
-        int steps = realm.getMountPoint().split("/").length - 1;
-
-        for (int i = 0; i < steps; i++) {
-            backToContext = backToContext + "../";
-        }
-        return backToContext;
-    }
-     
-    /**
-     * @return a String with as many ../ as it needs to go back to from current resource to the realm-root
-     */
-    private String backToRoot() {
-        String backToRoot = "";
-        int steps;
-        
-        if (getPath().endsWith("/") && !getPath().equals("/")) {
-            steps =  getPath().split("/").length - 1;
-        } else {
-            steps =  getPath().split("/").length - 2;
-        }
-        for (int i = 0; i < steps; i++) {
-            backToRoot = backToRoot + "../";
-        }
-        return backToRoot;
     }
 
     /**

@@ -110,8 +110,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 Transformer transformer = tf.newTransformer(new StreamSource(repo.getNode(xsltPath).getInputStream()));
                 transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
                 transformer.setParameter("yanel.path", getPath());
-                transformer.setParameter("yanel.back2context", backToContext()+backToRoot());
-                transformer.setParameter("yarep.back2realm", backToRoot());
+                transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
+                transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
                 String userAgent = getRequest().getHeader("User-Agent");
                 String os = getOS(userAgent);
                 if (os != null) transformer.setParameter("os", os);
@@ -284,36 +284,6 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         return null;
     }
 
-    /**
-     * @return a String with as many ../ as it needs to go back to from current realm to context
-     */
-    private String backToContext() {
-        String backToContext = "";
-        int steps = realm.getMountPoint().split("/").length - 1;
-
-        for (int i = 0; i < steps; i++) {
-            backToContext = backToContext + "../";
-        }
-        return backToContext;
-    }
-     
-    /**
-     * @return a String with as many ../ as it needs to go back to from current resource to the realm-root
-     */
-    private String backToRoot() {
-        String backToRoot = "";
-        int steps;
-        
-        if (getPath().endsWith("/") && !getPath().equals("/")) {
-            steps =  getPath().split("/").length - 1;
-        } else {
-            steps =  getPath().split("/").length - 2;
-        }
-        for (int i = 0; i < steps; i++) {
-            backToRoot = backToRoot + "../";
-        }
-        return backToRoot;
-    }
 
     /**
      *
