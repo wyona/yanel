@@ -424,6 +424,15 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public void create(HttpServletRequest request) {
+        try {
+            Repository repo = getRealm().getRepository();
+            Writer writer = new java.io.OutputStreamWriter(repo.getNode(getPath()).getOutputStream());
+            writer.write("<?xml version=\"1.0\"?>");
+            writer.write("<html/>");
+            writer.close();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
         log.warn("Not implemented yet!");
     }
 
@@ -431,8 +440,10 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public java.util.HashMap createRTIProperties(HttpServletRequest request) {
-        log.warn("Not implemented yet!");
-        return null;
+        java.util.HashMap map = new java.util.HashMap();
+        map.put("xslt", request.getParameter("rp.xslt"));
+        map.put("mime-type", request.getParameter("rp.mime-type"));
+        return map;
     }
 
     /**
