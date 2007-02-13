@@ -16,13 +16,12 @@
 
 <body>
 <h3>Unique Selling Proposition</h3>
-
 <p>
 </p><ul>
   <li>Resource Framework with <a href="../javadoc/org/wyona/yanel/core/api/attributes/package-summary.html">versioned published interfaces</a> which allows continuous development and integration. Therefore Yanel is backwards and forwards compatible at any time.<br/></li>
   <li>Yanel cleanly separates the user interface from the server side application by using various independent protocols such as <a href="http://neutron.wyona.org/">Neutron protocol</a>, <a href="http://bitworking.org/projects/atom/">Atom Publishing Protocol</a> and <a href="http://www.webdav.org/">WebDAV</a>. This architecture allows people to use clients of their own choice (OOo, Yulup, Sunbird, etc.).<br/></li>
   <li>Yanel is <a href="http://svn.wyona.com/repos/public/tomcat-cluster/">clusterable</a>. Therefore maintenance can be done during production. Also scalability and performance won't be an issue as the system can be extended easily.<br/></li>
-  <li>Yanel has a clean data abstraction layer implemented and hence allows access to arbitrary content repositories (e.g. File System, Subversion, Relational DB, XML DB, ...). Integration into existing enviroments will be easy and there won't be any lock-in regarding data.<br/></li>
+  <li>Yanel has a clean data abstraction layer implemented and hence allows access to arbitrary content repositories (e.g. File System, Subversion, Relational DB, XML DB, ...). Integration into existing environments will be easy and there won't be any lock-in regarding data.<br/></li>
   <li>Separation of Content and Layout by using XSLT and arbitrary templating frameworks has the advantage of being able to interpret and modify them independently of each other.<br/></li>
   <li>Multiple Sites can be nested arbitrarily. <br/></li>
   <li>Reverse Proxy Support gives great flexibility regarding operational processes.<br/></li>
