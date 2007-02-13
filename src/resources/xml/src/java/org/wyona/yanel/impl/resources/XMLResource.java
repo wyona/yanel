@@ -82,7 +82,13 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public ViewDescriptor[] getViewDescriptors() {
-        return null;
+        ViewDescriptor[] vd = new ViewDescriptor[2];
+        vd[0] = new ViewDescriptor("default");
+        // NOTE: depends on XSLT ...
+        vd[0].setMimeType(null);
+        vd[1] = new ViewDescriptor("source");
+        vd[1].setMimeType("application/xml");
+        return vd;
     }
 
     public View getView(String viewId) throws Exception {
@@ -100,11 +106,16 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         String yanelPath = getResourceConfigProperty("yanel-path");
         //if (yanelPath == null) yanelPath = path.toString();
 
-        String xsltPath = getXSLTPath(getPath());
-
         try {
             Repository repo = getRealm().getRepository();
 
+            if (viewId != null && viewId.equals("source")) {
+                defaultView.setInputStream(getContentXML(repo, yanelPath, revisionName));
+                defaultView.setMimeType("application/xml");
+                return defaultView;
+            }
+
+            String xsltPath = getXSLTPath(getPath());
             if (xsltPath != null) {
                 TransformerFactory tf = TransformerFactory.newInstance();
                 //tf.setURIResolver(null);
@@ -424,6 +435,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public void create(HttpServletRequest request) {
+        // TODO: XHTML template should not be hardcoded!
         try {
             Repository repo = getRealm().getRepository();
             Writer writer = new java.io.OutputStreamWriter(repo.getNode(getPath()).getOutputStream());
@@ -440,7 +452,6 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        log.warn("Not implemented yet!");
     }
 
     /**
