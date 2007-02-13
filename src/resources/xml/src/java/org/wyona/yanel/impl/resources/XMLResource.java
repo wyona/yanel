@@ -435,8 +435,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      *
      */
     public void create(HttpServletRequest request) {
-        // TODO: XHTML template should not be hardcoded!
         try {
+            // TODO: XHTML template should not be hardcoded!
             Repository repo = getRealm().getRepository();
             Writer writer = new java.io.OutputStreamWriter(repo.getNode(getPath()).getOutputStream());
             writer.write("<?xml version=\"1.0\"?>");
@@ -448,6 +448,17 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
             writer.write("  <p>From Template</p>");
             writer.write("</body>");
             writer.write("</html>");
+            writer.close();
+
+            // TODO: Introspection should not be hardcoded!
+            String name = new org.wyona.commons.io.Path(getPath()).getName();
+            String parent = new org.wyona.commons.io.Path(getPath()).getParent().toString();
+            String nameWithoutSuffix = name;
+            int lastIndex = name.lastIndexOf(".");
+            if (lastIndex > 0) nameWithoutSuffix = name.substring(0, lastIndex);
+            String introspectionPath = parent + "/introspection-" + nameWithoutSuffix + ".xml";
+            writer = new java.io.OutputStreamWriter(repo.getNode(introspectionPath).getOutputStream());
+            writer.write(getIntrospection(name));
             writer.close();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -494,4 +505,23 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     public void setProperty(String name, Object value) {
         log.warn("Not implemented yet!");
     }
+    
+    /**
+     * @param name
+     * @return introspection as string
+     */
+    private String getIntrospection(String name) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<?xml version=\"1.0\"?>");
+        sb.append("\n");
+        sb.append("\n<introspection xmlns=\"http://www.wyona.org/neutron/1.0\">");
+        sb.append("\n");
+        sb.append("\n  <edit mime-type=\"application/xhtml+xml\" name=\"" + name + "\">");
+        sb.append("\n    <checkout url=\"" + name + "?yanel.resource.viewid=source&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
+        sb.append("\n    <checkin  url=\"" + name + "?yanel.resource.usecase=checkin\" method=\"PUT\"/>");
+        sb.append("\n  </edit>");
+        sb.append("\n</introspection>");
+        
+        return sb.toString();
+    }    
 }
