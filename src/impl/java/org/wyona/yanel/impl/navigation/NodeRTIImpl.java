@@ -18,6 +18,7 @@ package org.wyona.yanel.impl.navigation;
 
 import org.wyona.yanel.core.navigation.Node;
 
+import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Path;
 import org.wyona.yarep.core.Repository;
 
@@ -79,7 +80,21 @@ public class NodeRTIImpl implements Node {
      */
     public boolean isResource() {
         if (isCollection()) return false;
-        return true;
+        try {
+            if (repo.getNode(path.toString() + ".yanel-rti").isResource()) return true;
+        } catch (NoSuchNodeException e) {
+            log.warn("No such node exception: " + path + ".yanel-rti");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        try {
+            if (repo.getNode(path.toString() + ".yanel-rc").isResource()) return true;
+        } catch (NoSuchNodeException e) {
+            log.warn("No such node exception: " + path + ".yanel-rc");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return false;
     }
 
     /**
@@ -87,7 +102,7 @@ public class NodeRTIImpl implements Node {
      */
     public boolean isCollection() {
         try {
-            log.error("DEBUG: Check if node is a collection: " + path);
+            log.debug("Check if node is a collection: " + path);
             if (repo.getNode(path.toString()).isCollection()) {
             //if (repo.isCollection(path)) {
                 log.error("DEBUG: Is collection within repo: " + path);
@@ -104,6 +119,9 @@ public class NodeRTIImpl implements Node {
                     }
                 }
             }
+        } catch(NoSuchNodeException e) {
+            log.warn("No such node exception: " + path);
+            return false;
         } catch(Exception e) {
             log.error(e.getMessage(), e);
         }
