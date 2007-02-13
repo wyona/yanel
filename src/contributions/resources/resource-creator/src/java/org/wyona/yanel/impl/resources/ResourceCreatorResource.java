@@ -313,6 +313,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     if (defaultProperties != null) {
                         for (int i = 0; i < defaultProperties.length; i++) {
                             sb.append("<p>Default property: " + defaultProperties[i] + "</p>");
+                            sb.append("<input type=\"hidden\" name=\"rp." + defaultProperties[i].getName() + "\" value=\"" + defaultProperties[i].getValue() + "\"/><br/>");
                         }
                     }
 
