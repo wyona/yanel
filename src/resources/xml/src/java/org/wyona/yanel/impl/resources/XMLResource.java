@@ -21,6 +21,7 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.Topic;
 import org.wyona.yanel.core.Yanel;
+import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
@@ -67,7 +68,7 @@ import org.apache.log4j.Category;
 /**
  *
  */
-public class XMLResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2 {
+public class XMLResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2 {
 
     private static Category log = Category.getInstance(XMLResource.class);
 
@@ -96,7 +97,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         String mimeType = getMimeType(getPath(), viewId);
         defaultView.setMimeType(mimeType);
 
-        String yanelPath = getProperty("yanel-path");
+        String yanelPath = getResourceConfigProperty("yanel-path");
         //if (yanelPath == null) yanelPath = path.toString();
 
         String xsltPath = getXSLTPath(getPath());
@@ -201,7 +202,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      * Get mime type
      */
     private String getMimeType(String path, String viewId) throws Exception {
-        String mimeType = getProperty("mime-type");
+        String mimeType = getResourceConfigProperty("mime-type");
         if (mimeType != null) return mimeType;
 
         String suffix = PathUtil.getSuffix(path);
@@ -278,7 +279,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      * Get XSLT path
      */
     private String getXSLTPath(String path) throws Exception {
-        String xsltPath = getProperty("xslt");
+        String xsltPath = getResourceConfigProperty("xslt");
         if (xsltPath != null) return xsltPath;
         log.info("No XSLT Path within: " + path);
         return null;
@@ -413,9 +414,55 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     /**
      * Get property value from resource configuration
      */
-    private String getProperty(String name) throws Exception {
+    private String getResourceConfigProperty(String name) throws Exception {
         ResourceConfiguration rc = getConfiguration();
         if (rc != null) return rc.getProperty(name);
         return getRTI().getProperty(name);
+    }
+
+    /**
+     *
+     */
+    public void create(HttpServletRequest request) {
+        log.warn("Not implemented yet!");
+    }
+
+    /**
+     *
+     */
+    public java.util.HashMap createRTIProperties(HttpServletRequest request) {
+        log.warn("Not implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public String getPropertyType(String name) {
+        log.warn("Not implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public Object getProperty(String name) {
+        log.warn("Not implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public String[] getPropertyNames() {
+        log.warn("Not implemented yet!");
+        return null;
+    }
+
+    /**
+     *
+     */
+    public void setProperty(String name, Object value) {
+        log.warn("Not implemented yet!");
     }
 }
