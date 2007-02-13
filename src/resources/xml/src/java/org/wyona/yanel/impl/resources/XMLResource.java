@@ -428,7 +428,14 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
             Repository repo = getRealm().getRepository();
             Writer writer = new java.io.OutputStreamWriter(repo.getNode(getPath()).getOutputStream());
             writer.write("<?xml version=\"1.0\"?>");
-            writer.write("<html/>");
+            writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+            writer.write("<head>");
+            writer.write("  <title>From Template</title>");
+            writer.write("</head>");
+            writer.write("<body>");
+            writer.write("  <p>From Template</p>");
+            writer.write("</body>");
+            writer.write("</html>");
             writer.close();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
