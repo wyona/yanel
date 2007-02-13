@@ -279,6 +279,11 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     String[] propertyNames = ((CreatableV2) resource).getPropertyNames();
                     if ((propertyNames != null && propertyNames.length > 0) || defaultProperties != null) {
                         sb.append("<p>Resource specific properties:</p>");
+                    } else {
+                        sb.append("<p>No resource specific properties!</p>");
+                    }
+
+                    if (propertyNames != null) {
                         for (int i = 0; i < propertyNames.length; i++) {
                             sb.append(propertyNames[i] + ": ");
                             String propertyType = ((CreatableV2) resource).getPropertyType(propertyNames[i]);
@@ -304,8 +309,11 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                                 }
                             }
                         }
-                    } else {
-                        sb.append("<p>No resource specific properties!</p>");
+                    }
+                    if (defaultProperties != null) {
+                        for (int i = 0; i < defaultProperties.length; i++) {
+                            sb.append("<p>Default property: " + defaultProperties[i] + "</p>");
+                        }
                     }
 
                     //sb.append("<br/><br/><input type=\"submit\" value=\"Save As\" name=\"save-as\"/>");
@@ -343,8 +351,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 }
             }
         } catch (Exception e) {
-            sb.append("<p>Exception: "+e+"</p>");
-            log.error(e);
+            sb.append("<p>Exception: " + e + "</p>");
+            log.error(e.getMessage(), e);
         }
     }
     
@@ -453,6 +461,13 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     try {
                         if (resourceTypeConfigs[i].getAttribute("namespace").equals(resNamespace) && resourceTypeConfigs[i].getAttribute("name").equals(resName)) {
                             log.error("DEBUG: Resource Type Found: " + resName + ", " + resNamespace);
+                            Configuration[] propertyConfigs = resourceTypeConfigs[i].getChildren("property");
+                            Property[] props = new Property[propertyConfigs.length];
+                            for (int k = 0; k < propertyConfigs.length; k++) {
+                                props[k] = new Property(propertyConfigs[k].getAttribute("name"), propertyConfigs[k].getAttribute("value"));
+                                log.error("DEBUG: Property: " + props[k]);
+                            }
+                            return props;
                         }
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -470,6 +485,35 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
  */
 class Property {
 
-    String name;
-    String value;
+    private String name;
+    private String value;
+
+    /**
+     *
+     */
+    public Property(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+
+    /**
+     *
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     *
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     *
+     */
+    public String toString() {
+        return name + " = " + value;
+    }
 }
