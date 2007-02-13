@@ -27,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
 
+import org.w3c.dom.Document;
+
 /**
  *
  */
@@ -265,17 +267,17 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             Resource resource = rtr.newResource(universalName);
             if (resource != null) {
                 if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Creatable", "2")) {
-                    String[] propertyNames = ((CreatableV2) resource).getPropertyNames();
-                    //((CreatableV2) resource).setProperty("Name", createName);
 
                     sb.append("<h4>Create resource (step 2)</h4>");
                     sb.append("<h2>Enter/Select resource specific parameters and \"Save As\"</h2>");
                     sb.append("<p>Resource Type: " + resName + " ("+resNamespace+")</p>");
                     sb.append("<form>");
                     // TODO: Add this parameter to the continuation within the session!
-                    sb.append("<input type=\"hidden\" name=\"resource-type\" value=\""+rtps+"\"/>");
+                    sb.append("<input type=\"hidden\" name=\"resource-type\" value=\"" + rtps + "\"/>");
 
-                    if (propertyNames != null && propertyNames.length > 0) {
+                    Property[] defaultProperties = getDefaultProperties(resName, resNamespace);
+                    String[] propertyNames = ((CreatableV2) resource).getPropertyNames();
+                    if ((propertyNames != null && propertyNames.length > 0) || defaultProperties != null) {
                         sb.append("<p>Resource specific properties:</p>");
                         for (int i = 0; i < propertyNames.length; i++) {
                             sb.append(propertyNames[i] + ": ");
@@ -314,9 +316,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("nav-sitetree");
                     Node node = sitetree.getNode(getRealm(), getPath());
                     if (node.isCollection()) {
-                        log.error("DEBUG: Collection: " + node.getName());
+                        log.error("DEBUG: Is Collection: " + node.getName());
                     } else if (node.isResource()) {
-                        log.error("DEBUG: Resource: " + node.getName());
+                        log.error("DEBUG: Is Resource: " + node.getName());
                     } else {
                         log.error("Neither collection nor resource: " + getPath());
                     }
@@ -382,26 +384,26 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     }
 
     /**
-     *
+     * Create resource configuration (yanel-rti respectively yanel-rc)
      */
     private void createConfiguration(Resource newResource) throws Exception {
-                    StringBuffer rtiContent = new StringBuffer(newResource.getResourceTypeUniversalName() + "\n");
-                    java.util.HashMap rtiProperties = ((CreatableV2) newResource).createRTIProperties(request);
-                    if (rtiProperties != null) {
-                        log.error("DEBUG: " + rtiProperties + " " + PathUtil.getRTIPath(newResource.getPath()));
-                        java.util.Iterator iterator = rtiProperties.keySet().iterator();
-                        while (iterator.hasNext()) {
-                            String property = (String) iterator.next();
-                            String value = (String) rtiProperties.get(property);
-                            rtiContent.append(property + ": " + value + "\n");
-                            log.error("DEBUG: " + property + ", " + value);
-                        }
-                    } else {
-                        log.warn("No RTI properties: " + newResource.getPath());
-                    }
-                    java.io.Writer writer = newResource.getRealm().getRTIRepository().getWriter(new org.wyona.yarep.core.Path(PathUtil.getRTIPath(newResource.getPath())));
-                    writer.write(rtiContent.toString());
-                    writer.close();
+        StringBuffer rtiContent = new StringBuffer(newResource.getResourceTypeUniversalName() + "\n");
+        java.util.HashMap rtiProperties = ((CreatableV2) newResource).createRTIProperties(request);
+        if (rtiProperties != null) {
+            log.error("DEBUG: " + rtiProperties + " " + PathUtil.getRTIPath(newResource.getPath()));
+            java.util.Iterator iterator = rtiProperties.keySet().iterator();
+            while (iterator.hasNext()) {
+                String property = (String) iterator.next();
+                String value = (String) rtiProperties.get(property);
+                rtiContent.append(property + ": " + value + "\n");
+                log.error("DEBUG: " + property + ", " + value);
+            }
+        } else {
+            log.warn("No RTI properties: " + newResource.getPath());
+        }
+        java.io.Writer writer = newResource.getRealm().getRTIRepository().getWriter(new org.wyona.yarep.core.Path(PathUtil.getRTIPath(newResource.getPath())));
+        writer.write(rtiContent.toString());
+        writer.close();
     }
 
     /**
@@ -410,7 +412,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     private ResourceTypeDefinition[] getResourceTypeDefinitions() {
         ResourceTypeRegistry rtr = new ResourceTypeRegistry();
         ResourceConfiguration rc = getConfiguration();
-        org.w3c.dom.Document customConfigDoc = rc.getCustomConfiguration();
+        Document customConfigDoc = rc.getCustomConfiguration();
         if (customConfigDoc != null) {
             Configuration config = ConfigurationUtil.toConfiguration(customConfigDoc.getDocumentElement());
             Configuration resourceTypesConfig = config.getChild("resource-types", false);
@@ -434,4 +436,40 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
         return rtds;
     }
+
+    /**
+     * Get default properties from custom configuration
+     */
+    private Property[] getDefaultProperties(String resName, String resNamespace) {
+        Document customConfigDoc = getConfiguration().getCustomConfiguration();
+        if (customConfigDoc != null) {
+            Configuration config = ConfigurationUtil.toConfiguration(customConfigDoc.getDocumentElement());
+            Configuration resourceTypesConfig = config.getChild("resource-types", false);
+            if (resourceTypesConfig != null) {
+                Configuration[] resourceTypeConfigs = resourceTypesConfig.getChildren("resource-type");
+                if (resourceTypeConfigs.length == 0) return null;
+                ResourceTypeDefinition[] rtds = new ResourceTypeDefinition[resourceTypeConfigs.length];
+                for (int i = 0; i < resourceTypeConfigs.length; i++) {
+                    try {
+                        if (resourceTypeConfigs[i].getAttribute("namespace").equals(resNamespace) && resourceTypeConfigs[i].getAttribute("name").equals(resName)) {
+                            log.error("DEBUG: Resource Type Found: " + resName + ", " + resNamespace);
+                        }
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        return null;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+}
+
+/**
+ *
+ */
+class Property {
+
+    String name;
+    String value;
 }
