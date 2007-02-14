@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
-<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:um="http://www.wyona.org/update-manager/1.0">
 
-  <Description about="urn:wyona:install-manifest">
+  <rdf:Description about="urn:wyona:install-manifest">
     <um:id>yanel-webapp-bin@wyona.org</um:id>
     <um:version>@VERSION@</um:version>
     <um:name>Wyona Yanel Webapp</um:name>
@@ -11,5 +11,5 @@
     <um:creator>Wyona</um:creator>
     <um:homepageURL>http://yanel.wyona.org/</um:homepageURL>
     <um:updateURL>http://yanel.wyona.org/download/update.rdf</um:updateURL>
-  </Description>
-</RDF>
+  </rdf:Description>
+</rdf:RDF>
