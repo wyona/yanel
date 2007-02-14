@@ -1,36 +1,15 @@
 <?xml version="1.0"?>
 
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+     xmlns:um="http://www.wyona.org/update-manager/1.0">
 
   <Description about="urn:wyona:install-manifest">
-    <em:id>ulysses-prototype-1@wyona.com</em:id>
-    <em:version>0.1.0</em:version>
-    <em:type>2</em:type>
-
-    <!-- Target application is Mozilla Firefox 1.5.0.* -->
-    <em:targetApplication>
-      <Description>
-        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>1.5.0</em:minVersion>
-        <em:maxVersion>1.5.0.*</em:maxVersion>
-      </Description>
-    </em:targetApplication>
-
-    <!-- Target application is Mozilla Suite 1.7.* -->
-    <!--<em:targetApplication>
-      <Description>
-        <em:id>{86c18b42-e466-45a9-ae7a-9b95ba6f5640}</em:id>
-        <em:minVersion>1.7</em:minVersion>
-        <em:maxVersion>1.7.*</em:maxVersion>
-      </Description>
-    </em:targetApplication>-->
-
-    <!-- Extension information -->
-    <em:name>Wyona Yanel</em:name>
-    <em:description>Content Management</em:description>
-    <em:creator>Michael Wechner</em:creator>
-    <em:homepageURL>http://yanel.wyona.org/</em:homepageURL>
-    <em:updateURL>http://yanel.wyona.org/download/update.rdf</em:updateURL>
+    <um:id>yanel-webapp-bin@wyona.org</um:id>
+    <um:version>@VERSION@</um:version>
+    <um:name>Wyona Yanel Webapp</um:name>
+    <um:description>Content Management Software</um:description>
+    <um:creator>Wyona</um:creator>
+    <um:homepageURL>http://yanel.wyona.org/</um:homepageURL>
+    <um:updateURL>http://yanel.wyona.org/download/update.rdf</um:updateURL>
   </Description>
 </RDF>
