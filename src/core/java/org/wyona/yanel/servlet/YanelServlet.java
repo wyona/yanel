@@ -877,26 +877,26 @@ public class YanelServlet extends HttpServlet {
                 String password = up[1];
                 log.debug("username: " + username + ", password: " + password);
                 try {
-                if (realm.getIdentityManager().authenticate(username, password)) {
-                    authorized = realm.getPolicyManager().authorize(path, new Identity(username, null), new Role("view"));
-                    if(authorized) {
-                        return null;
+                    if (realm.getIdentityManager().authenticate(username, password)) {
+                        authorized = realm.getPolicyManager().authorize(path, new Identity(username, null), new Role("view"));
+                        if(authorized) {
+                            return null;
+                        } else {
+                            log.warn("HTTP BASIC Authorization failed for " + username + "!");
+                            response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
+                            response.sendError(response.SC_UNAUTHORIZED);
+                            PrintWriter writer = response.getWriter();
+                            writer.print("BASIC Authorization Failed!");
+                            return response;
+                        }
                     } else {
-                        log.warn("HTTP BASIC Authorization failed for " + username + "!");
+                        log.warn("HTTP BASIC Authentication failed for " + username + "!");
                         response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
                         response.sendError(response.SC_UNAUTHORIZED);
                         PrintWriter writer = response.getWriter();
-                        writer.print("BASIC Authorization Failed!");
+                        writer.print("BASIC Authentication Failed!");
                         return response;
                     }
-                } else {
-                    log.warn("HTTP BASIC Authentication failed for " + username + "!");
-                    response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
-                    response.sendError(response.SC_UNAUTHORIZED);
-                    PrintWriter writer = response.getWriter();
-                    writer.print("BASIC Authentication Failed!");
-                    return response;
-                }
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
                     throw new ServletException(e.getMessage(), e);
