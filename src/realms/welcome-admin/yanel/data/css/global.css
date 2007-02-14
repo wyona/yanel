@@ -9,19 +9,15 @@ body  {
 
 #yanellogo {
   top:10px;
-  right:0px;
+  right:10px;
   background-color:white;
-  padding-right:10px;
-  padding-left:10px;
   position:absolute;
 }
 
 #everythingiscontent {
   top:47px;
-  right:0px;
+  right:8px;
   background-color:white;
-  padding-right:8px;
-  padding-left:10px;
   position:absolute;
 }
 
