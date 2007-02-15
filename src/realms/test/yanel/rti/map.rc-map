@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<rc-map>
+
+<matcher pattern="**/*/*.jtl" rcpath="/jmeter/jtl-rc-template.yanel-rc"/>
+
+</rc-map>

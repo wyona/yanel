@@ -108,6 +108,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
     <br/> &#160;<a href="{$yarep.back2realm}testing-control.html">Testing&#160;Control</a>
     <br/> &#160;<a href="{$yarep.back2realm}test-results-archive/">Test&#160;Results&#160;Archive</a>
     <br/> &#160;<a href="{$yarep.back2realm}testing-times.html">Time&#160;Analyze</a>
+    <br/> &#160;<a href="{$yarep.back2realm}jmeter/jmeter-results/">JMeter&#160;Results</a>
     <br/> <b><a href="{$yarep.back2realm}use-cases/">Use&#160;Cases</a></b>
     <br/>
   </xsl:template>
