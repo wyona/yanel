@@ -82,38 +82,39 @@ public class ExecuteTests implements Runnable {
         Project project = new Project();
         project.init();
         
-        ZipFileSet junitzipfileset = new ZipFileSet();
-        ZipFileSet htmlzipfileset = new ZipFileSet();
-        htmlzipfileset.setProject(project);
-        junitzipfileset.setProject(project);
-
-        htmlzipfileset.setSrc(HtmlunitJarLocation);
-        junitzipfileset.setSrc(JunitJarLocation);
-
         try {
-            JUnitTask junit = new JUnitTask();
-            junit.setProject(project);
-
-            FormatterElement formatter = new FormatterElement();
-            formatter.setUseFile(true);
-            FormatterElement.TypeAttribute typeattribute = new FormatterElement.TypeAttribute();
-            typeattribute.setValue("xml");
-            formatter.setType(typeattribute);
-
-            junit.addFormatter(formatter);
-            junit.setFork(false);
-
-            JUnitTask.SummaryAttribute summaryattr = new JUnitTask.SummaryAttribute();
-            summaryattr.setValue("true");
-            junit.setPrintsummary(summaryattr);
-
-            junit.setHaltonerror(false);
-            junit.setHaltonfailure(false);
-
-            BatchTest batchTest = junit.createBatchTest();
-            batchTest.setTodir(copytmpResultDir);
 
             for (int i = 0; i < testnames.length; i++) {
+                JUnitTask junit = new JUnitTask();
+                junit.setProject(project);
+                
+                FormatterElement formatter = new FormatterElement();
+                formatter.setUseFile(true);
+                FormatterElement.TypeAttribute typeattribute = new FormatterElement.TypeAttribute();
+                typeattribute.setValue("xml");
+                formatter.setType(typeattribute);
+                
+                junit.addFormatter(formatter);
+                junit.setFork(false);
+                
+                JUnitTask.SummaryAttribute summaryattr = new JUnitTask.SummaryAttribute();
+                summaryattr.setValue("true");
+                junit.setPrintsummary(summaryattr);
+                
+                junit.setHaltonerror(false);
+                junit.setHaltonfailure(false);
+                
+                BatchTest batchTest = junit.createBatchTest();
+                batchTest.setTodir(copytmpResultDir);
+                
+                ZipFileSet junitzipfileset = new ZipFileSet();
+                ZipFileSet htmlzipfileset = new ZipFileSet();
+                htmlzipfileset.setProject(project);
+                junitzipfileset.setProject(project);
+
+                htmlzipfileset.setSrc(HtmlunitJarLocation);
+                junitzipfileset.setSrc(JunitJarLocation);
+
                 if(testnames[i].matches(".*Web.*")){
                     batchTest.addFileSet(htmlzipfileset);
                     htmlzipfileset.setIncludes(testnames[i]);
