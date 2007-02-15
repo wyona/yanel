@@ -117,9 +117,15 @@ public class ResourceManager {
             ResourceTypeIdentifier rti = getResourceTypeIdentifier(realm, path);
             ResourceTypeDefinition rtd = rtRegistry.getResourceTypeDefinition(rti.getUniversalName());
             return getResource(request, response, realm, path, rtd, rti);
-        } else {
-            return getResource(request, response, realm, path, new ResourceConfiguration("file", "http://www.wyona.org/yanel/resource/1.0", null));
-        }
+        } 
+
+        if (realm.getRTIRepository().exists(new Path(ResourceConfigurationMap.getRCPath(realm, path)))) {
+            ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getInputStream(new Path(ResourceConfigurationMap.getRCPath(realm, path))));
+            if (rc != null) return getResource(request, response, realm, path, rc);
+        } 
+        
+        return getResource(request, response, realm, path, new ResourceConfiguration("file", "http://www.wyona.org/yanel/resource/1.0", null));
+        
     }
 
     /**

@@ -72,6 +72,12 @@
                   version="1.0"/>
       <dependency groupId="xindice" artifactId="xindice"
                   version="1.1b4"/>
+      <dependency groupId="stax" artifactId="stax"
+                  version="1.1.2-dev"/>
+      <dependency groupId="stax" artifactId="stax-api"
+                  version="1.0"/>
+      <dependency groupId="jakarta" artifactId="jakarta-regexp"
+                  version="1.4"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
