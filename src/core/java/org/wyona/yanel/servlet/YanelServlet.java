@@ -184,10 +184,10 @@ public class YanelServlet extends HttpServlet {
         String yanelToolbar = request.getParameter("yanel.toolbar");
         if(yanelToolbar != null) {
             if (yanelToolbar.equals("on")) {
-                log.error("DEBUG: Turn on toolbar!");
+                log.info("Turn on toolbar!");
                 session.setAttribute(TOOLBAR_KEY, "on");
             } else if (yanelToolbar.equals("off")) {
-                log.error("DEBUG: Turn off toolbar!");
+                log.info("Turn off toolbar!");
                 session.setAttribute(TOOLBAR_KEY, "off");
             } else {
                 log.warn("No such toolbar value: " + yanelToolbar);
@@ -204,14 +204,13 @@ public class YanelServlet extends HttpServlet {
         String toolbar = (String) session.getAttribute(TOOLBAR_KEY);
         if (toolbar != null && toolbar.equals("on")) {
             if (toolbarMasterSwitch.equals("on")) {
-                log.error("DEBUG: Embed toolbar ...");
+                log.warn("TODO: Embed toolbar ...");
                 getContent(request, response);
             } else {
-                log.error("DEBUG: Toolbar has been disabled. Please check web.xml!");
+                log.info("Toolbar has been disabled. Please check web.xml!");
                 getContent(request, response);
             }
         } else {
-            log.error("DEBUG: Do not add toolbar!");
             getContent(request, response);
         }
     }
