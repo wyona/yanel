@@ -119,7 +119,8 @@ public class ResourceManager {
             return getResource(request, response, realm, path, rtd, rti);
         } 
 
-        if (realm.getRTIRepository().exists(new Path(ResourceConfigurationMap.getRCPath(realm, path)))) {
+        String rcPath = ResourceConfigurationMap.getRCPath(realm, path);
+        if (rcPath != null && realm.getRTIRepository().exists(new Path(rcPath))) {
             ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getInputStream(new Path(ResourceConfigurationMap.getRCPath(realm, path))));
             if (rc != null) return getResource(request, response, realm, path, rc);
         } 
