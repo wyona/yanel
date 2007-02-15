@@ -172,14 +172,6 @@ public class YanelServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(true);
 
-        // Check if a new resource shall be created ...
-        String yanelUsecase = request.getParameter("yanel.usecase");
-        if(yanelUsecase != null && yanelUsecase.equals("create")) {
-            CreateUsecaseHelper creator = new CreateUsecaseHelper();
-            creator.create(request, response, yanel);
-            return;
-        }
-
         // Check for toolbar ...
         String yanelToolbar = request.getParameter("yanel.toolbar");
         if(yanelToolbar != null) {
@@ -871,10 +863,10 @@ public class YanelServlet extends HttpServlet {
             log.debug("Role will be 'view'!");
             role = new Role("view");
         }
-        value = request.getParameter("yanel.usecase");
-        if (value != null && value.equals("create")) {
-            log.debug("Create new resource ...");
-            role = new Role("create");
+        value = request.getParameter("yanel.toolbar");
+        if (value != null && value.equals("on")) {
+            log.debug("Turn on toolbar ...");
+            //role = new Role("toolbar");
         }
 
         boolean authorized = false;
