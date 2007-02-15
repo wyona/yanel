@@ -441,6 +441,7 @@ public class YanelServlet extends HttpServlet {
 
         if (view != null) {
             // Check if the view contains the response, otherwise assume that the resource wrote the response, and just return.
+            // TODO: There seem like no header fields are being set (e.g. Content-Length, ...). Please see below ...
             if (!view.isResponse()) return;
             
             if (view.getEncoding() != null) {
@@ -485,13 +486,19 @@ public class YanelServlet extends HttpServlet {
                 if (ifModifiedSince != null) {
                     log.warn("TODO: Implement 304 ...");
                 }
+                if(lastModified >= 0) response.setDateHeader("Last-Modified", lastModified);
+                if(size > 0) {
+                    log.debug("Size of " + request.getRequestURI() + ": " + size);
+                    response.setContentLength((int) size);
+                } else {
+                    log.debug("No size for " + request.getRequestURI() + ": " + size);
+                }
 
                 java.io.OutputStream os = response.getOutputStream();
                 os.write(buffer, 0, bytesRead);
                 while ((bytesRead = is.read(buffer)) != -1) {
                     os.write(buffer, 0, bytesRead);
                 }
-                if(lastModified >= 0) response.setDateHeader("Last-Modified", lastModified);
                 return;
             } else {
                 String message = "InputStream of view is null!";
