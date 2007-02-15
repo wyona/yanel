@@ -382,6 +382,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      * Get size of generated page
      */
     public long getSize() throws Exception {
+        // TODO: If the XML is being transformed then the size will not be the same as the size of the node!
+/*
         Node node = getRealm().getRepository().getNode(getPath());
         long size;
         if (node.isResource()) {
@@ -390,6 +392,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
             size = 0;
         }
         return size;
+*/
+        return -1;
     }
 
     /**
