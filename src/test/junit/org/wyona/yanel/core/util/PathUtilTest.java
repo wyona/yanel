@@ -69,15 +69,15 @@ public class PathUtilTest extends AbstractYanelTest {
      * Tests if the PathUtil.backToContext returns the correct amount of "../" for a given path.
      */
     public void testBackToContext() throws Exception {
-        Realm realm = new Realm("test", "test", "/");
+        Realm realm = new Realm("test", "test", "/", null);
         String backToContextPath = PathUtil.backToContext(realm);
         assertEquals("Incorrect backToContextPath for realm mount point: " + realm.getMountPoint(), "", backToContextPath);
         
-        realm = new Realm("test", "test", "/test/usecase/");
+        realm = new Realm("test", "test", "/test/usecase/", null);
         backToContextPath = PathUtil.backToContext(realm);
         assertEquals("Incorrect backToContextPath for realm mount point: " + realm.getMountPoint(), "../../", backToContextPath);
         
-        realm = new Realm("test", "test", "/yanel-website/");
+        realm = new Realm("test", "test", "/yanel-website/", null);
         backToContextPath = PathUtil.backToContext(realm);
         assertEquals("Incorrect backToContextPath for realm mount point: " + realm.getMountPoint(), "../", backToContextPath);
         

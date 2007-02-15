@@ -16,6 +16,8 @@
 
 package org.wyona.yanel.core.map;
 
+import java.io.File;
+
 import org.wyona.commons.io.Path;
 import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.PolicyManager;
@@ -33,6 +35,7 @@ public class Realm {
     private Repository rtiRepository;
     private PolicyManager policyManager;
     private IdentityManager identityManager;
+    private File configFile;
 
     private String proxyHostName;
     private String proxyPort;
@@ -41,10 +44,11 @@ public class Realm {
     /**
      *
      */
-    public Realm(String name, String id, String mountPoint) {
+    public Realm(String name, String id, String mountPoint, File configFile) {
         this.name = name;
         this.id = id;
         this.mountPoint = mountPoint;
+        this.configFile = configFile;
     }
 
     /**
@@ -66,6 +70,13 @@ public class Realm {
      */
     public String getMountPoint() {
         return mountPoint;
+    }
+
+    /**
+     * Configuration file of realm.
+     */
+    public File getConfigFile() {
+        return configFile;
     }
 
     /**

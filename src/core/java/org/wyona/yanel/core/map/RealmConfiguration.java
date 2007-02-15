@@ -29,8 +29,14 @@ import java.util.Properties;
 import org.apache.log4j.Category;
 
 import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.ConfigurationUtil;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
+import org.apache.avalon.framework.configuration.DefaultConfigurationSerializer;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.wyona.commons.io.FileUtil;
 import org.wyona.security.core.IdentityManagerFactory;
 import org.wyona.security.core.PolicyManagerFactory;
@@ -107,6 +113,9 @@ public class RealmConfiguration {
      *
      */
     public void readRealms() throws ConfigurationException {
+        hm = new LinkedHashMap();
+        rootRealm = null;
+
         DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
         Configuration config;
 
@@ -116,9 +125,13 @@ public class RealmConfiguration {
             IdentityManagerFactory imFactory = (IdentityManagerFactory) yanel.getBeanFactory().getBean("IdentityManagerFactory");
 
             RepositoryFactory repoFactory = yanel.getRepositoryFactory("DefaultRepositoryFactory");
+            repoFactory.reset();
             RepositoryFactory rtiRepoFactory = yanel.getRepositoryFactory("RTIRepositoryFactory");
+            rtiRepoFactory.reset();
             RepositoryFactory policiesRepoFactory = yanel.getRepositoryFactory("ACPoliciesRepositoryFactory");
+            policiesRepoFactory.reset();
             RepositoryFactory identitiesRepoFactory = yanel.getRepositoryFactory("ACIdentitiesRepositoryFactory");
+            identitiesRepoFactory.reset();
             config = builder.buildFromFile(realmsConfigFile);
             
             Configuration[] realmElements = config.getChildren("realm");
@@ -127,11 +140,7 @@ public class RealmConfiguration {
                 String realmId = realmElements[i].getAttribute("id", null);
                 String rootFlag = realmElements[i].getAttribute("root", "false");
                 Configuration name = realmElements[i].getChild("name", false);
-                Realm realm = new Realm(name.getValue(), realmId, mountPoint);
                 Configuration proxy = realmElements[i].getChild("reverse-proxy", false);
-                if (proxy != null) {
-                    realm.setProxy(proxy.getChild("host-name").getValue(), proxy.getChild("port").getValue(""), proxy.getChild("prefix").getValue());
-                }
                 Configuration configElement = realmElements[i].getChild("config", false);
                 if (configElement == null) {
                     throw new ConfigurationException("Missing <config src=\"...\"/> child element for realm " + realmId);
@@ -139,6 +148,10 @@ public class RealmConfiguration {
                 String configSrc = configElement.getAttribute("src", null);
                 
                 File realmConfigFile = resolveFile(new File(configSrc), realmsConfigFile);
+                Realm realm = new Realm(name.getValue(), realmId, mountPoint, realmConfigFile);
+                if (proxy != null) {
+                    realm.setProxy(proxy.getChild("host-name").getValue(), proxy.getChild("port").getValue(""), proxy.getChild("prefix").getValue());
+                }
                 log.debug("Reading realm config file for [" + realmId + "]: " + realmConfigFile);
                 Configuration realmConfig = builder.buildFromFile(realmConfigFile);
                 
@@ -196,9 +209,11 @@ public class RealmConfiguration {
     protected File resolveFile(File file, File dir) {
         if (!file.isAbsolute()) {
             if (dir.isDirectory()) {
-                file = FileUtil.file(dir.getAbsolutePath(), file.toString());
+                //file = FileUtil.file(dir.getAbsolutePath(), file.toString());
+                file = new File(dir, file.getPath());
             } else {
-                file = FileUtil.file(dir.getParentFile().getAbsolutePath(), file.toString());
+                //file = FileUtil.file(dir.getParentFile().getAbsolutePath(), file.toString());
+                file = new File(dir.getParentFile(), file.getPath());
             }
         }
         return file;
@@ -227,10 +242,39 @@ public class RealmConfiguration {
     }
 
     /**
-     * Add new realm
+     * Adds a new realm which already physically exists in the filesystem.
+     * The new realm will be added to realms.xml and registered in this RealmConfiguration.
      */
-    public void addRealm() {
-        log.error("Not implemented yet!");
+    public void addRealm(String realmID, String realmName, String mountPoint, String configFileSrc) throws Exception {
+        if (getRealm(realmID) != null) {
+            log.warn("Cannot add realm: " + realmID + " (realm with this ID exists already)");
+            return; // TODO: throw Exception
+        }
+        log.debug("adding realm: " + realmID);
+        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+        Configuration config = builder.buildFromFile(realmsConfigFile);
+        Element documentElement = ConfigurationUtil.toElement(config);
+        Document document = documentElement.getOwnerDocument(); 
+        
+        Element newRealmElement = document.createElementNS("http://www.wyona.org/yanel/1.0", "realm");
+        newRealmElement.setAttribute("id", realmID);
+        newRealmElement.setAttribute("mount-point", mountPoint);
+        Element newNameElement = document.createElementNS("http://www.wyona.org/yanel/1.0", "name");
+        newNameElement.appendChild(document.createTextNode(realmName));
+        newRealmElement.appendChild(newNameElement);
+        Element newConfigElement = document.createElementNS("http://www.wyona.org/yanel/1.0", "config");
+        newConfigElement.setAttribute("src", configFileSrc);
+        newRealmElement.appendChild(newConfigElement);
+        
+        documentElement.appendChild(newRealmElement);
+        config = ConfigurationUtil.toConfiguration(documentElement);
+        
+        DefaultConfigurationSerializer configSerializer = new DefaultConfigurationSerializer();
+        configSerializer.setIndent(true);
+        configSerializer.serializeToFile(realmsConfigFile, config);
+        
+        // reload the realm configuration:
+        readRealms();
     }
 
     /**
@@ -254,4 +298,78 @@ public class RealmConfiguration {
         }
     }
     
+    /**
+     * Copies a realm by creating a physical copy of the realm, changing its name/id,
+     * and registering it in this RealmConfiguration.
+     * A realm can only be copied if it has a <root-dir> element in its config file and
+     * if this directory contains the complete realm. 
+     * @param srcRealmID
+     * @param destRealmID
+     * @param destRealmName
+     * @param destMountPoint
+     * @throws Exception
+     */
+    public void copyRealm(String srcRealmID, String destRealmID, String destRealmName, 
+            String destMountPoint) throws Exception {
+        if (getRealm(destRealmID) != null) {
+            log.warn("Cannot add realm: " + destRealmID + " (realm with this ID exists already)");
+            return; // TODO: throw Exception
+        }
+        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+
+        Realm srcRealm = getRealm(srcRealmID);
+        String srcConfigSrc = srcRealm.getConfigFile().getAbsolutePath();
+        
+        File realmConfigFile = resolveFile(new File(srcConfigSrc), realmsConfigFile);
+        Configuration realmConfig = builder.buildFromFile(realmConfigFile);
+        Configuration srcRootConfig = realmConfig.getChild("root-dir", false);
+        if (srcRootConfig == null) {
+            throw new Exception("cannot copy realm " + srcRealmID + " no root dir specified in config file");
+        }
+        File srcRootDir = new File(srcRootConfig.getValue());
+        if (!srcRootDir.isAbsolute()) {
+            srcRootDir = resolveFile(srcRootDir, realmConfigFile).getCanonicalFile();
+        }
+        
+        // copy realm directory:
+        File destRootDir = new File(srcRootDir.getParentFile(), destRealmID);
+        log.debug("copying realm " + srcRootDir + " to " + destRootDir);
+        byte[] buffer = new byte[8192];
+        String[] filter = { ".svn", ".cvs" };
+        FileUtil.copyDirectory(srcRootDir, destRootDir, buffer, filter);
+
+        // patch new realm:
+        if (!srcConfigSrc.startsWith(srcRootDir.getAbsolutePath())) {
+            throw new Exception(srcConfigSrc + " does not start with " + srcRootDir);
+        }
+        
+        String configPath = srcConfigSrc.substring(srcRootDir.getAbsolutePath().length());
+        if (!configPath.startsWith(File.separator)) {
+            configPath = File.separator + configPath;
+        }
+        String destConfigSrc = destRootDir.getAbsolutePath() + configPath;
+        log.debug("destConfigSrc: " + destConfigSrc);
+        
+        realmConfigFile = resolveFile(new File(destConfigSrc), realmsConfigFile);
+        realmConfig = builder.buildFromFile(realmConfigFile);
+        Element realmDocument = ConfigurationUtil.toElement(realmConfig);
+        
+        Element nameElement = (Element)realmDocument.getElementsByTagName("name").item(0);
+        Node text = realmDocument.getOwnerDocument().createTextNode(destRealmName);
+        nameElement.removeChild(nameElement.getFirstChild());
+        nameElement.appendChild(text);
+        Element rootDirElement = (Element)realmDocument.getElementsByTagName("root-dir").item(0);
+        text = realmDocument.getOwnerDocument().createTextNode(destRootDir.getAbsolutePath());
+        rootDirElement.removeChild(rootDirElement.getFirstChild());
+        rootDirElement.appendChild(text);
+
+        realmConfig = ConfigurationUtil.toConfiguration(realmDocument);
+        DefaultConfigurationSerializer configSerializer = new DefaultConfigurationSerializer();
+        configSerializer.setIndent(true);
+        configSerializer.serializeToFile(realmConfigFile, realmConfig);
+
+        // add realm to realms.xml and register it:
+        addRealm(destRealmID, destRealmName, destMountPoint, destConfigSrc);
+    }
+
 }

@@ -111,7 +111,7 @@ public class MapImpl implements Map {
                     realms[i] = realmConfig.getRealm(repo.getID());
                     if (realms[i] == null) {
                         log.warn("No such realm defined: " + repo.getID() + " (fallback to repo configuration ...)");
-                        realms[i] = new Realm(repo.getName(), repo.getID(), "/" + repoIds[i] + "/");
+                        //realms[i] = new Realm(repo.getName(), repo.getID(), "/" + repoIds[i] + "/");
                     }
                 }
             }
