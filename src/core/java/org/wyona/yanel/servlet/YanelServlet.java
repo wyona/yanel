@@ -82,6 +82,7 @@ public class YanelServlet extends HttpServlet {
     File xsltLoginScreen;
 
     private static String IDENTITY_KEY = "identity";
+    private static String TOOLBAR_KEY = "toolbar";
     private static String NAMESPACE = "http://www.wyona.org/yanel/1.0";
 
     private static final String METHOD_PROPFIND = "PROPFIND";
@@ -167,12 +168,30 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(true);
+
         // Check if a new resource shall be created ...
         String yanelUsecase = request.getParameter("yanel.usecase");
         if(yanelUsecase != null && yanelUsecase.equals("create")) {
             CreateUsecaseHelper creator = new CreateUsecaseHelper();
             creator.create(request, response, yanel);
             return;
+        }
+
+        // Check for toolbar ...
+        String yanelToolbar = request.getParameter("yanel.toolbar");
+        if(yanelToolbar != null) {
+            if (yanelToolbar.equals("on")) {
+                log.error("DEBUG: Turn on toolbar!");
+                session.setAttribute(TOOLBAR_KEY, "on");
+            } else if (yanelToolbar.equals("off")) {
+                log.error("DEBUG: Turn off toolbar!");
+                session.setAttribute(TOOLBAR_KEY, "off");
+            } else {
+                log.error("DEBUG: No such toolbar value: " + yanelToolbar);
+            }
+        } else {
+            log.error("DEBUG: No toolbar parameter!");
         }
 
         String yanelWebDAV = request.getParameter("yanel.webdav");
@@ -182,7 +201,13 @@ public class YanelServlet extends HttpServlet {
             //return;
         }
 
-        getContent(request, response);
+        String toolbar = (String) session.getAttribute(TOOLBAR_KEY);
+        if (toolbar != null && toolbar.equals("on")) {
+            log.error("DEBUG: Embed toolbar ...");
+            getContent(request, response);
+        } else {
+            getContent(request, response);
+        }
     }
 
     /**
