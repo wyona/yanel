@@ -6,6 +6,6 @@
     <input required="true" samplevalue="http://www.foo.bar">url</input>
     <input required="true" samplevalue="D:/realms">fs-location</input>
     <input required="true" samplevalue="3">crawldepth</input>
-    <input required="true" samplevalue="100">maxpages</input>
+    <input required="true" samplevalue="100">crawlmaxpages</input>
   </inputfields>
 </form>

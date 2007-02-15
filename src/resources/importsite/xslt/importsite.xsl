@@ -14,14 +14,7 @@
   <xsl:param name="url" select="''" />
   <xsl:param name="fs-location" select="''" />
   <xsl:param name="crawldepth" select="''" />
-  <xsl:param name="maxpages" select="''" />
-  
-  <xsl:param name="error-realmid" select="''" />
-  <xsl:param name="error-realmname" select="''" />
-  <xsl:param name="error-url" select="''" />
-  <xsl:param name="error-fs-location" select="''" />
-  <xsl:param name="error-crawldepth" select="''" />
-  <xsl:param name="error-maxpages" select="''" />
+  <xsl:param name="crawlmaxpages" select="''" />
 
   <xsl:param name="submitted" select="'false'" />
 
@@ -56,29 +49,31 @@
                         </td>
                         <td>
                           <xsl:choose>
-                            <xsl:when test="$error-realmid != '' or $error-realmname != '' 
-                                            or $error-url != '' or $error-fs-location != ''
-                                            or $error-crawldepth != '' or $error-maxpages != ''">
+                            <xsl:when test="contains($realmid, 'ERROR:') or contains($realmname, 'ERROR:') 
+                                            or contains($url, 'ERROR:') or contains($fs-location, 'ERROR:')
+                                            or contains($crawldepth, 'ERROR:') or contains($crawlmaxpages, 'ERROR:')">
                               <xsl:choose>
-                                <xsl:when test="position()='1'">
+                                <xsl:when test="position()='1' and not(contains($realmid, 'ERROR:'))">
                                   <input type="text" name="{.}" class="box" size="30" value="{$realmid}" />
                                 </xsl:when>
-                                <xsl:when test="position()='2'">
+                                <xsl:when test="position()='2' and not(contains($realmname, 'ERROR:'))">
                                   <input type="text" name="{.}" class="box" size="30" value="{$realmname}" />
                                 </xsl:when>
-                                <xsl:when test="position()='3'">
+                                <xsl:when test="position()='3' and not(contains($url, 'ERROR:'))">
                                   <input type="text" name="{.}" class="box" size="30" value="{$url}" />
                                 </xsl:when>
-                                <xsl:when test="position()='4'">
+                                <xsl:when test="position()='4' and not(contains($fs-location, 'ERROR:'))">
                                   <input type="text" name="{.}" class="box" size="30" value="{$fs-location}" />
                                 </xsl:when>
-                                <xsl:when test="position()='5'">
+                                <xsl:when test="position()='5' and not(contains($crawldepth, 'ERROR:'))">
                                   <input type="text" name="{.}" class="box" size="30" value="{$crawldepth}" />
                                 </xsl:when>
-                                <xsl:when test="position()='6'">
-                                  <input type="text" name="{.}" class="box" size="30" value="{$maxpages}" />
+                                <xsl:when test="position()='6' and not(contains($crawlmaxpages, 'ERROR:'))">
+                                  <input type="text" name="{.}" class="box" size="30" value="{$crawlmaxpages}" />
                                 </xsl:when>
-                                <xsl:otherwise/>
+                                <xsl:otherwise>
+                                  <input type="text" name="{.}" class="box" size="30" value="" />
+                                </xsl:otherwise>
                               </xsl:choose>
                             </xsl:when>
                             <xsl:otherwise>
@@ -88,34 +83,70 @@
                         </td>
                         <td><xsl:if test="@required = 'true'">*</xsl:if></td>
                         <xsl:choose>
-                          <xsl:when test="position()='1' and $error-realmid != ''">
+                          <xsl:when test="position()='1' and contains($realmid, 'ERROR:')">
                             <td>
-                              &#160;<font color="red"><i18n:message key="{$error-realmid}"/></font>
+                              &#160;<font color="red">
+                                <i18n:message>
+                                  <xsl:attribute name="key">
+                                    <xsl:value-of select="substring-after($realmid, 'ERROR:')"/>
+                                  </xsl:attribute>
+                                </i18n:message>
+                              </font>
                             </td>
                           </xsl:when>
-                          <xsl:when test="position()='2' and $error-realmname != ''">
+                          <xsl:when test="position()='2' and contains($realmname, 'ERROR:')">
                             <td>
-                              &#160;<font color="red"><i18n:message key="{$error-realmname}"/></font>
+                              &#160;<font color="red">
+                                <i18n:message>
+                                  <xsl:attribute name="key">
+                                    <xsl:value-of select="substring-after($realmname, 'ERROR:')"/>
+                                  </xsl:attribute>
+                                </i18n:message>
+                              </font>
                             </td>
                           </xsl:when>
-                          <xsl:when test="position()='3' and $error-url != ''">
+                          <xsl:when test="position()='3' and contains($url, 'ERROR:')">
                             <td>
-                              &#160;<font color="red"><i18n:message key="{$error-url}"/></font>
+                              &#160;<font color="red">
+                                <i18n:message>
+                                  <xsl:attribute name="key">
+                                    <xsl:value-of select="substring-after($url, 'ERROR:')"/>
+                                  </xsl:attribute>
+                                </i18n:message>
+                              </font>
                             </td>
                           </xsl:when>
-                          <xsl:when test="position()='4' and $error-fs-location != ''">
+                          <xsl:when test="position()='4' and contains($fs-location, 'ERROR:')">
                             <td>
-                              &#160;<font color="red"><i18n:message key="{$error-fs-location}"/></font>
+                              &#160;<font color="red">
+                                <i18n:message>
+                                  <xsl:attribute name="key">
+                                    <xsl:value-of select="substring-after($fs-location, 'ERROR:')"/>
+                                  </xsl:attribute>
+                                </i18n:message>
+                              </font>
                             </td>
                           </xsl:when>
-                          <xsl:when test="position()='5' and $error-crawldepth != ''">
+                          <xsl:when test="position()='5' and contains($crawldepth, 'ERROR:')">
                             <td>
-                              &#160;<font color="red"><i18n:message key="{$error-crawldepth}"/></font>
+                              &#160;<font color="red">
+                                <i18n:message>
+                                  <xsl:attribute name="key">
+                                    <xsl:value-of select="substring-after($crawldepth, 'ERROR:')"/>
+                                  </xsl:attribute>
+                                </i18n:message>
+                              </font>
                             </td>
                           </xsl:when>
-                          <xsl:when test="position()='6' and $error-maxpages != ''">
+                          <xsl:when test="position()='6' and contains($crawlmaxpages, 'ERROR:')">
                             <td>
-                              &#160;<font color="red"><i18n:message key="{$error-maxpages}"/></font>
+                              &#160;<font color="red">
+                                <i18n:message>
+                                  <xsl:attribute name="key">
+                                    <xsl:value-of select="substring-after($crawlmaxpages, 'ERROR:')"/>
+                                  </xsl:attribute>
+                                </i18n:message>
+                              </font>
                             </td>
                           </xsl:when>
                           <xsl:otherwise>
