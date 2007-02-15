@@ -42,7 +42,6 @@ import org.wyona.yanel.core.util.DateUtil;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 
-import org.wyona.yanel.servlet.CreateUsecaseHelper;
 import org.wyona.yanel.servlet.communication.HttpRequest;
 import org.wyona.yanel.servlet.communication.HttpResponse;
 import org.wyona.yanel.util.ResourceAttributeHelper;
