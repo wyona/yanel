@@ -93,6 +93,7 @@ public class YanelServlet extends HttpServlet {
     private static final String METHOD_DELETE = "DELETE";
 
     private String sslPort = null;
+    private String toolbarMasterSwitch = "off";
     
     public static final String DEFAULT_ENCODING = "UTF-8";
 
@@ -115,6 +116,7 @@ public class YanelServlet extends HttpServlet {
             sitetree = (Sitetree) yanel.getBeanFactory().getBean("nav-sitetree");
 
             sslPort = config.getInitParameter("ssl-port");
+            toolbarMasterSwitch = config.getInitParameter("toolbar-master-switch");
             
         } catch (Exception e) {
             log.error(e);
@@ -188,10 +190,8 @@ public class YanelServlet extends HttpServlet {
                 log.error("DEBUG: Turn off toolbar!");
                 session.setAttribute(TOOLBAR_KEY, "off");
             } else {
-                log.error("DEBUG: No such toolbar value: " + yanelToolbar);
+                log.warn("No such toolbar value: " + yanelToolbar);
             }
-        } else {
-            log.error("DEBUG: No toolbar parameter!");
         }
 
         String yanelWebDAV = request.getParameter("yanel.webdav");
@@ -203,9 +203,15 @@ public class YanelServlet extends HttpServlet {
 
         String toolbar = (String) session.getAttribute(TOOLBAR_KEY);
         if (toolbar != null && toolbar.equals("on")) {
-            log.error("DEBUG: Embed toolbar ...");
-            getContent(request, response);
+            if (toolbarMasterSwitch.equals("on")) {
+                log.error("DEBUG: Embed toolbar ...");
+                getContent(request, response);
+            } else {
+                log.error("DEBUG: Toolbar has been disabled. Please check web.xml!");
+                getContent(request, response);
+            }
         } else {
+            log.error("DEBUG: Do not add toolbar!");
             getContent(request, response);
         }
     }
