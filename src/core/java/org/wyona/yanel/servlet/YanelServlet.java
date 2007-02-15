@@ -1431,6 +1431,7 @@ public class YanelServlet extends HttpServlet {
                 javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
                 out.close();
             } else {
+                // TODO: Use patchMimeType() !
                 response.setContentType("application/xhtml+xml; charset=" + DEFAULT_ENCODING);
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltInfoAndException));
                 transformer.transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
