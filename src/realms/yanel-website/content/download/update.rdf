@@ -1,38 +1,29 @@
-<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:um="http://www.wyona.org/update-manager/1.0#">
 
-<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <rdf:Description rdf:about="urn:wyona:application:updates">
+    <um:versions>
+      <rdf:Seq>
+        <rdf:li rdf:resource="urn:wyona:application:update:1.0-dev-r22343"/>
+        <rdf:li rdf:resource="urn:wyona:application:update:1.0-dev-r22342"/>
+      </rdf:Seq>
+    </um:versions>
+  </rdf:Description>  
+  
+  <rdf:Description rdf:about="urn:wyona:application:update:1.0-dev-r22342">
+    <um:version>1.0-dev-r22342</um:version>
+    <um:targetApplication>
+      <rdf:Description rdf:about="urn:wyona:targetapplication:tomcat">
+        <um:minVersion>5.0.0</um:minVersion>
+        <um:maxVersion>5.5.*</um:maxVersion>
+	    <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-jetty-build-0.1.1.xml</um:updateLink>
+      </rdf:Description>
+    </um:targetApplication>
+  </rdf:Description>
 
-  <Description about="urn:wyona:yanel">
-    <em:updates>
-      <Seq>
-        <li resource="urn:wyona:yanel:0.1.1"/>
-      </Seq>
-    </em:updates>
-  </Description>
+  <rdf:Description rdf:about="urn:wyona:application:update:1.0-dev-r22343">
+    <um:version>1.0-dev-r22343</um:version>
+    <um:updateURL>http://yanel.wyona.org/download/binary-snapshots/unix/wyona-yanel-SNAPSHOT-1.0-dev-r22342-bin.tar.gz</um:updateURL>
+  </rdf:Description>
 
-  <Description about="urn:wyona:yanel:0.1.1">
-    <em:version>0.1.1</em:version>
-
-    <!-- Target application is Tomcat 5.0.* -->
-    <em:targetApplication>
-      <Description>
-        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>5.0.30</em:minVersion>
-        <em:maxVersion>5.0.*</em:maxVersion>
-        <em:updateLink>http://yanel.wyona.org/download/wyona-yanel-tomcat-build-0.1.1.xml</em:updateLink>
-      </Description>
-    </em:targetApplication>
-
-    <!-- Target application is Jetty 6.0.* -->
-    <em:targetApplication>
-      <Description>
-        <em:id>{86c18b42-e466-45a9-ae7a-9b95ba6f5640}</em:id>
-        <em:minVersion>6.0.0</em:minVersion>
-        <em:maxVersion>6.0.*</em:maxVersion>
-        <em:updateLink>http://yanel.wyona.org/download/wyona-yanel-jetty-build-0.1.1.xml</em:updateLink>
-      </Description>
-    </em:targetApplication>
-  </Description>
-
-</RDF>
+</rdf:RDF>
