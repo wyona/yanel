@@ -29,6 +29,13 @@
      <param-name>login-screen-xslt</param-name>
      <param-value>xslt/login-screen.xsl</param-value>
     </init-param>
+
+    <!-- Enable resp. disable toolbar functionality. For security and performance reasons one might want to disable the toolbar functionality completely with this parameter -->
+    <init-param>
+     <param-name>toolbar-master-switch</param-name>
+     <param-value>on</param-value>
+     <!--<param-value>off</param-value>-->
+    </init-param>
   </servlet>
 
   <servlet-mapping>
