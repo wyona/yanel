@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<repository>
+  <name>Yanel Website Access Control Policies</name>
+
+  <paths class="org.wyona.yarep.impl.DefaultMapImpl" src="../ac-policies/paths" fallback="true"/>
+
+  <storage class="org.wyona.yarep.core.impl.fs.FileSystemStorage">
+    <content src="../ac-policies/content"/>
+  </storage>
+</repository>
