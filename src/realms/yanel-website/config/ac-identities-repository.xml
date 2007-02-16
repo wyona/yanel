@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <repository>
-  <name>Yanel from Scratch Access Control Identities</name>
+  <name>Yanel Website Access Control Identities</name>
 
   <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../ac-identities"/>
 
