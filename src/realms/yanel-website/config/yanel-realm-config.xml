@@ -4,6 +4,6 @@
   <name>Yanel Website</name>
   <rti>repository.xml</rti>
   <data>repository.xml</data>
-  <ac-policies>repository.xml</ac-policies>
+  <ac-policies>ac-policies-repository.xml</ac-policies>
   <ac-identities>ac-identities-repository.xml</ac-identities>
 </realm-config>
