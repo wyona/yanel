@@ -85,7 +85,7 @@ public class ODTResource extends Resource implements ViewableV2, ModifiableV2 {
             } else if (mimeType.equals("application/xhtml+xml")) {
                 File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
                         .getParentFile()
-                        .getAbsolutePath(), "document2xhtml.xsl");
+                        .getAbsolutePath(), "xslt" + File.separator + "document2xhtml.xsl");
                 log.debug("XSLT file: " + xsltFile);
                 Transformer transformer = TransformerFactory.newInstance()
                         .newTransformer(new StreamSource(xsltFile));
