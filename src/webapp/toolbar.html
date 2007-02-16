@@ -1,0 +1,278 @@
+<html>
+<head>
+  <title>Yanel Toolbar</title>
+
+<script language="JavaScript1.2" src="toolbar_files/functions.js" type="text/javascript">
+</script>	
+
+<script language="javascript">
+	tree=1;
+	function View(path) {
+		document.location.href='/ariadne/loader.php/-hDzv-/pt'+path+'view.phtml';
+	}
+	function LoadingDone() {
+		parent.LoadingDone();
+	}
+	function objectadded() {
+		window.location = "/ariadne/loader.php/-hDzv-/pt/demo/view.phtml";
+	}
+
+	function wgRecurseDone(action) {
+			switch( action ) {
+				case 'delete':
+					window.location = "/ariadne/loader.php/-hDzv-/pt/view.phtml";
+				break;
+				case 'copy':
+				case 'setowner':
+				default:
+					window.location = "/ariadne/loader.php/-hDzv-/pt/demo/view.phtml";
+				break;
+			}
+	}
+
+	function arEdit(object, arguments) {
+		arshow('edit_object_data','/ariadne/loader.php/-hDzv-/pt'+object+'edit.object.data.phtml', arguments);
+	}
+
+	function init() {
+		parent.LoadingDone();
+	}
+</script>
+<style>
+#icon {
+	top: 35px ! important;
+}
+</style>
+<link rel="stylesheet" href="toolbar_files/menu.css" type="text/css"><link href="toolbar_files/manage.css" rel="StyleSheet" type="text/css">
+</head>
+
+<body scroll="no" onload="init();" bgcolor="white">
+<div id="kill-scrollbars" style="position: relative;">
+<script>
+
+HM_Array1 = [
+[150,                          // menu width
+2, // left_position
+27,
+],
+["Criar","javascript:arshow('edit_object_data','object.new.select.phtml')",1,0,0],
+["<font color='#959595'>Mudar nome</font>","javascript:arshow('object_fs','object.rename.phtml')",1,0,0],
+["Copiar","javascript:arshow('object_fs','object.copy.phtml')",1,0,0],
+["Liga&ccedil;&atilde;o","javascript:arshow('object_fs','object.link.phtml')",1,0,0],
+['<hr>','<img src="/ariadne/images/hr.gif" width="100%" height="2" alt="" style="padding: 4px 2px 4px -20px;">',0,0,0],
+["Import","javascript:arshow('edit_object_data','object.import.phtml')",1,0,0],
+["Export","javascript:arshow('edit_object_data','object.export.phtml')",1,0,0],
+['<hr>','<img src="/ariadne/images/hr.gif" width="100%" height="2" alt="" style="padding: 4px 2px 4px -20px;">',0,0,0],
+["<font color='#959595'>Apagar</font>","javascript:arshow('object_fs','object.delete.phtml')",1,0,0],
+["Log&nbsp;off","javascript:arshow('object_fs','object.logoff.phtml')",1,0,0]
+]
+
+HM_Array2 = [
+[150,
+60,
+27,
+],
+["Objecto","",1,0,1],
+["Layout","",1,0,2],
+["Configura&ccedil;&atilde;o","",1,0,3],
+["Prioridade","javascript:arshow('edit_priority','edit.priority.phtml')",1,0,0],
+['<hr>','<img src="/ariadne/images/hr.gif" width="100%" height="2" alt="" style="padding: 4px 2px 4px -20px;">',0,0,0],
+["Procura","javascript:arshow('edit_find','edit.find.phtml')",1,0,0],
+['<hr>','<img src="/ariadne/images/hr.gif" width="100%" height="2" alt="" style="padding: 4px 2px 4px -20px;">',0,0,0],
+["Prefer&ecaret;ncias","javascript:arshow('edit_preferences','/ariadne/loader.php/-hDzv-/pt/system/users/guest/edit.preferences.phtml')",1,0,0]
+]
+
+HM_Array3 = [
+[150,
+108,
+27,
+],
+["P&aacute;gina web","javascript:arshow('_new','http://demo.muze.nl/ariadne/loader.php/-hDzv-/demo/')",1,0,0],
+['<hr>','<img src="/ariadne/images/hr.gif" width="100%" height="2" alt="" style="padding: 4px 2px 4px -20px;">',0,0,0],
+["P&aacute;gina","javascript:setView('page')",1,0,0],
+["Miniaturas pequenas","javascript:setView('list')",1,0,0],
+["Miniaturas grandes","javascript:setView('icons')",1,0,0],
+["Detalhes","javascript:setView('details')",1,0,0],
+['<hr>','<img src="/ariadne/images/hr.gif" width="100%" height="2" alt="" style="padding: 4px 2px 4px -20px;">',0,0,0],
+['<div id="explorerbar_icon" class="selectedOption">a</div>Barra&nbsp;Explorer',"javascript:artoggleexplorerbar()",1,0,0]
+]
+
+
+HM_Array4 = [
+[150,                          // menu width
+163, // left_position
+27,
+],
+
+["Index","javascript:arshow('help','http://demo.muze.nl/ariadne/loader.php/-hDzv-/pt/system/ariadne/help/reference/')",1,0,0],
+["Tutoriais","javascript:arshow('help','http://demo.muze.nl/ariadne/loader.php/-hDzv-/pt/system/ariadne/help/tutorials/')",1,0,0],
+["Acerca&nbsp;Ariadne","javascript:arshow('help_about','help.about.phtml')",1,0,0]
+]
+
+HM_Array2_1 = [
+[150],
+["<font color='#959595'>Dados</font>","javascript:arshow('edit_object_data','edit.object.data.phtml')",1,0,0],
+["<font color='#959595'>Atalho</font>","",1,0,0],
+["<font color='#959595'>Cache</font>","javascript:arshow('edit_object_cache','edit.object.cache.phtml')",1,0,0]
+]
+
+HM_Array2_2 = [
+[150],
+["<font color='#959595'>Moldes</font>","javascript:arshow('edit_object_layout','edit.object.layout.phtml')",1,0,0],
+["<font color='#959595'>Campos&nbsp;configuraveis</font>","javascript:arshow('edit_object_custom','edit.object.custom.phtml')",1,0,0],
+["<font color='#959595'>Lingua</font>","javascript:arshow('edit_object_nls','edit.object.nls.phtml')",1,0,0]
+]
+
+HM_Array2_3 = [
+[150],
+["<font color='#959595'>Permiss&otilde;es</font>","javascript:arshow('edit_object_grants','edit.object.grants.phtml')",1,0,0],
+["<font color='#959595'>Tipos</font>","javascript:arshow('edit_object_types','edit.object.types.phtml')",1,0,0],
+["<font color='#959595'></font>","javascript:arshow('edit_object_owner','edit.config.owner.phtml')",1,0,0]
+
+]
+</script>
+<script>
+  if (document.all) {
+	document.body.style.border='1px inset buttonhighlight';
+  }
+</script>
+<script language="JavaScript1.2" src="toolbar_files/config.html" type="text/javascript">
+</script>
+<script language="JavaScript1.2" src="toolbar_files/HM_ScriptDOM.js" type="text/javascript">
+</script>
+
+<form>
+<div id="hideoverflow" style="margin: 0px; position: relative; width: 100%; overflow: hidden;">
+<table id="menu" style="border-style: solid solid groove; border-color: buttonhighlight buttonshadow buttonhighlight buttonhighlight; border-width: 1px 1px 2px; padding: 0px; background-color: buttonface;" cellpadding="0" cellspacing="0" width="100%">
+	<tbody><tr><td valign="top"><table border="0" cellpadding="0" cellspacing="0" width="220">
+		<tbody><tr class="menu_header" align="center" valign="bottom">
+			<td><div style="width: 0px; height: 26px;"></div></td>
+			<td width="60">
+				<a href="javascript:;" onmouseover="popUp('HM_Menu1',event)" onmouseout="popDown('HM_Menu1')">Objecto&nbsp;&nbsp;&nbsp;</a>
+				</td>
+			<td width="50">
+				<a href="javascript:arshow('edit_object_data','edit.object.data.phtml')" onmouseover="popUp('HM_Menu2',event)" onmouseout="popDown('HM_Menu2')">Alterar&nbsp;&nbsp;&nbsp;</a>
+			</td>
+			<td width="60">
+				<a href="javascript:arshow('_new','http://demo.muze.nl/ariadne/loader.php/-hDzv-/pt/demo/view.html')" onmouseover="popUp('HM_Menu3',event)" onmouseout="popDown('HM_Menu3')">Mostrar&nbsp;&nbsp;&nbsp;</a>
+			</td>
+			<td width="60">
+				<a href="javascript:;" onmouseover="popUp('HM_Menu4',event)" onmouseout="popDown('HM_Menu4')">Ajuda&nbsp;&nbsp;&nbsp;</a>
+			</td>
+		</tr>
+		</tbody></table></td>
+	<td align="right" width="100%">
+		Caminho:&nbsp;</td><td align="right"><input name="path" size="50" value="/demo/" type="text">
+	</td>
+</tr> <!-- Needed to fill out the menubar -->
+</tbody></table>
+</div>
+</form>
+
+
+
+
+
+	<table height="95%" width="100%">
+	<tbody><tr><td valign="top" width="100%">
+	<div id="topdiv">
+		<img src="toolbar_files/pdir_open.gif" id="icon" align="left" height="40" width="40">
+<div id="object">
+	<h1>Demo</h1>
+	<div id="summary">
+			</div>
+</div>
+	</div>
+	</td><td rowspan="2" valign="top">
+	<div id="sidebar">
+			<div id="infobox">
+		<table width="100%">
+			<tbody><tr><td valign="top">Tipo:</td>
+				<td class="data" valign="top">pdir</td></tr>
+			<tr><td valign="top">Utilizador:</td>
+				<td class="data" valign="top"><a href="javascript:arshow('edit_object_owner','edit.config.owner.phtml')" title="">Administrator</a></td></tr>
+			<tr><td valign="top">Data:</td>
+				<td class="data" valign="top">11-01-2001</td></tr>
+			<tr><td valign="top">Alterado:</td>
+				<td class="data" valign="top">11-12-2004</td></tr>
+			<tr><td valign="top">Tamanho:</td>
+				<td class="data" valign="top">1 KB</td></tr>
+			<tr><td valign="top">Prioridade:</td>
+				<td class="data" valign="top"><a href="javascript:arshow('edit_priority','edit.priority.phtml')" title="Prioridade ">0</a></td></tr>
+						<tr><td valign="top">Lingua:</td><td class="data" valign="middle"><a class="selected" href="http://demo.muze.nl/ariadne/loader.php/-hDzv-/pt/demo/view.phtml?&amp;arLanguage=en" onclick="top.Set('arLanguage','en'); return true;"><img src="toolbar_files/en.gif" alt="English" border="0"></a> <a class="unselected" href="http://demo.muze.nl/ariadne/loader.php/-hDzv-/pt/demo/view.phtml?&amp;arLanguage=nl" onclick="top.Set('arLanguage','nl'); return true;"><img src="toolbar_files/nl.gif" alt="Nederlands" border="0"></a> <a class="unselected" href="http://demo.muze.nl/ariadne/loader.php/-hDzv-/pt/demo/view.phtml?&amp;arLanguage=de" onclick="top.Set('arLanguage','de'); return true;"><img src="toolbar_files/de.gif" alt="Deutsch" border="0"></a> </td></tr>
+						<tr><td valign="top">Detalhes:</td><td class="data" valign="top"><a href="javascript:arshow('edit_object_grants','edit.object.grants.phtml')" title="Permiss&amp;etilde;oes">G</a>&nbsp;				</td></tr>
+		</tbody></table>
+	</div>
+		<br clear="all">
+			</div>
+	</td></tr><tr><td height="60%" valign="top">
+	<div style="position: absolute; width: 955px; height: 486px; top: 220px;" id="container">
+	<script>
+		var myCookie=document.cookie;
+
+		function Get(name) {
+			var index = myCookie.indexOf(name + "=");
+			if (index == -1) return null;
+			index = myCookie.indexOf("=", index) + 1; // first character
+			var endstr = myCookie.indexOf(";", index);
+			if (endstr == -1) endstr = myCookie.length; // last character
+			return unescape(myCookie.substring(index, endstr));
+		}
+
+		function Set(name, value) {
+			var today=new Date();
+			var expires=new Date(today.getTime() + 2678400000); // 31 days
+			document.cookie=name+'='+value+'; expires='+expires.toGMTString();
+		}
+
+	</script>
+	<script src="toolbar_files/toolbar.js"></script>
+		<script>
+		function doHover(object, align) {
+			object.className='tbutton_'+align+'_hover';
+		}
+		function undoHover(object, align) {
+			if (object.id=='b_'+viewmode) {
+				object.className='tbutton_'+align+'_pressed';	
+			} else {
+				object.className='tbutton_'+align;	
+			}
+		}
+		var b_props='resizable,height=275,width=450';
+		function b_openwindow(windowname, link, arguments) {
+			if (window.arshow) {
+				window.arshow(windowname, link, arguments);
+			} else {
+				windowsize=top.Get(windowname);
+				if (windowsize) {
+					properties=b_props+','+windowsize;
+				} else {
+					properties=b_props;
+				}
+				window.open(link, windowname, properties);
+			}
+		}
+		function b_new() {
+			b_openwindow('edit_object_data','object.new.select.phtml');
+		}
+		function b_import() {
+			b_openwindow('edit_object_data','object.import.phtml');
+		}
+		function b_export() {
+			b_openwindow('edit_object_data','object.export.phtml');
+		}
+	</script>
+	<div id="toolbar" style="border-style: groove groove none; border-color: buttonhighlight buttonhighlight -moz-use-text-color; border-width: 2px 2px 0px; background: buttonface none repeat scroll 0%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; width: 100%; height: 26px;">
+		<div id="b_first" class="tbutton_left" style="visibility: hidden;" onmouseover="this.className='tbutton_left_hover'" onmouseout="this.className='tbutton_left'" onclick="b_first();"><img src="toolbar_files/first.gif"></div>
+		<div id="b_prev" class="tbutton_left" style="visibility: hidden;" onmouseover="this.className='tbutton_left_hover'" onmouseout="this.className='tbutton_left'" onclick="b_prev();"><img src="toolbar_files/prev.gif"></div>
+		<div id="b_up" class="tbutton_left" onmouseover="this.className='tbutton_left_hover'" onmouseout="this.className='tbutton_left'" onclick="top.View('/');"><img src="toolbar_files/up.gif"></div>
+		<div id="b_pages_div" style="float: left;">
+			<form name="b_pages" style="visibility: hidden; float: left; margin-top: 2px; font-family: menu; font-style: ; font-variant: ; font-weight: ; font-size: ; line-height: ; font-size-adjust: ; font-stretch: ;" onsubmit="b_goto(this.goto.options.selectedIndex); return false;">
+				<div style="padding: 2px; float: left;">Página : </div>
+				<select id="b_goto_select" name="b_goto_select" onchange="return b_goto(this.options.selectedIndex);"></select>
+			</form>
+		</div>
+
+
+</body>
+</html>
