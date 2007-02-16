@@ -172,6 +172,7 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
             
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            throw e;
         }
         
         defaultView.setMimeType("application/xhtml+xml");

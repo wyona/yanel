@@ -318,13 +318,17 @@ public class RealmConfiguration {
         DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
 
         Realm srcRealm = getRealm(srcRealmID);
+        if (srcRealm == null) {
+            throw new Exception("cannot create realm '" + destRealmID + "': source realm '" + 
+                    srcRealmID + "' does not exist.");
+        }
         String srcConfigSrc = srcRealm.getConfigFile().getAbsolutePath();
         
         File realmConfigFile = resolveFile(new File(srcConfigSrc), realmsConfigFile);
         Configuration realmConfig = builder.buildFromFile(realmConfigFile);
         Configuration srcRootConfig = realmConfig.getChild("root-dir", false);
         if (srcRootConfig == null) {
-            throw new Exception("cannot copy realm " + srcRealmID + " no root dir specified in config file");
+            throw new Exception("cannot copy realm '" + srcRealmID + "' no root dir specified in config file");
         }
         File srcRootDir = new File(srcRootConfig.getValue());
         if (!srcRootDir.isAbsolute()) {
