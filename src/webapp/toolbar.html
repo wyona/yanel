@@ -1,0 +1,39 @@
+<html>
+<head>
+<title>Yanel Toolbar</title>
+
+<script>
+function expand (menu_id, event) {
+alert("Expand: " + menu_id);
+}
+
+function collapse (menu_id) {
+alert("Collapse: " + menu_id);
+}
+</script>
+
+<script>
+menu_file = [
+]
+</script>
+</head>
+<body>
+
+
+<table id="toolbar">
+<tr>
+<td>
+<span onmouseover="expand('file_menu',event)" onmouseout="collapse('file_menu')">File</span>
+</td>
+<td>
+<span onmouseover="expand('edit_menu',event)" onmouseout="collapse('edit_menu')">Edit</span>
+</td>
+<td>
+<span onmouseover="expand('help_menu',event)" onmouseout="collapse('help_menu')">Help</span>
+</td>
+</tr>
+</table>
+
+BODY
+</body>
+</html>
