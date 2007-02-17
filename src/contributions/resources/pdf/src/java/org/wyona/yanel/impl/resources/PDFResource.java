@@ -65,7 +65,7 @@ public class PDFResource extends Resource implements ViewableV2 {
      */
     public View getView(String viewId) {
         View defaultView = new View();
-        defaultView.setMimeType("application/pdf");
+        defaultView.setMimeType(getMimeType(viewId));
        
         try {
             Repository repo = getRealm().getRepository();            
@@ -136,6 +136,11 @@ public class PDFResource extends Resource implements ViewableV2 {
      log.info("No XSLT Path within: " + path);
      return null;
  }
- 
-    
+
+    /**
+     *
+     */
+    public String getMimeType(String viewId) {
+        return "application/pdf";
+    }
 }
