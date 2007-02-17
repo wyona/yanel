@@ -47,4 +47,9 @@ public interface ViewableV2 {
      * 
      */
     public long getSize() throws Exception;
+    
+    /**
+     * 
+     */
+    public String getMimeType(String viewId) throws Exception;
 }
