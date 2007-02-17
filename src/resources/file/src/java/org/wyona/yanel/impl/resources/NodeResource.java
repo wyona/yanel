@@ -92,7 +92,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     /**
      *
      */
-    private String getMimeType(String viewId) throws Exception {
+    public String getMimeType(String viewId) throws Exception {
         
         String mimeType = null;
         ResourceConfiguration resConfig = getConfiguration();
