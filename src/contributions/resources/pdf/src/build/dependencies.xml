@@ -18,6 +18,7 @@
       <remoteRepository refid="wyona.remote.repository"/>
       <dependency groupId="fop" artifactId="fop"
                   version="0.20.5"/>
+      <!-- IMPORTANT: Fop 0.20.5 seems to depend on avalon-framework-4.0: ~/.m2/repository/fop/fop/0.20.5/fop-0.20.5.pom (One should comment avalon-framework-4.0 within pom file!) -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api"
                   version="4.3"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-impl"
