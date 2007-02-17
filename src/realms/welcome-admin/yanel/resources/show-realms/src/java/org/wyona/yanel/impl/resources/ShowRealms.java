@@ -162,15 +162,17 @@ public class ShowRealms extends Resource implements ViewableV2 {
     /**
      * 
      */
-    private String getXSLTPath() {
-        return getRTI().getProperty("xslt");
+    private String getXSLTPath() throws Exception {
+        return getConfiguration().getProperty("xslt");
+        //return getRTI().getProperty("xslt");
     }
 
      /**
      * 
      */
-    private String getMimeType(String path) {
-        String mimeType = getRTI().getProperty("mime-type");
+    public String getMimeType(String path) throws Exception {
+        String mimeType = getConfiguration().getProperty("mime-type");
+        //String mimeType = getRTI().getProperty("mime-type");
         if (mimeType == null) mimeType = "application/xhtml+xml";
         return mimeType;
     }
