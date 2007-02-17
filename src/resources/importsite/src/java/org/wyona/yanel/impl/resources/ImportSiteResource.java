@@ -175,7 +175,7 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
             throw e;
         }
         
-        defaultView.setMimeType("application/xhtml+xml");
+        defaultView.setMimeType(getMimeType(viewId));
         defaultView.setInputStream(i18nTransformer.getInputStream());
         return defaultView;
     }
@@ -195,7 +195,7 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
         java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
         transformer.transform(new StreamSource(new ByteArrayInputStream(byteArrayOutputStream.toByteArray())),
                 new StreamResult(baos));
-        defaultView.setMimeType("application/xhtml+xml");
+        defaultView.setMimeType(getMimeType(viewId));
         defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
         return defaultView;
     }*/
@@ -215,4 +215,10 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
         return getRealm().getRepository().getSize(new Path(getPath()));
     }
 
+    /**
+     *
+     */
+    public String getMimeType(String viewId) {
+        return "application/xhtml+xml";
+    }
 }
