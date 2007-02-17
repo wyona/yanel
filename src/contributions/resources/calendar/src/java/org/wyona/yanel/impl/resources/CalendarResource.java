@@ -53,6 +53,28 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
     /**
      *
      */
+    public String getMimeType(String viewId) {
+        if(viewId == null) {
+            String mimeType = getRTI().getProperty("mime-type");
+            if (mimeType != null) {
+                return mimeType;
+            } else {
+                return "text/calendar";
+            }
+        }
+        if(viewId != null && viewId.equals("xml")) {
+	    return "application/xml";
+        }
+        if (viewId != null && viewId.equals("xhtml")) {
+            return "application/xhtml+xml";
+        }
+        log.warn("No mime type for view id: " + viewId);
+        return null;
+    }
+
+    /**
+     *
+     */
     public boolean exists() throws Exception {
         log.warn("Not implemented yet!");
         return false;
@@ -75,12 +97,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
             if(viewId == null) {
                 View view = new View();
                 //view.setResponse(false);
-                String mimeType = getRTI().getProperty("mime-type");
-                if (mimeType != null) {
-	            view.setMimeType(mimeType);
-	        } else {
-	            view.setMimeType("text/calendar");
-                }
+	        view.setMimeType(getMimeType(null));
 	        view.setInputStream(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getPath())));
                 log.error("DEBUG: Return ICS!");
                 return view;
@@ -127,7 +144,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
 
             View view = new View();
             //view.setResponse(false);
-	    view.setMimeType("application/xml");
+	    view.setMimeType(getMimeType(viewId));
 	    view.setInputStream(new java.io.StringBufferInputStream(calendar.toString()));
             return view;
         } else if (viewId != null && viewId.equals("xhtml")) {
@@ -141,7 +158,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
             }
 
             View view = new View();
-            view.setMimeType("application/xhtml+xml");
+            view.setMimeType(getMimeType(viewId));
 
             view.setInputStream(new java.io.ByteArrayInputStream(out.toByteArray()));
             return view;
@@ -162,12 +179,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
 
             View view = new View();
             //view.setResponse(false);
-            String mimeType = getRTI().getProperty("mime-type");
-            if (mimeType != null) {
-	        view.setMimeType(mimeType);
-	    } else {
-	        view.setMimeType("text/calendar");
-            }
+	    view.setMimeType(getMimeType(null));
 	    view.setInputStream(new java.io.ByteArrayInputStream(out.toByteArray()));
             return view;
         }
