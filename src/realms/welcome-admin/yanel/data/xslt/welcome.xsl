@@ -31,10 +31,10 @@
         <h2>Getting Started</h2>
         <p>
           <ul>
-            <li><a href="yanel-website/en/documentation/what-is-a-realm.html">What is a realm?</a></li>
+            <li><a href="yanel-website/en/documentation/what-is-a-realm.html" target="_top">What is a realm?</a></li>
             <li>Create a realm from scratch.</li>
             <li>
-              <a href="yanel-website/en/documentation/import-existing-website-as-new-realm.html">Import
+              <a href="yanel-website/en/documentation/import-existing-website-as-new-realm.html" target="_top">Import
                 an existing website as a new realm.</a> (Work in progress: <a href="import-site.html">Do it!</a>)
             </li>
             <li>
@@ -43,6 +43,7 @@
                 an existing third-party realm.</a>
             </li>
             <li>More information can be found within the Yanel <a href="yanel-website/en/documentation/index.html">documentation</a>.</li>
+            <li>Turn on <a href="?yanel.toolbar=on">toolbar</a>.</li>
 
 <!--
             <li>What is a resource resp. resource type?</li>
