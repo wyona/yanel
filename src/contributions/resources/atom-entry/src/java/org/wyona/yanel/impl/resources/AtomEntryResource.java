@@ -75,7 +75,7 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
      */
     public View getView(String viewId) {
         View defaultView = new View();
-        String mimeType = getMimeType(getPath(), viewId);
+        String mimeType = getMimeType(viewId);
         defaultView.setMimeType(mimeType);
 
         try {
@@ -122,11 +122,11 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
     /**
      *
      */
-    private String getMimeType(String path, String viewId) {
+    public String getMimeType(String viewId) {
         String mimeType = getRTI().getProperty("mime-type");
         if (mimeType != null) return mimeType;
 
-        String suffix = PathUtil.getSuffix(path);
+        String suffix = PathUtil.getSuffix(getPath());
         if (suffix != null) {
             log.debug("SUFFIX: " + suffix);
             if (suffix.equals("html")) {
