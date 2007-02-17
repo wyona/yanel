@@ -13,6 +13,10 @@
   <xsl:template match="/">
     <html>
       <head>
+        <base target="_top"/>
+<!--
+        <base target="_parent"/>
+-->
         <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
         <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
         <link rel="stylesheet" href="css/global.css" type="text/css"/>
@@ -31,10 +35,10 @@
         <h2>Getting Started</h2>
         <p>
           <ul>
-            <li><a href="yanel-website/en/documentation/what-is-a-realm.html" target="_top">What is a realm?</a></li>
+            <li><a href="yanel-website/en/documentation/what-is-a-realm.html">What is a realm?</a></li>
             <li>Create a realm from scratch.</li>
             <li>
-              <a href="yanel-website/en/documentation/import-existing-website-as-new-realm.html" target="_top">Import
+              <a href="yanel-website/en/documentation/import-existing-website-as-new-realm.html">Import
                 an existing website as a new realm.</a> (Work in progress: <a href="import-site.html">Do it!</a>)
             </li>
             <li>
