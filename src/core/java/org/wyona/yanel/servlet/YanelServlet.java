@@ -96,6 +96,8 @@ public class YanelServlet extends HttpServlet {
     
     public static final String DEFAULT_ENCODING = "UTF-8";
 
+    public static final String VIEW_ID_PARAM_NAME = "yanel.resource.viewid";
+
     /**
      *
      */
@@ -193,17 +195,66 @@ public class YanelServlet extends HttpServlet {
         }
 
         String toolbar = (String) session.getAttribute(TOOLBAR_KEY);
+        // TODO: Check mime-type and yanel.no-toolbar parameter
         if (toolbar != null && toolbar.equals("on")) {
+            String mimeType = null;
+            Resource resource = getResource(request, response);
+            if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Viewable", "2")) {
+                try {
+                    mimeType = ((ViewableV2) resource).getMimeType(request.getParameter(VIEW_ID_PARAM_NAME));
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
+            if (mimeType != null && mimeType.indexOf("html") > 0) {
             if (toolbarMasterSwitch.equals("on")) {
-                log.warn("TODO: Embed toolbar ...");
-                getContent(request, response);
+                String noToolbar = request.getParameter("yanel.no-toolbar");
+                // TODO: Check on the referer with getHeader("Referer") and check if the referer used the yanel.no-toolbar parameter ...
+                log.error("DEBUG: Referer: " + request.getHeader("Referer"));
+                if (noToolbar == null) {
+                    log.warn("TODO: Embed toolbar ...");
+                    StringBuffer tb = new StringBuffer("<html>");
+                    tb.append("<body style=\"padding: 0; margin: 0; overflow: hidden;\">");
+                    tb.append("<table>");
+                    tb.append("<tr>");
+                    tb.append("<td><a href=\"create-new-page.html\">New Page</a></td>");
+                    tb.append("<td>&#160;|&#160;</td>");
+                    tb.append("<td><a href=\"?yanel.toolbar=off\">Turn of toolbar</a></td>");
+                    tb.append("<td>&#160;|&#160;</td>");
+                    tb.append("<td><a href=\"?yanel.usecase=logout\">Logout</a></td>");
+                    Identity identity = (Identity) session.getAttribute(IDENTITY_KEY);
+                    if (identity != null) {
+                        tb.append("<td>&#160;&#160;&#160;&#160;User: " + identity.getUsername() + "</td>");
+                    } else {
+                        tb.append("<td>&#160;&#160;&#160;&#160;Not signed in!</td>");
+                    }
+                    tb.append("</tr>");
+                    tb.append("</table>");
+                    // TODO: Enhance/Patch all hypertext links with target="top"
+                    // TODO: Consider proxy and query-string ...
+                    //tb.append("<iframe src=\"http://127.0.0.1:8080/\" width=\"100%\" height=\"100%\"/>");
+                    tb.append("<iframe src=\"" + request.getRequestURI() + "?yanel.no-toolbar\" width=\"100%\" height=\"100%\"/>");
+                    tb.append("</body>");
+                    tb.append("</html>");
+                    response.getWriter().print(tb);
+                    return;
+                } else {
+                    // TODO: Enhance/Patch all hypertext links with yanel.no-toolbar
+                    log.error("DEBUG: Requested by iframe src ...");
+                    getContent(request, response);
+                    return;
+                }
             } else {
                 log.info("Toolbar has been disabled. Please check web.xml!");
-                getContent(request, response);
+            }
+            } else {
+                log.error("DEBUG: No HTML related mime type: " + mimeType);
             }
         } else {
-            getContent(request, response);
+            log.error("DEBUG: Toolbar is turned off.");
         }
+        getContent(request, response);
+        return;
     }
 
     /**
@@ -284,7 +335,7 @@ public class YanelServlet extends HttpServlet {
                             viewElement.appendChild(doc.createTextNode("No View Descriptors!"));
                         }
 
-                        String viewId = request.getParameter("yanel.resource.viewid");
+                        String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
                         try {
                             view = ((ViewableV1) res).getView(request, viewId);
                         } catch(org.wyona.yarep.core.NoSuchNodeException e) {
@@ -311,7 +362,7 @@ public class YanelServlet extends HttpServlet {
                         }
                     } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
                         log.debug("Resource is viewable V2");
-                        String viewId = request.getParameter("yanel.resource.viewid");
+                        String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
                         Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
                         viewElement.setAttributeNS(NAMESPACE, "version", "2");
                         ViewDescriptor[] vd = ((ViewableV2) res).getViewDescriptors();
