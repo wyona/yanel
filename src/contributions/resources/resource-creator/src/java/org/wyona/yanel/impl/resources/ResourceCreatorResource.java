@@ -58,9 +58,17 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     /**
      *
      */
+    public String getMimeType(String viewId) {
+        if (viewId != null && viewId.equals("source")) return "application/xml";
+        return "application/xhtml+xml";
+    }
+
+    /**
+     *
+     */
     public View getView(String viewId) {
         View view = new View();
-        view.setMimeType("application/xhtml+xml");
+        view.setMimeType(getMimeType(viewId));
         view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
         return view;
     }
@@ -71,9 +79,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     public ViewDescriptor[] getViewDescriptors() {
         ViewDescriptor[] vd = new ViewDescriptor[2];
         vd[0] = new ViewDescriptor("default");
-        vd[0].setMimeType("application/xhtml+xml");
+        vd[0].setMimeType(getMimeType(null));
         vd[1] = new ViewDescriptor("source");
-        vd[1].setMimeType("application/xml");
+        vd[1].setMimeType(getMimeType("source"));
         return vd;
     }
 
