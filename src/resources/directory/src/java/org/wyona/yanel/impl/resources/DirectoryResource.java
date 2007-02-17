@@ -158,7 +158,7 @@ public class DirectoryResource extends Resource implements ViewableV2 {
                 }
             }
             // TODO: Is this the best way to generate an InputStream from an OutputStream?
-            defaultView.setMimeType(getMimeType());
+            defaultView.setMimeType(getMimeType(viewId));
             defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
         } catch (Exception e) {
             log.error(e);
@@ -208,7 +208,7 @@ public class DirectoryResource extends Resource implements ViewableV2 {
     /**
      * Get mime type
      */
-    private String getMimeType() {
+    public String getMimeType(String viewId) {
         String mimeType = getRTI().getProperty("mime-type");
         if (mimeType != null) return mimeType;
 
