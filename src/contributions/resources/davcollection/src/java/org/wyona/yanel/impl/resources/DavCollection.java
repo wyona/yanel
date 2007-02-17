@@ -173,4 +173,12 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
      public long getSize() throws Exception {
          return getRealm().getRepository().getSize(new Path(getPath()));
      }
+
+    /**
+     *
+     */
+    public String getMimeType(String viewId) {
+        log.warn("TODO: Not implemented yet!");
+        return null;
+    }
 }
