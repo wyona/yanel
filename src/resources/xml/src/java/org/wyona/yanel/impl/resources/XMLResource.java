@@ -100,7 +100,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      */
     public View getView(String viewId, String revisionName) throws Exception {
         View defaultView = new View();
-        String mimeType = getMimeType(getPath(), viewId);
+        String mimeType = getMimeType(viewId);
         defaultView.setMimeType(mimeType);
 
         String yanelPath = getResourceConfigProperty("yanel-path");
@@ -212,11 +212,11 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     /**
      * Get mime type
      */
-    private String getMimeType(String path, String viewId) throws Exception {
+    public String getMimeType(String viewId) throws Exception {
         String mimeType = getResourceConfigProperty("mime-type");
         if (mimeType != null) return mimeType;
 
-        String suffix = PathUtil.getSuffix(path);
+        String suffix = PathUtil.getSuffix(getPath());
         if (suffix != null) {
             log.debug("SUFFIX: " + suffix);
             if (suffix.equals("html")) {
