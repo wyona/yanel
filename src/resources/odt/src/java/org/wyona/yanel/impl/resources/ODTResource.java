@@ -125,7 +125,7 @@ public class ODTResource extends Resource implements ViewableV2, ModifiableV2 {
     /**
      * 
      */
-    private String getMimeType(String viewId) {
+    public String getMimeType(String viewId) {
         String mimeType = getRTI().getProperty("mime-type");
         if (mimeType != null) {
             if (mimeType.indexOf("mime-type:") == 0) {
