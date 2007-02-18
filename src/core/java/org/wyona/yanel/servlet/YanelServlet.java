@@ -226,7 +226,7 @@ public class YanelServlet extends HttpServlet {
                     if (identity != null) {
                         tb.append("<td>&#160;&#160;&#160;&#160;User: " + identity.getUsername() + "</td>");
                     } else {
-                        tb.append("<td>&#160;&#160;&#160;&#160;Not signed in!</td>");
+                        tb.append("<td>&#160;&#160;&#160;&#160;User: Not signed in!</td>");
                     }
                     tb.append("</tr>");
                     tb.append("</table>");
@@ -251,7 +251,7 @@ public class YanelServlet extends HttpServlet {
                 log.error("DEBUG: No HTML related mime type: " + mimeType);
             }
         } else {
-            log.error("DEBUG: Toolbar is turned off.");
+            log.debug("Toolbar is turned off.");
         }
         getContent(request, response);
         return;
