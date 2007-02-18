@@ -22,6 +22,7 @@
   <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-homepage.xml"/>
   <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
   <link rel="stylesheet" href="css/global.css" type="text/css"/>
+  <base target="_top"/>
   <style>
 #body {
   text-align:left;
