@@ -44,6 +44,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 
   <link rel="shortcut icon" href="{$yarep.back2realm}favicon.ico" type="image/vnd.microsoft.icon" />
   <link rel="stylesheet" href="{$yarep.back2realm}css/global.css" type="text/css"/>
+  <base target="_top"/>
   <xsl:copy-of select="/xhtml:html/xhtml:head/*[name(.) != 'title']"/>
 
   <xsl:choose>
