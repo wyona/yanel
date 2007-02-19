@@ -405,6 +405,17 @@
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" value="${yanel.home.dir.forward.slashes}/src/realms">
       <replacetoken>../src/realms</replacetoken>
     </replace>
+    
+    <copy file="${yanel.home.dir}/src/build/install.rdf" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}-r${yanel.revision}">
+      <replacetoken>@VERSION@</replacetoken>
+    </replace>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="source">
+      <replacetoken>@INSTALLTYPE@</replacetoken>
+    </replace>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="unknown">
+      <replacetoken>@PLATFORM@</replacetoken>
+    </replace>
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.file.forward.slashes}">
       <replacetoken>@LOG4J_FILE@</replacetoken>
