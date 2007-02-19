@@ -1,11 +1,14 @@
 package org.wyona.yanel.core.transformation;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import org.apache.log4j.Category;
 import org.xml.sax.Attributes;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -17,6 +20,7 @@ public class I18nTransformer extends DefaultHandler {
     private ByteArrayInputStream byteArrayInputStream = null;
     private StringBuffer transformedXmlAsBuffer = null;
     private String cachedEname;
+    private EntityResolver entityResolver;
 
     public I18nTransformer(String messages, String language) {
         currentLocale = new Locale(language);
@@ -129,5 +133,22 @@ public class I18nTransformer extends DefaultHandler {
         }
         log.debug("[" + inputString + "] replaced with [" + replacedAmpersand + "]");
         return replacedAmpersand;
+    }
+
+    public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
+        try {
+            if (this.entityResolver != null) {
+                    return this.entityResolver.resolveEntity(publicId, systemId);
+            } else {
+                return super.resolveEntity(publicId, systemId);
+            }
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            throw new SAXException(e);
+        }
+    }
+
+    public void setEntityResolver(EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
     }
 }

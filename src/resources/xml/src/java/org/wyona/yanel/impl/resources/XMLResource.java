@@ -64,6 +64,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
 import org.apache.log4j.Category;
+import org.apache.xml.resolver.tools.CatalogResolver;
 
 /**
  *
@@ -135,20 +136,18 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
 
                 org.xml.sax.XMLReader xmlReader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
-                xmlReader.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
+                CatalogResolver catalogResolver = new CatalogResolver();
+                xmlReader.setEntityResolver(catalogResolver);
                 transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML(repo, yanelPath, revisionName))), new StreamResult(baos));
                 
                 InputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
                 defaultView.setInputStream(inputStream);
 
-                // TODO: Seems to have problems accessing remote DTDs when being offline
-/*
                 I18nTransformer i18nTransformer = new I18nTransformer("global", getLanguage());
+                i18nTransformer.setEntityResolver(catalogResolver);
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 saxParser.parse(inputStream, i18nTransformer);
                 defaultView.setInputStream(i18nTransformer.getInputStream());
-*/
-
 
                 return defaultView;
             } else {
@@ -156,7 +155,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 defaultView.setInputStream(getContentXML(repo, yanelPath, revisionName));
             }
         } catch(Exception e) {
-            log.error(e + " (" + getPath() + ", " + getRealm() + ")");
+            log.error(e + " (" + getPath() + ", " + getRealm() + ")", e);
             throw new Exception(e);
         }
 
