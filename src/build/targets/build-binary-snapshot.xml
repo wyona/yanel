@@ -96,11 +96,13 @@
   
   <target name="bin-snapshot-win">
     <antcall target="patch-install-rdf-win"/>
-    <jar jarfile="${snapshot.dir}/${servlet.context.prefix}.war" basedir="${snapshot.dir}/${servlet.context.prefix}"/>
     <!-- Unpatch install.rdf ... -->
 
-    <copy dir="${snapshot.dir}/apache-tomcat-${tomcat.version}" todir="${snapshot.dir.win}"/>
-    <move file="${snapshot.dir}/${servlet.context.prefix}.war" todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps"/>
+    <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}">
+      <fileset dir="${snapshot.dir}/apache-tomcat-${tomcat.version}" />
+    </copy>
+    <jar jarfile="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps/${servlet.context.prefix}.war" basedir="${snapshot.dir}/${servlet.context.prefix}"/>
+    <!-- <move file="${snapshot.dir}/${servlet.context.prefix}.war" todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps"/> -->
 
     <copy file="${yanel.home.dir}/LICENSE.txt" todir="${snapshot.dir.win}"/>
 
@@ -125,8 +127,9 @@
   </target>
   
   <target name="bin-snapshot-unix">
-    <antcall target="bin-snapshot-war-unix"/>
-    <move file="${snapshot.dir}/${servlet.context.prefix}.war" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps"/>
+    <antcall target="patch-install-rdf-unix"/>
+    <jar jarfile="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/${servlet.context.prefix}.war" basedir="${snapshot.dir}/${servlet.context.prefix}"/>
+    <delete dir="${snapshot.dir}/${servlet.context.prefix}"/>
     <!-- Copy UNIX and Windows specific files -->
     <copy file="${yanel.home.dir}/src/binary-dist/README-UNIX.txt" tofile="${snapshot.dir}/README.txt" overwrite="true"/>
     <copy file="${yanel.home.dir}/src/binary-dist/start.sh" todir="${snapshot.dir}"/>
@@ -153,7 +156,7 @@
     </replace>
   </target>
 
-  <target name="bin-snapshot-war-unix">
+  <target name="patch-install-rdf-unix">
     <copy file="${yanel.home.dir}/src/build/install.rdf" todir="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
     <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}-r${yanel.revision}">
       <replacetoken>@VERSION@</replacetoken>
@@ -164,8 +167,6 @@
       <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="unix">
       <replacetoken>@PLATFORM@</replacetoken>
     </replace>
-    <antcall target="build-bin-snapshot-war"/>
-    <delete dir="${snapshot.dir}/${servlet.context.prefix}"/>
   </target>
   
 </project>
