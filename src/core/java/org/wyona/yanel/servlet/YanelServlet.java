@@ -224,7 +224,7 @@ public class YanelServlet extends HttpServlet {
                     tb.append("<td><a href=\"?yanel.usecase=logout\">Logout</a></td>");
                     Identity identity = (Identity) session.getAttribute(IDENTITY_KEY);
                     if (identity != null) {
-                        tb.append("<td>&#160;&#160;&#160;&#160;User: " + identity.getUsername() + "</td>");
+                        tb.append("<td>&#160;&#160;&#160;&#160;User: " + identity.getUsername() + " (Realm: ...)</td>");
                     } else {
                         tb.append("<td>&#160;&#160;&#160;&#160;User: Not signed in!</td>");
                     }
