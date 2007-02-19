@@ -42,6 +42,8 @@
     <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/jsp-examples"/>
     <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/servlets-examples"/>
     <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/tomcat-docs"/>
+    <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/balancer"/>
+    <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/webdav"/>
   </target>
   
   <target name="copy-realms-resources">
