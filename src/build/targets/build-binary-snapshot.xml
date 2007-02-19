@@ -116,8 +116,8 @@
     <copy file="${yanel.home.dir}/src/binary-dist/windows/stop.ico" todir="${snapshot.dir.win}"/>
     <copy file="${yanel.home.dir}/src/binary-dist/windows/install.ico" todir="${snapshot.dir.win}"/>
     <copy file="${yanel.home.dir}/src/binary-dist/windows/uninstall.ico" todir="${snapshot.dir.win}"/>
-    <copy file="${yanel.home.dir}/src/binary-dist/windows/install-lenya.nsi" todir="${snapshot.dir.win}"/>
-    <replace file="${snapshot.dir.win}/install-lenya.nsi" value="${yanel.version}-r${yanel.revision}">
+    <copy file="${yanel.home.dir}/src/binary-dist/windows/install-yanel.nsi" todir="${snapshot.dir.win}"/>
+    <replace file="${snapshot.dir.win}/install-yanel.nsi" value="${yanel.version}-r${yanel.revision}">
       <replacetoken>@YANEL_VERSION@</replacetoken>
     </replace>
 
