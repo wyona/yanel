@@ -12,4 +12,7 @@ See http://xml.apache.org/commons/components/resolver/resolver-article.html
 <public publicId="-//W3C//DTD XHTML 1.0 Transitional//EN"
         uri="entities/w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
 
+<public publicId="-//W3C//DTD XHTML 1.1//EN"
+        uri="entities/w3.org/TR/xhtml11/DTD/xhtml11-flat.dtd"/>
+
 </catalog>
