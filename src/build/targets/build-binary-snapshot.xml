@@ -1,21 +1,32 @@
 <?xml version="1.0"?>
 
 <project name="build-binary-snapshot" default="bin-snapshot" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
-
+  
   <target name="bin-snapshot" description="Create a binary snapshot" depends="init, webapp">
-<!--
-  <target name="bin-snapshot" description="Create a binary snapshot" depends="init, war">
--->
+    <delete dir="${build.dir}/bin-snapshots"/>
+    <property name="snapshot.dir" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin"/>
+    <mkdir dir="${snapshot.dir}"/>
+    <antcall target="prepare-tomcat"/>
+    <antcall target="copy-realms-resources"/>
+
+    <!-- Windows specific snapshot -->
+    <property name="snapshot.dir.win" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin-win"/>
+    <mkdir dir="${snapshot.dir.win}"/>
+    <antcall target="bin-snapshot-win"/>
+
+    <!-- UNIX specific snapshot -->
+    <antcall target="bin-snapshot-unix"/>
+    
+    <delete dir="${snapshot.dir}"/>
+  </target>
+
+  <target name="prepare-tomcat">
     <artifact:remoteRepository id="wyona.org.remote.repository" url="http://www.wyona.org/maven2/"/>
 
     <artifact:dependencies pathId="maven2.tomcat.classpath" filesetId="maven2.tomcat.fileset">
       <remoteRepository refid="wyona.org.remote.repository"/>
       <dependency groupId="apache-org" artifactId="apache-tomcat" version="${tomcat.version}" scope="provided"/>
     </artifact:dependencies>
-
-    <delete dir="${build.dir}/bin-snapshots"/>
-    <property name="snapshot.dir" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin"/>
-    <mkdir dir="${snapshot.dir}"/>
 
     <!-- Unpack Tomcat -->
     <unzip dest="${snapshot.dir}">
@@ -27,9 +38,13 @@
     <copy file="${yanel.home.dir}/tools/apache-tomcat/java-1.4/apache-tomcat-5.5.20/bin/jmx.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/bin"/>
     <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/common/endorsed"/>
     <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/common/endorsed"/>
-
-
-    <!-- Build WAR file -->
+    <!-- delete unused tomcat files -->
+    <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/jsp-examples"/>
+    <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/servlets-examples"/>
+    <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/tomcat-docs"/>
+  </target>
+  
+  <target name="copy-realms-resources">
     <copy todir="${snapshot.dir}/${servlet.context.prefix}">
       <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
     </copy>
@@ -77,30 +92,45 @@
     </replace>
     <mkdir dir="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/logs"/>
 
+  </target>
+  
+  <target name="bin-snapshot-win">
+    <antcall target="patch-install-rdf-win"/>
     <jar jarfile="${snapshot.dir}/${servlet.context.prefix}.war" basedir="${snapshot.dir}/${servlet.context.prefix}"/>
+    <!-- Unpatch install.rdf ... -->
 
-    <delete dir="${snapshot.dir}/${servlet.context.prefix}"/>
+    <copy dir="${snapshot.dir}/apache-tomcat-${tomcat.version}" todir="${snapshot.dir.win}"/>
+    <move file="${snapshot.dir}/${servlet.context.prefix}.war" todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps"/>
 
-    <move file="${snapshot.dir}/${servlet.context.prefix}.war" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps"/>
-
-    <copy file="${yanel.home.dir}/LICENSE.txt" todir="${snapshot.dir}"/>
+    <copy file="${yanel.home.dir}/LICENSE.txt" todir="${snapshot.dir.win}"/>
 
     <!-- Copy Windows specific files -->
-    <copy file="${yanel.home.dir}/src/binary-dist/README-WINDOWS.txt" tofile="${snapshot.dir}/README.txt"/>
-    <copy file="${yanel.home.dir}/src/binary-dist/start.bat" todir="${snapshot.dir}"/>
-    <copy file="${yanel.home.dir}/src/binary-dist/stop.bat" todir="${snapshot.dir}"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/README-WINDOWS.txt" tofile="${snapshot.dir.win}/README.txt"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/start.bat" todir="${snapshot.dir.win}"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/stop.bat" todir="${snapshot.dir.win}"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/windows/start.ico" todir="${snapshot.dir.win}"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/windows/stop.ico" todir="${snapshot.dir.win}"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/windows/install.ico" todir="${snapshot.dir.win}"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/windows/uninstall.ico" todir="${snapshot.dir.win}"/>
+    <copy file="${yanel.home.dir}/src/binary-dist/windows/install-lenya.nsi" todir="${snapshot.dir.win}"/>
+    <replace file="${snapshot.dir.win}/install-lenya.nsi" value="${yanel.version}-r${yanel.revision}">
+      <replacetoken>@YANEL_VERSION@</replacetoken>
+    </replace>
 
-    <!-- Create ZIP file -->
+    <!-- Create ZIP file 
     <zip destfile="${snapshot.dir}.zip">
       <zipfileset dir="${snapshot.dir}" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin" filemode="755"/>
     </zip>
-
+    -->
+  </target>
+  
+  <target name="bin-snapshot-unix">
+    <antcall target="bin-snapshot-war-unix"/>
+    <move file="${snapshot.dir}/${servlet.context.prefix}.war" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps"/>
     <!-- Copy UNIX and Windows specific files -->
     <copy file="${yanel.home.dir}/src/binary-dist/README-UNIX.txt" tofile="${snapshot.dir}/README.txt" overwrite="true"/>
     <copy file="${yanel.home.dir}/src/binary-dist/start.sh" todir="${snapshot.dir}"/>
     <copy file="${yanel.home.dir}/src/binary-dist/stop.sh" todir="${snapshot.dir}"/>
-    <delete file="${snapshot.dir}/start.bat"/>
-    <delete file="${snapshot.dir}/stop.bat"/>
 
     <!-- Create TGZ file -->
     <tar destfile="${snapshot.dir}.tar">
@@ -108,7 +138,34 @@
     </tar>
     <gzip src="${snapshot.dir}.tar" destfile="${snapshot.dir}.tar.gz"/>
     <delete file="${snapshot.dir}.tar"/>
-    <delete dir="${snapshot.dir}"/>
+  </target>
+  
+  <target name="patch-install-rdf-win">
+    <copy file="${yanel.home.dir}/src/build/install.rdf" todir="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
+    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}-r${yanel.revision}">
+      <replacetoken>@VERSION@</replacetoken>
+    </replace>
+    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="bin-snapshot">
+      <replacetoken>@INSTALLTYPE@</replacetoken>
+    </replace>
+      <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="windows">
+      <replacetoken>@PLATFORM@</replacetoken>
+    </replace>
   </target>
 
+  <target name="bin-snapshot-war-unix">
+    <copy file="${yanel.home.dir}/src/build/install.rdf" todir="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
+    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}-r${yanel.revision}">
+      <replacetoken>@VERSION@</replacetoken>
+    </replace>
+    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="bin-snapshot">
+      <replacetoken>@INSTALLTYPE@</replacetoken>
+    </replace>
+      <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="unix">
+      <replacetoken>@PLATFORM@</replacetoken>
+    </replace>
+    <antcall target="build-bin-snapshot-war"/>
+    <delete dir="${snapshot.dir}/${servlet.context.prefix}"/>
+  </target>
+  
 </project>
