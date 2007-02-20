@@ -441,6 +441,11 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         try {
             // TODO: XHTML template should not be hardcoded!
             Repository repo = getRealm().getRepository();
+            if (!repo.existsNode(getPath())) {
+                // TODO: create node recursively ...
+                repo.getRootNode().addNode(new org.wyona.commons.io.Path(getPath().toString()).getName(), org.wyona.yarep.core.NodeType.RESOURCE);
+                log.warn("Node has been created: " + getPath());
+            }
             Writer writer = new java.io.OutputStreamWriter(repo.getNode(getPath()).getOutputStream());
             writer.write("<?xml version=\"1.0\"?>");
             writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
@@ -460,6 +465,11 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
             int lastIndex = name.lastIndexOf(".");
             if (lastIndex > 0) nameWithoutSuffix = name.substring(0, lastIndex);
             String introspectionPath = parent + "/introspection-" + nameWithoutSuffix + ".xml";
+            if (!repo.existsNode(introspectionPath)) {
+                // TODO: create node recursively ...
+                repo.getRootNode().addNode(new org.wyona.commons.io.Path(introspectionPath).getName(), org.wyona.yarep.core.NodeType.RESOURCE);
+                log.warn("Introspection node has been created: " + introspectionPath);
+            }
             writer = new java.io.OutputStreamWriter(repo.getNode(introspectionPath).getOutputStream());
             writer.write(getIntrospection(name));
             writer.close();
