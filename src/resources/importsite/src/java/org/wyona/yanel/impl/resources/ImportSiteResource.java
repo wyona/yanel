@@ -153,7 +153,8 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
                     getYanel().getRealmConfiguration().copyRealm("from-scratch-realm-template", 
                             parameters.get("realmid").toString(), 
                             parameters.get("realmname").toString(),
-                            "/" + parameters.get("realmid").toString() + "/");
+                            "/" + parameters.get("realmid").toString() + "/", 
+                            new File(parameters.get("fs-location").toString()));
                     transformer.setParameter("submitted", "true");
                 }
                 

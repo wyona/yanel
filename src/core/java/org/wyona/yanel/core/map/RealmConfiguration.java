@@ -307,10 +307,12 @@ public class RealmConfiguration {
      * @param destRealmID
      * @param destRealmName
      * @param destMountPoint
+     * @param destDir directory where the new realm will be created (if null, the realm
+     *                will be created in the same directory as the src realm).
      * @throws Exception
      */
     public void copyRealm(String srcRealmID, String destRealmID, String destRealmName, 
-            String destMountPoint) throws Exception {
+            String destMountPoint, File destDir) throws Exception {
         if (getRealm(destRealmID) != null) {
             log.warn("Cannot add realm: " + destRealmID + " (realm with this ID exists already)");
             return; // TODO: throw Exception
@@ -336,7 +338,17 @@ public class RealmConfiguration {
         }
         
         // copy realm directory:
-        File destRootDir = new File(srcRootDir.getParentFile(), destRealmID);
+        File destRootDir;
+        if (destDir != null) {
+            if (!destDir.exists() || !destDir.isDirectory()) {
+            	if (!new File(destDir.getAbsolutePath()).mkdirs()) {
+            		throw new Exception("cannot create directory: " + destDir);
+                }
+            }
+            destRootDir = new File(destDir, destRealmID);
+        } else {
+            destRootDir = new File(srcRootDir.getParentFile(), destRealmID);
+        }
         log.debug("copying realm " + srcRootDir + " to " + destRootDir);
         byte[] buffer = new byte[8192];
         String[] filter = { ".svn", ".cvs" };
