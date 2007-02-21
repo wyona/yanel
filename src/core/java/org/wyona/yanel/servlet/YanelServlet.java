@@ -248,9 +248,9 @@ public class YanelServlet extends HttpServlet {
                     tb.append("</div>");
                     Identity identity = (Identity) session.getAttribute(IDENTITY_KEY);
                     if (identity != null) {
-                        tb.append("User: " + identity.getUsername());
+                        tb.append("<span id=\"user\">User: " + identity.getUsername() + "</span>");
                     } else {
-                        tb.append("User: Not signed in!");
+                        tb.append("<span id=\"user\">User: Not signed in!</span>");
                     }
                     tb.append("&#160;&#160;<img src=\""+reservedPrefix+"/yanel_toolbar_logo.png\" id=\"toolbar_logo\"/>");
                     tb.append("</div>");
