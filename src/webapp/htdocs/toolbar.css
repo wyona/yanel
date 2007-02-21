@@ -54,6 +54,13 @@ div#headerwrap{
   top:0px;
 }
 
+#user {
+  position: absolute;
+  right: 100px;
+  float: right;
+  top: 3px;
+}
+
 
 
 /* menu style starts here */
