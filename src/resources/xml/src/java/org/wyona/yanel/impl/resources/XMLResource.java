@@ -30,7 +30,10 @@ import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
+import org.wyona.yanel.core.serialization.HTMLSerializer;
+import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.transformation.I18nTransformer;
+import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
@@ -39,6 +42,9 @@ import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.core.Revision;
 import org.wyona.yarep.util.RepoPath;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,12 +53,16 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,11 +70,13 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Date;
+import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
 import org.apache.log4j.Category;
 import org.apache.xml.resolver.tools.CatalogResolver;
+import org.apache.xml.serializer.Serializer;
 
 /**
  *
@@ -118,37 +130,40 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
 
             String xsltPath = getXSLTPath(getPath());
             if (xsltPath != null) {
-                TransformerFactory tf = TransformerFactory.newInstance();
-                //tf.setURIResolver(null);
-                Transformer transformer = tf.newTransformer(new StreamSource(repo.getNode(xsltPath).getInputStream()));
-                transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
-                transformer.setParameter("yanel.path", getPath());
-                transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
-                transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
-                String userAgent = getRequest().getHeader("User-Agent");
-                String os = getOS(userAgent);
-                if (os != null) transformer.setParameter("os", os);
-                String client = getClient(userAgent);
-                if (client != null) transformer.setParameter("client", client);
-                transformer.setParameter("language", getLanguage());
-
-                // TODO: Is this the best way to generate an InputStream from an OutputStream?
-                java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-
-                org.xml.sax.XMLReader xmlReader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
+                XMLReader xmlReader = XMLReaderFactory.createXMLReader();
                 CatalogResolver catalogResolver = new CatalogResolver();
                 xmlReader.setEntityResolver(catalogResolver);
-                transformer.transform(new SAXSource(xmlReader, new org.xml.sax.InputSource(getContentXML(repo, yanelPath, revisionName))), new StreamResult(baos));
                 
-                InputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
-                defaultView.setInputStream(inputStream);
+                SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
+                //tf.setURIResolver(null);
+                TransformerHandler xsltHandler = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath).getInputStream()));
+                xsltHandler.getTransformer().setParameter("yanel.path.name", PathUtil.getName(getPath()));
+                xsltHandler.getTransformer().setParameter("yanel.path", getPath());
+                xsltHandler.getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
+                xsltHandler.getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
+                String userAgent = getRequest().getHeader("User-Agent");
+                String os = getOS(userAgent);
+                if (os != null) xsltHandler.getTransformer().setParameter("os", os);
+                String client = getClient(userAgent);
+                if (client != null) xsltHandler.getTransformer().setParameter("client", client);
+                xsltHandler.getTransformer().setParameter("language", getLanguage());
 
-                I18nTransformer i18nTransformer = new I18nTransformer("global", getLanguage());
+                xmlReader.setContentHandler(xsltHandler);
+                
+                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage());
                 i18nTransformer.setEntityResolver(catalogResolver);
-                SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
-                saxParser.parse(inputStream, i18nTransformer);
-                defaultView.setInputStream(i18nTransformer.getInputStream());
-
+                
+                xsltHandler.setResult(new SAXResult(i18nTransformer));
+                
+                Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                serializer.setOutputStream(baos);
+                
+                i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
+                
+                xmlReader.parse(new InputSource(getContentXML(repo, yanelPath, revisionName)));
+                
+                defaultView.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
                 return defaultView;
             } else {
                 log.debug("Mime-Type: " + mimeType);
