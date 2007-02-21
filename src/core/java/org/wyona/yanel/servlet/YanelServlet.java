@@ -93,6 +93,8 @@ public class YanelServlet extends HttpServlet {
 
     private String sslPort = null;
     private String toolbarMasterSwitch = "off";
+    private String reservedPrefix;
+    private String servletContextRealPath;
     
     public static final String DEFAULT_ENCODING = "UTF-8";
 
@@ -104,8 +106,10 @@ public class YanelServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         this.config = config;
 
-        xsltInfoAndException = org.wyona.commons.io.FileUtil.file(config.getServletContext().getRealPath("/"), config.getInitParameter("exception-and-info-screen-xslt"));
-        xsltLoginScreen = org.wyona.commons.io.FileUtil.file(config.getServletContext().getRealPath("/"), config.getInitParameter("login-screen-xslt"));
+        servletContextRealPath = config.getServletContext().getRealPath("/");
+
+        xsltInfoAndException = org.wyona.commons.io.FileUtil.file(servletContextRealPath, config.getInitParameter("exception-and-info-screen-xslt"));
+        xsltLoginScreen = org.wyona.commons.io.FileUtil.file(servletContextRealPath, config.getInitParameter("login-screen-xslt"));
         try {
             yanel = Yanel.getInstance();
             yanel.init();
@@ -118,7 +122,7 @@ public class YanelServlet extends HttpServlet {
 
             sslPort = config.getInitParameter("ssl-port");
             toolbarMasterSwitch = config.getInitParameter("toolbar-master-switch");
-            
+            reservedPrefix = config.getInitParameter("reserved-prefix");
         } catch (Exception e) {
             log.error(e);
             throw new ServletException(e.getMessage(), e);
@@ -173,6 +177,19 @@ public class YanelServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(true);
 
+        Resource resource = getResource(request, response);
+        String path = resource.getPath();
+        log.error("Realm path: " + path);
+        if (path.indexOf("/" + reservedPrefix + "/") == 0) {
+            log.error("Global data: " + path);
+            File globalFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "htdocs" + File.separator + path.substring(reservedPrefix.length() + 2));
+            if (globalFile.exists()) {
+                log.error("Global data: " + globalFile);
+            } else {
+                log.error("No such file or directory: " + globalFile);
+            }
+        }
+
         // Check for toolbar ...
         String yanelToolbar = request.getParameter("yanel.toolbar");
         if(yanelToolbar != null) {
@@ -189,16 +206,13 @@ public class YanelServlet extends HttpServlet {
 
         String yanelWebDAV = request.getParameter("yanel.webdav");
         if(yanelWebDAV != null && yanelWebDAV.equals("propfind1")) {
-            Resource resource = getResource(request, response);
             log.error("DEBUG: WebDAV client (" + request.getHeader("User-Agent") + ") requests to \"edit\" a resource: " + resource.getRealm() + ", " + resource.getPath());
             //return;
         }
 
         String toolbar = (String) session.getAttribute(TOOLBAR_KEY);
-        // TODO: Check mime-type and yanel.no-toolbar parameter
         if (toolbar != null && toolbar.equals("on")) {
             String mimeType = null;
-            Resource resource = getResource(request, response);
             if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Viewable", "2")) {
                 try {
                     mimeType = ((ViewableV2) resource).getMimeType(request.getParameter(VIEW_ID_PARAM_NAME));
@@ -207,46 +221,31 @@ public class YanelServlet extends HttpServlet {
                 }
             }
             if (mimeType != null && mimeType.indexOf("html") > 0) {
-            if (toolbarMasterSwitch.equals("on")) {
-                String noToolbar = request.getParameter("yanel.no-toolbar");
-                // TODO: Check on the referer with getHeader("Referer") and check if the referer used the yanel.no-toolbar parameter ...
-                log.error("DEBUG: Referer: " + request.getHeader("Referer"));
-                if (noToolbar == null) {
-                    log.warn("TODO: Embed toolbar ...");
-                    StringBuffer tb = new StringBuffer("<html>");
-                    tb.append("<body style=\"padding: 0; margin: 0; overflow: hidden;\">");
-                    tb.append("<table>");
-                    tb.append("<tr>");
-                    tb.append("<td><a href=\"create-new-page.html\">New Page</a></td>");
-                    tb.append("<td>&#160;|&#160;</td>");
-                    tb.append("<td><a href=\"?yanel.toolbar=off\">Turn of toolbar</a></td>");
-                    tb.append("<td>&#160;|&#160;</td>");
-                    tb.append("<td><a href=\"?yanel.usecase=logout\">Logout</a></td>");
-                    Identity identity = (Identity) session.getAttribute(IDENTITY_KEY);
-                    if (identity != null) {
-                        tb.append("<td>&#160;&#160;&#160;&#160;User: " + identity.getUsername() + " (Realm: ...)</td>");
-                    } else {
-                        tb.append("<td>&#160;&#160;&#160;&#160;User: Not signed in!</td>");
-                    }
-                    tb.append("</tr>");
-                    tb.append("</table>");
-                    // TODO: Enhance/Patch all hypertext links with target="top"
-                    // TODO: Consider proxy and query-string ...
-                    //tb.append("<iframe src=\"http://127.0.0.1:8080/\" width=\"100%\" height=\"100%\"/>");
-                    tb.append("<iframe src=\"" + request.getRequestURI() + "?yanel.no-toolbar\" width=\"100%\" height=\"100%\"/>");
+                if (toolbarMasterSwitch.equals("on")) {
+                    StringBuffer tb = new StringBuffer();
+                    tb.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+                    tb.append("<html>");
+                    tb.append("<head>");
+                    // TODO: compute relative path ...
+                    tb.append("<link type=\"text/css\" href=\""+reservedPrefix+"/toolbar.css\" rel=\"stylesheet\"/>");
+                    tb.append("</head>");
+                    tb.append("<body>");
+                    tb.append("<div id=\"headerwrap\">");
+                    tb.append("<div id=\"menu\">");
+                    tb.append(getToolbarMenus());
+                    tb.append("</div>");
+                    tb.append("<img src=\""+reservedPrefix+"/yanel_toolbar_logo.png\" id=\"toolbar_logo\"/>");
+                    tb.append("</div>");
+                    tb.append("<div id=\"middlewrap\">");
+                    tb.append("Hello Toolbar");
+                    tb.append("</div>");
                     tb.append("</body>");
                     tb.append("</html>");
                     response.getWriter().print(tb);
                     return;
                 } else {
-                    // TODO: Enhance/Patch all hypertext links with yanel.no-toolbar
-                    log.error("DEBUG: Requested by iframe src ...");
-                    getContent(request, response);
-                    return;
+                    log.info("Toolbar has been disabled. Please check web.xml!");
                 }
-            } else {
-                log.info("Toolbar has been disabled. Please check web.xml!");
-            }
             } else {
                 log.error("DEBUG: No HTML related mime type: " + mimeType);
             }
@@ -278,7 +277,6 @@ public class YanelServlet extends HttpServlet {
 
         Element rootElement = doc.getDocumentElement();
 
-        String servletContextRealPath = config.getServletContext().getRealPath("/");
         rootElement.setAttribute("servlet-context-real-path", servletContextRealPath);
 
         Element requestElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "request"));
@@ -1604,5 +1602,12 @@ public class YanelServlet extends HttpServlet {
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
+    }
+
+    /**
+     * Get toolbar menus
+     */
+    private String getToolbarMenus() {
+        return "<ul><li><h2>File</h2><ul><li>New</li></ul></li></ul> <ul><li><h2>Edit</h2><ul><li>Open</li></ul></li></ul>";
     }
 }
