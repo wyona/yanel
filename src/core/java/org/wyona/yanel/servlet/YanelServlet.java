@@ -246,10 +246,16 @@ public class YanelServlet extends HttpServlet {
                     tb.append("<div id=\"menu\">");
                     tb.append(getToolbarMenus());
                     tb.append("</div>");
-                    tb.append("<img src=\""+reservedPrefix+"/yanel_toolbar_logo.png\" id=\"toolbar_logo\"/>");
+                    Identity identity = (Identity) session.getAttribute(IDENTITY_KEY);
+                    if (identity != null) {
+                        tb.append("User: " + identity.getUsername());
+                    } else {
+                        tb.append("User: Not signed in!");
+                    }
+                    tb.append("&#160;&#160;<img src=\""+reservedPrefix+"/yanel_toolbar_logo.png\" id=\"toolbar_logo\"/>");
                     tb.append("</div>");
                     tb.append("<div id=\"middlewrap\">");
-                    tb.append("Hello Toolbar");
+                    tb.append("<br/><br/>Hello Toolbar");
                     tb.append("</div>");
                     tb.append("</body>");
                     tb.append("</html>");
@@ -1620,6 +1626,23 @@ public class YanelServlet extends HttpServlet {
      * Get toolbar menus
      */
     private String getToolbarMenus() {
-        return "<ul><li><h2>File</h2><ul><li>New</li></ul></li></ul> <ul><li><h2>Edit</h2><ul><li>Open</li></ul></li></ul>";
+        StringBuffer sb= new StringBuffer();
+        sb.append("<ul><li>");
+        sb.append("<h2>File</h2><ul>");
+        sb.append("<li><a href=\"create-new-page.html\">New</a></li>");
+        sb.append("<li><a href=\"?yanel.toolbar=off\">Turn of toolbar</a></li>");
+        sb.append("<li><a href=\"?yanel.usecase=logout\">Logout</a></li>");
+        sb.append("</ul></li></ul>");
+
+        sb.append("<ul><li>");
+        sb.append("<h2>Edit</h2><ul>");
+        sb.append("<li>Open</li>");
+        sb.append("</ul></li></ul>");
+
+        sb.append("<ul><li>");
+        sb.append("<h2>Help</h2><ul>");
+        sb.append("<li>About</li>");
+        sb.append("</ul></li></ul>");
+        return sb.toString();
     }
 }
