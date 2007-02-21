@@ -63,7 +63,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
             }
         }
         if(viewId != null && viewId.equals("xml")) {
-	    return "application/xml";
+            return "application/xml";
         }
         if (viewId != null && viewId.equals("xhtml")) {
             return "application/xhtml+xml";
@@ -97,8 +97,8 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
             if(viewId == null) {
                 View view = new View();
                 //view.setResponse(false);
-	        view.setMimeType(getMimeType(null));
-	        view.setInputStream(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getPath())));
+                view.setMimeType(getMimeType(null));
+                view.setInputStream(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getPath())));
                 log.error("DEBUG: Return ICS!");
                 return view;
             }
@@ -144,8 +144,8 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
 
             View view = new View();
             //view.setResponse(false);
-	    view.setMimeType(getMimeType(viewId));
-	    view.setInputStream(new java.io.StringBufferInputStream(calendar.toString()));
+            view.setMimeType(getMimeType(viewId));
+            view.setInputStream(new java.io.StringBufferInputStream(calendar.toString()));
             return view;
         } else if (viewId != null && viewId.equals("xhtml")) {
             String xslt = getRTD().getConfigFile().getParent() + File.separator + "xslt" + File.separator + "xml2xhtml.xsl";
@@ -169,7 +169,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(new File(xslt)));
 
                 // TODO: This will cause encoding problems. See for instance http://skew.org/xml/tutorial/
-		transformer.transform(new StreamSource(new java.io.StringBufferInputStream(calendar.toString())), new StreamResult(out));
+        transformer.transform(new StreamSource(new java.io.StringBufferInputStream(calendar.toString())), new StreamResult(out));
             } catch(Exception e) {
                 log.error(e.getMessage(), e);
                 throw new Exception(e);
@@ -179,8 +179,8 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
 
             View view = new View();
             //view.setResponse(false);
-	    view.setMimeType(getMimeType(null));
-	    view.setInputStream(new java.io.ByteArrayInputStream(out.toByteArray()));
+            view.setMimeType(getMimeType(null));
+            view.setInputStream(new java.io.ByteArrayInputStream(out.toByteArray()));
             return view;
         }
     }
@@ -310,7 +310,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
     public String getPropertyType(String propertyName) {
         if (propertyName.equals("classes")) {
             return CreatableV2.TYPE_SELECT;
-	} else if (propertyName.equals("categories")) {
+        } else if (propertyName.equals("categories")) {
             return CreatableV2.TYPE_SELECT;
         } else {
             return null;
