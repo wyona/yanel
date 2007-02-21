@@ -177,16 +177,26 @@ public class YanelServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(true);
 
+        // Check for requests for global data
         Resource resource = getResource(request, response);
         String path = resource.getPath();
-        log.error("Realm path: " + path);
         if (path.indexOf("/" + reservedPrefix + "/") == 0) {
-            log.error("Global data: " + path);
             File globalFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "htdocs" + File.separator + path.substring(reservedPrefix.length() + 2));
             if (globalFile.exists()) {
-                log.error("Global data: " + globalFile);
+                log.debug("Global data: " + globalFile);
+                // TODO: Set HTTP header (mime-type, size, etc.)
+                byte buffer[] = new byte[8192];
+                int bytesRead;
+                InputStream in = new java.io.FileInputStream(globalFile);
+                OutputStream out = response.getOutputStream();
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
+                return;
             } else {
                 log.error("No such file or directory: " + globalFile);
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
+                return;
             }
         }
 
@@ -204,12 +214,14 @@ public class YanelServlet extends HttpServlet {
             }
         }
 
+        // Check for requests refered by WebDAV
         String yanelWebDAV = request.getParameter("yanel.webdav");
         if(yanelWebDAV != null && yanelWebDAV.equals("propfind1")) {
             log.error("DEBUG: WebDAV client (" + request.getHeader("User-Agent") + ") requests to \"edit\" a resource: " + resource.getRealm() + ", " + resource.getPath());
             //return;
         }
 
+        // Possibly embed toolbar
         String toolbar = (String) session.getAttribute(TOOLBAR_KEY);
         if (toolbar != null && toolbar.equals("on")) {
             String mimeType = null;
