@@ -169,7 +169,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(new File(xslt)));
 
                 // TODO: This will cause encoding problems. See for instance http://skew.org/xml/tutorial/
-        transformer.transform(new StreamSource(new java.io.StringBufferInputStream(calendar.toString())), new StreamResult(out));
+                transformer.transform(new StreamSource(new java.io.StringBufferInputStream(calendar.toString())), new StreamResult(out));
             } catch(Exception e) {
                 log.error(e.getMessage(), e);
                 throw new Exception(e);
