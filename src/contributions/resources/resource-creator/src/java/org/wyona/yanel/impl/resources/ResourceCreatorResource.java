@@ -418,7 +418,14 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         } else {
             log.warn("No RTI properties: " + newResource.getPath());
         }
-        java.io.Writer writer = newResource.getRealm().getRTIRepository().getWriter(new org.wyona.yarep.core.Path(PathUtil.getRTIPath(newResource.getPath())));
+        org.wyona.yarep.core.Repository rcRepo = newResource.getRealm().getRTIRepository();
+        org.wyona.commons.io.Path newRTIPath = new org.wyona.commons.io.Path(PathUtil.getRTIPath(newResource.getPath()));
+        if (rcRepo.existsNode(newRTIPath.toString())) {
+            // TODO: create node recursively ...
+            rcRepo.getRootNode().addNode(newRTIPath.getName(), org.wyona.yarep.core.NodeType.RESOURCE);
+	    log.warn("Node has been created: " + newRTIPath);
+        }
+        java.io.Writer writer = new java.io.OutputStreamWriter(rcRepo.getNode(newRTIPath.toString()).getOutputStream());
         writer.write(rtiContent.toString());
         writer.close();
     }
