@@ -1,0 +1,175 @@
+body,
+html{
+	margin:0;
+	padding:0;
+}
+body {
+	min-width:720px; /* Prevent content from becoming unreachable in Gecko */
+}
+/* position:absolute for all browsers - the whole page scrolls */
+div#headerwrap {
+  position:absolute;
+  width:100%;
+  top:0;
+  left:0;
+  height:24px;
+  margin:0 auto;
+border-right-width:20px;
+}
+/* position:fixed for modern browsers - header and footer do not scroll */
+body>div#headerwrap {
+	position:fixed;
+}
+
+/* set a left margin to compensate for IE/Win always making room for a scrollbar */
+div#middlewrap {
+/* set left margin and bottom padding for IE5/Win */
+	padding:20px 0 0 0;
+	margin-left:0;
+/* set left margin and bottom padding for others */
+
+	margin-left:16px;
+
+}
+/* set left margin for modern browsers */
+body>div#middlewrap {
+	margin-left:0;
+}
+
+
+
+/* Styling rules to make this demo page look nice. */
+
+div#headerwrap{
+  background:slategray;
+  color:#eee;
+  border-bottom:1px solid #444444;
+}
+/* toolbar style ends here */
+
+#toolbar_logo{
+  position: absolute;
+  right:15px;
+  float:right;
+  top:0px;
+}
+
+
+
+/* menu style starts here */
+#menu{
+width:100%;
+float:left;
+margin-top:4px;
+margin-left:4px;
+text-align:left;
+}
+
+#menu a, #menu h2{
+display:block;
+color:#000;
+white-space:nowrap;
+margin:0;
+padding:1px 0 1px 3px;
+}
+
+#menu a{
+background:#eee;
+text-decoration:none;
+}
+
+#menu a, #menu a:visited{
+color:#000;
+}
+
+#menu a:hover{
+color:#000;
+background:#ddd;
+}
+
+#menu a:active{
+color:#060;
+background:#ccc;
+}
+
+#menu ul{
+left:0px;
+list-style:none;
+margin:0;
+padding:0;
+float:left;
+width:9em;
+}
+
+#menu li{
+position:relative;
+margin:0;
+padding:0;
+}
+
+#menu ul ul{
+position:absolute;
+z-index:500;
+top:auto;
+display:none;
+}
+
+#menu ul ul ul{
+top:0;
+left:100%;
+}
+
+/* Begin non-anchor hover selectors */
+
+/* Enter the more specific element (div) selector
+on non-anchor hovers for IE5.x to comply with the
+older version of csshover.htc - V1.21.041022. It
+improves IE's performance speed to use the older
+file and this method */
+
+div#menu h2:hover,div#menu ul:hover{
+color:#000;
+background:#ddd;
+}
+
+div#menu li:hover{
+cursor:pointer;
+z-index:100;
+}
+
+div#menu li:hover ul ul,
+div#menu li li:hover ul ul,
+div#menu li li li:hover ul ul,
+div#menu li li li li:hover ul ul
+{display:none;}
+
+div#menu li:hover ul,
+div#menu li li:hover ul,
+div#menu li li li:hover ul,
+div#menu li li li li:hover ul
+{display:block;}
+
+/* End of non-anchor hover selectors */
+
+/* Styling for Expand */
+
+#menu a.x, #menu a.x:visited{
+font-weight:bold;
+color:#000;
+background:#eee;
+}
+
+#menu a.x:hover{
+color:#a00;
+background:#ddd;
+}
+
+#menu a.x:active{
+color:#060;
+background:#ccc;
+}
+
+#menu h2, #menu a{
+  height:1%;
+  font:normal 10px "lucida grande", tahoma, verdana, arial, sans-serif;
+}
