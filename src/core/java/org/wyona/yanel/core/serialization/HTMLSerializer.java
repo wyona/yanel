@@ -114,7 +114,8 @@ public class HTMLSerializer extends DefaultHandler implements Serializer, Lexica
 
     /**
      * Indicates whether an element may be collapsed in the output if it is empty.
-     * Some browsers (e.g. IE) have problems with <textarea/>.
+     * Collapsing means to write e.g. &lt;textarea/&gt; instead of &lt;textarea&gt;&lt;/textarea&gt;.
+     * Some browsers (e.g. IE) have problems with &lt;/textarea&gt;.
      * @param elementName
      * @return
      */
