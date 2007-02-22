@@ -1,5 +1,7 @@
 package org.wyona.yanel.servlet;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -17,8 +19,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 
 import org.wyona.yanel.core.Path;
@@ -38,6 +46,8 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.navigation.Node;
 import org.wyona.yanel.core.navigation.Sitetree;
+import org.wyona.yanel.core.serialization.SerializerFactory;
+import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.util.DateUtil;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
@@ -51,14 +61,20 @@ import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.Role;
+import org.wyona.security.core.api.User;
 
 import org.apache.log4j.Category;
+import org.apache.xalan.transformer.TransformerIdentityImpl;
+import org.apache.xml.resolver.tools.CatalogResolver;
+import org.apache.xml.serializer.Serializer;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  *
@@ -346,7 +362,9 @@ public class YanelServlet extends HttpServlet {
                         if (vd != null) {
                             for (int i = 0; i < vd.length; i++) {
                                 Element descriptorElement = (Element) viewElement.appendChild(doc.createElement("descriptor"));
-                                descriptorElement.appendChild(doc.createTextNode(vd[i].getMimeType()));
+                                if (vd[i].getMimeType() != null) { 
+                                    descriptorElement.appendChild(doc.createTextNode(vd[i].getMimeType()));
+                                }
                                 descriptorElement.setAttributeNS(NAMESPACE, "id", vd[i].getId());
                             }
                         } else {
@@ -387,7 +405,9 @@ public class YanelServlet extends HttpServlet {
                         if (vd != null) {
                             for (int i = 0; i < vd.length; i++) {
                                 Element descriptorElement = (Element) viewElement.appendChild(doc.createElement("descriptor"));
-                                descriptorElement.appendChild(doc.createTextNode(vd[i].getMimeType()));
+                                if (vd[i].getMimeType() != null) {
+                                    descriptorElement.appendChild(doc.createTextNode(vd[i].getMimeType()));
+                                }
                                 descriptorElement.setAttributeNS(NAMESPACE, "id", vd[i].getId());
                             }
                         } else {
@@ -1344,6 +1364,7 @@ public class YanelServlet extends HttpServlet {
                 if (username != null) {
                     HttpSession session = request.getSession(true);
                     log.debug("Realm ID: " + realm.getID());
+                    
                     if (realm.getIdentityManager().authenticate(username, password)) {
                         log.info("Authentication successful: " + username);
                         session.setAttribute(IDENTITY_KEY, new Identity(username, null));
@@ -1509,13 +1530,56 @@ public class YanelServlet extends HttpServlet {
             } else {
                 // TODO: Use patchMimeType() !
                 response.setContentType("application/xhtml+xml; charset=" + DEFAULT_ENCODING);
-                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltInfoAndException));
-                transformer.transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
+                
+                // create identity transformer which serves as a dom-to-sax transformer
+                TransformerIdentityImpl transformer = new TransformerIdentityImpl();
+                
+                // create xslt transformer:
+                SAXTransformerFactory saxTransformerFactory = (SAXTransformerFactory)SAXTransformerFactory.newInstance();
+                TransformerHandler xsltTransformer = saxTransformerFactory.newTransformerHandler(new StreamSource(xsltInfoAndException));
+                
+                // create i18n transformer:
+                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage(request));
+                CatalogResolver catalogResolver = new CatalogResolver();
+                i18nTransformer.setEntityResolver(new CatalogResolver());
+                
+                // create serializer:
+                Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
+                
+                // chain everything together (create a pipeline):
+                xsltTransformer.setResult(new SAXResult(i18nTransformer));
+                i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
+                serializer.setOutputStream(response.getOutputStream());
+
+                // execute pipeline:
+                transformer.transform(new DOMSource(doc), new SAXResult(xsltTransformer));
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage());
         }
+    }
+
+    /**
+     * Get language with the following priorization: 1) yanel.meta.language query string parameter, 2) Accept-Language header, 3) Default en
+     */
+    private String getLanguage(HttpServletRequest request) {
+        String language = request.getParameter("yanel.meta.language");
+        if (language == null) {
+            language = request.getHeader("Accept-Language");
+            if (language != null) {
+                int commaIndex = language.indexOf(","); 
+                if (commaIndex > 0) {
+                    language = language.substring(0, commaIndex);
+                }
+                int dashIndex = language.indexOf("-"); 
+                if (dashIndex > 0) {
+                    language = language.substring(0, dashIndex);
+                }
+            }
+        }
+        if(language != null && language.length() > 0) return language;
+        return "en";
     }
 
     /**

@@ -22,26 +22,26 @@
                   - 404
                 </xsl:when>
                 <xsl:when test="child::node()/yanel:exception">
-                  <i18n:text>- An error occurred</i18n:text>
+                  <i18n:message key="anErrorOccurred">- An error occurred</i18n:message>
                 </xsl:when>
                 <xsl:otherwise>
-                  <i18n:text>- Page Info</i18n:text>
+                  <i18n:message key="pageInfo">- Page Info</i18n:message>
                 </xsl:otherwise>
               </xsl:choose>
             </title>
           </head>
           <body>
 
-              <h1>Yanel
+              <h1>Yanel - 
               <xsl:choose>
                 <xsl:when test="/yanel:yanel/yanel:exception/@yanel:status = '404'">
-                  <i18n:text>- 404</i18n:text>
+                  <i18n:message key="error404">404</i18n:message>
                 </xsl:when>
                 <xsl:when test="child::node()/yanel:exception">
-                  <i18n:text>- An error occurred</i18n:text>
+                  <i18n:message key="anErrorOccurred">An error occurred</i18n:message>
                 </xsl:when>
                 <xsl:otherwise>
-                  <i18n:text>- Page Info</i18n:text>
+                  <i18n:message key="pageInfo">Page Info</i18n:message>
                 </xsl:otherwise>
               </xsl:choose>
               </h1>
