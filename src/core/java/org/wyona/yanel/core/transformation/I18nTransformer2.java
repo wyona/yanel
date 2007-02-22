@@ -27,7 +27,6 @@ public class I18nTransformer2 extends AbstractTransformer {
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes attrs) throws SAXException {
-        String eName = ("".equals(localName)) ? qName : localName;
         
         if (this.insideI18n) {
             throw new SAXException("no elements allowed inside of i18n element");
@@ -106,7 +105,6 @@ public class I18nTransformer2 extends AbstractTransformer {
     }
 
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-        String eName = ("".equals(localName)) ? qName : localName;
         if (isI18nElement(namespaceURI, localName, qName)) {
             String defaultText = this.textBuffer.toString();
             if (this.key == null) {
@@ -132,9 +130,7 @@ public class I18nTransformer2 extends AbstractTransformer {
     }
     
     protected boolean isI18nElement(String namespaceURI, String localName, String qName) {
-        // TODO: check namespace uri
-        String eName = ("".equals(localName)) ? qName : localName;
-        if ((eName.equals("message")) || (eName.equals("i18n:message"))) {
+        if (namespaceURI.equals(NS_URI) && localName.equals("message")) {
             return true;
         } else {
             return false;
