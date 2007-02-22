@@ -15,6 +15,9 @@ public class I18nTransformer2 extends AbstractTransformer {
     private static Category log = Category.getInstance(I18nTransformer2.class);
     private Locale currentLocale = null;
     private ResourceBundle messageBundle = null;
+    private boolean insideI18n;
+    private String key;
+    private StringBuffer textBuffer;
 
     public static final String NS_URI = "http://apache.org/cocoon/i18n/2.1";
     
@@ -26,21 +29,15 @@ public class I18nTransformer2 extends AbstractTransformer {
     public void startElement(String namespaceURI, String localName, String qName, Attributes attrs) throws SAXException {
         String eName = ("".equals(localName)) ? qName : localName;
         
+        if (this.insideI18n) {
+            throw new SAXException("no elements allowed inside of i18n element");
+        }
+        
         if (isI18nElement(namespaceURI, localName, qName)) {
-            String key = attrs.getValue("key");
+            this.insideI18n = true;
+            this.textBuffer = new StringBuffer(); 
+            this.key = attrs.getValue("key");
             //String i18nText = messageBundle.getString(key);
-            
-            String i18nText;
-            try {
-                i18nText = messageBundle.getString(key);
-            } catch (Exception e) {
-                log.error("cannot find message for key: " + key);
-                i18nText = key;
-            }
-            
-            log.debug("TAG [key] " + key + " [message]" + i18nText);
-            char[] i18nMessage = i18nText.toCharArray(); 
-            characters(i18nMessage, 0, i18nMessage.length);
             
         } else {
             // translate attributes:
@@ -111,7 +108,24 @@ public class I18nTransformer2 extends AbstractTransformer {
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         String eName = ("".equals(localName)) ? qName : localName;
         if (isI18nElement(namespaceURI, localName, qName)) {
-            //ignore these tags
+            String defaultText = this.textBuffer.toString();
+            if (this.key == null) {
+                this.key = defaultText;
+            }
+            String i18nText;
+            try {
+                i18nText = messageBundle.getString(this.key);
+            } catch (Exception e) {
+                log.error("cannot find message for key: " + this.key);
+                i18nText = defaultText.length() == 0 ? this.key : defaultText;
+            }
+            
+            if (log.isDebugEnabled()) {
+                log.debug("TAG [key] " + this.key + " [message]" + i18nText);
+            }
+            char[] i18nMessage = i18nText.toCharArray(); 
+            this.insideI18n = false;
+            characters(i18nMessage, 0, i18nMessage.length);
         } else {
             super.endElement(namespaceURI, localName, qName);
         }
@@ -124,6 +138,14 @@ public class I18nTransformer2 extends AbstractTransformer {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public void characters(char[] buf, int offset, int len) throws SAXException {
+        if (this.insideI18n) {
+            this.textBuffer.append(buf, offset, len);
+        } else {
+            super.characters(buf, offset, len);
         }
     }
 
