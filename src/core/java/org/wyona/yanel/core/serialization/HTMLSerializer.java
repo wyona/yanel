@@ -19,7 +19,7 @@ public class HTMLSerializer extends DefaultHandler implements Serializer, Lexica
 
     private static Category log = Category.getInstance(HTMLSerializer.class);
     private EntityResolver entityResolver;
-    private String pendingElement;
+    private String pendingElement = null;
     private boolean doIndent;
     
     private String[] nonCollapsableElements = { "textarea", "script", "style" };
@@ -64,6 +64,10 @@ public class HTMLSerializer extends DefaultHandler implements Serializer, Lexica
         handlePendingElement();
         String eName = ("".equals(localName)) ? qName : localName;
         
+        if (localName.equals("html")) {
+            print("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+            return;
+        }
         StringBuffer element = new StringBuffer();
         element.append("<" + eName);
         for(int i = 0; i < attrs.getLength(); i++) {
@@ -168,7 +172,7 @@ public class HTMLSerializer extends DefaultHandler implements Serializer, Lexica
     
     protected void print(String s) throws SAXException {
         try {
-            this.os.write(replaceAmpersand(s).getBytes());
+            this.os.write(replaceAmpersand(s).getBytes("UTF-8"));
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new SAXException(e);
@@ -233,7 +237,6 @@ public class HTMLSerializer extends DefaultHandler implements Serializer, Lexica
     }
 
     public void endEntity(String name) throws SAXException {
-        System.out.println("start entity: " + name);
         // TODO Auto-generated method stub
     }
 
