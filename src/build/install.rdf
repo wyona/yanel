@@ -1,15 +1,26 @@
 <?xml version="1.0"?>
 
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:um="http://www.wyona.org/update-manager/1.0">
+     xmlns:um="http://www.wyona.org/update-manager/1.0#">
 
-  <rdf:Description about="urn:wyona:install-manifest">
-    <um:id>yanel-webapp-bin@wyona.org</um:id>
+  <rdf:Description rdf:about="urn:wyona:application:install">
+    <um:id>yanel-webapp@wyona.org</um:id>
     <um:version>@VERSION@</um:version>
+    <um:installtype>@INSTALLTYPE@</um:installtype>
+    <um:platform>@PLATFORM@</um:platform>
+    
+    <um:targetApplication>
+      <rdf:Description rdf:about="urn:wyona:targetapplication">
+        <um:id>tomcat</um:id>
+        <um:version>5.5.20</um:version>
+      </rdf:Description>
+    </um:targetApplication>
+    
     <um:name>Wyona Yanel Webapp</um:name>
     <um:description>Content Management Software</um:description>
     <um:creator>Wyona</um:creator>
     <um:homepageURL>http://yanel.wyona.org/</um:homepageURL>
     <um:updateURL>http://yanel.wyona.org/download/update.rdf</um:updateURL>
   </rdf:Description>
+  
 </rdf:RDF>
