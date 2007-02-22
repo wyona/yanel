@@ -234,12 +234,13 @@ public class YanelServlet extends HttpServlet {
             }
             if (mimeType != null && mimeType.indexOf("html") > 0) {
                 if (toolbarMasterSwitch.equals("on")) {
+                    String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(path);
                     StringBuffer tb = new StringBuffer();
                     tb.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
                     tb.append("<html>");
                     tb.append("<head>");
                     // TODO: compute relative path ...
-                    tb.append("<link type=\"text/css\" href=\""+reservedPrefix+"/toolbar.css\" rel=\"stylesheet\"/>");
+                    tb.append("<link type=\"text/css\" href=\"" + backToRealm+reservedPrefix + "/toolbar.css\" rel=\"stylesheet\"/>");
                     tb.append("</head>");
                     tb.append("<body>");
                     tb.append("<div id=\"headerwrap\">");
@@ -252,7 +253,8 @@ public class YanelServlet extends HttpServlet {
                     } else {
                         tb.append("<span id=\"user\">User: Not signed in!</span>");
                     }
-                    tb.append("&#160;&#160;<img src=\""+reservedPrefix+"/yanel_toolbar_logo.png\" id=\"toolbar_logo\"/>");
+                    
+                    tb.append("&#160;&#160;<img src=\"" + backToRealm+reservedPrefix + "/yanel_toolbar_logo.png\" id=\"toolbar_logo\"/>");
                     tb.append("</div>");
                     tb.append("<div id=\"middlewrap\">");
                     tb.append("<br/><br/>Hello Toolbar");
