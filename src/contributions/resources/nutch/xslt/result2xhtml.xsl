@@ -5,7 +5,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:yanel="http://www.wyona.org/yanel/1.0"
-  xmlns:i18n="http://apache.org/cocoon/i18n/2.1"  
+  xmlns:i18n="http://www.wyona.org/yanel/i18n/1.0"  
 >
  
   <xsl:output method="xhtml"/>

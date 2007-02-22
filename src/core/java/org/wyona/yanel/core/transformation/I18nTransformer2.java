@@ -19,7 +19,7 @@ public class I18nTransformer2 extends AbstractTransformer {
     private String key;
     private StringBuffer textBuffer;
 
-    public static final String NS_URI = "http://apache.org/cocoon/i18n/2.1";
+    public static final String NS_URI = "http://www.wyona.org/yanel/i18n/1.0";
     
     public I18nTransformer2(String messages, String language) {
         currentLocale = new Locale(language);
