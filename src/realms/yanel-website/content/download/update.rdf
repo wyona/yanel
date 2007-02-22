@@ -11,7 +11,9 @@
   </rdf:Description>  
   
   <rdf:Description rdf:about="urn:wyona:application:update:1.0-dev-r22342">
+    <um:id>yanel-webapp@wyona.org</um:id>
     <um:version>1.0-dev-r22342</um:version>
+    <um:changelog>this fixed and that improved</um:changelog>
     <um:targetApplication>
       <rdf:Description rdf:about="urn:wyona:targetapplication:tomcat:1.0-dev-r22342">
         <um:id>tomcat</um:id>
@@ -31,7 +33,9 @@
   </rdf:Description>
 
   <rdf:Description rdf:about="urn:wyona:application:update:1.0-dev-r22343">
+    <um:id>yanel-webapp@wyona.org</um:id>
     <um:version>1.0-dev-r22343</um:version>
+    <um:changelog>that improved and this fixed</um:changelog>
     <um:targetApplication>
       <rdf:Description rdf:about="urn:wyona:targetapplication:tomcat:1.0-dev-r22343">
         <um:id>tomcat</um:id>
