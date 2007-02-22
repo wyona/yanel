@@ -130,12 +130,14 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
 
             String xsltPath = getXSLTPath(getPath());
             if (xsltPath != null) {
+                
+                // create reader:
                 XMLReader xmlReader = XMLReaderFactory.createXMLReader();
                 CatalogResolver catalogResolver = new CatalogResolver();
                 xmlReader.setEntityResolver(catalogResolver);
                 
+                // create xslt transformer:
                 SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
-                //tf.setURIResolver(null);
                 TransformerHandler xsltHandler = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath).getInputStream()));
                 xsltHandler.getTransformer().setParameter("yanel.path.name", PathUtil.getName(getPath()));
                 xsltHandler.getTransformer().setParameter("yanel.path", getPath());
@@ -148,21 +150,24 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 if (client != null) xsltHandler.getTransformer().setParameter("client", client);
                 xsltHandler.getTransformer().setParameter("language", getLanguage());
 
-                xmlReader.setContentHandler(xsltHandler);
-                
+                // create i18n transformer:
                 I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage());
                 i18nTransformer.setEntityResolver(catalogResolver);
                 
-                xsltHandler.setResult(new SAXResult(i18nTransformer));
-                
+                // create serializer:
                 Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                
+                // chain everything together (create a pipeline):
+                xmlReader.setContentHandler(xsltHandler);
+                xsltHandler.setResult(new SAXResult(i18nTransformer));
+                i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
                 serializer.setOutputStream(baos);
                 
-                i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
-                
+                // execute pipeline:
                 xmlReader.parse(new InputSource(getContentXML(repo, yanelPath, revisionName)));
                 
+                // write result into view:
                 defaultView.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
                 return defaultView;
             } else {
