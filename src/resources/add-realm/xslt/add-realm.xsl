@@ -21,7 +21,7 @@
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title><i18n:message key="importsite"/></title>
+        <title><i18n:message key="add-realm"/></title>
         <style>
             .samplevalue {
               padding-bottom:10px;
@@ -30,7 +30,7 @@
       </head>
       
       <body>
-        <h3><i18n:message key="importsite"/></h3>
+        <h3><i18n:message key="add-realm"/></h3>
         
         <div id="contentBody">
           <xsl:choose>
@@ -174,7 +174,7 @@
                       <td>&#160;
                       </td>
                       <td align="right">
-                        <input type="submit" name="submit" value="i18n:attr key=importsite"/>
+                        <input type="submit" name="submit" value="i18n:attr key=add-realm"/>
                       </td>
                     </tr>
             

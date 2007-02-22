@@ -40,10 +40,10 @@ import javax.xml.transform.stream.StreamSource;
 /**
  *
  */
-public class ImportSiteResource extends Resource implements ViewableV2 {
+public class AddRealmResource extends Resource implements ViewableV2 {
 
     private static final String CRAWLER_JAR = "yanel-crawler.jar";
-    private static Category log = Category.getInstance(ImportSiteResource.class);
+    private static Category log = Category.getInstance(AddRealmResource.class);
     private String defaultLanguage = "en";
     private String language = null;
     private String parameterName = null;
@@ -60,7 +60,7 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
     /**
      *
      */
-    public ImportSiteResource() {
+    public AddRealmResource() {
     }
 
     /**
@@ -107,7 +107,7 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
         }
 
         Transformer transformer = null;
-        I18nTransformer i18nTransformer = new I18nTransformer("importsite", language);
+        I18nTransformer i18nTransformer = new I18nTransformer("add-realm", language);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         View defaultView = new View();
 
@@ -121,7 +121,7 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
                     submit = true;
             }
             if(submit) {
-                File statusXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "importsite.xsl");
+                File statusXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "add-realm.xsl");
                 File statusXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "status-screen.xml");
                 transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(statusXSLTFile));
                 
@@ -161,7 +161,7 @@ public class ImportSiteResource extends Resource implements ViewableV2 {
                 transformer.transform(new javax.xml.transform.stream.StreamSource(statusXMLFile), new StreamResult(byteArrayOutputStream));
                 
             } else {
-                File inputXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "importsite.xsl");
+                File inputXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "add-realm.xsl");
                 File inputXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "input-screen.xml");
                 transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(inputXSLTFile));
 

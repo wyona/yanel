@@ -47,7 +47,7 @@
     </copy>
     
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes">
-      <fileset dir="config" includes="importsite_*.properties"/>
+      <fileset dir="config" includes="add-realm_*.properties"/>
     </copy>
   </target>
 </project>
