@@ -56,12 +56,10 @@ import org.wyona.yanel.servlet.communication.HttpRequest;
 import org.wyona.yanel.servlet.communication.HttpResponse;
 import org.wyona.yanel.util.ResourceAttributeHelper;
 
-import org.wyona.security.core.AuthenticationException;
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.Role;
-import org.wyona.security.core.api.User;
 
 import org.apache.log4j.Category;
 import org.apache.xalan.transformer.TransformerIdentityImpl;
