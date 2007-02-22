@@ -204,7 +204,7 @@
   </xsl:template> 
 
   <xsl:template match="descriptor">
-    <br/>Descriptor: <a href="?yanel.resource.viewid={@yanel:id}"><xsl:value-of select="."/></a>
+    <br/>Descriptor (<xsl:value-of select="@yanel:id"/>): <a href="?yanel.resource.viewid={@yanel:id}"><xsl:value-of select="."/></a>
   </xsl:template> 
 
 </xsl:stylesheet>
