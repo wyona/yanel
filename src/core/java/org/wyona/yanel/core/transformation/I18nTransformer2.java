@@ -10,6 +10,27 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
+/**
+ * Transformer to translate content to a certain language using a message catalogue. 
+ * This i18n transformer supports two kinds of syntax:
+ * <ol>
+ * <li>old (deprecated):
+ * <pre>
+ *    &lt;i18n:message key="pageInfo"&gt;Page Info Default Text&lt;/i18n:message&gt;
+ *    &lt;i18n:message&gt;pageInfo&lt;/i18n:message&gt;
+ *    &lt;input type="submit" value="i18n:attr key=mySubmit"/&gt;
+ * </pre>
+ * </li>
+ * <li>new (cocoon-like):
+ * <pre>
+ *    &lt;i18n:text key="pageInfo"&gt;Page Info Default Text&lt;/i18n:text&gt;
+ *    &lt;i18n:text&gt;pageInfo&lt;/i18n:text&gt;
+ *    &lt;input type="submit" value="mySubmit" i18n:attr="value"/&gt;
+ * </pre>
+ * </li>
+ * </ol>
+ * The namespace uri is http://www.wyona.org/yanel/i18n/1.0
+ */
 public class I18nTransformer2 extends AbstractTransformer {
 
     private static Category log = Category.getInstance(I18nTransformer2.class);
@@ -36,38 +57,10 @@ public class I18nTransformer2 extends AbstractTransformer {
             this.insideI18n = true;
             this.textBuffer = new StringBuffer(); 
             this.key = attrs.getValue("key");
-            //String i18nText = messageBundle.getString(key);
             
         } else {
             // translate attributes:
             
-            AttributesImpl newAttrs = new AttributesImpl();
-            for(int i = 0; i < attrs.getLength(); i++) {
-                String attrUri = attrs.getURI(i);
-                String attrLocalName = attrs.getLocalName(i);
-                String attrQName = attrs.getQName(i);
-                String attrValue = attrs.getValue(i);
-                String attrType = attrs.getType(i);
-                
-                if (attrValue.indexOf("i18n:attr key=") != -1) {
-                    String key = attrValue.substring(14);
-
-                    String i18nValue;
-                    try {
-                        i18nValue = messageBundle.getString(key);
-                    } catch (Exception e) {
-                        log.error("cannot find message for key: " + key);
-                        i18nValue = key;
-                    }
-                    newAttrs.addAttribute(attrUri, attrLocalName, attrQName, attrType, i18nValue);
-                } else {
-                    newAttrs.addAttribute(attrUri, attrLocalName, attrQName, attrType, attrValue);
-                }
-            }
-            super.startElement(namespaceURI, localName, qName, newAttrs);
-            
-            /*
-             // this code would work for cocoon-like i18n attributes:
             int index = attrs.getIndex(NS_URI, "attr");
             
             if (index != -1) {
@@ -97,10 +90,35 @@ public class I18nTransformer2 extends AbstractTransformer {
                     }
                 }
                 super.startElement(namespaceURI, localName, qName, newAttrs);
+                
             } else {
-                super.startElement(namespaceURI, localName, qName, attrs);
+                
+                // support old i18n attribute syntax for compatibility reasons: 
+                AttributesImpl newAttrs = new AttributesImpl();
+                for(int i = 0; i < attrs.getLength(); i++) {
+                    String attrUri = attrs.getURI(i);
+                    String attrLocalName = attrs.getLocalName(i);
+                    String attrQName = attrs.getQName(i);
+                    String attrValue = attrs.getValue(i);
+                    String attrType = attrs.getType(i);
+                    
+                    if (attrValue.indexOf("i18n:attr key=") != -1) {
+                        String key = attrValue.substring(14);
+
+                        String i18nValue;
+                        try {
+                            i18nValue = messageBundle.getString(key);
+                        } catch (Exception e) {
+                            log.error("cannot find message for key: " + key);
+                            i18nValue = key;
+                        }
+                        newAttrs.addAttribute(attrUri, attrLocalName, attrQName, attrType, i18nValue);
+                    } else {
+                        newAttrs.addAttribute(attrUri, attrLocalName, attrQName, attrType, attrValue);
+                    }
+                }
+                super.startElement(namespaceURI, localName, qName, newAttrs);
             }
-            */
         }
     }
 
@@ -129,8 +147,17 @@ public class I18nTransformer2 extends AbstractTransformer {
         }
     }
     
+    /**
+     * Decides whether a the given element is a i18n element.
+     * Suppports the &lt;text&gt; element and for backwards compatibility also
+     * the &lt;message&gt; element.
+     * @param namespaceURI
+     * @param localName
+     * @param qName
+     * @return true if the element is a i18n element
+     */
     protected boolean isI18nElement(String namespaceURI, String localName, String qName) {
-        if (namespaceURI.equals(NS_URI) && localName.equals("message")) {
+        if (namespaceURI.equals(NS_URI) && (localName.equals("text") || localName.equals("message"))) {
             return true;
         } else {
             return false;
