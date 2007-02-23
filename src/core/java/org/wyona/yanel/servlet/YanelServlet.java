@@ -60,6 +60,7 @@ import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.Role;
+import org.wyona.security.core.api.User;
 
 import org.apache.log4j.Category;
 import org.apache.xalan.transformer.TransformerIdentityImpl;
@@ -971,8 +972,9 @@ public class YanelServlet extends HttpServlet {
                 String password = up[1];
                 log.debug("username: " + username + ", password: " + password);
                 try {
-                    if (realm.getIdentityManager().authenticate(username, password)) {
-                        authorized = realm.getPolicyManager().authorize(path, new Identity(username, null), new Role("view"));
+                    User user = realm.getIdentityManager().getUserManager().getUser(username);
+                    if (user != null && user.authenticate(password)) {
+                        authorized = realm.getPolicyManager().authorize(path, new Identity(user), new Role("view"));
                         if(authorized) {
                             return null;
                         } else {
@@ -1244,7 +1246,7 @@ public class YanelServlet extends HttpServlet {
                         sb.append("      </prop>\n");
                         sb.append("      <status>HTTP/1.1 200 OK</status>\n");
                         sb.append("    </propstat>\n");
-  		        sb.append("  </response>\n");
+                        sb.append("  </response>\n");
                     } else {
                         log.error("Neither collection nor resource: " + children[i].getPath());
                     }
@@ -1290,9 +1292,10 @@ public class YanelServlet extends HttpServlet {
             if(loginUsername != null) {
                 HttpSession session = request.getSession(true);
                 try {
-                    if (realm.getIdentityManager().authenticate(loginUsername, request.getParameter("yanel.login.password"))) {
+                    User user = realm.getIdentityManager().getUserManager().getUser(loginUsername);
+                    if (user != null && user.authenticate(request.getParameter("yanel.login.password"))) {
                         log.debug("Realm: " + realm);
-                        session.setAttribute(IDENTITY_KEY, new Identity(loginUsername, null));
+                        session.setAttribute(IDENTITY_KEY, new Identity(user));
                         return null;
                     } else {
                         log.warn("Login failed: " + loginUsername);
@@ -1341,10 +1344,10 @@ public class YanelServlet extends HttpServlet {
                 if (username != null) {
                     HttpSession session = request.getSession(true);
                     log.debug("Realm ID: " + realm.getID());
-                    
-                    if (realm.getIdentityManager().authenticate(username, password)) {
+                    User user = realm.getIdentityManager().getUserManager().getUser(username);
+                    if (user != null && user.authenticate(password)) {
                         log.info("Authentication successful: " + username);
-                        session.setAttribute(IDENTITY_KEY, new Identity(username, null));
+                        session.setAttribute(IDENTITY_KEY, new Identity(user));
 
                         // TODO: send some XML content, e.g. <authentication-successful/>
                         response.setContentType("text/plain; charset=" + DEFAULT_ENCODING);
