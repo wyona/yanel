@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -95,7 +96,7 @@ public class YanelServlet extends HttpServlet {
     File xsltInfoAndException;
     File xsltLoginScreen;
 
-    private static String IDENTITY_KEY = "identity";
+    private static String IDENTITY_MAP_KEY = "identity-map";
     private static String TOOLBAR_KEY = "toolbar";
     private static String NAMESPACE = "http://www.wyona.org/yanel/1.0";
 
@@ -237,37 +238,42 @@ public class YanelServlet extends HttpServlet {
         }
 
         // Possibly embed toolbar
-        String toolbar = (String) session.getAttribute(TOOLBAR_KEY);
-        if (toolbar != null && toolbar.equals("on")) {
-            String mimeType = null;
-            if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Viewable", "2")) {
-                try {
-                    mimeType = ((ViewableV2) resource).getMimeType(request.getParameter(VIEW_ID_PARAM_NAME));
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
-            if (mimeType != null && mimeType.indexOf("html") > 0) {
-                if (toolbarMasterSwitch.equals("on")) {
-                    InputStream in = mergeToolbarWithContent(resource, request);
-                    byte buffer[] = new byte[8192];
-                    int bytesRead;
-                    OutputStream out = response.getOutputStream();
-                    while ((bytesRead = in.read(buffer)) != -1) {
-                        out.write(buffer, 0, bytesRead);
+        try {
+            String toolbar = (String) session.getAttribute(TOOLBAR_KEY);
+            if (toolbar != null && toolbar.equals("on")) {
+                String mimeType = null;
+                if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Viewable", "2")) {
+                    try {
+                        mimeType = ((ViewableV2) resource).getMimeType(request.getParameter(VIEW_ID_PARAM_NAME));
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
                     }
-                    return;
+                }
+                if (mimeType != null && mimeType.indexOf("html") > 0) {
+                    if (toolbarMasterSwitch.equals("on")) {
+                        InputStream in = mergeToolbarWithContent(resource, request);
+                        byte buffer[] = new byte[8192];
+                        int bytesRead;
+                        OutputStream out = response.getOutputStream();
+                        while ((bytesRead = in.read(buffer)) != -1) {
+                            out.write(buffer, 0, bytesRead);
+                        }
+                        return;
+                    } else {
+                        log.info("Toolbar has been disabled. Please check web.xml!");
+                    }
                 } else {
-                    log.info("Toolbar has been disabled. Please check web.xml!");
+                    log.error("DEBUG: No HTML related mime type: " + mimeType);
                 }
             } else {
-                log.error("DEBUG: No HTML related mime type: " + mimeType);
+                log.debug("Toolbar is turned off.");
             }
-        } else {
-            log.debug("Toolbar is turned off.");
+            getContent(request, response);
+            return;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new ServletException(e.getMessage(), e);
         }
-        getContent(request, response);
-        return;
     }
 
     /**
@@ -458,8 +464,8 @@ public class YanelServlet extends HttpServlet {
                         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
                             // note: this will throw an exception if the document is checked out already
                             // by another user.
-                            Identity identity = (Identity) request.getSession().getAttribute("identity");
-                            String userID = identity.getUsername();
+                            Identity identity = getIdentity(request);
+                            String userID = identity.getUser().getID();
                             VersionableV2 versionable = (VersionableV2)res;
                             if (versionable.isCheckedOut()) {
                                 String checkoutUserID = versionable.getCheckoutUserID(); 
@@ -761,8 +767,8 @@ public class YanelServlet extends HttpServlet {
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
             try {
                 // check the resource state:
-                Identity identity = (Identity) request.getSession().getAttribute("identity");
-                String userID = identity.getUsername(); 
+                Identity identity = getIdentity(request);
+                String userID = identity.getUser().getID();
                 VersionableV2 versionable  = (VersionableV2)resource;
                 if (versionable.isCheckedOut()) {
                     String checkoutUserID = versionable.getCheckoutUserID(); 
@@ -1013,19 +1019,20 @@ public class YanelServlet extends HttpServlet {
 
 
         // Custom Authorization
-        log.debug("Do session based custom authorization");
-        //String[] groupnames = {"null", "null"};
-        HttpSession session = request.getSession(true);
-        Identity identity = (Identity) session.getAttribute(IDENTITY_KEY);
-        if (identity == null) {
-            log.debug("Identity is WORLD");
-            identity = new Identity();
-        }
-        
-        
-        //authorized = pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, role);
-        
         try {
+            log.debug("Do session based custom authorization");
+            //String[] groupnames = {"null", "null"};
+            HttpSession session = request.getSession(true);
+            Identity identity = getIdentity(request);
+            
+            if (identity == null) {
+                log.debug("Identity is WORLD");
+                identity = new Identity();
+                // TODO: should add world identity to the session?
+            }
+            
+            //authorized = pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, role);
+        
             log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity.getUsername() + ", role: " + role.getName());
             authorized = realm.getPolicyManager().authorize(path, identity, role);
             log.debug("Check authorization result: " + authorized);
@@ -1295,7 +1302,12 @@ public class YanelServlet extends HttpServlet {
                     User user = realm.getIdentityManager().getUserManager().getUser(loginUsername);
                     if (user != null && user.authenticate(request.getParameter("yanel.login.password"))) {
                         log.debug("Realm: " + realm);
-                        session.setAttribute(IDENTITY_KEY, new Identity(user));
+                        HashMap identityMap = (HashMap)session.getAttribute(IDENTITY_MAP_KEY);
+                        if (identityMap == null) {
+                            identityMap = new HashMap();
+                            session.setAttribute(IDENTITY_MAP_KEY, identityMap);
+                        }
+                        identityMap.put(realm.getID(), new Identity(user));
                         return null;
                     } else {
                         log.warn("Login failed: " + loginUsername);
@@ -1347,7 +1359,12 @@ public class YanelServlet extends HttpServlet {
                     User user = realm.getIdentityManager().getUserManager().getUser(username);
                     if (user != null && user.authenticate(password)) {
                         log.info("Authentication successful: " + username);
-                        session.setAttribute(IDENTITY_KEY, new Identity(user));
+                        HashMap identityMap = (HashMap)session.getAttribute(IDENTITY_MAP_KEY);
+                        if (identityMap == null) {
+                            identityMap = new HashMap();
+                            session.setAttribute(IDENTITY_MAP_KEY, identityMap);
+                        }
+                        identityMap.put(realm.getID(), new Identity(user));
 
                         // TODO: send some XML content, e.g. <authentication-successful/>
                         response.setContentType("text/plain; charset=" + DEFAULT_ENCODING);
@@ -1447,18 +1464,29 @@ public class YanelServlet extends HttpServlet {
      */
     public HttpServletResponse doLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.info("Logout from Yanel ...");
-        HttpSession session = request.getSession(true);
-        session.setAttribute(IDENTITY_KEY, null);
-        String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
-        if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
-            // TODO: send some XML content, e.g. <logout-successful/>
-            response.setContentType("text/plain; charset=" + DEFAULT_ENCODING);
-            response.setStatus(response.SC_OK);
-            PrintWriter writer = response.getWriter();
-            writer.print("Neutron Logout Successful!");
-            return response;
+        try {
+            HttpSession session = request.getSession(true);
+            // TODO: should we logout only from the current realm, or from all realms?
+            // -> logout only from the current realm
+            Realm realm = map.getRealm(request.getServletPath());
+            HashMap identityMap = (HashMap)session.getAttribute(IDENTITY_MAP_KEY);
+            if (identityMap != null && identityMap.containsKey(realm.getID())) {
+                identityMap.remove(realm.getID());
+            }
+            String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
+            if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
+                // TODO: send some XML content, e.g. <logout-successful/>
+                response.setContentType("text/plain; charset=" + DEFAULT_ENCODING);
+                response.setStatus(response.SC_OK);
+                PrintWriter writer = response.getWriter();
+                writer.print("Neutron Logout Successful!");
+                return response;
+            }
+            return null;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new ServletException(e.getMessage(), e);
         }
-        return null;
     }
 
     /**
@@ -1695,7 +1723,7 @@ public class YanelServlet extends HttpServlet {
     /**
      *
      */
-    private InputStream mergeToolbarWithContent(Resource resource, HttpServletRequest request) throws ServletException, IOException {
+    private InputStream mergeToolbarWithContent(Resource resource, HttpServletRequest request) throws Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
         StringBuffer tb = new StringBuffer();
                     tb.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
@@ -1709,9 +1737,9 @@ public class YanelServlet extends HttpServlet {
                     tb.append("<div id=\"menu\">");
                     tb.append(getToolbarMenus());
                     tb.append("</div>");
-                    Identity identity = (Identity) request.getSession().getAttribute(IDENTITY_KEY);
+                    Identity identity = getIdentity(request);
                     if (identity != null) {
-                        tb.append("<span id=\"user\">User: " + identity.getUsername() + "</span>");
+                        tb.append("<span id=\"user\">User: " + identity.getUser().getID() + "</span>");
                     } else {
                         tb.append("<span id=\"user\">User: Not signed in!</span>");
                     }
@@ -1724,5 +1752,23 @@ public class YanelServlet extends HttpServlet {
                     tb.append("</body>");
                     tb.append("</html>");
         return new java.io.ByteArrayInputStream(tb.toString().getBytes());
+    }
+    
+    /**
+     * Gets the identity from the session associated with the given request.
+     * @param request
+     * @return identity or null if there is no identity in the session for the current
+     *                  realm or if there is no session at all
+     */
+    private Identity getIdentity(HttpServletRequest request) throws Exception {
+        Realm realm = map.getRealm(request.getServletPath());
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            HashMap identityMap = (HashMap)session.getAttribute(IDENTITY_MAP_KEY);
+            if (identityMap != null) {
+                return (Identity)identityMap.get(realm.getID());
+            }
+        }
+        return null;
     }
 }
