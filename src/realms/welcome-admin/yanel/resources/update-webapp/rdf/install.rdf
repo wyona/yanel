@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+  <Description about="urn:wyona:install-manifest">
+    <em:id>yanel@wyona.com</em:id>
+    <em:version>@VERSION@</em:version>
+    <em:name>Wyona Yanel</em:name>
+    <em:description>Everything is Content.</em:description>
+    <em:contributor>Michael Wechner (Wyona Inc.)</em:contributor>
+    <em:homepageURL>http://yanel.wyona.org/</em:homepageURL>
+    <em:updateURL>http://yanel.wyona.org/download/update.rdf</em:updateURL>
+  </Description>
+</RDF>

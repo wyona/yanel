@@ -1,0 +1,29 @@
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:um="http://www.wyona.org/update-manager/1.0#">
+
+  <rdf:Description rdf:about="urn:wyona:application:updates">
+    <um:versions>
+      <rdf:Seq>
+        <rdf:li rdf:resource="urn:wyona:application:update:1.0-dev-r22343"/>
+        <rdf:li rdf:resource="urn:wyona:application:update:1.0-dev-r22342"/>
+      </rdf:Seq>
+    </um:versions>
+  </rdf:Description>  
+  
+  <rdf:Description rdf:about="urn:wyona:application:update:1.0-dev-r22342">
+    <um:version>1.0-dev-r22342</um:version>
+    <um:targetApplication>
+      <rdf:Description rdf:about="urn:wyona:targetapplication:tomcat">
+        <um:minVersion>5.0.0</um:minVersion>
+        <um:maxVersion>5.5.*</um:maxVersion>
+	    <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-jetty-build-0.1.1.xml</um:updateLink>
+      </rdf:Description>
+    </um:targetApplication>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="urn:wyona:application:update:1.0-dev-r22343">
+    <um:version>1.0-dev-r22343</um:version>
+    <um:updateURL>http://yanel.wyona.org/download/binary-snapshots/unix/wyona-yanel-SNAPSHOT-1.0-dev-r22342-bin.tar.gz</um:updateURL>
+  </rdf:Description>
+
+</rdf:RDF>
