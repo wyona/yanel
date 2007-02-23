@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<project name="yanel-user-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <target name="dependencies" description="Dependencies">
+    <!-- INFO: http://maven.apache.org/ant-tasks.html -->
+    <artifact:remoteRepository id="wyona.remote.repository" url="http://www.wyona.org/maven2/"/>
+
+    <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-core"
+                  version="${yanel.source.version}"/>
+     </artifact:dependencies>
+
+
+
+    <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="avalon-framework" artifactId="avalon-framework-api"
+                  version="4.3"/>
+      <dependency groupId="avalon-framework" artifactId="avalon-framework-impl"
+                  version="4.3"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core"
+                  version="0.0.1-dev-r22929"/>
+       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl"
+                  version="0.0.1-dev-r22929"/>
+    </artifact:dependencies>
+
+    <property name="maven2.cp" refid="maven2.classpath"/>
+    <property name="maven2.resource.cp" refid="maven2.resource.classpath"/>
+    <!--<echo>Maven2 classpath: ${maven2.cp}</echo>-->
+  </target>
+
+</project>
+

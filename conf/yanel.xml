@@ -32,7 +32,10 @@
 -->
   <resource src="../src/contributions/resources/nutch/"         compile="true"/>
   <resource src="../src/contributions/resources/davcollection/" compile="true"/>
-  <resource src="../src/contributions/resources/pdf/"           compile="true"/> 
+  <resource src="../src/contributions/resources/pdf/"           compile="true"/>
+
+  <resource src="../src/contributions/resources/yanel-user/"    compile="true"/> 
+
 </resources>
 
 # Realms configuration

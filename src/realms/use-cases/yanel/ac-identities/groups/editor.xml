@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<group id="editor" xmlns="http://www.wyona.org/security/1.0">
+  <name>My Editors</name>
+  <members>
+    <member id="alice"/>
+    <member id="lenya"/>
+  </members>
+</group>
