@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 
 <repository>
-  <name>Yanel From Scratch RTI Repository</name>
+  <name>Yanel From Scratch Resource Configurations Repository</name>
 
-  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../rti"/>
+  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../res-configs"/>
 
   <storage class="org.wyona.yarep.core.impl.vfs.VFileSystemStorage">
-    <content src="../rti"/>
+    <content src="../res-configs"/>
   </storage>
 </repository>
