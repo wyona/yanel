@@ -7,15 +7,6 @@
     <um:id>yanel-webapp@wyona.org</um:id>
     <um:version>@VERSION@</um:version>
     <um:installtype>@INSTALLTYPE@</um:installtype>
-    <um:platform>@PLATFORM@</um:platform>
-    
-    <um:targetApplication>
-      <rdf:Description rdf:about="urn:wyona:targetapplication">
-        <um:id>tomcat</um:id>
-        <um:version>5.5.20</um:version>
-      </rdf:Description>
-    </um:targetApplication>
-    
     <um:name>Wyona Yanel Webapp</um:name>
     <um:description>Content Management Software</um:description>
     <um:creator>Wyona</um:creator>
