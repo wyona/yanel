@@ -1694,7 +1694,7 @@ public class YanelServlet extends HttpServlet {
         sb.append("<ul><li>");
         sb.append("<h2>File</h2><ul>");
         sb.append("<li><a href=\"create-new-page.html\">New</a></li>");
-        sb.append("<li><a href=\"?yanel.toolbar=off\">Turn of toolbar</a></li>");
+        sb.append("<li><a href=\"?yanel.toolbar=off\">Turn off toolbar</a></li>");
         sb.append("<li><a href=\"?yanel.usecase=logout\">Logout</a></li>");
         sb.append("</ul></li></ul>");
 
