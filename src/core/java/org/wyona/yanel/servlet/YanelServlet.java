@@ -248,34 +248,13 @@ public class YanelServlet extends HttpServlet {
             }
             if (mimeType != null && mimeType.indexOf("html") > 0) {
                 if (toolbarMasterSwitch.equals("on")) {
-                    String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(path);
-                    StringBuffer tb = new StringBuffer();
-                    tb.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
-                    tb.append("<html>");
-                    tb.append("<head>");
-                    // TODO: compute relative path ...
-                    tb.append("<link type=\"text/css\" href=\"" + backToRealm+reservedPrefix + "/toolbar.css\" rel=\"stylesheet\"/>");
-                    tb.append("</head>");
-                    tb.append("<body>");
-                    tb.append("<div id=\"headerwrap\">");
-                    tb.append("<div id=\"menu\">");
-                    tb.append(getToolbarMenus());
-                    tb.append("</div>");
-                    Identity identity = (Identity) session.getAttribute(IDENTITY_KEY);
-                    if (identity != null) {
-                        tb.append("<span id=\"user\">User: " + identity.getUsername() + "</span>");
-                    } else {
-                        tb.append("<span id=\"user\">User: Not signed in!</span>");
+                    InputStream in = mergeToolbarWithContent(resource, request);
+                    byte buffer[] = new byte[8192];
+                    int bytesRead;
+                    OutputStream out = response.getOutputStream();
+                    while ((bytesRead = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytesRead);
                     }
-                    
-                    tb.append("&#160;&#160;<img src=\"" + backToRealm+reservedPrefix + "/yanel_toolbar_logo.png\" id=\"toolbar_logo\"/>");
-                    tb.append("</div>");
-                    tb.append("<div id=\"middlewrap\">");
-                    tb.append("<br/><br/>Hello Toolbar");
-                    tb.append("</div>");
-                    tb.append("</body>");
-                    tb.append("</html>");
-                    response.getWriter().print(tb);
                     return;
                 } else {
                     log.info("Toolbar has been disabled. Please check web.xml!");
@@ -1708,5 +1687,39 @@ public class YanelServlet extends HttpServlet {
         sb.append("<li>About</li>");
         sb.append("</ul></li></ul>");
         return sb.toString();
+    }
+
+    /**
+     *
+     */
+    private InputStream mergeToolbarWithContent(Resource resource, HttpServletRequest request) throws ServletException, IOException {
+        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
+        StringBuffer tb = new StringBuffer();
+                    tb.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
+                    tb.append("<html>");
+                    tb.append("<head>");
+                    // TODO: compute relative path ...
+                    tb.append("<link type=\"text/css\" href=\"" + backToRealm+reservedPrefix + "/toolbar.css\" rel=\"stylesheet\"/>");
+                    tb.append("</head>");
+                    tb.append("<body>");
+                    tb.append("<div id=\"headerwrap\">");
+                    tb.append("<div id=\"menu\">");
+                    tb.append(getToolbarMenus());
+                    tb.append("</div>");
+                    Identity identity = (Identity) request.getSession().getAttribute(IDENTITY_KEY);
+                    if (identity != null) {
+                        tb.append("<span id=\"user\">User: " + identity.getUsername() + "</span>");
+                    } else {
+                        tb.append("<span id=\"user\">User: Not signed in!</span>");
+                    }
+                    
+                    tb.append("&#160;&#160;<img src=\"" + backToRealm+reservedPrefix + "/yanel_toolbar_logo.png\" id=\"toolbar_logo\"/>");
+                    tb.append("</div>");
+                    tb.append("<div id=\"middlewrap\">");
+                    tb.append("<br/><br/>Hello Toolbar");
+                    tb.append("</div>");
+                    tb.append("</body>");
+                    tb.append("</html>");
+        return new java.io.ByteArrayInputStream(tb.toString().getBytes());
     }
 }
