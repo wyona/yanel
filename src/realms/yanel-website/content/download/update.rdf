@@ -25,7 +25,7 @@
   </rdf:Description>
 
   <rdf:Description rdf:about="urn:wyona:targetapplication:tomcat:1.0-dev-r22342">
-    <um:id>tomcat</um:id>
+    <um:id>Apache Tomcat</um:id>
     <um:minVersion>5.0.0</um:minVersion>
     <um:maxVersion>5.5.*</um:maxVersion>
     <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-tomcat-update-1.0-dev-r22342.war</um:updateLink>
@@ -51,7 +51,7 @@
   </rdf:Description>
   
   <rdf:Description rdf:about="urn:wyona:targetapplication:tomcat:1.0-dev-r22343">
-    <um:id>tomcat</um:id>
+    <um:id>Apache Tomcat</um:id>
     <um:minVersion>5.0.0</um:minVersion>
     <um:maxVersion>5.5.*</um:maxVersion>
     <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-tomcat-update-1.0-dev-r22343.war</um:updateLink>
@@ -77,7 +77,7 @@
   </rdf:Description>
   
   <rdf:Description rdf:about="urn:wyona:targetapplication:tomcat:1.0-dev-r52343">
-    <um:id>tomcat</um:id>
+    <um:id>Apache Tomcat</um:id>
     <um:minVersion>6.0.0</um:minVersion>
     <um:maxVersion>6.5.*</um:maxVersion>
     <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-tomcat-update-1.0-dev-r52343.war</um:updateLink>
@@ -103,7 +103,7 @@
   </rdf:Description>  
     
   <rdf:Description rdf:about="urn:wyona:targetapplication:tomcat:1.0-dev-r12343">
-    <um:id>tomcat</um:id>
+    <um:id>Apache Tomcat</um:id>
     <um:minVersion>4.0.0</um:minVersion>
     <um:maxVersion>4.5.*</um:maxVersion>
     <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-tomcat-update-1.0-dev-r12343.war</um:updateLink>
