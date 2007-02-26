@@ -10,6 +10,10 @@
     <world permission="true"/>
   </role>
 
+  <role id="toolbar">
+    <world permission="true"/>
+  </role>
+
 <!--
   <role id="open">
     <user id="lenya" permission="true"/>
