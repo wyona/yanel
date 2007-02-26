@@ -18,4 +18,8 @@
     <user id="lenya" permission="true"/>
   </role>
 
+  <role id="toolbar">
+    <user id="lenya" permission="true"/>
+  </role>
+
 </policy>
