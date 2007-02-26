@@ -46,6 +46,7 @@ import org.wyona.yanel.core.ConfigurationException;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -119,8 +120,16 @@ public class RealmConfiguration {
         DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
         Configuration config;
 
+        Yanel yanel;
         try {
-            Yanel yanel = Yanel.getInstance();
+            yanel = Yanel.getInstance();
+        } catch (Exception e) {
+            String errorMsg = "Could not get yanel: " + e.getMessage(); 
+            log.error(errorMsg, e);
+            throw new ConfigurationException(errorMsg, e);
+        }
+        
+        try {
             PolicyManagerFactory pmFactory = (PolicyManagerFactory) yanel.getBeanFactory().getBean("PolicyManagerFactory");
             IdentityManagerFactory imFactory = (IdentityManagerFactory) yanel.getBeanFactory().getBean("IdentityManagerFactory");
 
@@ -148,54 +157,61 @@ public class RealmConfiguration {
                 String configSrc = configElement.getAttribute("src", null);
                 
                 File realmConfigFile = resolveFile(new File(configSrc), realmsConfigFile);
-                Realm realm = new Realm(name.getValue(), realmId, mountPoint, realmConfigFile);
-                if (proxy != null) {
-                    realm.setProxy(proxy.getChild("host-name").getValue(), proxy.getChild("port").getValue(""), proxy.getChild("prefix").getValue());
-                }
                 log.debug("Reading realm config file for [" + realmId + "]: " + realmConfigFile);
-                Configuration realmConfig = builder.buildFromFile(realmConfigFile);
-                
-                String repoConfigSrc = realmConfig.getChild("data", false).getValue();
-                File repoConfig = resolveFile(new File(repoConfigSrc), realmConfigFile);
-                realm.setRepository(repoFactory.newRepository(realmId, repoConfig));
-                
-                repoConfigSrc = realmConfig.getChild("rti", false).getValue();
-                repoConfig = resolveFile(new File(repoConfigSrc), realmConfigFile);
-                realm.setRTIRepository(rtiRepoFactory.newRepository(realmId, repoConfig));
-                
-                Configuration repoConfigElement = realmConfig.getChild("ac-policies", false);
-                if (repoConfigElement != null) {
-                    repoConfig = resolveFile(new File(repoConfigElement.getValue()), realmConfigFile);
-                    Repository policiesRepo = policiesRepoFactory.newRepository(realmId, repoConfig);
-                    PolicyManager policyManager = pmFactory.newPolicyManager(policiesRepo);
-                    realm.setPolicyManager(policyManager);
-                }
-                
-                repoConfigElement = realmConfig.getChild("ac-identities", false);
-                if (repoConfigElement != null) {
-                    repoConfig = resolveFile(new File(repoConfigElement.getValue()), realmConfigFile);
-                    Repository identitiesRepo = identitiesRepoFactory.newRepository(realmId, repoConfig);
-                    IdentityManager identityManager = imFactory.newIdentityManager(identitiesRepo);
-                    realm.setIdentityManager(identityManager);
-                }
-                
-                log.info("Realm: " + realm);
-                
-                hm.put(realmId, realm);
-                if (rootFlag.equals("true")) {
-                    log.debug("Root realm found: " + realm.getID());
-                    if (rootRealm == null) {
-                        log.debug("Root realm set: " + realm.getID());
-                        rootRealm = realm;
-                    } else {
-                        log.error("Root realm has already been set: " + realmId);
+                try {
+                    Realm realm = new Realm(name.getValue(), realmId, mountPoint, realmConfigFile);
+                    if (proxy != null) {
+                        realm.setProxy(proxy.getChild("host-name").getValue(), proxy.getChild("port").getValue(""), proxy.getChild("prefix").getValue());
                     }
+                    Configuration realmConfig = builder.buildFromFile(realmConfigFile);
+                    
+                    String repoConfigSrc = realmConfig.getChild("data", false).getValue();
+                    File repoConfig = resolveFile(new File(repoConfigSrc), realmConfigFile);
+                    realm.setRepository(repoFactory.newRepository(realmId, repoConfig));
+                    
+                    repoConfigSrc = realmConfig.getChild("rti", false).getValue();
+                    repoConfig = resolveFile(new File(repoConfigSrc), realmConfigFile);
+                    realm.setRTIRepository(rtiRepoFactory.newRepository(realmId, repoConfig));
+                    
+                    Configuration repoConfigElement = realmConfig.getChild("ac-policies", false);
+                    if (repoConfigElement != null) {
+                        repoConfig = resolveFile(new File(repoConfigElement.getValue()), realmConfigFile);
+                        Repository policiesRepo = policiesRepoFactory.newRepository(realmId, repoConfig);
+                        PolicyManager policyManager = pmFactory.newPolicyManager(policiesRepo);
+                        realm.setPolicyManager(policyManager);
+                    }
+                    
+                    repoConfigElement = realmConfig.getChild("ac-identities", false);
+                    if (repoConfigElement != null) {
+                        repoConfig = resolveFile(new File(repoConfigElement.getValue()), realmConfigFile);
+                        Repository identitiesRepo = identitiesRepoFactory.newRepository(realmId, repoConfig);
+                        IdentityManager identityManager = imFactory.newIdentityManager(identitiesRepo);
+                        realm.setIdentityManager(identityManager);
+                    }
+                    
+                    log.info("Realm: " + realm);
+                    
+                    hm.put(realmId, realm);
+                    if (rootFlag.equals("true")) {
+                        log.debug("Root realm found: " + realm.getID());
+                        if (rootRealm == null) {
+                            log.debug("Root realm set: " + realm.getID());
+                            rootRealm = realm;
+                        } else {
+                            log.error("Root realm has already been set: " + realmId);
+                        }
+                    }
+                } catch (Exception e) {
+                    String errorMsg = "Error setting up realm [" + realmId + "]: " + realmConfigFile 
+                        + ": " + e;
+                    log.error(errorMsg, e);
+                    throw new ConfigurationException(errorMsg, e);
                 }
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new ConfigurationException("Error reading realm configuration from file " + 
-                    realmsConfigFile + ": " + e.getMessage(), e);
+            throw new ConfigurationException("Error setting up realms from file " + 
+                    realmsConfigFile + ": " + e, e);
         }
         inheritRootRealmProperties();
     }
