@@ -1740,7 +1740,7 @@ public class YanelServlet extends HttpServlet {
                     tb.append("</div>");
                     Identity identity = getIdentity(request);
                     if (identity != null) {
-                        tb.append("<span id=\"user\">User: " + identity.getUser().getID() + "</span>");
+                        tb.append("<span id=\"user\">User: " + identity.getUser().getID() + " (Realm: " + resource.getRealm().getName() + ")</span>");
                     } else {
                         tb.append("<span id=\"user\">User: Not signed in!</span>");
                     }
