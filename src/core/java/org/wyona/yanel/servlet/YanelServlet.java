@@ -945,7 +945,7 @@ public class YanelServlet extends HttpServlet {
         value = request.getParameter("yanel.toolbar");
         if (value != null && value.equals("on")) {
             log.debug("Turn on toolbar ...");
-            //role = new Role("toolbar");
+            role = new Role("toolbar");
         }
 
         boolean authorized = false;
