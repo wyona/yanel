@@ -1699,11 +1699,12 @@ public class YanelServlet extends HttpServlet {
     /**
      * Get toolbar menus
      */
-    private String getToolbarMenus() {
+    private  String getToolbarMenus(Resource resource, HttpServletRequest request) throws ServletException, IOException {
+        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
         StringBuffer sb= new StringBuffer();
         sb.append("<ul><li>");
         sb.append("<h2>File</h2><ul>");
-        sb.append("<li><a href=\"create-new-page.html\">New</a></li>");
+        sb.append("<li><a href=\"" + backToRealm + "create-new-page.html\">New</a></li>");
         sb.append("<li><a href=\"?yanel.toolbar=off\">Turn off toolbar</a></li>");
         sb.append("<li><a href=\"?yanel.usecase=logout\">Logout</a></li>");
         sb.append("</ul></li></ul>");
@@ -1730,12 +1731,12 @@ public class YanelServlet extends HttpServlet {
                     tb.append("<html>");
                     tb.append("<head>");
                     // TODO: compute relative path ...
-                    tb.append("<link type=\"text/css\" href=\"" + backToRealm+reservedPrefix + "/toolbar.css\" rel=\"stylesheet\"/>");
+                    tb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbar.css\" rel=\"stylesheet\"/>");
                     tb.append("</head>");
                     tb.append("<body>");
                     tb.append("<div id=\"headerwrap\">");
                     tb.append("<div id=\"menu\">");
-                    tb.append(getToolbarMenus());
+                    tb.append(getToolbarMenus(resource, request));
                     tb.append("</div>");
                     Identity identity = getIdentity(request);
                     if (identity != null) {
