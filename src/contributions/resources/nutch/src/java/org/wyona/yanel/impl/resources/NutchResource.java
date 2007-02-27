@@ -99,6 +99,8 @@ public class NutchResource extends Resource implements ViewableV1 {
     private Transformer transformer = null;
     private I18nTransformer i18nTransformer = null;
     Ontology ontology = null;
+
+    private URL finalResource;
     
     /**
      * 
@@ -205,7 +207,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             URL defaultResource = new URL(confDir + File.separator + defaultFile);
             configuration.addDefaultResource(defaultResource);
 
-            URL finalResource = new URL(confDir + File.separator + localFile);
+            finalResource = new URL(confDir + File.separator + localFile);
             String nutchConfig;
             ResourceConfiguration rc = getConfiguration();
             if (rc != null) {
@@ -229,7 +231,8 @@ public class NutchResource extends Resource implements ViewableV1 {
     
     /**
      * Create DOM document
-     * @param searchTerm
+     * @param searchTerm query
+     * @param language language
      */
     private void getDOMDocument(String searchTerm, String language) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -242,6 +245,7 @@ public class NutchResource extends Resource implements ViewableV1 {
         }
         Element rootElement = document.getDocumentElement();
         rootElement.setAttributeNS(NAME_SPACE, "language", language);
+        rootElement.setAttributeNS(NAME_SPACE, "local-nutch-config-url", finalResource.toString());
         if (searchTerm != null && searchTerm.length() > 0) {
             Element queryElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "query"));
             queryElement.appendChild(document.createTextNode(searchTerm));
@@ -269,7 +273,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                     exceptionMessage = "noSuchCrawlDirectory#" + crawlDir;
                     exceptionElement.appendChild(document.createTextNode(exceptionMessage));
                     log.error(exceptionMessage);
-                return;
+                    return;
                 }
             } catch (Exception e) {
                 log.error(e);
