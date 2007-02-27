@@ -57,6 +57,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
@@ -127,7 +128,12 @@ public class NutchResource extends Resource implements ViewableV1 {
         try {
             getNutchConfiguration();
 
-            resourceBundle = getRTI().getProperty("messageBundle");
+            ResourceConfiguration rc = getConfiguration();
+            if (rc != null) {
+                resourceBundle = rc.getProperty("messageBundle");
+            } else {
+                resourceBundle = getRTI().getProperty("messageBundle");
+            }
             nutchView = new View();
             nutchView.setInputStream(getInputStream(viewId, show, idx, id, language));
 
@@ -152,7 +158,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     /**
      * 
      */
-    public View getView(HttpServletRequest request, String viewId) {
+    public View getView(HttpServletRequest request, String viewId) throws Exception {
         servletContext = request.getSession().getServletContext();
         int _start = 0;
         try {
@@ -190,7 +196,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     /**
      *  Read Nutch configuration (default and local)
      */
-    private void getNutchConfiguration() {
+    private void getNutchConfiguration() throws Exception {
         configuration = new Configuration();
         try {
             String confDir = "file:" + rtd.getConfigFile().getParentFile().getAbsolutePath()
@@ -200,7 +206,13 @@ public class NutchResource extends Resource implements ViewableV1 {
             configuration.addDefaultResource(defaultResource);
 
             URL finalResource = new URL(confDir + File.separator + localFile);
-            String nutchConfig = getRTI().getProperty("nutch-config");
+            String nutchConfig;
+            ResourceConfiguration rc = getConfiguration();
+            if (rc != null) {
+                nutchConfig = rc.getProperty("nutch-config");
+            } else {
+                nutchConfig = getRTI().getProperty("nutch-config");
+            }
             log.debug("Local nutch config: " + nutchConfig);
             if(nutchConfig != null) {
                 if(nutchConfig.indexOf("file:") == 0) {
@@ -600,7 +612,13 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @return StreamSource
      */
     private StreamSource getXSLTStreamSource() throws Exception {
-        String xsltPath = getRTI().getProperty("xslt");
+        String xsltPath;
+        ResourceConfiguration rc = getConfiguration();
+        if (rc != null) {
+            xsltPath = rc.getProperty("xslt");
+        } else {
+            xsltPath = getRTI().getProperty("xslt");
+        }
         log.debug("XSLT: " + xsltPath);
         if (xsltPath != null) {
             return new StreamSource(getRealm().getRepository().getInputStream(new org.wyona.yarep.core.Path(xsltPath)));
@@ -658,8 +676,15 @@ public class NutchResource extends Resource implements ViewableV1 {
     /**
      * Get language
      */
-    private String getLanguage() {
-        String language = getRTI().getProperty("language");
+    private String getLanguage() throws Exception {
+        String language;
+
+        ResourceConfiguration rc = getConfiguration();
+        if (rc != null) {
+            language = rc.getProperty("language");
+        } else {
+            language = getRTI().getProperty("language");
+        }
 
         if (language == null) {
 	    language = getRequest().getParameter("yanel.meta.language");
