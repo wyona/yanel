@@ -12,6 +12,12 @@
     <um:creator>Wyona</um:creator>
     <um:homepageURL>http://yanel.wyona.org/</um:homepageURL>
     <um:updateURL>http://yanel.wyona.org/download/update.rdf</um:updateURL>
+    <um:protectedFiles>
+      <rdf:Seq>
+       <rdf:li>WEB-INF/classes/yanel.properties</rdf:li>
+       <rdf:li>WEB-INF/classes/realms.xml</rdf:li>
+      </rdf:Seq>
+    </um:protectedFiles>
   </rdf:Description>
   
 </rdf:RDF>
