@@ -2,11 +2,8 @@
 
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/resource-config/1.0">
   <yanel:rti name="nutch" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
   <yanel:property name="xslt" value="/xslt/global.xsl"/>
   <yanel:property name="messageBundle" value="nutch"/>
   <yanel:property name="nutch-config" value="file:/home/michi/src/wyona/public/yanel/trunk/src/realms/yanel-website/content/nutch-config/nutch-local-yanel-mls.xml"/>
-
-  <yanel:custom-config>
-    <nr:xslt src="/xslt/global.xsl" xmlns:nr="http://www.wyona.org/yanel/resource/nutch-resource/1.0"/>
-  </yanel:custom-config>
 </yanel:resource-config>
