@@ -341,15 +341,15 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
     
     /**
-     * 
      * @param inputStream
      * @param searchTerm
+     * @param language
      * @return
      */
     private InputStream applyGlobalXslIfExists(InputStream inputStream, String searchTerm, String language) {
         StreamSource streamSource = null;
         try {
-            streamSource = getXSLTStreamSource();
+            streamSource = getGlobalXSLTStreamSource();
             if(streamSource != null) {
                 transformer = TransformerFactory.newInstance().newTransformer(streamSource);
                 transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
@@ -615,13 +615,13 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @param repo
      * @return StreamSource
      */
-    private StreamSource getXSLTStreamSource() throws Exception {
+    private StreamSource getGlobalXSLTStreamSource() throws Exception {
         String xsltPath;
         ResourceConfiguration rc = getConfiguration();
         if (rc != null) {
-            xsltPath = rc.getProperty("xslt");
+            xsltPath = rc.getProperty("global-xslt");
         } else {
-            xsltPath = getRTI().getProperty("xslt");
+            xsltPath = getRTI().getProperty("global-xslt");
         }
         log.debug("XSLT: " + xsltPath);
         if (xsltPath != null) {
