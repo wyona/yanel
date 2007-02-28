@@ -67,10 +67,12 @@
   
   <xsl:template match="yanel:refined-query-terms">
      Refined Query:
+     <span id="refined-query-terms">
      <xsl:for-each select="yanel:term">
        <a href="?query={.}"><xsl:value-of select="."/></a>
        <xsl:if test="position() != last()">, </xsl:if>
     </xsl:for-each>
+    </span>
   </xsl:template>
   
   <xsl:template match="yanel:no-query">
