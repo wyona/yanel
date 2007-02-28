@@ -176,7 +176,7 @@
       
       <xsl:variable name="idx"><xsl:value-of select="yanel:hitIndexNo"/></xsl:variable>
       <xsl:variable name="id"><xsl:value-of select="yanel:hitIndexDocNo"/></xsl:variable>
-      <div id="deltails">
+      <div id="details">
           <span style="font-size:smaller;color:green;"><xsl:value-of select="yanel:url"/></span>
           <span style="font-size:smaller;">
             <xsl:text>&#0160;(</xsl:text><a href="?show=cache&amp;idx={$idx}&amp;id={$id}" style="font-size:smaller;"><i18n:message key="cached"/></a><xsl:text>)</xsl:text>
