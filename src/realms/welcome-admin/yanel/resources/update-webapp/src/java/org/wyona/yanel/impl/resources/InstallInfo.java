@@ -8,6 +8,8 @@ import org.apache.log4j.Category;
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileInputStream;
+import java.util.ArrayList;
+
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.*;
 import com.hp.hpl.jena.rdf.model.impl.PropertyImpl;
@@ -15,30 +17,40 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * 
  */
-public class InstallRDF {
+public class InstallInfo {
     
-    private static Category log = Category.getInstance(InstallRDF.class);
+    private static Category log = Category.getInstance(InstallInfo.class);
     private String id;
     private String version;
     private String installtype;
+    private String contextPrefix;
     private String updateURL;
     private String osName; //platform
     private String javaVersion;
     private String targetApplicationId;
     private String targetApplicationVersion;
+    private ArrayList protectedFiles = new ArrayList();
     
     private String updateManagerNS = "http://www.wyona.org/update-manager/1.0#"; 
     
-    public InstallRDF(InputStream in, HttpServletRequest request){
+    public InstallInfo(HttpServletRequest request)  throws java.io.FileNotFoundException{
+        String WEBINFPath = request.getSession().getServletContext().getRealPath("WEB-INF");
+        contextPrefix = request.getSession().getServletContext().getServletContextName();
+        if (contextPrefix.equalsIgnoreCase("ROOT")) {
+            contextPrefix = "ROOT";
+        } else {
+            contextPrefix = contextPrefix.toLowerCase();
+        }
+        InputStream installRdfIn = new FileInputStream(new File(WEBINFPath + File.separator + "classes" + File.separator + "install.rdf"));
+        Model model = ModelFactory.createDefaultModel();
+        //read the RDF/XML file
+        model.read(installRdfIn, "");
+        parseModel(model);
+        
         setServerInfoDetail(request);
         
         osName = System.getProperty("os.name");
         javaVersion = System.getProperty("java.version");
-        
-        Model model = ModelFactory.createDefaultModel();
-        //read the RDF/XML file
-        model.read(in, "");
-        parseModel(model);
     }
 
     private void parseModel(Model model) {
@@ -50,10 +62,20 @@ public class InstallRDF {
         version = install.getRequiredProperty(versionProperty).getString();
         Property installtypeProperty = new PropertyImpl(updateManagerNS, "installtype");
         installtype = install.getRequiredProperty(installtypeProperty).getString();
+        //Property contextPrefixProperty = new PropertyImpl(updateManagerNS, "contextprefix");
+        //contextPrefix = install.getRequiredProperty(contextPrefixProperty).getString();
 
         Property updateURLProperty = new PropertyImpl(updateManagerNS, "updateURL");
         updateURL = install.getRequiredProperty(updateURLProperty).getString();
 
+        Property protectedFilesProperty = new PropertyImpl(updateManagerNS, "protectedFiles");
+        Seq protectedFilesSeq = install.getRequiredProperty(protectedFilesProperty).getSeq();
+        
+        NodeIterator protectedFilesIter = protectedFilesSeq.iterator();
+        while (protectedFilesIter.hasNext()) {
+            protectedFiles.add(protectedFilesIter.next().toString());
+        }
+        
         /*Property targetApplicationProperty = new PropertyImpl(updateManagerNS, "targetApplication");
         Resource targetApplication = install.getProperty(targetApplicationProperty).getResource();
         
@@ -87,6 +109,9 @@ public class InstallRDF {
     public String getInstalltype() {
         return installtype;
     }
+    public String getContextPrefix() {
+        return contextPrefix;
+    }
 
     public String getUpdateURL() {
         return updateURL;
@@ -110,6 +135,10 @@ public class InstallRDF {
 
     public String getTargetApplicationVersion() {
         return targetApplicationVersion;
+    }
+
+    public ArrayList getProtectedFiles() {
+        return protectedFiles;
     }
     
 }

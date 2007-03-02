@@ -1,15 +1,23 @@
 <?xml version="1.0"?>
 
-<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:um="http://www.wyona.org/update-manager/1.0#">
 
-  <Description about="urn:wyona:install-manifest">
-    <em:id>yanel@wyona.com</em:id>
-    <em:version>@VERSION@</em:version>
-    <em:name>Wyona Yanel</em:name>
-    <em:description>Everything is Content.</em:description>
-    <em:contributor>Michael Wechner (Wyona Inc.)</em:contributor>
-    <em:homepageURL>http://yanel.wyona.org/</em:homepageURL>
-    <em:updateURL>http://yanel.wyona.org/download/update.rdf</em:updateURL>
-  </Description>
-</RDF>
+  <rdf:Description rdf:about="urn:wyona:application:install">
+    <um:id>yanel-webapp@wyona.org</um:id>
+    <um:version>@VERSION@</um:version>
+    <um:installtype>@INSTALLTYPE@</um:installtype>
+    <um:name>Wyona Yanel Webapp</um:name>
+    <um:description>Content Management Software</um:description>
+    <um:creator>Wyona</um:creator>
+    <um:homepageURL>http://yanel.wyona.org/</um:homepageURL>
+    <um:updateURL>http://yanel.wyona.org/download/update.rdf</um:updateURL>
+    <um:updateProtect>
+      <rdf:Seq>
+       <rdf:li>WEB-INF/classes/yanel.properties</rdf:li>
+       <rdf:li>WEB-INF/classes/realms.xml</rdf:li>
+      </rdf:Seq>
+    </um:updateProtect>
+  </rdf:Description>
+  
+</rdf:RDF>

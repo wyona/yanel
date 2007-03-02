@@ -14,7 +14,6 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import javax.servlet.http.HttpServletRequest;
 
 import org.wyona.yanel.core.transformation.I18nTransformer;
-import org.wyona.yanel.impl.resources.UpdateRDF.UpdateVersions;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -26,12 +25,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
+
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.net.URL;
@@ -75,11 +76,6 @@ public class UpdateResource extends Resource implements ViewableV2 {
     public View getView(String viewId) throws Exception {
 
         String path = getPath();
-        HttpServletRequest request = getRequest();
-        
-        String submit = request.getParameter("submit");
-        String check = request.getParameter("check");
-        String update = request.getParameter("update");
 
         // Get language
         try {
@@ -102,30 +98,32 @@ public class UpdateResource extends Resource implements ViewableV2 {
         try {
 
                     //install.rdf
-                    String WEBINFPath = request.getSession().getServletContext().getRealPath("WEB-INF");
                     
-                    InputStream installRdfIn= new FileInputStream(new File(WEBINFPath + File.separator + "classes" + File.separator + "install.rdf"));
-                    InstallRDF installRdf = new InstallRDF(installRdfIn, request);
+                    InstallInfo installInfo = new InstallInfo(request);
 
+                    //just testing
+                    System.out.println(installInfo.getId());
+                    System.out.println(installInfo.getInstalltype());
+                    System.out.println(installInfo.getContextPrefix());
+                    System.out.println(installInfo.getOsName());
+                    System.out.println(installInfo.getTargetApplicationId());
+                    System.out.println(installInfo.getTargetApplicationVersion());
+                    System.out.println(installInfo.getUpdateURL());
+                    System.out.println(installInfo.getVersion());
+                    System.out.println(installInfo.getJavaVersion());
+                    for (int i = 0; i < installInfo.getProtectedFiles().size(); i++) {
+                        System.out.println("getProtectedFiles --------" + installInfo.getProtectedFiles().get(i));
+                    }
                     
-                    System.out.println(installRdf.getId());
-                    System.out.println(installRdf.getInstalltype());
-                    System.out.println(installRdf.getOsName());
-                    System.out.println(installRdf.getTargetApplicationId());
-                    System.out.println(installRdf.getTargetApplicationVersion());
-                    System.out.println(installRdf.getUpdateURL());
-                    System.out.println(installRdf.getVersion());
-                    System.out.println(installRdf.getJavaVersion());
                     
                     
-                    
-                    URL UpdateRdfUrl = new URL(installRdf.getUpdateURL());
+                    URL UpdateRdfUrl = new URL(installInfo.getUpdateURL());
                     InputStream updateRdfIn = UpdateRdfUrl.openStream();
-                    UpdateRDF updateRdf = new UpdateRDF(updateRdfIn, installRdf);
+                    UpdateInfo updateInfo = new UpdateInfo(updateRdfIn, installInfo);
                     
 
                     
-                    if (installRdf.getInstalltype().equals("source")) {
+                    if (installInfo.getInstalltype().equals("source")) {
                         StringBuffer message = new StringBuffer();
                         message.append("<p>");
                         message.append("This Yanel was installed from source. You can only use the updater if you installed yanel from binary. Please use svn up, build.sh");
@@ -135,22 +133,39 @@ public class UpdateResource extends Resource implements ViewableV2 {
                         //transformer = TransformerFactory.newInstance().newTransformer();
 
                         
-                    } else if (installRdf.getInstalltype().equals("bin-snapshot")) {
-                        StringBuffer message = new StringBuffer();
-                        message.append("<p>");
-                        message.append("This are the updates which you can get:");
-                        message.append("</p>");
-                        message.append("<ul>");
-                        for (int i = 0; i < updateRdf.getUpdateVersions().size(); i++) {
-                            UpdateVersions test = (UpdateVersions) updateRdf.getUpdateVersions().get(i);
-                            if (test.version != installRdf.getVersion()) {
-                                message.append("<li>Version: " + test.version + " ChangeLog: " + test.changeLog + " Update Link: " + test.updateLink + "</li>");
-                            }
-                        }
-                        message.append("</ul>");
-                        byteArrayOutputStream = getOutput(message);
+                    } else if (installInfo.getInstalltype().equals("bin-snapshot")) {
+                if (request.getParameter("update") != null && request.getParameter("update").equals("true")) {
+                    WebAppUpdater webAppUpdater = new WebAppUpdater(request, "");
+                    
+                    StringBuffer message = new StringBuffer();
+                    message.append("<p>");
+                    if (webAppUpdater.update()) {
+                        message.append("Update done.");
+                    } else {
+                        message.append("Update failed.");
                     }
-                    //this.installRdf.put("updateURL", installRdf.getChild("Description").getChild("um:updateURL").getValue());
+                    message.append("</p>");
+                    byteArrayOutputStream = getOutput(message);
+                } else {
+                    StringBuffer message = new StringBuffer();
+                    message.append("<p>");
+                    message.append("This are the updates which you can get:");
+                    message.append("</p>");
+                    message.append("<ul>");
+                    for (int i = 0; i < updateInfo.getUpdateVersions().size(); i++) {
+                        HashMap versionDetails = (HashMap) updateInfo.getUpdateVersions()
+                                .get(i);
+                        if (versionDetails.get("version") != installInfo.getVersion()) {
+                            message.append("<li>Version: " + versionDetails.get("version") + " ChangeLog: "
+                                    + versionDetails.get("changeLog") + " Update Link: " + versionDetails.get("updateLink") + "<form><input type=\"submit\" name=\"update\" value=\"true\"></input></form></li>");
+                        }
+                    }
+                    message.append("</ul>");
+                    byteArrayOutputStream = getOutput(message);
+                }
+            }
+                    // this.installRdf.put("updateURL",
+                    // installRdf.getChild("Description").getChild("um:updateURL").getValue());
                     //this.installRdf.put("version", installRdf.getChild("Description").getChild("um:version").getValue()); 
                     //transformer.transform(new StreamSource(InstallRdf), new StreamResult(byteArrayOutputStream));
                     
@@ -165,15 +180,14 @@ public class UpdateResource extends Resource implements ViewableV2 {
                     
                     
 
-            SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
-            saxParser.parse(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()),
-                    i18nTransformer);
+            //SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
+            //saxParser.parse(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()),i18nTransformer);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
 
         defaultView.setMimeType("application/xhtml+xml");
-        defaultView.setInputStream(i18nTransformer.getInputStream());
+        defaultView.setInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
         return defaultView;
     }
 
