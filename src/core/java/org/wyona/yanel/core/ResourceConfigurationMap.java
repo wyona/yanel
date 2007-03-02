@@ -20,6 +20,7 @@ import java.io.InputStream;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
+import org.apache.log4j.Category;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.util.WildcardMatcherHelper;
 
@@ -29,10 +30,12 @@ import org.wyona.yanel.core.util.WildcardMatcherHelper;
  */
 public class ResourceConfigurationMap {
 
+    private static Category log = Category.getInstance(ResourceConfigurationMap.class);
+
     public static String getRCPath(Realm realm, String path) {
         XMLInputFactory factory = XMLInputFactory.newInstance();
         try {
-            XMLStreamReader parser = factory.createXMLStreamReader(getRCMap(realm, path));
+            XMLStreamReader parser = factory.createXMLStreamReader(getRCMap(realm));
             while (true) {
                 int event = parser.next();
                 if (event == XMLStreamConstants.END_DOCUMENT) {
@@ -68,7 +71,16 @@ public class ResourceConfigurationMap {
     /**
      * 
      */
-    private static InputStream getRCMap(Realm realm, String path) throws Exception {
-        return realm.getRTIRepository().getInputStream(new Path(getRCMapPath("/map")));
+    private static InputStream getRCMap(Realm realm) {
+        try {
+            if (realm.getRTIRepository().existsNode(getRCMapPath("/map"))) {
+                return realm.getRTIRepository().getInputStream(new Path(getRCMapPath("/map")));
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error(e);
+            return null;
+        }
     }
 }
