@@ -79,12 +79,12 @@ Section -Main SEC0000
 SectionEnd
 
 Section -post SEC0001
-ExecShell "open" '"$INSTDIR\start.bat"' 0 SW_SHOWMINIMIZED
+    ExecShell "open" '"$INSTDIR\start.bat"' 0 SW_SHOWMINIMIZED
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
     SetOutPath $INSTDIR
     WriteUninstaller $INSTDIR\uninstall.exe
-Sleep 12000
-ExecShell "open" '"http://localhost:8080/yanel/"' 0 SW_SHOWNORMAL    
+    Sleep 12000
+    ExecShell "open" '"http://localhost:8080/"' 0 SW_SHOWNORMAL    
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe

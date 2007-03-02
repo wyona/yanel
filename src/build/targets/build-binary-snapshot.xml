@@ -4,6 +4,7 @@
   
   <target name="bin-snapshot" description="Create a binary snapshot" depends="init, webapp">
     <delete dir="${build.dir}/bin-snapshots"/>
+    <property name="target.servlet.context.prefix" value="ROOT"/>
     <property name="snapshot.dir" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin"/>
     <mkdir dir="${snapshot.dir}"/>
     <antcall target="prepare-tomcat"/>
@@ -39,6 +40,7 @@
     <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/common/endorsed"/>
     <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/common/endorsed"/>
     <!-- delete unused tomcat files -->
+    <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/${target.servlet.context.prefix}"/>
     <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/jsp-examples"/>
     <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/servlets-examples"/>
     <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/tomcat-docs"/>
@@ -47,63 +49,69 @@
   </target>
   
   <target name="copy-realms-resources">
-    <copy todir="${snapshot.dir}/${servlet.context.prefix}">
+    <copy todir="${snapshot.dir}/${target.servlet.context.prefix}">
       <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
     </copy>
-    <copy todir="${snapshot.dir}/${servlet.context.prefix}/realms">
+    <copy todir="${snapshot.dir}/${target.servlet.context.prefix}/realms">
       <fileset dir="${yanel.home.dir}/src/realms"/>
     </copy>
-    <replace file="${snapshot.dir}/${servlet.context.prefix}/realms/javadoc/repository.xml" value="content">
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/realms/javadoc/repository.xml" value="content">
       <replacetoken>../../../build/javadoc</replacetoken>
     </replace>
-    <replace file="${snapshot.dir}/${servlet.context.prefix}/realms/test/yanel/config/data-repository.xml" value="../data">
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/realms/test/yanel/config/data-repository.xml" value="../data">
       <replacetoken>../../../../../local/test/data</replacetoken>
     </replace>
-    <copy todir="${snapshot.dir}/${servlet.context.prefix}/realms/javadoc/content">
+    <copy todir="${snapshot.dir}/${target.servlet.context.prefix}/realms/javadoc/content">
       <fileset dir="${yanel.home.dir}/build/javadoc"/>
     </copy>
-    <copy file="${yanel.home.dir}/conf/realms.xml" todir="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
-    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/realms.xml" value="../../realms">
+    <copy file="${yanel.home.dir}/conf/realms.xml" todir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/realms.xml" value="../../realms">
       <replacetoken>../src/realms</replacetoken>
     </replace>
-    <copy todir="${snapshot.dir}/${servlet.context.prefix}/resources">
+    <copy todir="${snapshot.dir}/${target.servlet.context.prefix}/resources">
       <fileset dir="${yanel.home.dir}/src/resources"/>
     </copy>
-    <copy todir="${snapshot.dir}/${servlet.context.prefix}/resources">
+    <copy todir="${snapshot.dir}/${target.servlet.context.prefix}/resources">
       <fileset dir="${yanel.home.dir}/src/contributions/resources"/>
     </copy>
-    <copy todir="${snapshot.dir}/${servlet.context.prefix}/resources">
+    <copy todir="${snapshot.dir}/${target.servlet.context.prefix}/resources">
       <fileset dir="${yanel.home.dir}/src/realms/welcome-admin/yanel/resources"/>
     </copy>
-    <xslt in="${yanel.home.dir}/conf/yanel.xml" out="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl" force="true">
+    <xslt in="${yanel.home.dir}/conf/yanel.xml" out="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl" force="true">
       <!--<param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>-->
     </xslt>
-    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="../../resources">
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="../../resources">
       <replacetoken>../src/resources</replacetoken>
     </replace>
-    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="../../resources">
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="../../resources">
       <replacetoken>../src/contributions/resources</replacetoken>
     </replace>
-    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="../../resources">
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="../../resources">
       <replacetoken>../src/realms/welcome-admin/yanel/resources</replacetoken>
     </replace>
 
-    <copy file="${yanel.home.dir}/src/binary-dist/log4j.properties" todir="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
-    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${servlet.context.prefix}">
+    <copy file="${yanel.home.dir}/src/binary-dist/log4j.properties" todir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${target.servlet.context.prefix}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace>
-    <mkdir dir="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/logs"/>
+    <mkdir dir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/logs"/>
 
+    <copy file="${yanel.home.dir}/src/build/install.rdf" todir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}-r${yanel.revision}">
+      <replacetoken>@VERSION@</replacetoken>
+    </replace>
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/install.rdf" value="bin-snapshot">
+      <replacetoken>@INSTALLTYPE@</replacetoken>
+    </replace>
   </target>
   
   <target name="bin-snapshot-win">
-    <antcall target="patch-install-rdf-win"/>
     <!-- Unpatch install.rdf ... -->
 
     <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}">
       <fileset dir="${snapshot.dir}/apache-tomcat-${tomcat.version}" />
     </copy>
-    <jar jarfile="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps/${servlet.context.prefix}.war" basedir="${snapshot.dir}/${servlet.context.prefix}"/>
+    <jar jarfile="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps/${target.servlet.context.prefix}.war" basedir="${snapshot.dir}/${target.servlet.context.prefix}"/>
     <!-- <move file="${snapshot.dir}/${servlet.context.prefix}.war" todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps"/> -->
 
     <copy file="${yanel.home.dir}/LICENSE.txt" todir="${snapshot.dir.win}"/>
@@ -129,9 +137,8 @@
   </target>
   
   <target name="bin-snapshot-unix">
-    <antcall target="patch-install-rdf-unix"/>
-    <jar jarfile="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/${servlet.context.prefix}.war" basedir="${snapshot.dir}/${servlet.context.prefix}"/>
-    <delete dir="${snapshot.dir}/${servlet.context.prefix}"/>
+    <jar jarfile="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/${target.servlet.context.prefix}.war" basedir="${snapshot.dir}/${target.servlet.context.prefix}"/>
+    <delete dir="${snapshot.dir}/${target.servlet.context.prefix}"/>
     <!-- Copy UNIX and Windows specific files -->
     <copy file="${yanel.home.dir}/src/binary-dist/README-UNIX.txt" tofile="${snapshot.dir}/README.txt" overwrite="true"/>
     <copy file="${yanel.home.dir}/src/binary-dist/start.sh" todir="${snapshot.dir}"/>
@@ -143,32 +150,6 @@
     </tar>
     <gzip src="${snapshot.dir}.tar" destfile="${snapshot.dir}.tar.gz"/>
     <delete file="${snapshot.dir}.tar"/>
-  </target>
-  
-  <target name="patch-install-rdf-win">
-    <copy file="${yanel.home.dir}/src/build/install.rdf" todir="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
-    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}-r${yanel.revision}">
-      <replacetoken>@VERSION@</replacetoken>
-    </replace>
-    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="bin-snapshot">
-      <replacetoken>@INSTALLTYPE@</replacetoken>
-    </replace>
-      <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="windows">
-      <replacetoken>@PLATFORM@</replacetoken>
-    </replace>
-  </target>
-
-  <target name="patch-install-rdf-unix">
-    <copy file="${yanel.home.dir}/src/build/install.rdf" todir="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
-    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}-r${yanel.revision}">
-      <replacetoken>@VERSION@</replacetoken>
-    </replace>
-    <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="bin-snapshot">
-      <replacetoken>@INSTALLTYPE@</replacetoken>
-    </replace>
-      <replace file="${snapshot.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="unix">
-      <replacetoken>@PLATFORM@</replacetoken>
-    </replace>
   </target>
   
 </project>

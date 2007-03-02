@@ -20,6 +20,7 @@
   <import file="targets/add-third-party-realm.xml"/>
   <import file="targets/create-new-resource-type.xml"/>
   <import file="targets/build-binary-snapshot.xml"/>
+  <import file="targets/build-update-war.xml"/>
   <import file="targets/execute-jmeter.xml"/>
   
   <target name="ask-to-reconfigure-tomcat-cluster-node1" description="reconfigure Tomcat cluster node 1" if="isTomcat1PortsSet">
@@ -412,9 +413,6 @@
     </replace>
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="source">
       <replacetoken>@INSTALLTYPE@</replacetoken>
-    </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="unknown">
-      <replacetoken>@PLATFORM@</replacetoken>
     </replace>
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.file.forward.slashes}">
