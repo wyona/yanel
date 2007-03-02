@@ -11,10 +11,6 @@ import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-/**
- * @author Piku Mishra
- * 
- */
 public class CreateZip {
 
     File files[];
