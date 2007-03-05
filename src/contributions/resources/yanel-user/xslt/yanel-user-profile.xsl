@@ -11,75 +11,38 @@
   <xsl:param name="userId" select="''"/>
   <xsl:param name="userName" select="''"/>
   <xsl:param name="email" select="''"/>
-  <xsl:param name="groupsString" select="''"/>
+  <xsl:param name="userGroupsString" select="''"/>
+  <xsl:param name="allGroupsString" select="''"/>
   <xsl:param name="success" select="''"/>
   <xsl:param name="error" select="''"/>
 
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
-      <xsl:choose>
-        <xsl:when test="$success != ''">
-          <head>
-            <title></title>
-          </head>
-          <body>
-            <xsl:apply-templates select="form" mode="success"/>
-          </body>
+      <head>
+        <title>Change user profile</title>
+      </head>
+      <body>
+        <h1> 
+          User Profile of <xsl:value-of select="$userId"/>
+        </h1>
+      <xsl:choose>       
+        <xsl:when test="$success != ''">            
+          <h4>
+            <xsl:value-of select="$success"/>
+          </h4>           
         </xsl:when>
-        <xsl:when test="$error != ''">
-          <head>
-            <title></title>
-          </head>
-          <body>
-            <xsl:apply-templates select="form" mode="error"/>
-          </body>
-        </xsl:when>
-        <xsl:otherwise>
-          <head>
-            <title>Change user profile</title>
-          </head>
-          <body>
-            <h1> User Profile of <xsl:value-of select="$userId"/>
-            </h1>
-            <xsl:apply-templates select="form" mode="init"/>
-          </body>
-        </xsl:otherwise>
+        <xsl:when test="$error != ''">          
+          <h4>
+            An error occurred: <xsl:value-of select="$error"/>
+          </h4>            
+        </xsl:when>        
       </xsl:choose>
+       <xsl:apply-templates select="form"/>
+       </body>
     </html>
-  </xsl:template>
+  </xsl:template>  
 
-  <xsl:template match="form" mode="success">
-    <h4>
-      <xsl:value-of select="$success"/>
-    </h4>
-
-    <xsl:if test="starts-with($success, 'Profile')">
-      <p>
-        <table>
-          <tr>
-            <td>Name:</td>
-            <td>
-              <xsl:value-of select="$userName"/>
-            </td>
-          </tr>
-          <tr>
-            <td>E-Mail:</td>
-            <td>
-              <xsl:value-of select="$email"/>
-            </td>
-          </tr>
-        </table>
-      </p>
-    </xsl:if>
-
-  </xsl:template>
-
-  <xsl:template match="form" mode="error">
-    <h4>An error occurred: <xsl:value-of select="$error"/>
-    </h4>
-  </xsl:template>
-
-  <xsl:template match="form" mode="init">
+  <xsl:template match="form">
     <h2>Change Password</h2>
     <form name="user-password-form" method="post" action="#">
       <p>
@@ -138,12 +101,15 @@
 
     <h2>Change Groups</h2>
 
+    <h4>Remove from group</h4>
     <p>
       <table>
-        <xsl:call-template name="process-groups"/>
+        <xsl:call-template name="process-user-groups"/>
       </table>
-    </p>
-
+    </p>    
+     
+    <xsl:call-template name="process-all-groups"/>         
+  
 
     <h2>Delete User</h2>
     <form name="user-deletion-form" method="post" action="#">
@@ -182,11 +148,56 @@
       </xsl:call-template>
     </xsl:if>
   </xsl:template>
-
-  <xsl:template name="process-groups">
+  
+  <xsl:template name="process-all-groups">
     <xsl:variable name="groups">
       <xsl:call-template name="tokenize">
-        <xsl:with-param name="inputString" select="$groupsString"/>
+        <xsl:with-param name="inputString" select="$allGroupsString"/>
+        <xsl:with-param name="separator" select="';'"/>
+        <xsl:with-param name="resultElement" select="'group'"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <h4> Add to group </h4>
+    <xsl:choose>
+      <xsl:when test="xalan:nodeset($groups)/node()">
+        <p>
+          <table>
+            <tr>
+              <td/>
+              <td>
+                <form name="add-user-to-group" method="post" action="#">
+                  <select name="Group">
+                    <xsl:for-each select="xalan:nodeset($groups)/node()">
+                      <option>
+                        <xsl:attribute name="value">
+                          <xsl:value-of select="."/>
+                        </xsl:attribute>
+                        <xsl:value-of select="."/>
+                      </option>
+                    </xsl:for-each>
+                  </select>
+                  <input type="submit" value="Add">
+                    <xsl:attribute name="name">
+                      <xsl:text>submitAddToGroup</xsl:text>                
+                    </xsl:attribute>
+                  </input>
+                </form>
+             </td>
+           </tr>
+         </table>
+       </p>
+     </xsl:when>
+     <xsl:otherwise>
+       <p>User already belongs to all existing groups</p>
+     </xsl:otherwise>
+   </xsl:choose>
+
+  </xsl:template>
+
+  <xsl:template name="process-user-groups">
+    <xsl:variable name="groups">
+      <xsl:call-template name="tokenize">
+        <xsl:with-param name="inputString" select="$userGroupsString"/>
         <xsl:with-param name="separator" select="';'"/>
         <xsl:with-param name="resultElement" select="'group'"/>
       </xsl:call-template>
@@ -212,7 +223,6 @@
                 <xsl:text>submitDeleteFrom</xsl:text>
                 <xsl:value-of select="$uniqueID"/>
               </xsl:attribute>
-
             </input>
           </form>
         </td>

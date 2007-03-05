@@ -34,7 +34,6 @@ import org.wyona.security.core.api.UserManager;
 import org.wyona.security.core.api.GroupManager;
 import org.wyona.security.core.api.User;
 import org.wyona.security.core.api.Group;
-import org.wyona.security.core.api.Item;
 import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.yarep.core.Repository;
 
@@ -130,7 +129,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
                     new StreamSource(xslFile));
 
             String action = determineAction(request);
-            String userId = getConfiguration().getProperty("user");
+            String userId = getConfiguration().getProperty("user");            
 
             if (action.equals("submitProfile")) {
                 updateUserProfile(request, transformer);
@@ -143,24 +142,41 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
                     transformer.setParameter("error", "Unable to delete user successfully");
                 }
                 transformer.setParameter("userId", userId);
-            } else if (action.equals("submitDeleteFromGroup")) {
-                deleteFromGroup(action, transformer);
-            } else {
-                User user = realm.getIdentityManager().getUserManager().getUser(userId);
-                transformer.setParameter("userId", userId);
-                transformer.setParameter("userName", user.getName());
-                transformer.setParameter("email", user.getEmail());
-                Group[] groups = user.getGroups();
-                StringBuffer groupsString = new StringBuffer();
-                for (int i = 0; i < groups.length; i++) {
-                    groupsString.append(groups[i].getID()).append(";");
-                }
-                transformer.setParameter("groupsString", groupsString);
+            } else if (action.startsWith("submitDeleteFromGroup")) {        	
+        	deleteFromGroup(action, transformer);
+            } else if (action.equals("submitAddToGroup")) {
+        	addToGroup(request,transformer);
             }
+
+            User user = realm.getIdentityManager().getUserManager().getUser(userId);
+            transformer.setParameter("userId", userId);
+            transformer.setParameter("userName", user.getName());
+            transformer.setParameter("email", user.getEmail());
+            Group[] userGroups = user.getGroups();
+            StringBuffer userGroupsString = new StringBuffer();
+            for (int i = 0; i < userGroups.length; i++) {
+        	userGroupsString.append(userGroups[i].getID()).append(";");
+            }
+            transformer.setParameter("userGroupsString", userGroupsString);            
+            
+            Group[] allGroups = getRealm().getIdentityManager().getGroupManager().getGroups();
+            StringBuffer allGroupsString = new StringBuffer();
+            for (int i = 0; i < allGroups.length; i++) {
+        	boolean isMember = false;        	
+        	for(int j = 0; j < userGroups.length; j++) {
+        	    if(userGroups[j].getID().equals(allGroups[i].getID())) {
+        		isMember = true;      		
+        	    }
+        	} 
+        	if(!isMember) {
+        	    allGroupsString.append(allGroups[i].getID()).append(";");
+        	}
+            }
+            transformer.setParameter("allGroupsString", allGroupsString);            
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             transformer.transform(new javax.xml.transform.stream.StreamSource(xmlFile),
-                    new StreamResult(baos));
+        	    new StreamResult(baos));
 
             defaultView.setMimeType(MIME_TYPE);
             defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
@@ -201,7 +217,6 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
      *      Creates the user
      */
     public void create(HttpServletRequest request) {
-
         try {
             if (!realm.getIdentityManager().getUserManager().existsUser("rp.userId")) {
                 boolean doCreate = validateNewUserData(request);
@@ -336,7 +351,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
      *            The request containing the data to update
      * @param transformer
      */
-    protected void updateUserProfile(HttpServletRequest request, Transformer transformer) {
+    private void updateUserProfile(HttpServletRequest request, Transformer transformer) {
         String email = request.getParameter("email");
         if (email == null || ("").equals(email)) {
             transformer.setParameter("error", "emailNotSet");
@@ -348,16 +363,11 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
                 User user = realm.getIdentityManager().getUserManager().getUser(userId);
                 user.setEmail(request.getParameter("email"));
                 user.setName(request.getParameter("userName"));
-                user.save();
-
-                transformer.setParameter("userId", userId);
-                transformer.setParameter("userName", user.getName());
-                transformer.setParameter("email", user.getEmail());
+                user.save();               
                 transformer.setParameter("success", "Profile updated successfully");
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }
-
         }
     }
 
@@ -370,29 +380,50 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
      *            The request containing the group involved
      * @param transformer
      */
-    protected void deleteFromGroup(String action, Transformer transformer) {
-
+    private void deleteFromGroup(String action, Transformer transformer) {
         try {
             String userId = getConfiguration().getProperty("user");
             User user = getRealm().getIdentityManager().getUserManager().getUser(userId);
             Group[] userGroups = user.getGroups();
             GroupManager gm = getRealm().getIdentityManager().getGroupManager();
 
-            String targetGroup = action.substring(action.indexOf("_"));
-            log.error("USER GROUPS: " + userGroups.length);
+            String targetGroup = action.substring(action.indexOf("_")+1);            
             if (userGroups.length > 0) {
-                Group group = gm.getGroup(targetGroup);
-                if (group.isMember(user)) {
-                    group.removeMember(user);
-                }
-                transformer.setParameter("success", "User successfully deleted from group"
-                        + targetGroup);
+        	if(userGroups.length > 1) {
+        	    Group group = gm.getGroup(targetGroup);
+        	    if (group.isMember(user)) {                   
+        		group.removeMember(user);
+        		group.save();                    
+        	    }
+        	    transformer.setParameter("success", "User successfully deleted from group: " + targetGroup);
+        	} else {
+        	    transformer.setParameter("error", "User can not be removed from group: " + targetGroup + ". Users must belong to one group at least."); 
+        	}        	
             } else {
-                log.error("The user " + userId + "does not belong to any group!");
+        	log.error("The user " + userId + "does not belong to any group!");
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+    }
+    
+    /**
+     * Add a user to a group
+     * @param request Request containing the group the user has to be added to
+     * @param transformer
+     */
+    private void addToGroup(HttpServletRequest request, Transformer transformer) {
+	String groupId = request.getParameter("Group");
+	try {
+	    String userId = getConfiguration().getProperty("user");	
+	    Group group = getRealm().getIdentityManager().getGroupManager().getGroup(groupId);
+	    User user = getRealm().getIdentityManager().getUserManager().getUser(userId);
+	    group.addMember(user);
+	    group.save();
+	} catch (Exception e) {
+	    log.error(e.getMessage(), e);
+	}
+	transformer.setParameter("success", "User successfully added to group: " + groupId);
     }
 
     /**
@@ -401,7 +432,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
      * @param request
      * @param transformer
      */
-    protected void updatePassword(HttpServletRequest request, Transformer transformer) {
+    private void updatePassword(HttpServletRequest request, Transformer transformer) {
         String oldPassword = request.getParameter("oldPassword");
         try {
             String userId = getConfiguration().getProperty("user");
@@ -422,8 +453,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
                 }
             } else {
                 transformer.setParameter("error", "Authentication failed!");
-            }
-            transformer.setParameter("userId", userId);
+            }            
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -512,7 +542,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
      * Delete the user from the identities repository and remove the related
      * user interface files
      */
-    protected boolean deleteUser(String userId) {
+    private boolean deleteUser(String userId) {
         boolean success = false;
         try {
             User user = realm.getIdentityManager().getUserManager().getUser(userId);

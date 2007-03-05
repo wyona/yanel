@@ -1,8 +1,7 @@
-<?xml version="1.0"?>
-<group id="admin" xmlns="http://www.wyona.org/security/1.0">
-  <name>Admins</name>
-  <members>
-    <member id="alice"/>
-    <member id="lenya"/>
-  </members>
+<?xml version="1.0" encoding="UTF-8"?>
+<group id="admin">
+<name>Admins</name>
+<members>
+<member id="lenya"/>
+</members>
 </group>
