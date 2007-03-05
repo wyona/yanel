@@ -197,6 +197,7 @@
   </xsl:template>
   
   <xsl:template match="yanel:exception">
+    <div id="exception">
         <div style="color: red; font-size: 24px;"><i18n:message key="exception"/></div>
         <xsl:choose>
           <xsl:when test="contains(string(.), '#')">
@@ -208,6 +209,7 @@
             <xsl:value-of select="."/>
           </xsl:otherwise>
         </xsl:choose>
+    </div>
   </xsl:template>
 
 </xsl:stylesheet>
