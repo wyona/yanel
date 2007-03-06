@@ -151,6 +151,10 @@ public class NutchResource extends Resource implements ViewableV1 {
                     nutchView.setMimeType(XHTML_MIME_TYPE);
                 }    
             }
+
+            // Set encoding
+            String encoding = getConfiguration().getProperty("encoding");
+            if (encoding != null) nutchView.setEncoding(encoding);
         } catch (Exception e) {
             log.error(e, e);
         }
