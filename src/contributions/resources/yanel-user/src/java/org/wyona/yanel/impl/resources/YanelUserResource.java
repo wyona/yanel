@@ -550,11 +550,11 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
 
             String userScreenPolicyPath = getPath() + POLICIES_SUFFIX;
             Repository policiesRepo = getRealm().getPolicyManager().getPoliciesRepository();
-            policiesRepo.getNode(userScreenPolicyPath).remove();
+            policiesRepo.getNode(userScreenPolicyPath).delete();
 
             String userScreenRCPath = PathUtil.getRCPath(getPath());
             Repository rtiRepo = getRealm().getRTIRepository();
-            rtiRepo.getNode(userScreenRCPath).remove();
+            rtiRepo.getNode(userScreenRCPath).delete();
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);

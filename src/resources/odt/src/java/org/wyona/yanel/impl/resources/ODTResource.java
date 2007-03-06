@@ -287,7 +287,7 @@ public class ODTResource extends Resource implements ViewableV2, ModifiableV2 {
      * 
      */
     public boolean delete() throws Exception {
-        getRealm().getRepository().getNode(getPath()).remove();
+        getRealm().getRepository().getNode(getPath()).delete();
         return true;
     }
 
