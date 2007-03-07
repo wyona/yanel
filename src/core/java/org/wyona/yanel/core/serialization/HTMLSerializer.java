@@ -72,7 +72,7 @@ public class HTMLSerializer extends DefaultHandler implements Serializer, Lexica
         element.append("<" + eName);
         for(int i = 0; i < attrs.getLength(); i++) {
             String aName = attrs.getQName(i);
-            String aValue = attrs.getValue(i);
+            String aValue = replaceEntities(attrs.getValue(i));
             element.append(" " + aName + "=\"" + aValue + "\"");
         }
         // NOTE: the element will not be closed yet because we don't know if the
@@ -130,7 +130,7 @@ public class HTMLSerializer extends DefaultHandler implements Serializer, Lexica
 
     public void characters(char[] buf, int offset, int len) throws SAXException {
         handlePendingElement();
-        String s = new String(buf, offset, len);
+        String s = replaceEntities(new String(buf, offset, len));
         print(s);
     }
 
@@ -173,7 +173,7 @@ public class HTMLSerializer extends DefaultHandler implements Serializer, Lexica
     
     protected void print(String s) throws SAXException {
         try {
-            this.os.write(replaceAmpersand(s).getBytes("UTF-8"));
+            this.os.write(s.getBytes("UTF-8"));
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new SAXException(e);
@@ -181,24 +181,21 @@ public class HTMLSerializer extends DefaultHandler implements Serializer, Lexica
     }
     
     /**
-     * Replaces all occurences of '&' but not '&amp;' with '&amp;'.
-     * TODO: fix this in the reader.
-     * @param inputString with or without '&'
-     * @return replaced ampersands as string
+     * Replaces some characters by their corresponding xml entities.
+     * @param str
+     * @return
      */
-    private String replaceAmpersand(String inputString) {
-        String [] tokens = inputString.split("&amp;");
-        String replacedAmpersand = null;
-        if(inputString.indexOf("&amp;") == -1) {
-            replacedAmpersand = inputString.replaceAll("&", "&amp;");
-        } else {
-            replacedAmpersand = "";
-            for(int i = 0; i < tokens.length; i++) {
-                replacedAmpersand += tokens[i].replaceAll("&", "&amp;") + "&amp;";
-            }
-        }
-        log.debug("[" + inputString + "] replaced with [" + replacedAmpersand + "]");
-        return replacedAmpersand;
+    private String replaceEntities(String str) {
+        // there may be some &amp; and some & mixed in the input, so first transform all
+        // &amp; to & and then transform all & back to &amp;
+        // this way we don't get double escaped &amp;amp;
+        str = str.replaceAll("&amp;", "&");
+        str = str.replaceAll("&", "&amp;");
+        str = str.replaceAll("<", "&lt;");
+        str = str.replaceAll(">", "&gt;");
+        str = str.replaceAll("'", "&apos;");
+        str = str.replaceAll("\"", "&quot;");
+        return str;
     }
 
     public void setWriter(Writer writer) {
