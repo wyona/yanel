@@ -2,6 +2,7 @@
 <group id="admin">
 <name>Admins</name>
 <members>
+<member id="alice"/>
 <member id="lenya"/>
 </members>
 </group>
