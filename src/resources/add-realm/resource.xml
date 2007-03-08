@@ -8,4 +8,9 @@
 <description>
 Add Realm Resource
 </description>
+
+<rtd>
+  <property name="fslocation" default-value=""/>
+  <property name="crawlmaxpages" default-value="100"/>
+</rtd>
 </resource>

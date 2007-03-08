@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="add-realm" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="fslocation" value=""/>
+  <yanel:property name="crawlmaxpages" value="100"/>
+</yanel:resource-config>

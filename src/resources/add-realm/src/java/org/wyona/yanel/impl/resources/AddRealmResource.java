@@ -11,6 +11,7 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.transformation.I18nTransformer;
 import org.wyona.yanel.core.util.HttpServletRequestHelper;
+import org.wyona.yanel.core.util.PathUtil;
 
 import org.apache.log4j.Category;
 
@@ -112,34 +113,50 @@ public class AddRealmResource extends Resource implements ViewableV2 {
         View defaultView = new View();
 
         try {
-
-            // Check if data was sumbitted (realm ID, realm Name, URL to be dumped, depth of crawling, max number of pages)
+            
+        	 // Check if data was sumbitted (realm ID, realm Name, URL to be dumped, depth of crawling, max number of pages)
             boolean submit = false;
             Enumeration enumeration = request.getParameterNames();
             while(enumeration.hasMoreElements()){
                 if(enumeration.nextElement().toString().equals("submit")) 
                     submit = true;
             }
+            
+        	File XSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "add-realm.xsl");
+        	File inputXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "input-screen.xml");
+        	File statusXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "status-screen.xml");
+            transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(XSLTFile));
+            
+            // Add HashMap keys with dummy values for form fields
+            String[] parameterNames = { "realmid", "realmname", "url", "fslocation", "crawldepth", "crawlmaxpages" };
+            for (int i=0; i<parameterNames.length; i++) {
+            	String property = getConfiguration().getProperty(parameterNames[i]);
+            	boolean propertyExists = getConfiguration().containsKey(parameterNames[i]);
+            	
+            	if (propertyExists == true) {
+            		if (property == null || ("").equals(property)) {
+            			parameters.put(parameterNames[i], "default");
+            		} else {
+            			parameters.put(parameterNames[i], property);
+            		}
+            	} else {
+            		parameters.put(parameterNames[i], "");
+        		}
+            }
+            
+            Set keys = parameters.keySet();
+            Iterator keysIterator = keys.iterator();
+            
             if(submit) {
-                File statusXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "add-realm.xsl");
-                File statusXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "status-screen.xml");
-                transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(statusXSLTFile));
-                
-                //Add HashMap keys with dummy values for form fields
-                parameters.put("realmid", null);
-                parameters.put("realmname", null);
-                parameters.put("url", null);
-                parameters.put("fs-location", null);
-                parameters.put("crawldepth", null);
-                parameters.put("crawlmaxpages", null);
-                
-                Set keys = parameters.keySet();
-                Iterator keysIterator = keys.iterator();
+            	
                 while (keysIterator.hasNext()) {
                     parameterName = (String) keysIterator.next();
                     parameter = HttpServletRequestHelper.getParameter(request, parameterName);
                     
-                    if (parameter == null || ("").equals(parameter)) {
+                    if (("fslocation").equals(parameterName)) {
+                    	parameters.put(parameterName, parameter);
+                        transformer.setParameter(parameterName, parameters.get(parameterName).toString());
+                    } else if (parameter == null || ("").equals(parameter)) {
                         parameterErrorName = "error-" + parameterName;
                         parameterError = "Please enter correct value for '" + parameterName + "'";
                         transformer.setParameter(parameterName, "ERROR:" + parameterError);
@@ -150,22 +167,34 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                 }
                 
                 if (parameterError == null || ("").equals(parameterError)) {
+                	File fslocationValue = null;
+                	if (parameters.get("fslocation").toString() == null || ("").equals(parameters.get("fslocation").toString())) {
+                		fslocationValue = null;
+                	} else if (parameters.get("fslocation").toString().equals("default")) {
+                		fslocationValue = null;
+                	} else {
+                		fslocationValue = new File(parameters.get("fslocation").toString());
+                	}
                     getYanel().getRealmConfiguration().copyRealm("from-scratch-realm-template", 
                             parameters.get("realmid").toString(), 
                             parameters.get("realmname").toString(),
                             "/" + parameters.get("realmid").toString() + "/", 
-                            new File(parameters.get("fs-location").toString()));
+                            fslocationValue);
                     transformer.setParameter("submitted", "true");
+                    transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
                 }
                 
                 transformer.transform(new javax.xml.transform.stream.StreamSource(statusXMLFile), new StreamResult(byteArrayOutputStream));
                 
             } else {
-                File inputXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "add-realm.xsl");
-                File inputXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "input-screen.xml");
-                transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(inputXSLTFile));
-
+            	
+                while (keysIterator.hasNext()) {
+                    parameterName = (String) keysIterator.next();
+                    transformer.setParameter(parameterName, parameters.get(parameterName).toString());
+                }
+                
                 transformer.transform(new javax.xml.transform.stream.StreamSource(inputXMLFile), new StreamResult(byteArrayOutputStream));
+                
             }
             
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();

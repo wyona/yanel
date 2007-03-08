@@ -9,10 +9,12 @@
 
   <xsl:output method="xhtml" encoding="UTF-8"/>
   
+  <xsl:param name="yanel.back2context" select="''" />
+  
   <xsl:param name="realmid" select="''" />
   <xsl:param name="realmname" select="''" />
   <xsl:param name="url" select="''" />
-  <xsl:param name="fs-location" select="''" />
+  <xsl:param name="fslocation" select="''" />
   <xsl:param name="crawldepth" select="''" />
   <xsl:param name="crawlmaxpages" select="''" />
 
@@ -37,6 +39,13 @@
             <xsl:when test="$submitted != 'false'">
               <p>[X] pages have been imported.</p>
               <p>[X]% complete.</p>
+              <p>
+                <a>
+                  <xsl:attribute name="href">
+                    <xsl:value-of select="$yanel.back2context"/><xsl:value-of select="$realmid"/>/
+                  </xsl:attribute>View <xsl:value-of select="$realmname" />
+                </a>
+              </p>
             </xsl:when>
             <xsl:otherwise>
               
@@ -50,34 +59,66 @@
                         <td>
                           <xsl:choose>
                             <xsl:when test="contains($realmid, 'ERROR:') or contains($realmname, 'ERROR:') 
-                                            or contains($url, 'ERROR:') or contains($fs-location, 'ERROR:')
+                                            or contains($url, 'ERROR:') or contains($fslocation, 'ERROR:')
                                             or contains($crawldepth, 'ERROR:') or contains($crawlmaxpages, 'ERROR:')">
+                              <input type="text" name="{.}" class="box" size="30">
                               <xsl:choose>
                                 <xsl:when test="position()='1' and not(contains($realmid, 'ERROR:'))">
-                                  <input type="text" name="{.}" class="box" size="30" value="{$realmid}" />
+                                  <xsl:attribute name="value"><xsl:value-of select="$realmid" /></xsl:attribute>
                                 </xsl:when>
                                 <xsl:when test="position()='2' and not(contains($realmname, 'ERROR:'))">
-                                  <input type="text" name="{.}" class="box" size="30" value="{$realmname}" />
+                                  <xsl:attribute name="value"><xsl:value-of select="$realmname" /></xsl:attribute>
                                 </xsl:when>
                                 <xsl:when test="position()='3' and not(contains($url, 'ERROR:'))">
-                                  <input type="text" name="{.}" class="box" size="30" value="{$url}" />
+                                  <xsl:attribute name="value"><xsl:value-of select="$url" /></xsl:attribute>
                                 </xsl:when>
-                                <xsl:when test="position()='4' and not(contains($fs-location, 'ERROR:'))">
-                                  <input type="text" name="{.}" class="box" size="30" value="{$fs-location}" />
+                                <xsl:when test="position()='4' and not(contains($fslocation, 'ERROR:'))">
+                                  <xsl:attribute name="value"><xsl:value-of select="$fslocation" /></xsl:attribute>
                                 </xsl:when>
                                 <xsl:when test="position()='5' and not(contains($crawldepth, 'ERROR:'))">
-                                  <input type="text" name="{.}" class="box" size="30" value="{$crawldepth}" />
+                                  <xsl:attribute name="value"><xsl:value-of select="$crawldepth" /></xsl:attribute>
                                 </xsl:when>
                                 <xsl:when test="position()='6' and not(contains($crawlmaxpages, 'ERROR:'))">
-                                  <input type="text" name="{.}" class="box" size="30" value="{$crawlmaxpages}" />
+                                  <xsl:attribute name="value"><xsl:value-of select="$crawlmaxpages" /></xsl:attribute>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                  <input type="text" name="{.}" class="box" size="30" value="" />
+                                  <xsl:attribute name="value"></xsl:attribute>
                                 </xsl:otherwise>
                               </xsl:choose>
+                              </input>
                             </xsl:when>
                             <xsl:otherwise>
-                              <input type="text" name="{.}" class="box" size="30" />
+                              <input type="text" name="{.}" class="box" size="30">
+                              <xsl:choose>
+                                <xsl:when test="position()='1'">
+                                  <xsl:attribute name="value"><xsl:value-of select="$realmid" /></xsl:attribute>
+                                  <xsl:if test="$realmid != ''"><xsl:attribute name="readonly">readonly</xsl:attribute></xsl:if>
+                                </xsl:when>
+                                <xsl:when test="position()='2'">
+                                  <xsl:attribute name="value"><xsl:value-of select="$realmname" /></xsl:attribute>
+                                  <xsl:if test="$realmname != ''"><xsl:attribute name="readonly">readonly</xsl:attribute></xsl:if>
+                                </xsl:when>
+                                <xsl:when test="position()='3'">
+                                  <xsl:attribute name="value"><xsl:value-of select="$url" /></xsl:attribute>
+                                  <xsl:if test="$url != ''"><xsl:attribute name="readonly">readonly</xsl:attribute></xsl:if>
+                                </xsl:when>
+                                <xsl:when test="position()='4'">
+                                  <xsl:attribute name="value"><xsl:value-of select="$fslocation" /></xsl:attribute>
+                                  <xsl:if test="$fslocation != ''"><xsl:attribute name="readonly">readonly</xsl:attribute></xsl:if>
+                                </xsl:when>
+                                <xsl:when test="position()='5'">
+                                  <xsl:attribute name="value"><xsl:value-of select="$crawldepth" /></xsl:attribute>
+                                  <xsl:if test="$crawldepth != ''"><xsl:attribute name="readonly">readonly</xsl:attribute></xsl:if>
+                                </xsl:when>
+                                <xsl:when test="position()='6'">
+                                  <xsl:attribute name="value"><xsl:value-of select="$crawlmaxpages" /></xsl:attribute>
+                                  <xsl:if test="$crawlmaxpages != ''"><xsl:attribute name="readonly">readonly</xsl:attribute></xsl:if>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                  <xsl:attribute name="value"></xsl:attribute>
+                                </xsl:otherwise>
+                              </xsl:choose>
+                              </input>
                             </xsl:otherwise>
                           </xsl:choose>
                         </td>
@@ -116,12 +157,12 @@
                               </font>
                             </td>
                           </xsl:when>
-                          <xsl:when test="position()='4' and contains($fs-location, 'ERROR:')">
+                          <xsl:when test="position()='4' and contains($fslocation, 'ERROR:')">
                             <td>
                               &#160;<font color="red">
                                 <i18n:message>
                                   <xsl:attribute name="key">
-                                    <xsl:value-of select="substring-after($fs-location, 'ERROR:')"/>
+                                    <xsl:value-of select="substring-after($fslocation, 'ERROR:')"/>
                                   </xsl:attribute>
                                 </i18n:message>
                               </font>
