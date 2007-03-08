@@ -86,11 +86,11 @@
   </target>
   
   <target name="generate-resources-test-build-from-default" depends="init" unless="local.yanel.config.exists">
-    <xslt in="${conf.dir}/yanel.xml" out="${build.dir}/test-resources.xml" style="test-resources.xsl" force="false"/>
+    <xslt in="${conf.dir}/resource-types.xml" out="${build.dir}/test-resources.xml" style="test-resources.xsl" force="false"/>
   </target>
 
   <target name="generate-resources-test-build-from-local" depends="init" if="local.yanel.config.exists">
-    <xslt in="${local.conf.dir}/local.yanel.xml" out="${build.dir}/test-resources.xml" style="test-resources.xsl" force="true"/>
+    <xslt in="${local.conf.dir}/local.resource-types.xml" out="${build.dir}/test-resources.xml" style="test-resources.xsl" force="true"/>
   </target>
   
   <target name="copy-properties">

@@ -1,44 +1,11 @@
 <?xml version="1.0"?>
 
 <yanel xmlns="http://www.wyona.org/yanel/1.0">
-
-<!-- NOTE: compile is true by default -->
-<resources>
-  <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
-  <resource src="../src/resources/file/"                        compile="true"/>
-  <resource src="../src/resources/directory/"                   compile="true"/>
-<!--
-  <resource src="../src/resources/tape/"                        compile="true"/>
--->
-  <resource src="../src/resources/add-realm/"                  compile="true"/>
-  <resource src="../src/resources/odt/"                         compile="true"/>
-  <resource src="../src/resources/xml/"                         compile="true"/>
-  <resource src="../src/realms/welcome-admin/yanel/resources/show-realms/"                 compile="true"/>
-  <resource src="../src/realms/welcome-admin/yanel/resources/update-webapp/"                 compile="true"/>
-<!--
-  <resource src="../src/resources/invoice/"                     compile="true"/>
--->
-  <resource src="../src/resources/testing-control/"             compile="true"/>
-  <resource src="../src/resources/testing-times/"               compile="true"/>
-  <resource src="../src/contributions/resources/atom/"          compile="true"/>
-  <resource src="../src/contributions/resources/atom-entry/"    compile="true"/>
-  <resource src="../src/contributions/resources/contact-form/"  compile="true"/>
-  <resource src="../src/contributions/resources/wiki/"          compile="true"/>
-  <resource src="../src/contributions/resources/zip/"           compile="true"/>
-  <resource src="../src/contributions/resources/calendar/"      compile="true"/>
-  <resource src="../src/contributions/resources/resource-creator/"      compile="true"/>
-<!--
-  <resource src="../src/resources/websearch/"                   compile="true"/>
--->
-  <resource src="../src/contributions/resources/nutch/"         compile="true"/>
-  <resource src="../src/contributions/resources/davcollection/" compile="true"/>
-  <resource src="../src/contributions/resources/pdf/"           compile="true"/>
-
-  <resource src="../src/contributions/resources/yanel-user/"    compile="true"/> 
-
-</resources>
-
-# Realms configuration
-<realms-config src="realms.xml"/>
-
+  
+  <!-- # Realms configuration -->
+  <realms-config src="realms.xml"/>
+  
+  <!-- # ResourceTypes configuration -->
+  <resource-types-config src="resource-types.xml"/>
+  
 </yanel>

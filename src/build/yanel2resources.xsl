@@ -25,7 +25,7 @@
   </target>
 
   <target name="build-resources" description="Build resources" depends="init">
-<xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
+<xsl:for-each select="/yanel:resource-types/yanel:resource-type">
   <xsl:choose>
     <xsl:when test="@compile='false'">
       <echo>INFO: Do not compile: <xsl:value-of select="@src"/></echo>
@@ -49,7 +49,7 @@
   </target>
 
   <target name="deploy-resources" description="Deploy resources" depends="init">
-<xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
+<xsl:for-each select="/yanel:resource-types/yanel:resource-type">
     <xsl:choose>
       <xsl:when test="starts-with(@src, '/')">
     <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
@@ -66,7 +66,7 @@
   </target>
 
   <target name="clean-resources" description="Clean resources" depends="init">
-<xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
+<xsl:for-each select="/yanel:resource-types/yanel:resource-type">
   <xsl:choose>
     <xsl:when test="@compile='false'">
       <echo>INFO: Do not clean: <xsl:value-of select="@src"/>build</echo>
@@ -87,7 +87,7 @@
   </target>
 
   <target name="copy-resources-dependencies" description="Copy dependencies of resources" depends="init">
-<xsl:for-each select="/yanel:yanel/yanel:resources/yanel:resource">
+<xsl:for-each select="/yanel:resource-types/yanel:resource-type">
     <xsl:choose>
       <xsl:when test="starts-with(@src, '/')">
     <ant inheritAll="false" antfile="{@src}/build.xml" target="copy-dependencies">

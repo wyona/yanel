@@ -20,20 +20,20 @@
         <javac destdir="${{junit.build.dir}}">
           <classpath refid="classpath" />
           <include name="src/test/junit/**/*.java"/>
-          <xsl:apply-templates select="/yanel:yanel/yanel:resources/yanel:resource"/>
+          <xsl:apply-templates select="/yanel:resource-types/yanel:resource-type"/>
         </javac>
         
         <javac destdir="${{htmlunit.build.dir}}">
           <classpath refid="classpath" />
           <include name="src/test/htmlunit/**/*.java"/>
-          <xsl:apply-templates select="/yanel:yanel/yanel:resources/yanel:resource"/>
+          <xsl:apply-templates select="/yanel:resource-types/yanel:resource-type"/>
         </javac>
         
       </target>
     </project>
   </xsl:template>
   
-  <xsl:template match="yanel:resource[@compile='true']">
+  <xsl:template match="yanel:resource-type[@compile='true']">
     <xsl:variable name="srcpath">
       <xsl:choose>
         <xsl:when test="starts-with(@src, '/')">
@@ -47,7 +47,7 @@
     <src path="{$srcpath}"/>
   </xsl:template>
   
-  <xsl:template match="yanel:resource[@compile='false']">
+  <xsl:template match="yanel:resource-type[@compile='false']">
   </xsl:template>
 
 </xsl:stylesheet>

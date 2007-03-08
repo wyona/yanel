@@ -193,6 +193,7 @@
 
     <copy file="${yanel.home.dir}/conf/yanel.xml" tofile="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/realms.xml" tofile="${yanel.home.dir}/${local.config.dir}/local.realms.xml" overwrite="false"/>
+    <copy file="${yanel.home.dir}/conf/resource-types.xml" tofile="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/log4j.properties" tofile="${yanel.home.dir}/${local.config.dir}/local.log4j.properties" overwrite="false"/>
 
     <echo>Customize the ${local.config.dir}/local.* files and run build.sh OR run build.sh first and then customize the config files within build/webapps/yanel/WEB-INF/classes</echo>
@@ -383,11 +384,12 @@
     <copy file="${yanel.home.dir}/conf/spring-yanel-config.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/realms.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.home.dir}/conf/log4j.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <!-- Create yanel.properties -->
+    <!-- Create yanel.xml -->
     <condition property="local.yanel.config.exists">
       <available file="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" type="file"/>
     </condition>
     <antcall target="generate-yanel-properties"/>
+    <antcall target="generate-resource-types-regisitry"/>
 
 
     <!-- Overwrite default by local properties -->
@@ -395,16 +397,21 @@
     <copy file="${yanel.home.dir}/${local.config.dir}/local.log4j.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" overwrite="true" failonerror="false"/>
     <copy file="${yanel.home.dir}/${local.config.dir}/local.realms.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" overwrite="true" failonerror="false"/>
     <antcall target="patch-with-local-yanel-config"/>
+    <antcall target="patch-with-local-resource-types-regisitry"/>
 
 
     <!-- Patch properties ... -->
 
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="${yanel.home.dir.forward.slashes}">
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.xml" value="${yanel.home.dir.forward.slashes}">
       <replacetoken>..</replacetoken>
     </replace>
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" value="${yanel.home.dir.forward.slashes}/src/realms">
       <replacetoken>../src/realms</replacetoken>
+    </replace>
+
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" value="${yanel.home.dir.forward.slashes}/src">
+      <replacetoken>../src</replacetoken>
     </replace>
     
     <copy file="${yanel.home.dir}/src/build/install.rdf" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
@@ -434,7 +441,7 @@
     </condition>
     <antcall target="generate-javadoc"/>
 
-    <ant antfile="${yanel.home.dir}/build/resources.xml" target="copy-resources-dependencies"/>
+    <ant antfile="${yanel.home.dir}/build/resource-types.xml" target="copy-resources-dependencies"/>
   </target>
 
   <target name="war" description="Build war file" depends="init, webapp">
@@ -786,21 +793,21 @@
   </target>
 
   <target name="generate-resources-build-from-default" description="Generate resources build from default config" depends="init" unless="local.yanel.config.exists">
-    <xslt in="${yanel.home.dir}/conf/yanel.xml" out="../../build/resources.xml" style="yanel2resources.xsl" force="false">
+    <xslt in="${yanel.home.dir}/conf/resource-types.xml" out="../../build/resource-types.xml" style="yanel2resources.xsl" force="false">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
     </xslt>
   </target>
 
   <target name="generate-resources-build-from-local" description="Generate resources build from local config" depends="init" if="local.yanel.config.exists">
-    <xslt in="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" out="../../build/resources.xml" style="yanel2resources.xsl" force="true">
+    <xslt in="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" out="../../build/resource-types.xml" style="yanel2resources.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
     </xslt>
   </target>
 
   <target name="build-resources" description="Build resources" depends="generate-resources-build">
-    <ant antfile="${yanel.home.dir}/build/resources.xml" target="build-resources"/>
+    <ant antfile="${yanel.home.dir}/build/resource-types.xml" target="build-resources"/>
   </target>
 
   <target name="deploy-resources" description="Deploy resources" depends="generate-resources-build">
@@ -811,22 +818,42 @@
       </fileset>
     </copy>
     
-    <ant antfile="${yanel.home.dir}/build/resources.xml" target="deploy-resources"/>
+    <ant antfile="${yanel.home.dir}/build/resource-types.xml" target="deploy-resources"/>
   </target>
 
   <target name="clean-resources" description="Clean resources" depends="generate-resources-build">
-    <ant antfile="${yanel.home.dir}/build/resources.xml" target="clean-resources"/>
+    <ant antfile="${yanel.home.dir}/build/resource-types.xml" target="clean-resources"/>
   </target>
 
   <target name="generate-yanel-properties" unless="local.yanel.config.exists">
-    <xslt in="${yanel.home.dir}/conf/yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl" force="false">
+    <xslt in="${yanel.home.dir}/conf/yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.xml" style="yanel2properties.xsl" force="false">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+      <param name="yanel.revision" expression="${yanel.revision}"/>
+      <param name="yanel.version" expression="${yanel.version}"/>
     </xslt>
   </target>
 
   <target name="patch-with-local-yanel-config" if="local.yanel.config.exists">
-    <xslt in="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl" force="true">
+    <xslt in="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.xml" style="yanel2properties.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+      <param name="yanel.revision" expression="${yanel.revision}"/>
+      <param name="yanel.version" expression="${yanel.version}"/>
+    </xslt>
+  </target>
+
+  <target name="generate-resource-types-regisitry" unless="local.yanel.config.exists">
+    <xslt in="${yanel.home.dir}/conf/resource-types.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" style="resource2resourcetypereg.xsl" force="false">
+      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+      <param name="yanel.revision" expression="${yanel.revision}"/>
+      <param name="yanel.version" expression="${yanel.version}"/>
+    </xslt>
+  </target>
+
+  <target name="patch-with-local-resource-types-regisitry" if="local.yanel.config.exists">
+    <xslt in="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" style="resource2resourcetypereg.xsl" force="true">
+      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+      <param name="yanel.revision" expression="${yanel.revision}"/>
+      <param name="yanel.version" expression="${yanel.version}"/>
     </xslt>
   </target>
   

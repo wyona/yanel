@@ -56,9 +56,11 @@ public class RealmConfiguration {
     private static Category log = Category.getInstance(RealmConfiguration.class);
 
     public static final String DEFAULT_CONFIGURATION_FILE = "yanel.properties";
+    public static final String DEFAULT_CONFIGURATION_FILE_XML = "yanel.xml";
     public static String CONFIGURATION_FILE = DEFAULT_CONFIGURATION_FILE;
 
     private URL propertiesURL;
+    private File configFile;
 
     private File realmsConfigFile; 
 
@@ -69,7 +71,7 @@ public class RealmConfiguration {
      *
      */
     public RealmConfiguration() throws ConfigurationException {
-        this(DEFAULT_CONFIGURATION_FILE);
+        this(DEFAULT_CONFIGURATION_FILE_XML);
     }
 
     /**
@@ -78,29 +80,67 @@ public class RealmConfiguration {
     public RealmConfiguration(String configurationFile) throws ConfigurationException {
         CONFIGURATION_FILE = configurationFile;
 
-        propertiesURL = RealmConfiguration.class.getClassLoader().getResource(CONFIGURATION_FILE);
-        if (propertiesURL == null) {
-            log.error("No such resource: " + CONFIGURATION_FILE);
-            return;
+        if (RealmConfiguration.class.getClassLoader().getResource(CONFIGURATION_FILE) == null) {
+            CONFIGURATION_FILE = DEFAULT_CONFIGURATION_FILE;
         }
 
-        Properties props = new Properties();
-        try {
-            props.load(propertiesURL.openStream());
-            // use URLDecoder to avoid problems when the filename contains spaces, see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5165
-            File propsFile = new File(URLDecoder.decode(propertiesURL.getFile()));
+        if (RealmConfiguration.class.getClassLoader().getResource(CONFIGURATION_FILE) != null) {
+            if (CONFIGURATION_FILE.endsWith(".xml")) {
 
-            realmsConfigFile = new File(props.getProperty("realms-config"));
-            if (!realmsConfigFile.isAbsolute()) {
-                realmsConfigFile = FileUtil.file(propsFile.getParentFile().getAbsolutePath(), realmsConfigFile.toString());
+                configFile = new File(RealmConfiguration.class.getClassLoader()
+                        .getResource(CONFIGURATION_FILE)
+                        .getFile());
+                try {
+                    DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+                    Configuration config;
+                    config = builder.buildFromFile(configFile);
+
+                    realmsConfigFile = new File(config.getChild("realms-config")
+                            .getAttribute("src"));
+                } catch (Exception e) {
+                    String errorMsg = "Failure while reading configuration: " + e.getMessage();
+                    log.error(errorMsg, e);
+                    throw new ConfigurationException(errorMsg, e);
+                }
+                if (!realmsConfigFile.isAbsolute()) {
+                    realmsConfigFile = FileUtil.file(configFile.getParentFile().getAbsolutePath(),
+                            realmsConfigFile.toString());
+                }
+                log.debug("Realms Configuration: " + realmsConfigFile);
+                readRealms();
+            } else if (CONFIGURATION_FILE.endsWith("properties")) {
+                propertiesURL = RealmConfiguration.class.getClassLoader()
+                        .getResource(CONFIGURATION_FILE);
+                if (propertiesURL == null) {
+                    log.error("No such resource: " + CONFIGURATION_FILE);
+                    return;
+                }
+                Properties props = new Properties();
+                try {
+                    props.load(propertiesURL.openStream());
+                    // use URLDecoder to avoid problems when the filename contains spaces, see
+                    // http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5165
+                    File propsFile = new File(URLDecoder.decode(propertiesURL.getFile()));
+
+                    realmsConfigFile = new File(props.getProperty("realms-config"));
+                    if (!realmsConfigFile.isAbsolute()) {
+                        realmsConfigFile = FileUtil.file(propsFile.getParentFile()
+                                .getAbsolutePath(), realmsConfigFile.toString());
+                    }
+                    log.debug("Realms Configuration: " + realmsConfigFile);
+                    readRealms();
+                    // assignRepositories();
+                } catch (IOException e) {
+                    log.error(e.getMessage(), e);
+                    throw new ConfigurationException("Could not load realms configuration file: "
+                            + propertiesURL);
+                }
+            } else {
+                log.error(CONFIGURATION_FILE + "have to be either .xml or .properties");
             }
-            log.debug("Realms Configuration: " + realmsConfigFile);
-            readRealms();
-            //assignRepositories();
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new ConfigurationException("Could not load realms configuration file: " + propertiesURL);
+            log.error("No such configuration file" + CONFIGURATION_FILE);
         }
+
     }
 
     /**
@@ -357,8 +397,8 @@ public class RealmConfiguration {
         File destRootDir;
         if (destDir != null) {
             if (!destDir.exists() || !destDir.isDirectory()) {
-            	if (!new File(destDir.getAbsolutePath()).mkdirs()) {
-            		throw new Exception("cannot create directory: " + destDir);
+                if (!new File(destDir.getAbsolutePath()).mkdirs()) {
+                    throw new Exception("cannot create directory: " + destDir);
                 }
             }
             destRootDir = new File(destDir, destRealmID);
