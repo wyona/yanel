@@ -334,8 +334,8 @@ public class AddRealmResource extends Resource implements ViewableV2 {
     
     /**
      * Adds a yanel introspection link element to the head element of the current page.
-     * Note: this method is stream based and does not consider encoding.
-     * It only works because all relevant characters are ascii. 
+     * Note: this method is stream based and does not consider character encoding, therefore
+     * it works only for data with ascii-compatible encoding like utf-8 or iso-8859-1. 
      * @param is stream of the source html page
      * @param os stream of the result html page
      * @throws IOException
