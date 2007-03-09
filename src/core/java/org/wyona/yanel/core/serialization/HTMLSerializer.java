@@ -71,9 +71,14 @@ public class HTMLSerializer extends DefaultHandler implements Serializer, Lexica
         StringBuffer element = new StringBuffer();
         element.append("<" + eName);
         for(int i = 0; i < attrs.getLength(); i++) {
-            String aName = attrs.getQName(i);
-            String aValue = replaceEntities(attrs.getValue(i));
-            element.append(" " + aName + "=\"" + aValue + "\"");
+            String aLocalName = attrs.getLocalName(i);
+            String aQName = attrs.getQName(i);
+            String aName = ("".equals(aLocalName)) ? aQName : aLocalName;
+            String aURI = attrs.getURI(i);
+            if (!aName.equals("xmlns") || !aURI.equals("http://www.w3.org/2000/xmlns/")) {
+                String aValue = replaceEntities(attrs.getValue(i));
+                element.append(" " + aName + "=\"" + aValue + "\"");
+            }
         }
         // NOTE: the element will not be closed yet because we don't know if the
         // element has to be collapsed.
