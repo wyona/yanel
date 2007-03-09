@@ -17,6 +17,9 @@
   <xsl:param name="fslocation" select="''" />
   <xsl:param name="crawldepth" select="''" />
   <xsl:param name="crawlmaxpages" select="''" />
+  <xsl:param name="downloadevents" select="''" />
+  <xsl:param name="errorevents" select="''" />
+  <xsl:param name="nofdownloads" select="''" />
 
   <xsl:param name="submitted" select="'false'" />
 
@@ -37,8 +40,12 @@
         <div id="contentBody">
           <xsl:choose>
             <xsl:when test="$submitted != 'false'">
-              <p>[X] pages have been imported.</p>
+              <p>[<xsl:value-of select="$nofdownloads"/>] pages have been imported.</p>
               <p>[X]% complete.</p>
+              <p>Downloaded Pages:</p>
+              <p style="font-size: small"><pre><xsl:value-of select="$downloadevents"/></pre></p>
+              <p>Errors:</p>
+              <p style="font-size: small"><pre><xsl:value-of select="$errorevents"/></pre></p>
               <p>
                 <a>
                   <xsl:attribute name="href">

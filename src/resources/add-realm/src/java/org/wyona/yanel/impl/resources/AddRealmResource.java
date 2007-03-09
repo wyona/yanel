@@ -23,8 +23,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.lenya.search.crawler.DumpingCrawler;
 import org.apache.log4j.Category;
 
-import websphinx.EventLog;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -44,6 +42,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
@@ -64,6 +63,8 @@ public class AddRealmResource extends Resource implements ViewableV2 {
     private static Category log = Category.getInstance(AddRealmResource.class);
     private final static int INSIDE_TAG = 0;
     private final static int OUTSIDE_TAG = 1;
+    private final static String SESSION_ATTR_EVENT_LOG = "org.wyona.yanel.addrealm.eventlog";
+    private final static String SESSION_ATTR_CRAWLER = "org.wyona.yanel.addrealm.crawler";
     
     private String defaultLanguage = "en";
     private String language = null;
@@ -210,6 +211,15 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                         String realmID = parameters.get("realmid").toString();
                         
                         importSite(crawlStartURL, maxPages, maxDepth, realmID);
+                        
+                        HttpSession session = getRequest().getSession(true); 
+                        EventLog eventLog = (EventLog)session.getAttribute(SESSION_ATTR_EVENT_LOG);
+                        if (eventLog != null) {
+                            transformer.setParameter("downloadevents", eventLog.getDownloadEvents());
+                            transformer.setParameter("errorevents", eventLog.getErrorEvents());
+                            transformer.setParameter("nofdownloads", String.valueOf(eventLog.getNofDownloads()));
+                        }
+
                     }
                 }
                 
@@ -260,10 +270,13 @@ public class AddRealmResource extends Resource implements ViewableV2 {
         crawler.setMaxPages(maxPages);
         crawler.setMaxDepth(maxDepth);
         
-        EventLog eventLog = new EventLog(System.out);
-        crawler.addCrawlListener(eventLog);
+        EventLog eventLog = new EventLog();
         crawler.addLinkListener(eventLog);
        
+        HttpSession session = getRequest().getSession(true); 
+        session.setAttribute(SESSION_ATTR_EVENT_LOG, eventLog);
+        //session.setAttribute(SESSION_ATTR_CRAWLER, crawler);
+        
         // create dump:
         // TODO: start crawler in thread and show progress
         crawler.run();
