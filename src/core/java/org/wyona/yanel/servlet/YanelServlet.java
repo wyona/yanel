@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URL;
@@ -106,6 +107,8 @@ public class YanelServlet extends HttpServlet {
     private static final String METHOD_POST = "POST";
     private static final String METHOD_PUT = "PUT";
     private static final String METHOD_DELETE = "DELETE";
+    private static final int INSIDE_TAG = 0;
+    private static final int OUTSIDE_TAG = 1;
 
     private String sslPort = null;
     private String toolbarMasterSwitch = "off";
@@ -237,37 +240,7 @@ public class YanelServlet extends HttpServlet {
             //return;
         }
 
-        // Possibly embed toolbar
         try {
-            String toolbar = (String) session.getAttribute(TOOLBAR_KEY);
-            if (toolbar != null && toolbar.equals("on")) {
-                String mimeType = null;
-                if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Viewable", "2")) {
-                    try {
-                        mimeType = ((ViewableV2) resource).getMimeType(request.getParameter(VIEW_ID_PARAM_NAME));
-                    } catch (Exception e) {
-                        log.error(e.getMessage(), e);
-                    }
-                }
-                if (mimeType != null && mimeType.indexOf("html") > 0) {
-                    if (toolbarMasterSwitch.equals("on")) {
-                        InputStream in = mergeToolbarWithContent(resource, request);
-                        byte buffer[] = new byte[8192];
-                        int bytesRead;
-                        OutputStream out = response.getOutputStream();
-                        while ((bytesRead = in.read(buffer)) != -1) {
-                            out.write(buffer, 0, bytesRead);
-                        }
-                        return;
-                    } else {
-                        log.info("Toolbar has been disabled. Please check web.xml!");
-                    }
-                } else {
-                    log.error("DEBUG: No HTML related mime type: " + mimeType);
-                }
-            } else {
-                log.debug("Toolbar is turned off.");
-            }
             getContent(request, response);
             return;
         } catch (Exception e) {
@@ -483,7 +456,6 @@ public class YanelServlet extends HttpServlet {
                         // acquireLock();
                     }
 
-
                 } else {
                         Element resourceIsNullElement = (Element) rootElement.appendChild(doc.createElement("resource-is-null"));
                 }
@@ -537,6 +509,37 @@ public class YanelServlet extends HttpServlet {
             }
 
             InputStream is = view.getInputStream();
+            
+            
+            // Possibly embed toolbar:
+            String toolbar = (String) session.getAttribute(TOOLBAR_KEY);
+            if (toolbar != null && toolbar.equals("on")) {
+                String mimeType = view.getMimeType();
+                if (mimeType != null && mimeType.indexOf("html") > 0) {
+                    if (toolbarMasterSwitch.equals("on")) {
+                        OutputStream os = response.getOutputStream();
+                        try {
+                            mergeToolbarWithContent(request, response, res, view);
+                        } catch (Exception e) {
+                            log.error(e, e);
+                            String message = "Error merging toolbar into content: " + e.toString();
+                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+                            exceptionElement.appendChild(doc.createTextNode(message));
+                            setYanelOutput(request, response, doc);
+                            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            return;
+                        }
+                        return;
+                    } else {
+                        log.info("Toolbar has been disabled. Please check web.xml!");
+                    }
+                } else {
+                    log.error("DEBUG: No HTML related mime type: " + mimeType);
+                }
+            } else {
+                log.debug("Toolbar is turned off.");
+            }
+            
 
             byte buffer[] = new byte[8192];
             int bytesRead;
@@ -1722,37 +1725,93 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Gets the part of the toolbar which has to be inserted into the html header.
+     * @param resource
+     * @param request
+     * @return
+     * @throws Exception
      */
-    private InputStream mergeToolbarWithContent(Resource resource, HttpServletRequest request) throws Exception {
+    private String getToolbarHeader(Resource resource, HttpServletRequest request) throws Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        StringBuffer tb = new StringBuffer();
-                    tb.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
-                    tb.append("<html>");
-                    tb.append("<head>");
-                    // TODO: compute relative path ...
-                    tb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbar.css\" rel=\"stylesheet\"/>");
-                    tb.append("</head>");
-                    tb.append("<body>");
-                    tb.append("<div id=\"headerwrap\">");
-                    tb.append("<div id=\"menu\">");
-                    tb.append(getToolbarMenus(resource, request));
-                    tb.append("</div>");
-                    Identity identity = getIdentity(request);
-                    if (identity != null) {
-                        tb.append("<span id=\"user\">User: " + identity.getUser().getID() + " (Realm: " + resource.getRealm().getName() + ")</span>");
-                    } else {
-                        tb.append("<span id=\"user\">User: Not signed in!</span>");
+        return "<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbar.css\" rel=\"stylesheet\"/>";
+    }
+    
+    /**
+     * Gets the part of the toolbar which has to be inserted into the html body.
+     * @param resource
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    private String getToolbarBody(Resource resource, HttpServletRequest request) throws Exception {
+        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
+        StringBuffer buf = new StringBuffer();
+        buf.append("<div id=\"headerwrap\">");
+        buf.append("<div id=\"menu\">");
+        buf.append(getToolbarMenus(resource, request));
+        buf.append("</div>");
+        Identity identity = getIdentity(request);
+        if (identity != null) {
+            buf.append("<span id=\"user\">User: " + identity.getUser().getID() + " (Realm: " + resource.getRealm().getName() + ")</span>");
+        } else {
+            buf.append("<span id=\"user\">User: Not signed in!</span>");
+        }
+        
+        buf.append("&#160;&#160;<img src=\"" + backToRealm + reservedPrefix + "/yanel_toolbar_logo.png\" id=\"toolbar_logo\"/>");
+        buf.append("</div>");
+        return buf.toString();
+    }
+    
+    /**
+     * Merges the toolbar and the page content. This will parse the html stream and add
+     * the toolbar.
+     * @param request
+     * @param response
+     * @param resource
+     * @param view
+     * @throws Exception
+     */
+    private void mergeToolbarWithContent(HttpServletRequest request, HttpServletResponse response, 
+            Resource resource, View view) throws Exception {
+        String encoding = view.getEncoding();
+        if (encoding == null) {
+            encoding = "UTF-8";
+        }
+        InputStreamReader reader = new InputStreamReader(view.getInputStream(), encoding);
+        OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream(), encoding);
+        int c;
+        int state = OUTSIDE_TAG;
+        StringBuffer tagNameBuf = null;
+        while ((c = reader.read()) != -1) {
+            switch (state) {
+            case OUTSIDE_TAG:
+                if (c == '<') {
+                    tagNameBuf = new StringBuffer();
+                    state = INSIDE_TAG;
+                }
+                writer.write(c);
+                break;
+            case INSIDE_TAG:
+                writer.write(c);
+                if (c == '>') {
+                    state = OUTSIDE_TAG;
+                    String tagName = tagNameBuf.toString();
+                    if (tagName.startsWith("head")) {
+                        String toolbarString = getToolbarHeader(resource, request);
+                        writer.write(toolbarString, 0, toolbarString.length());
                     }
-                    
-                    tb.append("&#160;&#160;<img src=\"" + backToRealm+reservedPrefix + "/yanel_toolbar_logo.png\" id=\"toolbar_logo\"/>");
-                    tb.append("</div>");
-                    tb.append("<div id=\"middlewrap\">");
-                    tb.append("<br/><br/>Hello Toolbar");
-                    tb.append("</div>");
-                    tb.append("</body>");
-                    tb.append("</html>");
-        return new java.io.ByteArrayInputStream(tb.toString().getBytes());
+                    if (tagName.startsWith("body")) {
+                        String toolbarString = getToolbarBody(resource, request);
+                        writer.write(toolbarString, 0, toolbarString.length());
+                    }
+                } else {
+                    tagNameBuf.append((char)c);
+                }
+                break;
+            }
+        }
+        writer.flush();
+        writer.close();
     }
     
     /**

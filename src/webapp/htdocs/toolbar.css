@@ -5,6 +5,7 @@ html{
 }
 body {
 	min-width:720px; /* Prevent content from becoming unreachable in Gecko */
+  padding-top: 24px;
 }
 /* position:absolute for all browsers - the whole page scrolls */
 div#headerwrap {
