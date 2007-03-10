@@ -785,21 +785,21 @@
   </target>
 
   <target name="generate-resources-build" description="Generate resources build" depends="init">
-    <condition property="local.yanel.config.exists">
-      <available file="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" type="file"/>
+    <condition property="local.resource-types.config.exists">
+      <available file="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" type="file"/>
     </condition>
     <antcall target="generate-resources-build-from-default"/>
     <antcall target="generate-resources-build-from-local"/>
   </target>
 
-  <target name="generate-resources-build-from-default" description="Generate resources build from default config" depends="init" unless="local.yanel.config.exists">
+  <target name="generate-resources-build-from-default" description="Generate resources build from default config" depends="init" unless="local.resource-types.config.exists">
     <xslt in="${yanel.home.dir}/conf/resource-types.xml" out="../../build/resource-types.xml" style="yanel2resources.xsl" force="false">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
     </xslt>
   </target>
 
-  <target name="generate-resources-build-from-local" description="Generate resources build from local config" depends="init" if="local.yanel.config.exists">
+  <target name="generate-resources-build-from-local" description="Generate resources build from local config" depends="init" if="local.resource-types.config.exists">
     <xslt in="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" out="../../build/resource-types.xml" style="yanel2resources.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
