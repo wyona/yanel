@@ -389,6 +389,10 @@
       <available file="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" type="file"/>
     </condition>
     <antcall target="generate-yanel-properties"/>
+
+    <condition property="local.resource-types.config.exists">
+      <available file="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" type="file"/>
+    </condition>
     <antcall target="generate-resource-types-regisitry"/>
 
 
@@ -841,7 +845,7 @@
     </xslt>
   </target>
 
-  <target name="generate-resource-types-regisitry" unless="local.yanel.config.exists">
+  <target name="generate-resource-types-regisitry" unless="local.resource-types.config.exists">
     <xslt in="${yanel.home.dir}/conf/resource-types.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" style="resource2resourcetypereg.xsl" force="false">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.revision" expression="${yanel.revision}"/>
