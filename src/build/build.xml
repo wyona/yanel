@@ -853,7 +853,7 @@
     </xslt>
   </target>
 
-  <target name="patch-with-local-resource-types-regisitry" if="local.yanel.config.exists">
+  <target name="patch-with-local-resource-types-regisitry" if="local.resource-types.config.exists">
     <xslt in="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" style="resource2resourcetypereg.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.revision" expression="${yanel.revision}"/>
