@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<yanel xmlns="http://www.wyona.org/yanel/1.0">
+<yanel xmlns="http://www.wyona.org/yanel/1.0" version="2007031300">
   
   <!-- # Realms configuration -->
   <realms-config src="realms.xml"/>
