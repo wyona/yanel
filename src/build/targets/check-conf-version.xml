@@ -2,7 +2,7 @@
 
 <project name="check-conf-version" default="check">
     
-  <target name="check-config-version">
+  <target name="check-config-version" depends="init">
     <condition property="local.yanel.config.exists">
       <available file="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" type="file"/>
     </condition> 
