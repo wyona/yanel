@@ -71,6 +71,7 @@ import org.apache.xml.serializer.Serializer;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
+import org.apache.commons.io.FilenameUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -211,6 +212,8 @@ public class YanelServlet extends HttpServlet {
                 while ((bytesRead = in.read(buffer)) != -1) {
                     out.write(buffer, 0, bytesRead);
                 }
+                String mimeType = guessMimeType(FilenameUtils.getExtension(globalFile.getName()));
+                response.setHeader("Content-Type", mimeType);
                 return;
             } else {
                 log.error("No such file or directory: " + globalFile);
@@ -247,6 +250,28 @@ public class YanelServlet extends HttpServlet {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);
         }
+    }
+    
+    /**
+     * Returns the mime-type according to the given file extension.
+     * Default is application/octet-stream.
+     * @param extension
+     * @return
+     */
+    private String guessMimeType(String extension) {
+        String ext = extension.toLowerCase();
+        if (ext.equals("html") || ext.equals("htm")) return "text/html";
+        if (ext.equals("css")) return "text/css";
+        if (ext.equals("txt")) return "text/plain";
+        if (ext.equals("js")) return "application/x-javascript";
+        if (ext.equals("jpg") || ext.equals("jpg")) return "image/jpeg";
+        if (ext.equals("gif")) return "image/gif";
+        if (ext.equals("pdf")) return "application/pdf";
+        if (ext.equals("zip")) return "application/zip";
+        if (ext.equals("htc")) return "text/x-component";
+        // TODO: add more mime types
+        // TODO: and move to MimeTypeUtil
+        return "application/octet-stream"; // default
     }
 
     /**
@@ -1539,8 +1564,8 @@ public class YanelServlet extends HttpServlet {
                 javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
                 out.close();
             } else {
-                // TODO: Use patchMimeType() !
-                response.setContentType("application/xhtml+xml; charset=" + DEFAULT_ENCODING);
+                String mimeType = patchMimeType("application/xhtml+xml", request);
+                response.setContentType(mimeType + "; charset=" + DEFAULT_ENCODING);
                 
                 // create identity transformer which serves as a dom-to-sax transformer
                 TransformerIdentityImpl transformer = new TransformerIdentityImpl();
@@ -1634,7 +1659,8 @@ public class YanelServlet extends HttpServlet {
                 javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
                 out.close();
             } else {
-                response.setContentType("application/xhtml+xml; charset=" + DEFAULT_ENCODING);
+                String mimeType = patchMimeType("application/xhtml+xml", request);
+                response.setContentType(mimeType + "; charset=" + DEFAULT_ENCODING);
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);            
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltLoginScreen));            
                 transformer.transform(new javax.xml.transform.dom.DOMSource(doc), 
@@ -1714,7 +1740,7 @@ public class YanelServlet extends HttpServlet {
 
         sb.append("<ul><li>");
         sb.append("<h2>Edit</h2><ul>");
-        sb.append("<li>Open</li>");
+        sb.append("<li>Open<ul><li>test</li></ul></li>");
         sb.append("</ul></li></ul>");
 
         sb.append("<ul><li>");
@@ -1733,7 +1759,35 @@ public class YanelServlet extends HttpServlet {
      */
     private String getToolbarHeader(Resource resource, HttpServletRequest request) throws Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        return "<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbar.css\" rel=\"stylesheet\"/>";
+        StringBuffer sb= new StringBuffer();
+        
+        sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbar.css\" rel=\"stylesheet\"/>");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("<!--[if gte IE 6]>");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("<link rel=\"stylesheet\" href=\"" + backToRealm + reservedPrefix + "/ie6.css\" type=\"text/css\">");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("<style type=\"text/css\" media=\"screen\">");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("#menu{float:none;} /* This is required for IE to avoid positioning bug when placing content first in source. */");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  /* IE Menu CSS */");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  /* csshover.htc file version: V1.21.041022 - Available for download from: http://www.xs4all.nl/~peterned/csshover.html */");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  body{behavior:url(" + backToRealm + reservedPrefix + "/csshover.htc);");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  font-size:100%; /* to enable text resizing in IE */");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("}");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("#menu ul li{float:left;width:100%;}");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("</style>");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("<![endif]-->");
+        sb.append(System.getProperty("line.separator"));
+        return sb.toString();
     }
     
     /**
