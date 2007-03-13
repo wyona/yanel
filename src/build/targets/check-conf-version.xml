@@ -33,8 +33,13 @@
 
   <target name="check-config-version-realms-xml" if="local.realms.config.exists">
     <echo>Check version of local.realms.xml ...</echo>
+    <property name="defaultconf.realms.version" value="2007"/>
+    <property name="localconf.realms.version" value="2007"/>
+    <!-- TODO: There seems to be a problem re Overriding ... -->
+<!--
     <xmlproperty file="${yanel.home.dir}/conf/realms.xml" prefix="defaultconf" semanticAttributes="true"/>
     <xmlproperty file="${yanel.home.dir}/${local.config.dir}/local.realms.xml" prefix="localconf" semanticAttributes="true"/>
+-->
     <condition property="local.realms.properties.in.sync">
       <equals arg1="${defaultconf.realms.version}" arg2="${localconf.realms.version}"/>
     </condition>
