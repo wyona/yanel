@@ -16,6 +16,7 @@ div#headerwrap {
   height:24px;
   margin:0 auto;
 border-right-width:20px;
+  z-index: 400; /* this z-index has to be bigger than any z-index of the page content */
 }
 /* position:fixed for modern browsers - header and footer do not scroll */
 body>div#headerwrap {
