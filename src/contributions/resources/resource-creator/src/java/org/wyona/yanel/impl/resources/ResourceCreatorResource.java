@@ -91,6 +91,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     private String getScreen() {
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+        sb.append("<head><title>create resource</title></head>");
         sb.append("<body>");
 
         HttpServletRequest request = getRequest();
