@@ -15,7 +15,7 @@
 
     <condition property="local.resource-types.config.exists">
       <available file="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" type="file"/>
-    </condition> 
+    </condition>
     <antcall target="check-config-version-resource-types-xml"/>
   </target>
 
@@ -32,7 +32,7 @@
   </target>
 
   <target name="check-config-version-realms-xml" if="local.realms.config.exists">
-    <!-- check realms.xml -->
+    <echo>Check version of local.realms.xml ...</echo>
     <xmlproperty file="${yanel.home.dir}/conf/realms.xml" prefix="defaultconf" semanticAttributes="true"/>
     <xmlproperty file="${yanel.home.dir}/conf/local/local.realms.xml" prefix="localconf" semanticAttributes="true"/>
     <condition property="local.realms.properties.in.sync">
@@ -42,7 +42,7 @@
   </target>
 
   <target name="check-config-version-resource-types-xml" if="local.resource-types.config.exists">
-    <!-- check resource-types.xml -->
+    <echo>Check version of local.resource-types.xml ...</echo>
     <xmlproperty file="${yanel.home.dir}/conf/resource-types.xml" prefix="defaultconf" semanticAttributes="true"/>
     <xmlproperty file="${yanel.home.dir}/conf/local/local.resource-types.xml" prefix="localconf" semanticAttributes="true"/>
     <condition property="local.resource-types.properties.in.sync">
