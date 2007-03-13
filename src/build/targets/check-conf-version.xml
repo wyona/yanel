@@ -24,7 +24,7 @@
   <target name="check-config-version-yanel-xml" if="local.yanel.config.exists">
     <echo>Check version of local.yanel.xml ...</echo>
     <xmlproperty file="${yanel.home.dir}/conf/yanel.xml" prefix="defaultconf" semanticAttributes="true"/>
-    <xmlproperty file="${yanel.home.dir}/conf/local/local.yanel.xml" prefix="localconf" semanticAttributes="true"/>
+    <xmlproperty file="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" prefix="localconf" semanticAttributes="true"/>
     <condition property="local.yanel.properties.in.sync">
       <equals arg1="${defaultconf.yanel.version}" arg2="${localconf.yanel.version}"/>
     </condition>
@@ -34,7 +34,7 @@
   <target name="check-config-version-realms-xml" if="local.realms.config.exists">
     <echo>Check version of local.realms.xml ...</echo>
     <xmlproperty file="${yanel.home.dir}/conf/realms.xml" prefix="defaultconf" semanticAttributes="true"/>
-    <xmlproperty file="${yanel.home.dir}/conf/local/local.realms.xml" prefix="localconf" semanticAttributes="true"/>
+    <xmlproperty file="${yanel.home.dir}/${local.config.dir}/local.realms.xml" prefix="localconf" semanticAttributes="true"/>
     <condition property="local.realms.properties.in.sync">
       <equals arg1="${defaultconf.realms.version}" arg2="${localconf.realms.version}"/>
     </condition>
@@ -44,11 +44,11 @@
   <target name="check-config-version-resource-types-xml" if="local.resource-types.config.exists">
     <echo>Check version of local.resource-types.xml ...</echo>
     <xmlproperty file="${yanel.home.dir}/conf/resource-types.xml" prefix="defaultconf" semanticAttributes="true"/>
-    <xmlproperty file="${yanel.home.dir}/conf/local/local.resource-types.xml" prefix="localconf" semanticAttributes="true"/>
+    <xmlproperty file="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" prefix="localconf" semanticAttributes="true"/>
     <condition property="local.resource-types.properties.in.sync">
       <equals arg1="${defaultconf.resource-types.version}" arg2="${localconf.resource-types.version}"/>
     </condition>
-    <fail unless="local.resource-types.properties.in.sync" message="It seems that your local.resource-types.xml is out of date. Please compare your local.resource-types.xml with the default configuration conf/resource-types.xml and update accordingly."/>
+    <fail unless="local.resource-types.properties.in.sync" message="It seems that your ${local.config.dir}/local.resource-types.xml is out of date. Please compare your ${local.config.dir}/local.resource-types.xml with the default configuration conf/resource-types.xml and update accordingly."/>
   </target>
   
 </project>
