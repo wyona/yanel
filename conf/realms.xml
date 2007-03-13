@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
-<realms xmlns="http://www.wyona.org/yanel/1.0">
-
+<realms xmlns="http://www.wyona.org/yanel/1.0" version="2007031300">
 
 <!-- WARNING: Access Control does not work properly for nested realms (also the mount-point needs to match the id in order to make the access control work properly, e.g. id="zurich" and mount-point="/zurich/")! -->
 <realm id="javadoc" mount-point="/yanel-website/javadoc/">
