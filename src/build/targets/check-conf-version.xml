@@ -1,34 +1,54 @@
 <?xml version="1.0"?>
 
 <project name="check-conf-version" default="check">
-  
-  <xmlproperty file="${yanel.home.dir}/conf/yanel.xml" prefix="defaultconf" semanticAttributes="true"/>
-  <xmlproperty file="${yanel.home.dir}/conf/local/local.yanel.xml" prefix="localconf" semanticAttributes="true"/>
+    
+  <target name="check-config-version">
+    <condition property="local.yanel.config.exists">
+      <available file="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" type="file"/>
+    </condition> 
+    <antcall target="check-config-version-yanel-xml"/>
 
-  <xmlproperty file="${yanel.home.dir}/conf/realms.xml" prefix="defaultconf" semanticAttributes="true"/>
-  <xmlproperty file="${yanel.home.dir}/conf/local/local.realms.xml" prefix="localconf" semanticAttributes="true"/>
+    <condition property="local.realms.config.exists">
+      <available file="${yanel.home.dir}/${local.config.dir}/local.realms.xml" type="file"/>
+    </condition> 
+    <antcall target="check-config-version-realms-xml"/>
 
-  <xmlproperty file="${yanel.home.dir}/conf/resource-types.xml" prefix="defaultconf" semanticAttributes="true"/>
-  <xmlproperty file="${yanel.home.dir}/conf/local/local.resource-types.xml" prefix="localconf" semanticAttributes="true"/>
+    <condition property="local.resource-types.config.exists">
+      <available file="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" type="file"/>
+    </condition> 
+    <antcall target="check-config-version-resource-types-xml"/>
+  </target>
 
-  <target name="check-config-version" if="local.yanel.config.exists">
-    <!-- check yanel.xml -->
+
+
+  <target name="check-config-version-yanel-xml" if="local.yanel.config.exists">
+    <echo>Check version of local.yanel.xml ...</echo>
+    <xmlproperty file="${yanel.home.dir}/conf/yanel.xml" prefix="defaultconf" semanticAttributes="true"/>
+    <xmlproperty file="${yanel.home.dir}/conf/local/local.yanel.xml" prefix="localconf" semanticAttributes="true"/>
     <condition property="local.yanel.properties.in.sync">
       <equals arg1="${defaultconf.yanel.version}" arg2="${localconf.yanel.version}"/>
     </condition>
-    <fail unless="local.yanel.properties.in.sync" message="It seems that your local.yanel.xml is of an older version than the original yanel.xml. If you have personal entries in your local.conf compare conf/yanel.xml and conf/local/local.yanel.xml and change them accordingly. Else use ./configure.sh to create your local config new from the default config."/>
-    
+    <fail unless="local.yanel.properties.in.sync" message="It seems that your local.yanel.xml is out of date. Please compare your local.yanel.xml with the default configuration conf/yanel.xml and update accordingly."/>
+  </target>
+
+  <target name="check-config-version-realms-xml" if="local.realms.config.exists">
     <!-- check realms.xml -->
+    <xmlproperty file="${yanel.home.dir}/conf/realms.xml" prefix="defaultconf" semanticAttributes="true"/>
+    <xmlproperty file="${yanel.home.dir}/conf/local/local.realms.xml" prefix="localconf" semanticAttributes="true"/>
     <condition property="local.realms.properties.in.sync">
       <equals arg1="${defaultconf.realms.version}" arg2="${localconf.realms.version}"/>
     </condition>
-    <fail unless="local.realms.properties.in.sync" message="It seems that your local.realms.xml is of an older version than the original realms.xml. If you have personal entries in your local.conf compare conf/realms.xml and conf/local/local.realms.xml and change them accordingly. Else use ./configure.sh to create your local config new from the default config."/>
-    
+    <fail unless="local.realms.properties.in.sync" message="It seems that your local.realms.xml is out of date. Please compare your local.realms.xml with the default configuration conf/realms.xml and update accordingly."/>
+  </target>
+
+  <target name="check-config-version-resource-types-xml" if="local.resource-types.config.exists">
     <!-- check resource-types.xml -->
+    <xmlproperty file="${yanel.home.dir}/conf/resource-types.xml" prefix="defaultconf" semanticAttributes="true"/>
+    <xmlproperty file="${yanel.home.dir}/conf/local/local.resource-types.xml" prefix="localconf" semanticAttributes="true"/>
     <condition property="local.resource-types.properties.in.sync">
       <equals arg1="${defaultconf.resource-types.version}" arg2="${localconf.resource-types.version}"/>
     </condition>
-    <fail unless="local.resource-types.properties.in.sync" message="It seems that your local.resource-types.xml is of an older version than the original resource-types.xml. If you have personal entries in your local.conf compare conf/resource-types.xml and conf/local/local.resource-types.xml and change them accordingly. Else use ./configure.sh to create your local config new from the default config."/>
+    <fail unless="local.resource-types.properties.in.sync" message="It seems that your local.resource-types.xml is out of date. Please compare your local.resource-types.xml with the default configuration conf/resource-types.xml and update accordingly."/>
   </target>
   
 </project>
