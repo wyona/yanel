@@ -1746,19 +1746,19 @@ public class YanelServlet extends HttpServlet {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
         StringBuffer sb= new StringBuffer();
         sb.append("<ul><li>");
-        sb.append("<h2>File</h2><ul>");
+        sb.append("<div id=\"menutitle\">File</div><ul>");
         sb.append("<li><a href=\"" + backToRealm + "create-new-page.html\">New</a></li>");
         sb.append("<li><a href=\"?yanel.toolbar=off\">Turn off toolbar</a></li>");
         sb.append("<li><a href=\"?yanel.usecase=logout\">Logout</a></li>");
         sb.append("</ul></li></ul>");
 
         sb.append("<ul><li>");
-        sb.append("<h2>Edit</h2><ul>");
+        sb.append("<div id=\"menutitle\">Edit</div><ul>");
         sb.append("<li>Open<ul><li>test</li></ul></li>");
         sb.append("</ul></li></ul>");
 
         sb.append("<ul><li>");
-        sb.append("<h2>Help</h2><ul>");
+        sb.append("<div id=\"menutitle\">Help</div><ul>");
         sb.append("<li>About</li>");
         sb.append("</ul></li></ul>");
         return sb.toString();
@@ -1805,13 +1805,14 @@ public class YanelServlet extends HttpServlet {
     }
     
     /**
-     * Gets the part of the toolbar which has to be inserted into the html body.
+     * Gets the part of the toolbar which has to be inserted into the html body 
+     * right after the opening body tag.
      * @param resource
      * @param request
      * @return
      * @throws Exception
      */
-    private String getToolbarBody(Resource resource, HttpServletRequest request) throws Exception {
+    private String getToolbarBodyStart(Resource resource, HttpServletRequest request) throws Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
         StringBuffer buf = new StringBuffer();
         buf.append("<div id=\"headerwrap\">");
@@ -1827,7 +1828,20 @@ public class YanelServlet extends HttpServlet {
         
         buf.append("&#160;&#160;<img src=\"" + backToRealm + reservedPrefix + "/yanel_toolbar_logo.gif\" id=\"toolbar_logo\"/>");
         buf.append("</div>");
+        buf.append("<div id=\"middlewrap\">");
         return buf.toString();
+    }
+    
+    /**
+     * Gets the part of the toolbar which has to be inserted into the html body
+     * right before the closing body tag.
+     * @param resource
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    private String getToolbarBodyEnd(Resource resource, HttpServletRequest request) throws Exception {
+        return "</div>";
     }
     
     /**
@@ -1849,31 +1863,40 @@ public class YanelServlet extends HttpServlet {
         OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream(), encoding);
         int c;
         int state = OUTSIDE_TAG;
-        StringBuffer tagNameBuf = null;
+        StringBuffer tagBuf = null;
         while ((c = reader.read()) != -1) {
             switch (state) {
             case OUTSIDE_TAG:
                 if (c == '<') {
-                    tagNameBuf = new StringBuffer();
+                    tagBuf = new StringBuffer("<");
                     state = INSIDE_TAG;
+                } else {
+                    writer.write(c);
                 }
-                writer.write(c);
                 break;
             case INSIDE_TAG:
-                writer.write(c);
+                //writer.write(c);
                 if (c == '>') {
                     state = OUTSIDE_TAG;
-                    String tagName = tagNameBuf.toString();
-                    if (tagName.startsWith("head")) {
+                    tagBuf.append((char)c);
+                    String tag = tagBuf.toString();
+                    if (tag.startsWith("<head")) {
+                        writer.write(tag, 0, tag.length());
                         String toolbarString = getToolbarHeader(resource, request);
                         writer.write(toolbarString, 0, toolbarString.length());
-                    }
-                    if (tagName.startsWith("body")) {
-                        String toolbarString = getToolbarBody(resource, request);
+                    } else if (tag.startsWith("<body")) {
+                        writer.write(tag, 0, tag.length());
+                        String toolbarString = getToolbarBodyStart(resource, request);
                         writer.write(toolbarString, 0, toolbarString.length());
+                    } else if (tag.equals("</body>")) {
+                        String toolbarString = getToolbarBodyEnd(resource, request);
+                        writer.write(toolbarString, 0, toolbarString.length());
+                        writer.write(tag, 0, tag.length());
+                    } else {
+                        writer.write(tag, 0, tag.length());
                     }
                 } else {
-                    tagNameBuf.append((char)c);
+                    tagBuf.append((char)c);
                 }
                 break;
             }
