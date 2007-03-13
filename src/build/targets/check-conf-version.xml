@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<project name="check-conf-version" default="check">
+  
+  <xmlproperty file="${yanel.home.dir}/conf/yanel.xml" prefix="defaultconf" semanticAttributes="true"/>
+  <xmlproperty file="${yanel.home.dir}/conf/local/local.yanel.xml" prefix="localconf" semanticAttributes="true"/>
+
+  <xmlproperty file="${yanel.home.dir}/conf/realms.xml" prefix="defaultconf" semanticAttributes="true"/>
+  <xmlproperty file="${yanel.home.dir}/conf/local/local.realms.xml" prefix="localconf" semanticAttributes="true"/>
+
+  <xmlproperty file="${yanel.home.dir}/conf/resource-types.xml" prefix="defaultconf" semanticAttributes="true"/>
+  <xmlproperty file="${yanel.home.dir}/conf/local/local.resource-types.xml" prefix="localconf" semanticAttributes="true"/>
+
+  <target name="check-config-version" if="local.yanel.config.exists">
+    <!-- check yanel.xml -->
+    <condition property="local.yanel.properties.in.sync">
+      <equals arg1="${defaultconf.yanel.version}" arg2="${localconf.yanel.version}"/>
+    </condition>
+    <fail unless="local.yanel.properties.in.sync" message="It seems that your local.yanel.xml is of an older version than the original yanel.xml. If you have personal entries in your local.conf compare conf/yanel.xml and conf/local/local.yanel.xml and change them accordingly. Else use ./configure.sh to create your local config new from the default config."/>
+    
+    <!-- check realms.xml -->
+    <condition property="local.realms.properties.in.sync">
+      <equals arg1="${defaultconf.realms.version}" arg2="${localconf.realms.version}"/>
+    </condition>
+    <fail unless="local.realms.properties.in.sync" message="It seems that your local.realms.xml is of an older version than the original realms.xml. If you have personal entries in your local.conf compare conf/realms.xml and conf/local/local.realms.xml and change them accordingly. Else use ./configure.sh to create your local config new from the default config."/>
+    
+    <!-- check resource-types.xml -->
+    <condition property="local.resource-types.properties.in.sync">
+      <equals arg1="${defaultconf.resource-types.version}" arg2="${localconf.resource-types.version}"/>
+    </condition>
+    <fail unless="local.resource-types.properties.in.sync" message="It seems that your local.resource-types.xml is of an older version than the original resource-types.xml. If you have personal entries in your local.conf compare conf/resource-types.xml and conf/local/local.resource-types.xml and change them accordingly. Else use ./configure.sh to create your local config new from the default config."/>
+  </target>
+  
+</project>
