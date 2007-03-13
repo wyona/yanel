@@ -23,8 +23,8 @@
 
   <target name="check-config-version-yanel-xml" if="local.yanel.config.exists">
     <echo>Check version of local.yanel.xml ...</echo>
-    <xmlproperty file="${yanel.home.dir}/conf/yanel.xml" prefix="defaultconf" semanticAttributes="true"/>
-    <xmlproperty file="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" prefix="localconf" semanticAttributes="true"/>
+    <xmlproperty file="${yanel.home.dir}/conf/yanel.xml" prefix="defaultconf" collapseAttributes="true"/>
+    <xmlproperty file="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" prefix="localconf" collapseAttributes="true"/>
     <condition property="local.yanel.properties.in.sync">
       <equals arg1="${defaultconf.yanel.version}" arg2="${localconf.yanel.version}"/>
     </condition>
@@ -33,13 +33,8 @@
 
   <target name="check-config-version-realms-xml" if="local.realms.config.exists">
     <echo>Check version of local.realms.xml ...</echo>
-    <property name="defaultconf.realms.version" value="2007"/>
-    <property name="localconf.realms.version" value="2007"/>
-    <!-- TODO: There seems to be a problem re Overriding ... -->
-<!--
-    <xmlproperty file="${yanel.home.dir}/conf/realms.xml" prefix="defaultconf" semanticAttributes="true"/>
-    <xmlproperty file="${yanel.home.dir}/${local.config.dir}/local.realms.xml" prefix="localconf" semanticAttributes="true"/>
--->
+    <xmlproperty file="${yanel.home.dir}/conf/realms.xml" prefix="defaultconf" collapseAttributes="true"/>
+    <xmlproperty file="${yanel.home.dir}/${local.config.dir}/local.realms.xml" prefix="localconf" collapseAttributes="true"/>
     <condition property="local.realms.properties.in.sync">
       <equals arg1="${defaultconf.realms.version}" arg2="${localconf.realms.version}"/>
     </condition>
@@ -48,8 +43,8 @@
 
   <target name="check-config-version-resource-types-xml" if="local.resource-types.config.exists">
     <echo>Check version of local.resource-types.xml ...</echo>
-    <xmlproperty file="${yanel.home.dir}/conf/resource-types.xml" prefix="defaultconf" semanticAttributes="true"/>
-    <xmlproperty file="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" prefix="localconf" semanticAttributes="true"/>
+    <xmlproperty file="${yanel.home.dir}/conf/resource-types.xml" prefix="defaultconf" collapseAttributes="true"/>
+    <xmlproperty file="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" prefix="localconf" collapseAttributes="true"/>
     <condition property="local.resource-types.properties.in.sync">
       <equals arg1="${defaultconf.resource-types.version}" arg2="${localconf.resource-types.version}"/>
     </condition>
