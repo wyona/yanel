@@ -22,6 +22,7 @@
   <import file="targets/build-binary-snapshot.xml"/>
   <import file="targets/build-update-war.xml"/>
   <import file="targets/execute-jmeter.xml"/>
+  <import file="targets/check-conf-version.xml"/>
   
   <target name="ask-to-reconfigure-tomcat-cluster-node1" description="reconfigure Tomcat cluster node 1" if="isTomcat1PortsSet">
     <input message="Do you want to reconfigure tomcat cluster node 1 in order to support SSL? (YES/no):" defaultvalue="NO" addproperty="answerReconfigureTomcat1"/>
@@ -202,11 +203,7 @@
   <target name="init" description="Initialize all parameters and other settings" depends="dependencies">
     <echo>Building with ${ant.version} and Java version ${ant.java.version}</echo>
 
-<!--
-    <dirname property="build.src.dir" file="${ant.file}"/>
-    <dirname property="src.dir" file="${build.src.dir}"/>
-    <dirname property="yanel.home.dir" file="${src.dir}"/>
--->
+
     <property name="yanel.home.dir" location="../../"/>
 <!--
     <echo>Yanel Home Dir: ${yanel.home.dir}</echo>
@@ -395,6 +392,7 @@
     </condition>
     <antcall target="generate-resource-types-regisitry"/>
 
+    <antcall target="check-config-version"/>
 
     <!-- Overwrite default by local properties -->
     <!-- TODO: Make the patching selectable within the build.properties of the build ... -->
