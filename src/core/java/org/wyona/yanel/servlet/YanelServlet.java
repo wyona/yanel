@@ -223,18 +223,7 @@ public class YanelServlet extends HttpServlet {
         }
 
         // Check for toolbar ...
-        String yanelToolbar = request.getParameter("yanel.toolbar");
-        if(yanelToolbar != null) {
-            if (yanelToolbar.equals("on")) {
-                log.info("Turn on toolbar!");
-                session.setAttribute(TOOLBAR_KEY, "on");
-            } else if (yanelToolbar.equals("off")) {
-                log.info("Turn off toolbar!");
-                session.setAttribute(TOOLBAR_KEY, "off");
-            } else {
-                log.warn("No such toolbar value: " + yanelToolbar);
-            }
-        }
+        checkToolbar(request);
 
         // Check for requests refered by WebDAV
         String yanelWebDAV = request.getParameter("yanel.webdav");
@@ -249,6 +238,28 @@ public class YanelServlet extends HttpServlet {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Checks if the yanel.toolbar request-param is set and stores
+     * the value of the parameter in the session.
+     * @param request
+     */
+    private void checkToolbar(HttpServletRequest request) {
+        // Check for toolbar ...
+        String yanelToolbar = request.getParameter("yanel.toolbar");
+        if(yanelToolbar != null) {
+            HttpSession session = request.getSession(false);
+            if (yanelToolbar.equals("on")) {
+                log.info("Turn on toolbar!");
+                session.setAttribute(TOOLBAR_KEY, "on");
+            } else if (yanelToolbar.equals("off")) {
+                log.info("Turn off toolbar!");
+                session.setAttribute(TOOLBAR_KEY, "off");
+            } else {
+                log.warn("No such toolbar value: " + yanelToolbar);
+            }
         }
     }
     
@@ -669,6 +680,9 @@ public class YanelServlet extends HttpServlet {
                 }
             }
 
+            // Check for toolbar ...
+            checkToolbar(request);
+            
             getContent(request, response);
         }
     }
