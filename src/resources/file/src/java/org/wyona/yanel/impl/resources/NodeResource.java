@@ -21,6 +21,7 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.Topic;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
+import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
@@ -49,7 +50,7 @@ import org.apache.log4j.Category;
 /**
  * Generic Node Resource
  */
-public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2 {
+public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, IntrospectableV1 {
 //public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2 {
 
     private static Category log = Category.getInstance(NodeResource.class);
@@ -340,5 +341,18 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      */
     public String getPropertyType(String name) {
         return CreatableV2.TYPE_UPLOAD;
+    }
+
+    public String getIntrospection() throws Exception {
+        String name = PathUtil.getName(getPath());
+        StringBuffer buf = new StringBuffer();
+        buf.append("<?xml version=\"1.0\"?>");
+        buf.append("<introspection xmlns=\"http://www.wyona.org/neutron/1.0\">");
+        buf.append("<edit mime-type=\"" + this.getMimeType(null) + "\" name=\"" + name + "\">");
+        buf.append("<checkout url=\"?yanel.resource.usecase=checkout\" method=\"GET\"/>");
+        buf.append("<checkin  url=\"?yanel.resource.usecase=checkin\"  method=\"PUT\"/>");
+        buf.append("</edit>");
+        buf.append("</introspection>");
+        return buf.toString();
     }
 }
