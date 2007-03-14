@@ -108,7 +108,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 	    } else if (request.getParameter("resource-type") != null) {
                 getResourceScreen(sb);
             } else {
-                getNoSuchScreen(sb);
+                log.info("Fallback ...");
+                //getNoSuchScreen(sb);
+                getSelectResourceTypeScreen(sb);
             }
         }
 
