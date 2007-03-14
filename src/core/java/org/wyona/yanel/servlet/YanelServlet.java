@@ -1826,7 +1826,7 @@ public class YanelServlet extends HttpServlet {
             buf.append("<span id=\"user\">User: Not signed in!</span>");
         }
         
-        buf.append("&#160;&#160;<img src=\"" + backToRealm + reservedPrefix + "/yanel_toolbar_logo.gif\" id=\"toolbar_logo\"/>");
+        buf.append("&#160;&#160;<img src=\"" + backToRealm + reservedPrefix + "/yanel_toolbar_logo.png\" id=\"toolbar_logo\"/>");
         buf.append("</div>");
         buf.append("<div id=\"middlewrap\">");
         return buf.toString();
