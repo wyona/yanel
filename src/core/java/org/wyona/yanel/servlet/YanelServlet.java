@@ -38,6 +38,7 @@ import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeIdentifier;
 import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.Yanel;
+import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
@@ -505,6 +506,25 @@ public class YanelServlet extends HttpServlet {
                 return;
             }
 
+            // TODO: Move this introspection generation somewhere else ...
+            try {
+                    if (usecase != null && usecase.equals("introspection")) {
+                        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Introspectable", "1")) {
+                            String introspection = ((IntrospectableV1)res).getIntrospection();
+                            response.setContentType("application/neutron+xml");
+                            response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+                            response.getWriter().print(introspection);
+                        } else {
+                            String message = "Resource is not introspectable.";
+                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                            exceptionElement.appendChild(doc.createTextNode(message));
+                            setYanelOutput(request, response, doc);
+                        }
+                        return;
+                    }
+	    } catch(Exception e) {
+                log.error(e.getMessage(), e);
+            }
 
 
         String meta = request.getParameter("yanel.resource.meta");
