@@ -5,16 +5,19 @@ body, html{
 body {
 	min-width:720px; /* Prevent content from becoming unreachable in Gecko */
 }
+
 /* the whole page should scrolls */
 div#headerwrap {
-  position:absolute;
-  width:100%;
-  top:0;
-  left:0;
-  height:23px;
-  margin:0 auto;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  height: 23px;
+  margin: 0 auto;
+  z-index: 500;
 /*border-right-width:20px;*/
 }
+
 /* position:fixed for modern browsers - header should not scroll */
 body>div#headerwrap {
 	position:fixed;
