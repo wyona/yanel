@@ -20,6 +20,7 @@
   <xsl:param name="downloadevents" select="''" />
   <xsl:param name="errorevents" select="''" />
   <xsl:param name="nofdownloads" select="''" />
+  <xsl:param name="isdone" select="''" />
 
   <xsl:param name="submitted" select="'false'" />
 
@@ -32,6 +33,9 @@
               padding-bottom:10px;
             }
         </style>
+        <xsl:if test="$isdone = 'false'">
+          <meta http-equiv="refresh" content="2"/>
+        </xsl:if>
       </head>
       
       <body>
@@ -40,19 +44,30 @@
         <div id="contentBody">
           <xsl:choose>
             <xsl:when test="$submitted != 'false'">
+              <xsl:choose>
+                <xsl:when test="$isdone = 'true'">
+                  <h2>Import completed</h2>
+                  <p>
+                    <a>
+                      <xsl:attribute name="href">
+                        <xsl:value-of select="$yanel.back2context"/><xsl:value-of select="$realmid"/>/
+                      </xsl:attribute>View <xsl:value-of select="$realmname" />
+                    </a>
+                  </p>
+                </xsl:when>
+                <xsl:otherwise>
+                  <h2>Import running, please wait...</h2>
+                  <form>
+                    <input type="submit" value="Stop Crawl" name="stop"/>
+                  </form>
+                </xsl:otherwise>
+              </xsl:choose>
+              
               <p>[<xsl:value-of select="$nofdownloads"/>] pages have been imported.</p>
-              <p>[X]% complete.</p>
               <p>Downloaded Pages:</p>
               <p style="font-size: small"><pre><xsl:value-of select="$downloadevents"/></pre></p>
               <p>Errors:</p>
               <p style="font-size: small"><pre><xsl:value-of select="$errorevents"/></pre></p>
-              <p>
-                <a>
-                  <xsl:attribute name="href">
-                    <xsl:value-of select="$yanel.back2context"/><xsl:value-of select="$realmid"/>/
-                  </xsl:attribute>View <xsl:value-of select="$realmname" />
-                </a>
-              </p>
             </xsl:when>
             <xsl:otherwise>
               

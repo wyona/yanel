@@ -7,20 +7,24 @@ package org.wyona.yanel.impl.resources;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import websphinx.CrawlEvent;
+import websphinx.CrawlListener;
 import websphinx.LinkEvent;
 import websphinx.LinkListener;
 
 /**
  * 
  */
-public class EventLog implements LinkListener, Serializable {
+public class EventLog implements LinkListener, CrawlListener, Serializable {
 
-    ArrayList downloadEvents;
-    ArrayList errorEvents;
+    private ArrayList downloadEvents;
+    private ArrayList errorEvents;
+    private boolean isDone;
     
     public EventLog() {
         this.downloadEvents = new ArrayList();
         this.errorEvents = new ArrayList();
+        this.isDone = false;
     }
     
     /**
@@ -64,5 +68,25 @@ public class EventLog implements LinkListener, Serializable {
      */
     public int getNofDownloads() {
         return this.downloadEvents.size();
+    }
+
+    public void cleared(CrawlEvent event) {
+    }
+
+    public void paused(CrawlEvent event) {
+    }
+
+    public void started(CrawlEvent event) {
+    }
+
+    public void stopped(CrawlEvent event) {
+        this.isDone = true;
+    }
+
+    public void timedOut(CrawlEvent event) {
+    }
+    
+    public boolean isDone() {
+        return this.isDone;
     }
 }
