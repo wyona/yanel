@@ -1670,34 +1670,34 @@ public class YanelServlet extends HttpServlet {
             Element rootElement = doc.getDocumentElement();
             
             if (message != null) {
-                Element messageElement = (Element) rootElement.appendChild(doc.createElement("message"));
+                Element messageElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "message"));
                 messageElement.appendChild(doc.createTextNode(message)); 
             }
             
-            Element requestElement = (Element) rootElement.appendChild(doc.createElement("request"));
-            requestElement.setAttribute("urlqs", getRequestURLQS(request, null, true));
+            Element requestElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "request"));
+            requestElement.setAttributeNS(NAMESPACE, "urlqs", getRequestURLQS(request, null, true));
 
             if (request.getQueryString() != null) {
-                requestElement.setAttribute("qs", request.getQueryString().replaceAll("&", "&amp;"));
+                requestElement.setAttributeNS(NAMESPACE, "qs", request.getQueryString().replaceAll("&", "&amp;"));
             }
             
-            Element realmElement = (Element) rootElement.appendChild(doc.createElement("realm"));
-            realmElement.setAttribute("name", realm.getName());
-            realmElement.setAttribute("mount-point", realm.getMountPoint().toString());  
+            Element realmElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "realm"));
+            realmElement.setAttributeNS(NAMESPACE, "name", realm.getName());
+            realmElement.setAttributeNS(NAMESPACE, "mount-point", realm.getMountPoint().toString());  
             
-            Element sslElement = (Element) rootElement.appendChild(doc.createElement("ssl"));            
+            Element sslElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "ssl"));            
             if(sslPort != null) {
-        	sslElement.setAttribute("status", "ON");   
+        	sslElement.setAttributeNS(NAMESPACE, "status", "ON");   
             } else {
-        	sslElement.setAttribute("status", "OFF");
+        	sslElement.setAttributeNS(NAMESPACE, "status", "OFF");
             }
             
             String yanelFormat = request.getParameter("yanel.format");
             if(yanelFormat != null && yanelFormat.equals("xml")) {
                 response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
-                OutputStream out = response.getOutputStream();
-                javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
-                out.close();
+                //OutputStream out = response.getOutputStream();
+                javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getOutputStream()));
+                //out.close();
             } else {
                 String mimeType = patchMimeType("application/xhtml+xml", request);
                 response.setContentType(mimeType + "; charset=" + DEFAULT_ENCODING);
@@ -1705,8 +1705,7 @@ public class YanelServlet extends HttpServlet {
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltLoginScreen));
                 transformer.setParameter("yanel.back2realm", backToRealm);
                 transformer.setParameter("yanel.reservedPrefix", reservedPrefix);
-                transformer.transform(new javax.xml.transform.dom.DOMSource(doc), 
-                        new javax.xml.transform.stream.StreamResult(response.getWriter()));
+                transformer.transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
             }
 
             
