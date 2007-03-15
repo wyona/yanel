@@ -1590,6 +1590,9 @@ public class YanelServlet extends HttpServlet {
      *
      */
     private void setYanelOutput(HttpServletRequest request, HttpServletResponse response, Document doc) throws ServletException {
+        String path = request.getServletPath();
+        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(path);
+        
         try {
             String yanelFormat = request.getParameter("yanel.format");
             if(yanelFormat != null && yanelFormat.equals("xml")) {
@@ -1603,10 +1606,12 @@ public class YanelServlet extends HttpServlet {
                 
                 // create identity transformer which serves as a dom-to-sax transformer
                 TransformerIdentityImpl transformer = new TransformerIdentityImpl();
-                
+
                 // create xslt transformer:
                 SAXTransformerFactory saxTransformerFactory = (SAXTransformerFactory)SAXTransformerFactory.newInstance();
                 TransformerHandler xsltTransformer = saxTransformerFactory.newTransformerHandler(new StreamSource(xsltInfoAndException));
+                xsltTransformer.getTransformer().setParameter("yanel.back2realm", backToRealm);
+                xsltTransformer.getTransformer().setParameter("yanel.reservedPrefix", reservedPrefix);
                 
                 // create i18n transformer:
                 I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage(request));

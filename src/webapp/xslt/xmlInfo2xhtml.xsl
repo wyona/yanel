@@ -12,6 +12,9 @@
 
   <xsl:output method="xhtml" encoding="UTF-8"/>
 
+  <xsl:param name="yanel.back2realm" select="'BACK2REALM_IS_NULL'"/>
+  <xsl:param name="yanel.reservedPrefix" select="'RESERVEDPREFIX_IS_NULL'"/>
+  
   <xsl:template match="/">
         <html>
           <head>
@@ -29,6 +32,7 @@
                 </xsl:otherwise>
               </xsl:choose>
             </title>
+            <link rel="stylesheet" href="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-css/global.css" type="text/css"/>
           </head>
           <body>
 
