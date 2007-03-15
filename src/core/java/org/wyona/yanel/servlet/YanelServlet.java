@@ -572,6 +572,8 @@ public class YanelServlet extends HttpServlet {
             if (toolbar != null && toolbar.equals("on")) {
                 String mimeType = view.getMimeType();
                 if (mimeType != null && mimeType.indexOf("html") > 0) {
+                    // TODO: What about other query strings or frames or TinyMCE?
+                    if (request.getParameter("yanel.resource.usecase") == null) {
                     if (toolbarMasterSwitch.equals("on")) {
                         OutputStream os = response.getOutputStream();
                         try {
@@ -589,8 +591,11 @@ public class YanelServlet extends HttpServlet {
                     } else {
                         log.info("Toolbar has been disabled. Please check web.xml!");
                     }
+                    } else {
+                        log.error("DEBUG: Exception to the rule: " + request.getParameter("yanel.resource.usecase"));
+                    }
                 } else {
-                    log.error("DEBUG: No HTML related mime type: " + mimeType);
+                    log.debug("No HTML related mime type: " + mimeType);
                 }
             } else {
                 log.debug("Toolbar is turned off.");
