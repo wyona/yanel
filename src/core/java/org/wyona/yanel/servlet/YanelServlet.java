@@ -1656,6 +1656,8 @@ public class YanelServlet extends HttpServlet {
      * Custom XHTML Form for authentication
      */
     public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message) throws ServletException, IOException {
+        String path = request.getServletPath();
+        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(path);
         
         org.w3c.dom.Document doc = null;
         javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
@@ -1674,6 +1676,10 @@ public class YanelServlet extends HttpServlet {
             
             Element requestElement = (Element) rootElement.appendChild(doc.createElement("request"));
             requestElement.setAttribute("urlqs", getRequestURLQS(request, null, true));
+
+            if (request.getQueryString() != null) {
+                requestElement.setAttribute("qs", request.getQueryString().replaceAll("&", "&amp;"));
+            }
             
             Element realmElement = (Element) rootElement.appendChild(doc.createElement("realm"));
             realmElement.setAttribute("name", realm.getName());
@@ -1696,7 +1702,9 @@ public class YanelServlet extends HttpServlet {
                 String mimeType = patchMimeType("application/xhtml+xml", request);
                 response.setContentType(mimeType + "; charset=" + DEFAULT_ENCODING);
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);            
-                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltLoginScreen));            
+                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltLoginScreen));
+                transformer.setParameter("yanel.back2realm", backToRealm);
+                transformer.setParameter("yanel.reservedPrefix", reservedPrefix);
                 transformer.transform(new javax.xml.transform.dom.DOMSource(doc), 
                         new javax.xml.transform.stream.StreamResult(response.getWriter()));
             }
