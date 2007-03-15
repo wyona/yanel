@@ -59,7 +59,6 @@ import javax.xml.transform.stream.StreamSource;
  */
 public class AddRealmResource extends Resource implements ViewableV2 {
 
-    private static final String CRAWLER_JAR = "yanel-crawler.jar";
     private static Category log = Category.getInstance(AddRealmResource.class);
     private final static String SESSION_ATTR_EVENT_LOG = "org.wyona.yanel.addrealm.eventlog";
     private final static String SESSION_ATTR_CRAWLER = "org.wyona.yanel.addrealm.crawler";
@@ -72,10 +71,6 @@ public class AddRealmResource extends Resource implements ViewableV2 {
     private String parameter = null;
     private String parameterErrorName = null;
     private String parameterError = null;
-    
-    private File CrawlerJarLocation;
-    private File tmpResultDir;
-    private String errorMessage;
     
     private HashMap parameters = new HashMap();
 
@@ -99,22 +94,6 @@ public class AddRealmResource extends Resource implements ViewableV2 {
         
         String path = getPath();
         HttpServletRequest request = getRequest();
-        
-        // the crawler jar
-        String WEBINFPath = request.getSession().getServletContext().getRealPath("WEB-INF");
-        CrawlerJarLocation = new File(WEBINFPath + File.separator + "lib" + File.separator
-                + CRAWLER_JAR);
-        
-        if (!CrawlerJarLocation.exists()) {
-            errorMessage = errorMessage + "\n Crawler not found.";
-        }
-        
-        // create tmp status file
-        if (!new File(request.getSession().getServletContext().getRealPath("tmp")).exists()) {
-            if (!new File(request.getSession().getServletContext().getRealPath("tmp")).mkdir()) {
-                errorMessage = errorMessage + "\n Creation of tmp directory faild.";
-            }
-        }
         
         // Get language
         try {
@@ -157,13 +136,11 @@ public class AddRealmResource extends Resource implements ViewableV2 {
             	boolean propertyExists = getConfiguration().containsKey(parameterNames[i]);
             	
             	if (propertyExists == true) {
-            		if (property == null || ("").equals(property)) {
-            			parameters.put(parameterNames[i], "default");
-            		} else {
-            			parameters.put(parameterNames[i], property);
-            		}
+            		parameters.put(parameterNames[i], property);
+            		transformer.setParameter(parameterNames[i] + "-prop-exists", "true");
             	} else {
             		parameters.put(parameterNames[i], "");
+            		transformer.setParameter(parameterNames[i] + "-prop-exists", "false");
         		}
             }
             
@@ -178,7 +155,7 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                     parameterName = (String) keysIterator.next();
                     parameter = HttpServletRequestHelper.getParameter(request, parameterName);
                     
-                    if (("fslocation").equals(parameterName)) {
+                    if (parameterName == "fslocation" || ("fslocation").equals(parameterName)) {
                     	parameters.put(parameterName, parameter);
                         transformer.setParameter(parameterName, parameters.get(parameterName).toString());
                     } else if (parameter == null || ("").equals(parameter)) {
@@ -192,10 +169,10 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                 }
                 
                 if (parameterError == null || ("").equals(parameterError)) {
+                	// Explicitly check whether fslocation is null and set to null (rather than the empty string).
+                	// File() (and copyRealm()) needs null to be passed.
                 	File fslocationValue = null;
                 	if (parameters.get("fslocation").toString() == null || ("").equals(parameters.get("fslocation").toString())) {
-                		fslocationValue = null;
-                	} else if (parameters.get("fslocation").toString().equals("default")) {
                 		fslocationValue = null;
                 	} else {
                 		fslocationValue = new File(parameters.get("fslocation").toString());
@@ -228,17 +205,17 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                 }
                 
                 transformer.transform(new javax.xml.transform.stream.StreamSource(statusXMLFile), new StreamResult(byteArrayOutputStream));
-                
+            
             } else if (session.getAttribute(SESSION_ATTR_EVENT_LOG) != null) {
+            	
                 // the crawler is running
-                
-                if (stop) {
-                    DumpingCrawler crawler = (DumpingCrawler)session.getAttribute(SESSION_ATTR_CRAWLER);
-                    if (crawler != null) {
-                        crawler.stop();
+            	if (stop) {
+            	    DumpingCrawler crawler = (DumpingCrawler)session.getAttribute(SESSION_ATTR_CRAWLER);
+            	    if (crawler != null) {
+            	        crawler.stop();
                     }
                 }
-                
+
                 // show progress
                 EventLog eventLog = (EventLog)session.getAttribute(SESSION_ATTR_EVENT_LOG);
                 if (eventLog != null) {
@@ -247,11 +224,11 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                     transformer.setParameter("nofdownloads", String.valueOf(eventLog.getNofDownloads()));
                     transformer.setParameter("submitted", "true");
                     transformer.setParameter("isdone", String.valueOf(eventLog.isDone()));
-
+                    
                     transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
                     transformer.setParameter("realmid", session.getAttribute(SESSION_ATTR_REALM_ID));
                     transformer.setParameter("realmname", session.getAttribute(SESSION_ATTR_REALM_NAME));
-
+                    
                     if (eventLog.isDone()) {
                         session.removeAttribute(SESSION_ATTR_EVENT_LOG);
                         session.removeAttribute(SESSION_ATTR_CRAWLER);
@@ -259,7 +236,7 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                         session.removeAttribute(SESSION_ATTR_REALM_NAME);
                     }
                 }
-                transformer.transform(new javax.xml.transform.stream.StreamSource(statusXMLFile), new StreamResult(byteArrayOutputStream));
+                transformer.transform(new javax.xml.transform.stream.StreamSource(statusXMLFile), new StreamResult(byteArrayOutputStream));              
                 
             } else {
             	
@@ -309,9 +286,9 @@ public class AddRealmResource extends Resource implements ViewableV2 {
         EventLog eventLog = new EventLog();
         crawler.addLinkListener(eventLog);
         crawler.addCrawlListener(eventLog);
-       
-        Realm realm = getYanel().getRealmConfiguration().getRealm(realmID);
         
+        Realm realm = getYanel().getRealmConfiguration().getRealm(realmID);
+       
         HttpSession session = getRequest().getSession(true); 
         session.setAttribute(SESSION_ATTR_EVENT_LOG, eventLog);
         session.setAttribute(SESSION_ATTR_CRAWLER, crawler);
@@ -322,7 +299,8 @@ public class AddRealmResource extends Resource implements ViewableV2 {
         ImportSiteThread thread = new ImportSiteThread(crawler, realm, dumpDir, crawlStartURL);
         thread.start();
     }
-        
+    
+   
     /**
      * 
      */
