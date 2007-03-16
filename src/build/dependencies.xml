@@ -34,7 +34,7 @@
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
                   version="0.0.1-dev-r22621"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core"
-                  version="0.0.1-dev-r23162"/>
+                  version="0.0.1-dev-r23290"/>
 
       <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api"
@@ -60,7 +60,7 @@
       <dependency groupId="xalan" artifactId="xalan"
                   version="2.7.0"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl"
-                  version="0.0.1-dev-r23162"/>
+                  version="0.0.1-dev-r23290"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="yarep" artifactId="yarep-impl"
                   version="0.0.1-dev-r23202"/>
