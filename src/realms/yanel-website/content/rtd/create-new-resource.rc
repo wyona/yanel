@@ -13,6 +13,7 @@
         <rc:property name="xslt" value="/xslt/global.xsl"/>
         <rc:property name="mime-type" value="application/xhtml+xml"/>
       </rc:resource-type>
+      <rc:resource-type name="yanel-user" namespace="http://www.wyona.org/yanel/resource/1.0"/>
     </rc:resource-types>
   </yanel:custom-config>
 </yanel:resource-config>

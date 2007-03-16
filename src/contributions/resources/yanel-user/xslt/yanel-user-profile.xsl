@@ -15,30 +15,32 @@
   <xsl:param name="allGroupsString" select="''"/>
   <xsl:param name="success" select="''"/>
   <xsl:param name="error" select="''"/>
+  <xsl:param name="deletion" select="'false'"/>
 
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <title>Change user profile</title>
-      </head>
-      <body>
-        <h1> 
-          User Profile of <xsl:value-of select="$userId"/>
-        </h1>
-      <xsl:choose>       
-        <xsl:when test="$success != ''">            
-          <h4>
-            <xsl:value-of select="$success"/>
-          </h4>           
+      <xsl:choose>
+        <xsl:when test="contains('true',$deletion)">
+          <head>
+            <title></title>
+          </head>
+          <body>	    
+            <xsl:call-template name="show-message"/>
+          </body>
         </xsl:when>
-        <xsl:when test="$error != ''">          
-          <h4>
-            An error occurred: <xsl:value-of select="$error"/>
-          </h4>            
-        </xsl:when>        
+        <xsl:otherwise>
+          <head>
+            <title>Change user profile</title>
+          </head>
+          <body>        
+            <h1> 
+              User Profile of <xsl:value-of select="$userId"/>
+            </h1>
+              <xsl:call-template name="show-message"/>     
+              <xsl:apply-templates select="form"/>
+          </body>
+        </xsl:otherwise>
       </xsl:choose>
-       <xsl:apply-templates select="form"/>
-       </body>
     </html>
   </xsl:template>  
 
@@ -123,6 +125,21 @@
         </table>
       </p>
     </form>
+  </xsl:template>
+
+  <xsl:template name="show-message">    
+    <xsl:choose>       
+      <xsl:when test="$success != ''">            
+        <h4>
+          <xsl:value-of select="$success"/>
+        </h4>           
+      </xsl:when>
+      <xsl:when test="$error != ''">          
+        <h4>
+          An error occurred: <xsl:value-of select="$error"/>
+        </h4>            
+      </xsl:when>        
+   </xsl:choose> 
   </xsl:template>
 
   <xsl:template name="tokenize">
