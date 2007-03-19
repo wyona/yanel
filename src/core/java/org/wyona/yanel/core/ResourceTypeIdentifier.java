@@ -85,7 +85,20 @@ public class ResourceTypeIdentifier {
      * @return value for this key or null if no value exists for this key.
      */
     public String getProperty(String key) {
-        return (String)properties.get(key);
+    	return (String)properties.get(key);
+    }
+    
+    /**
+     * @param key
+     * @return value for this key or null if no value exists for this key.
+     */
+    public String[] getProperties(String key) {
+    	String property = (String)properties.get(key);
+    	if (property != null) {
+    		return property.split(",");
+    	} else {
+    		return null;
+    	}
     }
     
     /**

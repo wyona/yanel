@@ -17,6 +17,7 @@
 package org.wyona.yanel.core;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -114,6 +115,24 @@ public class ResourceConfiguration {
             for (int i = 0; i < props.length; i++) {
                 if (props[i].getAttribute("name") != null && props[i].getAttribute("name").equals(key)) return props[i].getAttribute("value");
             }
+        }
+        return null;
+    }
+    
+    /**
+     * @param key
+     * @return value for this key or null if no value exists for this key.
+     */
+    public String[] getProperties(String key) throws Exception {
+        ArrayList properties = new ArrayList(); 
+        if (config != null) {
+            Configuration[] props = config.getChildren("property");
+            for (int i = 0; i < props.length; i++) {
+                if (props[i].getAttribute("name") != null && props[i].getAttribute("name").equals(key)) {
+                	properties.add(props[i].getAttribute("value"));
+                }
+            }
+            return (String[]) properties.toArray(new String[0]);
         }
         return null;
     }
