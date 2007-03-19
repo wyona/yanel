@@ -404,10 +404,12 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     }
 
     /**
-     * Create resource configuration (yanel-rti respectively yanel-rc)
+     * Create resource configuration (yanel-rc)
      */
     private void createConfiguration(Resource newResource) throws Exception {
-        StringBuffer rtiContent = new StringBuffer(newResource.getResourceTypeUniversalName() + "\n");
+        StringBuffer rcContent = new StringBuffer("<?xml version=\"1.0\"?>\n\n");
+        rcContent.append("<yanel:resource-config xmlns:yanel=\"http://www.wyona.org/yanel/rti/1.0\">\n");
+        rcContent.append("<yanel:rti name=\"" + newResource.getRTD().getResourceTypeLocalName() + "\" namespace=\"" + newResource.getRTD().getResourceTypeNamespace() + "\"/>\n\n");
         java.util.HashMap rtiProperties = ((CreatableV2) newResource).createRTIProperties(request);
         if (rtiProperties != null) {
             log.error("DEBUG: " + rtiProperties + " " + PathUtil.getRTIPath(newResource.getPath()));
@@ -415,21 +417,24 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             while (iterator.hasNext()) {
                 String property = (String) iterator.next();
                 String value = (String) rtiProperties.get(property);
-                rtiContent.append(property + ": " + value + "\n");
+                rcContent.append("<yanel:property name=\"" + property + "\" value=\"" + value + "\"/>\n");
                 log.error("DEBUG: " + property + ", " + value);
             }
         } else {
             log.warn("No RTI properties: " + newResource.getPath());
         }
+	rcContent.append("</yanel:resource-config>");
+
+
         org.wyona.yarep.core.Repository rcRepo = newResource.getRealm().getRTIRepository();
-        org.wyona.commons.io.Path newRTIPath = new org.wyona.commons.io.Path(PathUtil.getRTIPath(newResource.getPath()));
-        if (rcRepo.existsNode(newRTIPath.toString())) {
+        org.wyona.commons.io.Path newRCPath = new org.wyona.commons.io.Path(PathUtil.getRCPath(newResource.getPath()));
+        if (rcRepo.existsNode(newRCPath.toString())) {
             // TODO: create node recursively ...
-            rcRepo.getRootNode().addNode(newRTIPath.getName(), org.wyona.yarep.core.NodeType.RESOURCE);
-	    log.warn("Node has been created: " + newRTIPath);
+            rcRepo.getRootNode().addNode(newRCPath.getName(), org.wyona.yarep.core.NodeType.RESOURCE);
+	    log.warn("Node has been created: " + newRCPath);
         }
-        java.io.Writer writer = new java.io.OutputStreamWriter(rcRepo.getNode(newRTIPath.toString()).getOutputStream());
-        writer.write(rtiContent.toString());
+        java.io.Writer writer = new java.io.OutputStreamWriter(rcRepo.getNode(newRCPath.toString()).getOutputStream());
+        writer.write(rcContent.toString());
         writer.close();
     }
 
