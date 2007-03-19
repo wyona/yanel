@@ -16,8 +16,8 @@
 
 <node>
   <name>Development/Community</name>
-  <node uuid="" href="">Get the Source</node>
-  <node uuid="" href="">Mailing Lists</node>
+  <node uuid="" href=""><name>Get the Source</name></node>
+  <node uuid="" href=""><name>Mailing Lists</name></node>
   <node uuid="" href=""></node>
   <node uuid="" href=""></node>
   <node uuid="" href=""></node>
@@ -25,16 +25,16 @@
   <node uuid="" href=""></node>
   <node uuid="" href=""></node>
   <node uuid="" href=""></node>
-  <node uuid="" href=""></node>
+  <node uuid="" href=""><name>References</name></node>
 </node>
 
 <node>
   <name>Professional Services</name>
-  <node uuid="professional-services/support/en.xhtml" href="/en/professional-services/support.html">Support</node>
-  <node uuid="" href="">Consulting</node>
-  <node uuid="">Training</node>
-  <node uuid="">Solutions</node>
-  <node uuid="">Contact</node>
+  <node uuid="professional-services/support/en.xhtml" href="/en/professional-services/support.html"><name>Support</name></node>
+  <node uuid="" href=""><name>Consulting</name></node>
+  <node uuid=""><name>Training</name></node>
+  <node uuid=""><name>Solutions</name></node>
+  <node uuid=""><name>Contact</name></node>
 </node>
 
 <!--
