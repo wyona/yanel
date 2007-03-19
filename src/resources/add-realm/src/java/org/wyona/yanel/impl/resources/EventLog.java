@@ -45,7 +45,13 @@ public class EventLog implements LinkListener, CrawlListener, Serializable {
     public String getDownloadEvents() {
         StringBuffer buf = new StringBuffer();
         for (int i=0; i<this.downloadEvents.size(); i++) {
-            buf.append(this.downloadEvents.get(i) + "\n");
+            LinkEvent event = (LinkEvent)this.downloadEvents.get(i);
+            String desc = event.toString().replaceAll(">", "&gt;");
+            desc = desc.replaceAll("<", "&lt;");
+            desc = desc.replaceAll("'", "&apos;");
+            desc = desc.replaceAll("\"", "&quot;");
+            desc = desc.replaceAll("&", "&amp;");
+            buf.append(desc + "\n");
         }
         return buf.toString();
     }

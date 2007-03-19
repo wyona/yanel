@@ -14,7 +14,7 @@
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
-      <dependency groupId="wyona-org-crawler" artifactId="wyona-org-crawler" version="0.0.1-dev-r23135"/>
+      <dependency groupId="wyona-org-crawler" artifactId="wyona-org-crawler" version="0.0.1-dev-r23281"/>
       <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-io" version="1.2"/>
 
     </artifact:dependencies>

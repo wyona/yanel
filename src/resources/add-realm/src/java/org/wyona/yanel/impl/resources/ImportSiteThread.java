@@ -4,14 +4,19 @@
 
 package org.wyona.yanel.impl.resources;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -37,11 +42,16 @@ public class ImportSiteThread extends Thread {
     private String crawlStartURL;
     private Realm realm;
     
+    private HashMap mimeTypeMap;
+    private HashMap encodingMap;
+    
     public ImportSiteThread(DumpingCrawler crawler, Realm realm, String dumpDir, String crawlStartURL) {
         this.crawler = crawler;
         this.realm = realm;
         this.dumpDir = dumpDir;
         this.crawlStartURL = crawlStartURL;
+        this.mimeTypeMap = new HashMap();
+        this.encodingMap = new HashMap();
     }
     
     public void run() {
@@ -54,6 +64,7 @@ public class ImportSiteThread extends Thread {
             deleteRepositoryContent(realm.getRepository());
             deleteRepositoryContent(realm.getRTIRepository());
             Node root = realm.getRepository().getRootNode();
+            readMeta();
             importContent(new File(dumpDir), root);
             
             // remove temp dump dir
@@ -64,6 +75,29 @@ public class ImportSiteThread extends Thread {
         } catch (Exception e) {
             log.error(e, e);
             throw new RuntimeException(e.toString(), e);
+        }
+    }
+    
+    /**
+     * Reads the .meta file of the dump which contains the mimetypes
+     * and the encoding of the dumped files.
+     * @throws IOException
+     */
+    protected void readMeta() throws IOException {
+        File meta = new File(this.dumpDir + File.separator + ".meta");
+        BufferedReader reader = new BufferedReader(new FileReader(meta));
+        String line;
+        
+        while ((line = reader.readLine()) != null) {
+            String[] tokens = line.split(",");
+            // pattern is: path,mimetype[,encoding]
+            String path = tokens[0];
+            String mimeType = tokens[1];
+            this.mimeTypeMap.put(path, mimeType);
+            if (tokens.length > 2) {
+                String encoding = tokens[2];
+                this.encodingMap.put(path, encoding);
+            }
         }
     }
     
@@ -91,16 +125,30 @@ public class ImportSiteThread extends Thread {
                 // recursion:
                 importContent(file, childNode);
             } else {
+                if (name.equals(".meta")) {
+                    continue; // don't import the dump meta file
+                }
                 if (node.hasNode(name)) {
                     childNode = node.getNode(name);
                 } else {
                     childNode = node.addNode(name, NodeType.RESOURCE);
                 }
-                String mimeType = guessMimeType(FilenameUtils.getExtension(file.getName()));
+                String mimeType;
+                String path = getLocalPath(file);
+                if (this.mimeTypeMap.containsKey(path)) {
+                    mimeType = (String)this.mimeTypeMap.get(path);
+                } else {
+                    mimeType = guessMimeType(FilenameUtils.getExtension(file.getName()));
+                }
                 InputStream is = new FileInputStream(file);
                 OutputStream os = childNode.getOutputStream();
-                if (mimeType.equals("text/html")) {
-                    addIntrospectionLink(is, os);
+                if (mimeType.equals("text/html") || mimeType.equals("application/xhtml+xml")) {
+                    String encoding = "utf-8";
+                    if (this.encodingMap.containsKey(path)) {
+                        encoding = (String)this.encodingMap.get(path);
+                    }
+                    addIntrospectionLink(is, os, encoding);
+                    childNode.setEncoding(encoding);
                 } else {
                     byte[] buf = new byte[8192];
                     int bytesRead;
@@ -117,42 +165,64 @@ public class ImportSiteThread extends Thread {
     }
     
     /**
-     * Adds a yanel introspection link element to the head element of the current page.
-     * Note: this method is stream based and does not consider character encoding, therefore
-     * it works only for data with ascii-compatible encoding like utf-8 or iso-8859-1.
-     * TODO: remove existing introspection link if imported page already has one 
-     * @param is stream of the source html page
-     * @param os stream of the result html page
+     * Returns the local path of a dumped file, i.e. the path relative
+     * to the root dir of the dump.
+     * @param file
+     * @return
      * @throws IOException
      */
-    protected void addIntrospectionLink(InputStream is, OutputStream os) throws IOException {
-        int b;
+    protected String getLocalPath(File file) throws IOException {
+        String rootPath = new File(this.dumpDir).getCanonicalPath();
+        String path = file.getCanonicalPath();
+        if (!path.startsWith(rootPath)) {
+            throw new IOException("Path " + path + " must be inside of " + rootPath);
+        }
+        return path.substring(rootPath.length()+1);
+    }
+    
+    /**
+     * Adds a yanel introspection link element to the head element of the current page.
+     * @param is stream of the source html page
+     * @param os stream of the result html page
+     * @param encoding the encoding of the input stream
+     * @throws IOException
+     */
+    protected void addIntrospectionLink(InputStream is, OutputStream os, String encoding) throws IOException {
+        int c;
         int state = OUTSIDE_TAG;
-        StringBuffer tagNameBuf = null;
-        while ((b = is.read()) != -1) {
+        InputStreamReader reader = new InputStreamReader(is, encoding);
+        OutputStreamWriter writer = new OutputStreamWriter(os, encoding);
+
+        StringBuffer tagBuf = null;
+        while ((c = reader.read()) != -1) {
             switch (state) {
             case OUTSIDE_TAG:
-                if (b == '<') {
-                    tagNameBuf = new StringBuffer();
+                if (c == '<') {
+                    tagBuf = new StringBuffer("<");
                     state = INSIDE_TAG;
+                } else {
+                    writer.write(c);
                 }
-                os.write(b);
                 break;
             case INSIDE_TAG:
-                os.write(b);
-                if (b == '>') {
+                tagBuf.append((char)c);
+                if (c == '>') {
                     state = OUTSIDE_TAG;
-                    String tagName = tagNameBuf.toString();
-                    if (tagName.startsWith("head")) {
-                        String introspectionLink = "<link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"?yanel.resource.usecase=introspection\"/>";
-                        os.write(introspectionLink.getBytes());
+                    String tag = tagBuf.toString();
+                    if (!tag.startsWith("<link") || tag.indexOf("neutron-introspection") == -1) {
+                        writer.write(tag, 0, tag.length());
                     }
-                } else {
-                    tagNameBuf.append((char)b);
+                    if (tag.startsWith("<head")) {
+                        String introspectionLink = "<link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"?yanel.resource.usecase=introspection\"/>";
+                        writer.write(introspectionLink, 0, introspectionLink.length());
+                    }
                 }
                 break;
             }
         }
+        writer.flush();
+        writer.close();
+        reader.close();
     }
     
     /**
