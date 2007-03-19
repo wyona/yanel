@@ -330,24 +330,34 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 
                     //sb.append("<br/><br/><input type=\"submit\" value=\"Save As\" name=\"save-as\"/>");
 
-		    sb.append("<br/><br/>Save as:<br/>");
-		    sb.append("Look in: " + getPath() + "<br/>");
                     // TODO: Display repository navigation of this path ...
+		    sb.append("<br/><br/>Save as:<br/>");
                     Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("nav-sitetree");
                     Node node = sitetree.getNode(getRealm(), getPath());
                     if (node.isCollection()) {
                         log.error("DEBUG: Is Collection: " + node.getName());
                     } else if (node.isResource()) {
                         log.error("DEBUG: Is Resource: " + node.getName());
+                        node = node.getParent();
                     } else {
                         log.error("Neither collection nor resource: " + getPath());
                     }
+		    sb.append("Look in: " + node.getPath() + "<br/>");
+                    Node[] children = node.getChildren();
 		    sb.append("<table border=\"1\">");
 		    sb.append("<tr><th align=\"left\">Name</th><th align=\"left\">Resource Type</th></tr>");
-		    sb.append("<tr><td>Collection: foo2</td><td>bar</td></tr>");
-		    sb.append("<tr><td>Collection: foo1</td><td>bar</td></tr>");
-		    sb.append("<tr><td>Resource: foo.html</td><td>Wiki</td></tr>");
+                    for (int i = 0; i < children.length; i++) {
+                        if (children[i].isCollection()) {
+		            sb.append("<tr><td>Collection: "+children[i].getName()+"</td><td>RT</td></tr>");
+                        } else if (children[i].isResource()) {
+		            sb.append("<tr><td>Resource: "+children[i].getName()+"</td><td>RT</td></tr>");
+                        } else {
+		            sb.append("<tr><td>Neither Collection nor Resource: "+children[i].getName()+"</td><td>-</td></tr>");
+                        }
+                    }
 		    sb.append("</table><br/>");
+
+
                     String createName = getRequest().getParameter("create-name");
                     if (createName != null) {
                         sb.append("Name: <input type=\"text\" name=\"create-name\" value=\"" + createName + "\"/>");
@@ -484,12 +494,12 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 for (int i = 0; i < resourceTypeConfigs.length; i++) {
                     try {
                         if (resourceTypeConfigs[i].getAttribute("namespace").equals(resNamespace) && resourceTypeConfigs[i].getAttribute("name").equals(resName)) {
-                            log.error("DEBUG: Resource Type Found: " + resName + ", " + resNamespace);
+                            log.debug("Resource Type Found: " + resName + ", " + resNamespace);
                             Configuration[] propertyConfigs = resourceTypeConfigs[i].getChildren("property");
                             Property[] props = new Property[propertyConfigs.length];
                             for (int k = 0; k < propertyConfigs.length; k++) {
                                 props[k] = new Property(propertyConfigs[k].getAttribute("name"), propertyConfigs[k].getAttribute("value"));
-                                log.error("DEBUG: Property: " + props[k]);
+                                log.debug("Property: " + props[k]);
                             }
                             return props;
                         }
