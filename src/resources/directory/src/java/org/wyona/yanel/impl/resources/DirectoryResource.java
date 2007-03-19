@@ -200,9 +200,7 @@ public class DirectoryResource extends Resource implements ViewableV2 {
      * Get XSLT
      */
     private String[] getXSLTprop() {
-        String xslt = getRTI().getProperty("xslt");
-        if (xslt != null) return xslt.split(",");
-        return null;
+        return getRTI().getProperties("xslt");
     }
 
     /**

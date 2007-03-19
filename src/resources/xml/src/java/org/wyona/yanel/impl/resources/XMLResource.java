@@ -128,7 +128,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 return defaultView;
             }
 
-            String xsltPath = getXSLTPath(getPath());
+            String[] xsltPath = getXSLTPath(getPath());
             if (xsltPath != null) {
                 
                 // create reader:
@@ -138,18 +138,22 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 
                 // create xslt transformer:
                 SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
-                TransformerHandler xsltHandler = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath).getInputStream()));
-                xsltHandler.getTransformer().setParameter("yanel.path.name", PathUtil.getName(getPath()));
-                xsltHandler.getTransformer().setParameter("yanel.path", getPath());
-                xsltHandler.getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
-                xsltHandler.getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
-                String userAgent = getRequest().getHeader("User-Agent");
-                String os = getOS(userAgent);
-                if (os != null) xsltHandler.getTransformer().setParameter("os", os);
-                String client = getClient(userAgent);
-                if (client != null) xsltHandler.getTransformer().setParameter("client", client);
-                xsltHandler.getTransformer().setParameter("language", getLanguage());
-
+                
+                TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPath.length];
+                for (int i = 0; i < xsltPath.length; i++) {
+                    xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath[i]).getInputStream()));
+                    xsltHandlers[i].getTransformer().setParameter("yanel.path.name", PathUtil.getName(getPath()));
+                    xsltHandlers[i].getTransformer().setParameter("yanel.path", getPath());
+                    xsltHandlers[i].getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
+                    xsltHandlers[i].getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
+                    String userAgent = getRequest().getHeader("User-Agent");
+                    String os = getOS(userAgent);
+                    if (os != null) xsltHandlers[i].getTransformer().setParameter("os", os);
+                    String client = getClient(userAgent);
+                    if (client != null) xsltHandlers[i].getTransformer().setParameter("client", client);
+                    xsltHandlers[i].getTransformer().setParameter("language", getLanguage());
+                }
+                
                 // create i18n transformer:
                 I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage());
                 i18nTransformer.setEntityResolver(catalogResolver);
@@ -159,8 +163,11 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 
                 // chain everything together (create a pipeline):
-                xmlReader.setContentHandler(xsltHandler);
-                xsltHandler.setResult(new SAXResult(i18nTransformer));
+                xmlReader.setContentHandler(xsltHandlers[0]);
+                for (int i=0; i<xsltHandlers.length-1; i++) {
+                    xsltHandlers[i].setResult(new SAXResult(xsltHandlers[i+1]));
+                }
+                xsltHandlers[xsltHandlers.length-1].setResult(new SAXResult(i18nTransformer));
                 i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
                 serializer.setOutputStream(baos);
                 
@@ -308,8 +315,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     /**
      * Get XSLT path
      */
-    private String getXSLTPath(String path) throws Exception {
-        String xsltPath = getResourceConfigProperty("xslt");
+    private String[] getXSLTPath(String path) throws Exception {
+        String[] xsltPath = getResourceConfigProperties("xslt");
         if (xsltPath != null) return xsltPath;
         log.info("No XSLT Path within: " + path);
         return null;
@@ -444,15 +451,25 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
             return null;
         }
     }
-
+    
     /**
      * Get property value from resource configuration
      */
     private String getResourceConfigProperty(String name) throws Exception {
-        ResourceConfiguration rc = getConfiguration();
-        if (rc != null) return rc.getProperty(name);
-        return getRTI().getProperty(name);
+    	ResourceConfiguration rc = getConfiguration();
+    	if (rc != null) return rc.getProperty(name);
+    	return getRTI().getProperty(name);
     }
+    
+    /**
+     * Get property value from resource configuration
+     */
+    private String[] getResourceConfigProperties(String name) throws Exception {
+    	ResourceConfiguration rc = getConfiguration();
+    	if (rc != null) return rc.getProperties(name);
+    	return getRTI().getProperties(name);
+    }
+
 
     /**
      *
