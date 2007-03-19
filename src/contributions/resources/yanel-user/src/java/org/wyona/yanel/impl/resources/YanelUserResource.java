@@ -63,6 +63,8 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
     protected static final String WORLD = "world";
 
     protected static final String USER = "user";
+    
+    protected static final String GROUP = "group";
 
     protected static final String PERMISSION_ATTR = "permission";
 
@@ -307,8 +309,8 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
         worldNode.setAttribute(PERMISSION_ATTR, "false");
         child.addChild(worldNode);
 
-        DefaultConfiguration userNode = new DefaultConfiguration(USER);
-        userNode.setAttribute(ID_ATTR, "lenya");
+        DefaultConfiguration userNode = new DefaultConfiguration(GROUP);
+        userNode.setAttribute(ID_ATTR, "admin");
         userNode.setAttribute(PERMISSION_ATTR, "true");
         child.addChild(userNode);
 
@@ -321,8 +323,8 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
         child.setAttribute(ID_ATTR, "open");
         config.addChild(child);
 
-        userNode = new DefaultConfiguration(USER);
-        userNode.setAttribute(ID_ATTR, "lenya");
+        userNode = new DefaultConfiguration(GROUP);
+        userNode.setAttribute(ID_ATTR, "admin");
         userNode.setAttribute(PERMISSION_ATTR, "true");
         child.addChild(userNode);
 
@@ -335,8 +337,8 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
         child.setAttribute(ID_ATTR, "write");
         config.addChild(child);
 
-        userNode = new DefaultConfiguration(USER);
-        userNode.setAttribute(ID_ATTR, "lenya");
+        userNode = new DefaultConfiguration(GROUP);
+        userNode.setAttribute(ID_ATTR, "admin");
         userNode.setAttribute(PERMISSION_ATTR, "true");
         child.addChild(userNode);
 

@@ -389,13 +389,16 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 
         Path pathOfNewResource = null;
         String createName = getRequest().getParameter("create-name");
+        
         if(parent.equals("null")) {
             // if pathOfResourceCreator is ROOT
             pathOfNewResource = new Path("/" + createName);
+        } else if(parent.toString().equals("/")){
+            pathOfNewResource = new Path(parent + createName);
         } else {
-            pathOfNewResource = new Path(parent + "/" + createName);
+            pathOfNewResource = new Path(parent + "/" + createName);            
         }
-
+        
         log.error("DEBUG: Path of new resource: " + pathOfNewResource);
 
         String rtps = getRequest().getParameter("resource-type");
