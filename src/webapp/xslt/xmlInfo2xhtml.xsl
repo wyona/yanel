@@ -35,8 +35,10 @@
             <link rel="stylesheet" href="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-css/global.css" type="text/css"/>
           </head>
           <body>
-
-              <h1>Yanel - 
+        <table cellspacing="0" cellpadding="0" id="bodytable">
+          <tr>
+            <td id="title">
+              Yanel - 
               <xsl:choose>
                 <xsl:when test="/yanel:yanel/yanel:exception/@yanel:status = '404'">
                   <i18n:message key="error404">404</i18n:message>
@@ -48,7 +50,15 @@
                   <i18n:message key="pageInfo">Page Info</i18n:message>
                 </xsl:otherwise>
               </xsl:choose>
-              </h1>
+            </td>
+            <td id="logo">  
+               <img src="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-img/yanel_header.png"/>
+            </td>
+          </tr>
+          <tr>
+            <td width="100%" valign="top"  colspan="2">
+              <div id="content">
+                
 
               <xsl:choose>
                 <xsl:when test="child::node()/yanel:exception">
@@ -75,6 +85,10 @@
 -->
             <xsl:apply-templates select="/yanel:yanel/resource"/>
             <xsl:apply-templates select="child::node()/revisions"/>
+            </div>
+            </td>
+            </tr>
+            </table>
           </body>
         </html>
   </xsl:template>

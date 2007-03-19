@@ -21,36 +21,27 @@
         <link rel="stylesheet" href="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-css/global.css" type="text/css"/>
       </head>
       <body>
-        <h1>Login to realm "<xsl:value-of select="/yanel:yanel/yanel:realm/@yanel:name"/>"</h1>
+        <table cellspacing="0" cellpadding="0" id="bodytable">
+          <tr>
+            <td id="title">
+              Login to realm "<xsl:value-of select="/yanel:yanel/yanel:realm/@yanel:name"/>"
+            </td>
+            <td id="logo">  
+               <img src="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-img/yanel_header.png"/>
+            </td>
+          </tr>
+          <tr>
+            <td width="100%" valign="top"  colspan="2">
+              <div id="content">
+
         <p>Authorization was denied. Please, enter your username and password.</p>
         <xsl:apply-templates select="/yanel:yanel/yanel:message"/>
-        <table>
-          <tr><td>
-            <form method="POST">
-              <p>
-                <table>
-                  <tr>
-                    <td>Username:</td>
-                    <td>&#160;</td>
-                    <td><input type="text" name="yanel.login.username"/></td>
-                  </tr>
-                  <tr>
-                    <td>Password:</td>
-                    <td>&#160;</td>
-                    <td><input type="password" name="yanel.login.password"/></td>
-                  </tr>
-                  <tr>
-                    <td colspan="2">&#160;</td>
-                    <td align="right"><input type="submit" value="Login"/></td>
-                  </tr>
-                </table>
-              </p>
-            </form>
-          </td></tr>
-        </table>
+          <form method="POST">
+            Username:<input type="text" name="yanel.login.username"/>
+            Password:<input type="password" name="yanel.login.password"/>
+            <input type="submit" value="Login"/>
+          </form>
         <xsl:apply-templates select="/yanel:yanel/yanel:ssl"/>
-
-
         <hr/>
         <p>
         <xsl:choose>
@@ -64,6 +55,10 @@
         </p>
         <xsl:apply-templates select="/yanel:yanel/yanel:request"/>
         <xsl:apply-templates select="/yanel:yanel/yanel:realm"/>
+        </div>
+        </td>
+</tr>
+</table>
       </body>
     </html>
   </xsl:template>
@@ -77,16 +72,14 @@
   </xsl:template>
 
   <xsl:template match="yanel:ssl">
-    <li>
       <xsl:choose>
         <xsl:when test="contains(@yanel:status, 'ON')">
-          <p>SSL support is ON</p>
+          <p><img src="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-img/ssl_on.png" alt="ssl on"/> SSL support is ON</p>
         </xsl:when>
         <xsl:otherwise>
-          <h4>Warning: SSL support is OFF. Your username and password will be sent as plain text.</h4>
+          <h4><img src="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-img/ssl_off.png" alt="ssl off"/> Warning: SSL support is OFF. Your username and password will be sent as plain text.</h4>
         </xsl:otherwise>
       </xsl:choose>
-    </li>
   </xsl:template>
 
   <xsl:template match="yanel:realm">
