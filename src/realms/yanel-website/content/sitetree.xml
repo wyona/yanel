@@ -1,6 +1,43 @@
 <?xml version="1.0"?>
 
 <sitetree xmlns="http://www.wyona.org/yanel/1.0">
+
+<node>
+  <name>All You Need</name>
+  <node uuid="about/en.xhtml" href="/en/about.html"><name>About</name></node>
+  <node uuid="" href=""><name>Download</name></node>
+  <node uuid="" href=""><name>Unique Selling Proposition</name></node>
+  <node uuid="" href=""><name>License</name></node>
+  <node uuid="" href=""><name>Getting Started</name></node>
+  <node uuid="" href=""><name>Features</name></node>
+  <node uuid="" href=""><name>News</name></node>
+  <node uuid="" href=""><name>Documentation</name></node>
+</node>
+
+<node>
+  <name>Development/Community</name>
+  <node uuid="" href="">Get the Source</node>
+  <node uuid="" href="">Mailing Lists</node>
+  <node uuid="" href=""></node>
+  <node uuid="" href=""></node>
+  <node uuid="" href=""></node>
+  <node uuid="" href=""></node>
+  <node uuid="" href=""></node>
+  <node uuid="" href=""></node>
+  <node uuid="" href=""></node>
+  <node uuid="" href=""></node>
+</node>
+
+<node>
+  <name>Professional Services</name>
+  <node uuid="professional-services/support/en.xhtml" href="/en/professional-services/support.html">Support</node>
+  <node uuid="" href="">Consulting</node>
+  <node uuid="">Training</node>
+  <node uuid="">Solutions</node>
+  <node uuid="">Contact</node>
+</node>
+
+<!--
 <node href="en">
   <name>English Subtree</name>
   <node href="index.html">About</node>
@@ -19,4 +56,5 @@
   <name>Spanish Subtree</name>
   <node href="acerca.html">Acerca de Yanel</node>
 </node>
+-->
 </sitetree>
