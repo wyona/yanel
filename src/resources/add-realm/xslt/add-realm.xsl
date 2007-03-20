@@ -5,6 +5,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
   xmlns:i18n="http://www.wyona.org/yanel/i18n/1.0"
   xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:yanel="http://www.wyona.org/yanel/1.0"
 >
 
   <xsl:output method="xhtml" encoding="UTF-8"/>
@@ -82,7 +83,7 @@
 <!--
               <form method="post">
                   <table cellpadding="0" cellspacing="0" border="0">
-                    <xsl:apply-templates select="form/inputfields/input"/>
+                    <xsl:apply-templates select="/yanel:form/yanel:inputfields/yanel:input"/>
                   </table>
               </form>
               <br/><br/>
@@ -90,7 +91,7 @@
               
               <form method="post">
                   <table cellpadding="0" cellspacing="0" border="0">
-                    <xsl:for-each select="form/inputfields/input">
+                    <xsl:for-each select="/yanel:form/yanel:inputfields/yanel:input">
                       <div>
                         <xsl:choose>
                           <xsl:when test="position()='1' and $realmid-prop-exists = 'true'">
@@ -227,7 +228,7 @@
                             </xsl:otherwise>
                           </xsl:choose>
                         </td>
-                        <td><xsl:if test="@required = 'true'">*</xsl:if></td>
+                        <td><xsl:if test="@yanel:required = 'true'">*</xsl:if></td>
                         <xsl:choose>
                           <xsl:when test="position()='1' and contains($realmid, 'ERROR:')">
                             <td>
@@ -310,7 +311,7 @@
                       <tr>
                         <td>&#160;</td>
                         <td class="samplevalue">
-                          (i.e. <xsl:value-of select="@samplevalue"/>)
+                          (i.e. <xsl:value-of select="@yanel:samplevalue"/>)
                         </td>
                         <td>&#160;</td>
                       </tr>
@@ -340,9 +341,9 @@
     <xsl:attribute name="style">display:none;</xsl:attribute>
   </xsl:template>
   
-  <xsl:template match="input">
-    <tr><td><i18n:message key="{.}"/>:&#160;</td><td><input type="text" name="{.}"/><xsl:if test="@required='true'">*</xsl:if></td></tr>
-    <tr><td>&#160;</td><td>(i.e. <xsl:value-of select="@samplevalue"/>)</td></tr>
+  <xsl:template match="yanel:input">
+    <tr><td><i18n:message key="{.}"/>:&#160;</td><td><input type="text" name="{.}"/><xsl:if test="@yanel:required='true'">*</xsl:if></td></tr>
+    <tr><td>&#160;</td><td>(i.e. <xsl:value-of select="@yanel:samplevalue"/>)</td></tr>
   </xsl:template>
     
 </xsl:stylesheet>

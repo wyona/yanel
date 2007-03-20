@@ -43,6 +43,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
@@ -53,6 +55,8 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  *
@@ -125,8 +129,8 @@ public class AddRealmResource extends Resource implements ViewableV2 {
             }
             
         	File XSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "add-realm.xsl");
-        	File inputXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "input-screen.xml");
-        	File statusXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "status-screen.xml");
+        	//File inputXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "input-screen.xml");
+        	//File statusXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "status-screen.xml");
             transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(XSLTFile));
             
             // Add HashMap keys with dummy values for form fields
@@ -204,7 +208,10 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                     }
                 }
                 
-                transformer.transform(new javax.xml.transform.stream.StreamSource(statusXMLFile), new StreamResult(byteArrayOutputStream));
+		Document document = getInputDocument();
+                
+                transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
+                //transformer.transform(new javax.xml.transform.stream.StreamSource(statusXMLFile), new StreamResult(byteArrayOutputStream));
             
             } else if (session.getAttribute(SESSION_ATTR_EVENT_LOG) != null) {
             	
@@ -236,7 +243,10 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                         session.removeAttribute(SESSION_ATTR_REALM_NAME);
                     }
                 }
-                transformer.transform(new javax.xml.transform.stream.StreamSource(statusXMLFile), new StreamResult(byteArrayOutputStream));              
+		Document document = getInputDocument();
+                
+                transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
+                //transformer.transform(new javax.xml.transform.stream.StreamSource(statusXMLFile), new StreamResult(byteArrayOutputStream));              
                 
             } else {
             	
@@ -244,8 +254,11 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                     parameterName = (String) keysIterator.next();
                     transformer.setParameter(parameterName, parameters.get(parameterName).toString());
                 }
+
+		Document document = getInputDocument();
                 
-                transformer.transform(new javax.xml.transform.stream.StreamSource(inputXMLFile), new StreamResult(byteArrayOutputStream));
+                transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
+                //transformer.transform(new javax.xml.transform.stream.StreamSource(inputXMLFile), new StreamResult(byteArrayOutputStream));
                 
             }
             
@@ -321,5 +334,61 @@ public class AddRealmResource extends Resource implements ViewableV2 {
      */
     public String getMimeType(String viewId) {
         return "application/xhtml+xml";
+    }
+
+    /**
+     *
+     */
+    public Document getInputDocument() {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        String NAMESPACE = "http://www.wyona.org/yanel/1.0";
+        Document document = null;
+        try {
+            DocumentBuilder parser = dbf.newDocumentBuilder();
+            document = parser.parse(new java.io.StringBufferInputStream("<yanel:form xmlns:yanel=\""+NAMESPACE+"\" xmlns=\""+NAMESPACE+"\"/>"));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+	Element rootElement = document.getDocumentElement();
+	Element inputFieldsElement = (Element) rootElement.appendChild(document.createElementNS(NAMESPACE, "inputfields"));
+
+	Element realmIdFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
+	realmIdFieldElement.setAttributeNS(NAMESPACE, "name", "realmid");
+	realmIdFieldElement.setAttributeNS(NAMESPACE, "required", "true");
+	realmIdFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "my-realm");
+        realmIdFieldElement.appendChild(document.createTextNode("realmid"));
+
+	Element realmNameFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
+	realmNameFieldElement.setAttributeNS(NAMESPACE, "name", "realmname");
+	realmNameFieldElement.setAttributeNS(NAMESPACE, "required", "true");
+	realmNameFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "My Realm");
+        realmNameFieldElement.appendChild(document.createTextNode("realmname"));
+
+	Element urlFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
+	urlFieldElement.setAttributeNS(NAMESPACE, "name", "url");
+	urlFieldElement.setAttributeNS(NAMESPACE, "required", "true");
+	urlFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "http://www.foo.bar");
+        urlFieldElement.appendChild(document.createTextNode("url"));
+
+	Element fsLocationFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
+	fsLocationFieldElement.setAttributeNS(NAMESPACE, "name", "fslocation");
+	fsLocationFieldElement.setAttributeNS(NAMESPACE, "required", "true");
+	fsLocationFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "D:/realms");
+        fsLocationFieldElement.appendChild(document.createTextNode("fslocation"));
+
+	Element crawlDepthFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
+	crawlDepthFieldElement.setAttributeNS(NAMESPACE, "name", "crawldepth");
+	crawlDepthFieldElement.setAttributeNS(NAMESPACE, "required", "true");
+	crawlDepthFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "3");
+        crawlDepthFieldElement.appendChild(document.createTextNode("crawldepth"));
+
+	Element crawlMaxPagesFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
+	crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "name", "crawlmaxpages");
+	crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "required", "true");
+	crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "100");
+        crawlMaxPagesFieldElement.appendChild(document.createTextNode("crawlmaxpages"));
+
+        return document;
     }
 }
