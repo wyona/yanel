@@ -79,6 +79,15 @@
             </xsl:when>
             <xsl:otherwise>
               
+<!--
+              <form method="post">
+                  <table cellpadding="0" cellspacing="0" border="0">
+                    <xsl:apply-templates select="form/inputfields/input"/>
+                  </table>
+              </form>
+              <br/><br/>
+-->
+              
               <form method="post">
                   <table cellpadding="0" cellspacing="0" border="0">
                     <xsl:for-each select="form/inputfields/input">
@@ -327,9 +336,13 @@
     </html>
   </xsl:template>
   
-  
   <xsl:template name="style-display-none">
     <xsl:attribute name="style">display:none;</xsl:attribute>
+  </xsl:template>
+  
+  <xsl:template match="input">
+    <tr><td><i18n:message key="{.}"/>:&#160;</td><td><input type="text" name="{.}"/><xsl:if test="@required='true'">*</xsl:if></td></tr>
+    <tr><td>&#160;</td><td>(i.e. <xsl:value-of select="@samplevalue"/>)</td></tr>
   </xsl:template>
     
 </xsl:stylesheet>
