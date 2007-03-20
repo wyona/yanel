@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form>
   <inputfields>
-    <input required="true" samplevalue="my-realm">realmid</input>
+    <input name="realmid" required="true" samplevalue="my-realm">realmid</input>
     <input required="true" samplevalue="My Realm">realmname</input>
     <input required="true" samplevalue="http://www.foo.bar">url</input>
     <input required="true" samplevalue="D:/realms">fslocation</input>
