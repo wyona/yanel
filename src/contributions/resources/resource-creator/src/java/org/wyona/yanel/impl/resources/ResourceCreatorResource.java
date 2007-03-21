@@ -348,9 +348,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 		    sb.append("<tr><th align=\"left\">Name</th><th align=\"left\">Resource Type</th></tr>");
                     for (int i = 0; i < children.length; i++) {
                         if (children[i].isCollection()) {
-		            sb.append("<tr><td>Collection: "+children[i].getName()+"</td><td>RT</td></tr>");
+		            sb.append("<tr><td>Collection: <a href=\"" + children[i].getName() + "\">" + children[i].getName() + "</a></td><td>TBD</td></tr>");
                         } else if (children[i].isResource()) {
-		            sb.append("<tr><td>Resource: "+children[i].getName()+"</td><td>RT</td></tr>");
+		            sb.append("<tr><td>Resource: "+children[i].getName()+"</td><td>TBD</td></tr>");
                         } else {
 		            sb.append("<tr><td>Neither Collection nor Resource: "+children[i].getName()+"</td><td>-</td></tr>");
                         }
