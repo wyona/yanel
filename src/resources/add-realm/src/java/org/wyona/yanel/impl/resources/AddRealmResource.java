@@ -118,7 +118,7 @@ public class AddRealmResource extends Resource implements ViewableV2 {
 
         try {
             
-        	 // Check if data was sumbitted (realm ID, realm Name, URL to be dumped, depth of crawling, max number of pages)
+             // Check if data was sumbitted (realm ID, realm Name, URL to be dumped, depth of crawling, max number of pages)
             boolean submit = false;
             boolean stop = false;
             Enumeration enumeration = request.getParameterNames();
@@ -128,24 +128,24 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                 if (param.equals("stop")) stop = true;
             }
             
-        	File XSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "add-realm.xsl");
-        	//File inputXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "input-screen.xml");
-        	//File statusXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "status-screen.xml");
+            File XSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "add-realm.xsl");
+            //File inputXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "input-screen.xml");
+            //File statusXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "status-screen.xml");
             transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(XSLTFile));
             
             // Add HashMap keys with dummy values for form fields
             String[] parameterNames = { "realmid", "realmname", "url", "fslocation", "crawldepth", "crawlmaxpages" };
             for (int i=0; i<parameterNames.length; i++) {
-            	String property = getConfiguration().getProperty(parameterNames[i]);
-            	boolean propertyExists = getConfiguration().containsKey(parameterNames[i]);
-            	
-            	if (propertyExists == true) {
-            		parameters.put(parameterNames[i], property);
-            		transformer.setParameter(parameterNames[i] + "-prop-exists", "true");
-            	} else {
-            		parameters.put(parameterNames[i], "");
-            		transformer.setParameter(parameterNames[i] + "-prop-exists", "false");
-        		}
+                String property = getConfiguration().getProperty(parameterNames[i]);
+                boolean propertyExists = getConfiguration().containsKey(parameterNames[i]);
+                
+                if (propertyExists == true) {
+                    parameters.put(parameterNames[i], property);
+                    transformer.setParameter(parameterNames[i] + "-prop-exists", "true");
+                } else {
+                    parameters.put(parameterNames[i], "");
+                    transformer.setParameter(parameterNames[i] + "-prop-exists", "false");
+                }
             }
             
             Set keys = parameters.keySet();
@@ -154,13 +154,13 @@ public class AddRealmResource extends Resource implements ViewableV2 {
             HttpSession session = getRequest().getSession(true); 
             
             if(submit) {
-            	
+                
                 while (keysIterator.hasNext()) {
                     parameterName = (String) keysIterator.next();
                     parameter = HttpServletRequestHelper.getParameter(request, parameterName);
                     
                     if (parameterName == "fslocation" || ("fslocation").equals(parameterName)) {
-                    	parameters.put(parameterName, parameter);
+                        parameters.put(parameterName, parameter);
                         transformer.setParameter(parameterName, parameters.get(parameterName).toString());
                     } else if (parameter == null || ("").equals(parameter)) {
                         parameterErrorName = "error-" + parameterName;
@@ -173,14 +173,14 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                 }
                 
                 if (parameterError == null || ("").equals(parameterError)) {
-                	// Explicitly check whether fslocation is null and set to null (rather than the empty string).
-                	// File() (and copyRealm()) needs null to be passed.
-                	File fslocationValue = null;
-                	if (parameters.get("fslocation").toString() == null || ("").equals(parameters.get("fslocation").toString())) {
-                		fslocationValue = null;
-                	} else {
-                		fslocationValue = new File(parameters.get("fslocation").toString());
-                	}
+                    // Explicitly check whether fslocation is null and set to null (rather than the empty string).
+                    // File() (and copyRealm()) needs null to be passed.
+                    File fslocationValue = null;
+                    if (parameters.get("fslocation").toString() == null || ("").equals(parameters.get("fslocation").toString())) {
+                        fslocationValue = null;
+                    } else {
+                        fslocationValue = new File(parameters.get("fslocation").toString());
+                    }
                     getYanel().getRealmConfiguration().copyRealm("from-scratch-realm-template", 
                             parameters.get("realmid").toString(), 
                             parameters.get("realmname").toString(),
@@ -208,18 +208,18 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                     }
                 }
                 
-		Document document = getInputDocument();
+                Document document = getInputDocument();
                 
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
                 //transformer.transform(new javax.xml.transform.stream.StreamSource(statusXMLFile), new StreamResult(byteArrayOutputStream));
             
             } else if (session.getAttribute(SESSION_ATTR_EVENT_LOG) != null) {
-            	
+                
                 // the crawler is running
-            	if (stop) {
-            	    DumpingCrawler crawler = (DumpingCrawler)session.getAttribute(SESSION_ATTR_CRAWLER);
-            	    if (crawler != null) {
-            	        crawler.stop();
+                if (stop) {
+                    DumpingCrawler crawler = (DumpingCrawler)session.getAttribute(SESSION_ATTR_CRAWLER);
+                    if (crawler != null) {
+                        crawler.stop();
                     }
                 }
 
@@ -243,19 +243,19 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                         session.removeAttribute(SESSION_ATTR_REALM_NAME);
                     }
                 }
-		Document document = getInputDocument();
+                Document document = getInputDocument();
                 
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
                 //transformer.transform(new javax.xml.transform.stream.StreamSource(statusXMLFile), new StreamResult(byteArrayOutputStream));              
                 
             } else {
-            	
+                
                 while (keysIterator.hasNext()) {
                     parameterName = (String) keysIterator.next();
                     transformer.setParameter(parameterName, parameters.get(parameterName).toString());
                 }
 
-		Document document = getInputDocument();
+                Document document = getInputDocument();
                 
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
                 //transformer.transform(new javax.xml.transform.stream.StreamSource(inputXMLFile), new StreamResult(byteArrayOutputStream));
@@ -350,43 +350,43 @@ public class AddRealmResource extends Resource implements ViewableV2 {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-	Element rootElement = document.getDocumentElement();
-	Element inputFieldsElement = (Element) rootElement.appendChild(document.createElementNS(NAMESPACE, "inputfields"));
+        Element rootElement = document.getDocumentElement();
+        Element inputFieldsElement = (Element) rootElement.appendChild(document.createElementNS(NAMESPACE, "inputfields"));
 
-	Element realmIdFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
-	realmIdFieldElement.setAttributeNS(NAMESPACE, "name", "realmid");
-	realmIdFieldElement.setAttributeNS(NAMESPACE, "required", "true");
-	realmIdFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "my-realm");
+        Element realmIdFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
+        realmIdFieldElement.setAttributeNS(NAMESPACE, "name", "realmid");
+        realmIdFieldElement.setAttributeNS(NAMESPACE, "required", "true");
+        realmIdFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "my-realm");
         realmIdFieldElement.appendChild(document.createTextNode("realmid"));
 
-	Element realmNameFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
-	realmNameFieldElement.setAttributeNS(NAMESPACE, "name", "realmname");
-	realmNameFieldElement.setAttributeNS(NAMESPACE, "required", "true");
-	realmNameFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "My Realm");
+        Element realmNameFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
+        realmNameFieldElement.setAttributeNS(NAMESPACE, "name", "realmname");
+        realmNameFieldElement.setAttributeNS(NAMESPACE, "required", "true");
+        realmNameFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "My Realm");
         realmNameFieldElement.appendChild(document.createTextNode("realmname"));
 
-	Element urlFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
-	urlFieldElement.setAttributeNS(NAMESPACE, "name", "url");
-	urlFieldElement.setAttributeNS(NAMESPACE, "required", "true");
-	urlFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "http://www.foo.bar");
+        Element urlFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
+        urlFieldElement.setAttributeNS(NAMESPACE, "name", "url");
+        urlFieldElement.setAttributeNS(NAMESPACE, "required", "true");
+        urlFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "http://www.foo.bar");
         urlFieldElement.appendChild(document.createTextNode("url"));
 
-	Element fsLocationFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
-	fsLocationFieldElement.setAttributeNS(NAMESPACE, "name", "fslocation");
-	fsLocationFieldElement.setAttributeNS(NAMESPACE, "required", "true");
-	fsLocationFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "D:/realms");
+        Element fsLocationFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
+        fsLocationFieldElement.setAttributeNS(NAMESPACE, "name", "fslocation");
+        fsLocationFieldElement.setAttributeNS(NAMESPACE, "required", "true");
+        fsLocationFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "D:/realms");
         fsLocationFieldElement.appendChild(document.createTextNode("fslocation"));
 
-	Element crawlDepthFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
-	crawlDepthFieldElement.setAttributeNS(NAMESPACE, "name", "crawldepth");
-	crawlDepthFieldElement.setAttributeNS(NAMESPACE, "required", "true");
-	crawlDepthFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "3");
+        Element crawlDepthFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
+        crawlDepthFieldElement.setAttributeNS(NAMESPACE, "name", "crawldepth");
+        crawlDepthFieldElement.setAttributeNS(NAMESPACE, "required", "true");
+        crawlDepthFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "3");
         crawlDepthFieldElement.appendChild(document.createTextNode("crawldepth"));
 
-	Element crawlMaxPagesFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
-	crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "name", "crawlmaxpages");
-	crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "required", "true");
-	crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "100");
+        Element crawlMaxPagesFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
+        crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "name", "crawlmaxpages");
+        crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "required", "true");
+        crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "100");
         crawlMaxPagesFieldElement.appendChild(document.createTextNode("crawlmaxpages"));
 
         return document;
