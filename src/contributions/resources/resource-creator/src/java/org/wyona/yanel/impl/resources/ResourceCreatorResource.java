@@ -331,7 +331,6 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     //sb.append("<br/><br/><input type=\"submit\" value=\"Save As\" name=\"save-as\"/>");
 
                     // TODO: Display repository navigation of this path ...
-		    sb.append("<br/><br/>Save as:<br/>");
                     Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("nav-sitetree");
                     Node node = sitetree.getNode(getRealm(), getPath());
                     if (node.isCollection()) {
@@ -342,34 +341,43 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     } else {
                         log.error("Neither collection nor resource: " + getPath());
                     }
-		    sb.append("Look in: " + node.getPath() + "<br/>");
-                    Node[] children = node.getChildren();
-		    sb.append("<table border=\"1\">");
+
+		    sb.append("<br/><br/>");
+
+
+		    sb.append("<table border=\"1\"><tr><td colspan=\"2\">Save as:</td></tr>");
+		    sb.append("<tr><td>Look in: " + node.getPath() + "&#160;&#160;&#160;</td><td>Create new folder: <input type=\"text\" name=\"create-new-folder\"/><input type=\"submit\" value=\"Create\"/></td></tr>");
+
+		    sb.append("<tr><td colspan=\"2\"><table border=\"1\" width=\"100%\">");
 		    sb.append("<tr><th align=\"left\">Name</th><th align=\"left\">Resource Type</th></tr>");
+                    Node[] children = node.getChildren();
                     for (int i = 0; i < children.length; i++) {
                         if (children[i].isCollection()) {
-		            sb.append("<tr><td>Collection: <a href=\"" + children[i].getName() + "\">" + children[i].getName() + "</a></td><td>TBD</td></tr>");
+		            sb.append("<tr><td>Collection: <a href=\"?lookin=" + node.getPath() + children[i].getName() + "/\">" + children[i].getName() + "</a></td><td>TBD</td></tr>");
                         } else if (children[i].isResource()) {
 		            sb.append("<tr><td>Resource: "+children[i].getName()+"</td><td>TBD</td></tr>");
                         } else {
 		            sb.append("<tr><td>Neither Collection nor Resource: "+children[i].getName()+"</td><td>-</td></tr>");
                         }
                     }
-		    sb.append("</table><br/>");
+		    sb.append("</table></td></tr>");
 
-
+		    sb.append("<tr><td colspan=\"2\">");
                     String createName = getRequest().getParameter("create-name");
                     if (createName != null) {
                         sb.append("Name: <input type=\"text\" name=\"create-name\" value=\"" + createName + "\"/>");
                     } else {
                         sb.append("Name: <input type=\"text\" name=\"create-name\"/>");
                     }
+		    sb.append("</td></tr>");
 
-                    // TODO: Display realm navigation (sitetree, topic map, ...)
 
-                    sb.append("<br/><input type=\"submit\" value=\"Save\" name=\"save\"/>");
+                    sb.append("<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Save\" name=\"save\"/></td></tr>");
+		    sb.append("</table>");
 
                     sb.append("</form>");
+
+                    // TODO: Display realm navigation (sitetree, topic map, ...) resp. introduce another step
                 }
             }
         } catch (Exception e) {
