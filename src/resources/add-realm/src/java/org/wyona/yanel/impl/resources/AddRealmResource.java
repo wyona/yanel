@@ -21,6 +21,7 @@ import org.wyona.yanel.core.util.PathUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lenya.search.crawler.DumpingCrawler;
+import websphinx.DownloadParameters;
 import org.apache.log4j.Category;
 
 import java.io.BufferedReader;
@@ -134,7 +135,7 @@ public class AddRealmResource extends Resource implements ViewableV2 {
             transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(XSLTFile));
             
             // Add HashMap keys with dummy values for form fields
-            String[] parameterNames = { "realmid", "realmname", "url", "fslocation", "crawldepth", "crawlmaxpages" };
+            String[] parameterNames = { "realmid", "realmname", "url", "fslocation", "crawldepth", "crawlmaxpages", "scope" };
             for (int i=0; i<parameterNames.length; i++) {
                 String property = getConfiguration().getProperty(parameterNames[i]);
                 boolean propertyExists = getConfiguration().containsKey(parameterNames[i]);
@@ -159,7 +160,7 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                     parameterName = (String) keysIterator.next();
                     parameter = HttpServletRequestHelper.getParameter(request, parameterName);
                     
-                    if (parameterName == "fslocation" || ("fslocation").equals(parameterName)) {
+                    if (parameterName.equals("fslocation") || parameterName.equals("scope")) {
                         parameters.put(parameterName, parameter);
                         transformer.setParameter(parameterName, parameters.get(parameterName).toString());
                     } else if (parameter == null || ("").equals(parameter)) {
@@ -193,9 +194,10 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                     if (crawlStartURL != null && crawlStartURL.length() > 0) {
                         int maxPages = Integer.parseInt((String)parameters.get("crawlmaxpages"));
                         int maxDepth = Integer.parseInt((String)parameters.get("crawldepth"));
+                        String crawlScopeURL = (String)parameters.get("scope");
                         String realmID = parameters.get("realmid").toString();
                         
-                        importSite(crawlStartURL, maxPages, maxDepth, realmID);
+                        importSite(crawlStartURL, crawlScopeURL, maxPages, maxDepth, realmID);
                         
                         EventLog eventLog = (EventLog)session.getAttribute(SESSION_ATTR_EVENT_LOG);
                         if (eventLog != null) {
@@ -278,23 +280,35 @@ public class AddRealmResource extends Resource implements ViewableV2 {
     /**
      * Crawls and external site and imports it into a realm.
      * @param crawlStartURL
+     * @param crawlScopeURL comma-separated list of scope urls
      * @param maxPages
      * @param maxDepth
      * @param realmID
      * @throws Exception
      */
-    protected void importSite(String crawlStartURL, int maxPages, int maxDepth, String realmID) throws Exception {
-        String crawlScopeURL = crawlStartURL; 
-        URL url = new URL(crawlStartURL);
-        String path = url.getPath();
-        if (path.length() != 0 && !path.endsWith("/") && path.indexOf("/") > -1) {
-            crawlScopeURL = crawlStartURL.substring(0, crawlStartURL.lastIndexOf("/"));
+    protected void importSite(String crawlStartURL, String crawlScopeURL, int maxPages, int maxDepth, String realmID) throws Exception {
+        String[] crawlScopeURLs = null;
+        if (crawlScopeURL == null || crawlScopeURL.length() == 0) {
+            String path = new URL(crawlStartURL).getPath();
+            crawlScopeURLs = new String[1];
+            if (path.length() != 0 && !path.endsWith("/") && path.indexOf("/") > -1) {
+                crawlScopeURLs[0] = crawlStartURL.substring(0, crawlStartURL.lastIndexOf("/"));
+            } else {
+                crawlScopeURLs[0] = crawlStartURL;
+            }
+        } else {
+            crawlScopeURLs = crawlScopeURL.split(",");
         }
         
         String dumpDir = System.getProperty("java.io.tmpdir") + File.separator + "import_" + System.currentTimeMillis();
-        DumpingCrawler crawler = new DumpingCrawler(crawlStartURL, crawlScopeURL, dumpDir);
+        DumpingCrawler crawler = new DumpingCrawler(crawlStartURL, crawlScopeURLs, dumpDir);
         crawler.setMaxPages(maxPages);
         crawler.setMaxDepth(maxDepth);
+        
+        DownloadParameters downloadParams = new DownloadParameters();
+        downloadParams = downloadParams.changeMaxPageSize(-1);
+        crawler.setDownloadParameters(downloadParams);
+        
         
         EventLog eventLog = new EventLog();
         crawler.addLinkListener(eventLog);
@@ -388,6 +402,12 @@ public class AddRealmResource extends Resource implements ViewableV2 {
         crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "required", "true");
         crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "100");
         crawlMaxPagesFieldElement.appendChild(document.createTextNode("crawlmaxpages"));
+
+        Element scopeFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
+        scopeFieldElement.setAttributeNS(NAMESPACE, "name", "scope");
+        scopeFieldElement.setAttributeNS(NAMESPACE, "required", "false");
+        scopeFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "http://www.foo.bar");
+        scopeFieldElement.appendChild(document.createTextNode("scope"));
 
         return document;
     }

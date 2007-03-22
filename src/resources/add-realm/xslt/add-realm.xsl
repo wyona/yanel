@@ -15,6 +15,7 @@
   <xsl:param name="realmid" select="''" />
   <xsl:param name="realmname" select="''" />
   <xsl:param name="url" select="''" />
+  <xsl:param name="scope" select="''" />
   <xsl:param name="fslocation" select="''" />
   <xsl:param name="crawldepth" select="''" />
   <xsl:param name="crawlmaxpages" select="''" />
@@ -22,6 +23,7 @@
   <xsl:param name="realmid-prop-exists" select="''" />
   <xsl:param name="realmname-prop-exists" select="''" />
   <xsl:param name="url-prop-exists" select="''" />
+  <xsl:param name="scope-prop-exists" select="''" />
   <xsl:param name="fslocation-prop-exists" select="''" />
   <xsl:param name="crawldepth-prop-exists" select="''" />
   <xsl:param name="crawlmaxpages-prop-exists" select="''" />
@@ -112,6 +114,9 @@
                           <xsl:when test="position()='6' and $crawlmaxpages-prop-exists = 'true'">
                             <xsl:call-template name="style-display-none"/>
                           </xsl:when>
+                          <xsl:when test="position()='7' and $scope-prop-exists = 'true'">
+                            <xsl:call-template name="style-display-none"/>
+                          </xsl:when>
                           <xsl:otherwise/>
                         </xsl:choose>
                         
@@ -143,6 +148,9 @@
                                 </xsl:when>
                                 <xsl:when test="position()='6' and not(contains($crawlmaxpages, 'ERROR:'))">
                                   <xsl:attribute name="value"><xsl:value-of select="$crawlmaxpages" /></xsl:attribute>
+                                </xsl:when>
+                                <xsl:when test="position()='7' and not(contains($scope, 'ERROR:'))">
+                                  <xsl:attribute name="value"><xsl:value-of select="$scope" /></xsl:attribute>
                                 </xsl:when>
                                 <xsl:otherwise>
                                   <xsl:attribute name="value"></xsl:attribute>
@@ -213,6 +221,17 @@
                                   <xsl:attribute name="value"><xsl:value-of select="$crawlmaxpages" /></xsl:attribute>
                                   <xsl:choose>
                                     <xsl:when test="$crawlmaxpages-prop-exists != 'false'">
+                                      <xsl:attribute name="type">hidden</xsl:attribute>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                      <xsl:attribute name="type">text</xsl:attribute>
+                                    </xsl:otherwise>
+                                  </xsl:choose>
+                                </xsl:when>
+                                <xsl:when test="position()='7'">
+                                  <xsl:attribute name="value"><xsl:value-of select="$scope" /></xsl:attribute>
+                                  <xsl:choose>
+                                    <xsl:when test="$scope-prop-exists != 'false'">
                                       <xsl:attribute name="type">hidden</xsl:attribute>
                                     </xsl:when>
                                     <xsl:otherwise>
@@ -291,6 +310,17 @@
                                 <i18n:message>
                                   <xsl:attribute name="key">
                                     <xsl:value-of select="substring-after($crawlmaxpages, 'ERROR:')"/>
+                                  </xsl:attribute>
+                                </i18n:message>
+                              </font>
+                            </td>
+                          </xsl:when>
+                          <xsl:when test="position()='7' and contains($scope, 'ERROR:')">
+                            <td>
+                              &#160;<font color="red">
+                                <i18n:message>
+                                  <xsl:attribute name="key">
+                                    <xsl:value-of select="substring-after($scope, 'ERROR:')"/>
                                   </xsl:attribute>
                                 </i18n:message>
                               </font>
