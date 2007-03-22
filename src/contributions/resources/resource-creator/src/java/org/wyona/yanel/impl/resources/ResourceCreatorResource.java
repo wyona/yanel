@@ -294,9 +294,10 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                         sb.append("<p>No resource specific properties!</p>");
                     }
 
-                    if (propertyNames != null) {
+                    if (propertyNames != null && propertyNames.length > 0) {
+                        sb.append("<table border=\"1\">");
                         for (int i = 0; i < propertyNames.length; i++) {
-                            sb.append(propertyNames[i] + ": ");
+                            sb.append("<tr><td>" + propertyNames[i] + ":&#160;&#160;&#160;</td><td>");
                             String propertyType = ((CreatableV2) resource).getPropertyType(propertyNames[i]);
                             if (propertyType != null && propertyType.equals(CreatableV2.TYPE_UPLOAD)) {
                                 sb.append("<input type=\"file\" name=\"rp." + propertyNames[i] + "\"/><br/>");
@@ -319,7 +320,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                                     sb.append("<input name=\"rp." + propertyNames[i] + "\" value=\"" + value + "\" size=\"60\"/><br/>");
                                 }
                             }
+                            sb.append("</td></tr>");
                         }
+                        sb.append("</table>");
                     }
                     if (defaultProperties != null) {
                         for (int i = 0; i < defaultProperties.length; i++) {
@@ -346,7 +349,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 
 
 		    sb.append("<table border=\"1\"><tr><td colspan=\"2\">Save as:</td></tr>");
-		    sb.append("<tr><td>Look in: " + node.getPath() + "&#160;&#160;&#160;</td><td>Create new folder: <input type=\"text\" name=\"create-new-folder\"/><input type=\"submit\" value=\"Create\"/></td></tr>");
+		    sb.append("<tr><td>Look in: " + node.getPath() + "&#160;&#160;&#160;</td><td>New folder: <input type=\"text\" name=\"create-new-folder\"/><input type=\"submit\" value=\"Create new folder\"/></td></tr>");
 
 		    sb.append("<tr><td colspan=\"2\"><table border=\"1\" width=\"100%\">");
 		    sb.append("<tr><th align=\"left\">Name</th><th align=\"left\">Resource Type</th></tr>");
@@ -365,14 +368,14 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 		    sb.append("<tr><td colspan=\"2\">");
                     String createName = getRequest().getParameter("create-name");
                     if (createName != null) {
-                        sb.append("Name: <input type=\"text\" name=\"create-name\" value=\"" + createName + "\"/>");
+                        sb.append("New name: <input type=\"text\" name=\"create-name\" value=\"" + createName + "\"/>");
                     } else {
-                        sb.append("Name: <input type=\"text\" name=\"create-name\"/>");
+                        sb.append("New name: <input type=\"text\" name=\"create-name\"/>");
                     }
 		    sb.append("</td></tr>");
 
 
-                    sb.append("<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Save\" name=\"save\"/></td></tr>");
+                    sb.append("<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Save new resource\" name=\"save\"/></td></tr>");
 		    sb.append("</table>");
 
                     sb.append("</form>");
@@ -449,10 +452,14 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 
         org.wyona.yarep.core.Repository rcRepo = newResource.getRealm().getRTIRepository();
         org.wyona.commons.io.Path newRCPath = new org.wyona.commons.io.Path(PathUtil.getRCPath(newResource.getPath()));
-        if (rcRepo.existsNode(newRCPath.toString())) {
+        log.error("DEBUG: " + newRCPath);
+        if (!rcRepo.existsNode(newRCPath.toString())) {
             // TODO: create node recursively ...
             rcRepo.getRootNode().addNode(newRCPath.getName(), org.wyona.yarep.core.NodeType.RESOURCE);
 	    log.warn("Node has been created: " + newRCPath);
+        } else {
+	    log.error("Node already exists: " + newRCPath);
+            // TODO: Abort ...!
         }
         java.io.Writer writer = new java.io.OutputStreamWriter(rcRepo.getNode(newRCPath.toString()).getOutputStream());
         writer.write(rcContent.toString());
