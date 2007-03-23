@@ -40,18 +40,23 @@ public class ImportSiteThread extends Thread {
     private DumpingCrawler crawler;
     private String dumpDir;
     private String crawlStartURL;
+    private String[] crawlScopeURLs;
     private Realm realm;
+    private EventLog eventLog;
     
     private HashMap mimeTypeMap;
     private HashMap encodingMap;
     
-    public ImportSiteThread(DumpingCrawler crawler, Realm realm, String dumpDir, String crawlStartURL) {
+    public ImportSiteThread(DumpingCrawler crawler, Realm realm, String dumpDir, 
+            String crawlStartURL, String[] crawlScopeURLs, EventLog eventLog) {
         this.crawler = crawler;
         this.realm = realm;
         this.dumpDir = dumpDir;
         this.crawlStartURL = crawlStartURL;
+        this.crawlScopeURLs = crawlScopeURLs;
         this.mimeTypeMap = new HashMap();
         this.encodingMap = new HashMap();
+        this.eventLog = eventLog;
     }
     
     public void run() {
@@ -70,8 +75,10 @@ public class ImportSiteThread extends Thread {
             // remove temp dump dir
             FileUtils.deleteDirectory(new File(dumpDir));
             
-            fixRootNode(crawlStartURL, root);
+            fixRootNode(crawlStartURL, crawlScopeURLs[0], root);
             addResourceConfiguration(realm.getRTIRepository());
+            
+            eventLog.importFinished();
         } catch (Exception e) {
             log.error(e, e);
             throw new RuntimeException(e.toString(), e);
@@ -237,16 +244,18 @@ public class ImportSiteThread extends Thread {
      * @param root
      * @throws RepositoryException 
      */
-    protected void fixRootNode(String crawlStartURL, Node root) {
+    protected void fixRootNode(String crawlStartURL, String crawlScopeURL, Node root) {
         try {
             URL url = new URL(crawlStartURL);
             String path = url.getPath();
-            String crawlRoot = null;
+            String crawlRoot = crawlStartURL.substring(crawlScopeURL.length());
             if (path.length() == 0 || path.endsWith("/")) {
                 crawlRoot = "index.html";
-            } else if (path.indexOf("/") > -1) {
-                crawlRoot = path.substring(path.lastIndexOf("/") + 1);
             }
+            if (crawlRoot.startsWith("/")) {
+                crawlRoot = crawlRoot.substring(1);
+            }
+            
             log.debug("crawlRoot: " + crawlRoot);
             if (crawlRoot != null && root.hasNode(crawlRoot)) {
                 PrintWriter writer = new PrintWriter(new OutputStreamWriter(root.getOutputStream()));
@@ -259,6 +268,8 @@ public class ImportSiteThread extends Thread {
                 writer.println("</html>");
                 writer.flush();
                 writer.close();
+            } else {
+                log.error("crawl root node " + crawlRoot + " does not exist");
             }
         } catch (Exception e) {
             log.error(e, e);

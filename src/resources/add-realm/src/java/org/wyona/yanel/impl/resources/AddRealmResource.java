@@ -323,7 +323,8 @@ public class AddRealmResource extends Resource implements ViewableV2 {
         session.setAttribute(SESSION_ATTR_REALM_NAME, realm.getName());
         
         // start crawler in new thread to be able to show progress:
-        ImportSiteThread thread = new ImportSiteThread(crawler, realm, dumpDir, crawlStartURL);
+        ImportSiteThread thread = new ImportSiteThread(crawler, realm, dumpDir, crawlStartURL, 
+                crawlScopeURLs, eventLog);
         thread.start();
     }
     

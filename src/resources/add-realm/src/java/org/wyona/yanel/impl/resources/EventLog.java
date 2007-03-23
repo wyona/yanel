@@ -32,10 +32,19 @@ public class EventLog implements LinkListener, CrawlListener, Serializable {
      */
     public void crawled (LinkEvent event) {
         if (event.getID() == LinkEvent.DOWNLOADED) {
-            this.downloadEvents.add(event);
+            this.downloadEvents.add(createEventDescription(event));
         } else if (event.getID() == LinkEvent.ERROR) {
-            this.errorEvents.add(event);
+            this.errorEvents.add(createEventDescription(event));
         }
+    }
+    
+    private String createEventDescription(LinkEvent event) {
+        String desc = event.toString().replaceAll(">", "&gt;");
+        desc = desc.replaceAll("<", "&lt;");
+        desc = desc.replaceAll("'", "&apos;");
+        desc = desc.replaceAll("\"", "&quot;");
+        desc = desc.replaceAll("&", "&amp;");
+        return desc;
     }
     
     /**
@@ -45,13 +54,7 @@ public class EventLog implements LinkListener, CrawlListener, Serializable {
     public String getDownloadEvents() {
         StringBuffer buf = new StringBuffer();
         for (int i=0; i<this.downloadEvents.size(); i++) {
-            LinkEvent event = (LinkEvent)this.downloadEvents.get(i);
-            String desc = event.toString().replaceAll(">", "&gt;");
-            desc = desc.replaceAll("<", "&lt;");
-            desc = desc.replaceAll("'", "&apos;");
-            desc = desc.replaceAll("\"", "&quot;");
-            desc = desc.replaceAll("&", "&amp;");
-            buf.append(desc + "\n");
+            buf.append(this.downloadEvents.get(i) + "\n");
         }
         return buf.toString();
     }
@@ -86,10 +89,13 @@ public class EventLog implements LinkListener, CrawlListener, Serializable {
     }
 
     public void stopped(CrawlEvent event) {
-        this.isDone = true;
     }
 
     public void timedOut(CrawlEvent event) {
+    }
+    
+    public void importFinished() {
+        this.isDone = true;
     }
     
     public boolean isDone() {
