@@ -31,4 +31,10 @@ PATH=$PWD/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 # ----- Build Yanel
 #mvn --version
 ant -version
+# One might want to use the option "-f" for building resources, e.g. "./build.sh -f src/resources/xml/build.xml" instead having to build everything
+if [ "$1" = "-f" ];then
+  ant -f $2
+  exit 0
+fi
+# Build everything by default
 ant -f src/build/build.xml "$@"
