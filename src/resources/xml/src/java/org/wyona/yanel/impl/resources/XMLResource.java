@@ -157,7 +157,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 }
                 
                 // create i18n transformer:
-                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage());
+                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage(), getRealm().getDefaultLanguage());
                 i18nTransformer.setEntityResolver(catalogResolver);
                 
                 // create xinclude transformer:
@@ -206,7 +206,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
             language = getRequest().getParameter("Accept-Language");
         }
         if(language != null && language.length() > 0) return language;
-        return "en";
+        return getRealm().getDefaultLanguage();
     }
 
 

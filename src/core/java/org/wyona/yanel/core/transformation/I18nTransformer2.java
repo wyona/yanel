@@ -4,11 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.MissingResourceException;
 
 import org.apache.log4j.Category;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
+
 
 /**
  * Transformer to translate content to a certain language using a message catalogue. 
@@ -42,9 +44,14 @@ public class I18nTransformer2 extends AbstractTransformer {
 
     public static final String NS_URI = "http://www.wyona.org/yanel/i18n/1.0";
     
-    public I18nTransformer2(String messages, String language) {
-        currentLocale = new Locale(language);
-        messageBundle = ResourceBundle.getBundle(messages, currentLocale);
+    public I18nTransformer2(String messages, String language, String defaultLanguage) {
+        try {
+            currentLocale = new Locale(language);
+            messageBundle = ResourceBundle.getBundle(messages, currentLocale);
+        } catch (MissingResourceException e) {
+            currentLocale = new Locale(defaultLanguage);
+            messageBundle = ResourceBundle.getBundle(messages, currentLocale);
+        } 
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes attrs) throws SAXException {

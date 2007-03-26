@@ -31,6 +31,7 @@ public class Realm {
     private String name;
     private String id;
     private String mountPoint;
+    private String defaultLanguage;
     private Repository repository;
     private Repository rtiRepository;
     private PolicyManager policyManager;
@@ -162,6 +163,14 @@ public class Realm {
 
     public void setPolicyManager(PolicyManager policyManager) {
         this.policyManager = policyManager;
+    }
+
+    public String getDefaultLanguage() {
+        return defaultLanguage;
+    }
+
+    public void setDefaultLanguage(String language) {
+        this.defaultLanguage = language;
     }
 
 }

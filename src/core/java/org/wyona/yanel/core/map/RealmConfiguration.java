@@ -229,6 +229,16 @@ public class RealmConfiguration {
                         realm.setIdentityManager(identityManager);
                     }
                     
+                    repoConfigElement = realmConfig.getChild("default-language", false);
+                    if (repoConfigElement != null) {                       
+                        realm.setDefaultLanguage(repoConfigElement.getValue());
+                    } else {
+                        //Maintain backwards compatibility with realms
+                        realm.setDefaultLanguage("en");
+                    }
+                    
+                    
+                    
                     log.info("Realm: " + realm);
                     
                     hm.put(realmId, realm);

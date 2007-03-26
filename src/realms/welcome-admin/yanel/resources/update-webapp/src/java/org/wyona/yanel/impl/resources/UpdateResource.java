@@ -54,13 +54,14 @@ import com.hp.hpl.jena.rdf.model.*;
 public class UpdateResource extends Resource implements ViewableV2 {
 
     private static Category log = Category.getInstance(UpdateResource.class);
-    private String defaultLanguage = "en";
+    private String defaultLanguage;
     private String language = null;
     
     /**
      * 
      */
     public UpdateResource() {
+        defaultLanguage = getRealm().getDefaultLanguage();
     }
 
     /**
@@ -90,7 +91,7 @@ public class UpdateResource extends Resource implements ViewableV2 {
         }
 
         Transformer transformer = null;
-        I18nTransformer i18nTransformer = new I18nTransformer("update", language);
+        I18nTransformer i18nTransformer = new I18nTransformer("update", language, defaultLanguage);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         View defaultView = new View();
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();

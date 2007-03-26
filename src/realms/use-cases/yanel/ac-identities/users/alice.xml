@@ -2,5 +2,6 @@
 <user id="alice">
 <name>Michael Wechner</name>
 <email>michi@wyona.org</email>
-<password>e94ef563867e9c9df3fcc999bdb045f5</password>
+<password>9c62a68af3b80523ef2ffc8cb3eb9fb8</password>
+<salt>9a74c27e6cc2303e</salt>
 </user>

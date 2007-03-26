@@ -65,8 +65,6 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
     private HashMap properties = new HashMap();
     private final String DEFAULT_WIKI_PARSER_BEAN_ID = "jspWikiParser";
     
-    private String language = "en";
-    
     /**
      * 
      */
@@ -154,7 +152,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
             }
 
             inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-            I18nTransformer i18nTransformer = new I18nTransformer("global", language);
+            I18nTransformer i18nTransformer = new I18nTransformer("global", getRealm().getDefaultLanguage(), getRealm().getDefaultLanguage());
             saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(inputStream, i18nTransformer);
 
@@ -170,15 +168,15 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
      * 
      */
     public View getView(HttpServletRequest request, String viewId) {
-        String _language = language;
+        String _language = getRealm().getDefaultLanguage();
         try {
             _language = request.getParameter("yanel.meta.language");
         } catch(Exception e) {
             //use fallback language
-            _language = language;
+            _language = getRealm().getDefaultLanguage();
         }
-        if(_language == null || ("").equals(_language)) _language = language;
-        else language = _language;
+        //if(_language == null || ("").equals(_language)) _language = language;
+        //else language = _language;
         return getView(new Path(request.getServletPath()), viewId);
     }
 

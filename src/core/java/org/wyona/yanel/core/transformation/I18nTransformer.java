@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.MissingResourceException;
 import org.apache.log4j.Category;
 import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
@@ -22,9 +23,15 @@ public class I18nTransformer extends DefaultHandler {
     private String cachedEname;
     private EntityResolver entityResolver;
 
-    public I18nTransformer(String messages, String language) {
-        currentLocale = new Locale(language);
-        messageBundle = ResourceBundle.getBundle(messages, currentLocale);
+    public I18nTransformer(String messages, String language, String defaultLanguage) {
+        try {
+            currentLocale = new Locale(language);
+            messageBundle = ResourceBundle.getBundle(messages, currentLocale);
+        } catch (MissingResourceException e) {
+            currentLocale = new Locale(defaultLanguage);
+            messageBundle = ResourceBundle.getBundle(messages, currentLocale);
+        } 
+        
     }
 
     public void startDocument() throws SAXException {

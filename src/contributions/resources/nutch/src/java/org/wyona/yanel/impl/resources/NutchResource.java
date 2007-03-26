@@ -89,7 +89,6 @@ public class NutchResource extends Resource implements ViewableV1 {
     private long totalHits = 0;
     private String defaultFile = "nutch-default.xml";
     private String localFile = "nutch-local.xml";
-    private String DEFAULT_LANGUAGE = "en";
     private String searchTerm = "";
     private String show = ""; //default is empty, else show either CACHE, EXPLAIN, ANCHORS
     private String resourceBundle = "nutch";
@@ -106,6 +105,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * 
      */
     public NutchResource() {
+        
     }
 
     /**
@@ -119,7 +119,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * 
      */
     public View getView(Path path, String viewId) {
-        return getView(path, viewId, 0, 0, DEFAULT_LANGUAGE);
+        return getView(path, viewId, 0, 0, getRealm().getDefaultLanguage());
     }
 
     /**
@@ -333,7 +333,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 log.debug("Back 2 realm: " + PathUtil.backToRealm(getPath()));
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
                 InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-                i18nTransformer = new I18nTransformer(resourceBundle, language);
+                i18nTransformer = new I18nTransformer(resourceBundle, language, getRealm().getDefaultLanguage());
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 saxParser.parse(inputStream, i18nTransformer);
                 return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm, language);
@@ -370,7 +370,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 transformer.transform(new StreamSource(inputStream), new StreamResult(byteArrayOutputStream));
                 inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
                 log.debug("Language: " + language);
-                i18nTransformer = new I18nTransformer(resourceBundle, language);
+                i18nTransformer = new I18nTransformer(resourceBundle, language, getRealm().getDefaultLanguage());
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 saxParser.parse(inputStream, i18nTransformer);
                 return i18nTransformer.getInputStream(); 
@@ -445,7 +445,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                     "<h3><i18n:message key=\"scoreForQuery\"/>" + query + "</h3>" + 
                     nutchBean.getExplanation(query, hit) + 
                     "</div></body></html>"; 
-            I18nTransformer i18nTransformer = new I18nTransformer(resourceBundle, language);
+            I18nTransformer i18nTransformer = new I18nTransformer(resourceBundle, language, getRealm().getDefaultLanguage());
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new StringBufferInputStream(content), i18nTransformer);
             return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm, language);
@@ -485,7 +485,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             }
             content += "</div></body></html>"; 
             log.debug("content:\n" + content);
-            I18nTransformer i18nTransformer = new I18nTransformer(resourceBundle, language);
+            I18nTransformer i18nTransformer = new I18nTransformer(resourceBundle, language, getRealm().getDefaultLanguage());
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new StringBufferInputStream(content), i18nTransformer);
             return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm, language);
@@ -709,7 +709,7 @@ public class NutchResource extends Resource implements ViewableV1 {
         }
 
         if (language == null) {
-            language = DEFAULT_LANGUAGE;
+            language = getRealm().getDefaultLanguage();
         }
 
         log.debug("Language: " + language);

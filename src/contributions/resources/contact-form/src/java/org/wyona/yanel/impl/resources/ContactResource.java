@@ -152,7 +152,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             transformer.transform(new javax.xml.transform.stream.StreamSource(xmlFile), new StreamResult(byteArrayOutputStream));
             //translate the form
-            i18nTransformer = new I18nTransformer(messageBundle, language);
+            i18nTransformer = new I18nTransformer(messageBundle, language, getRealm().getDefaultLanguage());
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), i18nTransformer);
@@ -165,8 +165,8 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
  
             byteArrayOutputStream = new ByteArrayOutputStream();
             transformer.transform(new StreamSource(i18nTransformer.getInputStream()), new StreamResult(byteArrayOutputStream));
-            //tranlate the page
-            i18nTransformer = new I18nTransformer("global", language);
+            //translate the page
+            i18nTransformer = new I18nTransformer("global", language, getRealm().getDefaultLanguage());
             saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), i18nTransformer);
             

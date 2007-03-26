@@ -1619,7 +1619,7 @@ public class YanelServlet extends HttpServlet {
                 xsltTransformer.getTransformer().setParameter("yanel.reservedPrefix", reservedPrefix);
                 
                 // create i18n transformer:
-                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage(request));
+                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage(request),yanel.getMap().getRealm(request.getServletPath()).getDefaultLanguage());
                 CatalogResolver catalogResolver = new CatalogResolver();
                 i18nTransformer.setEntityResolver(new CatalogResolver());
                 
@@ -1643,7 +1643,7 @@ public class YanelServlet extends HttpServlet {
     /**
      * Get language with the following priorization: 1) yanel.meta.language query string parameter, 2) Accept-Language header, 3) Default en
      */
-    private String getLanguage(HttpServletRequest request) {
+    private String getLanguage(HttpServletRequest request) throws Exception {
         String language = request.getParameter("yanel.meta.language");
         if (language == null) {
             language = request.getHeader("Accept-Language");
@@ -1659,7 +1659,7 @@ public class YanelServlet extends HttpServlet {
             }
         }
         if(language != null && language.length() > 0) return language;
-        return "en";
+        return yanel.getMap().getRealm(request.getServletPath()).getDefaultLanguage();
     }
 
     /**

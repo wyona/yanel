@@ -70,7 +70,7 @@ public class AddRealmResource extends Resource implements ViewableV2 {
     private final static String SESSION_ATTR_REALM_ID = "org.wyona.yanel.addrealm.realm.id";
     private final static String SESSION_ATTR_REALM_NAME = "org.wyona.yanel.addrealm.realm.name";
     
-    private String defaultLanguage = "en";
+    private String defaultLanguage;
     private String language = null;
     private String parameterName = null;
     private String parameter = null;
@@ -83,6 +83,7 @@ public class AddRealmResource extends Resource implements ViewableV2 {
      *
      */
     public AddRealmResource() {
+        defaultLanguage = getRealm().getDefaultLanguage();
     }
 
     /**
@@ -113,7 +114,7 @@ public class AddRealmResource extends Resource implements ViewableV2 {
         }
 
         Transformer transformer = null;
-        I18nTransformer i18nTransformer = new I18nTransformer("add-realm", language);
+        I18nTransformer i18nTransformer = new I18nTransformer("add-realm", language, defaultLanguage);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         View defaultView = new View();
 
