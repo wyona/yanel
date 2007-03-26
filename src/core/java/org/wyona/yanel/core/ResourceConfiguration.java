@@ -132,6 +132,7 @@ public class ResourceConfiguration {
                 	properties.add(props[i].getAttribute("value"));
                 }
             }
+            if (properties.size() < 1) return null; 
             return (String[]) properties.toArray(new String[0]);
         }
         return null;
