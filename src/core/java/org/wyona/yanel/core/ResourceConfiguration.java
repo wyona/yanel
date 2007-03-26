@@ -203,6 +203,12 @@ public class ResourceConfiguration {
         for (int i = 0; i < attrs.length; i++) {
             element.setAttributeNS(config.getNamespace(), attrs[i], config.getAttribute(attrs[i]));
         }
+        // TODO: Does not work for elements with mixed content (text and elements)
+        try {
+            element.appendChild(doc.createTextNode(config.getValue()));
+        } catch(Exception e) {
+            log.debug("No value: " + element.getLocalName());
+        }
         Configuration[] children = config.getChildren();
         if (children.length > 0) {
             for (int i = 0; i < children.length; i++) {
