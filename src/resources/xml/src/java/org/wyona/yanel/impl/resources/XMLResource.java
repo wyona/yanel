@@ -32,8 +32,10 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.wyona.yanel.core.serialization.HTMLSerializer;
 import org.wyona.yanel.core.serialization.SerializerFactory;
+import org.wyona.yanel.core.source.ResourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
+import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
@@ -158,6 +160,11 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage());
                 i18nTransformer.setEntityResolver(catalogResolver);
                 
+                // create xinclude transformer:
+                XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
+                ResourceResolver resolver = new ResourceResolver(this);
+                xIncludeTransformer.setResolver(resolver);
+                
                 // create serializer:
                 Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -167,7 +174,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 for (int i=0; i<xsltHandlers.length-1; i++) {
                     xsltHandlers[i].setResult(new SAXResult(xsltHandlers[i+1]));
                 }
-                xsltHandlers[xsltHandlers.length-1].setResult(new SAXResult(i18nTransformer));
+                xsltHandlers[xsltHandlers.length-1].setResult(new SAXResult(xIncludeTransformer));
+                xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
                 i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
                 serializer.setOutputStream(baos);
                 
