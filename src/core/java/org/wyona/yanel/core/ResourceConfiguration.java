@@ -80,7 +80,7 @@ public class ResourceConfiguration {
      * Get universal name of resource type
      */
     public String getUniversalName() {
-	return "<{" + namespace + "}" + name + "/>";
+        return "<{" + namespace + "}" + name + "/>";
     }
     
     /**
