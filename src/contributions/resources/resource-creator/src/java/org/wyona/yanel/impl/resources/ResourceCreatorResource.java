@@ -123,20 +123,20 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      *
      */
     private void getSelectResourceTypeScreen(StringBuffer sb) {
-        sb.append("<h4>Create resource (step 1)</h4>");
-        sb.append("<h2>Select resource type</h2>");
+        sb.append("<h4>Create new page (step 1)</h4>");
+        sb.append("<h2>Select template (resp. resource type)</h2>");
         sb.append("<form>");
 
         ResourceTypeRegistry rtr = new ResourceTypeRegistry();
 
         ResourceTypeDefinition[] rtds = getResourceTypeDefinitions();
         if (rtds != null) {
-        sb.append("Resource Type: <select name=\"resource-type\">");
+        sb.append("Template (resp. resource type): <select name=\"resource-type\">");
         for (int i = 0; i < rtds.length; i++) {
             try {
                 Resource resource = rtr.newResource(rtds[i].getResourceTypeUniversalName());
                 if (resource != null && ResourceAttributeHelper.hasAttributeImplemented(resource, "Creatable", "2")) {
-                    sb.append("<option value=\"" + rtds[i].getResourceTypeNamespace() + "::" + rtds[i].getResourceTypeLocalName() + "\">" + rtds[i].getResourceTypeLocalName() + "</option>");
+                    sb.append("<option value=\"" + rtds[i].getResourceTypeNamespace() + "::" + rtds[i].getResourceTypeLocalName() + "\">" + getDisplayName(rtds[i].getResourceTypeLocalName(), rtds[i].getResourceTypeNamespace()) + "</option>");
                 } else {
                     log.warn("Resource type: " + rtds[i] + " does not implement CreatableV2 interface!");
                 }
@@ -161,81 +161,10 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     }
 
     /**
-     * OBSOLETE
-     */
-/*
-    private void getSaveAsScreen(StringBuffer sb) {
-        String rtps = getRequest().getParameter("resource-type");
-        String resNamespace = rtps.substring(0, rtps.indexOf("::"));
-        String resName = rtps.substring(rtps.indexOf("::") + 2);
-        ResourceTypeRegistry rtr = new ResourceTypeRegistry();
-
-        String universalName = "<{"+ resNamespace +"}"+ resName +"/>";
-        log.debug("Universal Name: " + universalName);
-        try {
-            Resource resource = rtr.newResource(universalName);
-            if (resource != null) {
-
-        sb.append("<h4>Create resource (step 3)</h4>");
-        sb.append("<h2>Save As</h2>");
-
-        HttpServletRequest request = getRequest();
-        Enumeration parameters = request.getParameterNames();
-        if (parameters.hasMoreElements()) {
-            sb.append("<ul>");
-            while (parameters.hasMoreElements()) {
-                String parameter = (String) parameters.nextElement();
-                if (parameter.indexOf("rp.") == 0) {
-                    sb.append("<li>"+parameter+": "+request.getParameter(parameter)+"</li>");
-                }
-            }
-            sb.append("</ul>");
-        }
-
-        sb.append("<p>");
-        sb.append("<form>");
-        //sb.append("<form method=\"post\" enctype=\"multipart/form-data\">");
-        // TODO: Add this parameter to the continuation within the session!
-        sb.append("<input type=\"hidden\" name=\"resource-type\" value=\""+rtps+"\"/>");
-
-        parameters = request.getParameterNames();
-        while (parameters.hasMoreElements()) {
-            String parameter = (String) parameters.nextElement();
-            if (parameter.indexOf("rp.") == 0) {
-                String propertyType = ((CreatableV2) resource).getPropertyType(parameter.substring(3));
-                if (propertyType != null && propertyType.equals(CreatableV2.TYPE_UPLOAD)) {
-                    sb.append("<input type=\"file\" name=\""+parameter+"\" value=\""+request.getParameter(parameter)+"\"/><br/>");
-		} else if (propertyType != null && propertyType.equals(CreatableV2.TYPE_SELECT)) {
-                    sb.append("<select name=\"parameter\">");
-                    sb.append("</select>");
-                } else {
-                    sb.append("<input type=\"hidden\" name=\""+parameter+"\" value=\""+request.getParameter(parameter)+"\"/>");
-                }
-            }
-        }
-
-        String createName = request.getParameter("create-name");
-        if (createName != null) {
-            sb.append("Name: <input type=\"text\" name=\"create-name\" value=\"" + createName + "\"/>");
-        } else {
-            sb.append("Name: <input type=\"text\" name=\"create-name\"/>");
-        }
-        sb.append("<br/><input type=\"submit\" value=\"Save\" name=\"save\"/>");
-        sb.append("</form>");
-        sb.append("</p>");
-        }
-        } catch (Exception e) {
-            sb.append("<p>Exception: "+e+"</p>");
-            log.error(e);
-        }
-    }
-*/
-
-    /**
      * Save screen
      */
     private void getSaveScreen(StringBuffer sb) {
-        sb.append("<h4>Create resource (step 3)</h4>");
+        sb.append("<h4>Create new page (step 3)</h4>");
 
         try {
             create();
@@ -279,9 +208,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             if (resource != null) {
                 if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Creatable", "2")) {
 
-                    sb.append("<h4>Create resource (step 2)</h4>");
-                    sb.append("<h2>Enter/Select resource specific parameters and \"Save As\"</h2>");
-                    sb.append("<p>Resource Type: " + resName + " ("+resNamespace+")</p>");
+                    sb.append("<h4>Create new page (step 2)</h4>");
+                    sb.append("<h2>Enter/Select template (resp. resource) specific parameters and \"Save As\"</h2>");
+                    sb.append("<p>Template (resp. resource type): " + resName + " ("+resNamespace+")</p>");
                     sb.append("<form>");
                     // TODO: Add this parameter to the continuation within the session!
                     sb.append("<input type=\"hidden\" name=\"resource-type\" value=\"" + rtps + "\"/>");
@@ -529,6 +458,35 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             }
         }
         return null;
+    }
+
+    /**
+     * Get the display name from custom configuration
+     */
+    private String getDisplayName(String resName, String resNamespace) {
+        Document customConfigDoc = getConfiguration().getCustomConfiguration();
+        if (customConfigDoc != null) {
+
+            try {
+                org.jdom.Document jdomDocument = new org.jdom.input.DOMBuilder().build(customConfigDoc);
+                org.jdom.xpath.XPath xpath = org.jdom.xpath.XPath.newInstance("/yanel:custom-config/rc:resource-types/rc:resource-type[@name='" + resName + "']/rc:display-name");
+                xpath.addNamespace("yanel", "http://www.wyona.org/yanel/rti/1.0");
+                xpath.addNamespace("rc", "http://www.wyona.org/yanel/resource/resource-creator/1.0");
+                org.jdom.Element displayNameElement = (org.jdom.Element) xpath.selectSingleNode(jdomDocument);
+                if (displayNameElement != null) {
+                    // TODO: It seems like document does not contain text nodes ...
+                    log.error("DEBUG: " + displayNameElement + " :: " + displayNameElement.getText() + " :: " + displayNameElement.getName());
+                    return displayNameElement.getText();
+                } else {
+                    log.warn("No display name: " + resName);
+                    return resName;
+                }
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                return resName;
+            }
+        }
+        return resName;
     }
 }
 
