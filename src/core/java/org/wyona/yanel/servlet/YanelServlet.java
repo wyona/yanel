@@ -1791,7 +1791,7 @@ public class YanelServlet extends HttpServlet {
 
         sb.append("<ul><li>");
         sb.append("<div id=\"menutitle\">Edit</div><ul>");
-        sb.append("<li>Open<ul><li>test</li></ul></li>");
+        sb.append("<li>Open with&#160;&#160;><ul><li>Source editor</li><li>WYSIWYG editor</li></ul></li>");
         sb.append("</ul></li></ul>");
 
         sb.append("<ul><li>");
