@@ -95,7 +95,7 @@ public class ResourceManager {
             
             return resource;
         } else {
-            log.error("Resource Type Definition cannot be determined for: " + realm + ", " + path);
+            log.error("Resource Type Definition cannot be determined for: " + realm + ", " + path + ", " + rc.getUniversalName());
             return null;
         }
     }
