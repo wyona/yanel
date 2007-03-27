@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<div xmlns="http://www.w3.org/1999/xhtml">
+  <p>
+    This is the included content.
+    <br/>
+    special characters test: öäü &amp; &lt; &gt;
+  </p>
+</div>
+
