@@ -70,7 +70,7 @@ public class AddRealmResource extends Resource implements ViewableV2 {
     private final static String SESSION_ATTR_REALM_ID = "org.wyona.yanel.addrealm.realm.id";
     private final static String SESSION_ATTR_REALM_NAME = "org.wyona.yanel.addrealm.realm.name";
     
-    private String defaultLanguage;
+    private String defaultLanguage = null;
     private String language = null;
     private String parameterName = null;
     private String parameter = null;
@@ -82,8 +82,7 @@ public class AddRealmResource extends Resource implements ViewableV2 {
     /**
      *
      */
-    public AddRealmResource() {
-        defaultLanguage = getRealm().getDefaultLanguage();
+    public AddRealmResource() {  
     }
 
     /**
@@ -100,6 +99,7 @@ public class AddRealmResource extends Resource implements ViewableV2 {
         
         String path = getPath();
         HttpServletRequest request = getRequest();
+        defaultLanguage = getRealm().getDefaultLanguage();
         
         // Get language
         try {
@@ -136,7 +136,7 @@ public class AddRealmResource extends Resource implements ViewableV2 {
             transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(XSLTFile));
             
             // Add HashMap keys with dummy values for form fields
-            String[] parameterNames = { "realmid", "realmname", "url", "fslocation", "crawldepth", "crawlmaxpages", "scope" };
+            String[] parameterNames = { "realmid", "realmname", "url", "fslocation", "crawldepth", "crawlmaxpages", "crawlmaxfilesize", "scope" };
             for (int i=0; i<parameterNames.length; i++) {
                 String property = getConfiguration().getProperty(parameterNames[i]);
                 boolean propertyExists = getConfiguration().containsKey(parameterNames[i]);
@@ -195,10 +195,17 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                     if (crawlStartURL != null && crawlStartURL.length() > 0) {
                         int maxPages = Integer.parseInt((String)parameters.get("crawlmaxpages"));
                         int maxDepth = Integer.parseInt((String)parameters.get("crawldepth"));
+                        int maxFileSize = 0;
+                        String tmpMaxFileSize = (String)parameters.get("crawlmaxfilesize");
+                        if (tmpMaxFileSize != null || !("").equals(tmpMaxFileSize)) {
+                        	maxFileSize = Integer.parseInt(tmpMaxFileSize);
+                        } else {
+                        	maxFileSize = -1;
+                        }
                         String crawlScopeURL = (String)parameters.get("scope");
                         String realmID = parameters.get("realmid").toString();
                         
-                        importSite(crawlStartURL, crawlScopeURL, maxPages, maxDepth, realmID);
+                        importSite(crawlStartURL, crawlScopeURL, maxPages, maxDepth, maxFileSize, realmID);
                         
                         EventLog eventLog = (EventLog)session.getAttribute(SESSION_ATTR_EVENT_LOG);
                         if (eventLog != null) {
@@ -287,7 +294,7 @@ public class AddRealmResource extends Resource implements ViewableV2 {
      * @param realmID
      * @throws Exception
      */
-    protected void importSite(String crawlStartURL, String crawlScopeURL, int maxPages, int maxDepth, String realmID) throws Exception {
+    protected void importSite(String crawlStartURL, String crawlScopeURL, int maxPages, int maxDepth, int maxPageSize, String realmID) throws Exception {
         String[] crawlScopeURLs = null;
         if (crawlScopeURL == null || crawlScopeURL.length() == 0) {
             String path = new URL(crawlStartURL).getPath();
@@ -307,7 +314,7 @@ public class AddRealmResource extends Resource implements ViewableV2 {
         crawler.setMaxDepth(maxDepth);
         
         DownloadParameters downloadParams = new DownloadParameters();
-        downloadParams = downloadParams.changeMaxPageSize(-1);
+        downloadParams = downloadParams.changeMaxPageSize(maxPageSize);
         crawler.setDownloadParameters(downloadParams);
         
         
@@ -404,11 +411,17 @@ public class AddRealmResource extends Resource implements ViewableV2 {
         crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "required", "true");
         crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "100");
         crawlMaxPagesFieldElement.appendChild(document.createTextNode("crawlmaxpages"));
+        
+        Element crawlMaxFileSizeFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
+        crawlMaxFileSizeFieldElement.setAttributeNS(NAMESPACE, "name", "crawlmaxfilesize");
+        crawlMaxFileSizeFieldElement.setAttributeNS(NAMESPACE, "required", "true");
+        crawlMaxFileSizeFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "100 [size in kb]");
+        crawlMaxFileSizeFieldElement.appendChild(document.createTextNode("crawlmaxfilesize"));
 
         Element scopeFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
         scopeFieldElement.setAttributeNS(NAMESPACE, "name", "scope");
         scopeFieldElement.setAttributeNS(NAMESPACE, "required", "false");
-        scopeFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "http://www.foo.bar");
+        scopeFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "http://www.foo.bar, http://www.f-o-o.bar");
         scopeFieldElement.appendChild(document.createTextNode("scope"));
 
         return document;

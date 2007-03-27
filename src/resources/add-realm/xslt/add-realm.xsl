@@ -19,6 +19,7 @@
   <xsl:param name="fslocation" select="''" />
   <xsl:param name="crawldepth" select="''" />
   <xsl:param name="crawlmaxpages" select="''" />
+  <xsl:param name="crawlmaxfilesize" select="''" />
 
   <xsl:param name="realmid-prop-exists" select="''" />
   <xsl:param name="realmname-prop-exists" select="''" />
@@ -27,6 +28,7 @@
   <xsl:param name="fslocation-prop-exists" select="''" />
   <xsl:param name="crawldepth-prop-exists" select="''" />
   <xsl:param name="crawlmaxpages-prop-exists" select="''" />
+  <xsl:param name="crawlmaxfilesize-prop-exists" select="''" />
   
   <xsl:param name="downloadevents" select="''" />
   <xsl:param name="errorevents" select="''" />
@@ -114,7 +116,10 @@
                           <xsl:when test="position()='6' and $crawlmaxpages-prop-exists = 'true'">
                             <xsl:call-template name="style-display-none"/>
                           </xsl:when>
-                          <xsl:when test="position()='7' and $scope-prop-exists = 'true'">
+                          <xsl:when test="position()='7' and $crawlmaxfilesize-prop-exists = 'true'">
+                            <xsl:call-template name="style-display-none"/>
+                          </xsl:when>
+                          <xsl:when test="position()='8' and $scope-prop-exists = 'true'">
                             <xsl:call-template name="style-display-none"/>
                           </xsl:when>
                           <xsl:otherwise/>
@@ -128,7 +133,8 @@
                           <xsl:choose>
                             <xsl:when test="contains($realmid, 'ERROR:') or contains($realmname, 'ERROR:') 
                                             or contains($url, 'ERROR:') or contains($fslocation, 'ERROR:')
-                                            or contains($crawldepth, 'ERROR:') or contains($crawlmaxpages, 'ERROR:')">
+                                            or contains($crawldepth, 'ERROR:') or contains($crawlmaxpages, 'ERROR:')
+                                            or contains($crawlmaxfilesize, 'ERROR:') or contains($scope, 'ERROR:')">
                               <input type="text" name="{.}" class="box" size="30">
                               <xsl:choose>
                                 <xsl:when test="position()='1' and not(contains($realmid, 'ERROR:'))">
@@ -149,7 +155,10 @@
                                 <xsl:when test="position()='6' and not(contains($crawlmaxpages, 'ERROR:'))">
                                   <xsl:attribute name="value"><xsl:value-of select="$crawlmaxpages" /></xsl:attribute>
                                 </xsl:when>
-                                <xsl:when test="position()='7' and not(contains($scope, 'ERROR:'))">
+                                <xsl:when test="position()='7' and not(contains($crawlmaxfilesize, 'ERROR:'))">
+                                  <xsl:attribute name="value"><xsl:value-of select="$crawlmaxpages" /></xsl:attribute>
+                                </xsl:when>
+                                <xsl:when test="position()='8' and not(contains($scope, 'ERROR:'))">
                                   <xsl:attribute name="value"><xsl:value-of select="$scope" /></xsl:attribute>
                                 </xsl:when>
                                 <xsl:otherwise>
@@ -229,6 +238,17 @@
                                   </xsl:choose>
                                 </xsl:when>
                                 <xsl:when test="position()='7'">
+                                  <xsl:attribute name="value"><xsl:value-of select="$crawlmaxfilesize" /></xsl:attribute>
+                                  <xsl:choose>
+                                    <xsl:when test="$crawlmaxfilesize-prop-exists != 'false'">
+                                      <xsl:attribute name="type">hidden</xsl:attribute>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                      <xsl:attribute name="type">text</xsl:attribute>
+                                    </xsl:otherwise>
+                                  </xsl:choose>
+                                </xsl:when>
+                                <xsl:when test="position()='8'">
                                   <xsl:attribute name="value"><xsl:value-of select="$scope" /></xsl:attribute>
                                   <xsl:choose>
                                     <xsl:when test="$scope-prop-exists != 'false'">
@@ -315,7 +335,18 @@
                               </font>
                             </td>
                           </xsl:when>
-                          <xsl:when test="position()='7' and contains($scope, 'ERROR:')">
+                          <xsl:when test="position()='7' and contains($crawlmaxfilesize, 'ERROR:')">
+                            <td>
+                              &#160;<font color="red">
+                                <i18n:message>
+                                  <xsl:attribute name="key">
+                                    <xsl:value-of select="substring-after($crawlmaxfilesize, 'ERROR:')"/>
+                                  </xsl:attribute>
+                                </i18n:message>
+                              </font>
+                            </td>
+                          </xsl:when>
+                          <xsl:when test="position()='8' and contains($scope, 'ERROR:')">
                             <td>
                               &#160;<font color="red">
                                 <i18n:message>
