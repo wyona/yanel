@@ -6,5 +6,9 @@
   <!-- An empty fslocation value means that the parent directory of the "from scratch realm" directory is being used as default. -->
   <yanel:property name="fslocation" value=""/>
 
+  <!-- -->
   <yanel:property name="crawlmaxpages" value="100"/>
+
+  <!-- A value of "-1" means unlimited size, whereas positive values are considered to be in kilobyte -->
+  <yanel:property name="crawlmaxfilesize" value="-1"/>
 </yanel:resource-config>
