@@ -13,6 +13,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+/**
+ * @deprecated please use I18nTransformer2 instead
+ */
 public class I18nTransformer extends DefaultHandler {
 
     private static Category log = Category.getInstance(I18nTransformer.class);
