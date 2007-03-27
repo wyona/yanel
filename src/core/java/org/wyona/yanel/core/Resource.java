@@ -16,6 +16,8 @@
 
 package org.wyona.yanel.core;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.wyona.yanel.core.map.Realm;
@@ -37,6 +39,7 @@ public abstract class Resource {
     protected Realm realm;
     protected HttpServletRequest request;
     protected HttpServletResponse response;
+    protected Map parameters;
 
     /**
      *
@@ -156,6 +159,14 @@ public abstract class Resource {
 
     public void setResponse(HttpServletResponse response) {
         this.response = response;
+    }
+
+    public Map getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Map parameters) {
+        this.parameters = parameters;
     }
 
 }
