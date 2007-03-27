@@ -3,6 +3,7 @@
 <!-- NOTE: compile is true by default -->
 <resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2007031300">
   <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
+  <resource-type src="../src/resources/navigation/"                  compile="true"/>
   <resource-type src="../src/resources/file/"                        compile="true"/>
   <resource-type src="../src/resources/directory/"                   compile="true"/>
 <!--
