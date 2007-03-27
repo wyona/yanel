@@ -25,8 +25,7 @@ import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.util.WildcardMatcherHelper;
 
 /**
- * Implements a Chain of Responsebility to get the path for the .yanel-rc file by looking up for a
- * match of path in sitemap.rc-map
+ * Implements a Chain of Responsibility (http://en.wikipedia.org/wiki/Chain-of-responsibility_pattern) to get the path for the .yanel-rc file by looking up for a match of path in sitemap.rc-map
  */
 public class ResourceConfigurationMap {
 
