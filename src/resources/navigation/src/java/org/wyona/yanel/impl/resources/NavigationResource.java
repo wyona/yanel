@@ -145,10 +145,10 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
                 TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPath.length];
                 for (int i = 0; i < xsltPath.length; i++) {
                     xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath[i]).getInputStream()));
-                    xsltHandlers[i].getTransformer().setParameter("yanel.path.name", PathUtil.getName(getPath()));
-                    xsltHandlers[i].getTransformer().setParameter("yanel.path", getPath());
-                    xsltHandlers[i].getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
-                    xsltHandlers[i].getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
+                    xsltHandlers[i].getTransformer().setParameter("yanel.path.name", PathUtil.getName(currentPath));
+                    xsltHandlers[i].getTransformer().setParameter("yanel.path", currentPath);
+                    xsltHandlers[i].getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, currentPath));
+                    xsltHandlers[i].getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(currentPath));
                     String userAgent = getRequest().getHeader("User-Agent");
                     String os = getOS(userAgent);
                     if (os != null) xsltHandlers[i].getTransformer().setParameter("os", os);
