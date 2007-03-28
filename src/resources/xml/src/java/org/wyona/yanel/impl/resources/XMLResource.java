@@ -22,6 +22,7 @@ import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.Topic;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
+import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
@@ -83,7 +84,7 @@ import org.apache.xml.serializer.Serializer;
 /**
  *
  */
-public class XMLResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2 {
+public class XMLResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2, IntrospectableV1 {
 
     private static Category log = Category.getInstance(XMLResource.class);
 
@@ -565,6 +566,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     }
     
     /**
+     * Create introspection for XHTML documents used by the creator (WARNING: Mime type is hardcoded!)
      * @param name
      * @return introspection as string
      */
@@ -581,5 +583,21 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         sb.append("\n</introspection>");
         
         return sb.toString();
-    }    
+    }
+
+    /**
+     * Get introspection for Introspectable interface
+     */
+    public String getIntrospection() throws Exception {
+        String name = PathUtil.getName(getPath());
+        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        sb.append("<introspection xmlns=\"http://www.wyona.org/neutron/1.0\">");
+        sb.append("<edit mime-type=\"application/xml\" name=\"" + name + "\">");
+        //sb.append("<edit mime-type=\"" + this.getMimeType(null) + "\" name=\"" + name + "\">");
+        sb.append("<checkout url=\"?yanel.resource.viewid=source&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
+        sb.append("<checkin  url=\"?yanel.resource.usecase=checkin\"  method=\"PUT\"/>");
+        sb.append("</edit>");
+        sb.append("</introspection>");
+        return sb.toString();
+    }
 }
