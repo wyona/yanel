@@ -1779,14 +1779,21 @@ public class YanelServlet extends HttpServlet {
     /**
      * Get toolbar menus
      */
-    private  String getToolbarMenus(Resource resource, HttpServletRequest request) throws ServletException, IOException {
+    private  String getToolbarMenus(Resource resource, HttpServletRequest request) throws ServletException, IOException, Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
         StringBuffer sb= new StringBuffer();
         sb.append("<ul><li>");
+        sb.append("<div id=\"menutitle\">Yanel</div><ul>");
+        sb.append("<li><a href=\"?yanel.resource.meta\">View page info</a></li>");
+        sb.append("<li><a href=\"?yanel.toolbar=off\">Turn off toolbar</a></li>");
+        if (getIdentity(request) != null) {
+            sb.append("<li><a href=\"?yanel.usecase=logout\">Logout</a></li>");
+        }
+        sb.append("</ul></li></ul>");
+        sb.append("<ul><li>");
+
         sb.append("<div id=\"menutitle\">File</div><ul>");
         sb.append("<li><a href=\"" + backToRealm + "create-new-page.html\">New</a></li>");
-        sb.append("<li><a href=\"?yanel.toolbar=off\">Turn off toolbar</a></li>");
-        sb.append("<li><a href=\"?yanel.usecase=logout\">Logout</a></li>");
         sb.append("</ul></li></ul>");
 
         sb.append("<ul><li>");
