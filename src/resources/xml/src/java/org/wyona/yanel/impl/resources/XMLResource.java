@@ -204,7 +204,13 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     private String getLanguage() {
         String language = getRequest().getParameter("yanel.meta.language");
         if (language == null) {
-            language = getRequest().getParameter("Accept-Language");
+            language = getRequest().getHeader("Accept-Language");
+            if (language != null) {
+                log.error("DEBUG: Use Accept-Language from Request Header: " + language);
+                if (language.indexOf(",") > 0) {
+                   language = language.substring(0, language.indexOf(","));
+                }
+            }
         }
         if(language != null && language.length() > 0) return language;
         return getRealm().getDefaultLanguage();
