@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<realm-config>
+<realm-config xmlns="http://www.wyona.org/yanel/realm/1.0">
   <name>Yanel Website</name>
   <rti>repository.xml</rti>
   <data>repository.xml</data>
