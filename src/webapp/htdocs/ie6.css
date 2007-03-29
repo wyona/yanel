@@ -1,7 +1,7 @@
-html {
-    overflow:hidden;
-	}
-body {
-    height:100%;
-    overflow:auto;
-	}
+#headerwrap {
+	position:absolute;
+	z-index:10000;
+	height:24px;
+}
+#headerwrap {top:expression(eval(document.compatMode && document.compatMode=='CSS1Compat') ? documentElement.scrollTop : document.body.scrollTop);}
+#middlewrap {padding:20px;}

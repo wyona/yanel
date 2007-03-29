@@ -1821,7 +1821,7 @@ public class YanelServlet extends HttpServlet {
         
         sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbar.css\" rel=\"stylesheet\"/>");
         sb.append(System.getProperty("line.separator"));
-        sb.append("<!--[if gte IE 6]>");
+        sb.append("<!--[if lt IE 7]>");
         sb.append(System.getProperty("line.separator"));
         sb.append("<link rel=\"stylesheet\" href=\"" + backToRealm + reservedPrefix + "/ie6.css\" type=\"text/css\">");
         sb.append(System.getProperty("line.separator"));

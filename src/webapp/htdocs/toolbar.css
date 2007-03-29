@@ -1,48 +1,22 @@
-body, html{
-	margin:0;
-	padding:0;
-}
+html,
 body {
-	min-width:720px; /* Prevent content from becoming unreachable in Gecko */
+	margin:0 !important;
+	padding:0;
+	height:100%; /* 100 % height */
 }
-
-/* the whole page should scrolls */
-div#headerwrap {
-  position: absolute;
-  width: 100%;
-  top: 0;
-  left: 0;
-  height: 23px;
-  margin: 0 auto;
-  z-index: 500;
-/*border-right-width:20px;*/
+html>body #headerwrap {height:23px;} /* 100 % height */
+#headerwrap {
+	width:100%;
+	height:23px;
+	background:lightgrey;
+	border-bottom:1px solid #888;
 }
-
-/* position:fixed for modern browsers - header should not scroll */
-body>div#headerwrap {
+html>body #headerwrap {
 	position:fixed;
+	top:0px;
+	z-index:10000; /* Prevent certain problems with form controls */
 }
-
-/* set a left margin to compensate for IE/Win always making room for a scrollbar */
-div#middlewrap {
-/* set left margin and bottom padding for IE5/Win */
-	padding:24px 0 0 0;
-	margin-left:0;
-/* set left margin and bottom padding for others */
-	margin-left:16px;
-}
-
-/* set left margin for modern browsers */
-body>div#middlewrap {
-	margin-left:0;
-}
-
-div#headerwrap{
-  background:lightgrey;
-  color:#000;
-  border-bottom:1px solid #888;
-  font:normal 12px "lucida grande", tahoma, verdana, arial, sans-serif;
-}
+html>body #middlewrap {height:100%;padding:23px 1em;} /* 100 % height */
 /* toolbar style ends here */
 
 #toolbar_logo{
