@@ -36,7 +36,7 @@
         <p>
           <ul>
             <li><a href="yanel-website/en/documentation/what-is-a-realm.html">What is a realm?</a></li>
-            <li>Create a realm from scratch.</li>
+            <li><a href="add-realm-from-scratch.html">Create a realm from scratch.</a></li>
             <li>
               <a href="yanel-website/en/documentation/import-existing-website-as-new-realm.html">Import
                 an existing website as a new realm.</a> (Work in progress: <a href="add-realm.html">Do it!</a>)
