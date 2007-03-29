@@ -170,7 +170,10 @@ public class ResourceTypeRegistry {
     /**
      *
      */
-    public ResourceTypeDefinition getResourceTypeDefinition(String universalName) {
+    public ResourceTypeDefinition getResourceTypeDefinition(String universalName) throws Exception {
+        if (!hm.containsKey(universalName)) {
+            throw new Exception("Unknown resource type: " + universalName);
+        }
         return (ResourceTypeDefinition) hm.get(universalName);
     }
 
@@ -184,7 +187,7 @@ public class ResourceTypeRegistry {
         int i = 0;
         while (keysIterator.hasNext()) {
             String universalName = (String) keysIterator.next();
-            rtds[i] = getResourceTypeDefinition(universalName);
+            rtds[i] = (ResourceTypeDefinition)hm.get(universalName);
             i++;
         }
         return rtds;

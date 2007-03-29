@@ -807,7 +807,7 @@ public class YanelServlet extends HttpServlet {
     /**
      *
      */
-    private Resource getResource(HttpServletRequest request, HttpServletResponse response) {
+    private Resource getResource(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
             Realm realm = map.getRealm(request.getServletPath());
             String path = map.getPath(realm, request.getServletPath());
@@ -817,8 +817,10 @@ public class YanelServlet extends HttpServlet {
             
             return res;
         } catch(Exception e) {
-            log.error(e.getMessage(), e);
-            return null;
+            String errorMsg = "Could not get resource for request: " + request.getServletPath() + 
+                    ": " + e.getMessage();
+            log.error(errorMsg, e);
+            throw new ServletException(errorMsg, e);
         }
     }
 
@@ -1794,6 +1796,7 @@ public class YanelServlet extends HttpServlet {
 
         sb.append("<div id=\"menutitle\">File</div><ul>");
         sb.append("<li><a href=\"" + backToRealm + "create-new-page.html\">New</a></li>");
+        sb.append("<li>New language&#160;&#160;><ul><li>German</li><li>Mandarin</li></ul></li>");
         sb.append("</ul></li></ul>");
 
         sb.append("<ul><li>");
