@@ -36,15 +36,11 @@
         <p>
           <ul>
             <li><a href="yanel-website/en/documentation/what-is-a-realm.html">What is a realm?</a></li>
+            <li>Add a realm<ul>
             <li><a href="add-realm-from-scratch.html">Create a realm from scratch.</a></li>
-            <li>
-              <a href="yanel-website/en/documentation/import-existing-website-as-new-realm.html">Import
-                an existing website as a new realm.</a> (Work in progress: <a href="add-realm.html">Do it!</a>)
-            </li>
-            <li>
-              <a
-                href="yanel-website/en/documentation/how-to-add-a-new-realm.html">Add
-                an existing third-party realm.</a>
+            <li><a href="yanel-website/en/documentation/import-existing-website-as-new-realm.html">Import an existing website as a new realm.</a> (Work in progress: <a href="add-realm.html">Do it!</a>)</li>
+            <li><a href="yanel-website/en/documentation/how-to-add-a-new-realm.html">Add an existing third-party realm.</a></li>
+            </ul>
             </li>
             <li>More information can be found within the Yanel <a href="yanel-website/en/documentation/index.html">documentation</a>.</li>
             <li>Turn on <a href="?yanel.toolbar=on">toolbar</a>.</li>
