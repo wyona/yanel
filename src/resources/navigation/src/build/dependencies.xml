@@ -15,9 +15,12 @@
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
       <!-- No resource specific libs yet -->
+      <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
+      <dependency groupId="avalon-framework" artifactId="avalon-framework-impl" version="4.3"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
+    <property name="maven2.resource.cp" refid="maven2.resource.classpath"/>
     <!--<echo>Maven2 classpath: ${maven2.cp}</echo>-->
   </target>
 

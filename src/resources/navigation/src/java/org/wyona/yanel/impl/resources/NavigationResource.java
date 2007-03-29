@@ -16,6 +16,7 @@
 
 package org.wyona.yanel.impl.resources;
 
+import org.w3c.dom.Document;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
@@ -80,6 +81,9 @@ import org.apache.log4j.Category;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 
+import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.ConfigurationUtil;
+
 /**
  *
  */
@@ -118,9 +122,37 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
         String mimeType = getMimeType(viewId);
         defaultView.setMimeType(mimeType);
 
-        String siteTreePath = getResourceConfigProperty("sitetree");
-        String currentPath = (String)getParameters().get("path");
+        String siteTreePath = null;
+        String language = null;
+        String currentPath = null;
+        if (getParameters() != null) {
+            currentPath = (String)getParameters().get("path");
+            language = (String)getParameters().get("language");
+        }
         if (currentPath == null) currentPath = getPath();
+
+        if (language == null) {
+            language = getLanguage();
+        }
+
+        ResourceConfiguration rc = getConfiguration();
+        Document customConfigDoc = rc.getCustomConfiguration();
+        if (customConfigDoc != null) {
+            Configuration config = ConfigurationUtil.toConfiguration(customConfigDoc.getDocumentElement());
+            Configuration[] sourceConfigs = config.getChildren("source");
+            for (int i = 0; i < sourceConfigs.length; i++) {
+                if (sourceConfigs[i].getAttribute("lang").equals(language)) {
+                    siteTreePath = sourceConfigs[i].getAttribute("src");
+                } 
+            }
+            if ((siteTreePath == null) && sourceConfigs.length > 0) {
+                siteTreePath = sourceConfigs[0].getAttribute("src");
+            }
+        }
+        
+        if (siteTreePath == null) {
+            siteTreePath = getResourceConfigProperty("sitetree");
+        }
 
         try {
             Repository repo = getRealm().getRepository();
@@ -210,8 +242,7 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
         if(language != null && language.length() > 0) return language;
         return getRealm().getDefaultLanguage();
     }
-
-
+    
     /**
      *
      */
