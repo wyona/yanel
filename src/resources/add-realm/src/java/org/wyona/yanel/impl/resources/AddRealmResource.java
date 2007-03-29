@@ -6,6 +6,7 @@ package org.wyona.yanel.impl.resources;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
@@ -58,6 +59,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.NamedNodeMap;
 
 /**
  *
@@ -375,55 +378,32 @@ public class AddRealmResource extends Resource implements ViewableV2 {
         }
         Element rootElement = document.getDocumentElement();
         Element inputFieldsElement = (Element) rootElement.appendChild(document.createElementNS(NAMESPACE, "inputfields"));
-
-        Element realmIdFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
-        realmIdFieldElement.setAttributeNS(NAMESPACE, "name", "realmid");
-        realmIdFieldElement.setAttributeNS(NAMESPACE, "required", "true");
-        realmIdFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "my-realm");
-        realmIdFieldElement.appendChild(document.createTextNode("realmid"));
-
-        Element realmNameFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
-        realmNameFieldElement.setAttributeNS(NAMESPACE, "name", "realmname");
-        realmNameFieldElement.setAttributeNS(NAMESPACE, "required", "true");
-        realmNameFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "My Realm");
-        realmNameFieldElement.appendChild(document.createTextNode("realmname"));
-
-        Element urlFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
-        urlFieldElement.setAttributeNS(NAMESPACE, "name", "url");
-        urlFieldElement.setAttributeNS(NAMESPACE, "required", "true");
-        urlFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "http://www.foo.bar");
-        urlFieldElement.appendChild(document.createTextNode("url"));
-
-        Element fsLocationFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
-        fsLocationFieldElement.setAttributeNS(NAMESPACE, "name", "fslocation");
-        fsLocationFieldElement.setAttributeNS(NAMESPACE, "required", "true");
-        fsLocationFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "D:/realms");
-        fsLocationFieldElement.appendChild(document.createTextNode("fslocation"));
-
-        Element crawlDepthFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
-        crawlDepthFieldElement.setAttributeNS(NAMESPACE, "name", "crawldepth");
-        crawlDepthFieldElement.setAttributeNS(NAMESPACE, "required", "true");
-        crawlDepthFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "3");
-        crawlDepthFieldElement.appendChild(document.createTextNode("crawldepth"));
-
-        Element crawlMaxPagesFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
-        crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "name", "crawlmaxpages");
-        crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "required", "true");
-        crawlMaxPagesFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "100");
-        crawlMaxPagesFieldElement.appendChild(document.createTextNode("crawlmaxpages"));
         
-        Element crawlMaxFileSizeFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
-        crawlMaxFileSizeFieldElement.setAttributeNS(NAMESPACE, "name", "crawlmaxfilesize");
-        crawlMaxFileSizeFieldElement.setAttributeNS(NAMESPACE, "required", "true");
-        crawlMaxFileSizeFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "100 [size in kb]");
-        crawlMaxFileSizeFieldElement.appendChild(document.createTextNode("crawlmaxfilesize"));
-
-        Element scopeFieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
-        scopeFieldElement.setAttributeNS(NAMESPACE, "name", "scope");
-        scopeFieldElement.setAttributeNS(NAMESPACE, "required", "false");
-        scopeFieldElement.setAttributeNS(NAMESPACE, "samplevalue", "http://www.foo.bar, http://www.f-o-o.bar");
-        scopeFieldElement.appendChild(document.createTextNode("scope"));
-
+        // get add-realm custom config parameters from rc file, use attributes to generate form input fields
+        String[] attributesArray = { "name", "value", "samplevalue", "required", "hidden" };
+        ResourceConfiguration rc = getConfiguration();
+        Document customConfigDoc = rc.getCustomConfiguration();
+        Element rootCustomConfigDocElement = customConfigDoc.getDocumentElement();
+        NodeList nodeList = rootCustomConfigDocElement.getChildNodes();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            org.w3c.dom.Node node = nodeList.item(i);
+            Element fieldElement = (Element) inputFieldsElement.appendChild(document.createElementNS(NAMESPACE, "input"));
+            NamedNodeMap attributes = node.getAttributes();
+            org.w3c.dom.Node attribute = null;
+            String nameAttribute = null;
+            for (int j = 0; j < attributesArray.length; j++) {
+            	attribute = attributes.getNamedItem(attributesArray[j]);
+            	if (attribute != null) {
+            		if (("name").equals(attributesArray[j])) {
+            			nameAttribute = attribute.getNodeValue();
+                	}
+            		fieldElement.setAttributeNS(NAMESPACE, attributesArray[j], attribute.getNodeValue());
+            	}
+            	attribute = null;
+            }
+            fieldElement.appendChild(document.createTextNode(nameAttribute));
+        }
         return document;
     }
+    
 }
