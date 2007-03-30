@@ -341,6 +341,14 @@ public class YanelServlet extends HttpServlet {
                     } else {
                         Element noResConfigElement = (Element) resourceElement.appendChild(doc.createElementNS(NAMESPACE, "no-config"));
                     }
+
+		    Element realmElement = (Element) resourceElement.appendChild(doc.createElementNS(NAMESPACE, "realm"));
+                    realmElement.setAttributeNS(NAMESPACE, "name", res.getRealm().getName());
+                    realmElement.setAttributeNS(NAMESPACE, "rid", res.getRealm().getID());
+                    realmElement.setAttributeNS(NAMESPACE, "prefix", res.getRealm().getMountPoint());
+                    Element identityManagerElement = (Element) realmElement.appendChild(doc.createElementNS(NAMESPACE, "identity-manager"));
+                    Element userManagerElement = (Element) identityManagerElement.appendChild(doc.createElementNS(NAMESPACE, "user-manager"));
+
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                         log.debug("Resource is viewable V1");
                         Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
