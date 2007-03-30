@@ -293,13 +293,8 @@ public class YanelServlet extends HttpServlet {
         View view = null;
 
         org.w3c.dom.Document doc = null;
-        javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
         try {
-            javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
-            org.w3c.dom.DOMImplementation impl = parser.getDOMImplementation();
-            org.w3c.dom.DocumentType doctype = null;
-            doc = impl.createDocument(NAMESPACE, "yanel", doctype);
+            doc = getDocument(NAMESPACE, "yanel");
         } catch(Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage());
@@ -1671,33 +1666,28 @@ public class YanelServlet extends HttpServlet {
         String path = request.getServletPath();
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(path);
         
-        org.w3c.dom.Document doc = null;
-        javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
         try {
-            javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
-            org.w3c.dom.DOMImplementation impl = parser.getDOMImplementation();
-            org.w3c.dom.DocumentType doctype = null;
-            doc = impl.createDocument(NAMESPACE, "yanel", doctype);            
+            org.w3c.dom.Document adoc = getDocument(NAMESPACE, "yanel-auth-screen");
             
-            Element rootElement = doc.getDocumentElement();
+            Element rootElement = adoc.getDocumentElement();
             
             if (message != null) {
-                Element messageElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "message"));
-                messageElement.appendChild(doc.createTextNode(message)); 
+                Element messageElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "message"));
+                messageElement.appendChild(adoc.createTextNode(message)); 
             }
             
-            Element requestElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "request"));
+            Element requestElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "request"));
             requestElement.setAttributeNS(NAMESPACE, "urlqs", getRequestURLQS(request, null, true));
 
             if (request.getQueryString() != null) {
                 requestElement.setAttributeNS(NAMESPACE, "qs", request.getQueryString().replaceAll("&", "&amp;"));
             }
             
-            Element realmElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "realm"));
+            Element realmElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "realm"));
             realmElement.setAttributeNS(NAMESPACE, "name", realm.getName());
             realmElement.setAttributeNS(NAMESPACE, "mount-point", realm.getMountPoint().toString());  
             
-            Element sslElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "ssl"));            
+            Element sslElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "ssl"));            
             if(sslPort != null) {
         	sslElement.setAttributeNS(NAMESPACE, "status", "ON");   
             } else {
@@ -1708,7 +1698,7 @@ public class YanelServlet extends HttpServlet {
             if(yanelFormat != null && yanelFormat.equals("xml")) {
                 response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                 //OutputStream out = response.getOutputStream();
-                javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getOutputStream()));
+                javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.stream.StreamResult(response.getOutputStream()));
                 //out.close();
             } else {
                 String mimeType = patchMimeType("application/xhtml+xml", request);
@@ -1717,7 +1707,7 @@ public class YanelServlet extends HttpServlet {
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltLoginScreen));
                 transformer.setParameter("yanel.back2realm", backToRealm);
                 transformer.setParameter("yanel.reservedPrefix", reservedPrefix);
-                transformer.transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
+                transformer.transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
             }
 
             
@@ -1968,5 +1958,17 @@ public class YanelServlet extends HttpServlet {
             }
         }
         return null;
+    }
+
+    /**
+     * Create a DOM Document
+     */
+    public Document getDocument(String namespace, String localname) throws Exception {
+        javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
+        org.w3c.dom.DOMImplementation impl = parser.getDOMImplementation();
+        org.w3c.dom.DocumentType doctype = null;
+        return impl.createDocument(namespace, localname, doctype);
     }
 }
