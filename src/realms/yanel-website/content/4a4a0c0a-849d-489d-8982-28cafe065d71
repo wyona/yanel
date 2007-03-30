@@ -1,3 +1,6 @@
-<{http://www.wyona.org/yanel/resource/1.0}xml/>
-mime-type: application/xhtml+xml
-xslt: /xslt/global.xsl
+<?xml version="1.0"?>
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="xml" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+  <yanel:property name="mime-type" value="application/xhtml+xml"/>
+  <yanel:property name="xslt" value="/xslt/global.xsl"/>
+</yanel:resource-config>

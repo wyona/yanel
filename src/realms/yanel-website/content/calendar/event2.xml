@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-
-<cal:event xmlns:cal="http://..." created="20061205T225748Z" last-modified="20061205T225748Z" dtstamp="20061205T225748Z" uid="26e7ee64-145e-4a9a-a35d-77dbb5aa7efc" class="PUBLIC" categories="Holidays">
-  <cal:summary>X'Mas</cal:summary>
-  <cal:location>Home</cal:location>
-  <cal:dtstart value="DATE" tzid="/mozilla.org/20050126_1/Europe/Zurich:20061224"/>
-  <cal:dtend value="DATE" tzid="/mozilla.org/20050126_1/Europe/Zurich:20061225"/>
-</cal:event>
