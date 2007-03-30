@@ -37,6 +37,9 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -53,6 +56,8 @@ import org.apache.nutch.searcher.NutchBean;
 import org.apache.nutch.searcher.Query;
 import org.apache.nutch.searcher.Summary;
 import org.apache.nutch.searcher.Summary.Fragment;
+import org.apache.xml.resolver.tools.CatalogResolver;
+import org.apache.xml.serializer.Serializer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.wyona.yanel.core.Path;
@@ -61,12 +66,19 @@ import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.serialization.SerializerFactory;
+import org.wyona.yanel.core.source.ResourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer;
+import org.wyona.yanel.core.transformation.I18nTransformer2;
+import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import javax.servlet.ServletContext;
 /**
@@ -355,7 +367,17 @@ public class NutchResource extends Resource implements ViewableV1 {
         try {
             streamSource = getGlobalXSLTStreamSource();
             if(streamSource != null) {
-                transformer = TransformerFactory.newInstance().newTransformer(streamSource);
+                
+                // create reader:
+                XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+                CatalogResolver catalogResolver = new CatalogResolver();
+                xmlReader.setEntityResolver(catalogResolver);
+                
+                // create xslt transformer:
+                SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
+
+                TransformerHandler xsltHandler = tf.newTransformerHandler(streamSource);
+                Transformer transformer = xsltHandler.getTransformer();
                 transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
                 transformer.setParameter("yanel.path", getPath().toString());
                 transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
@@ -366,14 +388,32 @@ public class NutchResource extends Resource implements ViewableV1 {
                 transformer.setParameter("start", "" + start);
                 transformer.setParameter("yanel.meta.lanugage", language);
                 transformer.setParameter("show", show);
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                transformer.transform(new StreamSource(inputStream), new StreamResult(byteArrayOutputStream));
-                inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-                log.debug("Language: " + language);
-                i18nTransformer = new I18nTransformer(resourceBundle, language, getRealm().getDefaultLanguage());
-                SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
-                saxParser.parse(inputStream, i18nTransformer);
-                return i18nTransformer.getInputStream(); 
+
+                // create xinclude transformer:
+                XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
+                ResourceResolver resolver = new ResourceResolver(this);
+                xIncludeTransformer.setResolver(resolver);
+                
+                // create i18n transformer:
+                I18nTransformer2 i18nTransformer = new I18nTransformer2(resourceBundle, language, getRealm().getDefaultLanguage());
+                i18nTransformer.setEntityResolver(catalogResolver);
+                
+                // create serializer:
+                Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                // chain everything together (create a pipeline):
+                xmlReader.setContentHandler(xsltHandler);
+                xsltHandler.setResult(new SAXResult(xIncludeTransformer));
+                xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
+                i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
+                serializer.setOutputStream(baos);
+                
+                // execute pipeline:
+                xmlReader.parse(new InputSource(inputStream));
+
+                return new ByteArrayInputStream(baos.toByteArray());
+
             } else {
                 return inputStream;
             }     

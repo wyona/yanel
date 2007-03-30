@@ -31,10 +31,15 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Category;
+import org.apache.xml.resolver.tools.CatalogResolver;
+import org.apache.xml.serializer.Serializer;
 
 import org.wyona.wikiparser.IWikiParser;
 
@@ -46,13 +51,20 @@ import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.serialization.SerializerFactory;
+import org.wyona.yanel.core.source.ResourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer;
+import org.wyona.yanel.core.transformation.I18nTransformer2;
+import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * 
@@ -132,31 +144,60 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
             
             transformer.transform(new StreamSource(linkChecker.getInputStream()), new StreamResult(byteArrayOutputStream));
 
+            inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            
             if(viewId != null && viewId.equals("source")) {
-                defaultView.setInputStream(new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
+                defaultView.setInputStream(inputStream);
                 return defaultView;
             }
             
-            // Apply global XSLT
+            // create reader:
+            XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+            CatalogResolver catalogResolver = new CatalogResolver();
+            xmlReader.setEntityResolver(catalogResolver);
+
+            // create xslt transformer:
+            TransformerHandler xsltHandler = null;
             if(getXSLTPath() != null) {
-                inputStream = new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray());
                 
-                transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath().toString()))));
+                SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
+                xsltHandler = tf.newTransformerHandler(new StreamSource(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath().toString()))));
+                transformer = xsltHandler.getTransformer();
                 transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
                 transformer.setParameter("yanel.path", getPath());
                 transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
                 transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
                 
-                byteArrayOutputStream = new ByteArrayOutputStream();
-                transformer.transform(new StreamSource(inputStream), new StreamResult(byteArrayOutputStream));    
             }
 
-            inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-            I18nTransformer i18nTransformer = new I18nTransformer("global", getRealm().getDefaultLanguage(), getRealm().getDefaultLanguage());
-            saxParser = SAXParserFactory.newInstance().newSAXParser();
-            saxParser.parse(inputStream, i18nTransformer);
+            // create xinclude transformer:
+            XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
+            ResourceResolver resolver = new ResourceResolver(this);
+            xIncludeTransformer.setResolver(resolver);
+            
+            // create i18n transformer:
+            I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getRealm().getDefaultLanguage(), getRealm().getDefaultLanguage());
+            i18nTransformer.setEntityResolver(catalogResolver);
+            
+            // create serializer:
+            Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            defaultView.setInputStream(i18nTransformer.getInputStream());
+            // chain everything together (create a pipeline):
+            if (xsltHandler != null) {
+                xmlReader.setContentHandler(xsltHandler);
+                xsltHandler.setResult(new SAXResult(xIncludeTransformer));
+            } else {
+                xmlReader.setContentHandler(xIncludeTransformer);
+            }
+            xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
+            i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
+            serializer.setOutputStream(baos);
+            
+            // execute pipeline:
+            xmlReader.parse(new InputSource(inputStream));
+
+            defaultView.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
             return defaultView;
         } catch (Exception e) {
             log.error(e, e);

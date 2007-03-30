@@ -18,6 +18,7 @@ package org.wyona.yanel.impl.resources;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.StringReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,10 +39,15 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Category;
+import org.apache.xml.resolver.tools.CatalogResolver;
+import org.apache.xml.serializer.Serializer;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
@@ -52,10 +58,17 @@ import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.RepositoryFactory;
+import org.wyona.yanel.core.serialization.SerializerFactory;
+import org.wyona.yanel.core.source.ResourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer;
+import org.wyona.yanel.core.transformation.I18nTransformer2;
+import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yarep.util.RepoPath;
 import org.wyona.yarep.util.YarepUtil;
 import org.wyona.yanel.core.util.HttpServletRequestHelper;import org.wyona.yanel.core.util.PathUtil;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 ;
 
 /**
@@ -127,12 +140,22 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             log.debug("language param is empty or null : " + language);
             language = defaultLanguage;
         }
-        Transformer transformer = null;
-        I18nTransformer i18nTransformer = null;
         File xslFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "contact-form.xsl");
         File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "contact-form.xml");        
         try {
-            transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xslFile));
+            
+            // create reader:
+            XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+            CatalogResolver catalogResolver = new CatalogResolver();
+            xmlReader.setEntityResolver(catalogResolver);
+            
+            // create first xslt transformer:
+            SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
+
+            //transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xslFile));
+            TransformerHandler xsltHandler1 = tf.newTransformerHandler(new StreamSource(xslFile));
+            Transformer transformer = xsltHandler1.getTransformer();
+            
             boolean submit = false;
             Enumeration enumeration = request.getParameterNames();
             while(enumeration.hasMoreElements()){
@@ -149,34 +172,54 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
                 transformer.setParameter("zipCity", HttpServletRequestHelper.getParameter(request, "zipCity"));
                 transformer.setParameter("message", HttpServletRequestHelper.getParameter(request, "message"));
             }
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            transformer.transform(new javax.xml.transform.stream.StreamSource(xmlFile), new StreamResult(byteArrayOutputStream));
-            //translate the form
-            i18nTransformer = new I18nTransformer(messageBundle, language, getRealm().getDefaultLanguage());
-            SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
-            saxParser = SAXParserFactory.newInstance().newSAXParser();
-            saxParser.parse(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), i18nTransformer);
             
-            transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, repository));
+            // create first i18n transformer:
+            I18nTransformer2 i18nTransformer1 = new I18nTransformer2(messageBundle, language, getRealm().getDefaultLanguage());
+            i18nTransformer1.setEntityResolver(catalogResolver);
+            
+            // create second xslt transformer:
+            TransformerHandler xsltHandler2 = tf.newTransformerHandler(getXSLTStreamSource(path, repository));
+            transformer = xsltHandler2.getTransformer();
             transformer.setParameter("yanel.path.name", path.getName());
             transformer.setParameter("yanel.path", path.toString());
             transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
             transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
- 
-            byteArrayOutputStream = new ByteArrayOutputStream();
-            transformer.transform(new StreamSource(i18nTransformer.getInputStream()), new StreamResult(byteArrayOutputStream));
-            //translate the page
-            i18nTransformer = new I18nTransformer("global", language, getRealm().getDefaultLanguage());
-            saxParser = SAXParserFactory.newInstance().newSAXParser();
-            saxParser.parse(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), i18nTransformer);
+
+            // create xinclude transformer:
+            XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
+            ResourceResolver resolver = new ResourceResolver(this);
+            xIncludeTransformer.setResolver(resolver);
+            
+            // create second i18n transformer:
+            I18nTransformer2 i18nTransformer2 = new I18nTransformer2("global", language, getRealm().getDefaultLanguage());
+            i18nTransformer2.setEntityResolver(catalogResolver);
+            
+            // create serializer:
+            Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            // chain everything together (create a pipeline):
+            xmlReader.setContentHandler(xsltHandler1);
+            xsltHandler1.setResult(new SAXResult(i18nTransformer1));
+            i18nTransformer1.setResult(new SAXResult(xsltHandler2));
+            xsltHandler2.setResult(new SAXResult(xIncludeTransformer));
+            xIncludeTransformer.setResult(new SAXResult(i18nTransformer2));
+            i18nTransformer2.setResult(new SAXResult(serializer.asContentHandler()));
+            serializer.setOutputStream(baos);
+            
+            // execute pipeline:
+            xmlReader.parse(new InputSource(new FileInputStream(xmlFile)));
+
+            // create view:
+            View defaultView = new View();
+            defaultView.setMimeType(getMimeType());
+            defaultView.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
+            return defaultView;
             
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            throw e;
         }
-        View defaultView = new View();
-        defaultView.setMimeType(getMimeType());
-        defaultView.setInputStream(i18nTransformer.getInputStream());
-        return defaultView;
     }
 
     /**
