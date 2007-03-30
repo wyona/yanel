@@ -24,7 +24,7 @@
         <table cellspacing="0" cellpadding="0" id="bodytable">
           <tr>
             <td id="title">
-              Login to realm "<xsl:value-of select="/yanel:yanel/yanel:realm/@yanel:name"/>"
+              Login to realm "<xsl:value-of select="/yanel:yanel-auth-screen/yanel:realm/@yanel:name"/>"
             </td>
             <td id="logo">  
                <img src="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-img/yanel_header.png"/>
@@ -35,26 +35,26 @@
               <div id="content">
 
         <p>Authorization was denied. Please, enter your username and password.</p>
-        <xsl:apply-templates select="/yanel:yanel/yanel:message"/>
+        <xsl:apply-templates select="/yanel:yanel-auth-screen/yanel:message"/>
           <form method="POST">
             Username:<input type="text" name="yanel.login.username"/>
             Password:<input type="password" name="yanel.login.password"/>
             <input type="submit" value="Login"/>
           </form>
-        <xsl:apply-templates select="/yanel:yanel/yanel:ssl"/>
+        <xsl:apply-templates select="/yanel:yanel-auth-screen/yanel:ssl"/>
         <hr/>
         <p>
         <xsl:choose>
-          <xsl:when test="/yanel:yanel/yanel:request/@yanel:qs">
-            <a href="?{/yanel:yanel/yanel:request/@yanel:qs}&amp;yanel.format=xml">Show XML source</a>
+          <xsl:when test="/yanel:yanel-auth-screen/yanel:request/@yanel:qs">
+            <a href="?{/yanel:yanel-auth-screen/yanel:request/@yanel:qs}&amp;yanel.format=xml">Show XML source</a>
           </xsl:when>
           <xsl:otherwise>
             <a href="?&amp;yanel.format=xml">Show XML source</a>
           </xsl:otherwise>
         </xsl:choose>
         </p>
-        <xsl:apply-templates select="/yanel:yanel/yanel:request"/>
-        <xsl:apply-templates select="/yanel:yanel/yanel:realm"/>
+        <xsl:apply-templates select="/yanel:yanel-auth-screen/yanel:request"/>
+        <xsl:apply-templates select="/yanel:yanel-auth-screen/yanel:realm"/>
         </div>
         </td>
 </tr>
