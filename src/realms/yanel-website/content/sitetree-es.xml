@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+
+<sitetree xmlns="http://www.wyona.org/yanel/1.0">
+
+<node>
+  <name>All You Need</name>
+  <node uuid="" href="es/acerca.html"><name>Acerca de Yanel</name></node>
+  <node uuid="" href="en/download/index.html"><name>Download</name></node>
+  <node uuid="" href="en/usp.html"><name>Unique Selling Proposition</name></node>
+  <node uuid="" href="license.html"><name>License</name></node>
+  <node uuid="" href="en/getting-started.html"><name>Getting Started</name></node>
+  <node uuid="" href=""><name>Features</name></node>
+  <node uuid="" href="news/index.html"><name>News</name></node>
+  <node uuid="" href="en/documentation/index.html"><name>Documentation</name></node>
+</node>
+
+<node>
+  <name>Development/Community</name>
+  <node uuid="" href="download/source-repository.html"><name>Get the Source</name></node>
+  <node uuid="" href="mailing-lists.html"><name>Mailing Lists</name></node>
+  <node uuid="" href="roadmap.html"><name>Roadmap</name></node>
+  <node uuid="" href="en/task-bug-tracker.html"><name>Task/Bug Tracker</name></node>
+  <node uuid="" href="testing.html"><name>Continuous Integration</name></node>
+  <node uuid="" href="en/governance.html"><name>Governance</name></node>
+  <node uuid="" href="principles.html"><name>Principles</name></node>
+  <node uuid="" href="en/development/processes/index.html"><name>Processes</name></node>
+  <node uuid="" href="acknowledgements.html"><name>Acknowledgements</name></node>
+  <node uuid="" href="references.html"><name>References</name></node>
+</node>
+
+<node>
+  <name>Professional Services</name>
+  <node uuid="professional-services/support/en.xhtml" href="en/professional-services/support.html"><name>Support</name></node>
+  <node uuid="" href="en/professional-services/consulting.html"><name>Consulting</name></node>
+  <node uuid="" href="en/professional-services/training.html"><name>Training</name></node>
+  <node uuid="" href="en/professional-services/solutions.html"><name>Solutions</name></node>
+  <node uuid="" href="en/contact.html"><name>Contact</name></node>
+</node>
+
+<!--
+<node href="en">
+  <name>English Subtree</name>
+  <node href="index.html">About</node>
+</node>
+<node href="download.html">
+  <name>Download</name>
+</node>
+<node href="license.html">
+  <name>Download</name>
+</node>
+<node href="de">
+  <name>Deutscher Subtree</name>
+  <node href="ueber.html">Ueber</node>
+</node>
+<node href="es">
+  <name>Spanish Subtree</name>
+  <node href="acerca.html">Acerca de Yanel</node>
+</node>
+-->
+</sitetree>
