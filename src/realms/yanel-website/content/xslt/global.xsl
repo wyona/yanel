@@ -4,6 +4,7 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
   xmlns:i18n="http://www.wyona.org/yanel/i18n/1.0"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
   xmlns="http://www.w3.org/1999/xhtml"
 >
 
@@ -17,6 +18,7 @@
 <xsl:param name="yanel.path" select="'PATH_IS_NULL'"/>
 <xsl:param name="yanel.back2context" select="'BACK2CONTEXT_IS_NULL'"/>
 <xsl:param name="yarep.back2realm" select="'BACK2REALM_IS_NULL'"/>
+<xsl:param name="language" select="'LANGUAGE_IS_NULL'"/>
 
 <xsl:param name="yanel.meta.language" select="'en'"/>
 
@@ -106,6 +108,8 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 </xsl:template>
 
 <xsl:template name="navigation">
+<xi:include href="yanelresource:/navigation/menu.xml?path={$yanel.path}&amp;language={$language}"/>
+<!--
 <b>All You Need</b><br/>
 &#160;<a href="{$yarep.back2realm}{$yanel.meta.language}/about.html">About</a><br/>
 &#160;<a href="{$yarep.back2realm}en/download/index.html">Download</a><br/>
@@ -113,9 +117,9 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 &#160;<a href="{$yarep.back2realm}license.html">License</a><br/>
 &#160;<a href="{$yarep.back2realm}{$yanel.meta.language}/getting-started.html">Getting Started</a><br/>
 &#160;Features<br/>
-<!--
+<!- -
 &#160;News<br/>
- -->
+ - ->
 &#160;<a href="{$yarep.back2realm}news/index.html">News</a><br/>
 
 &#160;<a href="{$yarep.back2realm}en/documentation/index.html">Documentation</a><br/>
@@ -138,6 +142,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 &#160;<a href="{$yarep.back2realm}en/professional-services/training.html">Training</a><br/>
 &#160;<a href="{$yarep.back2realm}en/professional-services/solutions.html">Solutions</a><br/>
 &#160;<a href="{$yarep.back2realm}en/contact.html">Contact</a><br/>
+-->
 <br/>
 <b><i18n:message key="search"/></b>
 &#160;<form action="{$yarep.back2realm}en/search.html" method="GET"><input type="text" name="query" class="searchbox" size="14"/></form>
