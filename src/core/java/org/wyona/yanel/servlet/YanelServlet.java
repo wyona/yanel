@@ -1783,27 +1783,27 @@ public class YanelServlet extends HttpServlet {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
         StringBuffer sb= new StringBuffer();
         sb.append("<ul><li>");
-        sb.append("<div id=\"menutitle\">Yanel</div><ul>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">Yanel</div><ul>");
         sb.append("<li><a href=\"?yanel.resource.meta\">View page info</a></li>");
         sb.append("<li><a href=\"?yanel.toolbar=off\">Turn off toolbar</a></li>");
         if (getIdentity(request) != null) {
-            sb.append("<li><a href=\"?yanel.usecase=logout\">Logout</a></li>");
+            sb.append("<li><a href=\"?yanel.usecase=logout\"><img class=\"yaneltoolbar_menuicon\" src=\"" + backToRealm + reservedPrefix + "/yanel-img/icons/system-log-out.png\" border=\"0\"/>Logout</a></li>");
         }
         sb.append("</ul></li></ul>");
         sb.append("<ul><li>");
 
-        sb.append("<div id=\"menutitle\">File</div><ul>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">File</div><ul>");
         sb.append("<li><a href=\"" + backToRealm + "create-new-page.html\">New</a></li>");
-        sb.append("<li>New language&#160;&#160;><ul><li>German</li><li>Mandarin</li></ul></li>");
+        sb.append("<li class=\"haschild\">New language<ul><li>German</li><li>Mandarin</li></ul></li>");
         sb.append("</ul></li></ul>");
 
         sb.append("<ul><li>");
-        sb.append("<div id=\"menutitle\">Edit</div><ul>");
-        sb.append("<li>Open with&#160;&#160;><ul><li>Source editor</li><li>WYSIWYG editor</li></ul></li>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">Edit</div><ul>");
+        sb.append("<li class=\"haschild\">Open with<ul><li>Source editor</li><li>WYSIWYG editor</li></ul></li>");
         sb.append("</ul></li></ul>");
 
         sb.append("<ul><li>");
-        sb.append("<div id=\"menutitle\">Help</div><ul>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">Help</div><ul>");
         sb.append("<li>About</li>");
         sb.append("</ul></li></ul>");
         return sb.toString();
@@ -1828,7 +1828,7 @@ public class YanelServlet extends HttpServlet {
         sb.append(System.getProperty("line.separator"));
         sb.append("<style type=\"text/css\" media=\"screen\">");
         sb.append(System.getProperty("line.separator"));
-        sb.append("#menu{float:none;} /* This is required for IE to avoid positioning bug when placing content first in source. */");
+        sb.append("#yaneltoolbar_menu{float:none;} /* This is required for IE to avoid positioning bug when placing content first in source. */");
         sb.append(System.getProperty("line.separator"));
         sb.append("  /* IE Menu CSS */");
         sb.append(System.getProperty("line.separator"));
@@ -1840,12 +1840,20 @@ public class YanelServlet extends HttpServlet {
         sb.append(System.getProperty("line.separator"));
         sb.append("}");
         sb.append(System.getProperty("line.separator"));
-        sb.append("#menu ul li{float:left;width:100%;}");
+        sb.append("#yaneltoolbar_menu ul li{float:left;width:100%;}");
         sb.append(System.getProperty("line.separator"));
         sb.append("</style>");
         sb.append(System.getProperty("line.separator"));
         sb.append("<![endif]-->");
         sb.append(System.getProperty("line.separator"));
+        sb.append("<style type=\"text/css\" media=\"screen\">");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("#yaneltoolbar_menu li li.haschild{ background: lightgrey url(" + backToRealm + reservedPrefix + "/yanel-img/submenu.png) no-repeat 98% 50%;}");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("#yaneltoolbar_menu li li.haschild:hover{  background: lightsteelblue url(" + backToRealm + reservedPrefix + "/yanel-img/submenu.png) no-repeat 98% 50%;}");
+        sb.append("</style>");
+        sb.append(System.getProperty("line.separator"));
+        
         return sb.toString();
     }
     
@@ -1860,20 +1868,20 @@ public class YanelServlet extends HttpServlet {
     private String getToolbarBodyStart(Resource resource, HttpServletRequest request) throws Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
         StringBuffer buf = new StringBuffer();
-        buf.append("<div id=\"headerwrap\">");
-        buf.append("<div id=\"menu\">");
+        buf.append("<div id=\"yaneltoolbar_headerwrap\">");
+        buf.append("<div id=\"yaneltoolbar_menu\">");
         buf.append(getToolbarMenus(resource, request));
         buf.append("</div>");
         Identity identity = getIdentity(request);
         if (identity != null) {
-            buf.append("<span id=\"user\">User: " + identity.getUser().getID() + " (Realm: " + resource.getRealm().getName() + ")</span>");
+            buf.append("<span id=\"yaneltoolbar_user\">User: " + identity.getUser().getID() + " (Realm: " + resource.getRealm().getName() + ")</span>");
         } else {
-            buf.append("<span id=\"user\">User: Not signed in!</span>");
+            buf.append("<span id=\"yaneltoolbar_user\">User: Not signed in!</span>");
         }
         
-        buf.append("<img src=\"" + backToRealm + reservedPrefix + "/yanel_toolbar_logo.png\" id=\"toolbar_logo\"/>");
+        buf.append("<img src=\"" + backToRealm + reservedPrefix + "/yanel_toolbar_logo.png\" id=\"yaneltoolbar_logo\"/>");
         buf.append("</div>");
-        buf.append("<div id=\"middlewrap\">");
+        buf.append("<div id=\"yaneltoolbar_middlewrap\">");
         return buf.toString();
     }
     

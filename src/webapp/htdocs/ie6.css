@@ -1,7 +1,8 @@
-#headerwrap {
+#yaneltoolbar_headerwrap {
 	position:absolute;
 	z-index:10000;
 	height:24px;
+	left:0px;
 }
-#headerwrap {top:expression(eval(document.compatMode && document.compatMode=='CSS1Compat') ? documentElement.scrollTop : document.body.scrollTop);}
-#middlewrap {padding:20px;}
+#yaneltoolbar_headerwrap {top:expression(eval(document.compatMode && document.compatMode=='CSS1Compat') ? documentElement.scrollTop : document.body.scrollTop);}
+#yaneltoolbar_middlewrap {padding:20px;}
