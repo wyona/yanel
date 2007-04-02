@@ -511,22 +511,27 @@ public class YanelServlet extends HttpServlet {
 
             // TODO: Move this introspection generation somewhere else ...
             try {
-                    if (usecase != null && usecase.equals("introspection")) {
-                        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Introspectable", "1")) {
-                            String introspection = ((IntrospectableV1)res).getIntrospection();
-                            response.setContentType("application/neutron+xml");
-                            response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
-                            response.getWriter().print(introspection);
-                        } else {
-                            String message = "Resource is not introspectable.";
-                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
-                            exceptionElement.appendChild(doc.createTextNode(message));
-                            setYanelOutput(request, response, doc);
-                        }
-                        return;
+                if (usecase != null && usecase.equals("introspection")) {
+                    if (ResourceAttributeHelper.hasAttributeImplemented(res, "Introspectable", "1")) {
+                        String introspection = ((IntrospectableV1)res).getIntrospection();
+                        response.setContentType("application/xml");
+                        response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+                        response.getWriter().print(introspection);
+                    } else {
+                        String message = "Resource is not introspectable.";
+                        Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                        exceptionElement.appendChild(doc.createTextNode(message));
+                        setYanelOutput(request, response, doc);
                     }
+                    return;
+                }
 	    } catch(Exception e) {
                 log.error(e.getMessage(), e);
+                Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+                exceptionElement.appendChild(doc.createTextNode(e.getMessage()));
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                setYanelOutput(request, response, doc);
+                return;
             }
 
 
