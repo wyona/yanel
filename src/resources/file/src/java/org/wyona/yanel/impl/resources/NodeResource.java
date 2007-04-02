@@ -138,6 +138,8 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
                 mimeType = "application/vnd.sun.xml.calc";
 	    } else if (suffix.equals("xpi")) {
                 mimeType = "application/x-xpinstall";
+	    } else if (suffix.equals("zip")) {
+                mimeType = "application/zip";
 	    } else if (suffix.equals("txt")) {
                 mimeType = "text/plain";
 	    } else if (suffix.equals("mov")) {
