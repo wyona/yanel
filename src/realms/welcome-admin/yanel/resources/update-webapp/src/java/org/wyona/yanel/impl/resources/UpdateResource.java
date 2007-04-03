@@ -61,7 +61,6 @@ public class UpdateResource extends Resource implements ViewableV2 {
      * 
      */
     public UpdateResource() {
-        defaultLanguage = getRealm().getDefaultLanguage();
     }
 
     /**
@@ -77,6 +76,7 @@ public class UpdateResource extends Resource implements ViewableV2 {
     public View getView(String viewId) throws Exception {
 
         String path = getPath();
+        defaultLanguage = getRealm().getDefaultLanguage();
 
         // Get language
         try {
