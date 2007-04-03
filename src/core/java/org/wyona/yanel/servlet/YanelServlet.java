@@ -61,6 +61,7 @@ import org.wyona.yanel.util.ResourceAttributeHelper;
 
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.IdentityManager;
+import org.wyona.security.core.api.IdentityMap;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.Role;
 import org.wyona.security.core.api.User;
@@ -478,7 +479,7 @@ public class YanelServlet extends HttpServlet {
                             // note: this will throw an exception if the document is checked out already
                             // by another user.
                             Identity identity = getIdentity(request);
-                            String userID = identity.getUser().getID();
+                            String userID = identity.getUsername();
                             VersionableV2 versionable = (VersionableV2)res;
                             if (versionable.isCheckedOut()) {
                                 String checkoutUserID = versionable.getCheckoutUserID(); 
@@ -1379,9 +1380,9 @@ public class YanelServlet extends HttpServlet {
                     User user = realm.getIdentityManager().getUserManager().getUser(loginUsername);
                     if (user != null && user.authenticate(request.getParameter("yanel.login.password"))) {
                         log.debug("Realm: " + realm);
-                        HashMap identityMap = (HashMap)session.getAttribute(IDENTITY_MAP_KEY);
+                        IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
                         if (identityMap == null) {
-                            identityMap = new HashMap();
+                            identityMap = new IdentityMap();
                             session.setAttribute(IDENTITY_MAP_KEY, identityMap);
                         }
                         identityMap.put(realm.getID(), new Identity(user));
@@ -1436,9 +1437,9 @@ public class YanelServlet extends HttpServlet {
                     User user = realm.getIdentityManager().getUserManager().getUser(username);
                     if (user != null && user.authenticate(password)) {
                         log.info("Authentication successful: " + username);
-                        HashMap identityMap = (HashMap)session.getAttribute(IDENTITY_MAP_KEY);
+                        IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
                         if (identityMap == null) {
-                            identityMap = new HashMap();
+                            identityMap = new IdentityMap();
                             session.setAttribute(IDENTITY_MAP_KEY, identityMap);
                         }
                         identityMap.put(realm.getID(), new Identity(user));
@@ -1546,7 +1547,7 @@ public class YanelServlet extends HttpServlet {
             // TODO: should we logout only from the current realm, or from all realms?
             // -> logout only from the current realm
             Realm realm = map.getRealm(request.getServletPath());
-            HashMap identityMap = (HashMap)session.getAttribute(IDENTITY_MAP_KEY);
+            IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
             if (identityMap != null && identityMap.containsKey(realm.getID())) {
                 identityMap.remove(realm.getID());
             }
@@ -1879,7 +1880,7 @@ public class YanelServlet extends HttpServlet {
         buf.append("</div>");
         Identity identity = getIdentity(request);
         if (identity != null) {
-            buf.append("<span id=\"yaneltoolbar_user\">User: " + identity.getUser().getID() + " (Realm: " + resource.getRealm().getName() + ")</span>");
+            buf.append("<span id=\"yaneltoolbar_user\">User: " + identity.getUsername() + " (Realm: " + resource.getRealm().getName() + ")</span>");
         } else {
             buf.append("<span id=\"yaneltoolbar_user\">User: Not signed in!</span>");
         }
@@ -1973,7 +1974,7 @@ public class YanelServlet extends HttpServlet {
         Realm realm = map.getRealm(request.getServletPath());
         HttpSession session = request.getSession(false);
         if (session != null) {
-            HashMap identityMap = (HashMap)session.getAttribute(IDENTITY_MAP_KEY);
+            IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
             if (identityMap != null) {
                 return (Identity)identityMap.get(realm.getID());
             }
