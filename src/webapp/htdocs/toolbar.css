@@ -33,6 +33,13 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
   top: 3px;
 }
 
+#yaneltoolbar_realm {
+  position: absolute;
+  right: 200px;
+  float: right;
+  top: 3px;
+}
+
 /* menu style starts here */
 #yaneltoolbar_menu{
   width:100%;

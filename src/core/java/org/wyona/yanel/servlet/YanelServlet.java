@@ -1880,10 +1880,11 @@ public class YanelServlet extends HttpServlet {
         buf.append("</div>");
         Identity identity = getIdentity(request);
         if (identity != null) {
-            buf.append("<span id=\"yaneltoolbar_user\">User: " + identity.getUsername() + " (Realm: " + resource.getRealm().getName() + ")</span>");
+            buf.append("<span id=\"yaneltoolbar_user\">User: " + identity.getUsername() + "</span>");
         } else {
             buf.append("<span id=\"yaneltoolbar_user\">User: Not signed in!</span>");
         }
+        buf.append("<span id=\"yaneltoolbar_realm\">Realm: " + resource.getRealm().getName() + "</span>");
         
         buf.append("<img src=\"" + backToRealm + reservedPrefix + "/yanel_toolbar_logo.png\" id=\"yaneltoolbar_logo\"/>");
         buf.append("</div>");
