@@ -1792,15 +1792,18 @@ public class YanelServlet extends HttpServlet {
         sb.append("<div id=\"yaneltoolbar_menutitle\">Yanel</div><ul>");
         sb.append("<li><a href=\"?yanel.resource.meta\">View page info</a></li>");
         sb.append("<li><a href=\"?yanel.toolbar=off\">Turn off toolbar</a></li>");
-        if (getIdentity(request) != null) {
+        Identity identity = getIdentity(request);
+        if (identity != null) {
+            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/users/" + identity.getUsername() + ".html\">My profile</a></li>");
             sb.append("<li><a href=\"?yanel.usecase=logout\"><img class=\"yaneltoolbar_menuicon\" src=\"" + backToRealm + reservedPrefix + "/yanel-img/icons/system-log-out.png\" border=\"0\"/>Logout</a></li>");
         }
         sb.append("</ul></li></ul>");
         sb.append("<ul><li>");
 
         sb.append("<div id=\"yaneltoolbar_menutitle\">File</div><ul>");
-        sb.append("<li><a href=\"" + backToRealm + "create-new-page.html\">New</a></li>");
+        sb.append("<li><a href=\"" + backToRealm + "create-new-page.html\">New</a><ul><li>Standard page (XHTML)</li><li>Wiki page</li></ul></li>");
         sb.append("<li class=\"haschild\">New language<ul><li>German</li><li>Mandarin</li></ul></li>");
+        sb.append("<li>Publish</li>");
         sb.append("</ul></li></ul>");
 
         sb.append("<ul><li>");
