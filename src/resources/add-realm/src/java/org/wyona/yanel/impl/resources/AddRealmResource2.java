@@ -168,7 +168,27 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
     private Document getFromScratchInputDocument() {
         Document doc = getDocument();
         Element rootElement = doc.getDocumentElement();
-        rootElement.appendChild(doc.createElementNS(NAMESPACE, "from-scratch"));
+        Element fromScratchElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "from-scratch"));
+        Element parameterElement = (Element) fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
+        parameterElement.setAttributeNS(NAMESPACE, "sample-value", getParameter());
         return doc;
+    }
+
+    /**
+     * Get parameter from custom configuration
+     */
+    private String getParameter() {
+        try {
+            org.jdom.Document jdomDocument = new org.jdom.input.DOMBuilder().build(getConfiguration().getCustomConfiguration());
+
+            org.jdom.xpath.XPath xpath = org.jdom.xpath.XPath.newInstance("/yanel:custom-config/arr:parameter[@name='realmid']/@samplevalue");
+            xpath.addNamespace("yanel", "http://www.wyona.org/yanel/rti/1.0");
+	    xpath.addNamespace("arr", "http://www.wyona.org/yanel/resource/add-realm-resource/1.0");
+
+            org.jdom.Attribute sampleValue = (org.jdom.Attribute) xpath.selectSingleNode(jdomDocument);
+            return sampleValue.getValue();
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
