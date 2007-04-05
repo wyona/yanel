@@ -19,13 +19,18 @@ package org.wyona.yanel.impl.resources;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.io.StringBufferInputStream;
+import java.io.ByteArrayOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import org.apache.log4j.Category;
 
@@ -41,6 +46,8 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 public class AddRealmResource2 extends Resource implements ViewableV1 {
 
     private static Category log = Category.getInstance(AddRealmResource2.class);
+
+    String NAMESPACE = "http://www.wyona.org/yanel/1.0";
 
     /**
      * 
@@ -68,32 +75,17 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
     }
 
     /**
-     * 
+     * Get view
      */
     public View getView(HttpServletRequest request, String viewId) throws Exception {
         String addType = getConfiguration().getProperty("add-type");
 
         if (addType != null && addType.equals("from-scratch")) {
-            return null;
+            return getFromScratchView(request, viewId);
         } else if (addType != null && addType.equals("from-existing-website")) {
-            return null;
+            return getFromExistingWebsiteView(request, viewId);
         } else {
-        View view = new View();
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-        sb.append("<head>");
-        sb.append("<title>Add Realm Resource</title>");
-        sb.append("</head>");
-        sb.append("<body>");
-        sb.append("<div id=\"contenBody\">");
-        sb.append("<h1>No such type: " + addType + "</h1>");
-        sb.append("</div>");
-        sb.append("</body>");
-        sb.append("</html>");
-
-        view.setMimeType("application/xhtml+xml");
-        view.setInputStream(new StringBufferInputStream(sb.toString()));
-        return view;
+            return getExceptionView("No such type: " + addType);
         }
     }
 
@@ -103,7 +95,6 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
     public Document getDocument() {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
-        String NAMESPACE = "http://www.wyona.org/yanel/1.0";
         Document document = null;
         try {
             DocumentBuilder parser = dbf.newDocumentBuilder();
@@ -112,5 +103,62 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
             log.error(e.getMessage(), e);
         }
         return document;
+    }
+
+    /**
+     * Get exception view
+     */
+    private View getExceptionView(String message) {
+        View view = new View();
+        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+        sb.append("<head>");
+        sb.append("<title>Add Realm Resource</title>");
+        sb.append("</head>");
+        sb.append("<body>");
+        sb.append("<div id=\"contenBody\">");
+        sb.append("<h1>" + message + "</h1>");
+        sb.append("</div>");
+        sb.append("</body>");
+        sb.append("</html>");
+
+        view.setMimeType("application/xhtml+xml");
+        view.setInputStream(new StringBufferInputStream(sb.toString()));
+        return view;
+    }
+
+    /**
+     * Get from scratch view
+     */
+    public View getFromScratchView(HttpServletRequest request, String viewId) throws Exception {
+        Document document = getFromScratchInputDocument();
+
+        if (viewId.equals("xml")) {
+            View view = new View();
+            view.setMimeType("application/xml");
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            TransformerFactory.newInstance().newTransformer().transform(new DOMSource(document), new StreamResult(byteArrayOutputStream));
+            view.setInputStream(new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
+            return view;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get from existing website view
+     */
+    public View getFromExistingWebsiteView(HttpServletRequest request, String viewId) throws Exception {
+        return null;
+    }
+
+    /**
+     *
+     */
+    private Document getFromScratchInputDocument() {
+        Document doc = getDocument();
+        Element rootElement = doc.getDocumentElement();
+        rootElement.appendChild(doc.createElementNS(NAMESPACE, "from-scratch"));
+        return doc;
     }
 }
