@@ -2,19 +2,14 @@
 
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="add-realm" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="add-type" value="from-scratch"/>
+  <yanel:property name="xslt" value="xslt/add-realm-from-scratch.xsl"/>
   
   <yanel:custom-config xmlns:arr="http://www.wyona.org/yanel/resource/add-realm-resource/1.0">
     <arr:parameter name="realmid" samplevalue="my-realm" required="true" />
     <arr:parameter name="realmname" samplevalue="My Realm" required="true" />
     <!-- NOTE: An empty value means that the parent directory of the "from-scratch-realm" is being used -->
     <arr:parameter name="fslocation" value="" samplevalue="C:/realms" required="true" />
-
-
-
-    <arr:parameter name="url" samplevalue="http://www.foo.bar" required="true" />
-    <arr:parameter name="crawldepth" samplevalue="3" required="true" />
-    <arr:parameter name="crawlmaxpages" value="100" samplevalue="100" required="true" hidden="true" />
-    <arr:parameter name="crawlmaxfilesize" value="-1" samplevalue="100 [size in kb]" required="true" hidden="true" />
-    <arr:parameter name="scope" samplevalue="http://www.foo.bar, http://www.f-o-o.bar" required="false" />
   </yanel:custom-config>
 </yanel:resource-config>
