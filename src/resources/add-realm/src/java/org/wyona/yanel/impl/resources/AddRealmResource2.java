@@ -53,6 +53,24 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
     String NAMESPACE = "http://www.wyona.org/yanel/1.0";
 
     /**
+     *
+     */
+    class Parameter {
+        public String name;
+        public String sampleValue;
+        public String setValue;
+        public boolean required = false;
+        public boolean hidden = false;
+
+        /**
+	 *
+	 */
+        public Parameter(String name) {
+            this.name =  name;
+        }
+    }
+
+    /**
      * 
      */
     public AddRealmResource2() {
@@ -171,25 +189,36 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         Element fromScratchElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "from-scratch"));
 
         Element parameterElement = null;
+        Parameter para = null;
 
+        para = getParameterFromResourceConfig("realmid");
         parameterElement = (Element) fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
-        parameterElement.setAttributeNS(NAMESPACE, "name", "realm-id");
-        parameterElement.setAttributeNS(NAMESPACE, "sample-value", getParameterFromResourceConfig("realmid"));
+        parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
+        parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
 
+        para = getParameterFromResourceConfig("realmname");
         parameterElement = (Element) fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
-        parameterElement.setAttributeNS(NAMESPACE, "name", "realm-name");
-        parameterElement.setAttributeNS(NAMESPACE, "sample-value", getParameterFromResourceConfig("realmname"));
+        parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
+        parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
 
+        para = getParameterFromResourceConfig("fslocation");
         parameterElement = (Element) fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
-        parameterElement.setAttributeNS(NAMESPACE, "name", "fs-location");
-        parameterElement.setAttributeNS(NAMESPACE, "sample-value", getParameterFromResourceConfig("fslocation"));
+        parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
+        parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
+        if (para.setValue != null) {
+            if (para.setValue.length() == 0) {
+                parameterElement.setAttributeNS(NAMESPACE, "value", "/home/michi");
+            } else {
+                parameterElement.setAttributeNS(NAMESPACE, "value", para.setValue);
+            }
+        }
         return doc;
     }
 
     /**
      * Get parameter from custom configuration
      */
-    private String getParameterFromResourceConfig(String name) {
+    private Parameter getParameterFromResourceConfig(String name) {
         try {
             org.jdom.Document jdomDocument = new org.jdom.input.DOMBuilder().build(getConfiguration().getCustomConfiguration());
 
@@ -197,8 +226,19 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
             xpath.addNamespace("yanel", "http://www.wyona.org/yanel/rti/1.0");
 	    xpath.addNamespace("arr", "http://www.wyona.org/yanel/resource/add-realm-resource/1.0");
 
+            Parameter para = new Parameter(name);
+
             org.jdom.Attribute sampleValue = (org.jdom.Attribute) xpath.selectSingleNode(jdomDocument);
-            return sampleValue.getValue();
+            para.sampleValue = sampleValue.getValue();
+
+            org.jdom.xpath.XPath xxpath = org.jdom.xpath.XPath.newInstance("/yanel:custom-config/arr:parameter[@name='" + name + "']/@value");
+            xxpath.addNamespace("yanel", "http://www.wyona.org/yanel/rti/1.0");
+	    xxpath.addNamespace("arr", "http://www.wyona.org/yanel/resource/add-realm-resource/1.0");
+            org.jdom.Attribute value = (org.jdom.Attribute) xxpath.selectSingleNode(jdomDocument);
+            if (value != null) {
+                para.setValue = value.getValue();
+            }
+            return para;
         } catch (Exception e) {
             return null;
         }
