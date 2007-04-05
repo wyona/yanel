@@ -18,6 +18,7 @@ package org.wyona.yanel.impl.resources;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.io.File;
 import java.io.StringBufferInputStream;
 import java.io.ByteArrayOutputStream;
 
@@ -25,9 +26,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -133,16 +136,23 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
     public View getFromScratchView(HttpServletRequest request, String viewId) throws Exception {
         Document document = getFromScratchInputDocument();
 
-        if (viewId.equals("xml")) {
-            View view = new View();
+        View view = new View();
+        Transformer transformer = null;
+
+        if (viewId != null && viewId.equals("xml")) {
             view.setMimeType("application/xml");
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            TransformerFactory.newInstance().newTransformer().transform(new DOMSource(document), new StreamResult(byteArrayOutputStream));
-            view.setInputStream(new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
-            return view;
+            transformer = TransformerFactory.newInstance().newTransformer();
         } else {
-            return null;
+            view.setMimeType("application/xhtml+xml");
+            File xsltFile = org.wyona.commons.io.FileUtil.file(getRTD().getConfigFile().getParentFile().getAbsolutePath(), getConfiguration().getProperty("xslt"));
+            transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
+            //transformer.setParameter();
         }
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        transformer.transform(new DOMSource(document), new StreamResult(byteArrayOutputStream));
+        view.setInputStream(new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
+        return view;
     }
 
     /**
