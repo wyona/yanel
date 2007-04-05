@@ -180,8 +180,8 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             // create second xslt transformer:
             TransformerHandler xsltHandler2 = tf.newTransformerHandler(getXSLTStreamSource(path, repository));
             transformer = xsltHandler2.getTransformer();
-            transformer.setParameter("yanel.path.name", path.getName());
-            transformer.setParameter("yanel.path", path.toString());
+            transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+            transformer.setParameter("yanel.path", getPath());
             transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
             transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
 
