@@ -10,7 +10,7 @@ Add Realm Resource
 </description>
 
 <rtd>
-  <property name="fslocation" default-value=""/>
-  <property name="crawlmaxpages" default-value="100"/>
+  <property name="add-type" default-value="from-scratch"/>
+  <property name="xslt" default="xslt/add-realm-from-scratch.xsl"/>
 </rtd>
 </resource>
