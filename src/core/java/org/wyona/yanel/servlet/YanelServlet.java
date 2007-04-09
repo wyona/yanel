@@ -41,6 +41,7 @@ import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
+import org.wyona.yanel.core.api.attributes.TranslatableV1;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
@@ -471,6 +472,17 @@ public class YanelServlet extends HttpServlet {
                         Element notVersionableElement = (Element) resourceElement.appendChild(doc.createElement("not-versionable"));
                     }
                     
+                    if (ResourceAttributeHelper.hasAttributeImplemented(res, "Translatable", "1")) {
+                        TranslatableV1 translatable = ((TranslatableV1) res);
+                        Element translationsElement = (Element) resourceElement.appendChild(doc.createElement("translations"));
+                        String[] languages = translatable.getLanguages();
+                        for (int i=0; i<languages.length; i++) {
+                            Element translationElement = (Element) translationsElement.appendChild(doc.createElement("translation"));
+                            translationElement.setAttribute("language", languages[i]);
+                            String path = translatable.getTranslation(languages[i]).getPath();
+                            translationElement.setAttribute("path", path);
+                        }
+                    }
                     
                     if (usecase != null && usecase.equals("checkout")) {
                         log.debug("Checkout data ...");
@@ -1606,7 +1618,7 @@ public class YanelServlet extends HttpServlet {
      *
      */
     private void setYanelOutput(HttpServletRequest request, HttpServletResponse response, Document doc) throws ServletException {
-        String path = request.getServletPath();
+        String path = getResource(request, response).getPath();
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(path);
         
         try {
