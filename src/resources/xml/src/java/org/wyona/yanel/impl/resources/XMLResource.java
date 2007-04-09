@@ -24,9 +24,13 @@ import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
+import org.wyona.yanel.core.api.attributes.TranslatableV1;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
+import org.wyona.yanel.core.attributes.translatable.TranslationException;
+import org.wyona.yanel.core.attributes.translatable.TranslationManager;
+import org.wyona.yanel.core.attributes.translatable.TranslationManagerRegistry;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
@@ -84,7 +88,7 @@ import org.apache.xml.serializer.Serializer;
 /**
  *
  */
-public class XMLResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2, IntrospectableV1 {
+public class XMLResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2, IntrospectableV1, TranslatableV1 {
 
     private static Category log = Category.getInstance(XMLResource.class);
 
@@ -154,11 +158,11 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                     if (os != null) xsltHandlers[i].getTransformer().setParameter("os", os);
                     String client = getClient(userAgent);
                     if (client != null) xsltHandlers[i].getTransformer().setParameter("client", client);
-                    xsltHandlers[i].getTransformer().setParameter("language", getLanguage());
+                    xsltHandlers[i].getTransformer().setParameter("language", getRequestedLanguage());
                 }
                 
                 // create i18n transformer:
-                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage(), getRealm().getDefaultLanguage());
+                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getRequestedLanguage(), getRealm().getDefaultLanguage());
                 i18nTransformer.setEntityResolver(catalogResolver);
                 
                 // create xinclude transformer:
@@ -201,7 +205,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     /**
      * Get language with the following priorization: 1) yanel.meta.language query string parameter, 2) Resource Configuration property, 3) Accept-Language header, 4) Default language or realm
      */
-    private String getLanguage() throws Exception {
+    private String getRequestedLanguage() throws Exception {
         // TODO: Make this reusable. Also see org/wyona/yanel/servlet/YanelServlet.java
         String language = getRequest().getParameter("yanel.meta.language");
 
@@ -616,5 +620,34 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         sb.append("</edit>");
         sb.append("</introspection>");
         return sb.toString();
+    }
+
+    protected TranslationManager getTranslationManager() throws TranslationException {
+        TranslationManagerRegistry registry = (TranslationManagerRegistry)getYanel().getTranslationManagerRegistry();
+        return registry.getTranslationManager(getRealm());
+    }
+
+    public String getLanguage() throws TranslationException {
+        return getTranslationManager().getLanguage(this);
+    }
+
+    public String[] getLanguages() throws TranslationException {
+        return getTranslationManager().getLanguages(this);
+    }
+    
+    public Resource getTranslation(String language) throws TranslationException {
+        return getTranslationManager().getTranslation(this, language);
+    }
+
+    public void addTranslation(Resource resource, String language) throws TranslationException {
+        getTranslationManager().addTranslation(this, resource, language);
+    }
+
+    public boolean hasTranslation(String language) throws TranslationException {
+        return getTranslationManager().hasTranslation(this, language);
+    }
+
+    public void removeTranslation(String language) throws TranslationException {
+        getTranslationManager().removeTranslation(this, language);
     }
 }
