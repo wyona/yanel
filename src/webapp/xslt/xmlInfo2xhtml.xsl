@@ -188,7 +188,18 @@
       </table>
     </li>
   </xsl:template>
-  
+
+  <xsl:template match="translations">
+    <li>Translations:
+      <xsl:apply-templates/>
+    </li>
+  </xsl:template>
+
+  <xsl:template match="translation">
+    <a href="{$yanel.back2realm}{@path}"><xsl:value-of select="@language"/></a>
+    <xsl:if test="position() != last()">, </xsl:if>
+  </xsl:template>
+
 <!-- OBSOLETE
   <xsl:template match="no-resource-type-identifier">
     <p>
