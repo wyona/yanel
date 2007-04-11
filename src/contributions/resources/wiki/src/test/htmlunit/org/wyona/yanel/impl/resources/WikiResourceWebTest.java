@@ -32,7 +32,7 @@ public class WikiResourceWebTest extends AbstractHtmlUnitTest {
      * Loads a page and verifies its title.
      */
     public void testXMLResource() throws Exception {
-        loadHtmlPage("yanel-website/wiki/hello-world.html");
+        loadHtmlPage("test/use-cases/hello/wiki/hello-world.html");
         assertTitleEquals("A Wiki page - Yanel");
         assertPageContainsText("Wiki Test Page");
     }
