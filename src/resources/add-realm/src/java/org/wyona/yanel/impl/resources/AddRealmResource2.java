@@ -243,6 +243,14 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
             if (value != null) {
                 para.setValue = value.getValue();
             }
+
+            org.jdom.xpath.XPath xxxpath = org.jdom.xpath.XPath.newInstance("/yanel:custom-config/arr:parameter[@name='" + name + "']/@required");
+            xxxpath.addNamespace("yanel", "http://www.wyona.org/yanel/rti/1.0");
+	    xxxpath.addNamespace("arr", "http://www.wyona.org/yanel/resource/add-realm-resource/1.0");
+            org.jdom.Attribute required = (org.jdom.Attribute) xxxpath.selectSingleNode(jdomDocument);
+            if (required != null) {
+                para.required = required.getBooleanValue();
+            }
             return para;
         } catch (Exception e) {
             return null;
