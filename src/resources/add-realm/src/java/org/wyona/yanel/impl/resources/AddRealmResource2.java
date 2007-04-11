@@ -212,7 +212,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
         if (para.setValue != null) {
             if (para.setValue.length() == 0) {
-                parameterElement.setAttributeNS(NAMESPACE, "configuration-value", getYanel().getRealmConfiguration().getRealm("from-scratch-realm-template").getRootDir().getAbsolutePath());
+                parameterElement.setAttributeNS(NAMESPACE, "configuration-value", getYanel().getRealmConfiguration().getRealm("from-scratch-realm-template").getRootDir().getParent());
             } else {
                 parameterElement.setAttributeNS(NAMESPACE, "configuration-value", para.setValue);
             }
