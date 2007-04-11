@@ -272,10 +272,17 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
             }
         }
 
-        if (valid) {
-            fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "valid"));
-        } else {
-            fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "not-valid"));
+        if (request.getParameter("submit-from-scratch") != null) {
+            if (valid) {
+                fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "valid"));
+            } else {
+                fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "not-valid"));
+            }
+        }
+
+        if (valid && request.getParameter("confirm") != null && request.getParameter("confirm").equals("true")) {
+            fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "realm-created"));
+            // TODO: Create realm ...
         }
 
         return doc;
