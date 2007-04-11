@@ -35,6 +35,12 @@
             <link rel="stylesheet" href="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-css/global.css" type="text/css"/>
           </head>
           <body>
+
+<xsl:comment>
+Back 2 Realm: <xsl:value-of select="$yanel.back2realm"/>,
+Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
+</xsl:comment>
+
         <table cellspacing="0" cellpadding="0" id="bodytable">
           <tr>
             <td id="title">
