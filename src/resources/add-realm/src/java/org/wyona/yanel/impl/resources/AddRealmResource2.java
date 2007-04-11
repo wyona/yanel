@@ -190,19 +190,25 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
 
         Element parameterElement = null;
         Parameter para = null;
+        boolean valid = true;
 
         // Parameter "realmid"
         para = getParameterFromResourceConfig("realmid");
         parameterElement = (Element) fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
         parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
         parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
-        if (request.getParameter("from-scratch") != null) {
+        if (request.getParameter("submit-from-scratch") != null) {
             String realmIdValue = request.getParameter("realmid");
             if (realmIdValue != null) {
-                // TODO: validate value ...
-                parameterElement.setAttributeNS(NAMESPACE, "value", realmIdValue);
+                valid = valid && validateRealmId(realmIdValue);
+                if (validateRealmId(realmIdValue)) {
+                    parameterElement.setAttributeNS(NAMESPACE, "value", realmIdValue);
+                } else {
+                    parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is wrong ...!");
+                }
             } else {
-                parameterElement.setAttributeNS(NAMESPACE, "exception", "required");
+                parameterElement.setAttributeNS(NAMESPACE, "exception", "NullPointer");
+                valid = valid && false;
             }
         }
 
@@ -264,5 +270,14 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    /**
+     *
+     */
+    private boolean validateRealmId(String value) {
+        if (value.length() < 1) return false;
+        // TODO: Check for whitespace ...
+        return true;
     }
 }
