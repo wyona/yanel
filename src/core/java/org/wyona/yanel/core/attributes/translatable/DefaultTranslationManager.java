@@ -59,10 +59,13 @@ public class DefaultTranslationManager implements TranslationManager {
         try {
             this.pages = new HashSet();
             this.languageVersions = new HashMap();
-            this.node = realm.getRepository().getNode("/translations.xml");
-            load();
-        } catch (NoSuchNodeException e) {
-            log.info("Realm " + realm.getID() + " contains no translations.xml");
+            String translationsPath = "/translations.xml";
+            if (realm.getRepository().existsNode(translationsPath)) {
+                this.node = realm.getRepository().getNode(translationsPath);
+                load();
+            } else {
+                log.info("Realm " + realm.getID() + " contains no translations.xml");
+            }
         } catch (Exception e) {
             throw new TranslationException(e.getMessage(), e);
         }
