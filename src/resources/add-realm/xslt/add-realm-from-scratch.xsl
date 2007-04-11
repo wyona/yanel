@@ -30,8 +30,15 @@
   </xsl:template>
 
   <xsl:template match="yanel:parameter">
-    <tr><td><xsl:value-of select="@yanel:name"/></td><td><input type="text" name="{@yanel:name}" value="{@yanel:value}"/></td></tr>
-    <tr><td>&#160;</td><td align="right">(i.e. <xsl:value-of select="@yanel:sample-value"/>)</td></tr>
+    <xsl:choose>
+      <xsl:when test="@yanel:configuration-value">
+    <tr><td><xsl:value-of select="@yanel:name"/></td><td><xsl:value-of select="@yanel:configuration-value"/></td></tr>
+      </xsl:when>
+      <xsl:otherwise>
+        <tr><td><xsl:value-of select="@yanel:name"/></td><td><input type="text" name="{@yanel:name}" value="{@yanel:value}"/></td></tr>
+        <tr><td>&#160;</td><td align="right">(i.e. <xsl:value-of select="@yanel:sample-value"/>)</td></tr>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
    
 </xsl:stylesheet>
