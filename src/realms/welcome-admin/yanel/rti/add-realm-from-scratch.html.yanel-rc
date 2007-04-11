@@ -7,9 +7,9 @@
   <yanel:property name="xslt" value="xslt/add-realm-from-scratch.xsl"/>
   
   <yanel:custom-config xmlns:arr="http://www.wyona.org/yanel/resource/add-realm-resource/1.0">
-    <arr:parameter name="realmid" samplevalue="my-realm" required="true" />
-    <arr:parameter name="realmname" samplevalue="My Realm" required="true" />
+    <arr:parameter name="realmid" samplevalue="my-realm" required="true"/>
+    <arr:parameter name="realmname" samplevalue="My Realm" required="true"/>
     <!-- NOTE: An empty value means that the parent directory of the "from-scratch-realm" is being used. No value attribute means that the value becomes configurable by the user. -->
-    <arr:parameter name="fslocation" value="" samplevalue="C:/realms" required="true" />
+    <arr:parameter name="fslocation" value="" samplevalue="C:/realms" required="true" hidden="false"/>
   </yanel:custom-config>
 </yanel:resource-config>
