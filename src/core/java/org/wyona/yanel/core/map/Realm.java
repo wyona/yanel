@@ -190,7 +190,8 @@ public class Realm {
             if (rootDirConfig != null) {
                 File rootDirFile = new File(rootDirConfig.getValue());
                 if (!rootDirFile.isAbsolute()) {
-                    return new File(org.wyona.commons.io.FileUtil.concat(getConfigFile().getParent(), rootDirFile.toString()));
+                    return new File(org.apache.commons.io.FilenameUtils.concat(getConfigFile().getParent(), rootDirFile.toString()));
+                    //return new File(org.wyona.commons.io.FileUtil.concat(getConfigFile().getParent(), rootDirFile.toString()));
                 } else {
                     return rootDirFile;
                 }
