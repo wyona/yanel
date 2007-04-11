@@ -196,6 +196,15 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         parameterElement = (Element) fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
         parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
         parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
+        if (request.getParameter("from-scratch") != null) {
+            String realmIdValue = request.getParameter("realmid");
+            if (realmIdValue != null) {
+                // TODO: validate value ...
+                parameterElement.setAttributeNS(NAMESPACE, "value", realmIdValue);
+            } else {
+                parameterElement.setAttributeNS(NAMESPACE, "exception", "required");
+            }
+        }
 
         // Parameter "realmname"
         para = getParameterFromResourceConfig("realmname");
