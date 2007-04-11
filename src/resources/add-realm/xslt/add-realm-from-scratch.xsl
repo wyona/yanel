@@ -30,6 +30,7 @@
   </xsl:template>
 
   <xsl:template match="yanel:parameter">
+    <xsl:apply-templates select="@yanel:exception"/>
     <xsl:choose>
       <xsl:when test="@yanel:configuration-value">
     <tr><td><xsl:value-of select="@yanel:name"/></td><td><xsl:value-of select="@yanel:configuration-value"/></td></tr>
@@ -39,6 +40,10 @@
         <tr><td>&#160;</td><td align="right">(i.e. <xsl:value-of select="@yanel:sample-value"/>)</td></tr>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+
+  <xsl:template match="@yanel:exception">
+    <tr><td colspan="2"><font color="red">Exception:</font> <xsl:value-of select="."/></td></tr>
   </xsl:template>
    
 </xsl:stylesheet>
