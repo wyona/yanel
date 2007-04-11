@@ -23,10 +23,17 @@ import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.yarep.core.Repository;
 
+import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
+
+import org.apache.log4j.Category;
+
 /**
  *
  */
 public class Realm {
+
+    private Category log = Category.getInstance(Realm.class);
 
     private String name;
     private String id;
@@ -173,4 +180,24 @@ public class Realm {
         this.defaultLanguage = language;
     }
 
+    /**
+     * Please note that the root-dir element is optional
+     */
+    public File getRootDir() {
+        try {
+            Configuration realmConfig = new DefaultConfigurationBuilder().buildFromFile(getConfigFile());
+            Configuration rootDirConfig = realmConfig.getChild("root-dir", false);
+            if (rootDirConfig != null) {
+                File rootDirFile = new File(rootDirConfig.getValue());
+                if (!rootDirFile.isAbsolute()) {
+                    return new File(org.wyona.commons.io.FileUtil.concat(getConfigFile().getParent(), rootDirFile.toString()));
+                } else {
+                    return rootDirFile;
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return null;
+    }
 }
