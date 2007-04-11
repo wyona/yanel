@@ -197,6 +197,8 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         parameterElement = (Element) fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
         parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
         parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
+        parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
+        parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
         if (request.getParameter("submit-from-scratch") != null) {
             String realmIdValue = request.getParameter("realmid");
             if (realmIdValue != null) {
@@ -217,6 +219,22 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         parameterElement = (Element) fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
         parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
         parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
+        parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
+        parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
+        if (request.getParameter("submit-from-scratch") != null) {
+            String realmNameValue = request.getParameter("realmname");
+            if (realmNameValue != null) {
+                valid = valid && validateRealmName(realmNameValue);
+                if (validateRealmName(realmNameValue)) {
+                    parameterElement.setAttributeNS(NAMESPACE, "value", realmNameValue);
+                } else {
+                    parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is really wrong ...!");
+                }
+            } else {
+                parameterElement.setAttributeNS(NAMESPACE, "exception", "NullPointer");
+                valid = valid && false;
+            }
+        }
 
         // Parameter "fslocation"
         para = getParameterFromResourceConfig("fslocation");
@@ -226,12 +244,40 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
         parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
         if (para.setValue != null) {
+            String configurationValue = null;
             if (para.setValue.length() == 0) {
-                parameterElement.setAttributeNS(NAMESPACE, "configuration-value", getYanel().getRealmConfiguration().getRealm("from-scratch-realm-template").getRootDir().getParent());
+                configurationValue = getYanel().getRealmConfiguration().getRealm("from-scratch-realm-template").getRootDir().getParent();
             } else {
-                parameterElement.setAttributeNS(NAMESPACE, "configuration-value", para.setValue);
+                configurationValue = para.setValue;
+            }
+            parameterElement.setAttributeNS(NAMESPACE, "configuration-value", configurationValue);
+            valid = valid && validateFSLocation(configurationValue);
+            if (!validateFSLocation(configurationValue)) {
+                parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is completely wrong ...!");
+            }
+        } else {
+            if (request.getParameter("submit-from-scratch") != null) {
+                String fsLocationValue = request.getParameter("fslocation");
+                if (fsLocationValue != null) {
+                    valid = valid && validateFSLocation(fsLocationValue);
+                    if (validateFSLocation(fsLocationValue)) {
+                        parameterElement.setAttributeNS(NAMESPACE, "value", fsLocationValue);
+                    } else {
+                        parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is absolutely wrong ...!");
+                    }
+                } else {
+                    parameterElement.setAttributeNS(NAMESPACE, "exception", "NullPointer");
+                    valid = valid && false;
+                }
             }
         }
+
+        if (valid) {
+            fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "valid"));
+        } else {
+            fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "not-valid"));
+        }
+
         return doc;
     }
 
@@ -266,6 +312,15 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
             if (required != null) {
                 para.required = required.getBooleanValue();
             }
+
+            org.jdom.xpath.XPath hiddenXPath = org.jdom.xpath.XPath.newInstance("/yanel:custom-config/arr:parameter[@name='" + name + "']/@hidden");
+            hiddenXPath.addNamespace("yanel", "http://www.wyona.org/yanel/rti/1.0");
+	    hiddenXPath.addNamespace("arr", "http://www.wyona.org/yanel/resource/add-realm-resource/1.0");
+            org.jdom.Attribute hidden = (org.jdom.Attribute) hiddenXPath.selectSingleNode(jdomDocument);
+            if (hidden != null) {
+                para.hidden = hidden.getBooleanValue();
+            }
+
             return para;
         } catch (Exception e) {
             return null;
@@ -278,6 +333,24 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
     private boolean validateRealmId(String value) {
         if (value.length() < 1) return false;
         // TODO: Check for whitespace ...
+        return true;
+    }
+
+    /**
+     *
+     */
+    private boolean validateRealmName(String value) {
+        if (value.length() < 1) return false;
+        // TODO: Check for whitespace ...
+        return true;
+    }
+
+    /**
+     *
+     */
+    private boolean validateFSLocation(String value) {
+        if (value.length() < 1) return false;
+        if (!new File(value).isDirectory()) return false;
         return true;
     }
 }
