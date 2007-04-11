@@ -3,7 +3,7 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="add-realm" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
-  <yanel:property name="add-type" value="test"/>
+  <yanel:property name="add-type" value="from-exsting-website"/>
   
   <yanel:custom-config xmlns:arr="http://www.wyona.org/yanel/resource/add-realm-resource/1.0">
     <arr:parameter name="realmid" samplevalue="my-realm" required="true" />
