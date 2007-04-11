@@ -20,6 +20,11 @@
       <h1>Add Realm From Scratch</h1>
       <a href="?yanel.resource.viewid=xml">Show XML</a>
 
+      <xsl:choose>
+        <xsl:when test="/yanel:add-realm/yanel:from-scratch/yanel:realm-created">
+	  <p>Realm has been created and registered</p>
+        </xsl:when>
+        <xsl:otherwise>
       <xsl:apply-templates select="/yanel:add-realm/yanel:from-scratch/yanel:not-valid"/>
       <xsl:apply-templates select="/yanel:add-realm/yanel:from-scratch/yanel:valid"/>
       <form>
@@ -38,6 +43,8 @@
         </xsl:choose>
         </table>
       </form>
+        </xsl:otherwise>
+        </xsl:choose>
       </body>
     </html>
   </xsl:template>
