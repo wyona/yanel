@@ -273,6 +273,7 @@ public class RealmConfiguration {
      * @param dir
      */
     protected File resolveFile(File file, File dir) {
+        // TODO: Replace this method by some method from org.wyona.commons.io.FileUtil ...
         if (!file.isAbsolute()) {
             if (dir.isDirectory()) {
                 //file = FileUtil.file(dir.getAbsolutePath(), file.toString());
