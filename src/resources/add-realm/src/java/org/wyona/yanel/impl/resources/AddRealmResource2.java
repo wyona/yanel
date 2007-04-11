@@ -199,8 +199,9 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
         parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
         parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
+        String realmIdValue = null;
         if (request.getParameter("submit-from-scratch") != null) {
-            String realmIdValue = request.getParameter("realmid");
+            realmIdValue = request.getParameter("realmid");
             if (realmIdValue != null) {
                 valid = valid && validateRealmId(realmIdValue);
                 if (validateRealmId(realmIdValue)) {
@@ -221,8 +222,9 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
         parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
         parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
+        String realmNameValue = null;
         if (request.getParameter("submit-from-scratch") != null) {
-            String realmNameValue = request.getParameter("realmname");
+            realmNameValue = request.getParameter("realmname");
             if (realmNameValue != null) {
                 valid = valid && validateRealmName(realmNameValue);
                 if (validateRealmName(realmNameValue)) {
@@ -243,21 +245,21 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
         parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
         parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
+        String fsLocationValue = null;
         if (para.setValue != null) {
-            String configurationValue = null;
             if (para.setValue.length() == 0) {
-                configurationValue = getYanel().getRealmConfiguration().getRealm("from-scratch-realm-template").getRootDir().getParent();
+                fsLocationValue = getYanel().getRealmConfiguration().getRealm("from-scratch-realm-template").getRootDir().getParent();
             } else {
-                configurationValue = para.setValue;
+                fsLocationValue = para.setValue;
             }
-            parameterElement.setAttributeNS(NAMESPACE, "configuration-value", configurationValue);
-            valid = valid && validateFSLocation(configurationValue);
-            if (!validateFSLocation(configurationValue)) {
+            parameterElement.setAttributeNS(NAMESPACE, "configuration-value", fsLocationValue);
+            valid = valid && validateFSLocation(fsLocationValue);
+            if (!validateFSLocation(fsLocationValue)) {
                 parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is completely wrong ...!");
             }
         } else {
             if (request.getParameter("submit-from-scratch") != null) {
-                String fsLocationValue = request.getParameter("fslocation");
+                fsLocationValue = request.getParameter("fslocation");
                 if (fsLocationValue != null) {
                     valid = valid && validateFSLocation(fsLocationValue);
                     if (validateFSLocation(fsLocationValue)) {
@@ -282,7 +284,12 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
 
         if (valid && request.getParameter("confirm") != null && request.getParameter("confirm").equals("true")) {
             fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "realm-created"));
-            // TODO: Create realm ...
+            try {
+                getYanel().getRealmConfiguration().copyRealm("from-scratch-realm-template", realmIdValue, realmNameValue, "/" + realmIdValue + "/", new File(fsLocationValue));
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+            }
         }
 
         return doc;
