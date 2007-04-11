@@ -22,7 +22,7 @@
       <form>
         <table>
         <xsl:apply-templates select="/yanel:add-realm/yanel:from-scratch/yanel:parameter"/>
-        <tr><td colspan="2" align="right"><input type="submit" name="from-scratch" value="Add Realm"/></td></tr>
+        <tr><td colspan="2" align="right"><input type="submit" name="submit-from-scratch" value="Add Realm"/></td></tr>
         </table>
       </form>
       </body>
