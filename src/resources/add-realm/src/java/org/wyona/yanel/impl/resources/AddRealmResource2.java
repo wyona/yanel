@@ -191,25 +191,30 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         Element parameterElement = null;
         Parameter para = null;
 
+        // Parameter "realmid"
         para = getParameterFromResourceConfig("realmid");
         parameterElement = (Element) fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
         parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
         parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
 
+        // Parameter "realmname"
         para = getParameterFromResourceConfig("realmname");
         parameterElement = (Element) fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
         parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
         parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
 
+        // Parameter "fslocation"
         para = getParameterFromResourceConfig("fslocation");
         parameterElement = (Element) fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
         parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
         parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
+        parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
+        parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
         if (para.setValue != null) {
             if (para.setValue.length() == 0) {
-                parameterElement.setAttributeNS(NAMESPACE, "value", "/home/michi");
+                parameterElement.setAttributeNS(NAMESPACE, "configuration-value", getYanel().getRealmConfiguration().getRealm("from-scratch-realm-template").getRootDir().getAbsolutePath());
             } else {
-                parameterElement.setAttributeNS(NAMESPACE, "value", para.setValue);
+                parameterElement.setAttributeNS(NAMESPACE, "configuration-value", para.setValue);
             }
         }
         return doc;
