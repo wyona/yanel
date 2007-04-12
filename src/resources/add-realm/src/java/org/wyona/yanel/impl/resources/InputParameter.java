@@ -67,4 +67,11 @@ public class InputParameter {
             return true;
         }
     }
+
+    /**
+     *
+     */
+    public String getValue() {
+        return value;
+    }
 }
