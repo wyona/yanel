@@ -310,7 +310,9 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         Element rootElement = doc.getDocumentElement();
         Element fromExistingWebsiteElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "from-existing-website"));
 
-        EventLog eventLog = (EventLog) request.getSession().getAttribute(SESSION_ATTR_EVENT_LOG);
+        HttpSession session = request.getSession();
+
+        EventLog eventLog = (EventLog) session.getAttribute(SESSION_ATTR_EVENT_LOG);
         if (eventLog != null) {
             Element deElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "downloadevents"));
             deElement.appendChild(doc.createTextNode(eventLog.getDownloadEvents()));
@@ -323,6 +325,22 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
 
             Element isdoneElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "isdone"));
             isdoneElement.appendChild(doc.createTextNode("" + eventLog.isDone()));
+
+            // TODO: Move this into the ImportSiteThread because it can lead to confusing results if two imports are happening at the same time within the same session!
+            if (eventLog.isDone()) {
+                session.removeAttribute(SESSION_ATTR_EVENT_LOG);
+                session.removeAttribute(SESSION_ATTR_CRAWLER);
+
+                Element realmIdElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "realm-id"));
+                realmIdElement.appendChild(doc.createTextNode((String) session.getAttribute(SESSION_ATTR_REALM_ID)));
+                session.removeAttribute(SESSION_ATTR_REALM_ID);
+
+                Element realmNameElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "realm-name"));
+                realmNameElement.appendChild(doc.createTextNode((String) session.getAttribute(SESSION_ATTR_REALM_NAME)));
+                session.removeAttribute(SESSION_ATTR_REALM_NAME);
+            }
+        } else {
+            // TODO: Import should be finished if no eventLog exists. Provide back link ...
         }
         return doc;
     }
