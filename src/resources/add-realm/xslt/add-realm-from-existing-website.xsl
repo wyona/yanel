@@ -40,9 +40,12 @@
             <xsl:apply-templates select="/yanel:add-realm/yanel:from-existing-website/yanel:downloadevents"/>
             <xsl:apply-templates select="/yanel:add-realm/yanel:from-existing-website/yanel:errorevents"/>
         </xsl:when>
+        <xsl:when test="/yanel:add-realm/yanel:from-existing-website/yanel:no-event-log">
+          <p>No crawler seems to be running ...</p>
+        </xsl:when>
         <xsl:otherwise>
-      <xsl:apply-templates select="/yanel:add-realm/yanel:from-existing-website/yanel:not-valid"/>
-      <xsl:apply-templates select="/yanel:add-realm/yanel:from-existing-website/yanel:valid"/>
+          <xsl:apply-templates select="/yanel:add-realm/yanel:from-existing-website/yanel:not-valid"/>
+          <xsl:apply-templates select="/yanel:add-realm/yanel:from-existing-website/yanel:valid"/>
       <form>
         <xsl:if test="/yanel:add-realm/yanel:from-existing-website/yanel:valid">
           <input type="hidden" name="confirm" value="true"/>
@@ -100,10 +103,10 @@
     <p>
       <xsl:choose>
         <xsl:when test=". = 'false'">
-          Still crawling resp. importing ...
+          Still crawling resp. importing ... (Please reload this page to check on status)
 	</xsl:when>
         <xsl:when test=". = 'true'">
-          Crawling resp. importing has been completed :-)
+          Crawling resp. importing has been completed :-) Please see new realm <a href="{../yanel:realm-id}/"><xsl:value-of select="../yanel:realm-name"/></a>.
 	</xsl:when>
 	<xsl:otherwise>
           Exception: <xsl:value-of select="."/>
