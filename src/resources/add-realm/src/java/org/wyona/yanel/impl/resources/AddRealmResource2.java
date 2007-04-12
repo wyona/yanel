@@ -16,12 +16,14 @@
 
 package org.wyona.yanel.impl.resources;
 
-import java.util.Calendar;
-import java.util.HashMap;
 import java.io.File;
 import java.io.StringBufferInputStream;
 import java.io.ByteArrayOutputStream;
+import java.net.URL;
+import java.util.Calendar;
+import java.util.HashMap;
 
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -36,12 +38,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import org.apache.log4j.Category;
+import org.apache.lenya.search.crawler.DumpingCrawler;
+
+import websphinx.DownloadParameters;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.map.Realm;
 
 /**
  * 
@@ -49,6 +55,11 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 public class AddRealmResource2 extends Resource implements ViewableV1 {
 
     private static Category log = Category.getInstance(AddRealmResource2.class);
+
+    private final static String SESSION_ATTR_EVENT_LOG = "org.wyona.yanel.addrealm.eventlog";
+    private final static String SESSION_ATTR_CRAWLER = "org.wyona.yanel.addrealm.crawler";
+    private final static String SESSION_ATTR_REALM_ID = "org.wyona.yanel.addrealm.realm.id";
+    private final static String SESSION_ATTR_REALM_NAME = "org.wyona.yanel.addrealm.realm.name";
 
     String NAMESPACE = "http://www.wyona.org/yanel/1.0";
 
@@ -273,9 +284,9 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         }
 
         if (valid && request.getParameter("confirm") != null && request.getParameter("confirm").equals("true")) {
-            fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "realm-created"));
             try {
                 getYanel().getRealmConfiguration().copyRealm("from-scratch-realm-template", realmidip.getValue(), realmnameip.getValue(), "/" + realmidip.getValue() + "/", new File(fsLocationValue));
+                fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "realm-created"));
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
@@ -389,9 +400,13 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         }
 
         if (valid && request.getParameter("confirm") != null && request.getParameter("confirm").equals("true")) {
-            fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "realm-created"));
+
             try {
                 getYanel().getRealmConfiguration().copyRealm("from-scratch-realm-template", realmidip.getValue(), realmnameip.getValue(), "/" + realmidip.getValue() + "/", new File(fsLocationValue));
+                fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "realm-created"));
+
+                importSite(urlip.getValue(), scopeip.getValue(), new Integer(cmpip.getValue()).intValue(), new Integer(cdip.getValue()).intValue(), new Integer(cmsip.getValue()).intValue(), realmidip.getValue());
+                fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "crawler-running"));
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
@@ -454,5 +469,56 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         if (value.length() < 1) return false;
         if (!new File(value).isDirectory()) return false;
         return true;
+    }
+    
+    /**
+     * Crawls and external site and imports it into a realm.
+     * @param crawlStartURL
+     * @param crawlScopeURL comma-separated list of scope urls
+     * @param maxPages
+     * @param maxDepth
+     * @param realmID
+     * @throws Exception
+     */
+    protected void importSite(String crawlStartURL, String crawlScopeURL, int maxPages, int maxDepth, int maxPageSize, String realmID) throws Exception {
+        String[] crawlScopeURLs = null;
+        if (crawlScopeURL == null || crawlScopeURL.length() == 0) {
+            String path = new URL(crawlStartURL).getPath();
+            crawlScopeURLs = new String[1];
+            if (path.length() != 0 && !path.endsWith("/") && path.indexOf("/") > -1) {
+                crawlScopeURLs[0] = crawlStartURL.substring(0, crawlStartURL.lastIndexOf("/"));
+            } else {
+                crawlScopeURLs[0] = crawlStartURL;
+            }
+        } else {
+            crawlScopeURLs = crawlScopeURL.split(",");
+        }
+        
+        String dumpDir = System.getProperty("java.io.tmpdir") + File.separator + "import_" + System.currentTimeMillis();
+        DumpingCrawler crawler = new DumpingCrawler(crawlStartURL, crawlScopeURLs, dumpDir);
+        crawler.setMaxPages(maxPages);
+        crawler.setMaxDepth(maxDepth);
+        
+        DownloadParameters downloadParams = new DownloadParameters();
+        downloadParams = downloadParams.changeMaxPageSize(maxPageSize);
+        crawler.setDownloadParameters(downloadParams);
+        
+        
+        EventLog eventLog = new EventLog();
+        crawler.addLinkListener(eventLog);
+        crawler.addCrawlListener(eventLog);
+        
+        Realm realm = getYanel().getRealmConfiguration().getRealm(realmID);
+       
+        HttpSession session = getRequest().getSession(true); 
+        session.setAttribute(SESSION_ATTR_EVENT_LOG, eventLog);
+        session.setAttribute(SESSION_ATTR_CRAWLER, crawler);
+        session.setAttribute(SESSION_ATTR_REALM_ID, realm.getID());
+        session.setAttribute(SESSION_ATTR_REALM_NAME, realm.getName());
+        
+        // start crawler in new thread to be able to show progress:
+        ImportSiteThread thread = new ImportSiteThread(crawler, realm, dumpDir, crawlStartURL, 
+                crawlScopeURLs, eventLog);
+        thread.start();
     }
 }
