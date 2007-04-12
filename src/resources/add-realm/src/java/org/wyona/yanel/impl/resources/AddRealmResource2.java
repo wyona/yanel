@@ -192,7 +192,13 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
      * Get from existing website view
      */
     public View getFromExistingWebsiteView(HttpServletRequest request, String viewId) throws Exception {
-        Document document = getFromExistingWebsiteInputDocument();
+        Document document = null;
+	
+        if (request.getParameter("check-crawler-status") != null) {
+	    document = getCheckCrawlerStatusInputDocument();
+        } else {
+	    document = getFromExistingWebsiteInputDocument();
+        }
 
         View view = new View();
         Transformer transformer = null;
@@ -293,6 +299,28 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
             }
         }
 
+        return doc;
+    }
+
+    /**
+     *
+     */
+    private Document getCheckCrawlerStatusInputDocument() {
+        Document doc = getDocument();
+        Element rootElement = doc.getDocumentElement();
+        Element fromExistingWebsiteElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "from-existing-website"));
+
+        EventLog eventLog = (EventLog) request.getSession().getAttribute(SESSION_ATTR_EVENT_LOG);
+        if (eventLog != null) {
+            Element deElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "downloadevents"));
+            deElement.appendChild(doc.createTextNode(eventLog.getDownloadEvents()));
+
+/*
+transformer.setParameter("errorevents", eventLog.getErrorEvents());
+transformer.setParameter("nofdownloads", String.valueOf(eventLog.getNofDownloads()));
+transformer.setParameter("isdone", String.valueOf(eventLog.isDone()));
+*/
+        }
         return doc;
     }
 
