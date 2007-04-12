@@ -17,7 +17,7 @@ public class ScopeInputParameter extends InputParameter {
      */
     public String validate(String value) {
         if (value == null) return "NullPointer!";
-        if (value.length() < 1) return "No value specified!";
+        if (value.length() < 1 && required) return "No value specified!";
         // TODO: Check if value is representing various URLs ...
         return null;
     }
