@@ -53,10 +53,10 @@
     <xsl:apply-templates select="@yanel:exception"/>
     <xsl:choose>
       <xsl:when test="@yanel:configuration-value">
-    <tr><td><xsl:value-of select="@yanel:name"/></td><td><xsl:value-of select="@yanel:configuration-value"/></td></tr>
+    <tr><td><b><xsl:value-of select="@yanel:name"/></b></td><td><xsl:value-of select="@yanel:configuration-value"/></td></tr>
       </xsl:when>
       <xsl:otherwise>
-        <tr><td><xsl:value-of select="@yanel:name"/></td><td><input type="text" name="{@yanel:name}" value="{@yanel:value}"/></td></tr>
+        <tr><td><b><xsl:value-of select="@yanel:name"/></b></td><td><input type="text" name="{@yanel:name}" value="{@yanel:value}"/></td></tr>
         <tr><td>&#160;</td><td align="right">(i.e. <xsl:value-of select="@yanel:sample-value"/>)</td></tr>
       </xsl:otherwise>
     </xsl:choose>
