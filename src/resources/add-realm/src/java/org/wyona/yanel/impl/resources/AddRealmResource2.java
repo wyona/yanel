@@ -177,7 +177,25 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
      * Get from existing website view
      */
     public View getFromExistingWebsiteView(HttpServletRequest request, String viewId) throws Exception {
-        return null;
+        Document document = getFromExistingWebsiteInputDocument();
+
+        View view = new View();
+        Transformer transformer = null;
+
+        if (viewId != null && viewId.equals("xml")) {
+            view.setMimeType("application/xml");
+            transformer = TransformerFactory.newInstance().newTransformer();
+        } else {
+            view.setMimeType("application/xhtml+xml");
+            File xsltFile = org.wyona.commons.io.FileUtil.file(getRTD().getConfigFile().getParentFile().getAbsolutePath(), getConfiguration().getProperty("xslt"));
+            transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
+            //transformer.setParameter();
+        }
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        transformer.transform(new DOMSource(document), new StreamResult(byteArrayOutputStream));
+        view.setInputStream(new java.io.ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
+        return view;
     }
 
     /**
@@ -296,6 +314,144 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
     }
 
     /**
+     *
+     */
+    private Document getFromExistingWebsiteInputDocument() {
+        Document doc = getDocument();
+        Element rootElement = doc.getDocumentElement();
+        Element fromExistingWebsiteElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "from-existing-website"));
+
+        Element parameterElement = null;
+        Parameter para = null;
+        boolean valid = true;
+
+        // Parameter "realmid"
+        para = getParameterFromResourceConfig("realmid");
+        parameterElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
+        parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
+        parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
+        parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
+        parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
+        String realmIdValue = null;
+        if (request.getParameter("submit-from-scratch") != null) {
+            realmIdValue = request.getParameter("realmid");
+            if (realmIdValue != null) {
+                valid = valid && validateRealmId(realmIdValue);
+                if (validateRealmId(realmIdValue)) {
+                    parameterElement.setAttributeNS(NAMESPACE, "value", realmIdValue);
+                } else {
+                    parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is wrong ...!");
+                }
+            } else {
+                parameterElement.setAttributeNS(NAMESPACE, "exception", "NullPointer");
+                valid = valid && false;
+            }
+        }
+
+        // Parameter "realmname"
+        para = getParameterFromResourceConfig("realmname");
+        parameterElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
+        parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
+        parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
+        parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
+        parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
+        String realmNameValue = null;
+        if (request.getParameter("submit-from-scratch") != null) {
+            realmNameValue = request.getParameter("realmname");
+            if (realmNameValue != null) {
+                valid = valid && validateRealmName(realmNameValue);
+                if (validateRealmName(realmNameValue)) {
+                    parameterElement.setAttributeNS(NAMESPACE, "value", realmNameValue);
+                } else {
+                    parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is really wrong ...!");
+                }
+            } else {
+                parameterElement.setAttributeNS(NAMESPACE, "exception", "NullPointer");
+                valid = valid && false;
+            }
+        }
+
+        // Parameter "fslocation"
+        para = getParameterFromResourceConfig("fslocation");
+        parameterElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
+        parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
+        parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
+        parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
+        parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
+        String fsLocationValue = null;
+        if (para.setValue != null) {
+            if (para.setValue.length() == 0) {
+                fsLocationValue = getYanel().getRealmConfiguration().getRealm("from-scratch-realm-template").getRootDir().getParent();
+            } else {
+                fsLocationValue = para.setValue;
+            }
+            parameterElement.setAttributeNS(NAMESPACE, "configuration-value", fsLocationValue);
+            valid = valid && validateFSLocation(fsLocationValue);
+            if (!validateFSLocation(fsLocationValue)) {
+                parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is completely wrong ...!");
+            }
+        } else {
+            if (request.getParameter("submit-from-scratch") != null) {
+                fsLocationValue = request.getParameter("fslocation");
+                if (fsLocationValue != null) {
+                    valid = valid && validateFSLocation(fsLocationValue);
+                    if (validateFSLocation(fsLocationValue)) {
+                        parameterElement.setAttributeNS(NAMESPACE, "value", fsLocationValue);
+                    } else {
+                        parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is absolutely wrong ...!");
+                    }
+                } else {
+                    parameterElement.setAttributeNS(NAMESPACE, "exception", "NullPointer");
+                    valid = valid && false;
+                }
+            }
+        }
+
+        // Parameter "url"
+        para = getParameterFromResourceConfig("url");
+        parameterElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
+        parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
+        parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
+        parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
+        parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
+        String urlValue = null;
+        if (request.getParameter("submit-from-scratch") != null) {
+            urlValue = request.getParameter("url");
+            if (urlValue != null) {
+                valid = valid && validateURL(urlValue);
+                if (validateURL(urlValue)) {
+                    parameterElement.setAttributeNS(NAMESPACE, "value", urlValue);
+                } else {
+                    parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is totally wrong ...!");
+                }
+            } else {
+                parameterElement.setAttributeNS(NAMESPACE, "exception", "NullPointer");
+                valid = valid && false;
+            }
+        }
+
+        if (request.getParameter("submit-from-scratch") != null) {
+            if (valid) {
+                fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "valid"));
+            } else {
+                fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "not-valid"));
+            }
+        }
+
+        if (valid && request.getParameter("confirm") != null && request.getParameter("confirm").equals("true")) {
+            fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "realm-created"));
+            try {
+                getYanel().getRealmConfiguration().copyRealm("from-scratch-realm-template", realmIdValue, realmNameValue, "/" + realmIdValue + "/", new File(fsLocationValue));
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+            }
+        }
+
+        return doc;
+    }
+
+    /**
      * Get parameter from custom configuration
      */
     private Parameter getParameterFromResourceConfig(String name) {
@@ -365,6 +521,15 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
     private boolean validateFSLocation(String value) {
         if (value.length() < 1) return false;
         if (!new File(value).isDirectory()) return false;
+        return true;
+    }
+
+    /**
+     *
+     */
+    private boolean validateURL(String value) {
+        if (value.length() < 1) return false;
+        // TODO: Check if value is URL ...
         return true;
     }
 }
