@@ -80,8 +80,12 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
      * 
      */
     public ViewDescriptor[] getViewDescriptors() {
-        log.warn("Not implemented yet!");
-        return null;
+        ViewDescriptor[] vd = new ViewDescriptor[2];
+        vd[0] = new ViewDescriptor("default");
+        vd[0].setMimeType("application/xhtml+xml");
+        vd[1] = new ViewDescriptor("xml");
+        vd[1].setMimeType("application/xml");
+        return vd;
     }
     
     /**
@@ -333,7 +337,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
         parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
         String realmIdValue = null;
-        if (request.getParameter("submit-from-scratch") != null) {
+        if (request.getParameter("submit-from-existing-website") != null) {
             realmIdValue = request.getParameter("realmid");
             if (realmIdValue != null) {
                 valid = valid && validateRealmId(realmIdValue);
@@ -356,7 +360,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
         parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
         String realmNameValue = null;
-        if (request.getParameter("submit-from-scratch") != null) {
+        if (request.getParameter("submit-from-existing-website") != null) {
             realmNameValue = request.getParameter("realmname");
             if (realmNameValue != null) {
                 valid = valid && validateRealmName(realmNameValue);
@@ -391,7 +395,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
                 parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is completely wrong ...!");
             }
         } else {
-            if (request.getParameter("submit-from-scratch") != null) {
+            if (request.getParameter("submit-from-existing-website") != null) {
                 fsLocationValue = request.getParameter("fslocation");
                 if (fsLocationValue != null) {
                     valid = valid && validateFSLocation(fsLocationValue);
@@ -415,7 +419,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
         parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
         String urlValue = null;
-        if (request.getParameter("submit-from-scratch") != null) {
+        if (request.getParameter("submit-from-existing-website") != null) {
             urlValue = request.getParameter("url");
             if (urlValue != null) {
                 valid = valid && validateURL(urlValue);
@@ -430,7 +434,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
             }
         }
 
-        if (request.getParameter("submit-from-scratch") != null) {
+        if (request.getParameter("submit-from-existing-website") != null) {
             if (valid) {
                 fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "valid"));
             } else {
