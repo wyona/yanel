@@ -213,52 +213,20 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         Element parameterElement = null;
         Parameter para = null;
         boolean valid = true;
+        boolean validate = false;
+        if (request.getParameter("submit-from-scratch") != null) validate = true;
 
         // Parameter "realmid"
         para = getParameterFromResourceConfig("realmid");
-        parameterElement = (Element) fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
-        parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
-        parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
-        parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
-        parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
-        String realmIdValue = null;
-        if (request.getParameter("submit-from-scratch") != null) {
-            realmIdValue = request.getParameter("realmid");
-            if (realmIdValue != null) {
-                valid = valid && validateRealmId(realmIdValue);
-                if (validateRealmId(realmIdValue)) {
-                    parameterElement.setAttributeNS(NAMESPACE, "value", realmIdValue);
-                } else {
-                    parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is wrong ...!");
-                }
-            } else {
-                parameterElement.setAttributeNS(NAMESPACE, "exception", "NullPointer");
-                valid = valid && false;
-            }
-        }
+        RealmIdInputParameter realmidip = new RealmIdInputParameter(para.name, para.sampleValue, para.required, para.hidden, request.getParameter("realmid"), validate);
+        parameterElement = (Element) fromScratchElement.appendChild(realmidip.createElementNS(NAMESPACE, doc));
+        valid = valid && realmidip.isValid();
 
         // Parameter "realmname"
         para = getParameterFromResourceConfig("realmname");
-        parameterElement = (Element) fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
-        parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
-        parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
-        parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
-        parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
-        String realmNameValue = null;
-        if (request.getParameter("submit-from-scratch") != null) {
-            realmNameValue = request.getParameter("realmname");
-            if (realmNameValue != null) {
-                valid = valid && validateRealmName(realmNameValue);
-                if (validateRealmName(realmNameValue)) {
-                    parameterElement.setAttributeNS(NAMESPACE, "value", realmNameValue);
-                } else {
-                    parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is really wrong ...!");
-                }
-            } else {
-                parameterElement.setAttributeNS(NAMESPACE, "exception", "NullPointer");
-                valid = valid && false;
-            }
-        }
+        RealmNameInputParameter realmnameip = new RealmNameInputParameter(para.name, para.sampleValue, para.required, para.hidden, request.getParameter("realmname"), validate);
+        parameterElement = (Element) fromScratchElement.appendChild(realmnameip.createElementNS(NAMESPACE, doc));
+        valid = valid && realmnameip.isValid();
 
         // Parameter "fslocation"
         para = getParameterFromResourceConfig("fslocation");
@@ -307,7 +275,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         if (valid && request.getParameter("confirm") != null && request.getParameter("confirm").equals("true")) {
             fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "realm-created"));
             try {
-                getYanel().getRealmConfiguration().copyRealm("from-scratch-realm-template", realmIdValue, realmNameValue, "/" + realmIdValue + "/", new File(fsLocationValue));
+                getYanel().getRealmConfiguration().copyRealm("from-scratch-realm-template", realmidip.getValue(), realmnameip.getValue(), "/" + realmidip.getValue() + "/", new File(fsLocationValue));
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
@@ -333,49 +301,15 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
 
         // Parameter "realmid"
         para = getParameterFromResourceConfig("realmid");
-        parameterElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
-        parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
-        parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
-        parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
-        parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
-        String realmIdValue = null;
-        if (request.getParameter("submit-from-existing-website") != null) {
-            realmIdValue = request.getParameter("realmid");
-            if (realmIdValue != null) {
-                valid = valid && validateRealmId(realmIdValue);
-                if (validateRealmId(realmIdValue)) {
-                    parameterElement.setAttributeNS(NAMESPACE, "value", realmIdValue);
-                } else {
-                    parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is wrong ...!");
-                }
-            } else {
-                parameterElement.setAttributeNS(NAMESPACE, "exception", "NullPointer");
-                valid = valid && false;
-            }
-        }
+        RealmIdInputParameter realmidip = new RealmIdInputParameter(para.name, para.sampleValue, para.required, para.hidden, request.getParameter("realmid"), validate);
+        parameterElement = (Element) fromExistingWebsiteElement.appendChild(realmidip.createElementNS(NAMESPACE, doc));
+        valid = valid && realmidip.isValid();
 
         // Parameter "realmname"
         para = getParameterFromResourceConfig("realmname");
-        parameterElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
-        parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
-        parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
-        parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
-        parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
-        String realmNameValue = null;
-        if (request.getParameter("submit-from-existing-website") != null) {
-            realmNameValue = request.getParameter("realmname");
-            if (realmNameValue != null) {
-                valid = valid && validateRealmName(realmNameValue);
-                if (validateRealmName(realmNameValue)) {
-                    parameterElement.setAttributeNS(NAMESPACE, "value", realmNameValue);
-                } else {
-                    parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is really wrong ...!");
-                }
-            } else {
-                parameterElement.setAttributeNS(NAMESPACE, "exception", "NullPointer");
-                valid = valid && false;
-            }
-        }
+        RealmNameInputParameter realmnameip = new RealmNameInputParameter(para.name, para.sampleValue, para.required, para.hidden, request.getParameter("realmname"), validate);
+        parameterElement = (Element) fromExistingWebsiteElement.appendChild(realmnameip.createElementNS(NAMESPACE, doc));
+        valid = valid && realmnameip.isValid();
 
         // Parameter "fslocation"
         para = getParameterFromResourceConfig("fslocation");
@@ -415,26 +349,9 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
 
         // Parameter "url"
         para = getParameterFromResourceConfig("url");
-        parameterElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "parameter"));
-        parameterElement.setAttributeNS(NAMESPACE, "name", para.name);
-        parameterElement.setAttributeNS(NAMESPACE, "sample-value", para.sampleValue);
-        parameterElement.setAttributeNS(NAMESPACE, "required", "" + para.required);
-        parameterElement.setAttributeNS(NAMESPACE, "hidden", "" + para.hidden);
-        String urlValue = null;
-        if (request.getParameter("submit-from-existing-website") != null) {
-            urlValue = request.getParameter("url");
-            if (urlValue != null) {
-                valid = valid && validateURL(urlValue);
-                if (validateURL(urlValue)) {
-                    parameterElement.setAttributeNS(NAMESPACE, "value", urlValue);
-                } else {
-                    parameterElement.setAttributeNS(NAMESPACE, "exception", "Something is totally wrong ...!");
-                }
-            } else {
-                parameterElement.setAttributeNS(NAMESPACE, "exception", "NullPointer");
-                valid = valid && false;
-            }
-        }
+        URLInputParameter urlip = new URLInputParameter(para.name, para.sampleValue, para.required, para.hidden, request.getParameter("url"), validate);
+        parameterElement = (Element) fromExistingWebsiteElement.appendChild(urlip.createElementNS(NAMESPACE, doc));
+        valid = valid && urlip.isValid();
 
         // Parameter "crawldepth"
         para = getParameterFromResourceConfig("crawldepth");
@@ -459,7 +376,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         if (valid && request.getParameter("confirm") != null && request.getParameter("confirm").equals("true")) {
             fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "realm-created"));
             try {
-                getYanel().getRealmConfiguration().copyRealm("from-scratch-realm-template", realmIdValue, realmNameValue, "/" + realmIdValue + "/", new File(fsLocationValue));
+                getYanel().getRealmConfiguration().copyRealm("from-scratch-realm-template", realmidip.getValue(), realmnameip.getValue(), "/" + realmidip.getValue() + "/", new File(fsLocationValue));
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
