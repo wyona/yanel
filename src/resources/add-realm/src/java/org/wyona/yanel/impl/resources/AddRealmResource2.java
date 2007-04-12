@@ -315,11 +315,14 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
             Element deElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "downloadevents"));
             deElement.appendChild(doc.createTextNode(eventLog.getDownloadEvents()));
 
-/*
-transformer.setParameter("errorevents", eventLog.getErrorEvents());
-transformer.setParameter("nofdownloads", String.valueOf(eventLog.getNofDownloads()));
-transformer.setParameter("isdone", String.valueOf(eventLog.isDone()));
-*/
+            Element eeElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "errorevents"));
+            eeElement.appendChild(doc.createTextNode(eventLog.getErrorEvents()));
+
+            Element nodElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "nofdownloads"));
+            nodElement.appendChild(doc.createTextNode("" + eventLog.getNofDownloads()));
+
+            Element isdoneElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "isdone"));
+            isdoneElement.appendChild(doc.createTextNode("" + eventLog.isDone()));
         }
         return doc;
     }
