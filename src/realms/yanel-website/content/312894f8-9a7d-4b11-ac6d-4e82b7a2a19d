@@ -43,7 +43,7 @@
 <tr>
 <th width="55%">Feature</th><th width="15%">Status</th><th width="15%">Due Date</th><th width="15%">Assigned To</th>
 </tr>
-            <tr><td style="vertical-align: top;">Archive URL resource</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.04.30</td><td style="vertical-align: top;">Michael</td></tr>
+            <tr><td valign="top">Navigation Editor</td><td valign="top">in planning</td><td valign="top">2007.04.30</td><td valign="top">Simon, Jonathan</td></tr><tr><td style="vertical-align: top;">Archive URL resource</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.04.30</td><td style="vertical-align: top;">Michael</td></tr>
 <tr><td valign="top">User Interface for Versioning</td><td valign="top">in progress</td><td valign="top">2007.04.30</td><td valign="top">Josias</td></tr><tr>
 <td style="vertical-align: top;"><a href="specification/pdf-fop-resource.html">FOP/PDF resource</a></td><td style="vertical-align: top;">mostly done</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Paloma</td>
 </tr>
