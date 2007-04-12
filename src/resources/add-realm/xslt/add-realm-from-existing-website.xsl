@@ -56,7 +56,7 @@
     <tr><td><b><xsl:value-of select="@yanel:name"/></b></td><td><xsl:value-of select="@yanel:configuration-value"/></td></tr>
       </xsl:when>
       <xsl:otherwise>
-        <tr><td><b><xsl:value-of select="@yanel:name"/></b></td><td><input type="text" name="{@yanel:name}" value="{@yanel:value}"/></td></tr>
+        <tr><td><b><xsl:value-of select="@yanel:name"/></b></td><td><input type="text" name="{@yanel:name}" value="{@yanel:value}"/> <xsl:apply-templates select="@yanel:required"/></td></tr>
         <tr><td>&#160;</td><td align="right">(i.e. <xsl:value-of select="@yanel:sample-value"/>)</td></tr>
       </xsl:otherwise>
     </xsl:choose>
@@ -72,6 +72,12 @@
 
   <xsl:template match="yanel:valid">
     <p>All input parameters are valid. Do you want to create a new realm from scratch with the parameters below?</p>
+  </xsl:template>
+
+  <xsl:template match="@yanel:required">
+    <xsl:if test=". = 'true'">
+      *
+    </xsl:if>
   </xsl:template>
    
 </xsl:stylesheet>
