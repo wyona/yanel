@@ -340,7 +340,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
                 session.removeAttribute(SESSION_ATTR_REALM_NAME);
             }
         } else {
-            // TODO: Import should be finished if no eventLog exists. Provide back link ...
+            Element noEventLogElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "no-event-log"));
         }
         return doc;
     }
