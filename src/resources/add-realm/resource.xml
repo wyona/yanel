@@ -3,7 +3,7 @@
 <resource xmlns="http://www.wyona.org/yanel/1.0"
   name="add-realm"
   namespace="http://www.wyona.org/yanel/resource/1.0"
-  class="org.wyona.yanel.impl.resources.AddRealmResource"
+  class="org.wyona.yanel.impl.resources.AddRealmResource2"
   >
 <description>
 Add Realm Resource
