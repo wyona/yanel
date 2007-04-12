@@ -64,7 +64,7 @@ public class DefaultTranslationManager implements TranslationManager {
                 this.node = realm.getRepository().getNode(translationsPath);
                 load();
             } else {
-                log.info("Realm " + realm.getID() + " contains no translations.xml");
+                log.warn("Realm " + realm.getID() + " contains no translations.xml");
             }
         } catch (Exception e) {
             throw new TranslationException(e.getMessage(), e);
