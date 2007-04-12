@@ -16,7 +16,7 @@ public class CrawlDepthInputParameter extends InputParameter {
      *
      */
     public String validate(String value) {
-        if (value != null) return "NullPointer!";
+        if (value == null) return "NullPointer!";
         if (value.length() < 1) return "No value specified!";
         try {
             new Integer(value);

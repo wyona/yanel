@@ -52,8 +52,19 @@ public class InputParameter {
      *
      */
     public String validate(String value) {
-        if (value != null) return "NullPointer!";
+        if (value == null) return "NullPointer!";
         if (value.length() < 1) return "No value specified!";
         return null;
+    }
+
+    /**
+     *
+     */
+    public boolean isValid() {
+        if (validate(value) != null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

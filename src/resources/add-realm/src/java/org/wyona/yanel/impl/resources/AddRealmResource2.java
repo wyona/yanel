@@ -328,6 +328,8 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         Element parameterElement = null;
         Parameter para = null;
         boolean valid = true;
+        boolean validate = false;
+        if (request.getParameter("submit-from-existing-website") != null) validate = true;
 
         // Parameter "realmid"
         para = getParameterFromResourceConfig("realmid");
@@ -433,6 +435,18 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
                 valid = valid && false;
             }
         }
+
+        // Parameter "crawldepth"
+        para = getParameterFromResourceConfig("crawldepth");
+        CrawlDepthInputParameter cdip = new CrawlDepthInputParameter(para.name, para.sampleValue, para.required, para.hidden, request.getParameter("crawldepth"), validate);
+        parameterElement = (Element) fromExistingWebsiteElement.appendChild(cdip.createElementNS(NAMESPACE, doc));
+        valid = valid && cdip.isValid();
+
+        // Parameter "crawlmaxpages"
+        para = getParameterFromResourceConfig("crawlmaxpages");
+        CrawlMaxPagesInputParameter cmpip = new CrawlMaxPagesInputParameter(para.name, para.sampleValue, para.required, para.hidden, request.getParameter("crawlmaxpages"), validate);
+        parameterElement = (Element) fromExistingWebsiteElement.appendChild(cmpip.createElementNS(NAMESPACE, doc));
+        valid = valid && cmpip.isValid();
 
         if (request.getParameter("submit-from-existing-website") != null) {
             if (valid) {
