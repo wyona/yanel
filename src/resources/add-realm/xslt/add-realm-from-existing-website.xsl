@@ -22,7 +22,17 @@
 
       <xsl:choose>
         <xsl:when test="/yanel:add-realm/yanel:from-existing-website/yanel:realm-created">
-	  <p>Realm has been created and registered</p>
+          <xsl:choose>
+          <xsl:when test="/yanel:add-realm/yanel:from-existing-website/yanel:crawler-running">
+	    <p>Realm has been created and registered, but the Crawler is still running ...</p>
+            <form>
+              <input type="submit" name="check-crawler-status" value="Check Crawler Status"/>
+            </form>
+          </xsl:when>
+          <xsl:otherwise>
+	    <p>Realm has been created, registered and all downloaded pages have been imported :-)</p>
+          </xsl:otherwise>
+          </xsl:choose>
         </xsl:when>
         <xsl:otherwise>
       <xsl:apply-templates select="/yanel:add-realm/yanel:from-existing-website/yanel:not-valid"/>
@@ -63,11 +73,11 @@
   </xsl:template>
 
   <xsl:template match="@yanel:exception">
-    <tr><td colspan="2"><font color="red">Exception:</font> <xsl:value-of select="."/></td></tr>
+    <tr><td colspan="2"><font color="red">Exception:</font>&#160;<xsl:value-of select="."/></td></tr>
   </xsl:template>
 
   <xsl:template match="yanel:not-valid">
-    <p>Something is wrong with one or more input parameters. Please see below for more details.</p>
+    <p><b>Something is wrong with one or more input parameters. Please see below for more details.</b></p>
   </xsl:template>
 
   <xsl:template match="yanel:valid">
