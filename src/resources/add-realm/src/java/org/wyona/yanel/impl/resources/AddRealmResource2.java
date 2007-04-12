@@ -365,6 +365,21 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         parameterElement = (Element) fromExistingWebsiteElement.appendChild(cmpip.createElementNS(NAMESPACE, doc));
         valid = valid && cmpip.isValid();
 
+        // Parameter "crawlmaxsize"
+        para = getParameterFromResourceConfig("crawlmaxfilesize");
+        CrawlMaxSizeInputParameter cmsip = new CrawlMaxSizeInputParameter(para.name, para.sampleValue, para.required, para.hidden, request.getParameter("crawlmaxfilesize"), validate);
+        parameterElement = (Element) fromExistingWebsiteElement.appendChild(cmsip.createElementNS(NAMESPACE, doc));
+        valid = valid && cmsip.isValid();
+
+        // Parameter "scope"
+        para = getParameterFromResourceConfig("scope");
+        ScopeInputParameter scopeip = new ScopeInputParameter(para.name, para.sampleValue, para.required, para.hidden, request.getParameter("scope"), validate);
+        parameterElement = (Element) fromExistingWebsiteElement.appendChild(scopeip.createElementNS(NAMESPACE, doc));
+        valid = valid && scopeip.isValid();
+
+
+
+
         if (request.getParameter("submit-from-existing-website") != null) {
             if (valid) {
                 fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "valid"));
@@ -435,36 +450,9 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
     /**
      *
      */
-    private boolean validateRealmId(String value) {
-        if (value.length() < 1) return false;
-        // TODO: Check for whitespace ...
-        return true;
-    }
-
-    /**
-     *
-     */
-    private boolean validateRealmName(String value) {
-        if (value.length() < 1) return false;
-        // TODO: Check for whitespace ...
-        return true;
-    }
-
-    /**
-     *
-     */
     private boolean validateFSLocation(String value) {
         if (value.length() < 1) return false;
         if (!new File(value).isDirectory()) return false;
-        return true;
-    }
-
-    /**
-     *
-     */
-    private boolean validateURL(String value) {
-        if (value.length() < 1) return false;
-        // TODO: Check if value is URL ...
         return true;
     }
 }
