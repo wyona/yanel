@@ -34,6 +34,12 @@
           </xsl:otherwise>
           </xsl:choose>
         </xsl:when>
+        <xsl:when test="/yanel:add-realm/yanel:from-existing-website/yanel:downloadevents">
+            <xsl:apply-templates select="/yanel:add-realm/yanel:from-existing-website/yanel:isdone"/>
+            <xsl:apply-templates select="/yanel:add-realm/yanel:from-existing-website/yanel:nofdownloads"/>
+            <xsl:apply-templates select="/yanel:add-realm/yanel:from-existing-website/yanel:downloadevents"/>
+            <xsl:apply-templates select="/yanel:add-realm/yanel:from-existing-website/yanel:errorevents"/>
+        </xsl:when>
         <xsl:otherwise>
       <xsl:apply-templates select="/yanel:add-realm/yanel:from-existing-website/yanel:not-valid"/>
       <xsl:apply-templates select="/yanel:add-realm/yanel:from-existing-website/yanel:valid"/>
@@ -88,6 +94,36 @@
     <xsl:if test=". = 'true'">
       *
     </xsl:if>
+  </xsl:template>
+
+  <xsl:template match="yanel:isdone">
+    <p>
+      <xsl:choose>
+        <xsl:when test=". = 'false'">
+          Still crawling resp. importing ...
+	</xsl:when>
+        <xsl:when test=". = 'true'">
+          Crawling resp. importing has been completed :-)
+	</xsl:when>
+	<xsl:otherwise>
+          Exception: <xsl:value-of select="."/>
+	</xsl:otherwise>
+      </xsl:choose>
+    </p>
+  </xsl:template>
+
+  <xsl:template match="yanel:nofdownloads">
+    <p><xsl:value-of select="."/> number of "pages" downloaded.</p>
+  </xsl:template>
+
+  <xsl:template match="yanel:downloadevents">
+    <h2>Downloaded pages</h2>
+    <p><xsl:value-of select="."/></p>
+  </xsl:template>
+
+  <xsl:template match="yanel:errorevents">
+    <h2>Failed downloads</h2>
+    <p><xsl:value-of select="."/></p>
   </xsl:template>
    
 </xsl:stylesheet>
