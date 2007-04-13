@@ -62,7 +62,6 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 
 <body>
 
-
 <table id="bodytable" cellpadding="0" cellspacing="0">
 <tr>
   <td colspan="3">
@@ -88,6 +87,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <!-- CONTENT -->
 <td valign="top" width="100%">
   <div id="content">
+    <xsl:call-template name="translations"/>
     <xsl:copy-of select="/xhtml:html/xhtml:body/*"/>
   </div>
 </td>
@@ -102,9 +102,13 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 </tr>
 </table>
 
-
 </body>
 </html>
+</xsl:template>
+
+
+<xsl:template name="translations">
+  <xi:include href="yanelresource:/navigation/translations.xml?path={$yanel.path}&amp;language={$language}"/>
 </xsl:template>
 
 <xsl:template name="navigation">
