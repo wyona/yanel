@@ -30,7 +30,9 @@
   
   
   <xsl:template match="yanel:form">
-    <xsl:apply-templates select="@*|node()"/>
+    <table border="0">
+      <xsl:apply-templates/>
+    </table>
   </xsl:template>
   
   
@@ -40,8 +42,38 @@
   
   
   <xsl:template match="yanel:input">
-    <tr><td><i18n:message key="{@yanel:name}"/>:&#160;</td><td><input type="text" name="{@yanel:name}" size="30"/><xsl:if test="@yanel:required='true'">*</xsl:if></td></tr>
-    <tr><td>&#160;</td><td>(i.e. <xsl:value-of select="@yanel:samplevalue"/>)</td></tr>
+    <div>
+      <xsl:if test="@yanel:hidden = 'true'">
+        <xsl:attribute name="style">display:none;</xsl:attribute>
+      </xsl:if>
+      <tr>
+        <td width="150" rowspan="2"><i18n:message key="{@yanel:name}"/>:&#160;</td>
+
+        <xsl:choose>
+        <xsl:when test="@yanel:value">
+          <td colspan="2"><strong><xsl:value-of select="@yanel:value"/></strong></td>
+        </xsl:when>
+        <xsl:otherwise>
+        <td align="left" width="175">
+          <input name="{@yanel:name}" size="25">
+            <xsl:choose>
+              <xsl:when test="@yanel:value">
+                <xsl:attribute name="type">hidden</xsl:attribute>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:attribute name="type">text</xsl:attribute>
+              </xsl:otherwise>
+            </xsl:choose>
+          </input>
+        </td>
+        <td>&#160;<xsl:if test="@yanel:required='true'">*</xsl:if></td>
+      </xsl:otherwise>
+      </xsl:choose>
+      </tr>
+      <xsl:if test="not(@yanel:value)">
+        <tr><td class="samplevalue" colspan="2">(i.e. <xsl:value-of select="@yanel:samplevalue"/>)</td></tr>
+      </xsl:if>
+    </div>
   </xsl:template>
   
 
@@ -49,16 +81,11 @@
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <title><i18n:message key="add-realm"/></title>
-        <style>
-            .samplevalue {
-              padding-bottom:10px;
-            }
-        </style>
+        <style>.samplevalue {padding-bottom:10px;}</style>
         <xsl:if test="$isdone = 'false'">
           <meta http-equiv="refresh" content="2"/>
         </xsl:if>
       </head>
-      
       <body>
         <h3><i18n:message key="add-realm"/></h3>
         
@@ -90,32 +117,20 @@
               <p style="font-size: small"><pre><xsl:value-of select="$errorevents"/></pre></p>
             </xsl:when>
             <xsl:otherwise>
-              
-<!--
               <form method="post">
-                  <table cellpadding="0" cellspacing="0" border="0">
-                    <xsl:apply-templates select="/yanel:form/yanel:inputfields/yanel:input"/>
-                  </table>
+                <table cellpadding="0" cellspacing="0" border="0">
+                  <xsl:apply-templates select="yanel:form"/>
+                  <tr><td>&#160;</td></tr>
+                  <tr>
+                    <td align="right">
+                      <input type="submit" name="submit" value="i18n:attr key=add-realm"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="right" valign="top" class="contentfield" colspan="2"><br/><i18n:message key="requiredFields"/></td>
+                  </tr>
+                </table>
               </form>
-              <br/><br/>
--->
-              
-              <form method="post">
-                  <table cellpadding="0" cellspacing="0" border="0">
-                    <div>
-                      <xsl:apply-templates select="yanel:form"/>
-                    </div>
-                    <tr>
-                      <td align="right">
-                        <input type="submit" name="submit" value="i18n:attr key=add-realm"/>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td align="right" valign="top" class="contentfield" colspan="2"><br/><i18n:message key="requiredFields"/></td>
-                    </tr>
-                  </table>
-              </form>
-        
             </xsl:otherwise>
           </xsl:choose>
         </div>

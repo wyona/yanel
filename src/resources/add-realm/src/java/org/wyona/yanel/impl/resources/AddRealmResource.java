@@ -73,15 +73,13 @@ public class AddRealmResource extends Resource implements ViewableV2 {
     private final static String SESSION_ATTR_REALM_ID = "org.wyona.yanel.addrealm.realm.id";
     private final static String SESSION_ATTR_REALM_NAME = "org.wyona.yanel.addrealm.realm.name";
     
-    private String defaultLanguage = null;
-    private String language = null;
     private String parameterName = null;
     private String parameter = null;
     private String parameterErrorName = null;
     private String parameterError = null;
-    
-    private HashMap parameters = new HashMap();
 
+    private HashMap parameters = new HashMap();
+    
     /**
      *
      */
@@ -96,28 +94,15 @@ public class AddRealmResource extends Resource implements ViewableV2 {
     }
 
     /**
-     * 
+     * Generate view
      */
     public View getView(String viewId) throws Exception {
-        
         String path = getPath();
         HttpServletRequest request = getRequest();
-        defaultLanguage = getRealm().getDefaultLanguage();
-        
-        // Get language
-        try {
-            language = request.getParameter("yanel.meta.language");
-        } catch(Exception e) {
-            log.debug("language param is not found will use default : " + language);
-            language = defaultLanguage;
-        }
-        if(language == null || ("").equals(language)) {
-            log.debug("language param is empty or null : " + language);
-            language = defaultLanguage;
-        }
+        String language = getLanguage();
 
         Transformer transformer = null;
-        I18nTransformer i18nTransformer = new I18nTransformer("add-realm", language, defaultLanguage);
+        I18nTransformer i18nTransformer = new I18nTransformer("add-realm", language, getRealm().getDefaultLanguage());
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         View defaultView = new View();
 
@@ -133,37 +118,17 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                 if (param.equals("stop")) stop = true;
             }
             
-            File XSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "add-realm.xsl");
-            //File inputXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "input-screen.xml");
-            //File statusXMLFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "status-screen.xml");
+            File XSLTFile = org.wyona.commons.io.FileUtil.file(getRTD().getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "add-realm.xsl");
             transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(XSLTFile));
-            
-            // Add HashMap keys with dummy values for form fields
-            String[] parameterNames = { "realmid", "realmname", "url", "fslocation", "crawldepth", "crawlmaxpages", "crawlmaxfilesize", "scope" };
-            for (int i=0; i<parameterNames.length; i++) {
-                String property = getConfiguration().getProperty(parameterNames[i]);
-                boolean propertyExists = getConfiguration().containsKey(parameterNames[i]);
-                
-                if (propertyExists == true) {
-                    parameters.put(parameterNames[i], property);
-                    transformer.setParameter(parameterNames[i] + "-prop-exists", "true");
-                } else {
-                    parameters.put(parameterNames[i], "");
-                    transformer.setParameter(parameterNames[i] + "-prop-exists", "false");
-                }
-            }
-            
-            Set keys = parameters.keySet();
-            Iterator keysIterator = keys.iterator();
             
             HttpSession session = getRequest().getSession(true); 
             
             if(submit) {
                 
-                while (keysIterator.hasNext()) {
-                    parameterName = (String) keysIterator.next();
+                Enumeration enumeration2 = request.getParameterNames();
+                while(enumeration2.hasMoreElements()){
+                    parameterName = enumeration2.nextElement().toString();
                     parameter = HttpServletRequestHelper.getParameter(request, parameterName);
-                    
                     if (parameterName.equals("fslocation") || parameterName.equals("scope")) {
                         parameters.put(parameterName, parameter);
                         transformer.setParameter(parameterName, parameters.get(parameterName).toString());
@@ -181,7 +146,7 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                     // Explicitly check whether fslocation is null and set to null (rather than the empty string).
                     // File() (and copyRealm()) needs null to be passed.
                     File fslocationValue = null;
-                    if (parameters.get("fslocation").toString() == null || ("").equals(parameters.get("fslocation").toString())) {
+                    if (parameters.get("fslocation") == null || ("").equals(parameters.get("fslocation").toString())) {
                         fslocationValue = null;
                     } else {
                         fslocationValue = new File(parameters.get("fslocation").toString());
@@ -196,7 +161,18 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                     
                     String crawlStartURL = (String)parameters.get("url"); 
                     if (crawlStartURL != null && crawlStartURL.length() > 0) {
-                        int maxPages = Integer.parseInt((String)parameters.get("crawlmaxpages"));
+
+                        int maxPages = 0;
+/*
+                        if (parameters.get("crawlmaxpages") != null) {
+                            maxPages = Integer.parseInt((String)parameters.get("crawlmaxpages"));
+                        } else if () {
+                            maxPages = Integer.parseInt((String)parameters.get("crawlmaxpages"));
+                        } else {
+                            log.error("Max number of pages has not been set!");
+                        }
+*/
+
                         int maxDepth = Integer.parseInt((String)parameters.get("crawldepth"));
                         int maxFileSize = 0;
                         String tmpMaxFileSize = (String)parameters.get("crawlmaxfilesize");
@@ -224,7 +200,6 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                 Document document = getInputDocument();
                 
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
-                //transformer.transform(new javax.xml.transform.stream.StreamSource(statusXMLFile), new StreamResult(byteArrayOutputStream));
             
             } else if (session.getAttribute(SESSION_ATTR_EVENT_LOG) != null) {
                 
@@ -259,19 +234,12 @@ public class AddRealmResource extends Resource implements ViewableV2 {
                 Document document = getInputDocument();
                 
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
-                //transformer.transform(new javax.xml.transform.stream.StreamSource(statusXMLFile), new StreamResult(byteArrayOutputStream));              
                 
             } else {
-                
-                while (keysIterator.hasNext()) {
-                    parameterName = (String) keysIterator.next();
-                    transformer.setParameter(parameterName, parameters.get(parameterName).toString());
-                }
 
                 Document document = getInputDocument();
                 
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
-                //transformer.transform(new javax.xml.transform.stream.StreamSource(inputXMLFile), new StreamResult(byteArrayOutputStream));
                 
             }
             
@@ -402,8 +370,28 @@ public class AddRealmResource extends Resource implements ViewableV2 {
             	attribute = null;
             }
             fieldElement.appendChild(document.createTextNode(nameAttribute));
+            nameAttribute = null;
         }
         return document;
     }
-    
+
+    /**
+     * Get language
+     */
+    private String getLanguage() {
+        String defaultLanguage = getRealm().getDefaultLanguage();
+        
+        String language = null;
+        try {
+            language = request.getParameter("yanel.meta.language");
+        } catch(Exception e) {
+            log.debug("language param is not found will use default : " + language);
+            language = defaultLanguage;
+        }
+        if(language == null || ("").equals(language)) {
+            log.debug("language param is empty or null : " + language);
+            language = defaultLanguage;
+        }
+        return language;
+        }
 }
