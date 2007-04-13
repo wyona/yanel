@@ -8,6 +8,8 @@
   xmlns:yanel="http://www.wyona.org/yanel/1.0"
 >
 
+<!-- DEPRECATED -->
+
   <xsl:output method="xhtml" encoding="UTF-8"/>
   
   <xsl:param name="yanel.back2context" select="''" />
