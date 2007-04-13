@@ -5,6 +5,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:yanel="http://www.wyona.org/yanel/1.0"
+  xmlns:i18n="http://www.wyona.org/yanel/i18n/1.0"
 >
 
   <xsl:output method="xhtml" encoding="UTF-8"/>
@@ -41,6 +42,7 @@
           <tr><td colspan="2" align="right"><input type="submit" name="submit-from-scratch" value="Add Realm"/></td></tr>
         </xsl:otherwise>
         </xsl:choose>
+          <tr><td colspan="2" align="right"><br/><i18n:message key="requiredFields"/>fields marked with (*) are required</td></tr>
         </table>
       </form>
         </xsl:otherwise>
@@ -53,17 +55,17 @@
     <xsl:apply-templates select="@yanel:exception"/>
     <xsl:choose>
       <xsl:when test="@yanel:configuration-value">
-    <tr><td><xsl:value-of select="@yanel:name"/></td><td><xsl:value-of select="@yanel:configuration-value"/></td></tr>
+    <tr><td><b><xsl:value-of select="@yanel:name"/></b></td><td><xsl:value-of select="@yanel:configuration-value"/></td></tr>
       </xsl:when>
       <xsl:otherwise>
-        <tr><td><xsl:value-of select="@yanel:name"/></td><td><input type="text" name="{@yanel:name}" value="{@yanel:value}"/></td></tr>
+        <tr><td><b><xsl:value-of select="@yanel:name"/></b></td><td><input type="text" name="{@yanel:name}" value="{@yanel:value}"/> <xsl:apply-templates select="@yanel:required"/></td></tr>
         <tr><td>&#160;</td><td align="right">(i.e. <xsl:value-of select="@yanel:sample-value"/>)</td></tr>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
 
   <xsl:template match="@yanel:exception">
-    <tr><td colspan="2"><font color="red">Exception:</font> <xsl:value-of select="."/></td></tr>
+    <tr><td colspan="2"><font color="red">Exception:</font>&#160;<xsl:value-of select="."/></td></tr>
   </xsl:template>
 
   <xsl:template match="yanel:not-valid">
@@ -72,6 +74,12 @@
 
   <xsl:template match="yanel:valid">
     <p>All input parameters are valid. Do you want to create a new realm from scratch with the parameters below?</p>
+  </xsl:template>
+
+  <xsl:template match="@yanel:required">
+    <xsl:if test=". = 'true'">
+      *
+    </xsl:if>
   </xsl:template>
    
 </xsl:stylesheet>
