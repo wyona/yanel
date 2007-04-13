@@ -47,6 +47,7 @@ import org.apache.tools.ant.taskdefs.optional.junit.BatchTest;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
@@ -75,7 +76,11 @@ public class TestingControlResource extends Resource implements ViewableV1 {
     }
 
     public ViewDescriptor[] getViewDescriptors() {
-        return null;
+        ViewDescriptor[] vd = new ViewDescriptor[1];
+        vd[0] = new ViewDescriptor("default");
+        // NOTE: depends on XSLT ...
+        vd[0].setMimeType(null);
+        return vd;
     }
 
     public View getView(Path path, String viewId) {
@@ -200,7 +205,7 @@ public class TestingControlResource extends Resource implements ViewableV1 {
         
         // prepare tmpResultDir
         if (request.getSession().getAttribute("tmpResultDir") == null) {
-            String uuid = new java.rmi.server.UID().toString();
+            String uuid = new java.rmi.server.UID().toString().replaceAll(":","");
             tmpResultDir = new File(request.getSession().getServletContext().getRealPath("tmp"
                     + File.separator + "test-results-" + uuid));
             request.getSession().setAttribute("tmpResultDir", tmpResultDir);
@@ -395,15 +400,37 @@ public class TestingControlResource extends Resource implements ViewableV1 {
     }
 
     /**
-     * Get XSLT path
+     * Get XSLTPath returns the path to the configured xslt or null
+     * @param path 
+     * @return Path
      */
     private Path getXSLTPath(Path path) {
-        String xsltPath = getRTI().getProperty("xslt");
-        if (xsltPath != null)
-            return new Path(xsltPath);
-        log.info("No XSLT Path within: " + path);
-        return null;
+    	try {
+    		return new Path(getResourceConfigProperty("xslt"));
+		} catch (Exception e) {
+			log.info("No XSLT Path within: " + path);
+			return null;
+		}
     }
+    
+    /**
+     * Get property value from resource configuration
+     */
+    private String getResourceConfigProperty(String name) throws Exception {
+    	ResourceConfiguration rc = getConfiguration();
+    	if (rc != null) return rc.getProperty(name);
+    	return getRTI().getProperty(name);
+    }
+    
+    /**
+     * Get property value from resource configuration
+     */
+    private String[] getResourceConfigProperties(String name) throws Exception {
+    	ResourceConfiguration rc = getConfiguration();
+    	if (rc != null) return rc.getProperties(name);
+    	return getRTI().getProperties(name);
+    }
+
 
     protected RepositoryFactory getRepositoryFactory() {
         return yanel.getRepositoryFactory("DefaultRepositoryFactory");

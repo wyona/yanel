@@ -28,9 +28,9 @@
       <dependency groupId="nekohtml" artifactId="nekohtml" version="0.9.5"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-impl" version="4.3"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
-      <dependency groupId="ant" artifactId="ant" version="1.6.5"/>
-      <dependency groupId="ant" artifactId="ant-launcher" version="1.6.5"/>
-      <dependency groupId="ant" artifactId="ant-junit" version="1.6.5"/>
+      <dependency groupId="ant" artifactId="ant" version="1.7.0"/>
+      <dependency groupId="ant" artifactId="ant-launcher" version="1.7.0"/>
+      <dependency groupId="ant" artifactId="ant-junit" version="1.7.0"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
