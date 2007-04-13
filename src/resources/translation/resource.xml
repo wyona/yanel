@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="translation"
+  namespace="http://www.wyona.org/yanel/resource/1.0"
+  class="org.wyona.yanel.impl.resources.TranslationResource"
+  >
+<description>
+Delivers an XML fragment containing links to the translations (aka language versions) of a resource.
+</description>
+
+<rtd>
+  <property name="mime-type"/>
+  <property name="xslt"/>
+</rtd>
+</resource>
