@@ -63,7 +63,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.NamedNodeMap;
 
 /**
- *
+ * @deprecated Please use AddRealmResource2
  */
 public class AddRealmResource extends Resource implements ViewableV2 {
 
