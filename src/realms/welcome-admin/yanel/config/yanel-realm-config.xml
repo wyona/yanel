@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<realm-config>
+<realm-config xmlns="http://www.wyona.org/yanel/realm/1.0">
   <name>Yanel Welcome and Admin Realm</name>
   <rti>rti-repository.xml</rti>
   <data>data-repository.xml</data>
@@ -9,4 +9,5 @@
 <!--
   <ac-identities/>
 -->
+  <menu class="org.wyona.yanel.servlet.menu.impl.WelcomeRealmMenu"/>
 </realm-config>
