@@ -46,12 +46,13 @@ abstract public class Menu {
      * Get toolbar menus
      */
     public String getHelpMenu(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
+        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
         StringBuffer sb= new StringBuffer();
 
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">Help</div>");
         sb.append("<ul>");
-        sb.append("<li>About</li>");
+        sb.append("<li><a href=\"" + backToRealm + "/" + reservedPrefix+ "/about.html\">About Yanel</a></li>");
         sb.append("</ul>");
         sb.append("</li></ul>");
         return sb.toString();

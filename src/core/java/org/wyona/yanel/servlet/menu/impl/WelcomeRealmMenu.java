@@ -26,7 +26,15 @@ public class WelcomeRealmMenu extends Menu {
      */
     public  String getMenus(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        StringBuffer sb= new StringBuffer("");
+        StringBuffer sb= new StringBuffer();
+
+	sb.append("<ul><li>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">File</div>");
+        sb.append("<ul>");
+        sb.append("<li class=\"haschild\">New Realm<ul><li><a href=\"" + backToRealm + "add-realm-from-scratch.html\">From Scratch</a></li><li><a href=\"" + backToRealm + "add-realm-from-existing-website.html\">From Existing Website</a></li></ul></li>");
+        sb.append("</ul>");
+        sb.append("</li></ul>");
+
         return sb.toString();
     }
 }
