@@ -101,7 +101,7 @@ public class YanelServlet extends HttpServlet {
     File xsltInfoAndException;
     File xsltLoginScreen;
 
-    private static String IDENTITY_MAP_KEY = "identity-map";
+    public static String IDENTITY_MAP_KEY = "identity-map";
     private static String TOOLBAR_KEY = "toolbar";
     private static String NAMESPACE = "http://www.wyona.org/yanel/1.0";
 
