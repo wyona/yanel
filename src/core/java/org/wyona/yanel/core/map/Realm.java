@@ -201,4 +201,20 @@ public class Realm {
         }
         return null;
     }
+
+    /**
+     * Please note that the menu element is optional
+     */
+    public String getMenuClass() {
+        try {
+            Configuration realmConfig = new DefaultConfigurationBuilder().buildFromFile(getConfigFile());
+            Configuration menuClassConfig = realmConfig.getChild("menu", false);
+            if (menuClassConfig != null) {
+                return menuClassConfig.getAttribute("class");
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return null;
+    }
 }
