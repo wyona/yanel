@@ -1798,8 +1798,15 @@ public class YanelServlet extends HttpServlet {
      * Get toolbar menus
      */
     private  String getToolbarMenus(Resource resource, HttpServletRequest request) throws ServletException, IOException, Exception {
-        //org.wyona.yanel.servlet.menu.Menu menu = new org.wyona.yanel.servlet.menu.impl.WelcomeRealmMenu();
-        org.wyona.yanel.servlet.menu.Menu menu = new org.wyona.yanel.servlet.menu.impl.DefaultMenu();
+        org.wyona.yanel.servlet.menu.Menu menu = null;
+        String menuRealmClass = resource.getRealm().getMenuClass();
+        if (menuRealmClass != null) {
+            menu = (org.wyona.yanel.servlet.menu.Menu) Class.forName(menuRealmClass).newInstance();
+        // TODO: Check resource configuration ...
+        //} else if (RESOURCE) {
+        } else {
+            menu = new org.wyona.yanel.servlet.menu.impl.DefaultMenu();
+        }
         return menu.getYanelMenu(resource, request, map, reservedPrefix) + menu.getMenus(resource, request, map, reservedPrefix) + menu.getHelpMenu(resource, request, map, reservedPrefix);
     }
 
