@@ -35,8 +35,8 @@ abstract public class Menu {
             sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/users/" + identity.getUsername() + ".html\">My profile</a></li>");
             sb.append("<li><a href=\"?yanel.usecase=logout\"><img class=\"yaneltoolbar_menuicon\" src=\"" + backToRealm + reservedPrefix + "/yanel-img/icons/system-log-out.png\" border=\"0\"/>Logout</a></li>");
         }
-        sb.append("</ul></li></ul>");
-        sb.append("<ul><li>");
+        sb.append("</ul>");
+        sb.append("</li></ul>");
 
         return sb.toString();
     }
@@ -49,9 +49,11 @@ abstract public class Menu {
         StringBuffer sb= new StringBuffer();
 
         sb.append("<ul><li>");
-        sb.append("<div id=\"yaneltoolbar_menutitle\">Help</div><ul>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">Help</div>");
+        sb.append("<ul>");
         sb.append("<li>About</li>");
-        sb.append("</ul></li></ul>");
+        sb.append("</ul>");
+        sb.append("</li></ul>");
         return sb.toString();
     }
 
