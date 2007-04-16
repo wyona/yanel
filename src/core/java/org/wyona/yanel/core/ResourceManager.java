@@ -17,6 +17,7 @@
 package org.wyona.yanel.core;
 
 import java.io.Reader;
+import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Category;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.core.util.HttpServletRequestHelper;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yarep.core.NoSuchNodeException;
 
@@ -66,6 +68,8 @@ public class ResourceManager {
             resource.setRequest(request);
             resource.setResponse(response);
             
+            passParameters(resource, request);
+            
             return resource;
         } else {
             log.error("No resource registered for rti: " + universalName);
@@ -92,6 +96,8 @@ public class ResourceManager {
             resource.setConfiguration(rc);
             resource.setRequest(request);
             resource.setResponse(response);
+            
+            passParameters(resource, request);
             
             return resource;
         } else {
@@ -145,4 +151,32 @@ public class ResourceManager {
             return new ResourceTypeIdentifier("<{http://www.wyona.org/yanel/resource/1.0}file/>", null);
         } 
     }
+    
+    /**
+     * Passes request parameter to a resource.
+     * String parameters will be decoded.
+     * TODO: handle multipart requests.
+     * @param resource
+     * @param request
+     */
+    protected void passParameters(Resource resource, HttpServletRequest request) {
+        if (request != null) {
+            Enumeration paramNames = request.getParameterNames();
+            
+            while (paramNames.hasMoreElements()) {
+                String name = (String)paramNames.nextElement();
+                String[] values = request.getParameterValues(name);
+                if (values.length == 1) {
+                    resource.setParameter(name, HttpServletRequestHelper.decode(values[0]));
+                } else {
+                    String[] stringValues = new String[values.length];
+                    for (int i = 0; i < values.length; i++) {
+                        stringValues[i] = HttpServletRequestHelper.decode(values[i]);
+                    }
+                    resource.setParameter(name, stringValues);
+                }
+            }
+        }
+    }
+    
 }

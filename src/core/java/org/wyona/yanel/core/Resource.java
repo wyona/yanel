@@ -16,6 +16,7 @@
 
 package org.wyona.yanel.core;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +47,7 @@ public abstract class Resource {
      */
     public Resource() {
         rtd = null;
+        this.parameters = new HashMap();
     }
 
     /**
@@ -161,12 +163,48 @@ public abstract class Resource {
         this.response = response;
     }
 
+    /**
+     * Gets the parameter map of this resource.
+     * @return map with parameter names as keys and parameter values as values.
+     */
     public Map getParameters() {
         return parameters;
     }
 
+    /**
+     * Sets the parameter map of this resource.
+     * If a parameter map already exists, it will be replaced.
+     * @param parameters map with parameter names as keys and parameter values as values.
+     */
     public void setParameters(Map parameters) {
         this.parameters = parameters;
+    }
+    
+    /**
+     * Gets the parameter with the given name.
+     * @param name
+     * @return parameter object or null if no parameter with this name exists.
+     */
+    public Object getParameter(String name) {
+        return this.parameters.get(name);
+    }
+
+    /**
+     * Gets the parameter with the given name as a string.
+     * @param name
+     * @return parameter string or null if no parameter with this name exists.
+     */
+    public String getParameterAsString(String name) {
+        return this.parameters.get(name).toString();
+    }
+
+    /**
+     * Sets the parameter with the given name and value.
+     * @param name
+     * @param value
+     */
+    public void setParameter(String name, Object value) {
+        this.parameters.put(name, value);
     }
 
 }

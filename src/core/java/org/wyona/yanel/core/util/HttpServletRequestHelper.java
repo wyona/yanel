@@ -41,7 +41,14 @@ public class HttpServletRequestHelper  {
         return decode(value);
     }
 
-    private static String decode(String str) {
+    /**
+     * Fixes the encoding of a request parameter.
+     * The servlet container normally decodes parameters as iso-8859-1, although they are
+     * actually encoded as utf-8. This is wrong and has to be corrected by this method.
+     * @param str parameter with wrong encoding
+     * @return parameter with fixed encoding.
+     */
+    public static String decode(String str) {
         if (str == null) return null;
         try {
             if (container_encoding == null)
@@ -49,7 +56,7 @@ public class HttpServletRequestHelper  {
             byte[] bytes = str.getBytes(container_encoding);
             return new String(bytes, form_encoding);
         } catch (UnsupportedEncodingException uee) {
-            throw new RuntimeException("Unsupported Encoding Exception", uee);
+            throw new RuntimeException(uee.toString(), uee);
         }
     }
 }
