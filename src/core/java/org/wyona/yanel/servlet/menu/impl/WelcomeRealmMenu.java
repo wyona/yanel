@@ -31,7 +31,7 @@ public class WelcomeRealmMenu extends Menu {
 	sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">File</div>");
         sb.append("<ul>");
-        sb.append("<li class=\"haschild\">New Realm<ul><li><a href=\"" + backToRealm + "add-realm-from-scratch.html\">From Scratch</a></li><li><a href=\"" + backToRealm + "add-realm-from-existing-website.html\">From Existing Website</a></li></ul></li>");
+        sb.append("<li class=\"haschild\">New Realm&#160;&#160;&#160;<ul><li><a href=\"" + backToRealm + "add-realm-from-scratch.html\">From Scratch</a></li><li><a href=\"" + backToRealm + "add-realm-from-existing-website.html\">From Existing Website</a></li></ul></li>");
         sb.append("</ul>");
         sb.append("</li></ul>");
 

@@ -10,6 +10,8 @@ html>body #yaneltoolbar_headerwrap {height:23px;} /* 100 % height */
 	height:23px;
 	background:lightgrey;
 	border-bottom:1px solid #888;
+        font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
+        font-size: 13px;
 }
 html>body #yaneltoolbar_headerwrap {
 	position:fixed;
@@ -56,6 +58,10 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
   margin:0;
 }
 
+#yaneltoolbar_menutitle {
+  padding-right:70px;
+}
+
 #yaneltoolbar_menu a{
   text-decoration:none;
 }
@@ -79,7 +85,8 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
   margin:0px;
   padding:0px;
   float:left;
-  width:9em;
+  width:auto;
+  white-space: nowrap;
 }
 
 #yaneltoolbar_menu li{
