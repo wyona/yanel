@@ -80,6 +80,9 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
   <config src="../src/realms/test/yanel/config/yanel-realm-config.xml"/>
 </realm>
 
+<!--
+  NOTE: Don't remove the from-scratch-realm-template. It is needed by yanel to create new realms.
+-->
 <realm id="from-scratch-realm-template" mount-point="/from-scratch-realm/">
   <name>From Scratch Realm Template</name>
   <config src="../src/realms/from-scratch-realm-template/yanel/config/yanel-realm-config.xml"/>
