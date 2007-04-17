@@ -10,11 +10,20 @@
   <xsl:output method="xhtml" encoding="UTF-8"/>
   
   <xsl:param name="yanel.back2context" select="''" />
+  <xsl:param name="refresh-time" select="'2'" />
   
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <title>Add Realm From Existing Website</title>
+        <xsl:choose>
+          <xsl:when test="/yanel:add-realm/yanel:from-existing-website/yanel:isdone = 'false'">
+            <meta http-equiv="refresh" content="{$refresh-time}"/>
+          </xsl:when>
+          <xsl:when test="/yanel:add-realm/yanel:from-existing-website/yanel:crawler-running">
+            <meta http-equiv="refresh" content="{$refresh-time}, URL=?check-crawler-status=Check..."/>
+          </xsl:when>
+        </xsl:choose>
       </head>
       <body>
       <h1>Add Realm From Existing Website</h1>
@@ -103,7 +112,7 @@
     <p>
       <xsl:choose>
         <xsl:when test=". = 'false'">
-          Still crawling resp. importing ... (Please reload this page to check on status)
+          Still crawling resp. importing ... (This page will be reloaded every <xsl:value-of select="$refresh-time"/> seconds)
 	</xsl:when>
         <xsl:when test=". = 'true'">
           Crawling resp. importing has been completed :-) Please see new realm <a href="{../yanel:realm-id}/"><xsl:value-of select="../yanel:realm-name"/></a>.
