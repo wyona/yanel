@@ -28,16 +28,9 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
   top:0px;
 }
 
-#yaneltoolbar_user {
+#yaneltoolbar_info {
   position: absolute;
   right: 100px;
-  float: right;
-  top: 3px;
-}
-
-#yaneltoolbar_realm {
-  position: absolute;
-  right: 200px;
   float: right;
   top: 3px;
 }
