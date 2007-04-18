@@ -20,7 +20,7 @@
     <dependency>
       <groupId>wyona-org-commons</groupId>
       <artifactId>wyona-org-commons</artifactId>
-      <version>0.0.1-dev-r22621</version>
+      <version>0.0.1-dev-r23672</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
