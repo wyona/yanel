@@ -25,7 +25,7 @@
   <li>Separation of Content and Layout by using XSLT and arbitrary templating frameworks has the advantage of being able to interpret and modify them independently of each other.<br/></li>
   <li>Multiple Sites can be nested arbitrarily. <br/></li>
   <li>Reverse Proxy Support gives great flexibility regarding operational processes.<br/></li>
-  <li>Cross-Platform (Continuously tested on Linux, Mac OS X, Windows).</li>
+  <li>Cross-Platform (Continuously tested on Linux, Mac OS X, Windows).</li><li>Support of language specific URL space, e.g. /about.html (en) and /acerca.html (es) and /ueber.html (de).</li><li>Clean separation between repository navigation and realm (website) navigation which allows to support various navigation types,  e.g. topic maps.</li>
 </ul>
 </body>
 </html>
