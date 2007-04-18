@@ -20,4 +20,11 @@
   <checkout url="../css/global.css?yanel.resource.usecase=checkout" method="GET"/>
   <checkin  url="../css/global.css?yanel.resource.usecase=checkin"  method="PUT"/>
 </edit>
+
+<navigation>
+  <sitetree href="../." method="PROPFIND"/>
+<!--
+  <sitetree href="./" method="PROPFIND"/>
+-->
+</navigation>
 </introspection>
