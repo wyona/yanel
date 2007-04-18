@@ -1318,7 +1318,7 @@ public class YanelServlet extends HttpServlet {
                         sb.append("    <href>" + request.getRequestURI() + "/" + children[i].getName() + "/</href>\n");
                         sb.append("    <propstat>\n");
                         sb.append("      <prop>\n");
-                        sb.append("        <displayname>C: " + children[i].getName() + "</displayname>\n");
+                        sb.append("        <displayname>" + children[i].getName() + "</displayname>\n");
                         sb.append("        <resourcetype><collection/></resourcetype>\n");
                         sb.append("        <getcontenttype>http/unix-directory</getcontenttype>\n");
                         sb.append("      </prop>\n");
@@ -1330,7 +1330,7 @@ public class YanelServlet extends HttpServlet {
                         sb.append("    <href>" + request.getRequestURI() + "/" + children[i].getName() + "?yanel.webdav=propfind1</href>\n");
                         sb.append("    <propstat>\n");
                         sb.append("      <prop>\n");
-                        sb.append("        <displayname>R: " + children[i].getName() + "</displayname>\n");
+                        sb.append("        <displayname>" + children[i].getName() + "</displayname>\n");
                         sb.append("        <resourcetype/>\n");
                         sb.append("        <getcontenttype>http/unix-directory</getcontenttype>\n");
                         // http://www.webdav.org/specs/rfc2518.html#PROPERTY_source, http://wiki.zope.org/HiperDom/RoundtripEditingDiscussion
