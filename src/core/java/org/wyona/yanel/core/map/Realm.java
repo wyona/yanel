@@ -52,6 +52,7 @@ public class Realm {
     private PolicyManager policyManager;
     private IdentityManager identityManager;
     private File configFile;
+    private File rootDir;
 
     private String proxyHostName;
     private String proxyPort;
@@ -121,13 +122,19 @@ public class Realm {
             setIdentityManager(identityManager);
         }
         
-        repoConfigElement = config.getChild("default-language", false);
-        if (repoConfigElement != null) {                       
-            setDefaultLanguage(repoConfigElement.getValue());
+        Configuration configElement = config.getChild("default-language", false);
+        if (configElement != null) {                       
+            setDefaultLanguage(configElement.getValue());
         } else {
             //Maintain backwards compatibility with realms
             setDefaultLanguage("en");
         }
+        
+        Configuration rootDirConfig = config.getChild("root-dir", false);
+        if (rootDirConfig != null) {
+            setRootDir(FileUtil.resolve(getConfigFile(), new File(rootDirConfig.getValue())));
+        }
+
     }
 
     /**
@@ -255,22 +262,11 @@ public class Realm {
      * Please note that the root-dir element is optional
      */
     public File getRootDir() {
-        try {
-            Configuration realmConfig = new DefaultConfigurationBuilder().buildFromFile(getConfigFile());
-            Configuration rootDirConfig = realmConfig.getChild("root-dir", false);
-            if (rootDirConfig != null) {
-                File rootDirFile = new File(rootDirConfig.getValue());
-                if (!rootDirFile.isAbsolute()) {
-                    return new File(org.apache.commons.io.FilenameUtils.concat(getConfigFile().getParent(), rootDirFile.toString()));
-                    //return new File(org.wyona.commons.io.FileUtil.concat(getConfigFile().getParent(), rootDirFile.toString()));
-                } else {
-                    return rootDirFile;
-                }
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        return null;
+        return this.rootDir;
+    }
+    
+    public void setRootDir(File rootDir) {
+        this.rootDir = rootDir;
     }
 
     /**
