@@ -17,13 +17,21 @@
 package org.wyona.yanel.core.map;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.wyona.commons.io.FileUtil;
 import org.wyona.commons.io.Path;
+import org.wyona.security.core.IdentityManagerFactory;
+import org.wyona.security.core.PolicyManagerFactory;
 import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.PolicyManager;
+import org.wyona.yanel.core.Yanel;
 import org.wyona.yarep.core.Repository;
+import org.wyona.yarep.core.RepositoryFactory;
+import org.xml.sax.SAXException;
 
 import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
 import org.apache.log4j.Category;
@@ -52,11 +60,74 @@ public class Realm {
     /**
      *
      */
-    public Realm(String name, String id, String mountPoint, File configFile) {
+    public Realm(String name, String id, String mountPoint, File configFile) throws Exception {
         this.name = name;
         this.id = id;
         this.mountPoint = mountPoint;
         this.configFile = configFile;
+        
+        if (configFile != null) {
+            DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+            Configuration config;
+            try {
+                config = builder.buildFromFile(configFile);
+                configure(config);
+            } catch (SAXException e) {
+                // TODO: CascadingSAXException cse = new CascadingSAXException(e);
+                String errorMsg = "Could not read config file: " + configFile + ": " + e.getMessage();
+                log.error(errorMsg, e);
+                throw new Exception(errorMsg, e);
+            } catch (Exception e) {
+                String errorMsg = "Could not configure realm [" + id + "] with config file: " + 
+                        configFile + ": " + e.toString();
+                throw new Exception(errorMsg, e);
+            }
+        }
+    }
+
+    protected void configure(Configuration config) throws Exception {
+
+        Yanel yanel = Yanel.getInstance();
+        
+        PolicyManagerFactory pmFactory = (PolicyManagerFactory) yanel.getBeanFactory().getBean("PolicyManagerFactory");
+        IdentityManagerFactory imFactory = (IdentityManagerFactory) yanel.getBeanFactory().getBean("IdentityManagerFactory");
+
+        RepositoryFactory repoFactory = yanel.getRepositoryFactory("DefaultRepositoryFactory");
+        RepositoryFactory rtiRepoFactory = yanel.getRepositoryFactory("RTIRepositoryFactory");
+        RepositoryFactory policiesRepoFactory = yanel.getRepositoryFactory("ACPoliciesRepositoryFactory");
+        RepositoryFactory identitiesRepoFactory = yanel.getRepositoryFactory("ACIdentitiesRepositoryFactory");
+
+        String repoConfigSrc = config.getChild("data", false).getValue();
+        File repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigSrc));
+        setRepository(repoFactory.newRepository(getID(), repoConfig));
+        
+        repoConfigSrc = config.getChild("rti", false).getValue();
+        repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigSrc));
+        setRTIRepository(rtiRepoFactory.newRepository(getID(), repoConfig));
+        
+        Configuration repoConfigElement = config.getChild("ac-policies", false);
+        if (repoConfigElement != null) {
+            repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
+            Repository policiesRepo = policiesRepoFactory.newRepository(getID(), repoConfig);
+            PolicyManager policyManager = pmFactory.newPolicyManager(policiesRepo);
+            setPolicyManager(policyManager);
+        }
+        
+        repoConfigElement = config.getChild("ac-identities", false);
+        if (repoConfigElement != null) {
+            repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
+            Repository identitiesRepo = identitiesRepoFactory.newRepository(getID(), repoConfig);
+            IdentityManager identityManager = imFactory.newIdentityManager(identitiesRepo);
+            setIdentityManager(identityManager);
+        }
+        
+        repoConfigElement = config.getChild("default-language", false);
+        if (repoConfigElement != null) {                       
+            setDefaultLanguage(repoConfigElement.getValue());
+        } else {
+            //Maintain backwards compatibility with realms
+            setDefaultLanguage("en");
+        }
     }
 
     /**

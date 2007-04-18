@@ -200,44 +200,10 @@ public class RealmConfiguration {
                 log.debug("Reading realm config file for [" + realmId + "]: " + realmConfigFile);
                 try {
                     Realm realm = new Realm(name.getValue(), realmId, mountPoint, realmConfigFile);
+                    
                     if (proxy != null) {
                         realm.setProxy(proxy.getChild("host-name").getValue(), proxy.getChild("port").getValue(""), proxy.getChild("prefix").getValue());
                     }
-                    Configuration realmConfig = builder.buildFromFile(realmConfigFile);
-                    
-                    String repoConfigSrc = realmConfig.getChild("data", false).getValue();
-                    File repoConfig = resolveFile(new File(repoConfigSrc), realmConfigFile);
-                    realm.setRepository(repoFactory.newRepository(realmId, repoConfig));
-                    
-                    repoConfigSrc = realmConfig.getChild("rti", false).getValue();
-                    repoConfig = resolveFile(new File(repoConfigSrc), realmConfigFile);
-                    realm.setRTIRepository(rtiRepoFactory.newRepository(realmId, repoConfig));
-                    
-                    Configuration repoConfigElement = realmConfig.getChild("ac-policies", false);
-                    if (repoConfigElement != null) {
-                        repoConfig = resolveFile(new File(repoConfigElement.getValue()), realmConfigFile);
-                        Repository policiesRepo = policiesRepoFactory.newRepository(realmId, repoConfig);
-                        PolicyManager policyManager = pmFactory.newPolicyManager(policiesRepo);
-                        realm.setPolicyManager(policyManager);
-                    }
-                    
-                    repoConfigElement = realmConfig.getChild("ac-identities", false);
-                    if (repoConfigElement != null) {
-                        repoConfig = resolveFile(new File(repoConfigElement.getValue()), realmConfigFile);
-                        Repository identitiesRepo = identitiesRepoFactory.newRepository(realmId, repoConfig);
-                        IdentityManager identityManager = imFactory.newIdentityManager(identitiesRepo);
-                        realm.setIdentityManager(identityManager);
-                    }
-                    
-                    repoConfigElement = realmConfig.getChild("default-language", false);
-                    if (repoConfigElement != null) {                       
-                        realm.setDefaultLanguage(repoConfigElement.getValue());
-                    } else {
-                        //Maintain backwards compatibility with realms
-                        realm.setDefaultLanguage("en");
-                    }
-                    
-                    
                     
                     log.info("Realm: " + realm);
                     
