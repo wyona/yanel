@@ -53,9 +53,19 @@ public class DefaultTranslationManager implements TranslationManager {
     private Node node;
     
     /**
+     * Empty constructor. Don't forget to call the init() method.
+     */
+    public DefaultTranslationManager() {
+    }
+   
+    /**
      *
      */
     public DefaultTranslationManager(Realm realm) throws TranslationException {
+        init(realm);
+    }
+    
+    public void init(Realm realm) throws TranslationException {
         try {
             this.pages = new HashSet();
             this.languageVersions = new HashMap();
@@ -69,6 +79,7 @@ public class DefaultTranslationManager implements TranslationManager {
         } catch (Exception e) {
             throw new TranslationException(e.getMessage(), e);
         }
+        
     }
 
     public synchronized String getLanguage(Resource resource) throws TranslationException {

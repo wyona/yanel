@@ -21,6 +21,4 @@
   <bean id="IdentityManagerFactory" class="org.wyona.security.impl.IdentityManagerFactoryImpl"/>
 
   <bean id="nav-sitetree" class="org.wyona.yanel.impl.navigation.SitetreeRTIImpl"/>
-
-  <bean id="TranslationManagerRegistry" class="org.wyona.yanel.core.attributes.translatable.DefaultTranslationManagerRegistry"/>
 </beans>

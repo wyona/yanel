@@ -17,12 +17,15 @@
 package org.wyona.yanel.core.attributes.translatable;
 
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.map.Realm;
 
 /**
  * This is a delegate for the translatable interface.
  * @see org.wyona.yanel.core.api.attributes.TranslatableV1
  */
 public interface TranslationManager {
+    
+    void init(Realm realm) throws TranslationException;
     
     String getLanguage(Resource resource) throws TranslationException;
     

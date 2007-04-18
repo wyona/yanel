@@ -18,6 +18,7 @@ package org.wyona.yanel.core.map;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.wyona.commons.io.FileUtil;
 import org.wyona.commons.io.Path;
@@ -26,6 +27,8 @@ import org.wyona.security.core.PolicyManagerFactory;
 import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.yanel.core.Yanel;
+import org.wyona.yanel.core.attributes.translatable.DefaultTranslationManager;
+import org.wyona.yanel.core.attributes.translatable.TranslationManager;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.xml.sax.SAXException;
@@ -51,8 +54,10 @@ public class Realm {
     private Repository rtiRepository;
     private PolicyManager policyManager;
     private IdentityManager identityManager;
+    private TranslationManager translationManager;
     private File configFile;
     private File rootDir;
+    private ArrayList languages;
 
     private String proxyHostName;
     private String proxyPort;
@@ -129,6 +134,28 @@ public class Realm {
             //Maintain backwards compatibility with realms
             setDefaultLanguage("en");
         }
+        
+        Configuration languagesElement = config.getChild("languages", false);
+        ArrayList languages = new ArrayList();
+        if (languagesElement != null) {
+            Configuration[] langElements = languagesElement.getChildren("language");
+            for (int i = 0; i < langElements.length; i++) {
+                String language = langElements[i].getValue();
+                languages.add(language);
+            }
+        }
+        setLanguages(languages);
+        
+        configElement = config.getChild("translation-manager", false);
+        TranslationManager translationManager = null;
+        if (configElement != null) {
+            String className = configElement.getAttribute("class");
+            translationManager = (TranslationManager)Class.forName(className).newInstance();
+        } else {
+            translationManager = new DefaultTranslationManager();
+        }
+        translationManager.init(this);
+        setTranslationManager(translationManager);
         
         Configuration rootDirConfig = config.getChild("root-dir", false);
         if (rootDirConfig != null) {
@@ -283,5 +310,25 @@ public class Realm {
             log.error(e.getMessage(), e);
         }
         return null;
+    }
+
+    /**
+     * Gets a list of all languages supported by this realm.
+     * @return list of languages. may be empty.
+     */
+    public ArrayList getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(ArrayList languages) {
+        this.languages = languages;
+    }
+
+    public TranslationManager getTranslationManager() {
+        return translationManager;
+    }
+
+    public void setTranslationManager(TranslationManager translationManager) {
+        this.translationManager = translationManager;
     }
 }

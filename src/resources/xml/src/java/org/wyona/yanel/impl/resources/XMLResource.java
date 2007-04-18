@@ -30,7 +30,6 @@ import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.translatable.TranslationException;
 import org.wyona.yanel.core.attributes.translatable.TranslationManager;
-import org.wyona.yanel.core.attributes.translatable.TranslationManagerRegistry;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
@@ -623,8 +622,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     }
 
     protected TranslationManager getTranslationManager() throws TranslationException {
-        TranslationManagerRegistry registry = (TranslationManagerRegistry)getYanel().getTranslationManagerRegistry();
-        return registry.getTranslationManager(getRealm());
+        return getRealm().getTranslationManager();
     }
 
     public String getLanguage() throws TranslationException {

@@ -18,7 +18,6 @@ package org.wyona.yanel.core;
 
 import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.PolicyManager;
-import org.wyona.yanel.core.attributes.translatable.TranslationManagerRegistry;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.map.RealmConfiguration;
@@ -111,10 +110,6 @@ public class Yanel {
     
     public RealmConfiguration getRealmConfiguration() {
         return realmConfig;
-    }
-    
-    public TranslationManagerRegistry getTranslationManagerRegistry() {
-        return (TranslationManagerRegistry)applicationContext.getBean("TranslationManagerRegistry");
     }
     
     /**
