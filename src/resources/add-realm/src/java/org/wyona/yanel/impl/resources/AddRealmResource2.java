@@ -553,21 +553,25 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         crawler.setDownloadParameters(downloadParams);
         
         
-        EventLog eventLog = new EventLog();
-        crawler.addLinkListener(eventLog);
-        crawler.addCrawlListener(eventLog);
-        
-        Realm realm = getYanel().getRealmConfiguration().getRealm(realmID);
-       
         HttpSession session = getRequest().getSession(true); 
-        session.setAttribute(SESSION_ATTR_EVENT_LOG, eventLog);
-        session.setAttribute(SESSION_ATTR_CRAWLER, crawler);
-        session.setAttribute(SESSION_ATTR_REALM_ID, realm.getID());
-        session.setAttribute(SESSION_ATTR_REALM_NAME, realm.getName());
+        EventLog eventLog = (EventLog) session.getAttribute(SESSION_ATTR_EVENT_LOG);
+        if (eventLog == null) {
+            eventLog = new EventLog();
+            crawler.addLinkListener(eventLog);
+            crawler.addCrawlListener(eventLog);
         
-        // start crawler in new thread to be able to show progress:
-        ImportSiteThread thread = new ImportSiteThread(crawler, realm, dumpDir, crawlStartURL, 
-                crawlScopeURLs, eventLog);
-        thread.start();
+            Realm realm = getYanel().getRealmConfiguration().getRealm(realmID);
+       
+            session.setAttribute(SESSION_ATTR_EVENT_LOG, eventLog);
+            session.setAttribute(SESSION_ATTR_CRAWLER, crawler);
+            session.setAttribute(SESSION_ATTR_REALM_ID, realm.getID());
+            session.setAttribute(SESSION_ATTR_REALM_NAME, realm.getName());
+        
+            // start crawler in new thread to be able to show progress:
+            ImportSiteThread thread = new ImportSiteThread(crawler, realm, dumpDir, crawlStartURL, crawlScopeURLs, eventLog);
+            thread.start();
+        } else {
+            log.warn("Another crawl is already in progress: " + eventLog.getNofDownloads());
+        }
     }
 }
