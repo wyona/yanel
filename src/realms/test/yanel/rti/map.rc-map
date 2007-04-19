@@ -2,5 +2,6 @@
 <rc-map>
 
 <matcher pattern="**/*/*.jtl" rcpath="/jmeter/jtl-rc-template.yanel-rc"/>
+<matcher pattern="**/test-results-archive/*-tests.xml" rcpath="/unit-results-rc-template.yanel-rc"/>
 
 </rc-map>
