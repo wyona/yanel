@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="add-realm" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="add-type" value="demo"/>
+  <yanel:property name="xslt" value="xslt/add-realm-demo.xsl"/>
+  
+  <yanel:custom-config xmlns:arr="http://www.wyona.org/yanel/resource/add-realm-resource/1.0">
+    <arr:parameter name="realmid" samplevalue="234797234273242" required="true" hidden="false"/>
+    <arr:parameter name="realmname" samplevalue="My Realm" required="true"/>
+    <!-- NOTE: An empty value means that the parent directory of the "from-scratch-realm" is being used. No value attribute means that the value becomes configurable by the user. -->
+    <arr:parameter name="fslocation" value="" samplevalue="C:/realms" required="true" hidden="true"/>
+  </yanel:custom-config>
+</yanel:resource-config>
