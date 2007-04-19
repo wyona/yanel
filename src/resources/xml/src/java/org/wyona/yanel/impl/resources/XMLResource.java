@@ -202,21 +202,32 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     }
 
     /**
-     * Get language with the following priorization: 1) yanel.meta.language query string parameter, 2) Resource Configuration property, 3) Accept-Language header, 4) Default language or realm
+     * Get language with the following priorization: 
+     * 1) yanel.meta.language query string parameter 
+     * 2) Translation Manager
+     * 3) Resource Configuration property 
+     * 4) Accept-Language header
+     * 5) Realm default language
+     * 6) Default "en"
      */
     private String getRequestedLanguage() throws Exception {
         // TODO: Make this reusable. Also see org/wyona/yanel/servlet/YanelServlet.java
         String language = getRequest().getParameter("yanel.meta.language");
+        
+        if (language == null) {
+            language = getLanguage(); // get language from translation manager 
+        }
 
-        ResourceConfiguration rc = getConfiguration();
-        if (rc != null) {
-            language = rc.getProperty("language");
+        if (language == null) {
+            ResourceConfiguration rc = getConfiguration();
+            if (rc != null) {
+                language = rc.getProperty("language");
+            }
         }
 
         if (language == null) {
             language = getRequest().getHeader("Accept-Language");
             if (language != null) {
-                log.error("DEBUG: Use Accept-Language from Request Header: " + language);
                 if (language.indexOf(",") > 0) {
                     language = language.substring(0, language.indexOf(","));
                 }
@@ -226,8 +237,16 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 }
             }
         }
-        if(language != null && language.length() > 0) return language;
-        return getRealm().getDefaultLanguage();
+        
+        if (language == null) {
+            language = getRealm().getDefaultLanguage();
+        }
+        
+        if (language == null || language.length() == 0) {
+            language = "en";
+        }
+        
+        return language;
     }
 
 
