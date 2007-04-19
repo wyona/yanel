@@ -1855,6 +1855,11 @@ public class YanelServlet extends HttpServlet {
         sb.append("</style>");
         sb.append(System.getProperty("line.separator"));
         
+        // If browser is Mozilla
+        if (request.getHeader("User-Agent").indexOf("rv:1.7") >= 0) {
+            sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbarMozilla.css\" rel=\"stylesheet\"/>");
+            sb.append(System.getProperty("line.separator"));
+        }
         return sb.toString();
     }
     
