@@ -32,7 +32,7 @@
     </xsl:when>
     <xsl:otherwise>
       <xsl:choose>
-        <xsl:when test="starts-with(@src, '/')">
+        <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
     <ant inheritAll="false" antfile="{@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
     </ant>
@@ -51,7 +51,7 @@
   <target name="deploy-resources" description="Deploy resources" depends="init">
 <xsl:for-each select="/yanel:resource-types/yanel:resource-type">
     <xsl:choose>
-      <xsl:when test="starts-with(@src, '/')">
+      <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
     <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
       <fileset dir="{@src}/build/lib"/>
     </copy>
@@ -74,7 +74,7 @@
     <xsl:otherwise>
       <xsl:choose>
         <!-- TODO: What about Windows, e.g. D:/foo/bar ...! -->
-        <xsl:when test="starts-with(@src, '/')">
+        <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
           <delete dir="{@src}/build"/>
         </xsl:when>
         <xsl:otherwise>
@@ -89,7 +89,7 @@
   <target name="copy-resources-dependencies" description="Copy dependencies of resources" depends="init">
 <xsl:for-each select="/yanel:resource-types/yanel:resource-type">
     <xsl:choose>
-      <xsl:when test="starts-with(@src, '/')">
+      <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
     <ant inheritAll="false" antfile="{@src}/build.xml" target="copy-dependencies">
       <property name="build.dir" value="${{build.dir}}"/>
       <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
