@@ -5,4 +5,8 @@
   <checkout url="index.html?yanel.resource.usecase=checkout" method="GET"/>
   <checkin  url="index.html?yanel.resource.usecase=checkin"  method="PUT"/>
 </edit>
+
+<navigation>
+  <sitetree href="./" method="PROPFIND"/>
+</navigation>
 </introspection>
