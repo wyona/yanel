@@ -46,11 +46,11 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class DefaultTranslationManager implements TranslationManager {
 
-    private static Category log = Category.getInstance(DefaultTranslationManager.class);
+    protected static Category log = Category.getInstance(DefaultTranslationManager.class);
     
-    private HashMap languageVersions; // key is path
-    private HashSet pages;
-    private Node node;
+    protected HashMap languageVersions; // key is path
+    protected HashSet pages;
+    protected Node node;
     
     /**
      * Empty constructor. Don't forget to call the init() method.
@@ -154,11 +154,11 @@ public class DefaultTranslationManager implements TranslationManager {
     
     
     
-    private synchronized LanguageVersion getLanguageVersion(String path) throws TranslationException {
+    protected synchronized LanguageVersion getLanguageVersion(String path) throws TranslationException {
         return (LanguageVersion)this.languageVersions.get(path);
     }
 
-    private synchronized Page getPage(Resource resource) throws TranslationException {
+    protected synchronized Page getPage(Resource resource) throws TranslationException {
         LanguageVersion langVersion = getLanguageVersion(resource.getPath());
         if (langVersion == null) {
             return null;
@@ -166,7 +166,7 @@ public class DefaultTranslationManager implements TranslationManager {
         return langVersion.page;
     }
     
-    private synchronized void load() throws TranslationException {
+    protected synchronized void load() throws TranslationException {
         try {
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             InputStream is = this.node.getInputStream();
@@ -178,7 +178,7 @@ public class DefaultTranslationManager implements TranslationManager {
         }
     }
     
-    private synchronized void save() throws TranslationException {
+    protected synchronized void save() throws TranslationException {
         try {
             OutputStream os = this.node.getOutputStream();
             Writer out = new OutputStreamWriter(os);
@@ -205,7 +205,7 @@ public class DefaultTranslationManager implements TranslationManager {
         }
     }
     
-    private synchronized void debug() throws TranslationException {
+    protected synchronized void debug() throws TranslationException {
         try {
             OutputStream os = System.out;
             Writer out = new OutputStreamWriter(os);
@@ -232,7 +232,7 @@ public class DefaultTranslationManager implements TranslationManager {
         }
     }
     
-    private synchronized Page registerTranslation(String path, String uuid, String language, Page page) {
+    protected synchronized Page registerTranslation(String path, String uuid, String language, Page page) {
         if (page == null) {
             page = new Page();
             this.pages.add(page);
@@ -243,7 +243,7 @@ public class DefaultTranslationManager implements TranslationManager {
         return page;
     }
 
-    private class LanguageVersion {
+    protected class LanguageVersion {
         public LanguageVersion(String path, String uuid, String language, Page page) {
             this.path = path;
             this.uuid = uuid;
@@ -259,7 +259,7 @@ public class DefaultTranslationManager implements TranslationManager {
     /**
      * A page is a set of language versions.
      */
-    private class Page extends HashMap {
+    protected class Page extends HashMap {
         // key is language
     }
     
@@ -269,7 +269,7 @@ public class DefaultTranslationManager implements TranslationManager {
      */
     public class TranslationSAXHandler extends DefaultHandler {
         
-        private Page page;
+        protected Page page;
         /**
          * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
          */
