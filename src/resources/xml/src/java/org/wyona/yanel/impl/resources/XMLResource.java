@@ -448,8 +448,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
 
 
     public boolean exists() throws Exception {
-        log.warn("Not implemented yet!");
-        return true; 
+        return getRealm().getRepository().existsNode(getPath());
     }
 
     /**
