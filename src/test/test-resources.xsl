@@ -36,7 +36,7 @@
   <xsl:template match="yanel:resource-type[@compile='true']">
     <xsl:variable name="srcpath">
       <xsl:choose>
-        <xsl:when test="starts-with(@src, '/')">
+        <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
           <xsl:value-of select="@src"/>
         </xsl:when>
         <xsl:otherwise>
