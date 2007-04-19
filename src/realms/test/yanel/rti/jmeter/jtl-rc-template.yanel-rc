@@ -5,4 +5,5 @@
 
   <yanel:property name="mime-type" value="application/xhtml+xml"/>
   <yanel:property name="xslt" value="/xslt/jmeter-results-detail-report.xsl"/>
+  <yanel:property name="xslt" value="/xslt/global.xsl"/>
 </yanel:resource-config>
