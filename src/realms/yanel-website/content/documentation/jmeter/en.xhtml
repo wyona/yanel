@@ -11,17 +11,16 @@
 
 <body><h1>How to use the jmeter-ant-task</h1>
 <p>
-Attached to yanel is a jmeter testplan. you can find it under local/test/data/jmeter/testplan/yanel_test_plan.jmx resp. src/realms/test/yanel/data/jmeter/testplan/yanel_test_plan.jmx
+Included in yanel is a jmeter testplan. you can find it under local/test/data/jmeter/testplan/yanel_test_plan.jmx resp. src/realms/test/yanel/data/jmeter/testplan/yanel_test_plan.jmx
 </p>
 <p>
-To make it work you need to install jmeter on your system and configure the path to your jmeter installation in src/build/local.build.properties jmeter.home.dir
+To make it work you need to install <a href="http://jakarta.apache.org/jmeter/">jmeter2.2</a> (jmeter2.1 will write the output in a different format hence the xslt included in yanel will not work) on your system and configure the path to your jmeter installation in src/build/local.build.properties jmeter.home.dir</p><p>Also set jmeter.save.saveservice.output_format=xml in the jmeter.properties of your jmeter installation.<br/>
 </p>
 <p>
 To execute the test just type ./build.sh jmeter.
 </p>
 <p>
-You will find the results in local/test/data/jmeter/jmeter-results/
+You will find the results in local/test/data/jmeter/jmeter-results/ resp. http://localhost:8080/yanel/test/jmeter/jmeter-results/</p><p>Note: turn off SSL.<br/>
 </p>
-
 </body>
 </html>
