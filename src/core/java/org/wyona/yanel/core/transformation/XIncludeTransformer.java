@@ -13,7 +13,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * It will resolve <xi:include href="bla.xml"/>. 
  * The namespace uri is http://www.w3.org/2001/XInclude
  * This is not a complete implementation of the xinclude specification.
- * @see http://www.w3.org/TR/xinclude/
+ * Also see http://www.w3.org/TR/xinclude/
  */
 public class XIncludeTransformer extends AbstractTransformer {
 
