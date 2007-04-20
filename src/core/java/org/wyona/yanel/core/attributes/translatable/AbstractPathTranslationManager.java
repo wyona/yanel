@@ -18,6 +18,7 @@ package org.wyona.yanel.core.attributes.translatable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.wyona.yanel.core.Resource;
@@ -123,7 +124,15 @@ public abstract class AbstractPathTranslationManager extends DefaultTranslationM
             }
         }
         String[] languages = new String[page.size()];
-        languages = (String[])page.keySet().toArray(languages);
+        // return languages in the order of the realm languages:
+        Set existingLanguages = page.keySet();
+        String[] realmLanguages = resource.getRealm().getLanguages();
+        int j = 0;
+        for (int i = 0; i < realmLanguages.length; i++) {
+            if (existingLanguages.contains(realmLanguages[i])) {
+                languages[j++] = realmLanguages[i];
+            }
+        }
         return languages;
     }
     

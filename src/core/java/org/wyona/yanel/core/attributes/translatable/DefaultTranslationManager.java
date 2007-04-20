@@ -23,6 +23,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -96,7 +97,15 @@ public class DefaultTranslationManager implements TranslationManager {
             return new String[0];
         }
         String[] languages = new String[langSet.size()];
-        languages = (String[])langSet.keySet().toArray(languages);
+        // return languages in the order of the realm languages:
+        Set existingLanguages = langSet.keySet();
+        String[] realmLanguages = resource.getRealm().getLanguages();
+        int j = 0;
+        for (int i = 0; i < realmLanguages.length; i++) {
+            if (existingLanguages.contains(realmLanguages[i])) {
+                languages[j++] = realmLanguages[i];
+            }
+        }
         return languages;
     }
     
