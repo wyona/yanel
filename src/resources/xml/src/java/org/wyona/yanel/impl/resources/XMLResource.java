@@ -202,55 +202,6 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     }
 
     /**
-     * Get language with the following priorization: 
-     * 1) yanel.meta.language query string parameter 
-     * 2) Translation Manager
-     * 3) Resource Configuration property 
-     * 4) Accept-Language header
-     * 5) Realm default language
-     * 6) Default "en"
-     */
-    private String getRequestedLanguage() throws Exception {
-        // TODO: Make this reusable. Also see org/wyona/yanel/servlet/YanelServlet.java
-        String language = getRequest().getParameter("yanel.meta.language");
-        
-        if (language == null) {
-            language = getLanguage(); // get language from translation manager 
-        }
-
-        if (language == null) {
-            ResourceConfiguration rc = getConfiguration();
-            if (rc != null) {
-                language = rc.getProperty("language");
-            }
-        }
-
-        if (language == null) {
-            language = getRequest().getHeader("Accept-Language");
-            if (language != null) {
-                if (language.indexOf(",") > 0) {
-                    language = language.substring(0, language.indexOf(","));
-                }
-                int dashIndex = language.indexOf("-");
-                if (dashIndex > 0) {
-                    language = language.substring(0, dashIndex);
-                }
-            }
-        }
-        
-        if (language == null) {
-            language = getRealm().getDefaultLanguage();
-        }
-        
-        if (language == null || language.length() == 0) {
-            language = "en";
-        }
-        
-        return language;
-    }
-
-
-    /**
      *
      */
     private InputStream getContentXML(Repository repo, String yanelPath, String revisionName) throws Exception {
