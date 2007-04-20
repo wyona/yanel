@@ -12,6 +12,7 @@
   <node uuid="" href=""><name>Features</name></node>
   <node uuid="" href="news/index.html"><name>News</name></node>
   <node uuid="" href="en/documentation/index.html"><name>Documentation</name></node>
+  <node uuid="" href="en/demo/index.html"><name>Demo</name></node>
 </node>
 
 <node>
