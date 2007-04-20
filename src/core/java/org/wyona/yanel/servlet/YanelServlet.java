@@ -1849,9 +1849,9 @@ public class YanelServlet extends HttpServlet {
         sb.append(System.getProperty("line.separator"));
         sb.append("<style type=\"text/css\" media=\"screen\">");
         sb.append(System.getProperty("line.separator"));
-        sb.append("#yaneltoolbar_menu li li.haschild{ background: lightgrey url(" + backToRealm + reservedPrefix + "/yanel-img/submenu.png) no-repeat 98% 50%;}");
+        sb.append("#yaneltoolbar_menu li li.haschild{ background: lightgrey url(" + backToRealm + reservedPrefix + "/yanel-img/submenu.gif) no-repeat 98% 50%;}");
         sb.append(System.getProperty("line.separator"));
-        sb.append("#yaneltoolbar_menu li li.haschild:hover{  background: lightsteelblue url(" + backToRealm + reservedPrefix + "/yanel-img/submenu.png) no-repeat 98% 50%;}");
+        sb.append("#yaneltoolbar_menu li li.haschild:hover{  background: lightsteelblue url(" + backToRealm + reservedPrefix + "/yanel-img/submenu.gif) no-repeat 98% 50%;}");
         sb.append("</style>");
         sb.append(System.getProperty("line.separator"));
         
