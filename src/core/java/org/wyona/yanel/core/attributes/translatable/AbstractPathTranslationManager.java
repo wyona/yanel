@@ -107,11 +107,10 @@ public abstract class AbstractPathTranslationManager extends DefaultTranslationM
         Page page = getPage(resource);
         if (page == null) {
             try {
-                ArrayList realmLanguages = resource.getRealm().getLanguages();
+                String[] realmLanguages = resource.getRealm().getLanguages();
                 ArrayList existingLanguages = new ArrayList();
-                Iterator iter = realmLanguages.iterator();
-                while (iter.hasNext()) {
-                    String possibleLanguage = (String)iter.next();
+                for (int i = 0; i < realmLanguages.length; i++) {
+                    String possibleLanguage = realmLanguages[i];
                     Resource possibleResource = getResource(resource, possibleLanguage);
                     if (possibleResource != null) {
                         existingLanguages.add(possibleLanguage);

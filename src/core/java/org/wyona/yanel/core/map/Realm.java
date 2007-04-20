@@ -57,7 +57,7 @@ public class Realm {
     private TranslationManager translationManager;
     private File configFile;
     private File rootDir;
-    private ArrayList languages;
+    private String[] languages;
 
     private String proxyHostName;
     private String proxyPort;
@@ -144,7 +144,7 @@ public class Realm {
                 languages.add(language);
             }
         }
-        setLanguages(languages);
+        setLanguages((String[])languages.toArray(new String[languages.size()]));
         
         configElement = config.getChild("translation-manager", false);
         TranslationManager translationManager = null;
@@ -316,12 +316,12 @@ public class Realm {
      * Gets a list of all languages supported by this realm.
      * @return list of languages. may be empty.
      */
-    public ArrayList getLanguages() {
+    public String[] getLanguages() {
         return languages;
     }
 
-    public void setLanguages(ArrayList languages) {
-        this.languages = languages;
+    public void setLanguages(String[] languages) {
+        this.languages = (String[])languages.clone();
     }
 
     public TranslationManager getTranslationManager() {
