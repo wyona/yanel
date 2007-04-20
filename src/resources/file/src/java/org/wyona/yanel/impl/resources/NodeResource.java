@@ -284,8 +284,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     public boolean exists() throws Exception {
-        log.warn("Not implemented yet!");
-        return true; 
+        return getRealm().getRepository().existsNode(getPath());
     }
 
     /**
