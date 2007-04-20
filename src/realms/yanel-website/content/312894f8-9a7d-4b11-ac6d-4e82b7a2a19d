@@ -43,7 +43,7 @@
 <tr><td style="vertical-align: top;">Locking of Write Access</td><td style="vertical-align: top;">done<br/></td><td style="vertical-align: top;">2007.02.28</td><td>Josias</td><td>-</td></tr>
 <tr><td style="vertical-align: top;">Standard and Custom Meta Data</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.04.30</td><td>Josias/Michael</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5298">5298</a></td></tr>
 <tr><td style="vertical-align: top;"><a href="http://yanel.wyona.org/specification/access-control-user-interface.html">Access Control User Interface</a></td><td style="vertical-align: top;">mostly done<br/></td><td style="vertical-align: top;">2007.04.30</td><td style="vertical-align: top;">Paloma</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5116">5116</a></td></tr>
-<tr><td valign="top">Toolbar</td><td valign="top">done<br/></td><td valign="top">2007.04.13</td><td valign="top">Josias/Michael</td><td>-</td></tr>
+<tr><td valign="top">Toolbar</td><td valign="top">done<br/></td><td valign="top">2007.04.13</td><td valign="top">Josias/Michael</td><td>-</td></tr><tr><td valign="top">Misc resp. Release 1.0 Tracking Task<br/></td><td valign="top">in progress</td><td valign="top">2007.04.30</td><td valign="top">All</td><td valign="top"><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5163">5163</a></td></tr>
 </tbody>
 </table>
 <h4>Release 1.1</h4>
