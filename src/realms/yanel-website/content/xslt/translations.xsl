@@ -17,7 +17,9 @@
 
   <xsl:template match="yanel:translations">
     <div id="translations" class="language_choice">
-      <xsl:apply-templates select="yanel:translation"/>
+      <xsl:if test="count(yanel:translation[@exists='true']) > 1">
+        <xsl:apply-templates select="yanel:translation[@exists='true']"/>
+      </xsl:if>
     </div>
   </xsl:template>
 

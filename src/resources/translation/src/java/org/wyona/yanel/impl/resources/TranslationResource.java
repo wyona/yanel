@@ -16,73 +16,40 @@
 
 package org.wyona.yanel.impl.resources;
 
-import org.w3c.dom.Document;
-import org.wyona.yanel.core.Path;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.transform.stream.StreamSource;
+
+import org.apache.log4j.Category;
+import org.apache.xml.resolver.tools.CatalogResolver;
+import org.apache.xml.serializer.Serializer;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
-import org.wyona.yanel.core.Topic;
-import org.wyona.yanel.core.Yanel;
-import org.wyona.yanel.core.api.attributes.CreatableV2;
-import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.TranslatableV1;
-import org.wyona.yanel.core.api.attributes.VersionableV2;
-import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
-import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
-
-import org.wyona.yanel.core.serialization.HTMLSerializer;
 import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.ResourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
-
-import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
-import org.wyona.yarep.core.RepositoryFactory;
-import org.wyona.yarep.core.Revision;
-import org.wyona.yarep.util.RepoPath;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.Date;
-import java.util.Properties;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
-
-import org.apache.log4j.Category;
-import org.apache.xml.resolver.tools.CatalogResolver;
-import org.apache.xml.serializer.Serializer;
-
-import org.apache.avalon.framework.configuration.Configuration;
-import org.apache.avalon.framework.configuration.ConfigurationUtil;
 
 /**
  *
@@ -212,16 +179,22 @@ public class TranslationResource extends Resource implements ViewableV2 {
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Translatable", "1")) {
             TranslatableV1 translatable = ((TranslatableV1) resource);
             
-            String[] languages = translatable.getLanguages();
+            List existingLanguages = Arrays.asList(translatable.getLanguages());
+            String[] realmLanguages = resource.getRealm().getLanguages(); 
             
-            for (int i=0; i<languages.length; i++) {
-                Resource translation = translatable.getTranslation(languages[i]);
+            for (int i = 0; i < realmLanguages.length; i++) {
                 String current = "";
-                if (currentLanguage.equals(languages[i])) {
+                if (currentLanguage.equals(realmLanguages[i])) {
                     current = "current=\"true\" ";
                 }
-                sb.append("<translation language=\"" + languages[i] + "\" path=\"" + 
-                        translation.getPath() + "\" " + current + "/>");
+                if (existingLanguages.contains(realmLanguages[i])) {
+                    Resource translation = translatable.getTranslation(realmLanguages[i]);
+                    sb.append("<translation language=\"" + realmLanguages[i] + "\" path=\"" + 
+                            translation.getPath() + "\" " + current + " exists=\"true\"/>");
+                } else {
+                    sb.append("<translation language=\"" + realmLanguages[i] + "\" " + current + 
+                            " exists=\"false\"/>");
+                }
             }
         }
         
