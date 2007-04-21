@@ -137,7 +137,7 @@ public class NodeResConfigAndDataRepoImpl implements Node {
         java.util.Vector c = new java.util.Vector();
         try {
             if (repo.isCollection(path)) {
-                log.debug("Is collection within repo: " + path);
+                log.debug("Is collection within resource config repo: " + path);
                 Path[] children = repo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
                     if (repo.isCollection(children[i])) {
@@ -153,7 +153,30 @@ public class NodeResConfigAndDataRepoImpl implements Node {
                     }
                 }
             } else {
-                log.warn("Is not a collection: " + path);
+                log.debug("Is not a collection within resource config repo: " + path);
+            }
+
+            if (dataRepo.isCollection(path)) {
+                log.debug("Is collection within data repository: " + path);
+                Path[] children = dataRepo.getChildren(path);
+                for (int i = 0; i < children.length; i++) {
+                    log.error("DEBUG: " + children[i]);
+/*
+                    if (dataRepo.isCollection(children[i])) {
+                        c.add(children[i].toString());
+                    }
+                    if (children[i].getName().indexOf(".yanel-rti") > 0) {
+                        String cp = children[i].toString().substring(0, children[i].toString().indexOf(".yanel-rti"));
+                        if (!dataRepo.isCollection(new Path(cp))) c.add(cp);
+                    }
+                    if (children[i].getName().indexOf(".yanel-rc") > 0) {
+                        String cp = children[i].toString().substring(0, children[i].toString().indexOf(".yanel-rc"));
+                        if (!dataRepo.isCollection(new Path(cp))) c.add(cp);
+                    }
+*/
+                }
+            } else {
+                log.warn("Is not a collection within data repository: " + path);
             }
         } catch(Exception e) {
             log.error(e);
