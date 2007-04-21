@@ -160,6 +160,7 @@ public class NodeResConfigAndDataRepoImpl implements Node {
                 log.debug("Is collection within data repository: " + path);
                 Path[] children = dataRepo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
+                    // TODO ...
                     log.error("DEBUG: " + children[i]);
 /*
                     if (dataRepo.isCollection(children[i])) {
