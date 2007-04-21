@@ -263,7 +263,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     //sb.append("<br/><br/><input type=\"submit\" value=\"Save As\" name=\"save-as\"/>");
 
                     // TODO: Display repository navigation of this path ...
-                    Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("nav-sitetree");
+                    Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("repo-navigation");
                     Node node = sitetree.getNode(getRealm(), getPath());
                     if (node.isCollection()) {
                         log.error("DEBUG: Is Collection: " + node.getName());
