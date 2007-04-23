@@ -1823,30 +1823,6 @@ public class YanelServlet extends HttpServlet {
         
         sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbar.css\" rel=\"stylesheet\"/>");
         sb.append(System.getProperty("line.separator"));
-        sb.append("<!--[if lt IE 7]>");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("<link rel=\"stylesheet\" href=\"" + backToRealm + reservedPrefix + "/ie6.css\" type=\"text/css\">");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("<style type=\"text/css\" media=\"screen\">");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("#yaneltoolbar_menu{float:none;} /* This is required for IE to avoid positioning bug when placing content first in source. */");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  /* IE Menu CSS */");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  /* csshover.htc file version: V1.21.041022 - Available for download from: http://www.xs4all.nl/~peterned/csshover.html */");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  body{behavior:url(" + backToRealm + reservedPrefix + "/csshover.htc);");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  font-size:100%; /* to enable text resizing in IE */");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("}");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("#yaneltoolbar_menu ul li{float:left;width:100%;}");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("</style>");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("<![endif]-->");
-        sb.append(System.getProperty("line.separator"));
         sb.append("<style type=\"text/css\" media=\"screen\">");
         sb.append(System.getProperty("line.separator"));
         sb.append("#yaneltoolbar_menu li li.haschild{ background: lightgrey url(" + backToRealm + reservedPrefix + "/yanel-img/submenu.gif) no-repeat 98% 50%;}");
@@ -1855,11 +1831,26 @@ public class YanelServlet extends HttpServlet {
         sb.append("</style>");
         sb.append(System.getProperty("line.separator"));
         
-        // If browser is Mozilla
+        // If browser is Mozilla (gecko engine rv:1.7)
         if (request.getHeader("User-Agent").indexOf("rv:1.7") >= 0) {
             sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbarMozilla.css\" rel=\"stylesheet\"/>");
             sb.append(System.getProperty("line.separator"));
         }
+        // If browser is IE
+        if (request.getHeader("User-Agent").indexOf("compatible; MSIE") >= 0 && request.getHeader("User-Agent").indexOf("Windows") >= 0 ) {
+            sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbarIE.css\" rel=\"stylesheet\"/>");
+            sb.append(System.getProperty("line.separator"));
+            sb.append("<style type=\"text/css\" media=\"screen\">");
+            sb.append("  body{behavior:url(" + backToRealm + reservedPrefix + "/csshover.htc);font-size:100%;}");
+            sb.append("</style>");
+            
+        }
+        // If browser is IE6
+        if (request.getHeader("User-Agent").indexOf("compatible; MSIE 6") >= 0 && request.getHeader("User-Agent").indexOf("Windows") >= 0 ) {
+            sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbarIE6.css\" rel=\"stylesheet\"/>");
+            sb.append(System.getProperty("line.separator"));
+        }
+
         return sb.toString();
     }
     
@@ -1889,7 +1880,10 @@ public class YanelServlet extends HttpServlet {
         }
         buf.append("</span>");
         
-        buf.append("<img src=\"" + backToRealm + reservedPrefix + "/yanel_toolbar_logo.png\" id=\"yaneltoolbar_logo\"/>");
+        buf.append("<span id=\"yaneltoolbar_logo\">");
+        buf.append("<img src=\"" + backToRealm + reservedPrefix + "/yanel_toolbar_logo.png\"/>");
+        buf.append("</span>");
+
         buf.append("</div>");
         buf.append("<div id=\"yaneltoolbar_middlewrap\">");
         return buf.toString();

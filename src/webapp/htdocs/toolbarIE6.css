@@ -1,0 +1,12 @@
+#yaneltoolbar_menu { 
+  float:none;
+}
+ 
+#yaneltoolbar_menu ul li {
+  float:left;width:100%;
+}
+
+#yaneltoolbar_menu ul {
+  width:9em;
+}
+        
