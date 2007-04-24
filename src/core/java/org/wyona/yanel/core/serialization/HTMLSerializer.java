@@ -21,8 +21,9 @@ public class HTMLSerializer extends DefaultHandler implements Serializer, Lexica
     private EntityResolver entityResolver;
     private String pendingElement = null;
     private boolean doIndent;
+    private boolean visitedRootElement = false;
     
-    private String[] nonCollapsableElements = { "textarea", "script", "style" };
+    private String[] nonCollapsableElements = { "textarea", "script", "style", "div" };
 
     public HTMLSerializer() {
     }
@@ -64,18 +65,20 @@ public class HTMLSerializer extends DefaultHandler implements Serializer, Lexica
         handlePendingElement();
         String eName = ("".equals(localName)) ? qName : localName;
         
-        if (localName.equals("html")) {
-            print("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-            return;
-        }
         StringBuffer element = new StringBuffer();
         element.append("<" + eName);
+        
+        // add xhtml namespace to the root element:
+        if (!this.visitedRootElement) {
+            element.append(" xmlns=\"http://www.w3.org/1999/xhtml\"");
+            this.visitedRootElement = true;
+        }
         for(int i = 0; i < attrs.getLength(); i++) {
             String aLocalName = attrs.getLocalName(i);
             String aQName = attrs.getQName(i);
             String aName = ("".equals(aLocalName)) ? aQName : aLocalName;
-            String aURI = attrs.getURI(i);
-            if (!aName.equals("xmlns") || !aURI.equals("http://www.w3.org/2000/xmlns/")) {
+            // don't copy namespace attributes
+            if (!(aLocalName.startsWith("xmlns") || aQName.startsWith("xmlns"))) {
                 String aValue = replaceEntities(attrs.getValue(i));
                 element.append(" " + aName + "=\"" + aValue + "\"");
             }
