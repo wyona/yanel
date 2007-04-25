@@ -581,8 +581,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         String name = PathUtil.getName(getPath());
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<introspection xmlns=\"http://www.wyona.org/neutron/1.0\">");
-        sb.append("<edit mime-type=\"application/xml\" name=\"" + name + "\">");
-        //sb.append("<edit mime-type=\"" + this.getMimeType(null) + "\" name=\"" + name + "\">");
+        //sb.append("<edit mime-type=\"application/xml\" name=\"" + name + "\">");
+        sb.append("<edit mime-type=\"" + this.getMimeType(null) + "\" name=\"" + name + "\">");
         sb.append("<checkout url=\"?yanel.resource.viewid=source&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
         sb.append("<checkin  url=\"?yanel.resource.usecase=checkin\"  method=\"PUT\"/>");
         sb.append("</edit>");
