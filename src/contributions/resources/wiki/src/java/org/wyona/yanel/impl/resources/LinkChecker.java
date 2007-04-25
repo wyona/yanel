@@ -70,7 +70,7 @@ public class LinkChecker extends DefaultHandler {
                         }
                     }
                 }
-                transformedXmlAsBuffer.append(" " + aName + "=\"" + aValue + "\"");
+                transformedXmlAsBuffer.append(" " + aName + "=\"" + replaceEntities(aValue) + "\"");
             }  
         } else {
             for(int i = 0; i < attrs.getLength(); i++) {
@@ -81,7 +81,7 @@ public class LinkChecker extends DefaultHandler {
                     if(aValue.charAt(j) == '"') tmp.append("&#34;");
                     else tmp.append(aValue.charAt(j));
                 }
-                transformedXmlAsBuffer.append(" " + aName + "=\"" + tmp.toString() + "\"");
+                transformedXmlAsBuffer.append(" " + aName + "=\"" + replaceEntities(tmp.toString()) + "\"");
             }
         }
         transformedXmlAsBuffer.append(">");
@@ -94,7 +94,20 @@ public class LinkChecker extends DefaultHandler {
 
     public void characters(char[] buf, int offset, int len) throws SAXException {
         String s = new String(buf, offset, len);
-        transformedXmlAsBuffer.append(s);
+        transformedXmlAsBuffer.append(replaceEntities(s));
+    }
+    
+    /**
+     * Replaces some characters by their corresponding xml entities.
+     * @param str
+     * @return
+     */
+    private String replaceEntities(String str) {
+        str = str.replaceAll("<", "&lt;");
+        str = str.replaceAll(">", "&gt;");
+        str = str.replaceAll("'", "&apos;");
+        str = str.replaceAll("\"", "&quot;");
+        return str;
     }
 
     private void setResultInputStream() {
