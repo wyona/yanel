@@ -76,12 +76,8 @@ public class LinkChecker extends DefaultHandler {
             for(int i = 0; i < attrs.getLength(); i++) {
                 String aName = attrs.getQName(i);
                 String aValue = attrs.getValue(i);
-                StringBuffer tmp = new StringBuffer();
-                for(int j=0; j<aValue.length(); j++) {
-                    if(aValue.charAt(j) == '"') tmp.append("&#34;");
-                    else tmp.append(aValue.charAt(j));
-                }
-                transformedXmlAsBuffer.append(" " + aName + "=\"" + replaceEntities(tmp.toString()) + "\"");
+                
+                transformedXmlAsBuffer.append(" " + aName + "=\"" + replaceEntities(aValue) + "\"");
             }
         }
         transformedXmlAsBuffer.append(">");
@@ -103,6 +99,7 @@ public class LinkChecker extends DefaultHandler {
      * @return
      */
     private String replaceEntities(String str) {
+        str = str.replaceAll("&", "&amp;");
         str = str.replaceAll("<", "&lt;");
         str = str.replaceAll(">", "&gt;");
         str = str.replaceAll("'", "&apos;");

@@ -63,3 +63,9 @@ __Bold Text__
 
 |Column 1, Row 1|Column 2, Row 1|
 |Column 1, Row 2|Column 2, Row 2|
+
+----
+
+Test for special characters like & < > ' ":\\
+<element attr="bla">äöü</element>\\
+'test' "test"
