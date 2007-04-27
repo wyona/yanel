@@ -182,7 +182,7 @@
           <xsl:when test="@label"><xsl:value-of select="@label"/></xsl:when>
           <xsl:otherwise><xsl:value-of select="@href"/></xsl:otherwise>
         </xsl:choose>
-        </u><a href="?yanel.usecase=create&amp;create.name={@href}">?</a><xsl:text>&#0160;</xsl:text>
+        </u><a href="?yanel.usecase=create&amp;create.name={@href}">?</a>
 <!--
         </u><a href="?yanel.usecase=create&amp;create.name={@href}&amp;resource.type=&lt;{http://www.wyona.org/yanel/resource/1.0}wiki/>">?</a><xsl:text>&#0160;</xsl:text>
 -->
@@ -190,10 +190,10 @@
       <xsl:otherwise>
         <xsl:choose>
           <xsl:when test="@label">
-            <a href="{@href}"><xsl:value-of select="@label"/></a><xsl:text>&#0160;</xsl:text>
+            <a href="{@href}"><xsl:value-of select="@label"/></a>
           </xsl:when>
           <xsl:otherwise>
-            <a href="{@href}"><xsl:value-of select="@href"/></a><xsl:text>&#0160;</xsl:text>
+            <a href="{@href}"><xsl:value-of select="@href"/></a>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:otherwise>

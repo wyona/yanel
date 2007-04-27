@@ -23,8 +23,13 @@ public class HTMLSerializer extends DefaultHandler implements Serializer, Lexica
     private boolean doIndent;
     private boolean visitedRootElement = false;
     
-    private String[] nonCollapsableElements = { "textarea", "script", "style", "div" };
+    protected static final String[] nonCollapsableElements = { "textarea", "script", "style", "div" };
 
+    protected static final String[] inlineElements = {"a", "abbr", "acronym", "b", "basefont",
+        "bdo", "big", "br", "cite", "code", "dfn", "em", "font", "i", "img", "input", "kbd", 
+        "label", "q", "s", "samp", "select", "small", "span", "strike", "strong", "sub", "sup",
+        "textarea", "tt", "u", "var"};
+    
     public HTMLSerializer() {
     }
     
@@ -101,10 +106,26 @@ public class HTMLSerializer extends DefaultHandler implements Serializer, Lexica
         } else {
             print("</" + eName + ">");
         }
-        if (this.doIndent) {
-            // not a real indent yet, just add linebreaks
+        if (this.doIndent && !isInlineElement(eName)) {
+            // Not a real indent yet, just add line breaks.
+            // Don't add line breaks after inline-elements because it might break the
+            // layout. see http://www.w3.org/TR/CSS21/text.html#q8
             print("\n");
         }
+    }
+    
+    /**
+     * Indicates whether an html element is a inline element or not.
+     * @param element element name
+     * @return true if it's an inline element, false otherwise.
+     */
+    protected boolean isInlineElement(String element) {
+        for (int i = 0; i < inlineElements.length; i++) {
+            if (element.equals(inlineElements[i])) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
