@@ -105,7 +105,7 @@ English (5.0 MB)
 </table>
 </p>
 
-<xsl:copy-of select="/yh:homepage/yh:footer/xhtml:body/*"/>
+<xsl:copy-of select="/yh:homepage/yh:footer/xhtml:body/node()"/>
 
 </div>
 </body>

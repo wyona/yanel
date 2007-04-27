@@ -88,7 +88,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <td valign="top" width="100%">
   <div id="content">
     <xsl:call-template name="translations"/>
-    <xsl:copy-of select="/xhtml:html/xhtml:body/*"/>
+    <xsl:copy-of select="/xhtml:html/xhtml:body/node()"/>
   </div>
 </td>
 </tr>
