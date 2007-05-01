@@ -185,7 +185,7 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
         </tr>
         <xsl:for-each select="revision">
           <tr>
-            <td><a href="?yanel.resource.revision={name}"><xsl:value-of select="name"/></a></td>
+            <td><a href="?yanel.resource.revision={name}"><xsl:value-of select="name"/></a> <xsl:if test="position() = last()">&#160;(most recent version)</xsl:if></td>
             <td><xsl:value-of select="date"/></td>
             <td><xsl:value-of select="user"/></td>
             <td><xsl:value-of select="comment"/></td>
@@ -197,6 +197,7 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
 
   <xsl:template match="translations">
     <li>Translations:
+      <xsl:if test="not(translation)">No translations yet!</xsl:if>
       <xsl:apply-templates/>
     </li>
   </xsl:template>
