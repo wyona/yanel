@@ -60,7 +60,10 @@ public class YanelWebsiteMenu extends Menu {
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">Edit</div><ul>");
         sb.append("<li class=\"haschild\">Open with<ul><li>Source editor</li><li>WYSIWYG editor</li></ul></li>");
-        sb.append("<li class=\"haschild\">Revisions<ul><li class=\"haschild\">53534<ul><li>Show diff</li><li>Revert to</li></ul></li><li class=\"haschild\">52108<ul><li>Show diff</li><li>Revert to</li></ul></li></ul></li>");
+
+        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
+            sb.append("<li class=\"haschild\">Revisions<ul><li class=\"haschild\">53534<ul><li>Show diff</li><li>Revert to</li></ul></li><li class=\"haschild\">52108<ul><li>Show diff</li><li>Revert to</li></ul></li></ul></li>");
+        }
         sb.append("</ul>");
         sb.append("</li></ul>");
 
