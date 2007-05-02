@@ -580,12 +580,21 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     public String getIntrospection() throws Exception {
         String name = PathUtil.getName(getPath());
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        sb.append("<introspection xmlns=\"http://www.wyona.org/neutron/1.0\">");
-        //sb.append("<edit mime-type=\"application/xml\" name=\"" + name + "\">");
-        sb.append("<edit mime-type=\"" + this.getMimeType(null) + "\" name=\"" + name + "\">");
+        sb.append("<introspection xmlns=\"http://www.wyona.org/neutron/2.0\">");
+        sb.append("<resource name=\"" + name + "\">");
+        //sb.append("<edit mime-type=\"application/xml\">");
+        sb.append("<edit mime-type=\"" + this.getMimeType(null) + "\">");
         sb.append("<checkout url=\"?yanel.resource.viewid=source&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
         sb.append("<checkin  url=\"?yanel.resource.usecase=checkin\"  method=\"PUT\"/>");
         sb.append("</edit>");
+
+        RevisionInformation[] revisions = getRevisions();
+        sb.append("<versions>");
+        sb.append("<version url=\"hugo\">");
+        sb.append("<comment>Hugo</comment>");
+        sb.append("</version>");
+        sb.append("</versions>");
+        sb.append("</resource>");
         sb.append("</introspection>");
         return sb.toString();
     }
