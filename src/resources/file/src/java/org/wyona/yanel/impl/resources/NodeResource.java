@@ -354,16 +354,19 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         StringBuffer buf = new StringBuffer();
         buf.append("<?xml version=\"1.0\"?>");
         buf.append("<introspection xmlns=\"http://www.wyona.org/neutron/2.0\">");
-        buf.append("<resource>");
-        buf.append("<edit mime-type=\"" + this.getMimeType(null) + "\" name=\"" + name + "\">");
+        buf.append("<resource name=\"" + name + "\">");
+        buf.append("<edit mime-type=\"" + this.getMimeType(null) + "\">");
         buf.append("<checkout url=\"?yanel.resource.usecase=checkout\" method=\"GET\"/>");
         buf.append("<checkin  url=\"?yanel.resource.usecase=checkin\"  method=\"PUT\"/>");
         buf.append("</edit>");
 
         RevisionInformation[] revisions = getRevisions();
         buf.append("<versions>");
-        buf.append("<version url=\"ezra\">");
+        buf.append("<version url=\"index.xhtml?yanel.resource.revision=ezra\">");
         buf.append("<comment>Ezra</comment>");
+        buf.append("<date>2006-05-23T00:38:05+02:00</date>");
+        buf.append("<user>joe</user>");
+        buf.append("<revision>45345345</revision>");
         buf.append("</version>");
         buf.append("<version url=\"levi\">");
         buf.append("<comment>Levi</comment>");
