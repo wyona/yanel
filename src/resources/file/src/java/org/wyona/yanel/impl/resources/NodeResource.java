@@ -346,15 +346,34 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         return CreatableV2.TYPE_UPLOAD;
     }
 
+    /**
+     * Get introspection document
+     */
     public String getIntrospection() throws Exception {
         String name = PathUtil.getName(getPath());
         StringBuffer buf = new StringBuffer();
         buf.append("<?xml version=\"1.0\"?>");
-        buf.append("<introspection xmlns=\"http://www.wyona.org/neutron/1.0\">");
+        buf.append("<introspection xmlns=\"http://www.wyona.org/neutron/2.0\">");
+        buf.append("<resource>");
         buf.append("<edit mime-type=\"" + this.getMimeType(null) + "\" name=\"" + name + "\">");
         buf.append("<checkout url=\"?yanel.resource.usecase=checkout\" method=\"GET\"/>");
         buf.append("<checkin  url=\"?yanel.resource.usecase=checkin\"  method=\"PUT\"/>");
         buf.append("</edit>");
+
+        RevisionInformation[] revisions = getRevisions();
+        buf.append("<versions>");
+        buf.append("<version url=\"ezra\">");
+        buf.append("<comment>Ezra</comment>");
+        buf.append("</version>");
+        buf.append("<version url=\"levi\">");
+        buf.append("<comment>Levi</comment>");
+        buf.append("</version>");
+        buf.append("<version url=\"vanya\">");
+        buf.append("<comment>Vanya</comment>");
+        buf.append("</version>");
+        buf.append("</versions>");
+
+        buf.append("</resource>");
         buf.append("</introspection>");
         return buf.toString();
     }
