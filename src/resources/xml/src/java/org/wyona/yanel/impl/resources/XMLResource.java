@@ -589,11 +589,18 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         sb.append("</edit>");
 
         RevisionInformation[] revisions = getRevisions();
-        sb.append("<versions>");
-        sb.append("<version url=\"hugo\">");
-        sb.append("<comment>Hugo</comment>");
-        sb.append("</version>");
-        sb.append("</versions>");
+        if (revisions != null) {
+            sb.append("<versions>");
+            for (int i = 0; i < revisions.length; i++) {
+                sb.append("<version url=\"?yanel.resource.revision=" + revisions[i].getName() + "\">");
+                sb.append("<comment>" + revisions[i].getComment() + "</comment>");
+                sb.append("<date>" + revisions[i].getDate() + "</date>");
+                sb.append("<user>" + revisions[i].getUser() + "</user>");
+                sb.append("<revision>" + revisions[i].getName() + "</revision>");
+                sb.append("</version>");
+            }
+            sb.append("</versions>");
+        }
         sb.append("</resource>");
         sb.append("</introspection>");
         return sb.toString();
