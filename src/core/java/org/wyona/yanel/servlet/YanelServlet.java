@@ -678,6 +678,28 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getParameter("yanel.resource.workflow.transition") != null) {
+            // TODO: Implement response if transition has failed ...
+
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+            StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+            sb.append("<workflow xmlns=\"http://www.wyona.org/neutron/2.0\">");
+            sb.append("  <state date=\"2006-05-23T00:54:05+02:00\">LIVE</state>");
+            sb.append("<transitions>");
+            sb.append("<transition id=\"deactivate\" to=\"ARCHIVE\" url=\"?yanel.resource.workflow.transition=deactivate\" method=\"POST\">");
+            sb.append("<description>Deactivate</description>");
+            sb.append("</transition>");
+            sb.append("</transitions>");
+            sb.append("<history>");
+            sb.append("  <state date=\"2006-05-23T00:38:05+02:00\">REVIEW</state>");
+            sb.append("  <state date=\"2006-05-23T00:31:05+02:00\">DRAFT</state>");
+            sb.append("</history>");
+            sb.append("</workflow>");
+            PrintWriter w = response.getWriter();
+            w.print(sb);
+            return;
+        }
+
         String value = request.getParameter("yanel.resource.usecase");
 
         if (value != null && value.equals("save")) {
