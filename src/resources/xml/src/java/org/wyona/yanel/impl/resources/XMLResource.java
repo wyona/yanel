@@ -589,7 +589,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         sb.append("</edit>");
 
         RevisionInformation[] revisions = getRevisions();
-        if (revisions != null) {
+        if (revisions != null && revisions.length > 0) {
             sb.append("<versions>");
             for (int i = 0; i < revisions.length; i++) {
                 sb.append("<version url=\"?yanel.resource.revision=" + revisions[i].getName() + "\">");
@@ -597,6 +597,15 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 sb.append("<date>" + revisions[i].getDate() + "</date>");
                 sb.append("<user>" + revisions[i].getUser() + "</user>");
                 sb.append("<revision>" + revisions[i].getName() + "</revision>");
+
+                sb.append("<workflow>");
+                sb.append("<transitions>");
+                sb.append("<transition id=\"publish\" to=\"LIVE\" url=\"?yanel.resource.workflow.transition=publish\" method=\"POST\">");
+                sb.append("<description>Publish</description>");
+                sb.append("</transition>");
+                sb.append("</transitions>");
+                sb.append("</workflow>");
+
                 sb.append("</version>");
             }
             sb.append("</versions>");
