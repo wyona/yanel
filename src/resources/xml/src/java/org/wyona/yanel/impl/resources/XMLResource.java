@@ -337,7 +337,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         Revision[] revisions = getRealm().getRepository().getNode(getPath()).getRevisions();
         RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
        
-        for (int i=0; i<revisions.length; i++) {
+        for (int i = 0; i < revisions.length; i++) {
             revisionInfos[i] = new RevisionInformation(revisions[i]);
         }
         return revisionInfos; 
@@ -591,7 +591,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         RevisionInformation[] revisions = getRevisions();
         if (revisions != null && revisions.length > 0) {
             sb.append("<versions>");
-            for (int i = 0; i < revisions.length; i++) {
+            for (int i = revisions.length - 1; i >= 0; i--) {
                 sb.append("<version url=\"?yanel.resource.revision=" + revisions[i].getName() + "\">");
                 sb.append("<comment>" + revisions[i].getComment() + "</comment>");
                 sb.append("<date>" + revisions[i].getDate() + "</date>");
@@ -612,6 +612,28 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
 
                 sb.append("</version>");
             }
+            sb.append("</versions>");
+        } else {
+            // TODO: Does this really make sense? Does Neutron require this?
+            sb.append("<versions>");
+            sb.append("<version>");
+            sb.append("<comment>Only one version available!</comment>");
+            sb.append("<date>" + getLastModified() + "</date>");
+            sb.append("<user>DUMMY</user>");
+            sb.append("<revision>NAN</revision>");
+
+            sb.append("<workflow>");
+            sb.append("  <state date=\"2006-05-23T00:38:05+02:00\">REVIEW</state>");
+            sb.append("<transitions>");
+            sb.append("<transition id=\"publish\" to=\"LIVE\" url=\"?yanel.resource.workflow.transition=publish\" method=\"POST\">");
+            sb.append("<description>Publish</description>");
+            sb.append("</transition>");
+            sb.append("</transitions>");
+            sb.append("<history>");
+            sb.append("  <state date=\"2006-05-23T00:31:05+02:00\">DRAFT</state>");
+            sb.append("</history>");
+            sb.append("</workflow>");
+            sb.append("</version>");
             sb.append("</versions>");
         }
         sb.append("</resource>");
