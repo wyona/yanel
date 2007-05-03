@@ -223,7 +223,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         Revision[] revisions = getRealm().getRepository().getNode(getPath()).getRevisions();
         RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
        
-        for (int i=0; i<revisions.length; i++) {
+        for (int i = 0; i < revisions.length; i++) {
             revisionInfos[i] = new RevisionInformation(revisions[i]);
         }
         return revisionInfos; 
@@ -363,7 +363,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         RevisionInformation[] revisions = getRevisions();
         if (revisions != null && revisions.length > 0) {
             buf.append("<versions>");
-            for (int i = 0; i < revisions.length; i++) {
+            for (int i = revisions.length -1; i >= 0; i--) {
                 buf.append("<version url=\"?yanel.resource.revision=" + revisions[i].getName() + "\">");
                 buf.append("<comment>" + revisions[i].getComment() + "</comment>");
                 buf.append("<date>" + revisions[i].getDate() + "</date>");
@@ -371,11 +371,15 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
                 buf.append("<revision>" + revisions[i].getName() + "</revision>");
 
                 buf.append("<workflow>");
+                buf.append("  <state date=\"2006-05-23T00:38:05+02:00\">REVIEW</state>");
                 buf.append("<transitions>");
                 buf.append("<transition id=\"publish\" to=\"LIVE\" url=\"?yanel.resource.workflow.transition=publish\" method=\"POST\">");
                 buf.append("<description>Publish</description>");
                 buf.append("</transition>");
                 buf.append("</transitions>");
+                buf.append("<history>");
+                buf.append("  <state date=\"2006-05-23T00:31:05+02:00\">DRAFT</state>");
+                buf.append("</history>");
                 buf.append("</workflow>");
                 buf.append("</version>");
             }
