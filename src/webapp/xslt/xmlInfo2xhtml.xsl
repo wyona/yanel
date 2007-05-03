@@ -203,7 +203,7 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
   </xsl:template>
 
   <xsl:template match="translation">
-    <a href="{$yanel.back2realm}{@path}"><xsl:value-of select="@language"/></a>
+    <a href="{$yanel.back2realm}{substring-after(@path, '/')}"><xsl:value-of select="@language"/></a>
     <xsl:if test="position() != last()">, </xsl:if>
   </xsl:template>
 
