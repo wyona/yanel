@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.lang.ClassNotFoundException;
 import java.lang.IllegalAccessException;
 import java.lang.InstantiationException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.LinkedHashMap;
@@ -87,9 +89,15 @@ public class RealmConfiguration {
         if (RealmConfiguration.class.getClassLoader().getResource(CONFIGURATION_FILE) != null) {
             if (CONFIGURATION_FILE.endsWith(".xml")) {
 
-                configFile = new File(RealmConfiguration.class.getClassLoader()
-                        .getResource(CONFIGURATION_FILE)
-                        .getFile());
+                try {
+                    URI configFileUri = new URI(RealmConfiguration.class.getClassLoader().getResource(CONFIGURATION_FILE).toString());
+                    configFile = new File(configFileUri.getPath());
+                } catch (Exception e) {
+                    String errorMsg = "Failure while reading configuration: " + e.getMessage();
+                    log.error(errorMsg, e);
+                    throw new ConfigurationException(errorMsg, e);
+                }     
+                
                 try {
                     DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
                     Configuration config;
