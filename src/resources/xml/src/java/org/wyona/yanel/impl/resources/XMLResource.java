@@ -599,11 +599,15 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 sb.append("<revision>" + revisions[i].getName() + "</revision>");
 
                 sb.append("<workflow>");
+                sb.append("  <state date=\"2006-05-23T00:38:05+02:00\">REVIEW</state>");
                 sb.append("<transitions>");
                 sb.append("<transition id=\"publish\" to=\"LIVE\" url=\"?yanel.resource.workflow.transition=publish\" method=\"POST\">");
                 sb.append("<description>Publish</description>");
                 sb.append("</transition>");
                 sb.append("</transitions>");
+                sb.append("<history>");
+                sb.append("  <state date=\"2006-05-23T00:31:05+02:00\">DRAFT</state>");
+                sb.append("</history>");
                 sb.append("</workflow>");
 
                 sb.append("</version>");
