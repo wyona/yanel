@@ -1,4 +1,7 @@
+yarep_revisionComment<string>:updated
 yarep_type<string>:resource
+yarep_revisionCreator<string>:lenya
 yarep_isCheckedOut<boolean>:false
 yarep_checkoutDate<date>:2007-05-03T12:12:28+0200
 yarep_checkoutUserID<string>:lenya
+yarep_revisionCreationDate<date>:2007-05-03T12:13:20+0200
