@@ -2,6 +2,8 @@ package org.wyona.yanel.servlet.menu.impl;
 
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.TranslatableV1;
+import org.wyona.yanel.core.api.attributes.VersionableV2;
+import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
@@ -62,7 +64,14 @@ public class YanelWebsiteMenu extends Menu {
         sb.append("<li class=\"haschild\">Open with<ul><li>Source editor</li><li>WYSIWYG editor</li></ul></li>");
 
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
-            sb.append("<li class=\"haschild\">Revisions<ul><li class=\"haschild\">53534<ul><li>Show diff</li><li>Revert to</li></ul></li><li class=\"haschild\">52108<ul><li>Show diff</li><li>Revert to</li></ul></li></ul></li>");
+            RevisionInformation[] revisions = ((VersionableV2) resource).getRevisions();
+            if (revisions !=  null && revisions.length > 0) {
+                sb.append("<li class=\"haschild\">Revisions<ul>");
+                for (int i = 0; i < revisions.length; i++) {
+                    sb.append("<li class=\"haschild\">"+revisions[i].getName()+"<ul><li><a href=\"?yanel.resource.revision=" + revisions[i].getName() + "\">View</a></li><li>Show diff</li><li>Revert to</li></ul></li>");
+                }
+                sb.append("</ul></li>");
+            }
         }
         sb.append("</ul>");
         sb.append("</li></ul>");
