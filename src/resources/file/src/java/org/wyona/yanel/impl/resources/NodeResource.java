@@ -361,20 +361,26 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         buf.append("</edit>");
 
         RevisionInformation[] revisions = getRevisions();
-        buf.append("<versions>");
-        buf.append("<version url=\"index.xhtml?yanel.resource.revision=ezra\">");
-        buf.append("<comment>Ezra</comment>");
-        buf.append("<date>2006-05-23T00:38:05+02:00</date>");
-        buf.append("<user>joe</user>");
-        buf.append("<revision>45345345</revision>");
-        buf.append("</version>");
-        buf.append("<version url=\"levi\">");
-        buf.append("<comment>Levi</comment>");
-        buf.append("</version>");
-        buf.append("<version url=\"vanya\">");
-        buf.append("<comment>Vanya</comment>");
-        buf.append("</version>");
-        buf.append("</versions>");
+        if (revisions != null && revisions.length > 0) {
+            buf.append("<versions>");
+            for (int i = 0; i < revisions.length; i++) {
+                buf.append("<version url=\"?yanel.resource.revision=" + revisions[i].getName() + "\">");
+                buf.append("<comment>" + revisions[i].getComment() + "</comment>");
+                buf.append("<date>" + revisions[i].getDate() + "</date>");
+                buf.append("<user>" + revisions[i].getUser() + "</user>");
+                buf.append("<revision>" + revisions[i].getName() + "</revision>");
+
+                buf.append("<workflow>");
+                buf.append("<transitions>");
+                buf.append("<transition id=\"publish\" to=\"LIVE\" url=\"?yanel.resource.workflow.transition=publish\" method=\"POST\">");
+                buf.append("<description>Publish</description>");
+                buf.append("</transition>");
+                buf.append("</transitions>");
+                buf.append("</workflow>");
+                buf.append("</version>");
+            }
+            buf.append("</versions>");
+        }
 
         buf.append("</resource>");
         buf.append("</introspection>");
