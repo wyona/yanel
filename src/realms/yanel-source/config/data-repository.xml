@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<repository>
+  <name>Yanel Source Code Data Repository</name>
+
+  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../../../../"/>
+
+  <storage class="org.wyona.yarep.core.impl.svn.SVNStorage">
+    <content src="https://svn.wyona.com/repos/public/yanel/trunk" offline="true" workdir="../../../../" username="anonymous" password="anonymous"/>
+  </storage>
+</repository>
