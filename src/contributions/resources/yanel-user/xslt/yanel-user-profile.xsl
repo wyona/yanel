@@ -101,6 +101,8 @@
       </p>
     </form>
 
+<!-- TODO: Is this actually working? -->
+<!--
     <h2>Change Groups</h2>
 
     <h4>Remove from group</h4>
@@ -111,8 +113,11 @@
     </p>    
      
     <xsl:call-template name="process-all-groups"/>         
+-->
   
 
+<!-- One shouldn't be able to delete oneself! -->
+<!--
     <h2>Delete User</h2>
     <form name="user-deletion-form" method="post" action="#">
       <p>
@@ -125,6 +130,7 @@
         </table>
       </p>
     </form>
+-->
   </xsl:template>
 
   <xsl:template name="show-message">    
