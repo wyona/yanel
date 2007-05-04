@@ -218,7 +218,8 @@
     <mkdir dir="${build.dir}"/>
     <property name="classes.dir" location="${build.dir}/classes"/>
     <property name="log4j.path" location="${build.dir}/logs"/>
-    <property name="log4j.file" location="${log4j.path}/log4j.log"/>
+    <mkdir dir="${log4j.path}"/>
+    <property name="log4j.file" location="${log4j.path}/log4j-cmdl.log"/>
     <path id="log4j.file.ref">
       <pathelement location="${log4j.file}"/>
     </path>
@@ -427,7 +428,6 @@
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.file.forward.slashes}">
       <replacetoken>@LOG4J_FILE@</replacetoken>
     </replace>
-    <mkdir dir="${log4j.path}"/>
     <touch file="${log4j.file}"/>
 
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
@@ -545,7 +545,7 @@
     </copy>
 
     <replace file="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="log4j-cnode1.log">
-      <replacetoken>log4j.log</replacetoken>
+      <replacetoken>log4j-cmdl.log</replacetoken>
     </replace>
     <touch file="${log4j.path}/log4j-cnode1.log"/>
 
@@ -599,7 +599,7 @@
     </copy>
 
     <replace file="${tomcat2.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="log4j-cnode2.log">
-      <replacetoken>log4j.log</replacetoken>
+      <replacetoken>log4j-cmdl.log</replacetoken>
     </replace>
     <touch file="${log4j.path}/log4j-cnode2.log"/>
 
