@@ -2004,7 +2004,9 @@ public class YanelServlet extends HttpServlet {
         Resource resource = getResource(request, response);
         String path = resource.getPath();
         if (path.indexOf("users") > 0) {
-            log.error("No such user: " + path);
+            String userName = path.substring(reservedPrefix.length() + 8);
+            userName = userName.split("[.]")[0];
+            log.error("No user resource implemented yet: " + userName);
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
             return;
         } else {
