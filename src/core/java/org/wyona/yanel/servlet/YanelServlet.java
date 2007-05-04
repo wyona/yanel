@@ -451,8 +451,8 @@ public class YanelServlet extends HttpServlet {
                         if (request.getParameter("yanel.resource.meta") != null) {
                             RevisionInformation[] revisions = ((VersionableV2)res).getRevisions();
                             Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement("revisions"));
-                            if (revisions != null) {
-                                for (int i=0; i<revisions.length; i++) {
+                            if (revisions != null && revisions.length > 0) {
+                                for (int i = revisions.length - 1; i >= 0; i--) {
                                     Element revisionElement = (Element) revisionsElement.appendChild(doc.createElement("revision"));
                                     Element revisionNameElement = (Element) revisionElement.appendChild(doc.createElement("name"));
                                     revisionNameElement.appendChild(doc.createTextNode(revisions[i].getName()));
