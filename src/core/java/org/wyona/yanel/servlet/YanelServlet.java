@@ -204,25 +204,8 @@ public class YanelServlet extends HttpServlet {
         Resource resource = getResource(request, response);
         String path = resource.getPath();
         if (path.indexOf("/" + reservedPrefix + "/") == 0) {
-            File globalFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "htdocs" + File.separator + path.substring(reservedPrefix.length() + 2));
-            if (globalFile.exists()) {
-                log.debug("Global data: " + globalFile);
-                // TODO: Set HTTP header (mime-type, size, etc.)
-                byte buffer[] = new byte[8192];
-                int bytesRead;
-                InputStream in = new java.io.FileInputStream(globalFile);
-                OutputStream out = response.getOutputStream();
-                while ((bytesRead = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytesRead);
-                }
-                String mimeType = guessMimeType(FilenameUtils.getExtension(globalFile.getName()));
-                response.setHeader("Content-Type", mimeType);
-                return;
-            } else {
-                log.error("No such file or directory: " + globalFile);
-                response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
-                return;
-            }
+            getGlobalData(request, response);
+            return;
         }
 
         // Check for toolbar ...
@@ -2012,5 +1995,40 @@ public class YanelServlet extends HttpServlet {
         org.w3c.dom.DOMImplementation impl = parser.getDOMImplementation();
         org.w3c.dom.DocumentType doctype = null;
         return impl.createDocument(namespace, localname, doctype);
+    }
+
+    /**
+     * Get global data located below reserved prefix
+     */
+    public void getGlobalData(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Resource resource = getResource(request, response);
+        String path = resource.getPath();
+        if (path.indexOf("users") > 0) {
+            log.error("No such user: " + path);
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
+            return;
+        } else {
+            File globalFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "htdocs" + File.separator + path.substring(reservedPrefix.length() + 2));
+            if (globalFile.exists()) {
+                log.debug("Global data: " + globalFile);
+
+                // TODO: Set HTTP header (mime-type, size, etc.)
+                String mimeType = guessMimeType(FilenameUtils.getExtension(globalFile.getName()));
+                response.setHeader("Content-Type", mimeType);
+
+                byte buffer[] = new byte[8192];
+                int bytesRead;
+                InputStream in = new java.io.FileInputStream(globalFile);
+                OutputStream out = response.getOutputStream();
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
+                return;
+            } else {
+                log.error("No such file or directory: " + globalFile);
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+        }
     }
 }
