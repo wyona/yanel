@@ -38,8 +38,8 @@ public class YanelWebsiteMenu extends Menu {
 	sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">File</div>");
         sb.append("<ul>");
-        sb.append("<li class=\"haschild\"><a href=\"" + backToRealm + "create-new-page.html\">New</a><ul><li><a href=\"" + backToRealm + "create-new-page.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Axml\">Standard page (XHTML)</a></li><li><a href=\"" + backToRealm + "create-new-page.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Awiki\">Wiki page</a></li></ul></li>");
-        sb.append("<li class=\"haschild\">New language<ul>");
+        sb.append("<li class=\"haschild\"><a href=\"" + backToRealm + "create-new-page.html\">New</a>&#160;&#160;&#160;<ul><li><a href=\"" + backToRealm + "create-new-page.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Axml\">Standard page (XHTML)</a></li><li><a href=\"" + backToRealm + "create-new-page.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Awiki\">Wiki page</a></li></ul></li>");
+        sb.append("<li class=\"haschild\">New language&#160;&#160;&#160;<ul>");
         
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Translatable", "1")) {
             TranslatableV1 translatable = (TranslatableV1)resource;
@@ -61,14 +61,14 @@ public class YanelWebsiteMenu extends Menu {
 
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">Edit</div><ul>");
-        sb.append("<li class=\"haschild\">Open with<ul><li>Source editor</li><li>WYSIWYG editor</li></ul></li>");
+        sb.append("<li class=\"haschild\">Open with&#160;&#160;&#160;<ul><li>Source editor</li><li>WYSIWYG editor</li></ul></li>");
 
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
             RevisionInformation[] revisions = ((VersionableV2) resource).getRevisions();
             if (revisions !=  null && revisions.length > 0) {
-                sb.append("<li class=\"haschild\">Revisions<ul>");
+                sb.append("<li class=\"haschild\">Revisions&#160;&#160;&#160;<ul>");
                 for (int i = 0; i < revisions.length; i++) {
-                    sb.append("<li class=\"haschild\">"+revisions[i].getName()+"<ul><li><a href=\"?yanel.resource.revision=" + revisions[i].getName() + "\">View</a></li><li>Show diff</li><li>Revert to</li></ul></li>");
+                    sb.append("<li class=\"haschild\">"+revisions[i].getName()+"&#160;&#160;&#160;<ul><li><a href=\"?yanel.resource.revision=" + revisions[i].getName() + "\">View</a></li><li>Show diff</li><li>Revert to</li></ul></li>");
                 }
                 sb.append("</ul></li>");
             }
