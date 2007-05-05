@@ -37,7 +37,7 @@ public class ResourceConfiguration {
 
     private Category log = Category.getInstance(ResourceConfiguration.class);
 
-    protected Map properties;
+    //protected Map properties;
     protected String name;
     protected String namespace;
     private String encoding = null;
@@ -69,10 +69,9 @@ public class ResourceConfiguration {
         this.name = name;
         this.namespace = namespace;
 
-        if (properties == null) {
-            this.properties = new HashMap();
-        } else {
-            this.properties = properties;
+        if (properties != null) {
+            log.error("Set config not implemented yet: " + properties);
+            // TODO: Set config ...
         }
     }
     
@@ -110,6 +109,7 @@ public class ResourceConfiguration {
      */
     public String getProperty(String key) throws Exception {
         //return (String)properties.get(key);
+
         if (config != null) {
             Configuration[] props = config.getChildren("property");
             for (int i = 0; i < props.length; i++) {
