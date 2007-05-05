@@ -127,11 +127,14 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
 
         try {
 
-            Transformer transformer = TransformerFactory.newInstance().newTransformer(
-                    new StreamSource(xslFile));
+            Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xslFile));
 
             String action = determineAction(request);
-            String userId = getUserId();            
+            String userId = getUserId();
+            if (userId == null) {
+                log.error("No user ID!");
+                throw new Exception("No user ID!");
+            }
 
             if (action.equals("submitProfile")) {
                 updateUserProfile(request, transformer);
@@ -153,6 +156,11 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
 
             if(!action.equals("submitDelete")) {
                 User user = getRealm().getIdentityManager().getUserManager().getUser(userId);
+                if (user == null) {
+                    log.error("No such user: " + userId);
+                    throw new Exception("No such user: " + userId);
+                }
+
                 transformer.setParameter("userId", userId);
                 transformer.setParameter("userName", user.getName());
                 transformer.setParameter("email", user.getEmail());
@@ -179,8 +187,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
                 transformer.setParameter("allGroupsString", allGroupsString);            
             }
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            transformer.transform(new javax.xml.transform.stream.StreamSource(xmlFile),
-                    new StreamResult(baos));
+            transformer.transform(new javax.xml.transform.stream.StreamSource(xmlFile), new StreamResult(baos));
 
             defaultView.setMimeType(MIME_TYPE);
             defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
@@ -544,12 +551,16 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
         return isValid;
     }
 
+    /**
+     * Get user id from resource configuration
+     */
     private String getUserId() throws Exception {
         String userId = null;
         ResourceConfiguration resConfig = getConfiguration();
         if(resConfig != null) {
             userId = getConfiguration().getProperty("user");
         } else {
+            log.warn("DEPRECATED: Do not use RTI but rather a resource configuration");
             userId = getRTI().getProperty("user");
         }
         return userId;
