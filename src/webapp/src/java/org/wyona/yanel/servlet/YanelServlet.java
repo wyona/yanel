@@ -2009,9 +2009,11 @@ public class YanelServlet extends HttpServlet {
             log.error("No user resource implemented yet: " + userName);
 
 	    try {
-                String yanelUserUniversalName = "<{http://www.wyona.org/yanel/resource/1.0}yanel-user/>";
+                java.util.Map properties = new HashMap();
+                properties.put("user", userName);
+                ResourceConfiguration rc = new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
                 Realm realm = yanel.getMap().getRealm(request.getServletPath());
-                Resource yanelUserResource = yanel.getResourceManager().getResource(request, response, realm, path, new ResourceTypeRegistry().getResourceTypeDefinition(yanelUserUniversalName), new ResourceTypeIdentifier(yanelUserUniversalName, null));
+                Resource yanelUserResource = yanel.getResourceManager().getResource(request, response, realm, path, rc);
                 View view = ((ViewableV2) yanelUserResource).getView(null);
             } catch (Exception e) {
                 throw new ServletException(e);
