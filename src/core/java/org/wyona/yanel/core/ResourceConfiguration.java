@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
+import org.apache.avalon.framework.configuration.DefaultConfiguration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
 import org.apache.log4j.Category;
@@ -41,14 +42,14 @@ public class ResourceConfiguration {
     protected String name;
     protected String namespace;
     private String encoding = null;
-    Configuration config;
+    DefaultConfiguration config;
     
     /**
      *
      */
     public ResourceConfiguration(InputStream in) throws Exception {
         DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder(true);
-        config = builder.build(in);
+        config = (DefaultConfiguration) builder.build(in);
         Configuration rtiConfig = config.getChild("rti");
         name = rtiConfig.getAttribute("name");
         namespace = rtiConfig.getAttribute("namespace");
@@ -70,8 +71,23 @@ public class ResourceConfiguration {
         this.namespace = namespace;
 
         if (properties != null) {
-            log.error("Set config not implemented yet: " + properties);
-            // TODO: Set config ...
+            String LOCATION = "resource_config_location";
+            String PREFIX = "yanel";
+            String RC_NAMESPACE = "http://www.wyona.org/yanel/rti/1.0";
+            config = new DefaultConfiguration("resource-config", LOCATION, RC_NAMESPACE, PREFIX);
+            DefaultConfiguration rti = new DefaultConfiguration("rti", LOCATION, RC_NAMESPACE, PREFIX);
+            rti.setAttribute("name", name);
+            rti.setAttribute("namespace", namespace);
+            config.addChild(rti);
+
+            java.util.Iterator keyIterator = properties.keySet().iterator();
+            while (keyIterator.hasNext()) {
+                DefaultConfiguration property = new DefaultConfiguration("property", LOCATION, RC_NAMESPACE, PREFIX);
+                String key = (String) keyIterator.next();
+                property.setAttribute("name", key);
+                property.setAttribute("value", (String) properties.get(key));
+                config.addChild(property);
+            }
         }
     }
     
@@ -113,7 +129,9 @@ public class ResourceConfiguration {
         if (config != null) {
             Configuration[] props = config.getChildren("property");
             for (int i = 0; i < props.length; i++) {
-                if (props[i].getAttribute("name") != null && props[i].getAttribute("name").equals(key)) return props[i].getAttribute("value");
+                if (props[i].getAttribute("name") != null && props[i].getAttribute("name").equals(key)) {
+                    return props[i].getAttribute("value");
+                }
             }
         }
         return null;
