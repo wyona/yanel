@@ -338,7 +338,7 @@
 
   <target name="compile-webapp" description="Compile Java classes of Yanel webapp" depends="init, compile-core, compile-cmdl">
     <mkdir dir="${classes.dir}"/>
-    <javac srcdir="${yanel.home.dir}/src/core/java/org/wyona/yanel/servlet" destdir="${classes.dir}"
+    <javac srcdir="${yanel.home.dir}/src/webapp/src/java/org/wyona/yanel/servlet" destdir="${classes.dir}"
       debug="true"
       classpathref="classpath"
     />
@@ -355,7 +355,9 @@
 -->
     <mkdir dir="${build.dir}/webapps/${servlet.context.prefix}"/>
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}">
-      <fileset dir="${yanel.home.dir}/src/webapp"/>
+      <fileset dir="${yanel.home.dir}/src/webapp">
+        <exclude name="src/**"/>
+      </fileset>
     </copy>
 
     <!-- TODO: Copy only core, impl, webapp, but NOT cmdl, etc. -->
