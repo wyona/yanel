@@ -705,11 +705,11 @@ public class YanelServlet extends HttpServlet {
                 // Create new Atom entry
                 try {
                     String atomEntryUniversalName = "<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>";
-                    org.wyona.yanel.core.map.Realm realm = yanel.getMap().getRealm(request.getServletPath());
+                    Realm realm = yanel.getMap().getRealm(request.getServletPath());
                     String newEntryPath = yanel.getMap().getPath(realm, request.getServletPath() + "/" + new java.util.Date().getTime() + ".xml");
 
                     log.error("DEBUG: Realm and Path of new Atom entry: " + realm + " " + newEntryPath);
-                    Resource atomEntryResource = yanel.getResourceManager().getResource(request, response, realm, newEntryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new org.wyona.yanel.core.ResourceTypeIdentifier(atomEntryUniversalName, null));
+                    Resource atomEntryResource = yanel.getResourceManager().getResource(request, response, realm, newEntryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new ResourceTypeIdentifier(atomEntryUniversalName, null));
                     
                     ((ModifiableV2)atomEntryResource).write(in);
 
@@ -766,12 +766,12 @@ public class YanelServlet extends HttpServlet {
                 // Overwrite existing atom entry
                 try {
                     String atomEntryUniversalName = "<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>";
-                    org.wyona.yanel.core.map.Realm realm = yanel.getMap().getRealm(request.getServletPath());
+                    Realm realm = yanel.getMap().getRealm(request.getServletPath());
                     String entryPath = yanel.getMap().getPath(realm, request.getServletPath());
 
                     log.error("DEBUG: Realm and Path of new Atom entry: " + realm + " " + entryPath);
 
-                    Resource atomEntryResource = yanel.getResourceManager().getResource(request, response, realm, entryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new org.wyona.yanel.core.ResourceTypeIdentifier(atomEntryUniversalName, null));
+                    Resource atomEntryResource = yanel.getResourceManager().getResource(request, response, realm, entryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new ResourceTypeIdentifier(atomEntryUniversalName, null));
                     
                     // TODO: There seems to be a problem ...
                     ((ModifiableV2)atomEntryResource).write(in);
@@ -2007,6 +2007,16 @@ public class YanelServlet extends HttpServlet {
             String userName = path.substring(reservedPrefix.length() + 8);
             userName = userName.split("[.]")[0];
             log.error("No user resource implemented yet: " + userName);
+
+	    try {
+                String yanelUserUniversalName = "<{http://www.wyona.org/yanel/resource/1.0}yanel-user/>";
+                Realm realm = yanel.getMap().getRealm(request.getServletPath());
+                Resource yanelUserResource = yanel.getResourceManager().getResource(request, response, realm, path, new ResourceTypeRegistry().getResourceTypeDefinition(yanelUserUniversalName), new ResourceTypeIdentifier(yanelUserUniversalName, null));
+                View view = ((ViewableV2) yanelUserResource).getView(null);
+            } catch (Exception e) {
+                throw new ServletException(e);
+            }
+
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
             return;
         } else {
