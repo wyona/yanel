@@ -545,107 +545,7 @@ public class YanelServlet extends HttpServlet {
 
 
         if (view != null) {
-            // Check if the view contains the response, otherwise assume that the resource wrote the response, and just return.
-            // TODO: There seem like no header fields are being set (e.g. Content-Length, ...). Please see below ...
-            if (!view.isResponse()) return;
-            
-            if (view.getEncoding() != null) {
-                response.setContentType(patchMimeType(view.getMimeType(), request) + "; charset=" + view.getEncoding());
-            } else if (res.getConfiguration() != null && res.getConfiguration().getEncoding() != null) {
-                response.setContentType(patchMimeType(view.getMimeType(), request) + "; charset=" + res.getConfiguration().getEncoding());
-            } else {
-                // try to guess if we have to set the default encoding
-                String mimeType = view.getMimeType();
-                if (mimeType.startsWith("text") || 
-                    mimeType.equals("application/xml") || 
-                    mimeType.equals("application/xhtml+xml") || 
-                    mimeType.equals("application/atom+xml") || 
-                    mimeType.equals("application/x-javascript")) {
-                    response.setContentType(patchMimeType(mimeType, request) + "; charset=" + DEFAULT_ENCODING);
-                } else {
-                    // probably binary mime-type, don't set encoding
-                    response.setContentType(patchMimeType(mimeType, request));
-                }
-            }
-
-            InputStream is = view.getInputStream();
-            
-            
-            // Possibly embed toolbar:
-            String toolbar = (String) session.getAttribute(TOOLBAR_KEY);
-            if (toolbar != null && toolbar.equals("on")) {
-                String mimeType = view.getMimeType();
-                if (mimeType != null && mimeType.indexOf("html") > 0) {
-                    // TODO: What about other query strings or frames or TinyMCE?
-                    if (request.getParameter("yanel.resource.usecase") == null) {
-                    if (toolbarMasterSwitch.equals("on")) {
-                        OutputStream os = response.getOutputStream();
-                        try {
-                            mergeToolbarWithContent(request, response, res, view);
-                        } catch (Exception e) {
-                            log.error(e, e);
-                            String message = "Error merging toolbar into content: " + e.toString();
-                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
-                            exceptionElement.appendChild(doc.createTextNode(message));
-                            setYanelOutput(request, response, doc);
-                            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                            return;
-                        }
-                        return;
-                    } else {
-                        log.info("Toolbar has been disabled. Please check web.xml!");
-                    }
-                    } else {
-                        log.error("DEBUG: Exception to the rule: " + request.getParameter("yanel.resource.usecase"));
-                    }
-                } else {
-                    log.debug("No HTML related mime type: " + mimeType);
-                }
-            } else {
-                log.debug("Toolbar is turned off.");
-            }
-            
-
-            byte buffer[] = new byte[8192];
-            int bytesRead;
-           
-            if (is != null) {
-                // TODO: Yarep does not set returned Stream to null resp. is missing Exception Handling for the constructor. Exceptions should be handled here, but rather within Yarep or whatever repositary layer is being used ...
-                bytesRead = is.read(buffer);
-                if (bytesRead == -1) {
-                    String message = "InputStream of view does not seem to contain any data!";
-
-                    Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
-                    exceptionElement.appendChild(doc.createTextNode(message));
-                    setYanelOutput(request, response, doc);
-                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    return;
-                }
-
-                // TODO: Compare If-Modified-Since with lastModified and return 304 without content resp. check on ETag
-                String ifModifiedSince = request.getHeader("If-Modified-Since");
-                if (ifModifiedSince != null) {
-                    log.warn("TODO: Implement 304 ...");
-                }
-                if(lastModified >= 0) response.setDateHeader("Last-Modified", lastModified);
-                if(size > 0) {
-                    log.debug("Size of " + request.getRequestURI() + ": " + size);
-                    response.setContentLength((int) size);
-                } else {
-                    log.debug("No size for " + request.getRequestURI() + ": " + size);
-                }
-
-                java.io.OutputStream os = response.getOutputStream();
-                os.write(buffer, 0, bytesRead);
-                while ((bytesRead = is.read(buffer)) != -1) {
-                    os.write(buffer, 0, bytesRead);
-                }
-                return;
-            } else {
-                String message = "InputStream of view is null!";
-                Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
-                exceptionElement.appendChild(doc.createTextNode(message));
-            }
+            if (generateResponse(view, res, request, response, doc, size, lastModified) != null) return;
         } else {
             String message = "View is null!";
             Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
@@ -2015,6 +1915,9 @@ public class YanelServlet extends HttpServlet {
                 Realm realm = yanel.getMap().getRealm(request.getServletPath());
                 Resource yanelUserResource = yanel.getResourceManager().getResource(request, response, realm, path, rc);
                 View view = ((ViewableV2) yanelUserResource).getView(null);
+                if (view != null) {
+                    if (generateResponse(view, yanelUserResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
+                }
             } catch (Exception e) {
                 throw new ServletException(e);
             }
@@ -2044,5 +1947,112 @@ public class YanelServlet extends HttpServlet {
                 return;
             }
         }
+    }
+
+    /**
+     *
+     */
+    private HttpServletResponse generateResponse(View view, Resource res, HttpServletRequest request, HttpServletResponse response, Document doc, long size, long lastModified) throws ServletException, IOException {
+            // Check if the view contains the response, otherwise assume that the resource wrote the response, and just return.
+            // TODO: There seem like no header fields are being set (e.g. Content-Length, ...). Please see below ...
+            if (!view.isResponse()) return response;
+            
+            if (view.getEncoding() != null) {
+                response.setContentType(patchMimeType(view.getMimeType(), request) + "; charset=" + view.getEncoding());
+            } else if (res.getConfiguration() != null && res.getConfiguration().getEncoding() != null) {
+                response.setContentType(patchMimeType(view.getMimeType(), request) + "; charset=" + res.getConfiguration().getEncoding());
+            } else {
+                // try to guess if we have to set the default encoding
+                String mimeType = view.getMimeType();
+                if (mimeType.startsWith("text") || 
+                    mimeType.equals("application/xml") || 
+                    mimeType.equals("application/xhtml+xml") || 
+                    mimeType.equals("application/atom+xml") || 
+                    mimeType.equals("application/x-javascript")) {
+                    response.setContentType(patchMimeType(mimeType, request) + "; charset=" + DEFAULT_ENCODING);
+                } else {
+                    // probably binary mime-type, don't set encoding
+                    response.setContentType(patchMimeType(mimeType, request));
+                }
+            }
+
+            InputStream is = view.getInputStream();
+            
+            // Possibly embed toolbar:
+            String toolbar = (String) request.getSession(true).getAttribute(TOOLBAR_KEY);
+            if (toolbar != null && toolbar.equals("on")) {
+                String mimeType = view.getMimeType();
+                if (mimeType != null && mimeType.indexOf("html") > 0) {
+                    // TODO: What about other query strings or frames or TinyMCE?
+                    if (request.getParameter("yanel.resource.usecase") == null) {
+                    if (toolbarMasterSwitch.equals("on")) {
+                        OutputStream os = response.getOutputStream();
+                        try {
+                            mergeToolbarWithContent(request, response, res, view);
+                        } catch (Exception e) {
+                            log.error(e, e);
+                            String message = "Error merging toolbar into content: " + e.toString();
+                            Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElement("exception"));
+                            exceptionElement.appendChild(doc.createTextNode(message));
+                            setYanelOutput(request, response, doc);
+                            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            return response;
+                        }
+                        return response;
+                    } else {
+                        log.info("Toolbar has been disabled. Please check web.xml!");
+                    }
+                    } else {
+                        log.error("DEBUG: Exception to the rule: " + request.getParameter("yanel.resource.usecase"));
+                    }
+                } else {
+                    log.debug("No HTML related mime type: " + mimeType);
+                }
+            } else {
+                log.debug("Toolbar is turned off.");
+            }
+            
+
+            byte buffer[] = new byte[8192];
+            int bytesRead;
+           
+            if (is != null) {
+                // TODO: Yarep does not set returned Stream to null resp. is missing Exception Handling for the constructor. Exceptions should be handled here, but rather within Yarep or whatever repositary layer is being used ...
+                bytesRead = is.read(buffer);
+                if (bytesRead == -1) {
+                    String message = "InputStream of view does not seem to contain any data!";
+
+                    Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElement("exception"));
+                    exceptionElement.appendChild(doc.createTextNode(message));
+                    setYanelOutput(request, response, doc);
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    return response;
+                }
+
+                // TODO: Compare If-Modified-Since with lastModified and return 304 without content resp. check on ETag
+                String ifModifiedSince = request.getHeader("If-Modified-Since");
+                if (ifModifiedSince != null) {
+                    log.warn("TODO: Implement 304 ...");
+                }
+                if(lastModified >= 0) response.setDateHeader("Last-Modified", lastModified);
+                if(size > 0) {
+                    log.debug("Size of " + request.getRequestURI() + ": " + size);
+                    response.setContentLength((int) size);
+                } else {
+                    log.debug("No size for " + request.getRequestURI() + ": " + size);
+                }
+
+                java.io.OutputStream os = response.getOutputStream();
+                os.write(buffer, 0, bytesRead);
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+                return response;
+            } else {
+                String message = "InputStream of view is null!";
+                Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElement("exception"));
+                exceptionElement.appendChild(doc.createTextNode(message));
+            }
+        return null;
     }
 }
