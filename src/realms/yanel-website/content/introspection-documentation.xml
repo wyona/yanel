@@ -1,8 +1,15 @@
 <?xml version="1.0"?>
 
-<introspection xmlns="http://www.wyona.org/neutron/1.0">
-<edit mime-type="application/xhtml+xml" name="Documentation Table of Contents">
-  <checkout url="index.xhtml?yanel.resource.usecase=checkout" method="GET"/>
-  <checkin  url="index.xhtml?yanel.resource.usecase=checkin"  method="PUT"/>
-</edit>
+<introspection xmlns="http://www.wyona.org/neutron/2.0">
+
+<resource name="Documentation Table of Contents">
+  <edit mime-type="application/xhtml+xml">
+    <checkout url="index.xhtml?yanel.resource.usecase=checkout" method="GET"/>
+    <checkin  url="index.xhtml?yanel.resource.usecase=checkin"  method="PUT"/>
+  </edit>
+</resource>
+
+<navigation>
+  <sitetree href="./" method="PROPFIND"/>
+</navigation>
 </introspection>
