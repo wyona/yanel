@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Documentation</title>
+</head>
+<body>
+<h1>Documentation</h1>
+<p>
+</p><ul>
+<li><a href="how-a-request-is-being-processed.html">How a request is being processed</a></li>
+<li><a href="what-is-a-realm.html">What is a realm?</a></li>
+<li><a href="how-to-add-a-new-realm.html">How a new realm (publication/site) is being added resp. configured</a></li>
+<li><a href="import-existing-website-as-new-realm.html">Import an existing website as a new realm</a></li>
+<li><a href="create-new-resource.html">Create a new resource type from scratch</a></li>
+<li>Best Practice</li>
+<li>Yarep as Data Abstraction Layer
+<ul>
+<li><a href="svn.html">SVN</a></li>
+</ul>
+</li>
+<li>Yanel Configuration (conf/...)</li>
+<li>Debugging Client-Server Communication (java -classpath axis-1_4/lib/axis.jar org.apache.axis.utils.tcpmon)</li>
+<li>Versioned API</li>
+<!-- TODO: Javadoc should be sub-realm of yanel website! -->
+<li><a href="../../javadoc/index.html">Javadoc</a> (To generate the Javadoc run <i>./build.sh javadoc</i> resp. <i>build javadoc</i>)</li>
+<li>Deployment with a Reverse Proxy
+<ul>
+  <li>Download Apache httpd 2.2.x (e.g. httpd-2.2.3)</li>
+  <li>Install as proxy: ./configure --prefix=/usr/local/httpd-2.2.3 --enable-proxy --enable-proxy-http</li>
+  <li>make</li>
+  <li>make install</li>
+  <li>Configure virtual hosts within /usr/local/httpd-2.2.3/conf/extra/httpd-vhosts.conf</li>
+  <li>Activate vhosts config within /usr/local/httpd-2.2.3/conf/httpd.conf (Include ...)</li>
+  <li>(a sample can be found at <a href="https://svn.wyona.org/repos/public/yanel/trunk/src/httpd-2.2.3/conf/extra/httpd-vhosts.conf">yanel/trunk/src/httpd-2.2.3/conf/extra/httpd-vhosts.conf</a>
+)</li>
+</ul>
+</li>
+<li>Resolving DTDs, etc.
+  <ul>
+    <li>See conf/catalog.xml resp. classes/catalog.xml</li>
+  </ul>
+</li>
+    <li><a href="how-to-add-ssl-to-apache-httpd.html">Install Apache-Httpd with SSL support</a></li>
+    <li><a href="i18n.html">Yanel and i18n</a></li>
+    <li><a href="jmeter.html">JMeter</a></li>
+    <li><a href="testing-framework.html">Yanel Testing Framework</a></li>
+</ul>
+</body>
+</html>
