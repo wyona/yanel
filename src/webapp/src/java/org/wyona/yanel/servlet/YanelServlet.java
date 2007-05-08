@@ -1046,7 +1046,6 @@ public class YanelServlet extends HttpServlet {
                     try {
                         URL url = new URL(getRequestURLQS(request, null, false).toString());
                         url = new URL("https", url.getHost(), new Integer(sslPort).intValue(), url.getFile());
-                        log.error("Redirect to SSL: " + url);
                         if (realm.isProxySet()) {
                             if (realm.getProxySSLPort() >= 0) {
                                 log.debug("Use configured port: " + realm.getProxySSLPort());
@@ -1057,6 +1056,8 @@ public class YanelServlet extends HttpServlet {
                                 url = new URL(url.getProtocol(), url.getHost(), url.getDefaultPort(), url.getFile());
                             }
                         }
+
+                        log.error("DEBUG: Redirect to SSL: " + url);
                         response.setHeader("Location", url.toString());
                         // TODO: Yulup has a bug re TEMPORARY_REDIRECT
                         //response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT);
