@@ -160,21 +160,9 @@ public class NodeResConfigAndDataRepoImpl implements Node {
                 log.debug("Is collection within data repository: " + path);
                 Path[] children = dataRepo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
-                    // TODO ...
-                    log.error("DEBUG: " + children[i]);
-/*
-                    if (dataRepo.isCollection(children[i])) {
-                        c.add(children[i].toString());
-                    }
-                    if (children[i].getName().indexOf(".yanel-rti") > 0) {
-                        String cp = children[i].toString().substring(0, children[i].toString().indexOf(".yanel-rti"));
-                        if (!dataRepo.isCollection(new Path(cp))) c.add(cp);
-                    }
-                    if (children[i].getName().indexOf(".yanel-rc") > 0) {
-                        String cp = children[i].toString().substring(0, children[i].toString().indexOf(".yanel-rc"));
-                        if (!dataRepo.isCollection(new Path(cp))) c.add(cp);
-                    }
-*/
+                    log.error("DEBUG: Child within data repo: " + children[i]);
+                    // TODO: Check if child already exists within vector!
+                    c.add(children[i].toString());
                 }
             } else {
                 log.warn("Is not a collection within data repository: " + path);
