@@ -37,9 +37,10 @@
   </ul>
 </li>
 </ul>
-<p>Httpd and Tomcat with SSL: <img src="../../img/tomcat-with-ssl.png"/>
+<p>
+Tomcat with SSL: <img src="../../img/tomcat-with-ssl.png"/>
 <br/>
-Httpd with SSL only: <img src="../../img/httpd-with-ssl.png"/>
+Httpd with SSL: <img src="../../img/httpd-with-ssl.png"/>
 </p>
 </body>
 </html>

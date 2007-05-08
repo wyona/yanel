@@ -18,7 +18,7 @@
          <li>make</li>
          <li>make install (will install at /usr/local/ssl by default, see INSTALL file for more details)</li>
        </ul></li>
-       <li>Test Open-SSL installation by typing &quot;/usr/local/ssl/bin/openssl version&quot;</li>
+       <li>Test Open-SSL installation by typing "/usr/local/ssl/bin/openssl version"</li>
        <li>Download <a href="http://httpd.apache.org">Apache-Httpd</a> version 2.2.3 or higher</li>
        <li>Build Apache-Httpd with SSL
          <ul>
@@ -28,18 +28,20 @@
          </ul></li>
        <li>Create SSL-Key
          <ul>
-           <li>openssl genrsa 1024 &gt; /usr/local/apache2/conf/server.key</li>
-           <li>openssl req -new -x509 -nodes -sha1 -days 365 -key /usr/local/apache2/conf/server.key &gt; /usr/local/apache2/conf/server.crt</li>
+           <li>openssl genrsa 1024 > /usr/local/apache2/conf/server.key</li>
+           <li>openssl req -new -x509 -nodes -sha1 -days 365 -key /usr/local/apache2/conf/server.key > /usr/local/apache2/conf/server.crt</li>
          </ul></li>
-       <li>Uncomment SSL config within /usr/local/apache2/conf/httpd.conf (Include conf/extra/httpd-ssl.conf)</li><li>Configure virtual hosts within /usr/local/httpd-2.2.3/conf/extra/httpd-vhosts.conf</li><ul><li>A sample can be found at <a href="https://svn.wyona.org/repos/public/yanel/trunk/src/httpd-2.2.3/conf/extra/httpd-vhosts_WITH_SSL.conf">yanel/trunk/src/httpd-2.2.3/conf/extra/httpd-vhosts_WITH_SSL.conf</a></li></ul>
+       <li>Uncomment SSL config within /usr/local/apache2/conf/httpd.conf (Include conf/extra/httpd-ssl.conf)</li>
        <li>Startup Apache: /usr/local/apache2/bin/apachectl start</li>
        <li>Test SSL: https://127.0.0.1:443</li>
   </ul>
 </li>
 </ul>
-<p>Httpd and Tomcat with SSL: <img src="../../img/tomcat-with-ssl.png"/>
+
+<p>
+Tomcat with SSL: <img src="../../img/tomcat-with-ssl.png"/>
 <br/>
-Httpd with SSL only: <img src="../../img/httpd-with-ssl.png"/>
+Httpd with SSL: <img src="../../img/httpd-with-ssl.png"/>
 </p>
 </body>
 </html>
