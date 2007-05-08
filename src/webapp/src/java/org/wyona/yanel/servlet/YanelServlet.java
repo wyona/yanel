@@ -1049,10 +1049,10 @@ public class YanelServlet extends HttpServlet {
                         log.error("Redirect to SSL: " + url);
                         if (realm.isProxySet()) {
                             if (realm.getProxySSLPort() >= 0) {
-                                log.error("DEBUG: Use configured port: " + realm.getProxySSLPort());
+                                log.debug("Use configured port: " + realm.getProxySSLPort());
                                 url = new URL(url.getProtocol(), url.getHost(), new Integer(realm.getProxySSLPort()).intValue(), url.getFile());
                             } else {
-                                log.error("DEBUG: Use default port: " + url.getDefaultPort());
+                                log.debug("Use default port: " + url.getDefaultPort());
                                 // NOTE: getDefaultPort depends on the Protocol (e.g. https is 443)
                                 url = new URL(url.getProtocol(), url.getHost(), url.getDefaultPort(), url.getFile());
                             }
@@ -1154,9 +1154,9 @@ public class YanelServlet extends HttpServlet {
                 if (proxyPrefix != null) {
                     url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile().substring(proxyPrefix.length()));
                 }
-                log.error("DEBUG: Proxy enabled for this realm resp. request: " + realm + ", " + url);
+                //log.debug("Proxy enabled for this realm resp. request: " + realm + ", " + url);
             } else {
-                log.error("DEBUG: No proxy set for this realm resp. request: " + realm + ", " + url);
+                //log.debug("No proxy set for this realm resp. request: " + realm + ", " + url);
             }
 
             String urlQS = url.toString();
