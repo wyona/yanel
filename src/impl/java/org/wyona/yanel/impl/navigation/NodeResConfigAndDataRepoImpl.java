@@ -162,7 +162,11 @@ public class NodeResConfigAndDataRepoImpl implements Node {
                 for (int i = 0; i < children.length; i++) {
                     log.error("DEBUG: Child within data repo: " + children[i]);
                     // TODO: Check if child already exists within vector!
-                    c.add(children[i].toString());
+                    if (!c.contains(children[i].toString())) {
+                        c.add(children[i].toString());
+                    } else {
+                       log.error("DEBUG: Child already listed: " + children[i].toString());
+                    }
                 }
             } else {
                 log.warn("Is not a collection within data repository: " + path);
