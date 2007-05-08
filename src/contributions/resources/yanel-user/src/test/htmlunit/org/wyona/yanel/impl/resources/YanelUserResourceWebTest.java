@@ -181,6 +181,7 @@ public class YanelUserResourceWebTest extends AbstractHtmlUnitTest {
     /**
      * Test addition and deletion from group
      */ 
+/*
     public void testAdditionAndDeletionFromGroup() throws Exception {       
 	
 	loadHtmlPage("test/use-cases/alice"); 	       
@@ -202,6 +203,7 @@ public class YanelUserResourceWebTest extends AbstractHtmlUnitTest {
        
         assertPageContainsText("User successfully added to group");         
     }
+*/
     
     
     /**
