@@ -133,13 +133,11 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
             if (proxyHostName != null) {
                 URL url = new URL(requestURL);
                 url = new URL(url.getProtocol(), proxyHostName, url.getPort(), url.getFile());
-                String proxyPort = realm.getProxyPort();
-                if (proxyPort != null) {
-                    if (proxyPort.length() > 0) {
-                        url = new URL(url.getProtocol(), url.getHost(), new Integer(proxyPort).intValue(), url.getFile());
-                    } else {
-                        url = new URL(url.getProtocol(), url.getHost(), url.getDefaultPort(), url.getFile());
-                    }
+                int proxyPort = realm.getProxyPort();
+                if (proxyPort >= 0) {
+                    url = new URL(url.getProtocol(), url.getHost(), proxyPort, url.getFile());
+                } else {
+                    url = new URL(url.getProtocol(), url.getHost(), url.getDefaultPort(), url.getFile());
                 }
                 String proxyPrefix = realm.getProxyPrefix();
                 if (proxyPrefix != null) {

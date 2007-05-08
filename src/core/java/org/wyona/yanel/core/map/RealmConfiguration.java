@@ -197,7 +197,6 @@ public class RealmConfiguration {
                 String realmId = realmElements[i].getAttribute("id", null);
                 String rootFlag = realmElements[i].getAttribute("root", "false");
                 Configuration name = realmElements[i].getChild("name", false);
-                Configuration proxy = realmElements[i].getChild("reverse-proxy", false);
                 Configuration configElement = realmElements[i].getChild("config", false);
                 if (configElement == null) {
                     throw new ConfigurationException("Missing <config src=\"...\"/> child element for realm " + realmId);
@@ -209,8 +208,11 @@ public class RealmConfiguration {
                 try {
                     Realm realm = new Realm(name.getValue(), realmId, mountPoint, realmConfigFile);
                     
+                    Configuration proxy = realmElements[i].getChild("reverse-proxy", false);
                     if (proxy != null) {
-                        realm.setProxy(proxy.getChild("host-name").getValue(), proxy.getChild("port").getValue(""), proxy.getChild("prefix").getValue());
+                        int proxyPort = new Integer(proxy.getChild("port").getValue("-1")).intValue();
+                        int proxySSLPort = new Integer(proxy.getChild("ssl-port").getValue("-1")).intValue();
+                        realm.setProxy(proxy.getChild("host-name").getValue(), proxyPort, proxySSLPort, proxy.getChild("prefix").getValue());
                     }
                     
                     log.info("Realm: " + realm);
@@ -326,8 +328,8 @@ public class RealmConfiguration {
         while(keyIterator.hasNext()) {
             String key = (String)keyIterator.next();
             Realm realm = (Realm)hm.get(key);
-            if ((realm.getProxyHostName() == null) && (!key.equals(rootRealm.getID()))) {
-                realm.setProxy(rootRealm.getProxyHostName(), rootRealm.getProxyPort(), rootRealm.getProxyPrefix());
+            if ((realm.getProxyHostName() == null) && (!key.equals(rootRealm.getID())) && rootRealm.isProxySet()) {
+                realm.setProxy(rootRealm.getProxyHostName(), rootRealm.getProxyPort(), rootRealm.getProxySSLPort(), rootRealm.getProxyPrefix());
                 log.debug("Inherit root realm properties to realm: " + key);
             }
             if (realm.getIdentityManager() == null) {

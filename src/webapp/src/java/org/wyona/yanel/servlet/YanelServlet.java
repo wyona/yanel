@@ -1044,8 +1044,19 @@ public class YanelServlet extends HttpServlet {
                 if(sslPort != null) {
                     log.info("Redirect to SSL ...");
                     try {
-                    URL url = new URL(getRequestURLQS(request, null, false).toString());
+                        URL url = new URL(getRequestURLQS(request, null, false).toString());
                         url = new URL("https", url.getHost(), new Integer(sslPort).intValue(), url.getFile());
+                        log.error("Redirect to SSL: " + url);
+                        if (realm.isProxySet()) {
+                            if (realm.getProxySSLPort() >= 0) {
+                                log.error("DEBUG: Use configured port: " + realm.getProxySSLPort());
+                                url = new URL(url.getProtocol(), url.getHost(), new Integer(realm.getProxySSLPort()).intValue(), url.getFile());
+                            } else {
+                                log.error("DEBUG: Use default port: " + url.getDefaultPort());
+                                // NOTE: getDefaultPort depends on the Protocol (e.g. https is 443)
+                                url = new URL(url.getProtocol(), url.getHost(), url.getDefaultPort(), url.getFile());
+                            }
+                        }
                         response.setHeader("Location", url.toString());
                         // TODO: Yulup has a bug re TEMPORARY_REDIRECT
                         //response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT);
@@ -1111,41 +1122,41 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Patch request with proxy settings re realm configuration
      */
     private String getRequestURLQS(HttpServletRequest request, String addQS, boolean xml) {
-        //Realm realm = map.getRealm(new Path(request.getServletPath()));
         try {
             Realm realm = map.getRealm(request.getServletPath());
     
             // TODO: Handle this exception more gracefully!
             if (realm == null) log.error("No realm found for path " +request.getServletPath());
+
             String proxyHostName = realm.getProxyHostName();
-            String proxyPort = realm.getProxyPort();
+            int proxyPort = realm.getProxyPort();
             String proxyPrefix = realm.getProxyPrefix();
     
             URL url = null;
         
             url = new URL(request.getRequestURL().toString());
 
-            if (proxyHostName != null) {
-                url = new URL(url.getProtocol(), proxyHostName, url.getPort(), url.getFile());
-            }
+            //if(proxyHostName != null || proxyPort >= null || proxyPrefix != null) {
+            if(realm.isProxySet()) {
+                if (proxyHostName != null) {
+                    url = new URL(url.getProtocol(), proxyHostName, url.getPort(), url.getFile());
+                }
 
-            if (proxyPort != null) {
-                if (proxyPort.length() > 0) {
-                    url = new URL(url.getProtocol(), url.getHost(), new Integer(proxyPort).intValue(), url.getFile());
+                if (proxyPort >= 0) {
+                    url = new URL(url.getProtocol(), url.getHost(), proxyPort, url.getFile());
                 } else {
                     url = new URL(url.getProtocol(), url.getHost(), url.getDefaultPort(), url.getFile());
                 }
-            }
 
-            if (proxyPrefix != null) {
-                url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile().substring(proxyPrefix.length()));
-            }
-
-            if(proxyHostName != null || proxyPort != null || proxyPrefix != null) {
-                log.debug("Proxy enabled request: " + url);
+                if (proxyPrefix != null) {
+                    url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile().substring(proxyPrefix.length()));
+                }
+                log.error("DEBUG: Proxy enabled for this realm resp. request: " + realm + ", " + url);
+            } else {
+                log.error("DEBUG: No proxy set for this realm resp. request: " + realm + ", " + url);
             }
 
             String urlQS = url.toString();

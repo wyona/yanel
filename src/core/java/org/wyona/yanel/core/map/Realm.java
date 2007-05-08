@@ -59,8 +59,10 @@ public class Realm {
     private File rootDir;
     private String[] languages;
 
+    private boolean proxySet = false;
     private String proxyHostName;
-    private String proxyPort;
+    private int proxyPort = -1;
+    private int proxySSLPort = -1;
     private String proxyPrefix;
 
     /**
@@ -71,6 +73,8 @@ public class Realm {
         this.id = id;
         this.mountPoint = mountPoint;
         this.configFile = configFile;
+
+        proxySet = false;
         
         if (configFile != null) {
             DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
@@ -91,6 +95,9 @@ public class Realm {
         }
     }
 
+    /**
+     *
+     */
     protected void configure(Configuration config) throws Exception {
 
         Yanel yanel = Yanel.getInstance();
@@ -195,10 +202,19 @@ public class Realm {
     /**
      *
      */
-    public void setProxy(String hostName, String port, String prefix) {
+    public void setProxy(String hostName, int port, int sslPort, String prefix) {
+        proxySet = true;
         proxyHostName = hostName;
         proxyPort = port;
+        proxySSLPort = sslPort;
         proxyPrefix = prefix;
+    }
+
+    /**
+     *
+     */
+    public boolean isProxySet() {
+        return proxySet;
     }
 
     /**
@@ -211,8 +227,15 @@ public class Realm {
     /**
      *
      */
-    public String getProxyPort() {
+    public int getProxyPort() {
         return proxyPort;
+    }
+
+    /**
+     *
+     */
+    public int getProxySSLPort() {
+        return proxySSLPort;
     }
 
     /**
@@ -227,14 +250,25 @@ public class Realm {
      */
     public String toString() {
         String descr = "Name: " + name + ", ID: " + id + ", Mount-Point: " + mountPoint;
-        if (proxyHostName != null) {
-            descr = descr + ", Reverse Proxy Host Name: " + proxyHostName;
-        }
-        if (proxyPort != null) {
-            descr = descr + ", Reverse Proxy Port: " + proxyPort;
-        }
-        if (proxyPrefix != null) {
-            descr = descr + ", Reverse Proxy Prefix: " + proxyPrefix;
+        if (isProxySet()) {
+            if (proxyHostName != null) {
+                descr = descr + ", Reverse Proxy Host Name: " + proxyHostName;
+            }
+            if (proxyPort >= 0) {
+                descr = descr + ", Reverse Proxy Port: " + proxyPort;
+            } else {
+                descr = descr + ", Reverse Proxy Port is set to default 80 (resp. -1)";
+            }
+            if (proxySSLPort >= 0) {
+                descr = descr + ", Reverse Proxy SSL Port: " + proxySSLPort;
+            } else {
+                descr = descr + ", Reverse Proxy SSL Port is set to default 443 (resp. -1)";
+            }
+            if (proxyPrefix != null) {
+               descr = descr + ", Reverse Proxy Prefix: " + proxyPrefix;
+            }
+        } else {
+            descr = descr + ", No reverse proxy set";
         }
         return descr;
     }
