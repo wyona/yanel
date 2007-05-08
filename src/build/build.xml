@@ -412,7 +412,7 @@
     </replace>
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" value="${yanel.home.dir.forward.slashes}/src/realms">
-      <replacetoken>../src/realms</replacetoken>
+      <replacetoken>@REALMS_DIR@</replacetoken>
     </replace>
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" value="${yanel.home.dir.forward.slashes}/src">
