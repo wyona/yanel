@@ -354,6 +354,11 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         StringBuffer buf = new StringBuffer();
         buf.append("<?xml version=\"1.0\"?>");
         buf.append("<introspection xmlns=\"http://www.wyona.org/neutron/2.0\">");
+
+        buf.append("<navigation>");
+        buf.append("  <sitetree href=\"./\" method=\"PROPFIND\"/>");
+        buf.append("</navigation>");
+
         buf.append("<resource name=\"" + name + "\">");
         buf.append("<edit mime-type=\"" + this.getMimeType(null) + "\">");
         buf.append("<checkout url=\"?yanel.resource.usecase=checkout\" method=\"GET\"/>");
