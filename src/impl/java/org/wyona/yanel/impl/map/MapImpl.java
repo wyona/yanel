@@ -134,13 +134,9 @@ public class MapImpl implements Map {
             Repository root = repoFactory.firstRepository();
             if (rp.getRepo().getID().equals(root.getID())) {
                 realm = realmConfig.getRootRealm();
-                //realm = new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/"));
             } else {
                 realm = realmConfig.getRealm(rp.getRepo().getID());
-                //realm = new Realm(rp.getRepo().getName(), rp.getRepo().getID(), new Path("/" + rp.getRepo().getID() + "/"));
             }
-    
-            //realm.setProxy(realmConfig.proxyHostName, realmConfig.proxyPort, realmConfig.proxyPrefix);
     
             return realm;
         } catch (Exception e) {
