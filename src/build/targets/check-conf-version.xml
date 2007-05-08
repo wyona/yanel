@@ -38,7 +38,7 @@
     <condition property="local.realms.properties.in.sync">
       <equals arg1="${defaultconf.realms.version}" arg2="${localconf.realms.version}"/>
     </condition>
-    <fail unless="local.realms.properties.in.sync" message="It seems that your local.realms.xml is out of date. Please compare your local.realms.xml with the default configuration conf/realms.xml and update accordingly."/>
+    <fail unless="local.realms.properties.in.sync" message="WARNING: It seems that your local.realms.xml is out of date. Please compare your local.realms.xml with the default configuration conf/realms.xml and update accordingly."/>
   </target>
 
   <target name="check-config-version-resource-types-xml" if="local.resource-types.config.exists">
