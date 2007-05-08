@@ -8,9 +8,13 @@
 </head>
 <body>
 <h2>OpenID</h2>
+
 <p>
 <a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5184">Task 5184</a>
 </p>
+
 <p>
-<a href="http://www.openid.net">OpenID Initiative</a> and <a href="http://openid.net/about.bml">how it works</a>.</p><br/><p></p>Also see https://opensso.dev.java.net/ and http://shibboleth.internet2.edu/</body>
+<a href="http://www.openid.net">OpenID Initiative</a> and <a href="http://openid.net/about.bml">how it works</a>.
+</p>
+</body>
 </html>
