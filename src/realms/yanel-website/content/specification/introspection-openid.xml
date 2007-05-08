@@ -9,6 +9,9 @@
 </resource>
 
 <navigation>
+<!--
   <sitetree href="./" method="POST"/>
+-->
+  <sitetree href="../" method="POST"/>
 </navigation>
 </introspection>
