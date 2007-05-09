@@ -197,9 +197,8 @@ public class DirectoryResource extends Resource implements ViewableV2 {
      */
     private StreamSource getXSLTStreamSource(Repository repo) throws RepositoryException {
 
-            File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(),
-                    "xslt" + File.separator + "dir2xhtml.xsl");
-            log.error("DEBUG: XSLT file: " + xsltFile);
+            File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "dir2xhtml.xsl");
+            log.debug("XSLT file: " + xsltFile);
             return new StreamSource(xsltFile);
         
     }
