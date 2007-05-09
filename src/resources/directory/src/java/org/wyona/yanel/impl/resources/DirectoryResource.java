@@ -18,6 +18,7 @@ package org.wyona.yanel.impl.resources;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
@@ -107,14 +108,21 @@ public class DirectoryResource extends Resource implements ViewableV2 {
             // NOTE: Do not hardcode the .yanel-rti, but rather use
             // Path.getRTIPath ...
             org.wyona.yarep.core.Path[] children = contentRepo.getChildren(p);
-            for (int i = 0; i < children.length; i++) {
-                if (contentRepo.isResource(children[i])) {
-                    sb.append("<dir:file path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
-                } else if (contentRepo.isCollection(children[i])) {
-                    sb.append("<dir:directory path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
-                } else {
-                    sb.append("<yanel:exception yanel:path=\"" + children[i] + "\"/>");
+            if (children != null) {
+                for (int i = 0; i < children.length; i++) {
+                    if (contentRepo.isResource(children[i])) {
+                        sb.append("<dir:file path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
+                    } else if (contentRepo.isCollection(children[i])) {
+                        sb.append("<dir:directory path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
+                    } else {
+                        sb.append("<yanel:exception yanel:path=\"" + children[i] + "\"/>");
+                    }
                 }
+                if (children.length < 1) {
+                    sb.append("<yanel:no-children/>");
+                }
+            } else {
+                sb.append("<yanel:no-children/>");
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -199,15 +207,23 @@ public class DirectoryResource extends Resource implements ViewableV2 {
     /**
      * Get XSLT
      */
-    private String[] getXSLTprop() {
+    private String[] getXSLTprop() throws Exception {
+        ResourceConfiguration rc = getConfiguration();
+        if (rc != null) return rc.getProperties("xslt");
         return getRTI().getProperties("xslt");
     }
 
     /**
      * Get mime type
      */
-    public String getMimeType(String viewId) {
-        String mimeType = getRTI().getProperty("mime-type");
+    public String getMimeType(String viewId) throws Exception {
+        String mimeType = null;
+        ResourceConfiguration rc = getConfiguration();
+        if (rc != null) {
+            mimeType = rc.getProperty("mime-type");
+        } else {
+            mimeType = getRTI().getProperty("mime-type");
+        }
         if (mimeType != null) return mimeType;
 
         // NOTE: Assuming fallback re dir2xhtml.xsl ...
