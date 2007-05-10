@@ -64,10 +64,23 @@
     <copy todir="${snapshot.dir}/${target.servlet.context.prefix}/realms/javadoc/content">
       <fileset dir="${yanel.home.dir}/build/javadoc"/>
     </copy>
+
     <copy file="${yanel.home.dir}/conf/realms.xml" todir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
     <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/realms.xml" value="../../realms">
       <replacetoken>@REALMS_DIR@</replacetoken>
     </replace>
+
+    <copy file="${yanel.home.dir}/conf/resource-types.xml" todir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/resource-types.xml" value="../../resources">
+      <replacetoken>../src/resources</replacetoken>
+    </replace>
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/resource-types.xml" value="../../resources">
+      <replacetoken>../src/contributions/resources</replacetoken>
+    </replace>
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/resource-types.xml" value="../../resources">
+      <replacetoken>../src/realms/welcome-admin/yanel/resources</replacetoken>
+    </replace>
+
     <copy todir="${snapshot.dir}/${target.servlet.context.prefix}/resources">
       <fileset dir="${yanel.home.dir}/src/resources"/>
     </copy>
