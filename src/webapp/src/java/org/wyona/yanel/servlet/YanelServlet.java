@@ -174,6 +174,14 @@ public class YanelServlet extends HttpServlet {
         // Check authorization
         if(doAuthorize(request, response) != null) return;
 
+        // Check for requests for global data
+        Resource resource = getResource(request, response);
+        String path = resource.getPath();
+        if (path.indexOf("/" + reservedPrefix + "/") == 0) {
+            getGlobalData(request, response);
+            return;
+        }
+
         // Delegate ...
         String method = request.getMethod();
         if (method.equals(METHOD_PROPFIND)) {
@@ -199,14 +207,7 @@ public class YanelServlet extends HttpServlet {
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(true);
-
-        // Check for requests for global data
         Resource resource = getResource(request, response);
-        String path = resource.getPath();
-        if (path.indexOf("/" + reservedPrefix + "/") == 0) {
-            getGlobalData(request, response);
-            return;
-        }
 
         // Check for toolbar ...
         checkToolbar(request);
@@ -1606,8 +1607,8 @@ public class YanelServlet extends HttpServlet {
      * Custom XHTML Form for authentication
      */
     public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message) throws ServletException, IOException {
-        String path = request.getServletPath();
-        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(path);
+        String pathRelativeToRealm = request.getServletPath().replaceFirst(realm.getMountPoint(),"/");
+        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(pathRelativeToRealm);
         
         try {
             org.w3c.dom.Document adoc = getDocument(NAMESPACE, "yanel-auth-screen");
