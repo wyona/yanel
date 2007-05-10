@@ -94,8 +94,9 @@ public class ResourceTypeRegistry {
 
 
             } else if (CONFIGURATION_FILE.endsWith("properties")) {
-                propertiesURL = ResourceTypeRegistry.class.getClassLoader()
-                        .getResource(CONFIGURATION_FILE);
+                log.warn("DEPRECATED: " + CONFIGURATION_FILE);
+
+                propertiesURL = ResourceTypeRegistry.class.getClassLoader().getResource(CONFIGURATION_FILE);
 
                 Properties props = new Properties();
                 try {
@@ -112,13 +113,13 @@ public class ResourceTypeRegistry {
                                     .getAbsolutePath(), tokens[i]);
                         }
 
-                        if (resConfigFile.exists()) {
+                        if (resConfigFile.isFile()) {
                             ResourceTypeDefinition rtd = new ResourceTypeDefinition(resConfigFile);
                             log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
                             log.debug("Classname: " + rtd.getResourceTypeClassname());
                             hm.put(rtd.getResourceTypeUniversalName(), rtd);
                         } else {
-                            log.warn("No such file or directory: " + resConfigFile);
+                            log.error("No such file: " + resConfigFile);
                         }
                     }
                 } catch (Exception e) {
@@ -146,17 +147,16 @@ public class ResourceTypeRegistry {
             for (int i = 0; i < resourceTypes.length; i++) {
                 File resConfigFile = new File(resourceTypes[i].getAttribute("src"));
                 if (!resConfigFile.isAbsolute()) {
-                    resConfigFile = FileUtil.file(resourceTypeConfigFile.getParentFile()
-                            .getAbsolutePath(), resourceTypes[i].getAttribute("src"));
+                    resConfigFile = FileUtil.file(resourceTypeConfigFile.getParentFile().getAbsolutePath(), resourceTypes[i].getAttribute("src"));
                 }
 
-                if (resConfigFile.exists()) {
+                if (resConfigFile.isFile()) {
                     ResourceTypeDefinition rtd = new ResourceTypeDefinition(resConfigFile);
                     log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
                     log.debug("Classname: " + rtd.getResourceTypeClassname());
                     hm.put(rtd.getResourceTypeUniversalName(), rtd);
                 } else {
-                    log.warn("No such file or directory: " + resConfigFile);
+                    log.error("No such file: " + resConfigFile);
                 }
             }    
         } catch (Exception e) {
