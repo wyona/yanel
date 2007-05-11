@@ -7,8 +7,6 @@
   
   <xsl:output method="xml" indent="yes"/>
   
-  <xsl:param name="servlet.context.prefix" select="'NULL'"/>
-  
   <xsl:template match="/">
     <xsl:apply-templates/>
   </xsl:template>
