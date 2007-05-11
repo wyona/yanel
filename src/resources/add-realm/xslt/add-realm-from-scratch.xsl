@@ -23,11 +23,12 @@
 
       <xsl:choose>
         <xsl:when test="/yanel:add-realm/yanel:from-scratch/yanel:realm-created">
-	  <p>Realm has been created and registered. Please see the <a href="index.html">list of registered realms</a>.</p>
+          <p>Realm has been created and registered. Please see the <a href="index.html">list of registered realms</a>.</p>
         </xsl:when>
         <xsl:otherwise>
       <xsl:apply-templates select="/yanel:add-realm/yanel:from-scratch/yanel:not-valid"/>
       <xsl:apply-templates select="/yanel:add-realm/yanel:from-scratch/yanel:valid"/>
+      <xsl:apply-templates select="/yanel:add-realm/yanel:from-scratch/yanel:exception"/>
       <form>
         <xsl:if test="/yanel:add-realm/yanel:from-scratch/yanel:valid">
           <input type="hidden" name="confirm" value="true"/>
@@ -66,6 +67,10 @@
 
   <xsl:template match="@yanel:exception">
     <tr><td colspan="2"><font color="red">Exception:</font>&#160;<xsl:value-of select="."/></td></tr>
+  </xsl:template>
+
+  <xsl:template match="yanel:exception">
+    <p><font color="red">Exception:</font>&#160;<xsl:value-of select="."/></p>
   </xsl:template>
 
   <xsl:template match="yanel:not-valid">
