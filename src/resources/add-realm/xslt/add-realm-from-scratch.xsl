@@ -23,7 +23,7 @@
 
       <xsl:choose>
         <xsl:when test="/yanel:add-realm/yanel:from-scratch/yanel:realm-created">
-	  <p>Realm has been created and registered</p>
+	  <p>Realm has been created and registered. Please see the <a href="index.html">list of registered realms</a>.</p>
         </xsl:when>
         <xsl:otherwise>
       <xsl:apply-templates select="/yanel:add-realm/yanel:from-scratch/yanel:not-valid"/>
