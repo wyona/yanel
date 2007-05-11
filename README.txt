@@ -15,13 +15,18 @@
 
     NOTE: You might have to configure a proxy. Please see below for more details
 
-    1) Run "configure"
-    2) Run "build"
-    3.1) Run "yanel start/stop" to start or stop Tomcat
-    3.2) Run "yanel /hello/world.html" from the command line
-    3.3) Run "yanel start-jetty" to start Jetty
+    1) Configure Yanel by running "configure"
+
+    2) Build Yanel by running "build"
+
+    3) Start using Yanel with one of the following options
+    3.1) Run within Tomcat: "yanel start/stop" to start or stop Tomcat
+    3.2) Run within Jetty: "yanel start-jetty" to start Jetty
+    3.3) Run within Command Line: "yanel /hello/world.html"
+
     4) Browse to http://127.0.0.1:8080/yanel/
-    5) Run "build test"
+
+    5) Run tests: "build test"
 
 
     More Information
