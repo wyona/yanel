@@ -675,6 +675,9 @@
       <fileset dir="${build.dir}" excludes="logs/**, javadoc/**"/>
     </delete>
 
+    <!-- Jetty target -->
+    <delete dir="${yanel.home.dir}/src/build/target"/>
+
     <condition property="yes-delete-tomcat-cluster-node1">
       <and>
         <isset property="tomcat1.home.dir"/>
@@ -714,6 +717,9 @@
   <target name="clean-all" description="Clean All (including local configuration!)" depends="init, clean">
     <delete dir="${build.dir}"/>
     <delete dir="${yanel.home.dir}/local"/>
+
+    <!-- Jetty target -->
+    <delete dir="${yanel.home.dir}/src/build/target"/>
 <!--
     <delete file="${yanel.home.dir}/src/build/local.build.properties"/>
     <delete dir="${yanel.home.dir}/${local.config.dir}"/>
