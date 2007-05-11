@@ -852,19 +852,11 @@
   </target>
 
   <target name="generate-resource-types-registry" unless="local.resource-types.config.exists">
-    <xslt in="${yanel.home.dir}/conf/resource-types.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" style="resource2resourcetypereg.xsl" force="false">
-      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
-      <param name="yanel.revision" expression="${yanel.revision}"/>
-      <param name="yanel.version" expression="${yanel.version}"/>
-    </xslt>
+    <xslt in="${yanel.home.dir}/conf/resource-types.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" style="resource2resourcetypereg.xsl" force="false"/>
   </target>
 
   <target name="patch-with-local-resource-types-registry" if="local.resource-types.config.exists">
-    <xslt in="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" style="resource2resourcetypereg.xsl" force="true">
-      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
-      <param name="yanel.revision" expression="${yanel.revision}"/>
-      <param name="yanel.version" expression="${yanel.version}"/>
-    </xslt>
+    <xslt in="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" style="resource2resourcetypereg.xsl" force="true"/>
   </target>
   
   <target name="test" description="Run tests">
