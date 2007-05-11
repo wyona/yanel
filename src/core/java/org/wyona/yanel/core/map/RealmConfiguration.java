@@ -291,7 +291,7 @@ public class RealmConfiguration {
     public void addRealm(String realmID, String realmName, String mountPoint, String configFileSrc) throws Exception {
         if (getRealm(realmID) != null) {
             log.warn("Cannot add realm: " + realmID + " (realm with this ID exists already)");
-            return; // TODO: throw Exception
+            throw new Exception("Cannot add realm: " + realmID + " (realm with this ID exists already)");
         }
         log.debug("adding realm: " + realmID);
         DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
@@ -358,7 +358,7 @@ public class RealmConfiguration {
             String destMountPoint, File destDir) throws Exception {
         if (getRealm(destRealmID) != null) {
             log.warn("Cannot add realm: " + destRealmID + " (realm with this ID exists already)");
-            return; // TODO: throw Exception
+            throw new Exception("Cannot add realm: " + destRealmID + " (realm with this ID exists already)");
         }
         DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
 
