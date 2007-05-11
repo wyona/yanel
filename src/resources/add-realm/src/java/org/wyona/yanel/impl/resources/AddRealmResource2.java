@@ -322,7 +322,6 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
                 fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "realm-created"));
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-                // TODO: Add actual exception message as text!
                 Element exceptionElement = doc.createElementNS(NAMESPACE, "exception");
                 exceptionElement.appendChild(doc.createTextNode(e.getMessage()));
                 fromScratchElement.appendChild(exceptionElement);
@@ -408,7 +407,9 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
                 fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "realm-created"));
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-                fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                Element exceptionElement = doc.createElementNS(NAMESPACE, "exception");
+                exceptionElement.appendChild(doc.createTextNode(e.getMessage()));
+                fromScratchElement.appendChild(exceptionElement);
             }
         }
 
