@@ -318,6 +318,17 @@
     <jar destfile="${yanel.home.dir}/build/lib/yanel-impl-${yanel.version}-r${yanel.revision}.jar"
       basedir="${classes.dir}"
       includes="org/wyona/yanel/impl/**"/>
+      
+    <copy file="${yanel.home.dir}/src/build/pom-impl.xml" todir="${yanel.home.dir}/build/lib"/>
+    <replace file="${yanel.home.dir}/build/lib/pom-impl.xml" value="${yanel.version}-r${yanel.revision}">
+      <replacetoken>@VERSION@</replacetoken>
+    </replace>
+
+    <artifact:pom id="impl.project" file="${yanel.home.dir}/build/lib/pom-impl.xml"/>
+
+    <artifact:install file="${yanel.home.dir}/build/lib/yanel-impl-${yanel.version}-r${yanel.revision}.jar">
+      <pom refid="impl.project"/>
+    </artifact:install>      
   </target>
 
   <target name="compile-cmdl" description="Compile Java classes of Yanel command line" depends="init">
@@ -346,6 +357,17 @@
     <jar destfile="${yanel.home.dir}/build/lib/yanel-webapp-${yanel.version}-r${yanel.revision}.jar"
       basedir="${classes.dir}"
       includes="org/wyona/yanel/servlet/**"/>
+      
+    <copy file="${yanel.home.dir}/src/build/pom-webapp.xml" todir="${yanel.home.dir}/build/lib"/>
+    <replace file="${yanel.home.dir}/build/lib/pom-webapp.xml" value="${yanel.version}-r${yanel.revision}">
+      <replacetoken>@VERSION@</replacetoken>
+    </replace>
+
+    <artifact:pom id="webapp.project" file="${yanel.home.dir}/build/lib/pom-webapp.xml"/>
+
+    <artifact:install file="${yanel.home.dir}/build/lib/yanel-webapp-${yanel.version}-r${yanel.revision}.jar">
+      <pom refid="webapp.project"/>
+    </artifact:install>            
   </target>
 
   <!-- TODO: Invoice depends on impl ...! -->
