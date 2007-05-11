@@ -34,7 +34,7 @@ elif [ "$1" == "start-jetty" ]; then
   MAVEN=`which mvn`
   if [ -z "$MAVEN" ]; then
     echo "ERROR: No \"mvn\" command available!"
-    echo "       Have you installed Maven 2.0.4? If so, then check your PATH and try again or install Maven 2.0.4 from http://maven.apache.org"
+    echo "       Have you installed Maven 2.0.4? If so, then check your PATH environment variable and try again or install Maven 2.0.4 from http://maven.apache.org"
   else
     shift
     mvn jetty:run-war -f  src/build/pom-webapp.xml $@
