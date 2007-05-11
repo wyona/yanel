@@ -37,7 +37,8 @@ elif [ "$1" == "start-jetty" ]; then
     echo "       Have you installed Maven 2.0.4? If so, then check your PATH environment variable and try again or install Maven 2.0.4 from http://maven.apache.org"
   else
     shift
-    mvn jetty:run-war -f  src/build/pom-webapp.xml $@
+    ant -f src/build/build.xml war
+    mvn jetty:run-war -f  src/build/pom-jetty.xml $@
   fi  
 else
   ant -f src/build/build.xml run-yanel-cmdl -Dyanel.path=$1
