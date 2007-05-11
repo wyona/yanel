@@ -1919,7 +1919,6 @@ public class YanelServlet extends HttpServlet {
         if (path.indexOf("users") > 0) {
             String userName = path.substring(reservedPrefix.length() + 8);
             userName = userName.split("[.]")[0];
-            log.error("No user resource implemented yet: " + userName);
 
 	    try {
                 java.util.Map properties = new HashMap();
