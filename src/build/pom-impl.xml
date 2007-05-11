@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>wyona-org-yanel</groupId>
+  <artifactId>yanel-impl</artifactId>
+  <version>@VERSION@</version>
+  <dependencies>
+    <dependency>
+      <groupId>wyona-org-yanel</groupId>
+      <artifactId>yanel-core</artifactId>
+      <version>1.0-dev-rREVISION</version>
+    </dependency>
+  </dependencies>
+</project>
+
