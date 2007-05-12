@@ -8,4 +8,5 @@
 <!--
   <ac-identities/>
 -->
+  <root-dir>./</root-dir>
 </realm-config>
