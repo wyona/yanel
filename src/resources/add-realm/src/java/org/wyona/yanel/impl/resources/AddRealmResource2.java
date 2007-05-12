@@ -282,7 +282,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         String fsLocationValue = null;
         if (para.setValue != null) {
             if (para.setValue.length() == 0) {
-                fsLocationValue = getYanel().getRealmConfiguration().getRealm("from-scratch-realm-template").getRootDir().getParent();
+                fsLocationValue = getYanel().getRealmConfiguration().getRealm(getTemplateRealmId()).getRootDir().getParent();
             } else {
                 fsLocationValue = para.setValue;
             }
@@ -318,7 +318,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
 
         if (valid && request.getParameter("confirm") != null && request.getParameter("confirm").equals("true")) {
             try {
-                getYanel().getRealmConfiguration().copyRealm("from-scratch-realm-template", realmidip.getValue(), realmnameip.getValue(), "/" + realmidip.getValue() + "/", new File(fsLocationValue));
+                getYanel().getRealmConfiguration().copyRealm(getTemplateRealmId(), realmidip.getValue(), realmnameip.getValue(), "/" + realmidip.getValue() + "/", new File(fsLocationValue));
                 fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "realm-created"));
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
@@ -367,7 +367,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         String fsLocationValue = null;
         if (para.setValue != null) {
             if (para.setValue.length() == 0) {
-                fsLocationValue = getYanel().getRealmConfiguration().getRealm("from-scratch-realm-template").getRootDir().getParent();
+                fsLocationValue = getYanel().getRealmConfiguration().getRealm(getTemplateRealmId()).getRootDir().getParent();
             } else {
                 fsLocationValue = para.setValue;
             }
@@ -403,7 +403,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
 
         if (valid && request.getParameter("confirm") != null && request.getParameter("confirm").equals("true")) {
             try {
-                getYanel().getRealmConfiguration().copyRealm("from-scratch-realm-template", realmidip.getValue(), realmnameip.getValue(), "/" + realmidip.getValue() + "/", new File(fsLocationValue));
+                getYanel().getRealmConfiguration().copyRealm(getTemplateRealmId(), realmidip.getValue(), realmnameip.getValue(), "/" + realmidip.getValue() + "/", new File(fsLocationValue));
                 fromScratchElement.appendChild(doc.createElementNS(NAMESPACE, "realm-created"));
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
@@ -495,7 +495,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         String fsLocationValue = null;
         if (para.setValue != null) {
             if (para.setValue.length() == 0) {
-                fsLocationValue = getYanel().getRealmConfiguration().getRealm("from-scratch-realm-template").getRootDir().getParent();
+                fsLocationValue = getYanel().getRealmConfiguration().getRealm(getTemplateRealmId()).getRootDir().getParent();
             } else {
                 fsLocationValue = para.setValue;
             }
@@ -565,7 +565,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         if (valid && request.getParameter("confirm") != null && request.getParameter("confirm").equals("true")) {
 
             try {
-                getYanel().getRealmConfiguration().copyRealm("from-scratch-realm-template", realmidip.getValue(), realmnameip.getValue(), "/" + realmidip.getValue() + "/", new File(fsLocationValue));
+                getYanel().getRealmConfiguration().copyRealm(getTemplateRealmId(), realmidip.getValue(), realmnameip.getValue(), "/" + realmidip.getValue() + "/", new File(fsLocationValue));
                 fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "realm-created"));
 
                 importSite(urlip.getValue(), scopeip.getValue(), new Integer(cmpip.getValue()).intValue(), new Integer(cdip.getValue()).intValue(), new Integer(cmsip.getValue()).intValue(), realmidip.getValue());
@@ -686,6 +686,23 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
             thread.start();
         } else {
             log.warn("Another crawl is already in progress: " + eventLog.getNofDownloads());
+        }
+    }
+
+    /**
+     *
+     */
+    private String getTemplateRealmId() {
+        String sampleRealmId = null;
+        try {
+            sampleRealmId = getConfiguration().getProperty("template-realm-id");
+        } catch (Exception e) {
+            log.warn(e);
+        }
+        if (sampleRealmId != null) {
+            return sampleRealmId;
+        } else {
+            return "from-scratch-realm-template";
         }
     }
 }
