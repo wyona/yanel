@@ -51,7 +51,7 @@ import org.wyona.yarep.core.RepositoryFactory;
 import org.xml.sax.SAXException;
 
 /**
- *
+ * Class managing registration of realms (adding, updating, copying, deleting, ...)
  */
 public class RealmConfiguration {
 
@@ -245,18 +245,16 @@ public class RealmConfiguration {
     /**
      * If the given file has a relative path, resolve it relative to the given dir.
      * If dir is in fact a file, the resolving will use the parent dir of that file.  
-     * @param file
-     * @param dir
+     * @param file Realm configuration specified within realms.xml
+     * @param dir Path of realms.xml
      */
     protected File resolveFile(File file, File dir) {
         // TODO: Replace this method by some method from org.wyona.commons.io.FileUtil ...
         if (!file.isAbsolute()) {
             if (dir.isDirectory()) {
-                //file = FileUtil.file(dir.getAbsolutePath(), file.toString());
-                file = new File(dir, file.getPath());
+                file = new File(org.apache.commons.io.FilenameUtils.concat(dir.getAbsolutePath(), file.getPath()));
             } else {
-                //file = FileUtil.file(dir.getParentFile().getAbsolutePath(), file.toString());
-                file = new File(dir.getParentFile(), file.getPath());
+                file = new File(org.apache.commons.io.FilenameUtils.concat(dir.getParent(), file.getPath()));
             }
         }
         return file;
