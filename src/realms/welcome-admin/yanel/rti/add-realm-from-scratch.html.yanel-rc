@@ -5,6 +5,11 @@
 
   <yanel:property name="add-type" value="from-scratch"/>
   <yanel:property name="xslt" value="xslt/add-realm-from-scratch.xsl"/>
+
+  <yanel:property name="template-realm-id" value="from-scratch-realm-template"/>
+  <!--
+  <yanel:property name="template-realm-id" value="javadoc"/>
+  -->
   
   <yanel:custom-config xmlns:arr="http://www.wyona.org/yanel/resource/add-realm-resource/1.0">
     <arr:parameter name="realmid" samplevalue="my-realm" required="true"/>
