@@ -8,7 +8,7 @@
   <node uuid="" href="en/download/index.html"><name>Download</name></node>
   <node uuid="" href="en/usp.html"><name>Unique Selling Proposition</name></node>
   <node uuid="" href="license.html"><name>License</name></node>
-  <node uuid="" href="en/getting-started.html"><name>Getting Started</name></node>
+  <node uuid="" href="en/getting-started/index.html"><name>Getting Started</name></node>
   <node uuid="" href=""><name>Features</name></node>
   <node uuid="" href="news/index.html"><name>News</name></node>
   <node uuid="" href="en/documentation/index.html"><name>Documentation</name></node>
