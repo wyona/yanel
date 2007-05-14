@@ -70,10 +70,8 @@
       <replacetoken>@REALMS_DIR@</replacetoken>
     </replace>
 
-<!--
-    <copy file="${yanel.home.dir}/conf/resource-types.xml" todir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
--->
-    <xslt in="${yanel.home.dir}/conf/resource-types.xml" out="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/resource-types.xml" style="resource2resourcetypereg.xsl" force="true"/>
+    <copy file="${yanel.home.dir}/conf/resource-types.xml" tofile="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/resource-types.xml" overwrite="true"/>
+
     <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/resource-types.xml" value="../../resources">
       <replacetoken>../src/resources</replacetoken>
     </replace>

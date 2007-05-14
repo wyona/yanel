@@ -874,11 +874,11 @@
   </target>
 
   <target name="generate-resource-types-registry" unless="local.resource-types.config.exists">
-    <xslt in="${yanel.home.dir}/conf/resource-types.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" style="resource2resourcetypereg.xsl" force="false"/>
+    <copy file="${yanel.home.dir}/conf/resource-types.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" overwrite="false"/>
   </target>
 
   <target name="patch-with-local-resource-types-registry" if="local.resource-types.config.exists">
-    <xslt in="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" style="resource2resourcetypereg.xsl" force="true"/>
+    <copy file="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" overwrite="true"/>
   </target>
   
   <target name="test" description="Run tests">
