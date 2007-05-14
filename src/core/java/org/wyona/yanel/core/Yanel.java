@@ -20,7 +20,7 @@ import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
-import org.wyona.yanel.core.map.RealmConfiguration;
+import org.wyona.yanel.core.map.RealmManager;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.springframework.beans.factory.BeanFactory;
@@ -35,7 +35,7 @@ public class Yanel {
     private Map map = null;
     private ResourceTypeRegistry rtr = null;
     private ApplicationContext applicationContext;
-    private RealmConfiguration realmConfig;
+    private RealmManager realmConfig;
     private ResourceManager resourceManager;
     private boolean isInitialized = false;
     
@@ -58,7 +58,7 @@ public class Yanel {
        }
        
        map = (Map) applicationContext.getBean("map");
-       realmConfig = new RealmConfiguration();
+       realmConfig = new RealmManager();
        map.setRealmConfiguration(realmConfig);
 
        rtr = new ResourceTypeRegistry();
@@ -108,7 +108,7 @@ public class Yanel {
         return resourceManager;
     }
     
-    public RealmConfiguration getRealmConfiguration() {
+    public RealmManager getRealmConfiguration() {
         return realmConfig;
     }
     

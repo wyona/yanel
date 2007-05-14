@@ -32,7 +32,7 @@ import org.apache.log4j.Category;
 import org.wyona.commons.io.FileUtil;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
-import org.wyona.yanel.core.map.RealmConfiguration;
+import org.wyona.yanel.core.map.RealmManager;
 
 /**
  *
@@ -66,14 +66,14 @@ public class ResourceTypeRegistry {
     public ResourceTypeRegistry(String configurationFile) {
         CONFIGURATION_FILE = configurationFile;
 
-        if (RealmConfiguration.class.getClassLoader().getResource(CONFIGURATION_FILE) == null) {
+        if (RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE) == null) {
             CONFIGURATION_FILE = DEFAULT_CONFIGURATION_FILE;
         }
 
         if (ResourceTypeRegistry.class.getClassLoader().getResource(CONFIGURATION_FILE) != null) {
 
             if (CONFIGURATION_FILE.endsWith(".xml")) {
-                configFile = new File(RealmConfiguration.class.getClassLoader()
+                configFile = new File(RealmManager.class.getClassLoader()
                         .getResource(CONFIGURATION_FILE)
                         .getFile());
                 try {

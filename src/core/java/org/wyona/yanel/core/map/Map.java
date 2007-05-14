@@ -45,7 +45,7 @@ public interface Map {
 
     
 
-    public void setRealmConfiguration(RealmConfiguration realmConfig);
+    public void setRealmConfiguration(RealmManager realmConfig);
 
     /**
      * Gets the realm for the given url, according to the configuration in realms.xml.

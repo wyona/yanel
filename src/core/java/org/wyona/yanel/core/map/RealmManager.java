@@ -53,9 +53,9 @@ import org.xml.sax.SAXException;
 /**
  * Class managing registration of realms (adding, updating, copying, deleting, ...)
  */
-public class RealmConfiguration {
+public class RealmManager {
 
-    private static Category log = Category.getInstance(RealmConfiguration.class);
+    private static Category log = Category.getInstance(RealmManager.class);
 
     public static final String DEFAULT_CONFIGURATION_FILE = "yanel.properties";
     public static final String DEFAULT_CONFIGURATION_FILE_XML = "yanel.xml";
@@ -72,25 +72,25 @@ public class RealmConfiguration {
     /**
      *
      */
-    public RealmConfiguration() throws ConfigurationException {
+    public RealmManager() throws ConfigurationException {
         this(DEFAULT_CONFIGURATION_FILE_XML);
     }
 
     /**
      *
      */
-    public RealmConfiguration(String configurationFile) throws ConfigurationException {
+    public RealmManager(String configurationFile) throws ConfigurationException {
         CONFIGURATION_FILE = configurationFile;
 
-        if (RealmConfiguration.class.getClassLoader().getResource(CONFIGURATION_FILE) == null) {
+        if (RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE) == null) {
             CONFIGURATION_FILE = DEFAULT_CONFIGURATION_FILE;
         }
 
-        if (RealmConfiguration.class.getClassLoader().getResource(CONFIGURATION_FILE) != null) {
+        if (RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE) != null) {
             if (CONFIGURATION_FILE.endsWith(".xml")) {
 
                 try {
-                    URI configFileUri = new URI(RealmConfiguration.class.getClassLoader().getResource(CONFIGURATION_FILE).toString());
+                    URI configFileUri = new URI(RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE).toString());
                     configFile = new File(configFileUri.getPath());
                 } catch (Exception e) {
                     String errorMsg = "Failure while reading configuration: " + e.getMessage();
@@ -117,7 +117,7 @@ public class RealmConfiguration {
                 log.debug("Realms Configuration: " + realmsConfigFile);
                 readRealms();
             } else if (CONFIGURATION_FILE.endsWith("properties")) {
-                propertiesURL = RealmConfiguration.class.getClassLoader()
+                propertiesURL = RealmManager.class.getClassLoader()
                         .getResource(CONFIGURATION_FILE);
                 if (propertiesURL == null) {
                     log.error("No such resource: " + CONFIGURATION_FILE);
@@ -284,7 +284,7 @@ public class RealmConfiguration {
 
     /**
      * Adds a new realm which already physically exists in the filesystem.
-     * The new realm will be added to realms.xml and registered in this RealmConfiguration.
+     * The new realm will be added to realms.xml and registered in this RealmManager.
      */
     public void addRealm(String realmID, String realmName, String mountPoint, String configFileSrc) throws Exception {
         if (getRealm(realmID) != null) {
@@ -341,7 +341,7 @@ public class RealmConfiguration {
     
     /**
      * Copies a realm by creating a physical copy of the realm, changing its name/id,
-     * and registering it in this RealmConfiguration.
+     * and registering it in this RealmManager.
      * A realm can only be copied if it has a <root-dir> element in its config file and
      * if this directory contains the complete realm. 
      * @param srcRealmID
