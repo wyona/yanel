@@ -58,7 +58,7 @@ import org.wyona.yanel.core.map.Realm;
 
 import org.wyona.yanel.servlet.communication.HttpRequest;
 import org.wyona.yanel.servlet.communication.HttpResponse;
-import org.wyona.yanel.util.ResourceAttributeHelper;
+import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.IdentityManager;

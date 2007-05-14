@@ -344,7 +344,7 @@
     <mkdir dir="${yanel.home.dir}/build/lib"/>
     <jar destfile="${yanel.home.dir}/build/lib/yanel-cmdl-${yanel.version}-r${yanel.revision}.jar"
       basedir="${classes.dir}"
-      includes="org/wyona/yanel/cmdl/**,org/wyona/yanel/util/**"/>
+      includes="org/wyona/yanel/cmdl/**"/>
   </target>
 
   <target name="compile-webapp" description="Compile Java classes of Yanel webapp" depends="init, compile-core, compile-cmdl">

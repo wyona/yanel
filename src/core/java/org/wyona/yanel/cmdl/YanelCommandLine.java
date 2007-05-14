@@ -31,7 +31,7 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 
-import org.wyona.yanel.util.ResourceAttributeHelper;
+import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.PolicyManager;
