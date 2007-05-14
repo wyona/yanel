@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 
-<!--
 <repository class="org.wyona.yarep.impl.repo.fs.FileSystemRepository">
   <name>Yanel Website Repository</name>
   <paths class="org.wyona.yarep.impl.DefaultMapImpl" src="../paths">
@@ -8,8 +7,8 @@
   </paths>
   <content src="../content"/>
 </repository>
--->
 
+<!--
 <repository>
   <name>Yanel Website Repository</name>
 
@@ -19,3 +18,4 @@
     <content src="../content"/>
   </storage>
 </repository>
+-->
