@@ -401,25 +401,6 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
     }
     
     /**
-     * Get property value from resource configuration
-     */
-    private String getResourceConfigProperty(String name) throws Exception {
-    	ResourceConfiguration rc = getConfiguration();
-    	if (rc != null) return rc.getProperty(name);
-    	return getRTI().getProperty(name);
-    }
-    
-    /**
-     * Get property value from resource configuration
-     */
-    private String[] getResourceConfigProperties(String name) throws Exception {
-    	ResourceConfiguration rc = getConfiguration();
-    	if (rc != null) return rc.getProperties(name);
-    	return getRTI().getProperties(name);
-    }
-
-
-    /**
      *
      */
     public String getPropertyType(String name) {
