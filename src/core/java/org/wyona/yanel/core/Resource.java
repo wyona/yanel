@@ -260,4 +260,23 @@ public abstract class Resource {
         return language;
     }
 
+    /**
+     * Get property value from resource configuration
+     */
+    public String getResourceConfigProperty(String name) throws Exception {
+        ResourceConfiguration rc = getConfiguration();
+        if (rc != null) return rc.getProperty(name);
+        return getRTI().getProperty(name);
+    }
+    
+    /**
+     * Get property value from resource configuration
+     */
+    public String[] getResourceConfigProperties(String name) throws Exception {
+        ResourceConfiguration rc = getConfiguration();
+        if (rc != null) return rc.getProperties(name);
+        return getRTI().getProperties(name);
+    }
+
+
 }
