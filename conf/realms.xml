@@ -11,7 +11,7 @@
 <!-- ROOT realm -->
 <realm id="yanel-website" mount-point="/yanel-website/">
   <name>Yanel Website</name>
-  <config src="@REALMS_DIR@/yanel-website/config/yanel-realm-config.xml"/>
+  <config src="@REALMS_DIR@/yanel-website/"/>
 
 <!--
 NOTE: Default port corresponding to protocol (e.g. 80 for http or 443 for https)

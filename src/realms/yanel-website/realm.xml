@@ -3,10 +3,10 @@
 <realm-config xmlns="http://www.wyona.org/yanel/realm/1.0">
   <name>Yanel Website</name>
 
-  <rti>repository.xml</rti>
-  <data>repository.xml</data>
-  <ac-policies>ac-policies-repository.xml</ac-policies>
-  <ac-identities>ac-identities-repository.xml</ac-identities>
+  <rti>config/repository.xml</rti>
+  <data>config/repository.xml</data>
+  <ac-policies>config/ac-policies-repository.xml</ac-policies>
+  <ac-identities>config/ac-identities-repository.xml</ac-identities>
 
   <default-language>en</default-language>
 
