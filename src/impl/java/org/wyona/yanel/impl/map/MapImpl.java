@@ -22,7 +22,7 @@ import org.wyona.yanel.core.ResourceTypeIdentifier;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
-import org.wyona.yanel.core.map.RealmConfiguration;
+import org.wyona.yanel.core.map.RealmManager;
 
 import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Repository;
@@ -39,7 +39,7 @@ public class MapImpl implements Map {
 
     private static Category log = Category.getInstance(MapImpl.class);
 
-    RealmConfiguration realmConfig;
+    RealmManager realmConfig;
     
 
     /**
@@ -48,7 +48,7 @@ public class MapImpl implements Map {
     public MapImpl() {
     }
     
-    public void setRealmConfiguration(RealmConfiguration realmConfig) {
+    public void setRealmConfiguration(RealmManager realmConfig) {
         this.realmConfig = realmConfig;
     }
     
