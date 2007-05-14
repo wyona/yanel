@@ -28,6 +28,7 @@ import org.wyona.yanel.core.api.attributes.TranslatableV1;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
+import org.wyona.yanel.core.api.attributes.WorkflowableV1;
 import org.wyona.yanel.core.attributes.translatable.TranslationException;
 import org.wyona.yanel.core.attributes.translatable.TranslationManager;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
@@ -42,9 +43,17 @@ import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
+import org.wyona.yanel.core.workflow.Transition;
+import org.wyona.yanel.core.workflow.Workflow;
+import org.wyona.yanel.core.workflow.WorkflowBuilder;
+import org.wyona.yanel.core.workflow.WorkflowException;
+import org.wyona.yanel.core.workflow.WorkflowHelper;
 
+import org.wyona.yarep.core.NoSuchNodeException;
+import org.wyona.yarep.core.NoSuchPropertyException;
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
+import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.core.Revision;
 import org.wyona.yarep.util.RepoPath;
@@ -87,10 +96,10 @@ import org.apache.xml.serializer.Serializer;
 /**
  *
  */
-public class XMLResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2, IntrospectableV1, TranslatableV1 {
+public class XMLResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2, IntrospectableV1, TranslatableV1, WorkflowableV1 {
 
     private static Category log = Category.getInstance(XMLResource.class);
-
+    
     /**
      *
      */
@@ -450,24 +459,6 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         }
     }
     
-    /**
-     * Get property value from resource configuration
-     */
-    private String getResourceConfigProperty(String name) throws Exception {
-    	ResourceConfiguration rc = getConfiguration();
-    	if (rc != null) return rc.getProperty(name);
-    	return getRTI().getProperty(name);
-    }
-    
-    /**
-     * Get property value from resource configuration
-     */
-    private String[] getResourceConfigProperties(String name) throws Exception {
-    	ResourceConfiguration rc = getConfiguration();
-    	if (rc != null) return rc.getProperties(name);
-    	return getRTI().getProperties(name);
-    }
-
 
     /**
      *
@@ -588,54 +579,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         sb.append("<checkin  url=\"?yanel.resource.usecase=checkin\"  method=\"PUT\"/>");
         sb.append("</edit>");
 
-        RevisionInformation[] revisions = getRevisions();
-        if (revisions != null && revisions.length > 0) {
-            sb.append("<versions>");
-            for (int i = revisions.length - 1; i >= 0; i--) {
-                sb.append("<version url=\"?yanel.resource.revision=" + revisions[i].getName() + "\">");
-                sb.append("<comment>" + revisions[i].getComment() + "</comment>");
-                sb.append("<date>" + revisions[i].getDate() + "</date>");
-                sb.append("<user>" + revisions[i].getUser() + "</user>");
-                sb.append("<revision>" + revisions[i].getName() + "</revision>");
-
-                sb.append("<workflow>");
-                sb.append("  <state date=\"2006-05-23T00:38:05+02:00\">REVIEW</state>");
-                sb.append("<transitions>");
-                sb.append("<transition id=\"publish\" to=\"LIVE\" url=\"?yanel.resource.workflow.transition=publish\" method=\"POST\">");
-                sb.append("<description>Publish</description>");
-                sb.append("</transition>");
-                sb.append("</transitions>");
-                sb.append("<history>");
-                sb.append("  <state date=\"2006-05-23T00:31:05+02:00\">DRAFT</state>");
-                sb.append("</history>");
-                sb.append("</workflow>");
-
-                sb.append("</version>");
-            }
-            sb.append("</versions>");
-        } else {
-            // TODO: Does this really make sense? Does Neutron require this?
-            sb.append("<versions>");
-            sb.append("<version>");
-            sb.append("<comment>Only one version available!</comment>");
-            sb.append("<date>" + getLastModified() + "</date>");
-            sb.append("<user>DUMMY</user>");
-            sb.append("<revision>NAN</revision>");
-
-            sb.append("<workflow>");
-            sb.append("  <state date=\"2006-05-23T00:38:05+02:00\">REVIEW</state>");
-            sb.append("<transitions>");
-            sb.append("<transition id=\"publish\" to=\"LIVE\" url=\"?yanel.resource.workflow.transition=publish\" method=\"POST\">");
-            sb.append("<description>Publish</description>");
-            sb.append("</transition>");
-            sb.append("</transitions>");
-            sb.append("<history>");
-            sb.append("  <state date=\"2006-05-23T00:31:05+02:00\">DRAFT</state>");
-            sb.append("</history>");
-            sb.append("</workflow>");
-            sb.append("</version>");
-            sb.append("</versions>");
-        }
+        sb.append(WorkflowHelper.getWorkflowIntrospection(this));
+        
         sb.append("</resource>");
         sb.append("</introspection>");
         return sb.toString();
@@ -668,4 +613,50 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     public void removeTranslation(String language) throws TranslationException {
         getTranslationManager().removeTranslation(this, language);
     }
+
+    /************************************************
+     * Workflow                                     *
+     ************************************************/
+    
+    public void doTransition(String transitionID, String revision) throws WorkflowException {
+        WorkflowHelper.doTransition(this, transitionID, revision);
+    }
+    
+    public View getLiveView(String viewid) throws Exception {
+        if (WorkflowHelper.isLive(this)) {
+            String liveRevision = WorkflowHelper.getLiveRevision(this);
+            return getView(viewid, liveRevision);
+        } else {
+            return null;
+        }
+    }
+
+    public boolean isLive() throws WorkflowException {
+        return WorkflowHelper.isLive(this);
+    }
+
+    public String getWorkflowVariable(String name) throws WorkflowException {
+        return WorkflowHelper.getWorkflowVariable(this, name);
+    }
+
+    public void setWorkflowVariable(String name, String value) throws WorkflowException {
+        WorkflowHelper.setWorkflowVariable(this, name, value);
+    }
+    
+    public void removeWorkflowVariable(String name) throws WorkflowException {
+        WorkflowHelper.removeWorkflowVariable(this, name);
+    }
+
+    public String getWorkflowState(String revision) throws WorkflowException {
+        return WorkflowHelper.getWorkflowState(this, revision);
+    }
+
+    public void setWorkflowState(String state, String revision) throws WorkflowException {
+        WorkflowHelper.setWorkflowState(this, state, revision);
+    }
+
+    public Date getWorkflowDate(String revision) throws WorkflowException {
+        return WorkflowHelper.getWorkflowDate(this, revision);
+    }
+
 }
