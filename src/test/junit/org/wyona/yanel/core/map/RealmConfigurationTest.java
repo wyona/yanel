@@ -24,11 +24,11 @@ import org.wyona.yanel.junit.AbstractYanelTest;
  */
 public class RealmConfigurationTest extends AbstractYanelTest {
 
-    protected RealmConfiguration realmConfig;
+    protected RealmManager realmConfig;
 
     public void setUp() throws Exception {
         super.setUp();
-        this.testName = "Test for the RealmConfiguration";
+        this.testName = "Test for the RealmManager";
         this.realmConfig = yanel.getRealmConfiguration();
     }
 
