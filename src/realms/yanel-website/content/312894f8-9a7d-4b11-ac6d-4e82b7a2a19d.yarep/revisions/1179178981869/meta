@@ -1,9 +1,9 @@
 yarep_revisionComment<string>:updated
 yarep_type<string>:resource
-yarep_isCheckedOut<boolean>:false
 yarep_revisionCreator<string>:lenya
-workflow-date<date>:2007-05-14T23:43:44+0200
+yarep_isCheckedOut<boolean>:false
+workflow-date<date>:2007-05-14T23:48:18+0200
 yarep_checkoutDate<date>:2007-05-14T23:12:14+0200
 yarep_checkoutUserID<string>:lenya
-workflow-state<string>:review
+workflow-state<string>:approved
 yarep_revisionCreationDate<date>:2007-05-14T23:43:01+0200
