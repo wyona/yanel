@@ -2,6 +2,6 @@
 mime-type: application/xhtml+xml
 xslt: /xslt/global.xsl
 
-#to: contact@wyona.com
-#smtpHost: mail.wyona.com
-#smtpPort: 25
+to: contact@wyona.com
+smtpHost: mail.wyona.com
+smtpPort: 25
