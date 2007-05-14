@@ -331,12 +331,8 @@
     </artifact:install>      
   </target>
 
-  <target name="compile-cmdl" description="Compile Java classes of Yanel command line" depends="init">
+  <target name="compile-cmdl" description="Compile Java classes of Yanel command line" depends="init, compile-core">
     <mkdir dir="${classes.dir}"/>
-    <!-- TODO: Make util classes available also for webapp, etc. -->
-    <javac srcdir="${yanel.home.dir}/src/core/java/org/wyona/yanel/util" destdir="${classes.dir}" debug="true">
-      <classpath refid="classpath"/>
-    </javac>
     <javac srcdir="${yanel.home.dir}/src/core/java/org/wyona/yanel/cmdl" destdir="${classes.dir}"
       debug="true"
       classpathref="classpath.cmdl"
