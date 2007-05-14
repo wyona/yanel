@@ -27,6 +27,18 @@
         <socket server="${tomcat.ip}" port="${tomcat.port}"/>
       </and>
     </waitfor>
+    <echo message="*****************************************************************"/>
+    <echo message="*"/>
+    <echo message="* You have successfully Started Yanel ${yanel.version} (Revision ${yanel.revision})"/>
+    <echo message="*"/>
+    <echo message="*"/>
+    <echo message="* Start you Browser and visit"/>
+    <echo message="*"/>
+    <echo message="*                   http://127.0.0.1:8080/${servlet.context.prefix}/"/>
+    <echo message="*"/>
+    <echo message="* Thanks for using Yanel"/>
+    <echo message="*"/>
+    <echo message="*****************************************************************"/>    
     <available file="${document.root}/cruise_is_building.html" property="cruise_is_building_html_available"/>
     <antcall target="delete-building-hint"/>
   </target>
@@ -86,6 +98,13 @@
     </condition>
     <antcall target="shutdown-tomcat-windows"/>
     <antcall target="shutdown-tomcat-unix"/>
+    <echo message="*****************************************************************"/>
+    <echo message="*"/>
+    <echo message="* You have successfully stoped Yanel ${yanel.version} (Revision ${yanel.revision})"/>
+    <echo message="*"/>
+    <echo message="* Thanks for using Yanel"/>
+    <echo message="*"/>
+    <echo message="*****************************************************************"/>    
   </target>
   
   <target name="shutdown-tomcat-windows" if="isWindows">

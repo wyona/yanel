@@ -13,3 +13,11 @@ if [ "$JAVA_HOME" = "" ];then
 fi
 
 sh apache-tomcat-5.5.20/bin/shutdown.sh
+
+echo "***************************************"
+echo "*"
+echo "* Yanel succesfully stoped!"
+echo "*"
+echo "* Thanks for using Yanel!"
+echo "*"
+echo "***************************************" 

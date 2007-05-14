@@ -13,3 +13,15 @@ if [ "$JAVA_HOME" = "" ];then
 fi
 
 sh apache-tomcat-5.5.20/bin/startup.sh
+
+echo "***************************************"
+echo "*"
+echo "* Yanel succesfully started!"
+echo "*"
+echo "* Start you Browser and visit"
+echo "*"
+echo "* http://localhost:8080/"
+echo "*"
+echo "* Thanks for using Yanel!"
+echo "*"
+echo "***************************************" 
