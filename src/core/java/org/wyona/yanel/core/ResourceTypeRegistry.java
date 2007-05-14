@@ -45,6 +45,8 @@ public class ResourceTypeRegistry {
     public static final String DEFAULT_CONFIGURATION_FILE_XML = "yanel.xml";
     public static String CONFIGURATION_FILE = DEFAULT_CONFIGURATION_FILE;
 
+    public static String RESOURCE_DEFAULT_CONFIG_NAME = "resource.xml";
+
     private URL propertiesURL;
     private File configFile;
     private File resourceTypeConfigFile; 
@@ -109,8 +111,11 @@ public class ResourceTypeRegistry {
                     for (int i = 0; i < tokens.length; i++) {
                         File resConfigFile = new File(tokens[i]);
                         if (!resConfigFile.isAbsolute()) {
-                            resConfigFile = FileUtil.file(propsFile.getParentFile()
-                                    .getAbsolutePath(), tokens[i]);
+                            resConfigFile = FileUtil.file(propsFile.getParentFile().getAbsolutePath(), tokens[i]);
+                        }
+
+                        if (resConfigFile.isDirectory()) {
+                            resConfigFile = new File(resConfigFile, RESOURCE_DEFAULT_CONFIG_NAME);
                         }
 
                         if (resConfigFile.isFile()) {
@@ -119,7 +124,7 @@ public class ResourceTypeRegistry {
                             log.debug("Classname: " + rtd.getResourceTypeClassname());
                             hm.put(rtd.getResourceTypeUniversalName(), rtd);
                         } else {
-                            log.error("No such file: " + resConfigFile);
+                            log.error("No such file or directory: " + resConfigFile);
                         }
                     }
                 } catch (Exception e) {
@@ -150,13 +155,17 @@ public class ResourceTypeRegistry {
                     resConfigFile = FileUtil.file(resourceTypeConfigFile.getParentFile().getAbsolutePath(), resourceTypes[i].getAttribute("src"));
                 }
 
+                if (resConfigFile.isDirectory()) {
+                    resConfigFile = new File(resConfigFile, RESOURCE_DEFAULT_CONFIG_NAME);
+                }
+
                 if (resConfigFile.isFile()) {
                     ResourceTypeDefinition rtd = new ResourceTypeDefinition(resConfigFile);
                     log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
                     log.debug("Classname: " + rtd.getResourceTypeClassname());
                     hm.put(rtd.getResourceTypeUniversalName(), rtd);
                 } else {
-                    log.error("No such file: " + resConfigFile);
+                    log.error("No such file or directory: " + resConfigFile);
                 }
             }    
         } catch (Exception e) {
