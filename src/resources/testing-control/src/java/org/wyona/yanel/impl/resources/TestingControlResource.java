@@ -413,25 +413,6 @@ public class TestingControlResource extends Resource implements ViewableV1 {
 		}
     }
     
-    /**
-     * Get property value from resource configuration
-     */
-    private String getResourceConfigProperty(String name) throws Exception {
-    	ResourceConfiguration rc = getConfiguration();
-    	if (rc != null) return rc.getProperty(name);
-    	return getRTI().getProperty(name);
-    }
-    
-    /**
-     * Get property value from resource configuration
-     */
-    private String[] getResourceConfigProperties(String name) throws Exception {
-    	ResourceConfiguration rc = getConfiguration();
-    	if (rc != null) return rc.getProperties(name);
-    	return getRTI().getProperties(name);
-    }
-
-
     protected RepositoryFactory getRepositoryFactory() {
         return yanel.getRepositoryFactory("DefaultRepositoryFactory");
     }
