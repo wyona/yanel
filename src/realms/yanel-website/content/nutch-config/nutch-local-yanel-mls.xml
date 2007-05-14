@@ -8,6 +8,9 @@
     <!--
     <value>/home/ulysses/src/crawl_yanel_ml_20061222</value>
     -->
+    <!--
+    <value>/home/michi/src/wyona/extra/ipi/nutch/trunk/crawl_yanel_ml_20061222</value>
+    -->
     <description>
     Path to root of crawl.  This directory is searched (in
     order) for either the file search-servers.txt, containing a list of
