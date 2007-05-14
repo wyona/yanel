@@ -61,6 +61,8 @@ public class RealmManager {
     public static final String DEFAULT_CONFIGURATION_FILE_XML = "yanel.xml";
     public static String CONFIGURATION_FILE = DEFAULT_CONFIGURATION_FILE;
 
+    public static String REALM_DEFAULT_CONFIG_NAME = "realm.xml";
+
     private URL propertiesURL;
     private File configFile;
 
@@ -204,6 +206,10 @@ public class RealmManager {
                 String configSrc = configElement.getAttribute("src", null);
                 
                 File realmConfigFile = resolveFile(new File(configSrc), realmsConfigFile);
+                if (realmConfigFile.isDirectory()) {
+                    realmConfigFile = new File(realmConfigFile, REALM_DEFAULT_CONFIG_NAME);
+                }
+
                 log.debug("Reading realm config file for [" + realmId + "]: " + realmConfigFile);
                 try {
                     Realm realm = new Realm(name.getValue(), realmId, mountPoint, realmConfigFile);
