@@ -45,6 +45,7 @@ import org.wyona.yanel.core.api.attributes.TranslatableV1;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
+import org.wyona.yanel.core.api.attributes.WorkflowableV1;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
@@ -53,6 +54,8 @@ import org.wyona.yanel.core.navigation.Sitetree;
 import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.util.DateUtil;
+import org.wyona.yanel.core.workflow.WorkflowException;
+import org.wyona.yanel.core.workflow.WorkflowHelper;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 
@@ -562,26 +565,33 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getParameter("yanel.resource.workflow.transition") != null) {
-            // TODO: Implement response if transition has failed ...
+        String transition = request.getParameter("yanel.resource.workflow.transition");
+        if (transition != null) {
+            
+            Resource resource = getResource(request, response);
+            if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Workflowable", "1")) {
+                WorkflowableV1 workflowable = (WorkflowableV1)resource;
+                try {
+                    String revision = request.getParameter("yanel.resource.revision");
+                    workflowable.doTransition(transition, revision);
+                    
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+                    StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+                    //sb.append(WorkflowHelper.getWorkflowIntrospection(resource));
+                    // TODO: don't use WorkflowHelper here, it's implementation specific!
+                    sb.append(WorkflowHelper.getWorkflowIntrospectionAnswer(resource, revision));
+                    PrintWriter w = response.getWriter();
+                    w.print(sb);
+                    return;
+                } catch (WorkflowException e) {
+                    // TODO: Implement response if transition has failed ...
+                    log.error(e, e);
+                    throw new ServletException(e.getMessage(), e);
+                }
+            } else {
+                log.warn("Resource not workflowable: " + resource.getPath());
+            }
 
-            response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
-            StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-            sb.append("<workflow xmlns=\"http://www.wyona.org/neutron/2.0\">");
-            sb.append("  <state date=\"2006-05-23T00:54:05+02:00\">LIVE</state>");
-            sb.append("<transitions>");
-            sb.append("<transition id=\"deactivate\" to=\"ARCHIVE\" url=\"?yanel.resource.workflow.transition=deactivate\" method=\"POST\">");
-            sb.append("<description>Deactivate</description>");
-            sb.append("</transition>");
-            sb.append("</transitions>");
-            sb.append("<history>");
-            sb.append("  <state date=\"2006-05-23T00:38:05+02:00\">REVIEW</state>");
-            sb.append("  <state date=\"2006-05-23T00:31:05+02:00\">DRAFT</state>");
-            sb.append("</history>");
-            sb.append("</workflow>");
-            PrintWriter w = response.getWriter();
-            w.print(sb);
-            return;
         }
 
         String value = request.getParameter("yanel.resource.usecase");
