@@ -157,47 +157,50 @@ public class WorkflowHelper {
                 sb.append("<versions>");
                 for (int i = revisions.length - 1; i >= 0; i--) {
                     
-                    Workflow workflow = getWorkflow(resource);
-                    String state = workflowable.getWorkflowState(revisions[i].getName());
-                    if (state == null) {
-                        state = workflow.getInitialState();
-                    }
-                    Date workflowDate = workflowable.getWorkflowDate(revisions[i].getName());
-                    String date = "";
-                    if (workflowDate != null) {
-                        date = DateUtil.format(workflowDate);
-                    }
-                    
-                    Transition[] transitions = workflow.getLeavingTransitions(state);
-
                     sb.append("<version url=\"?yanel.resource.revision=" + revisions[i].getName() + "\">");
                     sb.append("<comment>" + revisions[i].getComment() + "</comment>");
                     sb.append("<date>" + revisions[i].getDate() + "</date>");
                     sb.append("<user>" + revisions[i].getUser() + "</user>");
                     sb.append("<revision>" + revisions[i].getName() + "</revision>");
-    
-                    sb.append("<workflow>");
-
-                    if (revisions[i].getName().equals(liveRevision)) {
-                        state += "-LIVE"; // TODO: this is a hack
-                    }
-                    sb.append("<state date=\"" + date + "\">" + state + "</state>");
                     
-                    sb.append("<transitions>");
-transitions:        for (int j = 0; j < transitions.length; j++) {
-                        Condition[] conditions = transitions[j].getConditions();
-                        for (int k = 0; k < conditions.length; k++) {
-                            if (!conditions[k].isComplied(workflowable, workflow, revisions[i].getName())) {
-                                continue transitions; // jump to next transition
-                            }
+                    Workflow workflow = getWorkflow(resource);
+                    if (workflow != null) {
+                        // TODO: handle workflow==null !!!
+                        String state = workflowable.getWorkflowState(revisions[i].getName());
+                        if (state == null) {
+                            state = workflow.getInitialState();
                         }
-                        sb.append("<transition id=\""+transitions[j].getID()+"\" to=\""+transitions[j].getDestinationState()+"\" url=\"?yanel.resource.workflow.transition="+transitions[j].getID()+"&amp;yanel.resource.revision=" + revisions[i].getName() + "\" method=\"POST\">");
-                        sb.append("<description>"+transitions[j].getID()+"</description>");
-                        sb.append("</transition>");
+                        Date workflowDate = workflowable.getWorkflowDate(revisions[i].getName());
+                        String date = "";
+                        if (workflowDate != null) {
+                            date = DateUtil.format(workflowDate);
+                        }
+                        
+                        Transition[] transitions = workflow.getLeavingTransitions(state);
+    
+                        sb.append("<workflow>");
+    
+                        if (revisions[i].getName().equals(liveRevision)) {
+                            state += "-LIVE"; // TODO: this is a hack
+                        }
+                        sb.append("<state date=\"" + date + "\">" + state + "</state>");
+                        
+                        sb.append("<transitions>");
+transitions:            for (int j = 0; j < transitions.length; j++) {
+                            Condition[] conditions = transitions[j].getConditions();
+                            for (int k = 0; k < conditions.length; k++) {
+                                if (!conditions[k].isComplied(workflowable, workflow, revisions[i].getName())) {
+                                    continue transitions; // jump to next transition
+                                }
+                            }
+                            sb.append("<transition id=\""+transitions[j].getID()+"\" to=\""+transitions[j].getDestinationState()+"\" url=\"?yanel.resource.workflow.transition="+transitions[j].getID()+"&amp;yanel.resource.revision=" + revisions[i].getName() + "\" method=\"POST\">");
+                            sb.append("<description>"+transitions[j].getID()+"</description>");
+                            sb.append("</transition>");
+                        }
+                        sb.append("</transitions>");
+                        sb.append("<history/>");
+                        sb.append("</workflow>");
                     }
-                    sb.append("</transitions>");
-                    sb.append("<history/>");
-                    sb.append("</workflow>");
                     
                     sb.append("</version>");
                 }
