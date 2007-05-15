@@ -41,9 +41,7 @@ public class ResourceTypeRegistry {
 
     private static Category log = Category.getInstance(ResourceTypeRegistry.class);
 
-    public static final String DEFAULT_CONFIGURATION_FILE = "yanel.properties";
-    public static final String DEFAULT_CONFIGURATION_FILE_XML = "yanel.xml";
-    public static String CONFIGURATION_FILE = DEFAULT_CONFIGURATION_FILE;
+    public static String CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
 
     public static String RESOURCE_DEFAULT_CONFIG_NAME = "resource.xml";
 
@@ -57,7 +55,7 @@ public class ResourceTypeRegistry {
      *
      */
     public ResourceTypeRegistry() {
-        this(DEFAULT_CONFIGURATION_FILE_XML);
+        this(Yanel.DEFAULT_CONFIGURATION_FILE_XML);
     }
 
     /**
@@ -67,7 +65,7 @@ public class ResourceTypeRegistry {
         CONFIGURATION_FILE = configurationFile;
 
         if (RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE) == null) {
-            CONFIGURATION_FILE = DEFAULT_CONFIGURATION_FILE;
+            CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
         }
 
         if (ResourceTypeRegistry.class.getClassLoader().getResource(CONFIGURATION_FILE) != null) {
