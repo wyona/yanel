@@ -14,18 +14,22 @@ import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 
+import org.apache.log4j.Category;
+
 /**
  *
  */
 abstract public class Menu {
+
+    private static Category log = Category.getInstance(Menu.class);
 
     /**
      * Get yanel menu
      */
     public String getYanelMenu(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        StringBuffer sb= new StringBuffer();
 
+        StringBuffer sb= new StringBuffer();
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">Yanel</div><ul>");
         sb.append("<li><a href=\"?yanel.resource.meta\">View page info</a></li>");
@@ -47,12 +51,12 @@ abstract public class Menu {
      */
     public String getHelpMenu(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        StringBuffer sb= new StringBuffer();
 
+        StringBuffer sb= new StringBuffer();
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">Help</div>");
         sb.append("<ul>");
-        sb.append("<li><a href=\"" + backToRealm + "/" + reservedPrefix+ "/about.html\">About Yanel</a></li>");
+        sb.append("<li><a href=\"" + backToRealm + reservedPrefix+ "/about.html\">About Yanel</a></li>");
         sb.append("</ul>");
         sb.append("</li></ul>");
         return sb.toString();
