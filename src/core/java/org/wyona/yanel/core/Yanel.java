@@ -23,9 +23,16 @@ import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.map.RealmManager;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.io.File;
+
+import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
+import org.apache.log4j.Category;
 
 /**
  * This class is a singleton.
@@ -41,7 +48,15 @@ public class Yanel {
     
     private static final String SPRING_CONFIG_FILE = "spring-*-config.xml"; 
 
+    public static final String DEFAULT_CONFIGURATION_FILE = "yanel.properties";
+    public static final String DEFAULT_CONFIGURATION_FILE_XML = "yanel.xml";
+
     private static Yanel yanel = null;
+
+    private String version = null;
+    private String revision = null;
+
+    private static Category log = Category.getInstance(Yanel.class);
 
     /**
     * Private constructor
@@ -50,6 +65,9 @@ public class Yanel {
        applicationContext = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
    } 
    
+   /**
+    * Initialize Yanel
+    */
    public void init() throws Exception {
        if (isInitialized) {
            return;
@@ -76,6 +94,12 @@ public class Yanel {
 
        im = (IdentityManager) yanel.getBeanFactory().getBean("identityManager");*/
 
+       File configFile = new File(Yanel.class.getClassLoader().getResource(DEFAULT_CONFIGURATION_FILE_XML).getFile());
+       DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+       Configuration config = builder.buildFromFile(configFile);
+       Configuration versionConfig = config.getChild("version");
+       version = versionConfig.getAttribute("version");
+       revision = versionConfig.getAttribute("revision");
     }
    
     public static Yanel getInstance() throws Exception {
@@ -120,5 +144,17 @@ public class Yanel {
         return resourceManager.getResource(null, null, realm, path);
     }
 
+    /**
+     * Get Yanel version
+     */
+    public String getVersion() {
+        return version;
+    }
 
+    /**
+     * Get Yanel revision
+     */
+    public String getRevision() {
+        return revision;
+    }
 }
