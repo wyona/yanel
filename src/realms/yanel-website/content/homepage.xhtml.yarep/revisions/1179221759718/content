@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+
+
+
+<homepage xmlns="http://yanel.wyona.org/homepage/1.0">
+
+
+
+<header>
+
+<body xmlns="http://www.w3.org/1999/xhtml">
+
+<h1 id="header"><img id="logo" src="img/yanel.png" border="0"/><img id="lead" src="img/everything_is_content.png"/></h1>
+
+<p>
+
+Everything is Content Management. Yanel is free, open source and easy to use.
+
+</p>
+
+</body>
+
+</header>
+
+
+
+<download>
+
+  <version-unix>1.0-dev-r24393</version-unix>
+  <version-windows>1.0-dev-r24441</version-windows>
+
+</download>
+
+
+
+<footer>
+
+<body xmlns="http://www.w3.org/1999/xhtml">
+
+<p>
+
+<a href="en/download/index.html">Other systems and versions</a> | <a href="en/about.html">Learn more about Yanel</a>
+
+</p>
+
+<p>
+
+In case you need support or want to get in touch with the developers for whatever reason, please subscribe to one of the <a href="mailing-lists.html">mailing lists</a>.
+
+</p>
+
+</body>
+
+
+
+</footer>
+
+</homepage>
+

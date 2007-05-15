@@ -80,7 +80,19 @@ en/download/<xsl:value-of select="$os"/>.html
 </xsl:attribute>
 <span id="download-download">DOWNLOAD</span>
 <br/>
-<span id="download-yanel-version">Yanel <xsl:value-of select="/yh:homepage/yh:download/yh:version"/></span>
+<span id="download-yanel-version">Yanel<br/>
+<xsl:choose>
+<xsl:when test="$os = 'windows'">
+<xsl:value-of select="/yh:homepage/yh:download/yh:version-windows"/>
+</xsl:when>
+<!--
+<xsl:when test="$os = 'unix'">
+-->
+<xsl:otherwise>
+<xsl:value-of select="/yh:homepage/yh:download/yh:version-unix"/>
+</xsl:otherwise>
+</xsl:choose>
+</span>
 <br/>
 <xsl:choose>
 <xsl:when test="$os = 'unix'">
