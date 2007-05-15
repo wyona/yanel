@@ -16,7 +16,7 @@ sh apache-tomcat-5.5.20/bin/shutdown.sh
 
 echo "***************************************"
 echo "*"
-echo "* Yanel succesfully stoped!"
+echo "* Yanel succesfully stopped!"
 echo "*"
 echo "* Thanks for using Yanel!"
 echo "*"
