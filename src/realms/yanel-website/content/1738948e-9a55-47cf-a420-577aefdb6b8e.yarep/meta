@@ -1,1 +1,4 @@
 yarep_type<string>:resource
+yarep_isCheckedOut<boolean>:false
+yarep_checkoutDate<date>:2007-05-15T18:21:29+0200
+yarep_checkoutUserID<string>:michi
