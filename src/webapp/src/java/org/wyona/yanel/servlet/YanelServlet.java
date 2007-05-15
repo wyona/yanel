@@ -1947,6 +1947,15 @@ public class YanelServlet extends HttpServlet {
 
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
             return;
+        } else if (path.indexOf("about.html") >= 0) {
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+            StringBuffer sb = new StringBuffer("<html>");
+            sb.append("<head><title>About Yanel</title></head>");
+            sb.append("<body><h1>About Yanel</h1><p>Version " + yanel.getVersion() + "-r" + yanel.getRevision() + "</p><p>Copyright &#169; 2007 Wyona. All rights reserved.</p></body>");
+            sb.append("</html>");
+            PrintWriter w = response.getWriter();
+            w.print(sb);
+            return;
         } else {
             File globalFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "htdocs" + File.separator + path.substring(reservedPrefix.length() + 2));
             if (globalFile.exists()) {
