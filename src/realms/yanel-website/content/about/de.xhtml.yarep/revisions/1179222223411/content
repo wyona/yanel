@@ -7,25 +7,34 @@
   <title>Über</title>
 </head>
 <body>
+
 <h3>Über Yanel<br/></h3>
 <p>
 Alles ist Content Management (WCMS, DMS, CRM, ERP, PIM/E-Mail, DRM, ...) und Yanel
 ist ein bescheidener Versuch eine Lösung für alle Content Management Bedürfnisse anzubieten durch ein Open Source Service-orientiertes Content Management Framework geschrieben in Java.
 </p>
+
 <p>
 Die Yanel community hat eine Reihe von <a href="../principles.html">Prinzipien</a> definiert um eine langfristige Entwicklung und einen entsprechenden Investitionsschutz zu garantieren.
 </p>
+
 <h3>Download</h3>
 <p>
 Siehe <a href="../en/download/index.html">Download</a> Seite für Informationen über Releases, Snapshots, Source Code, etc.
 </p>
+
 <h3>Features</h3>
 <p>
 </p><ul>
-  <li>Benutzerfreundlichkeit<br/></li>
-  <li>Betrieb<a href="http://www.wyona.org/osr-101/"><br/></a></li>
+  <li>Resource Framework mit versionierten Schnittstellen das fortlaufende Entwicklung erlaubt</li>
+  <li>Unterstützt das <a href="http://www.wyona.org/osr-101/">Neutron Protokoll</a></li>
   <!--<li>WebDAV and APP</li>-->
-  
-  <li>Integration</li></ul>
+  <li><a href="http://svn.wyona.com/repos/public/tomcat-cluster/">Clusterfähigkeit</a></li>
+  <li>Beliebige Content Repositories</li>
+  <li>Trennung von Inhalt und Layout</li>
+  <li>Mehrere Sites</li>
+  <li>Reverse Proxy Unterstützung</li>
+  <li>Cross-Platform (Linux, Mac OS X, Windows (ungetestet), ...)</li>
+</ul>
 </body>
 </html>
