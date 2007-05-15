@@ -285,7 +285,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     Node[] children = node.getChildren();
                     for (int i = 0; i < children.length; i++) {
                         if (children[i].isCollection()) {
-		            sb.append("<tr><td>Collection: <a href=\"?lookin=" + node.getPath() + children[i].getName() + "/\">" + children[i].getName() + "</a></td><td>TBD</td></tr>");
+                            // TODO: Also append resource specific parameters (AJAX ...)
+		            sb.append("<tr><td>Collection: <a href=\"?lookin=" + node.getPath() + children[i].getName() + "/&amp;resource-type=" + resNamespace + "::" + resName + "\">" + children[i].getName() + "</a></td><td>TBD</td></tr>");
                         } else if (children[i].isResource()) {
 		            sb.append("<tr><td>Resource: "+children[i].getName()+"</td><td>TBD</td></tr>");
                         } else {
