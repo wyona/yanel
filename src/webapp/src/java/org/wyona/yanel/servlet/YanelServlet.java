@@ -1799,6 +1799,7 @@ public class YanelServlet extends HttpServlet {
         buf.append("</div>");
         
         buf.append("<span id=\"yaneltoolbar_info\">");
+        buf.append("Version: " + yanel.getVersion() + "-r" + yanel.getRevision() + "&#160;&#160;");
         buf.append("Realm: " + resource.getRealm().getName() + "&#160;&#160;");
         Identity identity = getIdentity(request);
         if (identity != null) {
