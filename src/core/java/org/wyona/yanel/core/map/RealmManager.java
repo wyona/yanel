@@ -57,9 +57,7 @@ public class RealmManager {
 
     private static Category log = Category.getInstance(RealmManager.class);
 
-    public static final String DEFAULT_CONFIGURATION_FILE = "yanel.properties";
-    public static final String DEFAULT_CONFIGURATION_FILE_XML = "yanel.xml";
-    public static String CONFIGURATION_FILE = DEFAULT_CONFIGURATION_FILE;
+    public static String CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
 
     public static String REALM_DEFAULT_CONFIG_NAME = "realm.xml";
 
@@ -75,7 +73,7 @@ public class RealmManager {
      *
      */
     public RealmManager() throws ConfigurationException {
-        this(DEFAULT_CONFIGURATION_FILE_XML);
+        this(Yanel.DEFAULT_CONFIGURATION_FILE_XML);
     }
 
     /**
@@ -85,7 +83,7 @@ public class RealmManager {
         CONFIGURATION_FILE = configurationFile;
 
         if (RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE) == null) {
-            CONFIGURATION_FILE = DEFAULT_CONFIGURATION_FILE;
+            CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
         }
 
         if (RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE) != null) {
@@ -142,15 +140,14 @@ public class RealmManager {
                     // assignRepositories();
                 } catch (IOException e) {
                     log.error(e.getMessage(), e);
-                    throw new ConfigurationException("Could not load realms configuration file: "
-                            + propertiesURL);
+                    throw new ConfigurationException("Could not load realms configuration file: " + propertiesURL);
                 }
             } else {
-                log.error(CONFIGURATION_FILE + "have to be either .xml or .properties");
+                log.error(CONFIGURATION_FILE + " has to be either .xml or .properties");
             }
-            log.error("No such configuration file" + CONFIGURATION_FILE);
+        } else {
+            log.error("No such configuration file: " + RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE));
         }
-
     }
 
     /**
