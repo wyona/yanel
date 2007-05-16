@@ -192,8 +192,12 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
                                     continue transitions; // jump to next transition
                                 }
                             }
-                            sb.append("<transition id=\""+transitions[j].getID()+"\" to=\""+transitions[j].getDestinationState()+"\" url=\"?yanel.resource.workflow.transition="+transitions[j].getID()+"&amp;yanel.resource.revision=" + revisions[i].getName() + "\" method=\"POST\">");
-                            sb.append("<description>"+transitions[j].getID()+"</description>");
+                            sb.append("<transition id=\"" + transitions[j].getID() + "\" to=\"" + transitions[j].getDestinationState() + "\" url=\"?yanel.resource.workflow.transition=" + transitions[j].getID() + "&amp;yanel.resource.revision=" + revisions[i].getName() + "\" method=\"POST\">");
+                            String[] languages = transitions[j].getDescriptionLanguages();
+                            for (int l = 0; l < languages.length; l++) {
+                                String description = transitions[j].getDescription(languages[l]);
+                                sb.append("<description xml:lang=\"" + languages[l] + "\">" + description + "</description>");
+                            }
                             sb.append("</transition>");
                         }
                         sb.append("</transitions>");

@@ -168,6 +168,14 @@ public class WorkflowBuilder {
 
         transition.setActions(actions);
 
+        NodeList descriptionElements = element.getElementsByTagNameNS(Workflow.NAMESPACE,
+                "description");
+        for (int i = 0; i < descriptionElements.getLength(); i++) {
+            Element desc = (Element)descriptionElements.item(i);
+            String language = desc.getAttribute("xml:lang");
+            String description = desc.getFirstChild().getNodeValue();
+            transition.addDescription(description, language);
+        }
         return transition;
     }
     

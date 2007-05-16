@@ -15,6 +15,9 @@
  */
 package org.wyona.yanel.core.workflow.impl;
 
+import java.util.HashMap;
+import java.util.Set;
+
 import org.wyona.yanel.core.workflow.Action;
 import org.wyona.yanel.core.workflow.Condition;
 import org.wyona.yanel.core.workflow.Transition;
@@ -25,11 +28,13 @@ public class TransitionImpl implements Transition {
     private String destinationState;
     private Condition[] conditions;
     private Action[] actions;
+    private HashMap descriptions;
     
     public TransitionImpl(String id, String from, String to) {
         this.id = id;
         this.sourceState = from;
         this.destinationState = to;
+        this.descriptions = new HashMap();
     }
     
     public String getID() {
@@ -70,5 +75,18 @@ public class TransitionImpl implements Transition {
 
     public void setConditions(Condition[] conditions) {
         this.conditions = conditions;
+    }
+
+    public String getDescription(String language) {
+        return (String)this.descriptions.get(language);
+    }
+
+    public String[] getDescriptionLanguages() {
+        Set languages = this.descriptions.keySet();
+        return (String[])languages.toArray(new String[languages.size()]);
+    }
+    
+    public void addDescription(String description, String language) {
+        this.descriptions.put(language, description);
     }
 }

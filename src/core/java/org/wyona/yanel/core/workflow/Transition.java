@@ -26,4 +26,8 @@ public interface Transition {
     Condition[] getConditions();
     
     Action[] getActions();
+    
+    String[] getDescriptionLanguages();
+    
+    String getDescription(String language);
 }

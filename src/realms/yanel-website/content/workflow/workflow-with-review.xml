@@ -10,22 +10,26 @@
   <transitions>
     <transition id="submit" from="draft" to="review">
       <condition class="org.wyona.yanel.impl.workflow.RoleCondition">write</condition>
+      <description xml:lang="en">Submit</description>
     </transition>
 
     <transition id="reject" from="review" to="draft">
       <condition class="org.wyona.yanel.impl.workflow.RoleCondition">review</condition>
+      <description xml:lang="en">Reject</description>
     </transition>
 
     <transition id="approve" from="review" to="approved">
       <condition class="org.wyona.yanel.impl.workflow.RoleCondition">review</condition>
       <action class="org.wyona.yanel.impl.workflow.SetRevisionAction">live-revision</action>
       <action class="org.wyona.yanel.impl.workflow.PublishAction"/>
+      <description xml:lang="en">Approve</description>
     </transition>
 
     <transition id="publish" from="draft" to="approved">
       <condition class="org.wyona.yanel.impl.workflow.RoleCondition">review</condition>
       <action class="org.wyona.yanel.impl.workflow.SetRevisionAction">live-revision</action>
       <action class="org.wyona.yanel.impl.workflow.PublishAction"/>
+      <description xml:lang="en">Publish</description>
     </transition>
 
     <transition id="republish" from="approved" to="approved">
@@ -33,6 +37,7 @@
       <condition class="org.wyona.yanel.impl.workflow.RevisionNotEqualsCondition">live-revision</condition>
       <action class="org.wyona.yanel.impl.workflow.SetRevisionAction">live-revision</action>
       <action class="org.wyona.yanel.impl.workflow.PublishAction"/>
+      <description xml:lang="en">Re-Publish</description>
     </transition>
 
     <transition id="deactivate" from="approved" to="approved">
@@ -40,11 +45,13 @@
       <condition class="org.wyona.yanel.impl.workflow.RevisionEqualsCondition">live-revision</condition>
       <action class="org.wyona.yanel.impl.workflow.RemoveVariableAction">live-revision</action>
       <action class="org.wyona.yanel.impl.workflow.DeactivateAction"/>
+      <description xml:lang="en">Deactivate</description>
     </transition>
 
     <transition id="cancel-approve" from="approved" to="draft">
       <condition class="org.wyona.yanel.impl.workflow.RoleCondition">review</condition>
       <condition class="org.wyona.yanel.impl.workflow.RevisionNotEqualsCondition">live-revision</condition>
+      <description xml:lang="en">Cancel Approve</description>
     </transition>
 
   </transitions>
