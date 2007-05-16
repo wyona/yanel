@@ -9,7 +9,7 @@
 
   <transitions>
     <transition id="submit" from="draft" to="review">
-      <condition class="org.wyona.yanel.impl.workflow.RoleCondition">edit</condition>
+      <condition class="org.wyona.yanel.impl.workflow.RoleCondition">write</condition>
     </transition>
 
     <transition id="reject" from="review" to="draft">

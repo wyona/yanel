@@ -7,19 +7,25 @@
   </role>
 
   <role id="open">
-    <user id="lenya" permission="true"/>
+    <group id="editor" permission="true"/>
   </role>
 
   <role id="write">
-    <user id="lenya" permission="true"/>
+    <group id="editor" permission="true"/>
   </role>
 
   <role id="create">
-    <user id="lenya" permission="true"/>
+    <group id="editor" permission="true"/>
   </role>
 
   <role id="toolbar">
-    <user id="lenya" permission="true"/>
+    <group id="editor" permission="true"/>
+    <group id="reviewer" permission="true"/>
+    <group id="admin" permission="true"/>
+  </role>
+
+  <role id="review">
+    <group id="reviewer" permission="true"/>
   </role>
 
 </policy>
