@@ -29,8 +29,6 @@ import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
 
-import javax.servlet.http.HttpServletRequest;
-
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
@@ -190,7 +188,13 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
             entry.setPublished(date);
         }
 
-        OutputStream out = getRealm().getRepository().getOutputStream(new org.wyona.yarep.core.Path(getPath()));
+        Repository repo = getRealm().getRepository();
+        org.wyona.commons.io.Path atomEntryPath = new org.wyona.commons.io.Path(getPath());
+        if (!repo.existsNode(getPath())) {
+            // TODO: Create node recursively in case parent does not exist!
+            repo.getNode(atomEntryPath.getParent().toString()).addNode(atomEntryPath.getName(), org.wyona.yarep.core.NodeType.RESOURCE);
+        }
+        OutputStream out = repo.getOutputStream(new org.wyona.yarep.core.Path(getPath()));
 
         org.apache.abdera.writer.Writer writer = abdera.getWriter();
         writer.writeTo(entry, out);
