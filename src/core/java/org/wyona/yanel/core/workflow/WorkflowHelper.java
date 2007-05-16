@@ -154,7 +154,7 @@ public class WorkflowHelper {
             WorkflowableV1 workflowable = (WorkflowableV1)resource;
             String liveRevision = getLiveRevision(resource);
             if (revisions != null && revisions.length > 0) {
-                sb.append("<versions>");
+                sb.append("<versions xmlns=\"http://www.wyona.org/neutron/2.0\">");
                 for (int i = revisions.length - 1; i >= 0; i--) {
                     
                     sb.append("<version url=\"?yanel.resource.revision=" + revisions[i].getName() + "\">");
@@ -214,46 +214,6 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
         }
     }
 
-    public static String getWorkflowIntrospectionAnswer(Resource resource, String revision) throws WorkflowException {
-        try {
-            StringBuffer sb = new StringBuffer();
-            WorkflowableV1 workflowable = (WorkflowableV1)resource;
-
-            Workflow workflow = getWorkflow(resource);
-            String state = workflowable.getWorkflowState(revision);
-            if (state == null) {
-                state = workflow.getInitialState();
-            }
-            String date = "";
-            
-            sb.append("<workflow xmlns=\"http://www.wyona.org/neutron/2.0\">");
-            sb.append("  <state date=\"" + date + "\">" + state + "</state>");
-            
-            Transition[] transitions = workflow.getLeavingTransitions(state);
-                
-            sb.append("<transitions>");
-transitions: for (int j = 0; j < transitions.length; j++) {
-                Condition[] conditions = transitions[j].getConditions();
-                for (int k = 0; k < conditions.length; k++) {
-                    if (!conditions[k].isComplied(workflowable, workflow, revision)) {
-                        continue transitions; // jump to next transition
-                    }
-                }
-                sb.append("<transition id=\""+transitions[j].getID()+"\" to=\""+transitions[j].getDestinationState()+"\" url=\"?yanel.resource.workflow.transition="+transitions[j].getID()+"\" method=\"POST\">");
-                sb.append("<description>"+transitions[j].getID()+"</description>");
-                sb.append("</transition>");
-            }
-            sb.append("</transitions>");
-            sb.append("<history/>");
-            sb.append("</workflow>");
-                    
-            return sb.toString();
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new WorkflowException(e.getMessage(), e);
-        }
-    }
-    
     public static String getWorkflowVariable(Resource resource, String name) throws WorkflowException {
         try {
             Node node = resource.getRealm().getRepository().getNode(resource.getPath());

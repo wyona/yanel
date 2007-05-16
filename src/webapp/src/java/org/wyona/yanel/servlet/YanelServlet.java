@@ -577,9 +577,7 @@ public class YanelServlet extends HttpServlet {
                     
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
                     StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-                    //sb.append(WorkflowHelper.getWorkflowIntrospection(resource));
-                    // TODO: don't use WorkflowHelper here, it's implementation specific!
-                    sb.append(WorkflowHelper.getWorkflowIntrospectionAnswer(resource, revision));
+                    sb.append(workflowable.getWorkflowIntrospection());
                     PrintWriter w = response.getWriter();
                     w.print(sb);
                     return;

@@ -42,6 +42,8 @@ public interface WorkflowableV1 {
     void setWorkflowVariable(String name, String value) throws WorkflowException;
     void removeWorkflowVariable(String name) throws WorkflowException;
     
+    String getWorkflowIntrospection() throws WorkflowException;
+    
     //boolean canDoTransition(String transitionID) throws WorkflowException;
     //String[] getPossibleTransitions() throws WorkflowException;
 }

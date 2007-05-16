@@ -658,5 +658,9 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     public Date getWorkflowDate(String revision) throws WorkflowException {
         return WorkflowHelper.getWorkflowDate(this, revision);
     }
+    
+    public String getWorkflowIntrospection() throws WorkflowException {
+        return WorkflowHelper.getWorkflowIntrospection(this);
+    }
 
 }
