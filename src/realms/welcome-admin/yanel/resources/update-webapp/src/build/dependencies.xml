@@ -12,6 +12,9 @@
       <dependency groupId="avalon-framework" artifactId="avalon-framework-impl" version="4.3"/>                                
       <dependency groupId="jena" artifactId="jena" version="2.1"/>
       <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-io" version="1.2"/>
+      <dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3"/>
+      <dependency groupId="xml-resolver" artifactId="xml-resolver" version="1.1"/>
+      <dependency groupId="xalan" artifactId="xalan" version="2.7.0"/>
     </artifact:dependencies>
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
