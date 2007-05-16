@@ -165,7 +165,6 @@ public class WorkflowHelper {
                     
                     Workflow workflow = getWorkflow(resource);
                     if (workflow != null) {
-                        // TODO: handle workflow==null !!!
                         String state = workflowable.getWorkflowState(revisions[i].getName());
                         if (state == null) {
                             state = workflow.getInitialState();
