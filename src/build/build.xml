@@ -1,11 +1,28 @@
 <?xml version="1.0"?>
 
 <project name="yanel-main" default="deploy" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
   <description>Yanel Build</description>
 
+<!--
+  <taskdef name="svn" classname="org.tigris.subversion.svnant.SvnTask"/>
+  <svn failonerror="false">
+    <status path="../../" lastChangedRevisionProperty="yanel.revision.svn"/>
+  </svn>
+  <condition property="yanel.revision" value="${yanel.revision.svn}">
+   <not>
+     <equals arg1="-1" arg2="${yanel.revision.svn}"/>
+   </not>
+  </condition>
+-->
+    
   <property file="local.build.properties"/>
   <property file="build.properties"/>
   
+<!--
+  <echo>Yanel Revision: ${yanel.revision}</echo>
+-->
+    
   <condition property="isWindows">
    <os family="windows"/>
   </condition>
@@ -202,7 +219,6 @@
     
   <target name="init" description="Initialize all parameters and other settings" depends="dependencies">
     <echo>Building with ${ant.version} and Java version ${ant.java.version}</echo>
-
 
     <property name="yanel.home.dir" location="../../"/>
 <!--
