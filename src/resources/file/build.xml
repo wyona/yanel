@@ -28,6 +28,7 @@
     <javac srcdir="${resource.java.dir}" destdir="${resource.classes.dir}"
       classpathref="classpath"
       debug="true"
+      deprecation="off"
     />
     <mkdir dir="${resource.lib.dir}"/>
     <jar destfile="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}.jar"
