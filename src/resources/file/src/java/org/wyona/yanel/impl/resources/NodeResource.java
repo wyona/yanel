@@ -25,10 +25,13 @@ import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
+import org.wyona.yanel.core.api.attributes.WorkflowableV1;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.util.PathUtil;
+import org.wyona.yanel.core.workflow.WorkflowException;
+import org.wyona.yanel.core.workflow.WorkflowHelper;
 
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
@@ -50,7 +53,7 @@ import org.apache.log4j.Category;
 /**
  * Generic Node Resource
  */
-public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, IntrospectableV1 {
+public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, IntrospectableV1, WorkflowableV1 {
 //public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2 {
 
     private static Category log = Category.getInstance(NodeResource.class);
@@ -95,14 +98,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      */
     public String getMimeType(String viewId) throws Exception {
         
-        String mimeType = null;
-        ResourceConfiguration resConfig = getConfiguration();
-        if (resConfig != null) {
-            mimeType = resConfig.getProperty("mime-type");
-        } else {
-            log.warn("Depracted: " + getPath());
-            mimeType = getRTI().getProperty("mime-type");
-        }
+        String mimeType = getResourceConfigProperty("mime-type");
         
         if (mimeType != null) return mimeType;
 
@@ -365,6 +361,8 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         buf.append("<checkin  url=\"?yanel.resource.usecase=checkin\"  method=\"PUT\"/>");
         buf.append("</edit>");
 
+        buf.append(getWorkflowIntrospection());
+/*
         RevisionInformation[] revisions = getRevisions();
         if (revisions != null && revisions.length > 0) {
             buf.append("<versions>");
@@ -390,9 +388,85 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
             }
             buf.append("</versions>");
         }
+*/
 
         buf.append("</resource>");
         buf.append("</introspection>");
         return buf.toString();
+    }
+
+    /**
+     *
+     */
+    public String getWorkflowIntrospection() throws WorkflowException {
+        return WorkflowHelper.getWorkflowIntrospection(this);
+    }
+
+    /**
+     *
+     */
+    public void removeWorkflowVariable(String name) throws WorkflowException {
+        WorkflowHelper.removeWorkflowVariable(this, name);
+    }
+
+    /**
+     *
+     */
+    public void setWorkflowVariable(String name, String value) throws WorkflowException {
+        WorkflowHelper.setWorkflowVariable(this, name, value);
+    }
+
+    /**
+     *
+     */
+    public String getWorkflowVariable(String name) throws WorkflowException {
+        return WorkflowHelper.getWorkflowVariable(this, name);
+    }
+
+    /**
+     *
+     */
+    public Date getWorkflowDate(String revision) throws WorkflowException {
+        return WorkflowHelper.getWorkflowDate(this, revision);
+    }
+
+    /**
+     *
+     */
+    public void setWorkflowState(String state, String revision) throws WorkflowException {
+        WorkflowHelper.setWorkflowState(this, state, revision);
+    }
+
+    /**
+     *
+     */
+    public String getWorkflowState(String revision) throws WorkflowException {
+        return WorkflowHelper.getWorkflowState(this, revision);
+    }
+
+    /**
+     *
+     */
+    public View getLiveView(String viewid) throws Exception {
+        if (WorkflowHelper.isLive(this)) {
+            String liveRevision = WorkflowHelper.getLiveRevision(this);
+            return getView(viewid, liveRevision);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     *
+     */
+    public boolean isLive() throws WorkflowException {
+        return WorkflowHelper.isLive(this);
+    }
+
+    /**
+     *
+     */
+    public void doTransition(String transitionID, String revision) throws WorkflowException {
+        WorkflowHelper.doTransition(this, transitionID, revision);
     }
 }
