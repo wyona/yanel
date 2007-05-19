@@ -43,9 +43,11 @@ import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
+/*
 import org.wyona.yanel.core.workflow.Transition;
 import org.wyona.yanel.core.workflow.Workflow;
 import org.wyona.yanel.core.workflow.WorkflowBuilder;
+*/
 import org.wyona.yanel.core.workflow.WorkflowException;
 import org.wyona.yanel.core.workflow.WorkflowHelper;
 
