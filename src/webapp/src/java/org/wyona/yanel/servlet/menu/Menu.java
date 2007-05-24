@@ -32,7 +32,8 @@ abstract public class Menu {
         StringBuffer sb= new StringBuffer();
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">Yanel</div><ul>");
-        sb.append("<li><a href=\"?yanel.resource.meta\">View page info</a></li>");
+        // View page info moved to getFileMenu() of default implementation
+        //sb.append("<li><a href=\"?yanel.resource.meta\">View page info</a></li>");
         sb.append("<li><a href=\"?yanel.toolbar=off\">Turn off toolbar</a></li>");
         Identity identity = getIdentity(request, map);
         if (identity != null) {
