@@ -136,8 +136,7 @@ public class WorkflowHelper {
                 return null;
             } else {
                 WorkflowBuilder builder = new WorkflowBuilder();
-                InputStream stream;
-                    stream = resource.getRealm().getRepository().getNode(workflowSchema).getInputStream();
+                InputStream stream = resource.getRealm().getRepository().getNode(workflowSchema).getInputStream();
                 // TODO: cache of workflow
                 return builder.buildWorkflow(stream);
             }
@@ -147,6 +146,9 @@ public class WorkflowHelper {
         }
     }
     
+    /**
+     * Get introspection part re workflow and versioning
+     */
     public static String getWorkflowIntrospection(Resource resource) throws WorkflowException {
         try {
             StringBuffer sb = new StringBuffer();
@@ -189,6 +191,7 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
                             Condition[] conditions = transitions[j].getConditions();
                             for (int k = 0; k < conditions.length; k++) {
                                 if (!conditions[k].isComplied(workflowable, workflow, revisions[i].getName())) {
+                                    log.warn("Transition condition failed: " + transitions[j].getID() + " (Revision: " + revisions[i].getName() + ")");
                                     continue transitions; // jump to next transition
                                 }
                             }
@@ -201,6 +204,7 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
                             sb.append("</transition>");
                         }
                         sb.append("</transitions>");
+                        sb.append("<!-- NOTE: Workflow history not implemented by Yanel yet! -->");
                         sb.append("<history/>");
                         sb.append("</workflow>");
                     }
