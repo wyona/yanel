@@ -1,5 +1,5 @@
 yarep_type<string>:resource
 yarep_isCheckedOut<boolean>:false
 live-revision<string>:1179178981869
-yarep_checkoutDate<date>:2007-05-14T23:12:14+0200
+yarep_checkoutDate<date>:2007-05-22T00:02:43+0200
 yarep_checkoutUserID<string>:lenya
