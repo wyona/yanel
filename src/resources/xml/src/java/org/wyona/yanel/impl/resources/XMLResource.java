@@ -43,11 +43,7 @@ import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
-/*
-import org.wyona.yanel.core.workflow.Transition;
 import org.wyona.yanel.core.workflow.Workflow;
-import org.wyona.yanel.core.workflow.WorkflowBuilder;
-*/
 import org.wyona.yanel.core.workflow.WorkflowException;
 import org.wyona.yanel.core.workflow.WorkflowHelper;
 
@@ -356,7 +352,12 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     
     public void checkin(String comment) throws Exception {
         Node node = getRealm().getRepository().getNode(getPath());
-        node.checkin(comment);
+        Revision revision = node.checkin(comment);
+        // set initial workflow state and date:
+        Workflow workflow = WorkflowHelper.getWorkflow(this);
+        if (workflow != null) {
+            setWorkflowState(workflow.getInitialState(), revision.getRevisionName());
+        }
         /*
         if (node.isCheckedOut()) {
             String checkoutUserID = node.getCheckoutUserID(); 
@@ -513,6 +514,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         java.util.HashMap map = new java.util.HashMap();
         map.put("xslt", request.getParameter("rp.xslt"));
         map.put("mime-type", request.getParameter("rp.mime-type"));
+        map.put("workflow-schema", request.getParameter("rp.workflow-schema"));
         return map;
     }
 
@@ -581,7 +583,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         sb.append("<checkin  url=\"?yanel.resource.usecase=checkin\"  method=\"PUT\"/>");
         sb.append("</edit>");
 
-        sb.append(WorkflowHelper.getWorkflowIntrospection(this));
+        sb.append(getWorkflowIntrospection());
         
         sb.append("</resource>");
         sb.append("</introspection>");
