@@ -20,6 +20,8 @@ import java.io.File;
 import java.lang.ClassNotFoundException;
 import java.lang.IllegalAccessException;
 import java.lang.InstantiationException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.LinkedHashMap;
@@ -71,9 +73,15 @@ public class ResourceTypeRegistry {
         if (ResourceTypeRegistry.class.getClassLoader().getResource(CONFIGURATION_FILE) != null) {
 
             if (CONFIGURATION_FILE.endsWith(".xml")) {
-                configFile = new File(RealmManager.class.getClassLoader()
-                        .getResource(CONFIGURATION_FILE)
-                        .getFile());
+                
+                try {
+                    // It seems like one can also use URI instead URLDecoder in order to avoid the Windows issue if a path contains spaces
+                    URI configFileUri = new URI(RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE).toString());
+                    configFile = new File(configFileUri.getPath());
+                } catch (Exception e) {
+                    log.error("Failure while reading configuration: " + e.getMessage(), e);
+                }
+                
                 try {
                     DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
                     Configuration config;
