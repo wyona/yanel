@@ -11,7 +11,7 @@ XML whereas an XSLT can be specified and applied
 
 <rtd>
   <property name="mime-type"/>
-  <property name="xslt"/>
+  <property name="xslt" multiple="true"/>
   <property name="yanel-path"/>
 </rtd>
 </resource>
