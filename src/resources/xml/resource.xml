@@ -6,7 +6,7 @@
   class="org.wyona.yanel.impl.resources.XMLResource"
   >
 <description>
-XML whereas an XSLT can be specified and applied
+XML whereas an XSLT or multiple XSLTs can be specified and applied
 </description>
 
 <rtd>
