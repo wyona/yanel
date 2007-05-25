@@ -383,7 +383,7 @@
   </target>
 
   <!-- TODO: Invoice depends on impl ...! -->
-  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-impl, build-resources, compile-webapp">
+  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-impl, build-resources, build-realms, compile-webapp">
 <!--
   <target name="webapp" description="Build webapp" depends="init, compile-webapp">
 -->
@@ -868,6 +868,37 @@
   <target name="clean-resources" description="Clean resources" depends="generate-resources-build">
     <ant antfile="${yanel.home.dir}/build/build-resource-types.xml" target="clean-resources"/>
   </target>
+
+
+
+  <!-- Build Realms -->
+  <target name="build-realms" description="Build realms" depends="generate-realms-build">
+    <ant antfile="${yanel.home.dir}/build/build-realms.xml" target="build-realms"/>
+  </target>
+
+  <target name="generate-realms-build" description="Generate realms build" depends="init">
+    <condition property="local.realms.config.exists">
+      <available file="${yanel.home.dir}/${local.config.dir}/local.realms.xml" type="file"/>
+    </condition>
+    <antcall target="generate-realms-build-from-default"/>
+    <antcall target="generate-realms-build-from-local"/>
+  </target>
+
+  <target name="generate-realms-build-from-default" description="Generate realms build from default config" depends="init" unless="local.realms.config.exists">
+    <xslt in="${yanel.home.dir}/conf/realms.xml" out="../../build/build-realms.xml" style="yanel2realms.xsl" force="false">
+      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+      <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
+    </xslt>
+  </target>
+
+  <target name="generate-realms-build-from-local" description="Generate realms build from local config" depends="init" if="local.realms.config.exists">
+    <xslt in="${yanel.home.dir}/${local.config.dir}/local.realms.xml" out="../../build/build-realms.xml" style="yanel2realms.xsl" force="true">
+      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+      <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
+    </xslt>
+  </target>
+
+
 
   <target name="generate-yanel-properties" unless="local.yanel.config.exists">
     <xslt in="${yanel.home.dir}/conf/yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.xml" style="yanel2properties.xsl" force="false">
