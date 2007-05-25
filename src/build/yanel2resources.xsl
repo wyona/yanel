@@ -12,7 +12,7 @@
 
 <xsl:template match="/">
 
-<xsl:comment> NOTE: This file has been generated automatically from conf/yanel.xml! </xsl:comment>
+<xsl:comment> NOTE: This file has been generated automatically from conf/resource-types.xml resp. conf/local/local.resource-types.xml! </xsl:comment>
 <project name="resources">
 
   <target name="init">
