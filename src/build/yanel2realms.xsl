@@ -25,13 +25,13 @@
     <echo>Build realm with id "<xsl:value-of select="@id"/>"</echo>
 <!--
       <xsl:choose>
-        <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
-    <ant inheritAll="false" antfile="{@src}/build.xml" target="compile">
+        <xsl:when test="starts-with(yanel:config/@src, '/') or string-length(substring-before(yanel:config/@src, ':/'))='1'">
+    <ant inheritAll="false" antfile="{yanel:config/@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
     </ant>
         </xsl:when>
         <xsl:otherwise>
-    <ant inheritAll="false" antfile="${{build.dir}}/{@src}/build.xml" target="compile">
+    <ant inheritAll="false" antfile="${{build.dir}}/{yanel:config/@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
     </ant>
         </xsl:otherwise>
