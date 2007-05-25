@@ -479,7 +479,7 @@
     </condition>
     <antcall target="generate-javadoc"/>
 
-    <ant antfile="${yanel.home.dir}/build/resource-types.xml" target="copy-resources-dependencies"/>
+    <ant antfile="${yanel.home.dir}/build/build-resource-types.xml" target="copy-resources-dependencies"/>
   </target>
 
   <target name="war" description="Build war file" depends="init, webapp">
@@ -837,21 +837,21 @@
   </target>
 
   <target name="generate-resources-build-from-default" description="Generate resources build from default config" depends="init" unless="local.resource-types.config.exists">
-    <xslt in="${yanel.home.dir}/conf/resource-types.xml" out="../../build/resource-types.xml" style="yanel2resources.xsl" force="false">
+    <xslt in="${yanel.home.dir}/conf/resource-types.xml" out="../../build/build-resource-types.xml" style="yanel2resources.xsl" force="false">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
     </xslt>
   </target>
 
   <target name="generate-resources-build-from-local" description="Generate resources build from local config" depends="init" if="local.resource-types.config.exists">
-    <xslt in="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" out="../../build/resource-types.xml" style="yanel2resources.xsl" force="true">
+    <xslt in="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" out="../../build/build-resource-types.xml" style="yanel2resources.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
     </xslt>
   </target>
 
   <target name="build-resources" description="Build resources" depends="generate-resources-build">
-    <ant antfile="${yanel.home.dir}/build/resource-types.xml" target="build-resources"/>
+    <ant antfile="${yanel.home.dir}/build/build-resource-types.xml" target="build-resources"/>
   </target>
 
   <target name="deploy-resources" description="Deploy resources" depends="generate-resources-build">
@@ -862,11 +862,11 @@
       </fileset>
     </copy>
     
-    <ant antfile="${yanel.home.dir}/build/resource-types.xml" target="deploy-resources"/>
+    <ant antfile="${yanel.home.dir}/build/build-resource-types.xml" target="deploy-resources"/>
   </target>
 
   <target name="clean-resources" description="Clean resources" depends="generate-resources-build">
-    <ant antfile="${yanel.home.dir}/build/resource-types.xml" target="clean-resources"/>
+    <ant antfile="${yanel.home.dir}/build/build-resource-types.xml" target="clean-resources"/>
   </target>
 
   <target name="generate-yanel-properties" unless="local.yanel.config.exists">
