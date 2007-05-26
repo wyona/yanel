@@ -889,6 +889,9 @@
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
     </xslt>
+    <replace file="../../build/build-realms.xml" value="${yanel.home.dir.forward.slashes}/src/realms">
+      <replacetoken>@REALMS_DIR@</replacetoken>
+    </replace>
   </target>
 
   <target name="generate-realms-build-from-local" description="Generate realms build from local config" depends="init" if="local.realms.config.exists">
@@ -896,6 +899,9 @@
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
     </xslt>
+    <replace file="../../build/build-realms.xml" value="${yanel.home.dir.forward.slashes}/src/realms">
+      <replacetoken>@REALMS_DIR@</replacetoken>
+    </replace>
   </target>
 
 
