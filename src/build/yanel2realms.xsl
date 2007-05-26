@@ -22,7 +22,11 @@
 
   <target name="build-realms" description="Build realms" depends="init">
 <xsl:for-each select="/yanel:realms/yanel:realm">
-    <echo>Build realm with id "<xsl:value-of select="@id"/>"</echo>
+    <condition property="ant-file-of-realm-with-id-{@id}-exists">
+      <available file="{yanel:config/@src}/build.xml"/>
+    </condition>
+    <antcall target="build-realm-with-id-{@id}"/>
+
 <!--
       <xsl:choose>
         <xsl:when test="starts-with(yanel:config/@src, '/') or string-length(substring-before(yanel:config/@src, ':/'))='1'">
@@ -39,6 +43,15 @@
 -->
 </xsl:for-each>
   </target>
+
+<xsl:for-each select="/yanel:realms/yanel:realm">
+  <target name="build-realm-with-id-{@id}" if="ant-file-of-realm-with-id-{@id}-exists">
+    <echo>Build realm with id "<xsl:value-of select="@id"/>"</echo>
+    <ant inheritAll="false" antfile="{yanel:config/@src}/build.xml" target="compile">
+      <property name="yanel.source.version" value="{$yanel.source.version}"/>
+    </ant>
+  </target>
+</xsl:for-each>
 
 </project>
 
