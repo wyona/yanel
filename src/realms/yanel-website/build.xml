@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<project name="yanel-realm" default="compile">
+<target name="compile">
+<echo>Compile java sources of Yanel website realm!</echo>
+</target>
+</project>
