@@ -1,7 +1,37 @@
 <?xml version="1.0"?>
 
 <project name="yanel-realm" default="compile">
-<target name="compile">
-<echo>Compile java sources of Yanel website realm!</echo>
-</target>
+
+  <target name="init">
+    <dirname property="realm.home.dir" file="${ant.file}"/>
+    <property name="realm.build.dir" value="${realm.home.dir}/build"/>
+    <property name="realm.classes.dir" value="${realm.build.dir}/classes"/>
+    <property name="realm.lib.dir" value="${realm.build.dir}/lib"/>
+    <property name="realm.java.dir" value="${realm.home.dir}/src/java"/>
+
+    <path id="classpath">
+<!--
+      <pathelement path="${maven2.cp}"/>
+-->
+    </path>
+  </target>
+
+  <target name="compile" depends="init">
+    <echo>Compile java sources of Yanel website realm!</echo>
+
+    <mkdir dir="${realm.classes.dir}"/>
+<!--
+    <javac srcdir="${realm.java.dir}" destdir="${realm.classes.dir}"
+      classpathref="classpath"
+      debug="true"
+    />
+-->
+    <mkdir dir="${realm.lib.dir}"/>
+<!--
+    <jar destfile="${realm.lib.dir}/yanel-realm-${realm.name}-${realm.version}.jar"
+      basedir="${realm.classes.dir}"
+    />
+-->
+  </target>
+
 </project>
