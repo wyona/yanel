@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<realms xmlns="http://www.wyona.org/yanel/1.0" version="2007051400">
+<realms xmlns="http://www.wyona.org/yanel/1.0" version="2007052900">
 
 <!-- WARNING: Access Control does not work properly for nested realms (also the mount-point needs to match the id in order to make the access control work properly, e.g. id="zurich" and mount-point="/zurich/")! -->
 <realm id="javadoc" mount-point="/yanel-website/javadoc/">
@@ -94,7 +94,7 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
 
 <realm id="welcome" mount-point="/" root="true">
   <name>Yanel Welcome and General Administration</name>
-  <config src="@REALMS_DIR@/welcome-admin/yanel/config/yanel-realm-config.xml"/>
+  <config src="@REALMS_DIR@/welcome-admin/"/>
 </realm>
 
 </realms>
