@@ -2,12 +2,13 @@
 
 <realm-config xmlns="http://www.wyona.org/yanel/realm/1.0">
   <name>Yanel Welcome and Admin Realm</name>
-  <rti>rti-repository.xml</rti>
-  <data>data-repository.xml</data>
-  <ac-policies>ac-policies-repository.xml</ac-policies>
 
+  <rti>yanel/config/rti-repository.xml</rti>
+  <data>yanel/config/data-repository.xml</data>
+  <ac-policies>yanel/config/ac-policies-repository.xml</ac-policies>
 <!--
   <ac-identities/>
 -->
+
   <menu class="org.wyona.yanel.servlet.menu.impl.WelcomeRealmMenu"/>
 </realm-config>
