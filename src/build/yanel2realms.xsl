@@ -13,7 +13,7 @@
 <xsl:template match="/">
 
 <xsl:comment> NOTE: This file has been generated automatically from conf/realms.xml resp. conf/local/local.realms.xml! </xsl:comment>
-<project name="realms" default="init">
+<project name="realms" default="build-realms">
 
   <target name="init">
     <echo>Init ...</echo>
@@ -50,6 +50,23 @@
     <ant inheritAll="false" antfile="{yanel:config/@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
     </ant>
+  </target>
+</xsl:for-each>
+
+  <target name="deploy-realms" description="Deploy libs of realms" depends="init">
+<xsl:for-each select="/yanel:realms/yanel:realm">
+    <condition property="lib-dir-of-realm-with-id-{@id}-exists">
+      <available file="{yanel:config/@src}/build/lib" type="dir"/>
+    </condition>
+    <antcall target="deploy-realm-with-id-{@id}"/>
+</xsl:for-each>
+  </target>
+
+<xsl:for-each select="/yanel:realms/yanel:realm">
+  <target name="deploy-realm-with-id-{@id}" description="Deploy libs of realm {@id}" depends="init" if="lib-dir-of-realm-with-id-{@id}-exists">
+    <copy todir="${{build.dir}}/webapps/yanel/WEB-INF/lib">
+      <fileset dir="{yanel:config/@src}/build/lib"/>
+    </copy>
   </target>
 </xsl:for-each>
 
