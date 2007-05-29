@@ -70,6 +70,21 @@
   </target>
 </xsl:for-each>
 
+  <target name="clean-realms" description="Clean realms" depends="init">
+<xsl:for-each select="/yanel:realms/yanel:realm">
+    <condition property="build-dir-of-realm-with-id-{@id}-exists">
+      <available file="{yanel:config/@src}/build" type="dir"/>
+    </condition>
+    <antcall target="clean-realm-with-id-{@id}"/>
+</xsl:for-each>
+  </target>
+
+<xsl:for-each select="/yanel:realms/yanel:realm">
+  <target name="clean-realm-with-id-{@id}" description="Clean realm {@id}" depends="init" if="build-dir-of-realm-with-id-{@id}-exists">
+    <delete dir="{yanel:config/@src}/build"/>
+  </target>
+</xsl:for-each>
+
 </project>
 
 </xsl:template>
