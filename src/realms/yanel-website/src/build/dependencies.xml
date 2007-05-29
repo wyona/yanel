@@ -25,7 +25,9 @@
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
+<!--
     <echo>Maven2 classpath: ${maven2.cp}</echo>
+-->
 
 <!--
     <property name="maven2.realm.cp" refid="maven2.realm.classpath"/>
