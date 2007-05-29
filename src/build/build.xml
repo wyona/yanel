@@ -706,7 +706,7 @@
     <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${tomcat2.home.dir}/common/endorsed" overwrite="false"/>
   </target>
 
-  <target name="clean" description="Clean build" depends="init, clean-resources">
+  <target name="clean" description="Clean build" depends="init, clean-resources, clean-realms">
     <delete includeemptydirs="true">
       <fileset dir="${build.dir}" excludes="logs/**, javadoc/**"/>
     </delete>
@@ -874,6 +874,10 @@
 
   <target name="clean-resources" description="Clean resources" depends="generate-resources-build">
     <ant antfile="${yanel.home.dir}/build/build-resource-types.xml" target="clean-resources"/>
+  </target>
+
+  <target name="clean-realms" description="Clean realms" depends="generate-realms-build">
+    <ant antfile="${yanel.home.dir}/build/build-realms.xml" target="clean-realms"/>
   </target>
 
 
