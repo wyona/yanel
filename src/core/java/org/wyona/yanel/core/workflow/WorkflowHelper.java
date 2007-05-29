@@ -214,7 +214,7 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
                 sb.append("</versions>");
                 return sb.toString();
             } else {
-                return "";
+                return "<!-- No revisions! -->";
             }
         } catch (Exception e) {
             log.error(e, e);
