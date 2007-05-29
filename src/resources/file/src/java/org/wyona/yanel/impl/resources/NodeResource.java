@@ -228,6 +228,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         } else {
             log.warn("Node \"" + getPath() + "\" does not seem to have any revisions!");
 
+            // TODO: Does this really make sense?!
             RevisionInformation[] revisionInfos = new RevisionInformation[1];
             revisionInfos[0] = new RevisionInformation("no-revision-number", new Date(getLastModified()), "No user name available!", "No revisions are being kept, but only this most recent version!");
             //return revisionInfos;
