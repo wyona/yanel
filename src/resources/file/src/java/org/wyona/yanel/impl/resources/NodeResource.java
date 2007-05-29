@@ -213,16 +213,22 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
     
     /**
-     *
+     * Get revisions
      */
     public RevisionInformation[] getRevisions() throws Exception {
         Revision[] revisions = getRealm().getRepository().getNode(getPath()).getRevisions();
-        RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
+
+        if (revisions != null && revisions.length > 0) {
+            RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
        
-        for (int i = 0; i < revisions.length; i++) {
-            revisionInfos[i] = new RevisionInformation(revisions[i]);
+            for (int i = 0; i < revisions.length; i++) {
+                revisionInfos[i] = new RevisionInformation(revisions[i]);
+            }
+            return revisionInfos;
+        } else {
+            log.warn("Node \"" + getPath() + "\" does not seem to have any revisions!");
+            return null;
         }
-        return revisionInfos; 
     }
    
     public void checkin(String comment) throws Exception {
