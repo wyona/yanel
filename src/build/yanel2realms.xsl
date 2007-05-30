@@ -64,7 +64,7 @@
 
 <xsl:for-each select="/yanel:realms/yanel:realm">
   <target name="deploy-realm-with-id-{@id}" description="Deploy libs of realm {@id}" depends="init" if="lib-dir-of-realm-with-id-{@id}-exists">
-    <copy todir="${{build.dir}}/webapps/yanel/WEB-INF/lib">
+    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
       <fileset dir="{yanel:config/@src}/build/lib"/>
     </copy>
   </target>
