@@ -365,9 +365,9 @@ public class YanelServlet extends HttpServlet {
                             String message = "No such node exception: " + e;
                             log.warn(e);
                             //log.error(e.getMessage(), e);
-                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
                             exceptionElement.appendChild(doc.createTextNode(message));
-                            exceptionElement.setAttribute("status", "404");
+                            exceptionElement.setAttributeNS(NAMESPACE, "status", "404");
                             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
                             setYanelOutput(request, response, doc);
                             return;
@@ -375,9 +375,9 @@ public class YanelServlet extends HttpServlet {
                             log.error(e.getMessage(), e);
                             String message = e.toString();
                             log.error(e.getMessage(), e);
-                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
                             exceptionElement.appendChild(doc.createTextNode(message));
-                            exceptionElement.setAttribute("status", "500");
+                            exceptionElement.setAttributeNS(NAMESPACE, "status", "500");
                             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                             setYanelOutput(request, response, doc);
                             return;
@@ -499,6 +499,17 @@ public class YanelServlet extends HttpServlet {
                 } else {
                         Element resourceIsNullElement = (Element) rootElement.appendChild(doc.createElement("resource-is-null"));
                 }
+            } catch(org.wyona.yarep.core.NoSuchNodeException e) {
+                // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
+                String message = "No such node exception: " + e;
+                log.warn(e);
+                //log.error(e.getMessage(), e);
+                Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                exceptionElement.appendChild(doc.createTextNode(message));
+                exceptionElement.setAttributeNS(NAMESPACE, "status", "404");
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
+                setYanelOutput(request, response, doc);
+                return;
             } catch(Exception e) {
                 log.error(e.getMessage(), e);
                 String message = e.toString();
@@ -527,7 +538,7 @@ public class YanelServlet extends HttpServlet {
                 }
 	    } catch(Exception e) {
                 log.error(e.getMessage(), e);
-                Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+                Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
                 exceptionElement.appendChild(doc.createTextNode(e.getMessage()));
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 setYanelOutput(request, response, doc);
@@ -552,7 +563,7 @@ public class YanelServlet extends HttpServlet {
             if (generateResponse(view, res, request, response, doc, size, lastModified) != null) return;
         } else {
             String message = "View is null!";
-            Element exceptionElement = (Element) rootElement.appendChild(doc.createElement("exception"));
+            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
             exceptionElement.appendChild(doc.createTextNode(message));
         }
 
@@ -2022,7 +2033,7 @@ public class YanelServlet extends HttpServlet {
                         } catch (Exception e) {
                             log.error(e, e);
                             String message = "Error merging toolbar into content: " + e.toString();
-                            Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElement("exception"));
+                            Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
                             exceptionElement.appendChild(doc.createTextNode(message));
                             setYanelOutput(request, response, doc);
                             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -2052,7 +2063,7 @@ public class YanelServlet extends HttpServlet {
                 if (bytesRead == -1) {
                     String message = "InputStream of view does not seem to contain any data!";
 
-                    Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElement("exception"));
+                    Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
                     exceptionElement.appendChild(doc.createTextNode(message));
                     setYanelOutput(request, response, doc);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -2080,7 +2091,7 @@ public class YanelServlet extends HttpServlet {
                 return response;
             } else {
                 String message = "InputStream of view is null!";
-                Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElement("exception"));
+                Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
                 exceptionElement.appendChild(doc.createTextNode(message));
             }
         return null;
