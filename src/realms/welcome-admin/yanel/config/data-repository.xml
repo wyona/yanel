@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<repository>
+<repository class="org.wyona.yarep.impl.DefaultRepository">
   <name>Yanel Welcome and Admin Data Repository</name>
 
   <paths src="../data-paths" fallback="true"/>
