@@ -383,7 +383,7 @@
   </target>
 
   <!-- TODO: Invoice depends on impl ...! -->
-  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-impl, build-resources, build-realms, compile-webapp">
+  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-impl, compile-webapp, build-resources, build-realms">
 <!--
   <target name="webapp" description="Build webapp" depends="init, compile-webapp">
 -->
