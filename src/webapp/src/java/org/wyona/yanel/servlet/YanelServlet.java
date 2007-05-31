@@ -331,7 +331,7 @@ public class YanelServlet extends HttpServlet {
                         Element noResConfigElement = (Element) resourceElement.appendChild(doc.createElementNS(NAMESPACE, "no-config"));
                     }
 
-		    Element realmElement = (Element) resourceElement.appendChild(doc.createElementNS(NAMESPACE, "realm"));
+                    Element realmElement = (Element) resourceElement.appendChild(doc.createElementNS(NAMESPACE, "realm"));
                     realmElement.setAttributeNS(NAMESPACE, "name", res.getRealm().getName());
                     realmElement.setAttributeNS(NAMESPACE, "rid", res.getRealm().getID());
                     realmElement.setAttributeNS(NAMESPACE, "prefix", res.getRealm().getMountPoint());
@@ -536,7 +536,7 @@ public class YanelServlet extends HttpServlet {
                     }
                     return;
                 }
-	    } catch(Exception e) {
+            } catch(Exception e) {
                 log.error(e.getMessage(), e);
                 Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
                 exceptionElement.appendChild(doc.createTextNode(e.getMessage()));
@@ -1652,9 +1652,9 @@ public class YanelServlet extends HttpServlet {
             
             Element sslElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "ssl"));            
             if(sslPort != null) {
-        	sslElement.setAttributeNS(NAMESPACE, "status", "ON");   
+                sslElement.setAttributeNS(NAMESPACE, "status", "ON");   
             } else {
-        	sslElement.setAttributeNS(NAMESPACE, "status", "OFF");
+                sslElement.setAttributeNS(NAMESPACE, "status", "OFF");
             }
             
             String yanelFormat = request.getParameter("yanel.format");
@@ -1940,7 +1940,7 @@ public class YanelServlet extends HttpServlet {
             String userName = path.substring(reservedPrefix.length() + 8);
             userName = userName.split("[.]")[0];
 
-	    try {
+            try {
                 java.util.Map properties = new HashMap();
                 properties.put("user", userName);
                 ResourceConfiguration rc = new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
