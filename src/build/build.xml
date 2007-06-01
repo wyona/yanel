@@ -152,6 +152,15 @@
     <!-- Reload local.build.properties -->
     <property file="local.build.properties"/>
 
+    <fail message="No such directory: ${tomcat1.home.dir}! You might have to delete src/build/local.build.properties and re-run configure.">
+    <condition>
+      <and>
+        <isset property="tomcat1.home.dir"/>
+        <not><available file="${tomcat1.home.dir}" type="dir"/></not>
+      </and>
+    </condition>
+    </fail>
+
 <!--
     <echo>Tomcat Ports: ${tomcat1.ssl.port}, ${tomcat1.http.port}</echo>
 -->
