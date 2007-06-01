@@ -300,23 +300,20 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
     }
     
     /**
-     * @param newWikiPage
-     * @return the empty wiki introspection as String
+     *
      */
     private String getWikiIntrospection(String title, String createName) {
         StringBuffer emptyWikiPageContent = new StringBuffer();
         emptyWikiPageContent.append("<?xml version=\"1.0\"?>");
         emptyWikiPageContent.append("\n");
-        emptyWikiPageContent.append("\n<introspection xmlns=\"http://www.wyona.org/neutron/1.0\">");
+        emptyWikiPageContent.append("\n<introspection xmlns=\"http://www.wyona.org/neutron/2.0\">");
         emptyWikiPageContent.append("\n");
-        emptyWikiPageContent.append("\n  <edit mime-type=\"text/plain\" name=\"" + title + "\">");
+        emptyWikiPageContent.append("\n  <resource name=\"" + title + "\">");
+        emptyWikiPageContent.append("\n  <edit mime-type=\"text/plain\">");
         emptyWikiPageContent.append("\n    <checkout url=\"" + createName + "?yanel.resource.viewid=txt&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
         emptyWikiPageContent.append("\n    <checkin  url=\"" + createName + "?yanel.resource.usecase=checkin\" method=\"PUT\"/>");
-/*
-        emptyWikiPageContent.append("\n    <checkout url=\"" + createName + ".txt?yanel.resource.usecase=checkout\" method=\"GET\"/>");
-        emptyWikiPageContent.append("\n    <checkin  url=\"" + createName + ".txt?yanel.resource.usecase=checkin\" method=\"PUT\"/>");
-*/
         emptyWikiPageContent.append("\n  </edit>");
+        emptyWikiPageContent.append("\n  </resource>");
         emptyWikiPageContent.append("\n</introspection>");
         
         return emptyWikiPageContent.toString();
@@ -358,6 +355,11 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
             Repository dataRepo = getRealm().getRepository();
 
             log.info("Writing content into repository \"" + dataRepo.getName() + "\" with content:\n" + content + "\nto path: " + newPath);
+            if (!dataRepo.existsNode(newPath.toString())) {
+                //TODO: Add nodes recursively ...
+                dataRepo.getNode(newPath.getParent().toString()).addNode(newPath.getName(), org.wyona.yarep.core.NodeType.RESOURCE);
+                log.warn("Node has been created: " + newPath);
+            }
             Writer writer = dataRepo.getWriter(newPath);
             writer.write(content);
             writer.close();
@@ -365,11 +367,17 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
             org.wyona.yarep.core.Path introspectionPath = new org.wyona.yarep.core.Path(newPath.getParent() + "/introspection-" + newPath.getName() + ".xml");
             String introspectionContent = getWikiIntrospection(title, newPath.getName());
             log.error("DEBUG: Writing introspection into repository \"" + dataRepo.getName() + "\" with content:\n" + introspectionContent + "\nto path: " + introspectionPath);
+            if (!dataRepo.existsNode(introspectionPath.toString())) {
+                //TODO: Add nodes recursively ...
+                dataRepo.getNode(introspectionPath.getParent().toString()).addNode(introspectionPath.getName(), org.wyona.yarep.core.NodeType.RESOURCE);
+                log.warn("Node has been created: " + introspectionPath);
+            }
             writer = dataRepo.getWriter(introspectionPath);
             writer.write(introspectionContent);
             writer.close();
 
-            dataRepo.addSymbolicLink(newPath, new org.wyona.yarep.core.Path(newPath.toString() + ".txt"));
+            // TODO: This seems to be a bad idea, rather use ?...&amp;yanel.resource.viewid=txt
+            //dataRepo.addSymbolicLink(newPath, new org.wyona.yarep.core.Path(newPath.toString() + ".txt"));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -381,7 +389,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
     public HashMap createRTIProperties(HttpServletRequest request) {
         HashMap map = new HashMap();
         // TODO: Do not hardcode xslt ...
-        map.put("#xslt", "/xslt/global.xsl");
+        map.put("DO_NOT_HARDCODE_xslt", "/xslt/global.xsl");
 
         // TODO: Make mime-type configurable (depending on global XSLT) ...
         map.put("mime-type", "application/xhtml+xml");
