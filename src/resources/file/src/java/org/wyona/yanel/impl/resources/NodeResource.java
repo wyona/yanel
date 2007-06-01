@@ -179,6 +179,10 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public OutputStream getOutputStream() throws Exception {
+        if (!getRealm().getRepository().existsNode(getPath())) {
+            // TODO: create node recursively ...
+            getRealm().getRepository().getNode(new org.wyona.commons.io.Path(getPath()).getParent().toString()).addNode(new org.wyona.commons.io.Path(getPath()).getName().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
+        }
         return getRealm().getRepository().getNode(getPath()).getOutputStream();
     }
 
