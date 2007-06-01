@@ -60,7 +60,6 @@ import org.wyona.yanel.core.util.PathUtil;
 
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
-import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -101,20 +100,19 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
     }
     
     /**
-     *
+     * Get view of resource
      */
     public View getView(Path path, String viewId) {
-
         try {
-        if (viewId != null && viewId.equals("txt")) {
-            View view = new View();
-            view.setInputStream(getRealm().getRepository().getInputStream(new org.wyona.yarep.core.Path(getPath())));
-            view.setMimeType("text/plain");
-            return view;
-        }
-
-        View defaultView = new View();
             Repository dataRepo = getRealm().getRepository();
+            if (viewId != null && viewId.equals("txt")) {
+                View view = new View();
+                view.setInputStream(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getPath())));
+                view.setMimeType("text/plain");
+                return view;
+            }
+
+            View defaultView = new View();
             
             String path2Resource = path.toString();
             path2Resource = path2Resource.substring(0, path2Resource.lastIndexOf("/") + 1);
@@ -323,11 +321,6 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
         
         return emptyWikiPageContent.toString();
     }    
-    
-    protected RepositoryFactory getRepositoryFactory() {
-        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
-    }
-    
     
     public String[] getPropertyNames() {
         String[] propertyNames = (String[])properties.keySet().toArray(new String[properties.keySet().size()]);
