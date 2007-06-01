@@ -558,12 +558,20 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         StringBuffer sb = new StringBuffer();
         sb.append("<?xml version=\"1.0\"?>");
         sb.append("\n");
-        sb.append("\n<introspection xmlns=\"http://www.wyona.org/neutron/1.0\">");
+        sb.append("\n<introspection xmlns=\"http://www.wyona.org/neutron/2.0\">");
         sb.append("\n");
-        sb.append("\n  <edit mime-type=\"application/xhtml+xml\" name=\"" + name + "\">");
+
+        sb.append("<navigation>");
+        sb.append("  <sitetree href=\"./\" method=\"PROPFIND\"/>");
+        sb.append("</navigation>");
+
+
+        sb.append("\n  <resource name=\"" + name + "\">");
+        sb.append("\n  <edit mime-type=\"application/xhtml+xml\">");
         sb.append("\n    <checkout url=\"" + name + "?yanel.resource.viewid=source&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
         sb.append("\n    <checkin  url=\"" + name + "?yanel.resource.usecase=checkin\" method=\"PUT\"/>");
         sb.append("\n  </edit>");
+        sb.append("\n  </resource>");
         sb.append("\n</introspection>");
         
         return sb.toString();
@@ -576,6 +584,11 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         String name = PathUtil.getName(getPath());
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<introspection xmlns=\"http://www.wyona.org/neutron/2.0\">");
+
+        sb.append("<navigation>");
+        sb.append("  <sitetree href=\"./\" method=\"PROPFIND\"/>");
+        sb.append("</navigation>");
+
         sb.append("<resource name=\"" + name + "\">");
         //sb.append("<edit mime-type=\"application/xml\">");
         sb.append("<edit mime-type=\"" + this.getMimeType(null) + "\">");
