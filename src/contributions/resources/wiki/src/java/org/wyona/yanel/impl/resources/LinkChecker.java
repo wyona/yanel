@@ -1,6 +1,8 @@
 package org.wyona.yanel.impl.resources;
 
 import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
+
 import org.apache.log4j.Category;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
@@ -108,7 +110,11 @@ public class LinkChecker extends DefaultHandler {
     }
 
     private void setResultInputStream() {
-        this.byteArrayInputStream = new ByteArrayInputStream(transformedXmlAsBuffer.toString().getBytes());
+        try {
+            this.byteArrayInputStream = new ByteArrayInputStream(transformedXmlAsBuffer.toString().getBytes("utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            log.error(e, e);
+        }
     }
  
     public ByteArrayInputStream getInputStream() {

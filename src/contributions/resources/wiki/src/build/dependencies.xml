@@ -24,7 +24,7 @@
                   version="2.4.71"/>
 
       <dependency groupId="wyona-org-wiki-parser" artifactId="jsp-wiki-parser"
-                  version="0.0.1-dev-r24028"/>
+                  version="0.0.1-dev-r24881"/>
       <dependency groupId="wyona-org-wiki-parser" artifactId="wiki-parser-factory"
                   version="r19560"/>
       <dependency groupId="wyona-org-wiki-parser" artifactId="wyona-wiki-parser"
