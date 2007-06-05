@@ -336,6 +336,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 log.debug("Back 2 realm: " + PathUtil.backToRealm(getPath()));
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
                 InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+                //log.error("DEBUG 1: " + getI18nResourceBundleName() + ", " + getLanguage() + ", " + getRealm().getDefaultLanguage());
                 I18nTransformer i18nTransformer = new I18nTransformer(getI18nResourceBundleName(), getLanguage(), getRealm().getDefaultLanguage());
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 saxParser.parse(inputStream, i18nTransformer);
@@ -386,6 +387,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 xIncludeTransformer.setResolver(resolver);
                 
                 // create i18n transformer:
+                //log.error("DEBUG 2: " + getI18nResourceBundleName() + ", " + getLanguage() + ", " + getRealm().getDefaultLanguage());
                 I18nTransformer2 i18nTransformer = new I18nTransformer2(getI18nResourceBundleName(), getLanguage(), getRealm().getDefaultLanguage());
                 i18nTransformer.setEntityResolver(catalogResolver);
                 
@@ -725,28 +727,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * Get language
      */
     private String getLanguage() throws Exception {
-        String language = getResourceConfigProperty("language");
-
-        if (language == null) {
-	    language = getRequest().getParameter("yanel.meta.language");
-        }
-
-        if (language == null) {
-            language = getRequest().getHeader("Accept-Language");
-            if (language != null) {
-                log.debug("Use Accept-Language from Request Header: " + language);
-                if (language.indexOf(",") > 0) {
-                    language = language.substring(0, language.indexOf(","));
-                }
-            }
-        }
-
-        if (language == null) {
-            language = getRealm().getDefaultLanguage();
-        }
-
-        log.error("DEBUG: Language: " + language);
-        return language;
+        return getRequestedLanguage();
     }
 
     /**
