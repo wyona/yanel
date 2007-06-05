@@ -1,2 +1,2 @@
-<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>From Template</title></head><body>  <h1>Serving Content Statically<br/></h1><br/></body>
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>From Template</title></head><body>  <h1>Serving Content Statically<br/></h1><img src="deployment_static.png" alt="Deployment with static server"/><br/><br/><a href="deployment_static.svg">SVG</a> created with <a href="http://www.inkscape.org/">Inkscape</a><br/><br/></body>
 </html>
