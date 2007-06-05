@@ -2,6 +2,9 @@
 
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/resource-config/1.0">
   <yanel:rti name="nutch" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
   <yanel:property name="global-xslt" value="/xslt/global.xsl"/>
-  <yanel:property name="messageBundle" value="nutch"/>
+<!--
+  <yanel:property name="i18n-bundle-name" value="nutch"/>
+-->
 </yanel:resource-config>
