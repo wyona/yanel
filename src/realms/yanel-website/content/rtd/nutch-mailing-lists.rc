@@ -4,6 +4,8 @@
   <yanel:rti name="nutch" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
   <yanel:property name="global-xslt" value="/xslt/global.xsl"/>
-  <yanel:property name="messageBundle" value="nutch"/>
+<!--
+  <yanel:property name="i18n-bundle-name" value="nutch"/>
+-->
   <yanel:property name="nutch-config" value="file:/home/michi/src/wyona/public/yanel/trunk/src/realms/yanel-website/content/nutch-config/nutch-local-yanel-mls.xml"/>
 </yanel:resource-config>
