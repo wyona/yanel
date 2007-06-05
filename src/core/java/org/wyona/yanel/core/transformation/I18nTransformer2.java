@@ -25,7 +25,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * </li>
  * <li>new (cocoon-like):
  * <pre>
- *    &lt;i18n:text key="pageInfo"&gt;Page Info Default Text&lt;/i18n:text&gt;
+ *    &lt;i18n:text xmlns:i18n="http://www.wyona.org/yanel/i18n/1.0" key="pageInfo"&gt;Page Info Default Text&lt;/i18n:text&gt;
  *    &lt;i18n:text&gt;pageInfo&lt;/i18n:text&gt;
  *    &lt;input type="submit" value="mySubmit" i18n:attr="value"/&gt;
  * </pre>
