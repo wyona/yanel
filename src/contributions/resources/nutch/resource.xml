@@ -11,7 +11,7 @@ Getting Search results from a Nutch crawl (version 0.8.x)
 
 <rtd>
   <property name="xslt"/>
-  <property name="messageBundle"/>
+  <property name="i18n-bundle-name"/>
   <property name="language"/>
   <property name="nutch-config" value="file:/..."/>
 </rtd>
