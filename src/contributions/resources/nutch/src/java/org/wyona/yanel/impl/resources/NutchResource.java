@@ -102,7 +102,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     private String defaultFile = "nutch-default.xml";
     private String localFile = "nutch-local.xml";
     private String searchTerm = "";
-    private String show = ""; //default is empty, else show either CACHE, EXPLAIN, ANCHORS
+    private String SHOW_DEFAULT = "default"; // Otherwise either Cache, Explain, Anchors
     private NutchBean nutchBean = null;
     private ServletContext servletContext = null;
     private String cachedMimeType = null;
@@ -139,6 +139,7 @@ public class NutchResource extends Resource implements ViewableV1 {
         try {
             getNutchConfiguration();
 
+            String show = getShowParameterValue();
             nutchView = new View();
             nutchView.setInputStream(getInputStream(viewId, show, idx, id, language));
 
@@ -196,8 +197,7 @@ public class NutchResource extends Resource implements ViewableV1 {
         } catch(Exception e) {
             id = 0;
         }
-        show = request.getParameter("show");
-        if (show == null) show = "";
+
         searchTerm = request.getParameter("query");
         return getView(new Path(request.getServletPath()), viewId, idx, id, language);
     }
@@ -239,9 +239,8 @@ public class NutchResource extends Resource implements ViewableV1 {
     /**
      * Create DOM document
      * @param searchTerm query
-     * @param language language
      */
-    private void getDOMDocument(String searchTerm, String language) {
+    private void getSearchResultsAsDOM(String searchTerm) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         try {
@@ -251,7 +250,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             log.error(e.getMessage(), e);
         }
         Element rootElement = document.getDocumentElement();
-        rootElement.setAttributeNS(NAME_SPACE, "language", language);
+        rootElement.setAttributeNS(NAME_SPACE, "language", getLanguage());
         rootElement.setAttributeNS(NAME_SPACE, "local-nutch-config-url", finalResource.toString());
         if (searchTerm != null && searchTerm.length() > 0) {
             Element queryElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "query"));
@@ -294,9 +293,9 @@ public class NutchResource extends Resource implements ViewableV1 {
     
     /**
      * Generate response depending on show parameter
-     * @param show cache, explain, anchors and actual search results
+     * @param show Cache, Explain, Anchors and actual search results
      */
-    private InputStream getInputStream(String viewId, String show, int idx, int id, String language) {
+    private InputStream getInputStream(String viewId, String show, int idx, int id, String language) throws Exception {
         if(show.equals("cache")){
             return new StringBufferInputStream(getCachedContent(idx, id));
         } else if(show.equals("explain")) {
@@ -304,18 +303,19 @@ public class NutchResource extends Resource implements ViewableV1 {
         } else if(show.equals("anchors")) {
             return createAnchorsDocument4SearchResult(idx, id, searchTerm, language);
         } else {
-            getDOMDocument(searchTerm, language);
-            return transformedInputStream(viewId, searchTerm, language);
+            return getSearchResults(viewId, searchTerm);
         }
     }
 
     /**
      * Generate results page as XHTML
-     * @param viewId
-     * @param searchTerm
-     * @return
+     * @param viewId View ID
+     * @param searchTerm Search term
+     * @param language Language
+     * @return InputStream
      */
-    private InputStream transformedInputStream(String viewId, String searchTerm, String language) {
+    private InputStream getSearchResults(String viewId, String searchTerm) throws Exception {
+        getSearchResultsAsDOM(searchTerm);
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             if (viewId != null && viewId.equals("source")) {
@@ -336,10 +336,10 @@ public class NutchResource extends Resource implements ViewableV1 {
                 log.debug("Back 2 realm: " + PathUtil.backToRealm(getPath()));
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
                 InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-                I18nTransformer i18nTransformer = new I18nTransformer(getI18nResourceBundleName(), language, getRealm().getDefaultLanguage());
+                I18nTransformer i18nTransformer = new I18nTransformer(getI18nResourceBundleName(), getLanguage(), getRealm().getDefaultLanguage());
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 saxParser.parse(inputStream, i18nTransformer);
-                return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm, language);
+                return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm);
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -353,7 +353,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @param language
      * @return
      */
-    private InputStream applyGlobalXslIfExists(InputStream inputStream, String searchTerm, String language) {
+    private InputStream applyGlobalXslIfExists(InputStream inputStream, String searchTerm) {
         StreamSource streamSource = null;
         try {
             streamSource = getGlobalXSLTStreamSource();
@@ -377,8 +377,8 @@ public class NutchResource extends Resource implements ViewableV1 {
                 transformer.setParameter("totalHits", "" + totalHits);
                 transformer.setParameter("query", "" + searchTerm);
                 transformer.setParameter("start", "" + start);
-                transformer.setParameter("yanel.meta.lanugage", language);
-                transformer.setParameter("show", show);
+                transformer.setParameter("yanel.meta.lanugage", getLanguage());
+                transformer.setParameter("show", getShowParameterValue());
 
                 // create xinclude transformer:
                 XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
@@ -386,7 +386,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 xIncludeTransformer.setResolver(resolver);
                 
                 // create i18n transformer:
-                I18nTransformer2 i18nTransformer = new I18nTransformer2(getI18nResourceBundleName(), language, getRealm().getDefaultLanguage());
+                I18nTransformer2 i18nTransformer = new I18nTransformer2(getI18nResourceBundleName(), getLanguage(), getRealm().getDefaultLanguage());
                 i18nTransformer.setEntityResolver(catalogResolver);
                 
                 // create serializer:
@@ -479,7 +479,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             I18nTransformer i18nTransformer = new I18nTransformer(getI18nResourceBundleName(), language, getRealm().getDefaultLanguage());
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new StringBufferInputStream(content), i18nTransformer);
-            return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm, language);
+            return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -519,7 +519,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             I18nTransformer i18nTransformer = new I18nTransformer(getI18nResourceBundleName(), language, getRealm().getDefaultLanguage());
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new StringBufferInputStream(content), i18nTransformer);
-            return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm, language);
+            return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -713,17 +713,19 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
 
     /**
+     * Get show parameter value
+     */
+    private String getShowParameterValue() {
+        String show = request.getParameter("show");
+        if (show == null) show = SHOW_DEFAULT;
+        return show;
+    }
+
+    /**
      * Get language
      */
     private String getLanguage() throws Exception {
-        String language;
-
-        ResourceConfiguration rc = getConfiguration();
-        if (rc != null) {
-            language = rc.getProperty("language");
-        } else {
-            language = getRTI().getProperty("language");
-        }
+        String language = getResourceConfigProperty("language");
 
         if (language == null) {
 	    language = getRequest().getParameter("yanel.meta.language");
@@ -743,7 +745,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             language = getRealm().getDefaultLanguage();
         }
 
-        log.debug("Language: " + language);
+        log.error("DEBUG: Language: " + language);
         return language;
     }
 
