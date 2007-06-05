@@ -61,8 +61,8 @@ public class PathUtil extends org.wyona.commons.io.PathUtil {
    }
    
    /**
-    * @parameter realm Realm
-    * @parameter path Path relative to realm
+    * @param realm Realm
+    * @param path Path relative to realm
     * @return a String with as many ../ as it needs to go back to from current resource to context
     */
    public static String backToContext(Realm realm, String path) {
@@ -70,7 +70,7 @@ public class PathUtil extends org.wyona.commons.io.PathUtil {
    }
    
    /**
-    * @parameter path Path relative to realm
+    * @param path Path relative to realm
     * @return a String with as many ../ as it needs to go back to from current resource to the realm-root
     */
    public static String backToRealm(String path) {
