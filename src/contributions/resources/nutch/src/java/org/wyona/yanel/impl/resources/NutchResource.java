@@ -103,12 +103,9 @@ public class NutchResource extends Resource implements ViewableV1 {
     private String localFile = "nutch-local.xml";
     private String searchTerm = "";
     private String show = ""; //default is empty, else show either CACHE, EXPLAIN, ANCHORS
-    private String resourceBundle = "nutch";
     private NutchBean nutchBean = null;
     private ServletContext servletContext = null;
     private String cachedMimeType = null;
-    private Transformer transformer = null;
-    private I18nTransformer i18nTransformer = null;
     Ontology ontology = null;
 
     private URL finalResource;
@@ -142,12 +139,6 @@ public class NutchResource extends Resource implements ViewableV1 {
         try {
             getNutchConfiguration();
 
-            ResourceConfiguration rc = getConfiguration();
-            if (rc != null) {
-                resourceBundle = rc.getProperty("messageBundle");
-            } else {
-                resourceBundle = getRTI().getProperty("messageBundle");
-            }
             nutchView = new View();
             nutchView.setInputStream(getInputStream(viewId, show, idx, id, language));
 
@@ -328,13 +319,13 @@ public class NutchResource extends Resource implements ViewableV1 {
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             if (viewId != null && viewId.equals("source")) {
-                transformer = TransformerFactory.newInstance().newTransformer();
+                Transformer transformer = TransformerFactory.newInstance().newTransformer();
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
                 return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
             } else {
                 File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile()
                         .getAbsolutePath(), "xslt" + File.separator + "result2xhtml.xsl");
-                transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
+                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
                 transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
                 // TODO: Remove the trailing slash ...
                 transformer.setParameter("yanel.path", getRealm().getMountPoint() + getPath());
@@ -345,7 +336,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 log.debug("Back 2 realm: " + PathUtil.backToRealm(getPath()));
                 transformer.transform(new javax.xml.transform.dom.DOMSource(document), new StreamResult(byteArrayOutputStream));
                 InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-                i18nTransformer = new I18nTransformer(resourceBundle, language, getRealm().getDefaultLanguage());
+                I18nTransformer i18nTransformer = new I18nTransformer(getI18nResourceBundleName(), language, getRealm().getDefaultLanguage());
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 saxParser.parse(inputStream, i18nTransformer);
                 return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm, language);
@@ -395,7 +386,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 xIncludeTransformer.setResolver(resolver);
                 
                 // create i18n transformer:
-                I18nTransformer2 i18nTransformer = new I18nTransformer2(resourceBundle, language, getRealm().getDefaultLanguage());
+                I18nTransformer2 i18nTransformer = new I18nTransformer2(getI18nResourceBundleName(), language, getRealm().getDefaultLanguage());
                 i18nTransformer.setEntityResolver(catalogResolver);
                 
                 // create serializer:
@@ -485,7 +476,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                     "<h3><i18n:message key=\"scoreForQuery\"/>" + query + "</h3>" + 
                     nutchBean.getExplanation(query, hit) + 
                     "</div></body></html>"; 
-            I18nTransformer i18nTransformer = new I18nTransformer(resourceBundle, language, getRealm().getDefaultLanguage());
+            I18nTransformer i18nTransformer = new I18nTransformer(getI18nResourceBundleName(), language, getRealm().getDefaultLanguage());
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new StringBufferInputStream(content), i18nTransformer);
             return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm, language);
@@ -525,7 +516,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             }
             content += "</div></body></html>"; 
             log.debug("content:\n" + content);
-            I18nTransformer i18nTransformer = new I18nTransformer(resourceBundle, language, getRealm().getDefaultLanguage());
+            I18nTransformer i18nTransformer = new I18nTransformer(getI18nResourceBundleName(), language, getRealm().getDefaultLanguage());
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(new StringBufferInputStream(content), i18nTransformer);
             return applyGlobalXslIfExists(i18nTransformer.getInputStream(), searchTerm, language);
@@ -754,5 +745,18 @@ public class NutchResource extends Resource implements ViewableV1 {
 
         log.debug("Language: " + language);
         return language;
+    }
+
+    /**
+     * Get i18m resource bundle name
+     */
+    private String getI18nResourceBundleName() {
+        try {
+            String name = getResourceConfigProperty("i18n-bundle-name");
+            if (name != null) return name;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return "nutch";
     }
 }
