@@ -64,7 +64,6 @@ public class WorkflowBuilder {
 
     /**
      * Builds a workflow object from an XML document.
-     * @param name The workflow name.
      * @param document The XML document.
      * @return A workflow implementation.
      * @throws WorkflowException when something went wrong.
