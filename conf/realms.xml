@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 
-<realms xmlns="http://www.wyona.org/yanel/1.0" version="2007053100">
+<realms xmlns="http://www.wyona.org/yanel/1.0" version="2007060600">
 
 <changes>
+  <change version="2007060600">From scratch realm config/@src updated</change>
   <change version="2007053100">Javadoc realm config/@src updated</change>
   <change version="2007052900">Welcome realm config/@src updated</change>
 </changes>
@@ -94,7 +95,7 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
 -->
 <realm id="from-scratch-realm-template" mount-point="/from-scratch-realm/">
   <name>From Scratch Realm Template</name>
-  <config src="@REALMS_DIR@/from-scratch-realm-template/yanel/config/yanel-realm-config.xml"/>
+  <config src="@REALMS_DIR@/from-scratch-realm-template/"/>
 </realm>
 
 <realm id="welcome" mount-point="/" root="true">
