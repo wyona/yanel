@@ -1,1 +1,4 @@
 yarep_type<string>:resource
+yarep_isCheckedOut<boolean>:true
+yarep_checkoutDate<date>:2007-06-06T10:15:42+0200
+yarep_checkoutUserID<string>:lenya
