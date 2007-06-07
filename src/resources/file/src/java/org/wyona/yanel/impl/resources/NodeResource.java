@@ -72,25 +72,26 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     public View getView(String viewId, String revisionName) throws Exception {
-        View defaultView = new View();
+        View view = new View();
         
-        defaultView.setInputStream(getRealm().getRepository().getNode(getPath())
-                .getRevision(revisionName).getInputStream());
-        defaultView.setMimeType(getMimeType(viewId));
+        view.setInputStream(getRealm().getRepository().getNode(getPath()).getRevision(revisionName).getInputStream());
+        view.setMimeType(getMimeType(viewId));
+        view.setEncoding(getResourceConfigProperty("encoding"));
 
-        return defaultView;
+        return view;
     }
 
     /**
      *
      */
     public View getView(String viewId) throws Exception {
-        View defaultView = new View();
+        View view = new View();
         
-        defaultView.setInputStream(getRealm().getRepository().getNode(getPath()).getInputStream());
-        defaultView.setMimeType(getMimeType(viewId));
+        view.setInputStream(getRealm().getRepository().getNode(getPath()).getInputStream());
+        view.setMimeType(getMimeType(viewId));
+        view.setEncoding(getResourceConfigProperty("encoding"));
 
-        return defaultView;
+        return view;
     }
 
     /**
