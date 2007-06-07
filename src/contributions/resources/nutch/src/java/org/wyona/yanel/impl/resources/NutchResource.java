@@ -157,7 +157,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             }
 
             // Set encoding
-            String encoding = getConfiguration().getProperty("encoding");
+            String encoding = getResourceConfigProperty("encoding");
             if (encoding != null) nutchView.setEncoding(encoding);
         } catch (Exception e) {
             log.error(e, e);
@@ -215,13 +215,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             configuration.addDefaultResource(defaultResource);
 
             finalResource = new URL(confDir + File.separator + localFile);
-            String nutchConfig;
-            ResourceConfiguration rc = getConfiguration();
-            if (rc != null) {
-                nutchConfig = rc.getProperty("nutch-config");
-            } else {
-                nutchConfig = getRTI().getProperty("nutch-config");
-            }
+            String nutchConfig = getResourceConfigProperty("nutch-config");
             log.debug("Local nutch config: " + nutchConfig);
             if(nutchConfig != null) {
                 if(nutchConfig.indexOf("file:") == 0) {
