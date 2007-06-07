@@ -182,7 +182,7 @@ public class WorkflowHelper {
                         sb.append("<workflow>");
     
                         if (revisions[i].getName().equals(liveRevision)) {
-                            state += "-LIVE"; // TODO: this is a hack
+                            state += " (LIVE)"; // TODO: this is a hack
                         }
                         sb.append("<state date=\"" + date + "\">" + state + "</state>");
                         
