@@ -36,8 +36,9 @@ public class RealmConfigurationTest extends AbstractYanelTest {
      * Tests
      */
     public void testCopyRealm() throws Exception {
-        this.realmConfig.copyRealm("from-scratch-realm-template", "test-copy-realm", "Test Realm (created by a Testcase)", "/test/test-copy-realm/", null);
-        assertNotNull(this.realmConfig.getRealm("test-copy-realm"));
+        String testRealmID = "test-copy-realm-" + new java.util.Date().getTime();
+        this.realmConfig.copyRealm("from-scratch-realm-template", testRealmID, "Test Realm (created by a Testcase)", "/test/" + testRealmID + "/", null);
+        assertNotNull(this.realmConfig.getRealm(testRealmID));
     }
 
 }
