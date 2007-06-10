@@ -2016,8 +2016,6 @@ public class YanelServlet extends HttpServlet {
                     response.setContentType(patchMimeType(mimeType, request));
                 }
             }
-
-            InputStream is = view.getInputStream();
             
             // Possibly embed toolbar:
             String toolbar = (String) request.getSession(true).getAttribute(TOOLBAR_KEY);
@@ -2057,6 +2055,7 @@ public class YanelServlet extends HttpServlet {
             byte buffer[] = new byte[8192];
             int bytesRead;
            
+            InputStream is = view.getInputStream();
             if (is != null) {
                 // TODO: Yarep does not set returned Stream to null resp. is missing Exception Handling for the constructor. Exceptions should be handled here, but rather within Yarep or whatever repositary layer is being used ...
                 bytesRead = is.read(buffer);
