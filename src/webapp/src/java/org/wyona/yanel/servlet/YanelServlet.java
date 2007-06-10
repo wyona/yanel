@@ -156,14 +156,11 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Dispatch requests
      */
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String httpAcceptMediaTypes = request.getHeader("Accept");
-        log.debug("HTTP Accept Media Types: " + httpAcceptMediaTypes);
-        log.debug("HTTP User Agent: " + request.getHeader("User-Agent"));
         String httpAcceptLanguage = request.getHeader("Accept-Language");
-        log.debug("HTTP Accept Language: " + httpAcceptLanguage);
 
         // Logout from Yanel
         String yanelUsecase = request.getParameter("yanel.usecase");
@@ -339,7 +336,7 @@ public class YanelServlet extends HttpServlet {
                     Element userManagerElement = (Element) identityManagerElement.appendChild(doc.createElementNS(NAMESPACE, "user-manager"));
 
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
-                        log.debug("Resource is viewable V1");
+                        if (log.isDebugEnabled()) log.debug("Resource is viewable V1");
                         Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
                         viewElement.setAttributeNS(NAMESPACE, "version", "1");
 
@@ -383,7 +380,7 @@ public class YanelServlet extends HttpServlet {
                             return;
                         }
                     } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
-                        log.debug("Resource is viewable V2");
+                        if (log.isDebugEnabled()) log.debug("Resource is viewable V2");
                         String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
                         Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
                         viewElement.setAttributeNS(NAMESPACE, "version", "2");
@@ -954,7 +951,6 @@ public class YanelServlet extends HttpServlet {
             log.error("DEBUG: Delete resource ...");
             role = new Role("delete");
         } else {
-            log.debug("Role will be 'view'!");
             role = new Role("view");
         }
         value = request.getParameter("yanel.toolbar");
@@ -1048,9 +1044,9 @@ public class YanelServlet extends HttpServlet {
             
             //authorized = pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, role);
         
-            log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity.getUsername() + ", role: " + role.getName());
+            if (log.isDebugEnabled()) log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity.getUsername() + ", role: " + role.getName());
             authorized = realm.getPolicyManager().authorize(path, identity, role);
-            log.debug("Check authorization result: " + authorized);
+            if (log.isDebugEnabled()) log.debug("Check authorization result: " + authorized);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);
@@ -1190,7 +1186,7 @@ public class YanelServlet extends HttpServlet {
     
             if (xml) urlQS = urlQS.replaceAll("&", "&amp;");
     
-            log.debug("Request: " + urlQS);
+            if(log.isDebugEnabled()) log.debug("Request: " + urlQS);
 
             return urlQS;
         } catch (Exception e) {
@@ -1523,7 +1519,6 @@ public class YanelServlet extends HttpServlet {
      */
     public String patchMimeType(String mimeType, HttpServletRequest request) throws ServletException, IOException {
         String httpAcceptMediaTypes = request.getHeader("Accept");
-        log.debug("HTTP Accept Media Types: " + httpAcceptMediaTypes);
         if (mimeType != null && mimeType.equals("application/xhtml+xml") && httpAcceptMediaTypes != null && httpAcceptMediaTypes.indexOf("application/xhtml+xml") < 0) {
             log.info("Patch contentType with text/html because client (" + request.getHeader("User-Agent") + ") does not seem to understand application/xhtml+xml");
             return "text/html";
@@ -2077,10 +2072,10 @@ public class YanelServlet extends HttpServlet {
                 if(lastModified >= 0) response.setDateHeader("Last-Modified", lastModified);
 
                 if(size > 0) {
-                    log.debug("Size of " + request.getRequestURI() + ": " + size);
+                    if (log.isDebugEnabled()) log.debug("Size of " + request.getRequestURI() + ": " + size);
                     response.setContentLength((int) size);
                 } else {
-                    log.debug("No size for " + request.getRequestURI() + ": " + size);
+                    if (log.isDebugEnabled()) log.debug("No size for " + request.getRequestURI() + ": " + size);
                 }
 
                 java.io.OutputStream os = response.getOutputStream();
