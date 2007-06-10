@@ -515,8 +515,8 @@ public class YanelServlet extends HttpServlet {
                 String message = e.toString();
                 Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
                 exceptionElement.appendChild(doc.createTextNode(message));
-                setYanelOutput(request, response, doc);
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                setYanelOutput(request, response, doc);
                 return;
             }
 
@@ -567,8 +567,8 @@ public class YanelServlet extends HttpServlet {
             exceptionElement.appendChild(doc.createTextNode(message));
         }
 
-        setYanelOutput(request, response, doc);
         response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        setYanelOutput(request, response, doc);
         return;
     }
 
@@ -1552,7 +1552,7 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Generate a "Yanel" response (page information, 404, internal server error, ...)
      */
     private void setYanelOutput(HttpServletRequest request, HttpServletResponse response, Document doc) throws ServletException {
         String path = getResource(request, response).getPath();
@@ -2033,8 +2033,8 @@ public class YanelServlet extends HttpServlet {
                             String message = "Error merging toolbar into content: " + e.toString();
                             Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
                             exceptionElement.appendChild(doc.createTextNode(message));
-                            setYanelOutput(request, response, doc);
                             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            setYanelOutput(request, response, doc);
                             return response;
                         }
                         return response;
@@ -2057,15 +2057,15 @@ public class YanelServlet extends HttpServlet {
            
             InputStream is = view.getInputStream();
             if (is != null) {
-                // TODO: Yarep does not set returned Stream to null resp. is missing Exception Handling for the constructor. Exceptions should be handled here, but rather within Yarep or whatever repositary layer is being used ...
                 bytesRead = is.read(buffer);
+                // Check if InputStream is empty
                 if (bytesRead == -1) {
                     String message = "InputStream of view does not seem to contain any data!";
 
                     Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
                     exceptionElement.appendChild(doc.createTextNode(message));
-                    setYanelOutput(request, response, doc);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    setYanelOutput(request, response, doc);
                     return response;
                 }
 
@@ -2075,6 +2075,7 @@ public class YanelServlet extends HttpServlet {
                     log.warn("TODO: Implement 304 ...");
                 }
                 if(lastModified >= 0) response.setDateHeader("Last-Modified", lastModified);
+
                 if(size > 0) {
                     log.debug("Size of " + request.getRequestURI() + ": " + size);
                     response.setContentLength((int) size);
@@ -2092,7 +2093,9 @@ public class YanelServlet extends HttpServlet {
                 String message = "InputStream of view is null!";
                 Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
                 exceptionElement.appendChild(doc.createTextNode(message));
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                setYanelOutput(request, response, doc);
+                return response;
             }
-        return null;
     }
 }
