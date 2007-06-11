@@ -9,10 +9,14 @@ import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
+import org.apache.log4j.Category;
+
 /**
  *
  */
 public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
+
+    private static Category log = Category.getInstance(DataRepoSitetreeResource.class);
 
     /**
      *
@@ -24,6 +28,7 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
      *
      */
     public String getMimeType(String viewId) throws Exception {
+        if (viewId != null && viewId.equals("xml")) return "application/xml";
         return "application/xhtml+xml";
     }
 
@@ -45,11 +50,16 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
      *
      */
     public View getView(String viewId) throws Exception {
+
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        sb.append("<sitetree/>");
+        if (viewId != null && viewId.equals("xml")) {
+            sb.append("<sitetree/>");
+        } else {
+            sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:xhtml=\"http://www.w3.org/1999/xhtml\"><head><title>Browse Data Repository Sitetree</title></head><body><a href=\"?yanel.resource.viewid=xml\">Show XML</a></body></html>");
+        }
 
         View view = new View();
-        view.setMimeType("application/xml");
+        view.setMimeType(getMimeType(viewId));
         view.setInputStream(new java.io.StringBufferInputStream(sb.toString()));
         return view;
     }
@@ -58,6 +68,16 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
      *
      */
     public ViewDescriptor[] getViewDescriptors() {
-        return null;
+        try {
+            ViewDescriptor[] vd = new ViewDescriptor[2];
+            vd[0] = new ViewDescriptor("default");
+            vd[0].setMimeType(getMimeType(null));
+            vd[1] = new ViewDescriptor("xml");
+            vd[1].setMimeType(getMimeType("xml"));
+            return vd;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
     }
 }
