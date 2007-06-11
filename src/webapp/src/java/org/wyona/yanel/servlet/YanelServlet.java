@@ -1960,6 +1960,20 @@ public class YanelServlet extends HttpServlet {
             PrintWriter w = response.getWriter();
             w.print(sb);
             return;
+        } else if (path.indexOf("data-repository-sitetree.html") >= 0) {
+            try {
+                java.util.Map properties = new HashMap();
+                //properties.put("user", userName);
+                ResourceConfiguration rc = new ResourceConfiguration("data-repo-sitetree", "http://www.wyona.org/yanel/resource/1.0", properties);
+                Realm realm = yanel.getMap().getRealm(request.getServletPath());
+                Resource sitetreeResource = yanel.getResourceManager().getResource(request, response, realm, path, rc);
+                View view = ((ViewableV2) sitetreeResource).getView(null);
+                if (view != null) {
+                    if (generateResponse(view, sitetreeResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
+                }
+            } catch (Exception e) {
+                throw new ServletException(e);
+            }
         } else {
             File globalFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "htdocs" + File.separator + path.substring(reservedPrefix.length() + 2));
             if (globalFile.exists()) {
