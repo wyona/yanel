@@ -8,6 +8,8 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.navigation.Node;
+import org.wyona.yanel.core.navigation.Sitetree;
 
 import org.apache.log4j.Category;
 
@@ -53,7 +55,8 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
 
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         if (viewId != null && viewId.equals("xml")) {
-            sb.append("<sitetree/>");
+            sb.append(getSitetreeAsXML());
+            //sb.append(getSitetreeAsXML(getPath().toString()));
         } else {
             sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:xhtml=\"http://www.w3.org/1999/xhtml\"><head><title>Browse Data Repository Sitetree</title></head><body><a href=\"?yanel.resource.viewid=xml\">Show XML</a></body></html>");
         }
@@ -79,5 +82,32 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
             log.error(e.getMessage(), e);
             return null;
         }
+    }
+
+    /**
+     *
+     */
+    private String getSitetreeAsXML() {
+    //private String getSitetreeAsXML(String path) {
+        String path = "/"; 
+        StringBuffer sb = new StringBuffer("<sitetree>");
+        Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("repo-navigation");
+        Node node = sitetree.getNode(getRealm(), path);
+        if (node.isCollection()) {
+            sb.append("<collection path=\"" + path + "\">");
+            Node[] children = node.getChildren();
+            for (int i = 0; i < children.length; i++) {
+                if (children[i].isCollection()) {
+                    sb.append("<collection path=\"" + children[i].getPath() + "\"/>");
+                } else {
+                    sb.append("<resource path=\"" + children[i].getPath() + "\"/>");
+                }
+            }
+            sb.append("</collection>");
+        } else {
+            sb.append("<resource path=\"" + path + "\"/>");
+        }
+        sb.append("</sitetree>");
+        return sb.toString();
     }
 }
