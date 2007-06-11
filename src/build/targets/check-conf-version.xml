@@ -48,7 +48,7 @@
     <condition property="local.resource-types.properties.in.sync">
       <equals arg1="${defaultconf.resource-types.version}" arg2="${localconf.resource-types.version}"/>
     </condition>
-    <fail unless="local.resource-types.properties.in.sync" message="It seems that your ${local.config.dir}/local.resource-types.xml is out of date. Please compare your ${local.config.dir}/local.resource-types.xml with the default configuration conf/resource-types.xml and update accordingly."/>
+    <fail unless="local.resource-types.properties.in.sync" message="WARNING: It seems that your ${local.config.dir}/local.resource-types.xml is out of date. Please compare your ${local.config.dir}/local.resource-types.xml with the default configuration conf/resource-types.xml (see changes within conf/resource-types.xml) and update accordingly."/>
   </target>
   
 </project>
