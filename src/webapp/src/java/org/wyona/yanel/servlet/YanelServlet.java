@@ -1931,6 +1931,7 @@ public class YanelServlet extends HttpServlet {
     public void getGlobalData(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Resource resource = getResource(request, response);
         String path = resource.getPath();
+        String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
         if (path.indexOf("users") > 0) {
             String userName = path.substring(reservedPrefix.length() + 8);
             userName = userName.split("[.]")[0];
@@ -1941,7 +1942,7 @@ public class YanelServlet extends HttpServlet {
                 ResourceConfiguration rc = new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
                 Realm realm = yanel.getMap().getRealm(request.getServletPath());
                 Resource yanelUserResource = yanel.getResourceManager().getResource(request, response, realm, path, rc);
-                View view = ((ViewableV2) yanelUserResource).getView(null);
+                View view = ((ViewableV2) yanelUserResource).getView(viewId);
                 if (view != null) {
                     if (generateResponse(view, yanelUserResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
                 }
@@ -1967,7 +1968,7 @@ public class YanelServlet extends HttpServlet {
                 ResourceConfiguration rc = new ResourceConfiguration("data-repo-sitetree", "http://www.wyona.org/yanel/resource/1.0", properties);
                 Realm realm = yanel.getMap().getRealm(request.getServletPath());
                 Resource sitetreeResource = yanel.getResourceManager().getResource(request, response, realm, path, rc);
-                View view = ((ViewableV2) sitetreeResource).getView(null);
+                View view = ((ViewableV2) sitetreeResource).getView(viewId);
                 if (view != null) {
                     if (generateResponse(view, sitetreeResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
                 }
