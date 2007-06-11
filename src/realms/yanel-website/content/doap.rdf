@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl"?>
+<rdf:RDF xml:lang="en"
+         xmlns="http://usefulinc.com/ns/doap#" 
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+         xmlns:wyonaext="http://projects.wyona.org/ns/wyonaext#"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/">
+
+  <Project rdf:about="http://yanel.rdf.wyona.org/">
+    <created>2007-06-11</created>
+    <license rdf:resource="http://usefulinc.com/doap/licenses/asl20" />
+    <name>Wyona Yanel</name>
+    <homepage rdf:resource="http://yanel.wyona.org" />
+    <wyonaext:roadmap rdf:resource="http://yanel.wyona.org/roadmap.html" />
+    <shortdesc>Content Management Framework</shortdesc>
+
+    <description>Everything is content management (WCMS/Wiki, DMS, CRM, ECM, ERP, PIM/E-Mail, DRM, ...) and Yanel is a humble attempt to provide a solution for all your content management needs by offering an Open Source service oriented Content Management Framework written in Java.</description>
+
+    <bug-database rdf:resource="http://yanel.wyona.org/en/task-bug-tracker.html"/>
+
+    <mailing-list rdf:resource="http://yanel.wyona.org/mailing-lists.html"/>
+
+    <download-page rdf:resource="http://yanel.wyona.org/en/download/index.html"/>
+
+    <programming-language>Java</programming-language>
+
+    <category rdf:resource="http://projects.wyona.org/category/web-framework" />
+    <category rdf:resource="http://projects.wyona.org/category/xml"/>
+
+<!--
+    <release>
+      <Version>
+        <name>Latest release</name>
+        <created>2007-06-18</created>
+        <revision>1.0</revision>
+      </Version>
+    </release>
+-->
+
+    <repository>
+      <SVNRepository>
+        <location rdf:resource="http://svn.wyona.com/repos/public/yanel/trunk/"/>
+        <browse rdf:resource="http://svn.wyona.com/repos/public/yanel/trunk/"/>
+      </SVNRepository>
+    </repository>
+
+    <maintainer>
+      <foaf:Person>
+        <foaf:name>Michael Wechner</foaf:name>
+          <foaf:mbox rdf:resource="mailto:michael.wechner@wyona.com"/>
+      </foaf:Person>
+    </maintainer>
+  </Project>
+</rdf:RDF>
