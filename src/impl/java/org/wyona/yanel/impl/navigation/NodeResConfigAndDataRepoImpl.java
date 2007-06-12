@@ -83,16 +83,12 @@ public class NodeResConfigAndDataRepoImpl implements Node {
     public boolean isResource() {
         if (isCollection()) return false;
         try {
-            if (resRepo.getNode(path.toString() + ".yanel-rti").isResource()) return true;
-        } catch (NoSuchNodeException e) {
-            log.warn("No such node exception: " + path + ".yanel-rti");
+            if (resRepo.existsNode(path.toString() + ".yanel-rti") && resRepo.getNode(path.toString() + ".yanel-rti").isResource()) return true;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
         try {
-            if (resRepo.getNode(path.toString() + ".yanel-rc").isResource()) return true;
-        } catch (NoSuchNodeException e) {
-            log.warn("No such node exception: " + path + ".yanel-rc");
+            if (resRepo.existsNode(path.toString() + ".yanel-rc") && resRepo.getNode(path.toString() + ".yanel-rc").isResource()) return true;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -109,7 +105,6 @@ public class NodeResConfigAndDataRepoImpl implements Node {
      */
     public boolean isCollection() {
         try {
-            log.error("DEBUG: Check if node is a collection: " + path);
             if (resRepo.existsNode(path.toString()) && resRepo.getNode(path.toString()).isCollection()) {
                 return true;
 /*
@@ -174,15 +169,13 @@ public class NodeResConfigAndDataRepoImpl implements Node {
             }
 
             if (dataRepo.existsNode(path.toString()) && dataRepo.getNode(path.toString()).isCollection()) {
-                log.error("DEBUG: Is collection within data repository: " + path);
                 Path[] children = dataRepo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
-                    log.error("DEBUG: Child within data repo: " + children[i]);
-                    // TODO: Check if child already exists within vector!
+                    // Check if child already exists within vector!
                     if (!c.contains(children[i].toString())) {
                         c.add(children[i].toString());
                     } else {
-                       log.error("DEBUG: Child already listed: " + children[i].toString());
+                       if(log.isDebugEnabled()) log.debug("Child already listed: " + children[i].toString());
                     }
                 }
             } else {
