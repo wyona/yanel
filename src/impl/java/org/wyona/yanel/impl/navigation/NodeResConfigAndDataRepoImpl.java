@@ -96,6 +96,11 @@ public class NodeResConfigAndDataRepoImpl implements Node {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+        try {
+            if (dataRepo.existsNode(path.toString()) && dataRepo.getNode(path.toString()).isResource()) return true;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
         return false;
     }
 
