@@ -372,8 +372,12 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             while (iterator.hasNext()) {
                 String property = (String) iterator.next();
                 String value = (String) rtiProperties.get(property);
-                rcContent.append("<yanel:property name=\"" + property + "\" value=\"" + value + "\"/>\n");
-                log.error("DEBUG: " + property + ", " + value);
+                if (value != null) {
+                    rcContent.append("<yanel:property name=\"" + property + "\" value=\"" + value + "\"/>\n");
+                    if(log.isDebugEnabled()) log.debug("Set Property: " + property + ", " + value);
+                } else {
+                    log.warn("Property value is null: " + property);
+                }
             }
         } else {
             log.warn("No RTI properties: " + newResource.getPath());
