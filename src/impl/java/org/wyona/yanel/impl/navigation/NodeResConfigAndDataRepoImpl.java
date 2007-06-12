@@ -32,7 +32,7 @@ public class NodeResConfigAndDataRepoImpl implements Node {
     private static Category log = Category.getInstance(NodeResConfigAndDataRepoImpl.class);
 
     Path path;
-    Repository repo; // resource configuration repository
+    Repository resRepo; // resource configuration repository
     Repository dataRepo;
 
     /**
@@ -40,7 +40,7 @@ public class NodeResConfigAndDataRepoImpl implements Node {
      */
     public NodeResConfigAndDataRepoImpl(org.wyona.yarep.core.Repository resConfigRepo, org.wyona.yarep.core.Repository dataRepo, String path) {
         this.path = new Path(path);
-        this.repo = resConfigRepo;
+        this.resRepo = resConfigRepo;
         this.dataRepo = dataRepo;
     }
 
@@ -83,14 +83,14 @@ public class NodeResConfigAndDataRepoImpl implements Node {
     public boolean isResource() {
         if (isCollection()) return false;
         try {
-            if (repo.getNode(path.toString() + ".yanel-rti").isResource()) return true;
+            if (resRepo.getNode(path.toString() + ".yanel-rti").isResource()) return true;
         } catch (NoSuchNodeException e) {
             log.warn("No such node exception: " + path + ".yanel-rti");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
         try {
-            if (repo.getNode(path.toString() + ".yanel-rc").isResource()) return true;
+            if (resRepo.getNode(path.toString() + ".yanel-rc").isResource()) return true;
         } catch (NoSuchNodeException e) {
             log.warn("No such node exception: " + path + ".yanel-rc");
         } catch (Exception e) {
@@ -105,10 +105,10 @@ public class NodeResConfigAndDataRepoImpl implements Node {
     public boolean isCollection() {
         try {
             log.debug("Check if node is a collection: " + path);
-            if (repo.getNode(path.toString()).isCollection()) {
-            //if (repo.isCollection(path)) {
+            if (resRepo.getNode(path.toString()).isCollection()) {
+            //if (resRepo.isCollection(path)) {
                 log.error("DEBUG: Is collection within repo: " + path);
-                Path[] children = repo.getChildren(path);
+                Path[] children = resRepo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
                     if (children[i].getName().indexOf(".yanel-rti") > 0) {
                         return true;
@@ -116,7 +116,7 @@ public class NodeResConfigAndDataRepoImpl implements Node {
                     if (children[i].getName().indexOf(".yanel-rc") > 0) {
                         return true;
                     }
-                    if (repo.isCollection(children[i])) {
+                    if (resRepo.isCollection(children[i])) {
                         return true;
                     }
                 }
@@ -136,20 +136,20 @@ public class NodeResConfigAndDataRepoImpl implements Node {
     public Node[] getChildren() {
         java.util.Vector c = new java.util.Vector();
         try {
-            if (repo.isCollection(path)) {
+            if (resRepo.isCollection(path)) {
                 log.debug("Is collection within resource config repo: " + path);
-                Path[] children = repo.getChildren(path);
+                Path[] children = resRepo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
-                    if (repo.isCollection(children[i])) {
+                    if (resRepo.isCollection(children[i])) {
                         c.add(children[i].toString());
                     }
                     if (children[i].getName().indexOf(".yanel-rti") > 0) {
                         String cp = children[i].toString().substring(0, children[i].toString().indexOf(".yanel-rti"));
-                        if (!repo.isCollection(new Path(cp))) c.add(cp);
+                        if (!resRepo.isCollection(new Path(cp))) c.add(cp);
                     }
                     if (children[i].getName().indexOf(".yanel-rc") > 0) {
                         String cp = children[i].toString().substring(0, children[i].toString().indexOf(".yanel-rc"));
-                        if (!repo.isCollection(new Path(cp))) c.add(cp);
+                        if (!resRepo.isCollection(new Path(cp))) c.add(cp);
                     }
                 }
             } else {
@@ -172,11 +172,11 @@ public class NodeResConfigAndDataRepoImpl implements Node {
                 log.warn("Is not a collection within data repository: " + path);
             }
         } catch(Exception e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
         }
         Node[] nodes = new Node[c.size()];
         for (int i = 0; i < c.size(); i++) {
-            nodes[i] = new NodeResConfigAndDataRepoImpl(repo, dataRepo, (String) c.elementAt(i));
+            nodes[i] = new NodeResConfigAndDataRepoImpl(resRepo, dataRepo, (String) c.elementAt(i));
         }
         return nodes;
     }
@@ -186,7 +186,7 @@ public class NodeResConfigAndDataRepoImpl implements Node {
      */
     public Node getParent() {
         try {
-	    return new NodeResConfigAndDataRepoImpl(repo, dataRepo, (String) repo.getNode(path.toString() + ".yanel-rc").getParent().getPath());
+	    return new NodeResConfigAndDataRepoImpl(resRepo, dataRepo, (String) resRepo.getNode(path.toString() + ".yanel-rc").getParent().getPath());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
