@@ -24,9 +24,7 @@
       <dependency groupId="avalon-framework" artifactId="avalon-framework-impl"
                   version="4.3"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core"
-                  version="0.0.1-dev-r23969"/>
-       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl"
-                  version="0.0.1-dev-r23969"/>
+                  version="0.0.1-dev-r25041"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
