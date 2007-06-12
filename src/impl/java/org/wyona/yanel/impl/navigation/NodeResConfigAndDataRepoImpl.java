@@ -107,7 +107,6 @@ public class NodeResConfigAndDataRepoImpl implements Node {
             log.debug("Check if node is a collection: " + path);
             if (resRepo.getNode(path.toString()).isCollection()) {
             //if (resRepo.isCollection(path)) {
-                log.error("DEBUG: Is collection within repo: " + path);
                 Path[] children = resRepo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
                     if (children[i].getName().indexOf(".yanel-rti") > 0) {
@@ -145,11 +144,19 @@ public class NodeResConfigAndDataRepoImpl implements Node {
                     }
                     if (children[i].getName().indexOf(".yanel-rti") > 0) {
                         String cp = children[i].toString().substring(0, children[i].toString().indexOf(".yanel-rti"));
-                        if (!resRepo.isCollection(new Path(cp))) c.add(cp);
+                        if (resRepo.existsNode(cp)) {
+                            if (!resRepo.isCollection(new Path(cp))) c.add(cp);
+                        } else {
+                            c.add(cp);
+                        }
                     }
                     if (children[i].getName().indexOf(".yanel-rc") > 0) {
                         String cp = children[i].toString().substring(0, children[i].toString().indexOf(".yanel-rc"));
-                        if (!resRepo.isCollection(new Path(cp))) c.add(cp);
+                        if (resRepo.existsNode(cp)) {
+                            if (!resRepo.isCollection(new Path(cp))) c.add(cp);
+                        } else {
+                            c.add(cp);
+                        }
                     }
                 }
             } else {
