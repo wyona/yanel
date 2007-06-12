@@ -104,9 +104,10 @@ public class NodeResConfigAndDataRepoImpl implements Node {
      */
     public boolean isCollection() {
         try {
-            log.debug("Check if node is a collection: " + path);
-            if (resRepo.getNode(path.toString()).isCollection()) {
-            //if (resRepo.isCollection(path)) {
+            log.error("DEBUG: Check if node is a collection: " + path);
+            if (resRepo.existsNode(path.toString()) && resRepo.getNode(path.toString()).isCollection()) {
+                return true;
+/*
                 Path[] children = resRepo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
                     if (children[i].getName().indexOf(".yanel-rti") > 0) {
@@ -119,9 +120,13 @@ public class NodeResConfigAndDataRepoImpl implements Node {
                         return true;
                     }
                 }
+*/
+            }
+            if (dataRepo.existsNode(path.toString()) && dataRepo.getNode(path.toString()).isCollection()) {
+                return true;
             }
         } catch(NoSuchNodeException e) {
-            log.warn("No such node exception: " + path);
+            log.error("No such node exception: " + path, e);
             return false;
         } catch(Exception e) {
             log.error(e.getMessage(), e);
@@ -163,8 +168,8 @@ public class NodeResConfigAndDataRepoImpl implements Node {
                 log.debug("Is not a collection within resource config repo: " + path);
             }
 
-            if (dataRepo.isCollection(path)) {
-                log.debug("Is collection within data repository: " + path);
+            if (dataRepo.existsNode(path.toString()) && dataRepo.getNode(path.toString()).isCollection()) {
+                log.error("DEBUG: Is collection within data repository: " + path);
                 Path[] children = dataRepo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
                     log.error("DEBUG: Child within data repo: " + children[i]);
