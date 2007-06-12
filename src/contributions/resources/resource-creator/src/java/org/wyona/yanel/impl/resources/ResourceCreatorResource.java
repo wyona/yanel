@@ -169,6 +169,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         try {
             create();
         } catch(Exception e) {
+            log.error(e.getMessage(), e);
             sb.append("<p>Exception: "+e.getMessage()+"</p>");
             return;
         }
