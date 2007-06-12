@@ -3,7 +3,7 @@
 <repository>
   <name>Yanel From Scratch Data Repository</name>
 
-  <paths src="../data-paths" fallback="true"/>
+  <paths class="org.wyona.yarep.impl.DefaultMapImpl" src="../data-paths" fallback="true"/>
 
   <storage class="org.wyona.yarep.core.impl.fs.FileSystemStorage">
     <content src="../data"/>
