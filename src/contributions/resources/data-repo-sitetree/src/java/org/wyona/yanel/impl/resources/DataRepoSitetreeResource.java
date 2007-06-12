@@ -99,8 +99,10 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
             for (int i = 0; i < children.length; i++) {
                 if (children[i].isCollection()) {
                     sb.append("<collection path=\"" + children[i].getPath() + "\"/>");
-                } else {
+                } else if (children[i].isResource()) {
                     sb.append("<resource path=\"" + children[i].getPath() + "\"/>");
+                } else {
+                    sb.append("<neither-resource-nor-collection path=\"" + children[i].getPath() + "\"/>");
                 }
             }
             sb.append("</collection>");
