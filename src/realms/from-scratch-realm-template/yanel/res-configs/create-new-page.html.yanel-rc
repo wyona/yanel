@@ -7,6 +7,13 @@
     <rc:resource-types xmlns:rc="http://www.wyona.org/yanel/resource/resource-creator/1.0">
       <rc:resource-type name="xml" namespace="http://www.wyona.org/yanel/resource/1.0">
         <rc:display-name>Standard (HTML) Page</rc:display-name>
+<!--
+        <rc:property name="xslt" value="/xslt/global.xsl"/>
+-->
+        <rc:property name="mime-type" value="application/xhtml+xml"/>
+<!--
+        <rc:property name="workflow-schema" value="/workflow.xml"/>
+-->
       </rc:resource-type>
 
       <rc:resource-type name="yanel-user" namespace="http://www.wyona.org/yanel/resource/1.0">
