@@ -141,6 +141,8 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
                 mimeType = "text/plain";
 	    } else if (suffix.equals("mov")) {
                 mimeType = "video/quicktime";
+	    } else if (suffix.equals("svg")) {
+                mimeType = "image/svg+xml";
 	    } else if (suffix.equals("ico")) {
                 mimeType = "image/x-icon";
             } else {
