@@ -315,6 +315,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     sb.append("<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Save new resource\" name=\"save\"/></td></tr>");
 		    sb.append("</table>");
 
+                    sb.append("<input type=\"hidden\" name=\"lookin\" value=\"" + node.getPath() + "\"/>");
                     sb.append("</form>");
 
                     // TODO: Display realm navigation (sitetree, topic map, ...) resp. introduce another step
@@ -338,13 +339,14 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         Path pathOfNewResource = null;
         String createName = getRequest().getParameter("create-name");
         
+        String lookinPath = getRequest().getParameter("lookin");
         if(parent.equals("null")) {
             // if pathOfResourceCreator is ROOT
-            pathOfNewResource = new Path("/" + createName);
+            pathOfNewResource = new Path("/" + lookinPath + "/" + createName);
         } else if(parent.toString().equals("/")){
-            pathOfNewResource = new Path(parent + createName);
+            pathOfNewResource = new Path(parent + "/" + lookinPath + "/" + createName);
         } else {
-            pathOfNewResource = new Path(parent + "/" + createName);            
+            pathOfNewResource = new Path(parent + "/" + lookinPath + "/" + createName);            
         }
         
         log.error("DEBUG: Path of new resource: " + pathOfNewResource);
@@ -396,7 +398,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         log.error("DEBUG: " + newRCPath);
         if (!rcRepo.existsNode(newRCPath.toString())) {
             // TODO: create node recursively ...
-            rcRepo.getRootNode().addNode(newRCPath.getName(), org.wyona.yarep.core.NodeType.RESOURCE);
+            org.wyona.yarep.core.Node newNode = rcRepo.getNode(newRCPath.getParent().toString()).addNode(newRCPath.getName(), org.wyona.yarep.core.NodeType.RESOURCE);
 	    log.warn("Node has been created: " + newRCPath);
         } else {
 	    log.error("Node already exists: " + newRCPath);
