@@ -1,0 +1,4 @@
+<{http://www.wyona.org/yanel/resource/1.0}nutch/>
+xslt: /xslt/global.xsl
+messageBundle: nutch
+nutch-config: file:/home/ulysses/src/realms/yanel-website/content/nutch-config/nutch-local-yanel-mls.xml
