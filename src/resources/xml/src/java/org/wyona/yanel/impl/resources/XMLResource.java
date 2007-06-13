@@ -478,10 +478,11 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
             writer.write("<?xml version=\"1.0\"?>");
             writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
             writer.write("<head>");
-            writer.write("  <title>From Template</title>");
+            writer.write("  <title>Created from template ...</title>");
+            writer.write("  <link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"?yanel.resource.usecase=introspection\"/>");
             writer.write("</head>");
             writer.write("<body>");
-            writer.write("  <p>From Template</p>");
+            writer.write("  <p>Created from template ...</p>");
             writer.write("</body>");
             writer.write("</html>");
             writer.close();
