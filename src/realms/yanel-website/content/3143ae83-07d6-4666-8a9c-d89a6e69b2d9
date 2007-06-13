@@ -1,2 +1,2 @@
-<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>From Template</title></head><body>  <p><h1>Deployment within FOAF environment</h1><br/>...</p></body>
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>From Template</title></head><body>  <h1>Deployment within FOAF environment</h1><img alt="FOAF Architecture" src="foaf-architecture.png"/> <br/><br/><a href="foaf-architecture.svg">SVG</a> created with <a href="http://www.inkscape.org">Inkscape</a></body>
 </html>
