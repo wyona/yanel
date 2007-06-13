@@ -166,8 +166,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     private void getSaveScreen(StringBuffer sb) {
         sb.append("<h4>Create new page (step 3)</h4>");
 
+        Path pathOfNewResource = null;
         try {
-            create();
+            pathOfNewResource = create();
         } catch(Exception e) {
             log.error(e.getMessage(), e);
             sb.append("<p>Exception: "+e.getMessage()+"</p>");
@@ -190,7 +191,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         }
 
         String createName = request.getParameter("create-name");
-        sb.append("<p>New resource can be accessed at: <a href=\""+createName+"\">"+createName+"</a></p>");
+        sb.append("<p>New resource can be accessed at: <a href=\""+createName+"\">" + pathOfNewResource + "</a></p>");
     }
 
     /**
@@ -329,8 +330,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     
     /**
      * Creates new resource
+     * @return Path of new resource
      */
-    private void create() throws Exception {
+    private Path create() throws Exception {
         org.wyona.yanel.core.map.Realm realm = getRealm();
         Path pathOfResourceCreator = new Path(getPath());
 
@@ -359,17 +361,18 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         if (newResource != null) {
             if (ResourceAttributeHelper.hasAttributeImplemented(newResource, "Creatable", "2")) {
                 ((CreatableV2) newResource).create(request);
-                createConfiguration(newResource);
+                createResourceConfiguration(newResource);
             } else {
                 throw new Exception("creation NOT successfull!");
             }
         }
+        return pathOfNewResource;
     }
 
     /**
      * Create resource configuration (yanel-rc)
      */
-    private void createConfiguration(Resource newResource) throws Exception {
+    private void createResourceConfiguration(Resource newResource) throws Exception {
         StringBuffer rcContent = new StringBuffer("<?xml version=\"1.0\"?>\n\n");
         rcContent.append("<yanel:resource-config xmlns:yanel=\"http://www.wyona.org/yanel/rti/1.0\">\n");
         rcContent.append("<yanel:rti name=\"" + newResource.getRTD().getResourceTypeLocalName() + "\" namespace=\"" + newResource.getRTD().getResourceTypeNamespace() + "\"/>\n\n");
@@ -397,17 +400,6 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         org.wyona.commons.io.Path newRCPath = new org.wyona.commons.io.Path(PathUtil.getRCPath(newResource.getPath()));
         log.error("DEBUG: " + newRCPath);
         org.wyona.yanel.core.util.YarepUtil.addNodes(rcRepo, newRCPath.toString(), org.wyona.yarep.core.NodeType.RESOURCE);
-
-/*
-        if (!rcRepo.existsNode(newRCPath.toString())) {
-            // TODO: create node recursively ...
-            org.wyona.yarep.core.Node newNode = rcRepo.getNode(newRCPath.getParent().toString()).addNode(newRCPath.getName(), org.wyona.yarep.core.NodeType.RESOURCE);
-	    log.warn("Node has been created: " + newRCPath);
-        } else {
-	    log.error("Node already exists: " + newRCPath);
-            // TODO: Abort ...!
-        }
-*/
 
         java.io.Writer writer = new java.io.OutputStreamWriter(rcRepo.getNode(newRCPath.toString()).getOutputStream());
         writer.write(rcContent.toString());
