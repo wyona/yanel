@@ -396,6 +396,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         org.wyona.yarep.core.Repository rcRepo = newResource.getRealm().getRTIRepository();
         org.wyona.commons.io.Path newRCPath = new org.wyona.commons.io.Path(PathUtil.getRCPath(newResource.getPath()));
         log.error("DEBUG: " + newRCPath);
+        org.wyona.yanel.core.util.YarepUtil.addNodes(rcRepo, newRCPath.toString(), org.wyona.yarep.core.NodeType.RESOURCE);
+
+/*
         if (!rcRepo.existsNode(newRCPath.toString())) {
             // TODO: create node recursively ...
             org.wyona.yarep.core.Node newNode = rcRepo.getNode(newRCPath.getParent().toString()).addNode(newRCPath.getName(), org.wyona.yarep.core.NodeType.RESOURCE);
@@ -404,6 +407,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 	    log.error("Node already exists: " + newRCPath);
             // TODO: Abort ...!
         }
+*/
+
         java.io.Writer writer = new java.io.OutputStreamWriter(rcRepo.getNode(newRCPath.toString()).getOutputStream());
         writer.write(rcContent.toString());
         writer.close();
