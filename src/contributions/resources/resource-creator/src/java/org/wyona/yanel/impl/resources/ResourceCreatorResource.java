@@ -265,11 +265,17 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 
                     // TODO: Display repository navigation of this path ...
                     Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("repo-navigation");
-                    Node node = sitetree.getNode(getRealm(), getPath());
+                    Node node = null;
+                    String lookinPath = getRequest().getParameter("lookin");
+                    if (lookinPath != null) {
+                        node = sitetree.getNode(getRealm(), lookinPath);
+                    } else {
+                        node = sitetree.getNode(getRealm(), getPath());
+                    }
                     if (node.isCollection()) {
-                        log.error("DEBUG: Is Collection: " + node.getName());
+                        if(log.isDebugEnabled()) log.debug("Is Collection: " + node.getName());
                     } else if (node.isResource()) {
-                        log.error("DEBUG: Is Resource: " + node.getName());
+                        if (log.isDebugEnabled()) log.debug("Is Resource: " + node.getName());
                         node = node.getParent();
                     } else {
                         log.error("Neither collection nor resource: " + getPath());
