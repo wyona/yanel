@@ -191,7 +191,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         }
 
         String createName = request.getParameter("create-name");
-        sb.append("<p>New resource can be accessed at: <a href=\""+createName+"\">" + pathOfNewResource + "</a></p>");
+        log.error("DEBUG: New Resource: " + PathUtil.backToRealm(getPath()) + ", " + pathOfNewResource);
+        sb.append("<p>New resource can be accessed at: <a href=\"" + PathUtil.backToRealm(getPath()) + pathOfNewResource + "\">" + pathOfNewResource + "</a></p>");
     }
 
     /**
