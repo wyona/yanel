@@ -81,6 +81,7 @@ public class PathUtil extends org.wyona.commons.io.PathUtil {
        } else {
            steps =  path.split("/").length - 2;
        }
+       if (steps == 0) return "./";
        for (int i = 0; i < steps; i++) {
            backToRealm.append("../");
        }
