@@ -91,7 +91,58 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     private String getScreen() {
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-        sb.append("<head><title>create resource</title></head>");
+        sb.append("<head><title>create resource</title>");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("<script language=\"Javascript\">");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("function xmlhttpPost(strURL, lookin) {");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  var xmlHttpReq = false;");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  var self = this;");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  // Mozilla/Safari");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  if (window.XMLHttpRequest) {");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("    self.xmlHttpReq = new XMLHttpRequest();");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  }");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  // IE");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  else if (window.ActiveXObject) {");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("    self.xmlHttpReq = new ActiveXObject(\"Microsoft.XMLHTTP\");");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  }");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  self.xmlHttpReq.open('GET', strURL, true);");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  self.xmlHttpReq.onreadystatechange = function() {");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("    if (self.xmlHttpReq.readyState == 4) {");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("      document.getElementById(\"showLookIn\").innerHTML = lookin;");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("      document.getElementById(\"lookinpasser\").value = lookin;");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("      document.getElementById(\"lookup\").innerHTML = self.xmlHttpReq.responseText;");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("    }");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  }");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  self.xmlHttpReq.send(null);");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("}");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("</script>");
+        sb.append(System.getProperty("line.separator"));
+        
+        sb.append("</head>");
         sb.append("<body>");
 
         HttpServletRequest request = getRequest();
@@ -105,6 +156,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 getNoSuchScreen(sb);
             } else if (request.getParameter("save") != null) {
                 getSaveScreen(sb);
+            } else if (request.getParameter("lookup") != null) {
+                return getLookUp().toString();
 	    } else if (request.getParameter("resource-type") != null) {
                 getResourceScreen(sb);
             } else {
@@ -287,22 +340,11 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 
 
 		    sb.append("<table border=\"1\"><tr><td colspan=\"2\">Save as:</td></tr>");
-		    sb.append("<tr><td>Look in: " + node.getPath() + "&#160;&#160;&#160;</td><td>New folder: <input type=\"text\" name=\"create-new-folder\"/><input type=\"submit\" value=\"Create new folder\"/></td></tr>");
+		    sb.append("<tr><td>Look in: <div id=\"showLookIn\">" + node.getPath() + "</div>&#160;&#160;&#160;</td><td>New folder: <input type=\"text\" name=\"create-new-folder\"/><input type=\"submit\" value=\"Create new folder\"/></td></tr>");
 
-		    sb.append("<tr><td colspan=\"2\"><table border=\"1\" width=\"100%\">");
-		    sb.append("<tr><th align=\"left\">Name</th><th align=\"left\">Resource Type</th></tr>");
-                    Node[] children = node.getChildren();
-                    for (int i = 0; i < children.length; i++) {
-                        if (children[i].isCollection()) {
-                            // TODO: Also append resource specific parameters (AJAX ...)
-		            sb.append("<tr><td>Collection: <a href=\"?lookin=" + node.getPath() + children[i].getName() + "/&amp;resource-type=" + resNamespace + "::" + resName + "\">" + children[i].getName() + "</a></td><td>TBD</td></tr>");
-                        } else if (children[i].isResource()) {
-		            sb.append("<tr><td>Resource: "+children[i].getName()+"</td><td>TBD</td></tr>");
-                        } else {
-		            sb.append("<tr><td>Neither Collection nor Resource: "+children[i].getName()+"</td><td>-</td></tr>");
-                        }
-                    }
-		    sb.append("</table></td></tr>");
+		    sb.append("<tr><td colspan=\"2\" id=\"lookup\">");
+                    sb.append(getLookUp());
+                    sb.append("</td></tr>");
 
 		    sb.append("<tr><td colspan=\"2\">");
                     String createName = getRequest().getParameter("create-name");
@@ -317,7 +359,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     sb.append("<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Save new resource\" name=\"save\"/></td></tr>");
 		    sb.append("</table>");
 
-                    sb.append("<input type=\"hidden\" name=\"lookin\" value=\"" + node.getPath() + "\"/>");
+                    sb.append("<input type=\"hidden\" name=\"lookin\" id=\"lookinpasser\" value=\"" + node.getPath() + "\"/>");
                     sb.append("</form>");
 
                     // TODO: Display realm navigation (sitetree, topic map, ...) resp. introduce another step
@@ -499,6 +541,48 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             }
         }
         return resName;
+    }
+    
+    private StringBuffer getLookUp() {
+        StringBuffer sb = new StringBuffer("");
+        Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("repo-navigation");
+        Node node = null;
+        String lookinPath = getRequest().getParameter("lookin");
+        if (lookinPath != null) {
+            node = sitetree.getNode(getRealm(), lookinPath);
+        } else {
+            node = sitetree.getNode(getRealm(), getPath());
+        }
+        if (node.isCollection()) {
+            if(log.isDebugEnabled()) log.debug("Is Collection: " + node.getName());
+        } else if (node.isResource()) {
+            if (log.isDebugEnabled()) log.debug("Is Resource: " + node.getName());
+            node = node.getParent();
+        } else {
+            log.error("Neither collection nor resource: " + getPath());
+        }
+        String rtps = getRequest().getParameter("resource-type");
+        String resNamespace = rtps.substring(0, rtps.indexOf("::"));
+        String resName = rtps.substring(rtps.indexOf("::") + 2);
+        
+        sb.append("<div style=\"height:160px;overflow:auto;\">");
+        sb.append("<table border=\"1\" width=\"100%\">");
+        sb.append("<tr><th align=\"left\">Name</th><th align=\"left\">Resource Type</th></tr>");
+                Node[] children = node.getChildren();
+                for (int i = 0; i < children.length; i++) {
+                    if (children[i].isCollection()) {
+                        // TODO: Also append resource specific parameters (AJAX ...)
+                sb.append("<tr><td>Collection: <a href='JavaScript:xmlhttpPost(\"?lookup=true&amp;lookin=" + node.getPath() + children[i].getName() + "/&amp;resource-type=" + resNamespace + "::" + resName + "\", \"" + node.getPath() + children[i].getName() + "/\")'>" + children[i].getName() + "</a></td><td>TBD</td></tr>");
+                    } else if (children[i].isResource()) {
+                sb.append("<tr><td>Resource: "+children[i].getName()+"</td><td>TBD</td></tr>");
+                    } else {
+                sb.append("<tr><td>Neither Collection nor Resource: "+children[i].getName()+"</td><td>-</td></tr>");
+                    }
+                }
+        sb.append("</table>");
+        sb.append("</div>");
+        
+        return sb;
     }
 }
 
