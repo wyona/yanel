@@ -245,7 +245,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 
         String createName = request.getParameter("create-name");
         log.error("DEBUG: New Resource: " + PathUtil.backToRealm(getPath()) + ", " + pathOfNewResource);
-        sb.append("<p>New resource can be accessed at: <a href=\"" + PathUtil.backToRealm(getPath()) + pathOfNewResource + "\">" + pathOfNewResource + "</a></p>");
+        // NOTE: Back to realm has the form of ./ or ../ or ../../ etc., hence drop the leading slash!
+        String href = PathUtil.backToRealm(getPath()) + pathOfNewResource.toString().substring(1);
+        sb.append("<p>New resource can be accessed at: <a href=\"" + href + "\">" + href + "</a></p>");
     }
 
     /**
