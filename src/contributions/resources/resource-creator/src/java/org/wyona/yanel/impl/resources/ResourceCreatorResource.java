@@ -395,6 +395,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         }
         
         log.error("DEBUG: Path of new resource: " + pathOfNewResource);
+        pathOfNewResource = new Path(removeTooManySlashes(pathOfNewResource.toString()));
+        log.error("DEBUG: Path of new resource without too many slashes: " + pathOfNewResource);
 
         String rtps = getRequest().getParameter("resource-type");
         String resNamespace = rtps.substring(0, rtps.indexOf("::"));
@@ -583,6 +585,28 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         sb.append("</div>");
         
         return sb;
+    }
+
+    /**
+     * Remove slashes if there are too many, e.g. /foo//bar.html is being transformed into /foo/bar.html
+     */
+    private String removeTooManySlashes(String path) {
+        StringBuffer sb = new StringBuffer();
+        boolean previousCharWasSlash = false;
+        for (int i = 0; i < path.length(); i++) {
+            char c = path.charAt(i);
+            if (c == '/' && previousCharWasSlash) {
+                log.error("DEBUG: Do not append this slash: " + i);
+            } else {
+                sb.append(c);
+            }
+            if (c == '/') {
+                previousCharWasSlash = true;
+            } else {
+                previousCharWasSlash = false;
+            }
+        }
+        return sb.toString();
     }
 }
 
