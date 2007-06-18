@@ -15,25 +15,47 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.navigation.Node;
 import org.wyona.yanel.core.navigation.Sitetree;
+import org.wyona.yanel.core.serialization.SerializerFactory;
+import org.wyona.yanel.core.source.ResourceResolver;
+import org.wyona.yanel.core.transformation.I18nTransformer2;
+import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
 import org.apache.log4j.Category;
+import org.apache.xml.resolver.tools.CatalogResolver;
+import org.apache.xml.serializer.Serializer;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
 
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  *
  */
 public class ResourceCreatorResource extends Resource implements ViewableV2{
     private static Category log = Category.getInstance(ResourceCreatorResource.class);
+    private boolean ajaxBrowser = false;
 
     /**
      *
@@ -67,8 +89,88 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      *
      */
     public View getView(String viewId) {
+        if(request.getHeader("User-Agent").indexOf("rv:1.7") < 0) {
+            ajaxBrowser = true;
+        }
+        
         View view = new View();
-        view.setMimeType(getMimeType(viewId));
+        String mimeType = getMimeType(viewId);
+        view.setMimeType(mimeType);
+
+        try {
+            org.wyona.yarep.core.Repository repo = getRealm().getRepository();
+
+            if (viewId != null && viewId.equals("source")) {
+                view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
+                view.setMimeType("application/xml");
+                return view;
+            }
+            if (request.getParameter("javascript") != null) {
+                view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
+                view.setMimeType("text/javascript");
+                return view;
+            }
+
+            String[] xsltPath = getXSLTPath(getPath());
+            if (xsltPath != null) {
+                
+                // create reader:
+                XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+                CatalogResolver catalogResolver = new CatalogResolver();
+                xmlReader.setEntityResolver(catalogResolver);
+                
+                // create xslt transformer:
+                SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
+                
+                TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPath.length];
+                for (int i = 0; i < xsltPath.length; i++) {
+                    xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath[i]).getInputStream()));
+                    xsltHandlers[i].getTransformer().setParameter("yanel.path.name", PathUtil.getName(getPath()));
+                    xsltHandlers[i].getTransformer().setParameter("yanel.path", getPath());
+                    xsltHandlers[i].getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
+                    xsltHandlers[i].getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
+                   
+                    xsltHandlers[i].getTransformer().setParameter("language", getRequestedLanguage());
+                }
+                
+                // create i18n transformer:
+                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getRequestedLanguage(), getRealm().getDefaultLanguage());
+                i18nTransformer.setEntityResolver(catalogResolver);
+                
+                // create xinclude transformer:
+                XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
+                ResourceResolver resolver = new ResourceResolver(this);
+                xIncludeTransformer.setResolver(resolver);
+                
+                // create serializer:
+                Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                
+                // chain everything together (create a pipeline):
+                xmlReader.setContentHandler(xsltHandlers[0]);
+                for (int i=0; i<xsltHandlers.length-1; i++) {
+                    xsltHandlers[i].setResult(new SAXResult(xsltHandlers[i+1]));
+                }
+                xsltHandlers[xsltHandlers.length-1].setResult(new SAXResult(xIncludeTransformer));
+                xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
+                i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
+                serializer.setOutputStream(baos);
+                
+                // execute pipeline:
+                xmlReader.parse(new InputSource(new java.io.StringBufferInputStream(getScreen())));
+                
+                // write result into view:
+                view.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
+                return view;
+            } else {
+                log.debug("Mime-Type: " + mimeType);
+                view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
+                return view;
+            }
+        } catch(Exception e) {
+            log.error(e + " (" + getPath() + ", " + getRealm() + ")", e);
+        }
+        
         view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
         return view;
     }
@@ -89,59 +191,14 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      * Flow
      */
     private String getScreen() {
+        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(getPath());
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
         sb.append("<head><title>create resource</title>");
+        sb.append("<script src=\"?javascript=prototype.js\" type=\"text/javascript\"></script>");
         sb.append(System.getProperty("line.separator"));
-        sb.append("<script language=\"Javascript\">");
+        sb.append("<script src=\"?javascript=ajaxlookup.js\" type=\"text/javascript\"></script>");
         sb.append(System.getProperty("line.separator"));
-        sb.append("function xmlhttpPost(strURL, lookin) {");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  var xmlHttpReq = false;");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  var self = this;");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  // Mozilla/Safari");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  if (window.XMLHttpRequest) {");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("    self.xmlHttpReq = new XMLHttpRequest();");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  }");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  // IE");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  else if (window.ActiveXObject) {");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("    self.xmlHttpReq = new ActiveXObject(\"Microsoft.XMLHTTP\");");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  }");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  self.xmlHttpReq.open('GET', strURL, true);");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  self.xmlHttpReq.onreadystatechange = function() {");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("    if (self.xmlHttpReq.readyState == 4) {");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("      document.getElementById(\"showLookIn\").innerHTML = lookin;");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("      document.getElementById(\"lookinpasser\").value = lookin;");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("      document.getElementById(\"lookup\").innerHTML = self.xmlHttpReq.responseText;");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("    }");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  }");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("  self.xmlHttpReq.send(null);");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("}");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("</script>");
-        sb.append(System.getProperty("line.separator"));
-        
         sb.append("</head>");
         sb.append("<body>");
 
@@ -158,7 +215,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 getSaveScreen(sb);
             } else if (request.getParameter("lookup") != null) {
                 return getLookUp().toString();
-	    } else if (request.getParameter("resource-type") != null) {
+            } else if (request.getParameter("javascript") != null) {
+                return getJavaScript().toString();
+            } else if (request.getParameter("resource-type") != null) {
                 getResourceScreen(sb);
             } else {
                 log.info("Fallback ...");
@@ -288,7 +347,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                             String propertyType = ((CreatableV2) resource).getPropertyType(propertyNames[i]);
                             if (propertyType != null && propertyType.equals(CreatableV2.TYPE_UPLOAD)) {
                                 sb.append("<input type=\"file\" name=\"rp." + propertyNames[i] + "\"/><br/>");
-		            } else if (propertyType != null && propertyType.equals(CreatableV2.TYPE_SELECT)) {
+                    } else if (propertyType != null && propertyType.equals(CreatableV2.TYPE_SELECT)) {
                                 Object defaultValues = ((CreatableV2) resource).getProperty(propertyNames[i]);
                                 if (defaultValues instanceof java.util.HashMap) {
                                     sb.append("<select name=\"rp." + propertyNames[i] + "\">");
@@ -338,30 +397,12 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                         log.error("Neither collection nor resource: " + getPath());
                     }
 
-		    sb.append("<br/><br/>");
-
-
-		    sb.append("<table border=\"1\"><tr><td colspan=\"2\">Save as:</td></tr>");
-		    sb.append("<tr><td>Look in: <div id=\"showLookIn\">" + node.getPath() + "</div>&#160;&#160;&#160;</td><td>New folder: <input type=\"text\" name=\"create-new-folder\"/><input type=\"submit\" value=\"Create new folder\"/></td></tr>");
-
-		    sb.append("<tr><td colspan=\"2\" id=\"lookup\">");
+                    sb.append("<br/><br/>");
+                    
+                    sb.append("<div id=\"lookup\">");
                     sb.append(getLookUp());
-                    sb.append("</td></tr>");
-
-		    sb.append("<tr><td colspan=\"2\">");
-                    String createName = getRequest().getParameter("create-name");
-                    if (createName != null) {
-                        sb.append("New name: <input type=\"text\" name=\"create-name\" value=\"" + createName + "\"/>");
-                    } else {
-                        sb.append("New name: <input type=\"text\" name=\"create-name\"/>");
-                    }
-		    sb.append("</td></tr>");
-
-
-                    sb.append("<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Save new resource\" name=\"save\"/></td></tr>");
-		    sb.append("</table>");
-
-                    sb.append("<input type=\"hidden\" name=\"lookin\" id=\"lookinpasser\" value=\"" + node.getPath() + "\"/>");
+                    sb.append("</div>");
+                    
                     sb.append("</form>");
 
                     // TODO: Display realm navigation (sitetree, topic map, ...) resp. introduce another step
@@ -440,7 +481,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         } else {
             log.warn("No RTI properties: " + newResource.getPath());
         }
-	rcContent.append("</yanel:resource-config>");
+    rcContent.append("</yanel:resource-config>");
 
 
         org.wyona.yarep.core.Repository rcRepo = newResource.getRealm().getRTIRepository();
@@ -569,6 +610,24 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         String resNamespace = rtps.substring(0, rtps.indexOf("::"));
         String resName = rtps.substring(rtps.indexOf("::") + 2);
         
+        sb.append("<table border=\"1\" style=\"width:100%;\"><tr><td colspan=\"2\">Save as:</td></tr>");
+        sb.append("<tr><td>Look in: " + node.getPath() + "&#160;&#160;&#160;</td><td>New folder: <input type=\"text\" name=\"create-new-folder\"/><input type=\"submit\" value=\"Create new folder\"/> ");
+        
+        String parent = "";
+        if (!node.getPath().equals("/")) {
+            parent = node.getPath().substring(0, node.getPath().lastIndexOf("/"));
+            parent = parent.substring(0, parent.lastIndexOf("/"));
+        }    
+
+        if (ajaxBrowser) {
+            sb.append("<a href='JavaScript:ajaxlookup(\"" + resNamespace + "::" + resName + "\", \"" + parent + "/\")'>parent</a>");
+        } else {
+            sb.append("<a href=\"?lookin=" + parent + "/&amp;resource-type=" + resNamespace + "::" + resName + "\">parent</a>");
+        }
+        sb.append("</td></tr>");
+
+        sb.append("<tr><td colspan=\"2\">");
+
         sb.append("<div style=\"height:160px;overflow:auto;\">");
         sb.append("<table border=\"1\" width=\"100%\">");
         sb.append("<tr><th align=\"left\">Name</th><th align=\"left\">Resource Type</th></tr>");
@@ -576,7 +635,11 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 for (int i = 0; i < children.length; i++) {
                     if (children[i].isCollection()) {
                         // TODO: Also append resource specific parameters (AJAX ...)
-                sb.append("<tr><td>Collection: <a href='JavaScript:xmlhttpPost(\"?lookup=true&amp;lookin=" + node.getPath() + children[i].getName() + "/&amp;resource-type=" + resNamespace + "::" + resName + "\", \"" + node.getPath() + children[i].getName() + "/\")'>" + children[i].getName() + "</a></td><td>TBD</td></tr>");
+                        if (ajaxBrowser) {
+                            sb.append("<tr><td>Collection: <a href='JavaScript:ajaxlookup(\"" + resNamespace + "::" + resName + "\", \"" + node.getPath() + children[i].getName() + "/\")'>" + children[i].getName() + "</a></td><td>TBD</td></tr>");
+                        } else {
+                            sb.append("<tr><td>Collection: <a href=\"?lookin=" + node.getPath() + children[i].getName() + "/&amp;resource-type=" + resNamespace + "::" + resName + "\">" + children[i].getName() + "</a></td><td>TBD</td></tr>");
+                        }
                     } else if (children[i].isResource()) {
                 sb.append("<tr><td>Resource: "+children[i].getName()+"</td><td>TBD</td></tr>");
                     } else {
@@ -585,8 +648,56 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 }
         sb.append("</table>");
         sb.append("</div>");
+        sb.append("</td></tr>");
+
+        sb.append("<tr><td colspan=\"2\">");
+       
+        String createName = getRequest().getParameter("create-name");
+        if (createName != null) {
+                    sb.append("New name: <input type=\"text\" name=\"create-name\" value=\"" + createName + "\"/>");
+                } else {
+                    sb.append("New name: <input type=\"text\" name=\"create-name\"/>");
+                }
+        sb.append("</td></tr>");
+
+
+                sb.append("<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Save new resource\" name=\"save\"/></td></tr>");
+        sb.append("</table>");
+        sb.append("<input type=\"hidden\" name=\"lookin\" value=\"" + node.getPath() + "\"/>");
         
         return sb;
+    }
+    
+    private StringBuffer getJavaScript() {
+        String jsFileName = getRequest().getParameter("javascript");
+        try {
+            File jsFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile()
+                    .getAbsolutePath(), "js" + File.separator + jsFileName);
+            StringBuffer sb = new StringBuffer(1000);
+            BufferedReader reader = new BufferedReader(
+                    new FileReader(jsFile));
+            char[] buf = new char[1024];
+            int numRead=0;
+            while((numRead=reader.read(buf)) != -1){
+                sb.append(buf, 0, numRead);
+            }
+            reader.close();
+            return sb;
+        } catch (Exception e) {
+            // TODO: handle exception
+            log.error("DEBUG: could not get javascript file: " + jsFileName + " " + e);
+        }
+        return null;
+    }
+    
+    /**
+     * Get XSLT path
+     */
+    private String[] getXSLTPath(String path) throws Exception {
+        String[] xsltPath = getResourceConfigProperties("xslt");
+        if (xsltPath != null) return xsltPath;
+        log.info("No XSLT Path within: " + path);
+        return null;
     }
 
     /**
