@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<introspection xmlns="http://www.wyona.org/neutron/2.0">
+<navigation>  <sitetree href="./" method="PROPFIND"/></navigation>
+  <resource name="access-policies.html">
+  <edit mime-type="application/xhtml+xml">
+    <checkout url="access-policies.html?yanel.resource.viewid=source&amp;yanel.resource.usecase=checkout" method="GET"/>
+    <checkin  url="access-policies.html?yanel.resource.usecase=checkin" method="PUT"/>
+  </edit>
+  </resource>
+</introspection>
