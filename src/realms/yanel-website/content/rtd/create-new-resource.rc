@@ -22,4 +22,5 @@
       </rc:resource-type>
     </rc:resource-types>
   </yanel:custom-config>
+  <yanel:property name="xslt" value="/xslt/global.xsl"/>
 </yanel:resource-config>
