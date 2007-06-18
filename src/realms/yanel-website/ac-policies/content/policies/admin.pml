@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
-<policy xmlns="http://www.wyona.org/security/1.0">
+<policy xmlns="http://www.wyona.org/security/1.0" use-inherited-policies="false">
 
   <role id="view">
-    <world permission="false"/>
+    <!--<world permission="false"/>-->
     <user id="lenya" permission="true"/>
   </role>
 
