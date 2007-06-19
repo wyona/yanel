@@ -1,4 +1,7 @@
+yarep_revisionComment<string>:updated
 yarep_type<string>:resource
+yarep_revisionCreator<string>:michi
 yarep_isCheckedOut<boolean>:false
 yarep_checkoutDate<date>:2007-06-19T12:47:50+0200
 yarep_checkoutUserID<string>:michi
+yarep_revisionCreationDate<date>:2007-06-19T12:48:11+0200
