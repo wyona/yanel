@@ -38,7 +38,11 @@ Var StartMenuGroup
 !insertmacro MUI_UNPAGE_INSTFILES
 
 # Installer languages
+!insertmacro MUI_LANGUAGE English ;first language is the default language
 !insertmacro MUI_LANGUAGE German
+!insertmacro MUI_LANGUAGE "French"
+!insertmacro MUI_LANGUAGE "Spanish"
+!insertmacro MUI_LANGUAGE "Japanese"
 
 # Installer attributes
 OutFile install-yanel-@YANEL_VERSION@.exe
