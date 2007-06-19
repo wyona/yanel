@@ -10,12 +10,13 @@
       <groupId>yarep</groupId>
       <artifactId>yarep-core</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>0.0.1-dev-r25121</version>
+      <version>0.0.1-dev-r25195</version>
     </dependency>
     <dependency>
       <groupId>wyona-org-commons</groupId>
       <artifactId>wyona-org-commons</artifactId>
-      <version>0.0.1-dev-r23672</version>
+      <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
+      <version>0.0.1-dev-r25193</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
