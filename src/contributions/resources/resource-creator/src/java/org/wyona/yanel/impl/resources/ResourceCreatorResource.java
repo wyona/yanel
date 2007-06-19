@@ -574,7 +574,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 org.jdom.Element displayNameElement = (org.jdom.Element) xpath.selectSingleNode(jdomDocument);
                 if (displayNameElement != null) {
                     // TODO: It seems like document does not contain text nodes ...
-                    log.error("DEBUG: " + displayNameElement + " :: " + displayNameElement.getText() + " :: " + displayNameElement.getName());
+                    if (log.isDebugEnabled()) log.debug("Display name: " + displayNameElement + " :: " + displayNameElement.getText() + " :: " + displayNameElement.getName());
                     return displayNameElement.getText();
                 } else {
                     log.warn("No display name: " + resName);
@@ -613,16 +613,16 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         sb.append("<table border=\"1\" style=\"width:100%;\"><tr><td colspan=\"2\">Save as:</td></tr>");
         sb.append("<tr><td>Look in: " + node.getPath() + "&#160;&#160;&#160;</td><td>New folder: <input type=\"text\" name=\"create-new-folder\"/><input type=\"submit\" value=\"Create new folder\"/> ");
         
-        String parent = "";
+        String parent = "/";
         if (!node.getPath().equals("/")) {
-            parent = node.getPath().substring(0, node.getPath().lastIndexOf("/"));
-            parent = parent.substring(0, parent.lastIndexOf("/"));
-        }    
+            parent = new org.wyona.commons.io.Path(node.getPath()).getParent().toString();
+        }
+        if (log.isDebugEnabled()) log.debug("Parent: " + parent);
 
         if (ajaxBrowser) {
-            sb.append("<a href='JavaScript:ajaxlookup(\"" + resNamespace + "::" + resName + "\", \"" + parent + "/\")'>parent</a>");
+            sb.append("<a href='JavaScript:ajaxlookup(\"" + resNamespace + "::" + resName + "\", \"" + parent + "\")'>parent</a>");
         } else {
-            sb.append("<a href=\"?lookin=" + parent + "/&amp;resource-type=" + resNamespace + "::" + resName + "\">parent</a>");
+            sb.append("<a href=\"?lookin=" + parent + "&amp;resource-type=" + resNamespace + "::" + resName + "\">parent</a>");
         }
         sb.append("</td></tr>");
 
