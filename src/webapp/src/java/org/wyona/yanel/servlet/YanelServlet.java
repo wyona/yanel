@@ -148,7 +148,7 @@ public class YanelServlet extends HttpServlet {
 
             sslPort = config.getInitParameter("ssl-port");
             toolbarMasterSwitch = config.getInitParameter("toolbar-master-switch");
-            reservedPrefix = config.getInitParameter("reserved-prefix");
+            reservedPrefix = yanel.getReservedPrefix();
         } catch (Exception e) {
             log.error(e);
             throw new ServletException(e.getMessage(), e);
@@ -1989,6 +1989,42 @@ public class YanelServlet extends HttpServlet {
                 View view = ((ViewableV2) sitetreeResource).getView(viewId);
                 if (view != null) {
                     if (generateResponse(view, sitetreeResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
+                }
+            } catch (Exception e) {
+                throw new ServletException(e);
+            }
+        } else if (path.indexOf("resource-types") >=0 ) {
+            String[] pathPart1 = path.split("/resource-types/");
+            String[] pathPart2 = pathPart1[1].split("::");
+            String[] pathPart3 = pathPart2[1].split("/");
+            String name = pathPart3[0];
+            String namespace = pathPart2[0].replaceAll("http:/", "http://");
+            String htdocsPath = path.split("::" + name)[1].replaceAll("/", File.separator); 
+            try {
+                java.util.Map properties = new HashMap();
+                Realm realm = yanel.getMap().getRealm(request.getServletPath());
+                ResourceConfiguration rc = new ResourceConfiguration(name, namespace, properties);
+                Resource resourceOfPrefix = yanel.getResourceManager().getResource(request, response, realm, path, rc);
+                File resourceFile = org.wyona.commons.io.FileUtil.file(resourceOfPrefix.getRTD().getConfigFile().getParentFile().getAbsolutePath(), "htdocs" + htdocsPath);
+
+                if (resourceFile.exists()) {
+                    log.debug("Resource-Type specific data: " + resourceFile);
+                    // TODO: Set HTTP header (mime-type, size, etc.)
+                    String mimeType = guessMimeType(FilenameUtils.getExtension(resourceFile.getName()));
+                    response.setHeader("Content-Type", mimeType);
+
+                    byte buffer[] = new byte[8192];
+                    int bytesRead;
+                    InputStream in = new java.io.FileInputStream(resourceFile);
+                    OutputStream out = response.getOutputStream();
+                    while ((bytesRead = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytesRead);
+                    }
+                    return;
+                } else {
+                    log.error("No such file or directory: " + resourceFile);
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
+                    return;
                 }
             } catch (Exception e) {
                 throw new ServletException(e);
