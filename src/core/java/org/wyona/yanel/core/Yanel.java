@@ -55,6 +55,7 @@ public class Yanel {
 
     private String version = null;
     private String revision = null;
+    private String reservedPrefix = null;
 
     private static Category log = Category.getInstance(Yanel.class);
 
@@ -100,6 +101,7 @@ public class Yanel {
        Configuration versionConfig = config.getChild("version");
        version = versionConfig.getAttribute("version");
        revision = versionConfig.getAttribute("revision");
+       reservedPrefix = config.getChild("reserved-prefix").getValue();
     }
    
     public static Yanel getInstance() throws Exception {
@@ -156,5 +158,12 @@ public class Yanel {
      */
     public String getRevision() {
         return revision;
+    }
+
+    /**
+     * Get Yanel reserved prefix
+     */
+    public String getReservedPrefix() {
+        return reservedPrefix;
     }
 }
