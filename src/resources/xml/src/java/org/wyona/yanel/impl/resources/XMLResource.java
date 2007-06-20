@@ -387,6 +387,11 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         }
         */
     }
+    
+    public void cancelCheckout() throws Exception {
+        Node node = getRealm().getRepository().getNode(getPath());
+        node.cancelCheckout();
+    }
 
     public void restore(String revisionName) throws Exception {
         getRealm().getRepository().getNode(getPath()).restore(revisionName);
@@ -564,6 +569,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         sb.append("\n  <edit mime-type=\"application/xhtml+xml\">");
         sb.append("\n    <checkout url=\"" + name + "?yanel.resource.viewid=source&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
         sb.append("\n    <checkin  url=\"" + name + "?yanel.resource.usecase=checkin\" method=\"PUT\"/>");
+        sb.append("\n    <release-lock url=\"" + name + "?yanel.resource.usecase=release-lock\" method=\"GET\"/>");
         sb.append("\n  </edit>");
         sb.append("\n  </resource>");
         sb.append("\n</introspection>");
@@ -588,6 +594,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         sb.append("<edit mime-type=\"" + this.getMimeType(null) + "\">");
         sb.append("<checkout url=\"?yanel.resource.viewid=source&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
         sb.append("<checkin  url=\"?yanel.resource.usecase=checkin\"  method=\"PUT\"/>");
+        sb.append("<release-lock url=\"?yanel.resource.usecase=release-lock\" method=\"GET\"/>");
         sb.append("</edit>");
 
         sb.append(getWorkflowIntrospection());

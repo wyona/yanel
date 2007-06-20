@@ -218,10 +218,28 @@ public class YanelServlet extends HttpServlet {
             log.error("DEBUG: WebDAV client (" + request.getHeader("User-Agent") + ") requests to \"edit\" a resource: " + resource.getRealm() + ", " + resource.getPath());
             //return;
         }
+        
+        String value = request.getParameter("yanel.resource.usecase");
 
         try {
-            getContent(request, response);
-            return;
+            if (value != null && value.equals("release-lock")) {
+                log.debug("Release lock ...");
+                
+                if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
+                    VersionableV2 versionable  = (VersionableV2)resource;
+                    try {
+                        versionable.cancelCheckout();
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        throw new ServletException("Releasing of lock failed because of: " + resource.getPath() 
+                                + " " + e.getMessage(), e);
+                    }
+                }
+                return;
+            } else {
+                getContent(request, response);
+                return;
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);

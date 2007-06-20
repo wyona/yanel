@@ -275,6 +275,11 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         }
         */
     }
+    
+    public void cancelCheckout() throws Exception {
+        Node node = getRealm().getRepository().getNode(getPath());
+        node.cancelCheckout();
+    }
 
     public void restore(String revisionName) throws Exception {
         getRealm().getRepository().getNode(getPath()).restore(revisionName);
@@ -376,6 +381,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         buf.append("<edit mime-type=\"" + this.getMimeType(null) + "\">");
         buf.append("<checkout url=\"?yanel.resource.usecase=checkout\" method=\"GET\"/>");
         buf.append("<checkin  url=\"?yanel.resource.usecase=checkin\"  method=\"PUT\"/>");
+        buf.append("<release-lock url=\"?yanel.resource.usecase=release-lock\" method=\"GET\"/>");
         buf.append("</edit>");
 
         buf.append(getWorkflowIntrospection());

@@ -62,6 +62,10 @@ public interface VersionableV2 {
      */
     public void checkin(String comment) throws Exception;
     
+    /**
+    *
+    */
+    public void cancelCheckout() throws Exception;
     
     /**
      * Indicates whether this resource is checked out.
