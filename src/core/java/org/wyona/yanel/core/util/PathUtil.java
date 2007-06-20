@@ -18,6 +18,7 @@ package org.wyona.yanel.core.util;
 
 import org.apache.log4j.Category;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.core.Resource;
 
 /**
  *
@@ -88,4 +89,19 @@ public class PathUtil extends org.wyona.commons.io.PathUtil {
        return backToRealm.toString();
    }
    
+    /**
+     * @param resource Resource
+     * @return A string with as many ../ as it needs to get from the resource path to the root of the realm and adds the reservedPrefix and resource-types/resource-type-namespace::resource-type-localname/ to it. 
+     */
+    public static String getResourcesHtdocs(Resource resource) {
+        return getGlobalHtdocs(resource) + "resource-types/" + resource.getResourceTypeNamespace() + "::" + resource.getResourceTypeLocalName() + "/";
+    }
+
+    /**
+     * @param resource Resource
+     * @return A string with as many ../ as it needs to get from the resource path to the root of the realm and adds the reservedPrefix to it. 
+     */
+    public static String getGlobalHtdocs(Resource resource) {
+        return backToRealm(resource.getPath()) + resource.getYanel().getReservedPrefix() + "/";
+    }
 }
