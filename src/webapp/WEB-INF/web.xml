@@ -36,12 +36,6 @@
      <param-value>on</param-value>
      <!--<param-value>off</param-value>-->
     </init-param>
-
-    <!-- Reserved prefix in order to allow accessing of global data, such as for instance the yanel logo -->
-    <init-param>
-     <param-name>reserved-prefix</param-name>
-     <param-value>yanel</param-value>
-    </init-param>
   </servlet>
 
   <servlet-mapping>
