@@ -17,6 +17,7 @@
       <version version="{$yanel.version}" revision="{$yanel.revision}"/>
       <xsl:copy-of select="/yanel:yanel/yanel:realms-config"/>
       <xsl:copy-of select="/yanel:yanel/yanel:resource-types-config"/>
+      <xsl:copy-of select="/yanel:yanel/yanel:reserved-prefix"/>
     </yanel>
   </xsl:template>
 

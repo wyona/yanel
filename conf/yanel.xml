@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<yanel xmlns="http://www.wyona.org/yanel/1.0" version="2007031300">
+<yanel xmlns="http://www.wyona.org/yanel/1.0" version="2007061900">
   
   <!-- # Realms configuration -->
   <realms-config src="realms.xml"/>
@@ -8,4 +8,7 @@
   <!-- # ResourceTypes configuration -->
   <resource-types-config src="resource-types.xml"/>
   
+  <!-- # Reserved-Prefix configuration -->
+  <reserved-prefix>yanel</reserved-prefix>
+
 </yanel>
