@@ -947,6 +947,7 @@ public class YanelServlet extends HttpServlet {
 
         // TODO: Replace hardcoded roles by mapping between roles amd query strings ...
         String value = request.getParameter("yanel.resource.usecase");
+        String workflowTransitionValue = request.getParameter("yanel.resource.workflow.transition");
         String contentType = request.getContentType();
         String method = request.getMethod();
         if (value != null && value.equals("save")) {
@@ -962,12 +963,17 @@ public class YanelServlet extends HttpServlet {
             // TODO: Is posting atom entries different from a general post (see below)?!
             log.error("DEBUG: Write/Checkin Atom entry ...");
             role = new Role("write");
-        } else if (method.equals(METHOD_PUT) || method.equals(METHOD_POST)) {
+        // TODO: METHOD_POST is not generally protected, but save, checkin, application/atom+xml are being protected. See doPost(.... 
+        } else if (method.equals(METHOD_PUT)) {
             log.error("DEBUG: Upload data ...");
             role = new Role("write");
         } else if (method.equals(METHOD_DELETE)) {
             log.error("DEBUG: Delete resource ...");
             role = new Role("delete");
+        } else if (workflowTransitionValue != null) {
+            // TODO: How shall we protect workflow transitions?!
+            log.error("DEBUG: Workflow transition ...");
+            role = new Role("view");
         } else {
             role = new Role("view");
         }
