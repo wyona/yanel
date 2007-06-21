@@ -1,0 +1,19 @@
+#yanelprogressbar {
+  border:1px solid #d8dfea;
+  width:100px;
+  height:20px;
+  position:absolute;
+  top:45%;
+  left:45%;
+  overflow:hidden;
+  background-color:#f7f7f7; 
+}
+
+#yanelprogressbarindicator {
+  position:absolute;
+  top:-5px;
+  left:0;
+  background-color: #4682b4;
+  font: 25px bold sans-serif;
+  color:white;
+}
