@@ -73,7 +73,7 @@ public abstract class XmlViewResource extends Resource implements ViewableV2, Co
     public View getView(String viewId) throws Exception {
         
         // set the output stream for the XML serializer
-        this.xmlSerializer.setOutputByteStream(response.getOutputStream());
+        this.xmlSerializer.setOutputByteStream(getResponse().getOutputStream());
         
         this.contentHandler = xmlSerializer.asContentHandler();
         
