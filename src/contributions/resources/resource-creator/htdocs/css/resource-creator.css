@@ -1,0 +1,13 @@
+#resourceCreatorSaveAsTable {
+  width:100%;
+}
+
+#lookupfilesTable {
+  width:100%;
+}
+
+#lookupfiles {
+  height:160px;
+  overflow:auto;
+  position:relative;
+}
