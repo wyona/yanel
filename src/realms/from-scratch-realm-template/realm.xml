@@ -3,10 +3,10 @@
 <realm-config xmlns="http://www.wyona.org/yanel/realm/1.0">
   <name>Yanel From Scratch Realm</name>
 
-  <rti>yanel/config/rti-repository.xml</rti>
-  <data>yanel/config/data-repository.xml</data>
-  <ac-policies>yanel/config/ac-policies-repository.xml</ac-policies>
-  <ac-identities>yanel/config/ac-identities-repository.xml</ac-identities>
+  <rti>config/rti-repository.xml</rti>
+  <data>config/data-repository.xml</data>
+  <ac-policies>config/ac-policies-repository.xml</ac-policies>
+  <ac-identities>config/ac-identities-repository.xml</ac-identities>
 
   <!-- Directory where all repositories are being contained. At the moment necessary for copying this realm. WARNING: This doesn't have to be the case, but rather check the various repository configs themselves! TODO: See http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5208 -->
   <root-dir>./.</root-dir>
