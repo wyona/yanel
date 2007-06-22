@@ -30,9 +30,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
@@ -103,11 +101,6 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             if (viewId != null && viewId.equals("source")) {
                 view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
                 view.setMimeType("application/xml");
-                return view;
-            }
-            if (request.getParameter("javascript") != null) {
-                view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
-                view.setMimeType("text/javascript");
                 return view;
             }
 
@@ -191,14 +184,14 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      * Flow
      */
     private String getScreen() {
-        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(getPath());
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
         sb.append("<head><title>create resource</title>");
-        sb.append("<script src=\"?javascript=prototype.js\" type=\"text/javascript\"></script>");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("<script src=\"?javascript=ajaxlookup.js\" type=\"text/javascript\"></script>");
-        sb.append(System.getProperty("line.separator"));
+        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + PathUtil.getResourcesHtdocsPath(this) + "css/resource-creator.css\"/>");
+        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-css/progressBar.css\"/>");
+        sb.append("<script src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-js/prototype.js\" type=\"text/javascript\"></script>");
+        sb.append("<script src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-js/progressBar.js\" type=\"text/javascript\"></script>");
+        sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPath(this)+ "js/ajaxlookup.js\" type=\"text/javascript\"></script>");
         sb.append("</head>");
         sb.append("<body>");
 
@@ -215,8 +208,6 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 getSaveScreen(sb);
             } else if (request.getParameter("lookup") != null) {
                 return getLookUp().toString();
-            } else if (request.getParameter("javascript") != null) {
-                return getJavaScript().toString();
             } else if (request.getParameter("resource-type") != null) {
                 getResourceScreen(sb);
             } else {
@@ -302,7 +293,6 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             sb.append("</ul>");
         }
 
-        String createName = request.getParameter("create-name");
         log.error("DEBUG: New Resource: " + PathUtil.backToRealm(getPath()) + ", " + pathOfNewResource);
         // NOTE: Back to realm has the form of ./ or ../ or ../../ etc., hence drop the leading slash!
         String href = PathUtil.backToRealm(getPath()) + pathOfNewResource.toString().substring(1);
@@ -318,6 +308,16 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         String resName = rtps.substring(rtps.indexOf("::") + 2);
         ResourceTypeRegistry rtr = new ResourceTypeRegistry();
 
+        if (getRequest().getParameter("create-new-folder") != null && !getRequest().getParameter("create-new-folder").equals("")) {
+            try {
+                create(getRequest().getParameter("create-new-folder"), getRequest().getParameter("lookin"), "http://www.wyona.org/yanel/resource/1.0::directory");
+            } catch (Exception e) {
+                sb.append("<p>Could not create folder. Exception: " + e + "</p>");
+                log.error(e.getMessage(), e);
+            }
+        }
+        
+        
         try {
             String universalName = "<{"+ resNamespace +"}"+ resName +"/>";
             log.debug("Universal Name: " + universalName);
@@ -419,15 +419,24 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      * @return Path of new resource
      */
     private Path create() throws Exception {
+        return create(getRequest().getParameter("create-name"), getRequest().getParameter("lookin"), getRequest().getParameter("resource-type"));
+    }
+
+    /**
+     * Creates new resource
+     * @param String createName
+     * @param String lookinPath
+     * @param String resourceType
+     * @return Path of new resource
+     */
+    private Path create(String createName, String lookinPath, String resourceType) throws Exception {
         org.wyona.yanel.core.map.Realm realm = getRealm();
         Path pathOfResourceCreator = new Path(getPath());
-
-        org.wyona.commons.io.Path parent = new org.wyona.commons.io.Path(pathOfResourceCreator.toString()).getParent();
-
-        Path pathOfNewResource = null;
-        String createName = getRequest().getParameter("create-name");
         
-        String lookinPath = getRequest().getParameter("lookin");
+        org.wyona.commons.io.Path parent = new org.wyona.commons.io.Path(pathOfResourceCreator.toString()).getParent();
+        
+        Path pathOfNewResource = null;
+        
         if(parent.equals("null")) {
             // if pathOfResourceCreator is ROOT
             pathOfNewResource = new Path("/" + lookinPath + "/" + createName);
@@ -440,12 +449,12 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         log.error("DEBUG: Path of new resource: " + pathOfNewResource);
         pathOfNewResource = new Path(removeTooManySlashes(pathOfNewResource.toString()));
         log.error("DEBUG: Path of new resource without too many slashes: " + pathOfNewResource);
-
-        String rtps = getRequest().getParameter("resource-type");
+        
+        String rtps = resourceType;
         String resNamespace = rtps.substring(0, rtps.indexOf("::"));
         String resName = rtps.substring(rtps.indexOf("::") + 2);
         Resource newResource = yanel.getResourceManager().getResource(request, response, realm, pathOfNewResource.toString(), new ResourceConfiguration(resName, resNamespace, null));
-
+        
         if (newResource != null) {
             if (ResourceAttributeHelper.hasAttributeImplemented(newResource, "Creatable", "2")) {
                 ((CreatableV2) newResource).create(request);
@@ -481,7 +490,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         } else {
             log.warn("No RTI properties: " + newResource.getPath());
         }
-    rcContent.append("</yanel:resource-config>");
+        rcContent.append("</yanel:resource-config>");
 
 
         org.wyona.yarep.core.Repository rcRepo = newResource.getRealm().getRTIRepository();
@@ -536,7 +545,6 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             if (resourceTypesConfig != null) {
                 Configuration[] resourceTypeConfigs = resourceTypesConfig.getChildren("resource-type");
                 if (resourceTypeConfigs.length == 0) return null;
-                ResourceTypeDefinition[] rtds = new ResourceTypeDefinition[resourceTypeConfigs.length];
                 for (int i = 0; i < resourceTypeConfigs.length; i++) {
                     try {
                         if (resourceTypeConfigs[i].getAttribute("namespace").equals(resNamespace) && resourceTypeConfigs[i].getAttribute("name").equals(resName)) {
@@ -610,8 +618,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         String resNamespace = rtps.substring(0, rtps.indexOf("::"));
         String resName = rtps.substring(rtps.indexOf("::") + 2);
         
-        sb.append("<table border=\"1\" style=\"width:100%;\"><tr><td colspan=\"2\">Save as:</td></tr>");
-        sb.append("<tr><td>Look in: " + node.getPath() + "&#160;&#160;&#160;</td><td>New folder: <input type=\"text\" name=\"create-new-folder\"/><input type=\"submit\" value=\"Create new folder\"/> ");
+        sb.append("<table id=\"resourceCreatorSaveAsTable\"><tr><td colspan=\"2\">Save as:</td></tr>");
+        sb.append("<tr><td>Look in: " + node.getPath() + "&#160;&#160;&#160;</td><td>New folder: <input type=\"text\" name=\"create-new-folder\"/><input type=\"image\" src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/folder-new.png\" alt=\"make a new folder\"/> ");
         
         String parent = "/";
         if (!node.getPath().equals("/")) {
@@ -620,16 +628,16 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         if (log.isDebugEnabled()) log.debug("Parent: " + parent);
 
         if (ajaxBrowser) {
-            sb.append("<a href='JavaScript:ajaxlookup(\"" + resNamespace + "::" + resName + "\", \"" + parent + "\")'>parent</a>");
+            sb.append("<a href='JavaScript:ajaxlookup(\"" + resNamespace + "::" + resName + "\", \"" + parent + "\")'><img src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/go-up.png\" alt=\"go up\" border=\"0\"/></a>");
         } else {
-            sb.append("<a href=\"?lookin=" + parent + "&amp;resource-type=" + resNamespace + "::" + resName + "\">parent</a>");
+            sb.append("<a href=\"?lookin=" + parent + "&amp;resource-type=" + resNamespace + "::" + resName + "\"><img src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/go-up.png\" alt=\"go up\" border=\"0\"/></a>");
         }
         sb.append("</td></tr>");
 
         sb.append("<tr><td colspan=\"2\">");
 
-        sb.append("<div style=\"height:160px;overflow:auto;\">");
-        sb.append("<table border=\"1\" width=\"100%\">");
+        sb.append("<div id=\"lookupfiles\">");
+        sb.append("<table id=\"lookupfilesTable\">");
         sb.append("<tr><th align=\"left\">Name</th><th align=\"left\">Resource Type</th></tr>");
                 Node[] children = node.getChildren();
                 for (int i = 0; i < children.length; i++) {
@@ -654,40 +662,18 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
        
         String createName = getRequest().getParameter("create-name");
         if (createName != null) {
-                    sb.append("New name: <input type=\"text\" name=\"create-name\" value=\"" + createName + "\"/>");
-                } else {
-                    sb.append("New name: <input type=\"text\" name=\"create-name\"/>");
-                }
+            sb.append("New name: <input type=\"text\" name=\"create-name\" value=\"" + createName + "\"/>");
+        } else {
+            sb.append("New name: <input type=\"text\" name=\"create-name\"/>");
+        }
         sb.append("</td></tr>");
 
-
-                sb.append("<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Save new resource\" name=\"save\"/></td></tr>");
-        sb.append("</table>");
+        sb.append("<tr><td colspan=\"2\" align=\"right\">");
         sb.append("<input type=\"hidden\" name=\"lookin\" value=\"" + node.getPath() + "\"/>");
+        sb.append("<input type=\"submit\" value=\"Save new resource\" name=\"save\"/></td></tr>");
+        sb.append("</table>");
         
         return sb;
-    }
-    
-    private StringBuffer getJavaScript() {
-        String jsFileName = getRequest().getParameter("javascript");
-        try {
-            File jsFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile()
-                    .getAbsolutePath(), "js" + File.separator + jsFileName);
-            StringBuffer sb = new StringBuffer(1000);
-            BufferedReader reader = new BufferedReader(
-                    new FileReader(jsFile));
-            char[] buf = new char[1024];
-            int numRead=0;
-            while((numRead=reader.read(buf)) != -1){
-                sb.append(buf, 0, numRead);
-            }
-            reader.close();
-            return sb;
-        } catch (Exception e) {
-            // TODO: handle exception
-            log.error("DEBUG: could not get javascript file: " + jsFileName + " " + e);
-        }
-        return null;
     }
     
     /**
