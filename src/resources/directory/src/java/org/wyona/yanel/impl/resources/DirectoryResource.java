@@ -19,6 +19,7 @@ package org.wyona.yanel.impl.resources;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
+import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
@@ -54,7 +55,7 @@ import java.util.LinkedHashSet;
 /**
  * 
  */
-public class DirectoryResource extends Resource implements ViewableV2 {
+public class DirectoryResource extends Resource implements ViewableV2, CreatableV2 {
 
     private static Category log = Category.getInstance(DirectoryResource.class);
 
@@ -270,4 +271,57 @@ public class DirectoryResource extends Resource implements ViewableV2 {
         }
         return parentPath;
     }
+    
+    /**
+    *
+    */
+   public void create(HttpServletRequest request) {
+       try {
+           Repository repo = getRealm().getRepository();
+           org.wyona.yanel.core.util.YarepUtil.addNodes(repo, getPath().toString(), org.wyona.yarep.core.NodeType.COLLECTION);
+       } catch (Exception e) {
+           log.error(e.getMessage(), e);
+       }
+   }
+
+   /**
+    *
+    */
+   public java.util.HashMap createRTIProperties(HttpServletRequest request) {
+       java.util.HashMap map = new java.util.HashMap();
+       map.put("xslt", request.getParameter("rp.xslt"));
+       map.put("mime-type", request.getParameter("rp.mime-type"));
+       return map;
+   }
+
+   /**
+    *
+    */
+   public String getPropertyType(String name) {
+       log.warn("Not implemented yet!");
+       return null;
+   }
+
+   /**
+    *
+    */
+   public Object getProperty(String name) {
+       log.warn("Not implemented yet!");
+       return null;
+   }
+
+   /**
+    *
+    */
+   public String[] getPropertyNames() {
+       log.warn("Not implemented yet!");
+       return null;
+   }
+
+   /**
+    *
+    */
+   public void setProperty(String name, Object value) {
+       log.warn("Not implemented yet!");
+   }
 }
