@@ -208,13 +208,12 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     }
 
     /**
-     *
+     * Get initial content as XML
      */
     private InputStream getContentXML(Repository repo, String yanelPath, String revisionName) throws Exception {
         if (yanelPath != null) {
             log.debug("Yanel Path: " + yanelPath);
-            Resource res = yanel.getResourceManager().getResource(getRequest(), getResponse(), 
-                    getRealm(), yanelPath);
+            Resource res = yanel.getResourceManager().getResource(getRequest(), getResponse(), getRealm(), yanelPath);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                 // TODO: Pass the request ...
                 String viewV1path = getRealm().getMountPoint() + yanelPath.substring(1);
@@ -224,11 +223,21 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                     // TODO: Shall the mime-type be transfered?
                     return view.getInputStream();
                 } else {
-                    log.warn("No XML like mime-type: " + getPath());
+                    log.error("No XML like mime-type: " + getPath() + " (yanel-path: " + yanelPath + ")");
+                }
+	    } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
+                // TODO: Pass the request ...
+                View view = ((ViewableV2) res).getView(null);
+                if (view.getMimeType().indexOf("xml") >= 0) {
+                    // TODO: Shall the mime-type be transfered?
+                    return view.getInputStream();
+                } else {
+                    log.error("No XML like mime-type: " + getPath() + " (yanel-path: " + yanelPath + ")");
                 }
             } else {
-                log.warn("Resource is not ViewableV1: " + getPath());
+                log.error("Resource is not ViewableV1: " + getPath() + " (yanel-path: " + yanelPath + ")");
             }
+            return null;
         }
         
         Node node;
