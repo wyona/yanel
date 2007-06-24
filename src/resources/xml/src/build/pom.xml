@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>wyona-org-yanel</groupId>
+  <artifactId>yanel-resource-@NAME@</artifactId>
+  <version>@VERSION@</version>
+</project>
