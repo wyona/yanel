@@ -1,0 +1,1 @@
+<Context docBase="${catalina.home}/yanel-webapps/@YANEL_VERSION@"/>
