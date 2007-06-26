@@ -90,6 +90,10 @@ a:visited:hover  {
   color:#777777;
 } 
 
+table .sortable th  { 
+  cursor:pointer; 
+}
+
 #content table  { 
   border-collapse:collapse;
   border-color:#999999;
@@ -106,7 +110,7 @@ a:visited:hover  {
   border-color:#999999;
   background-color:#f7f7f7; 
   padding:2px;
-} 
+}
 
 #content h1  { 
   font-size:x-large;
@@ -120,13 +124,9 @@ a:visited:hover  {
   font-size:medium;
 } 
 
-form { 
-  width:1%; 
-  text-align:right;
-} 
-
-input  { 
-  margin:2px; 
+input  {
+  display:block; 
+  margin-bottom:3px; 
   border:solid 1px #4682B4;
   background-color:#f7f7f7;
 }
