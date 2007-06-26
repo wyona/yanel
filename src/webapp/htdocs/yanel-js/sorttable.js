@@ -108,7 +108,7 @@ sorttable = {
             this.removeChild(document.getElementById('sorttable_sortfwdind'));
             sortrevind = document.createElement('span');
             sortrevind.id = "sorttable_sortrevind";
-            sortrevind.innerHTML = stIsIE ? '&nbsp<font face="webdings">5</font>' : '&#160;&#x25B4;';
+            sortrevind.innerHTML = stIsIE ? '&nbsp<span style="font-family:webdings">5</span>' : '&#160;&#x25B4;';
             this.appendChild(sortrevind);
             return;
           }
@@ -121,7 +121,7 @@ sorttable = {
             this.removeChild(document.getElementById('sorttable_sortrevind'));
             sortfwdind = document.createElement('span');
             sortfwdind.id = "sorttable_sortfwdind";
-            sortfwdind.innerHTML = stIsIE ? '&nbsp<font face="webdings">6</font>' : '&#160;&#x25BE;';
+            sortfwdind.innerHTML = stIsIE ? '&nbsp<span style="font-family:webdings">6</span>' : '&#160;&#x25BE;';
             this.appendChild(sortfwdind);
             return;
           }
@@ -142,7 +142,7 @@ sorttable = {
           this.className += ' sorttable_sorted';
           sortfwdind = document.createElement('span');
           sortfwdind.id = "sorttable_sortfwdind";
-          sortfwdind.innerHTML = stIsIE ? '&nbsp<font face="webdings">6</font>' : '&#160;&#x25BE;';
+          sortfwdind.innerHTML = stIsIE ? '&nbsp<span style="font-family:webdings">6</span>' : '&#160;&#x25BE;';
           this.appendChild(sortfwdind);
 
 	        // build an array to sort. This is a Schwartzian transform thing,
