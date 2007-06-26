@@ -28,7 +28,7 @@
       <remoteRepository refid="wyona.org.remote.repository"/>
       <dependency groupId="apache-org" artifactId="apache-tomcat" version="${tomcat.version}" scope="provided"/>
     </artifact:dependencies>
-
+    
     <!-- Unpack Tomcat -->
     <unzip dest="${snapshot.dir}">
       <fileset refid="maven2.tomcat.fileset"/>
@@ -46,6 +46,17 @@
     <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/tomcat-docs"/>
     <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/balancer"/>
     <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/webdav"/>
+    
+    <mkdir dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/yanel-webapps"/>
+    <!-- Add context file -->
+    <copy file="${yanel.home.dir}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/yanel-${yanel.version}-r${yanel.revision}.xml"/>
+    <replace file="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/yanel-${yanel.version}-r${yanel.revision}.xml" value="yanel-${yanel.version}-r${yanel.revision}">
+      <replacetoken>@YANEL_VERSION@</replacetoken>
+    </replace>
+    <copy file="${yanel.home.dir}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/${target.servlet.context.prefix}.xml"/>
+    <replace file="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/${target.servlet.context.prefix}.xml" value="yanel-${yanel.version}-r${yanel.revision}">
+      <replacetoken>@YANEL_VERSION@</replacetoken>
+    </replace>
   </target>
   
   <target name="copy-realms-resources">
@@ -125,7 +136,9 @@
     <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}">
       <fileset dir="${snapshot.dir}/apache-tomcat-${tomcat.version}" />
     </copy>
-    <jar jarfile="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps/${target.servlet.context.prefix}.war" basedir="${snapshot.dir}/${target.servlet.context.prefix}"/>
+    <copy todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/yanel-webapps/yanel-${yanel.version}-r${yanel.revision}">
+      <fileset dir="${snapshot.dir}/${target.servlet.context.prefix}"/>
+    </copy>
     <!-- <move file="${snapshot.dir}/${servlet.context.prefix}.war" todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps"/> -->
 
     <copy file="${yanel.home.dir}/LICENSE.txt" todir="${snapshot.dir.win}"/>
@@ -151,7 +164,9 @@
   </target>
   
   <target name="bin-snapshot-unix">
-    <jar jarfile="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/${target.servlet.context.prefix}.war" basedir="${snapshot.dir}/${target.servlet.context.prefix}"/>
+    <copy todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/yanel-webapps/yanel-${yanel.version}-r${yanel.revision}">
+      <fileset dir="${snapshot.dir}/${target.servlet.context.prefix}"/>
+    </copy>
     <delete dir="${snapshot.dir}/${target.servlet.context.prefix}"/>
     <!-- Copy UNIX and Windows specific files -->
     <copy file="${yanel.home.dir}/src/binary-dist/README-UNIX.txt" tofile="${snapshot.dir}/README.txt" overwrite="true"/>
