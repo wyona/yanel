@@ -13,16 +13,8 @@
   <xsl:variable name="testcase.failure.list" select="$testcase.list/failure"/>
   
   <xsl:template match="/">
-    <html>
-      <head>
-        <xsl:if test="$testing.result.title = 'stillTesting'">
-          <meta http-equiv="refresh" content="5; URL="/>
-        </xsl:if>
-        <title>Testing Results</title>
-      </head>
-      <body>
         <div id="contenBody">
-          <h1>
+          <h1 id="{$testing.result.title}">
           <xsl:choose>
             <xsl:when test="$testing.result.title = 'stillTesting'">
               Tests are running...
@@ -45,9 +37,7 @@
           Errors: <xsl:value-of select="count($testcase.error.list)"/></p>
           <hr/>
           <xsl:apply-templates select="//testsuite"/>
-        </div>
-      </body>
-    </html>
+    </div>
   </xsl:template>
 
   <xsl:template match="testsuite">

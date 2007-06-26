@@ -22,17 +22,24 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
+import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.w3c.dom.Document;
 
 import org.apache.commons.io.FileUtils;
@@ -44,178 +51,285 @@ import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.ZipFileSet;
 import org.apache.tools.ant.taskdefs.optional.junit.JUnitTask;
 import org.apache.tools.ant.taskdefs.optional.junit.BatchTest;
+import org.apache.xml.resolver.tools.CatalogResolver;
+import org.apache.xml.serializer.Serializer;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
-import org.wyona.yanel.core.api.attributes.ViewableV1;
+import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
+import org.wyona.yanel.core.serialization.SerializerFactory;
+import org.wyona.yanel.core.source.ResourceResolver;
+import org.wyona.yanel.core.transformation.I18nTransformer2;
+import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yarep.util.RepoPath;
 import org.wyona.yarep.util.YarepUtil;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * 
  */
-public class TestingControlResource extends Resource implements ViewableV1 {
+public class TestingControlResource extends Resource implements ViewableV2 {
 
     private static final String JUNIT_JAR = "yanel-JunitTests.jar";
     private static final String HTMLUNIT_JAR = "yanel-HtmlUnitTests.jar";
     private static Category log = Category.getInstance(TestingControlResource.class);
-
+    private boolean ajaxBrowser = false;
     private File JunitJarLocation;
     private File HtmlunitJarLocation;
     private File tmpResultDir;
-    private String errorMessage;
 
     public TestingControlResource() {
     }
 
+    /**
+     * 
+     */
+    public boolean exists() {
+        return true;
+    }
+
+    /**
+     * 
+     */
+    public long getSize() {
+        return -1;
+    }
+
+    /**
+     * 
+     */
+    public String getMimeType(String viewId) {
+        if (viewId != null && viewId.equals("source"))
+            return "application/xml";
+        return "application/xhtml+xml";
+    }
+
+    /**
+     * 
+     */
+    public View getView(String viewId) {
+        if (request.getHeader("User-Agent").indexOf("rv:1.7") < 0) {
+            ajaxBrowser = true;
+        }
+        try {
+            setLocations();
+        } catch (Exception e) {
+            // sb.append("<p>Could not get the Locations: " + e + "</p>");
+            log.error(e.getMessage(), e);
+        }
+        View view = new View();
+        String mimeType = getMimeType(viewId);
+        view.setMimeType(mimeType);
+
+        try {
+            org.wyona.yarep.core.Repository repo = getRealm().getRepository();
+
+            if (viewId != null && viewId.equals("source")) {
+                view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
+                view.setMimeType("application/xml");
+                return view;
+            }
+
+            String[] xsltPath = getXSLTPath(getPath());
+            if (xsltPath != null) {
+
+                // create reader:
+                XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+                CatalogResolver catalogResolver = new CatalogResolver();
+                xmlReader.setEntityResolver(catalogResolver);
+
+                // create xslt transformer:
+                SAXTransformerFactory tf = (SAXTransformerFactory) TransformerFactory.newInstance();
+
+                TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPath.length];
+                for (int i = 0; i < xsltPath.length; i++) {
+                    xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath[i])
+                            .getInputStream()));
+                    xsltHandlers[i].getTransformer().setParameter("yanel.path.name",
+                            PathUtil.getName(getPath()));
+                    xsltHandlers[i].getTransformer().setParameter("yanel.path", getPath());
+                    xsltHandlers[i].getTransformer().setParameter("yanel.back2context",
+                            PathUtil.backToContext(realm, getPath()));
+                    xsltHandlers[i].getTransformer().setParameter("yarep.back2realm",
+                            PathUtil.backToRealm(getPath()));
+
+                    xsltHandlers[i].getTransformer().setParameter("language",
+                            getRequestedLanguage());
+                }
+
+                // create i18n transformer:
+                I18nTransformer2 i18nTransformer = new I18nTransformer2("global",
+                        getRequestedLanguage(),
+                        getRealm().getDefaultLanguage());
+                i18nTransformer.setEntityResolver(catalogResolver);
+
+                // create xinclude transformer:
+                XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
+                ResourceResolver resolver = new ResourceResolver(this);
+                xIncludeTransformer.setResolver(resolver);
+
+                // create serializer:
+                Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                // chain everything together (create a pipeline):
+                xmlReader.setContentHandler(xsltHandlers[0]);
+                for (int i = 0; i < xsltHandlers.length - 1; i++) {
+                    xsltHandlers[i].setResult(new SAXResult(xsltHandlers[i + 1]));
+                }
+                xsltHandlers[xsltHandlers.length - 1].setResult(new SAXResult(xIncludeTransformer));
+                xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
+                i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
+                serializer.setOutputStream(baos);
+
+                // execute pipeline:
+                xmlReader.parse(new InputSource(new java.io.StringBufferInputStream(getScreen())));
+
+                // write result into view:
+                view.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
+                return view;
+            } else {
+                log.debug("Mime-Type: " + mimeType);
+                view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
+                return view;
+            }
+        } catch (Exception e) {
+            log.error(e + " (" + getPath() + ", " + getRealm() + ")", e);
+        }
+        view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
+        return view;
+    }
+
+    /**
+     * 
+     */
     public ViewDescriptor[] getViewDescriptors() {
-        ViewDescriptor[] vd = new ViewDescriptor[1];
+        ViewDescriptor[] vd = new ViewDescriptor[2];
         vd[0] = new ViewDescriptor("default");
-        // NOTE: depends on XSLT ...
-        vd[0].setMimeType(null);
+        vd[0].setMimeType(getMimeType(null));
+        vd[1] = new ViewDescriptor("source");
+        vd[1].setMimeType(getMimeType("source"));
         return vd;
     }
 
-    public View getView(Path path, String viewId) {
-        View defaultView = new View();
-        defaultView.setMimeType("application/xml");
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        defaultView.setInputStream(new java.io.StringBufferInputStream(sb.toString()));
-        return defaultView;
-    }
-
-    public View getView(HttpServletRequest request, String viewId) throws Exception {
-        Path path = new Path(request.getServletPath());
-
-        // the junit and htmlunit jars
-        String WEBINFPath = request.getSession().getServletContext().getRealPath("WEB-INF");
-        HtmlunitJarLocation = new File(WEBINFPath + File.separator + "lib" + File.separator
-                + HTMLUNIT_JAR);
-        JunitJarLocation = new File(WEBINFPath + File.separator + "lib" + File.separator
-                + JUNIT_JAR);
-
-        if (!HtmlunitJarLocation.exists()) {
-            errorMessage = errorMessage + "\n HtmlUnit-Tests not found.";
-        }
-        if (!JunitJarLocation.exists()) {
-            errorMessage = errorMessage + "\n JUnit-Tests not found.";
-        }
-
-        // create tmp-directory to write the tests
-        if (!new File(request.getSession().getServletContext().getRealPath("tmp")).exists()) {
-            if (!new File(request.getSession().getServletContext().getRealPath("tmp")).mkdir()) {
-                errorMessage = errorMessage + "\n Creation of tmp directory faild.";
+    /**
+     * Flow
+     */
+    private String getScreen() {
+        StringBuffer sbContent = new StringBuffer();
+        Enumeration parameters = request.getParameterNames();
+        if (request.getSession().getAttribute("tmpResultDir") != null) {
+            if (request.getParameterValues("ajaxshowprogress") != null) {
+                return showProgress().toString();
+            } else {
+                sbContent.append(showProgress());
             }
-        }
-
-        String submit = request.getParameter("submit");
-        String type = request.getParameter("type");
-        String archivedResults = request.getParameter("archived-results");
-        String[] testnames = request.getParameterValues("testnames");
-
-        View defaultView = new View();
-        if (errorMessage != null) {
-            return error();
-        }
-        if(request.getSession().getAttribute("tmpResultDir") != null){
-            return showProgress(path, defaultView);
-        }
-        if (archivedResults != null) {
-            return showArchive(path, defaultView, archivedResults);
-        }
-        if (submit != null) {
-            if (testnames != null) {
-                return executeTests(path, defaultView, testnames);
-            }
-            return plainRequest(path, defaultView);
+        } else if (!parameters.hasMoreElements()) {
+            sbContent.append(getPlainRequest());
         } else {
-
-            return plainRequest(path, defaultView);
+            if (request.getParameterValues("testnames") != null) {
+                if (request.getParameterValues("ajaxexecutetest") != null) {
+                    return executeTests().toString();
+                }else {
+                    sbContent.append(executeTests());
+                }
+            } else {
+                log.info("Fallback ...");
+                sbContent.append(getPlainRequest());
+            }
         }
-    }
-
-    private View plainRequest(Path path, View defaultView) throws Exception,
-            TransformerConfigurationException, TransformerFactoryConfigurationError,
-            NoSuchNodeException, TransformerException {
-        Repository contentRepo;
-        RepoPath rp = contentRepo(path);
-        contentRepo = rp.getRepo();
 
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-        sb.append("<head>");
-        sb.append("<title>Testing Control</title>");
+        sb.append("<head><title>Testing Control</title>");
+        if (request.getSession().getAttribute("tmpResultDir") != null && !ajaxBrowser) {
+            sb.append("<meta http-equiv=\"refresh\" content=\"5; URL=\"/>");
+        }
+        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""
+                + PathUtil.getGlobalHtdocsPath(this) + "yanel-css/progressBar.css\"/>");
+        sb.append("<script src=\"" + PathUtil.getGlobalHtdocsPath(this)
+                + "yanel-js/prototype.js\" type=\"text/javascript\"></script>");
+        sb.append("<script src=\"" + PathUtil.getGlobalHtdocsPath(this)
+                + "yanel-js/progressBar.js\" type=\"text/javascript\"></script>");
+        sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPath(this)
+                + "js/ajaxexecutetests.js\" type=\"text/javascript\"></script>");
+        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""
+                + PathUtil.getResourcesHtdocsPath(this) + "css/testingcontroler.css\"/>");
         sb.append("</head>");
         sb.append("<body>");
+        sb.append("<span id=\"yanelprogressbarph\"/>");
+        sb.append("<div id=\"ajaxreplace\">");
+        sb.append(sbContent);
+        sb.append("</div>");
+        sb.append("</body>");
+        sb.append("</html>");
+        return sb.toString();
+    }
+
+    private StringBuffer getPlainRequest() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<form method=\"post\">");
+        sb.append("<h3>HtmlUnit Tests</h3>");
         sb.append("<ul id=\"htmlunit\">");
         String[] allHtmlUnitTestNames = getAllTestNames("htmlunit");
-
         for (int i = 0; i < allHtmlUnitTestNames.length; i++) {
-            sb.append("<li title=\""
-                    + allHtmlUnitTestNames[i].substring(allHtmlUnitTestNames[i].lastIndexOf("/") + 1)
-                    + "\">" + allHtmlUnitTestNames[i] + "</li>");
+            String title = allHtmlUnitTestNames[i].substring(allHtmlUnitTestNames[i].lastIndexOf("/") + 1)
+                    .replaceAll(".class", "");
+            sb.append("<li title=\"" + "\">");
+            sb.append(title);
+            sb.append("<input type=\"checkbox\" name=\"testnames\" value=\""
+                    + allHtmlUnitTestNames[i] + "\"/>");
+            sb.append("</li>");
         }
-
         sb.append("</ul>");
+        sb.append("<hr/>");
+        sb.append("<h3>JUnit Tests</h3>");
         sb.append("<ul id=\"junit\">");
         String[] allJUnitTestNames = getAllTestNames("junit");
         for (int i = 0; i < allJUnitTestNames.length; i++) {
-            sb.append("<li title=\""
-                    + allJUnitTestNames[i].substring(allJUnitTestNames[i].lastIndexOf("/") + 1)
-                    + "\">" + allJUnitTestNames[i] + "</li>");
+            String title = allJUnitTestNames[i].substring(allJUnitTestNames[i].lastIndexOf("/") + 1)
+                    .replaceAll(".class", "");
+            sb.append("<li title=\"" + title + "\">");
+            sb.append(title);
+            sb.append("<input type=\"checkbox\" name=\"testnames\" value=\"" + allJUnitTestNames[i]
+                    + "\"/>");
+            sb.append("</li>");
         }
         sb.append("</ul>");
-        sb.append("</body>");
-        sb.append("</html>");
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        File result2htmlXsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
-                .getParentFile()
-                .getAbsolutePath(), "xslt" + File.separator + "chooseTest.xsl");
-        Transformer transResult2html = TransformerFactory.newInstance()
-                .newTransformer(new StreamSource(result2htmlXsltFile));
-        transResult2html.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())),
-                new StreamResult(byteArrayOutputStream));
-
-        Transformer transformer = globalTransformer(path, contentRepo);
-        // TODO: Is this the best way to generate an InputStream from an
-        // OutputStream?
-        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-        transformer.transform(new StreamSource(new ByteArrayInputStream(byteArrayOutputStream.toByteArray())),
-                new StreamResult(baos));
-
-        defaultView.setMimeType("application/xhtml+xml");
-        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
-        return defaultView;
+        if (ajaxBrowser) {
+            sb.append("<input type=\"hidden\" name=\"yanel.resource.viewid\" value=\"source\"/>");
+            sb.append("<input type=\"hidden\" name=\"ajaxexecutetest\" value=\"true\"/>");
+            sb.append("<input type=\"button\" name=\"submit\" value=\"Test\" onclick=\"ajaxexecutetests();\" />");
+        } else {
+            sb.append("<input type=\"submit\" name=\"submit\" value=\"Test\"/>");
+        }
+        sb.append("</form>");
+        return sb;
     }
 
-    private View executeTests(Path path, View defaultView, String[] testnames) throws Exception,
-            TransformerConfigurationException, TransformerFactoryConfigurationError,
-            NoSuchNodeException, TransformerException {
-        Repository contentRepo;
-        RepoPath rp = contentRepo(path);
-        contentRepo = rp.getRepo();
-        
+    private StringBuffer executeTests() {
+        StringBuffer sb = new StringBuffer();
+        String[] testnames = request.getParameterValues("testnames");
         // prepare tmpResultDir
         if (request.getSession().getAttribute("tmpResultDir") == null) {
-            String uuid = new java.rmi.server.UID().toString().replaceAll(":","");
+            String uuid = new java.rmi.server.UID().toString().replaceAll(":", "");
             tmpResultDir = new File(request.getSession().getServletContext().getRealPath("tmp"
                     + File.separator + "test-results-" + uuid));
             request.getSession().setAttribute("tmpResultDir", tmpResultDir);
         } else {
             tmpResultDir = (File) request.getSession().getAttribute("tmpResultDir");
-        }        
-
+        }
         request.getSession().setAttribute("exectime", getTime());
-        request.getSession().setAttribute("numberOfTests", ""+testnames.length);
-
+        request.getSession().setAttribute("numberOfTests", "" + testnames.length);
         // delete the resultdir before making new tests
         tmpResultDir.mkdir();
         Runnable runtest = new ExecuteTests(testnames,
@@ -223,35 +337,27 @@ public class TestingControlResource extends Resource implements ViewableV1 {
                 HtmlunitJarLocation,
                 tmpResultDir);
         new Thread(runtest).start();
-        return showProgress(path, defaultView);
+        sb.append(showProgress());
+        return sb;
     }
 
-    private View showProgress(Path path, View defaultView) throws Exception,
-    TransformerConfigurationException, TransformerFactoryConfigurationError,
-    NoSuchNodeException, TransformerException{
-        Repository contentRepo;
-        RepoPath rp = contentRepo(path);
-        contentRepo = rp.getRepo();
-        
-        //get tmpResultDir from session
+    private StringBuffer showProgress() {
+        StringBuffer sb = new StringBuffer();
+        // get tmpResultDir from session
         tmpResultDir = (File) request.getSession().getAttribute("tmpResultDir");
-        
-        //number of executed tests
-        int numberOfTests = Integer.parseInt((String) request.getSession().getAttribute("numberOfTests"));
-        
+        // number of executed tests
+        int numberOfTests = Integer.parseInt((String) request.getSession()
+                .getAttribute("numberOfTests"));
         String resultName = request.getSession().getAttribute("exectime") + "-tests.xml";
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        
         if (tmpResultDir.list().length < numberOfTests) {
             // geting the test results
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document result = builder.newDocument();
-
-            Project project = new Project();
-
             // aggregate all tests in the tmp dir
             try {
+                DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                Document result = builder.newDocument();
+                Project project = new Project();
+
                 ResultAggregator junitreport = new ResultAggregator();
                 junitreport.setTaskName("JUnitReport");
                 junitreport.setProject(project);
@@ -267,31 +373,32 @@ public class TestingControlResource extends Resource implements ViewableV1 {
                 junitreport.init();
                 // get the result to show for this request
                 result = junitreport.getDocument();
-            } catch (Exception e) {
-                log.error(e);
-            }
 
-            File result2htmlXsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
-                    .getParentFile()
-                    .getAbsolutePath(), "xslt" + File.separator + "result2html.xsl");
-            Transformer transResult2html = TransformerFactory.newInstance()
-                    .newTransformer(new StreamSource(result2htmlXsltFile));
-            transResult2html.setParameter("testing.result.title", "stillTesting");
-            transResult2html.setParameter("testing.number.requested.tests", ""+numberOfTests);
-            transResult2html.transform(new DOMSource(result),
-                    new StreamResult(byteArrayOutputStream));
+                File result2htmlXsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
+                        .getParentFile()
+                        .getAbsolutePath(), "xslt" + File.separator + "result2html.xsl");
+                Transformer transResult2html = TransformerFactory.newInstance()
+                        .newTransformer(new StreamSource(result2htmlXsltFile));
+                transResult2html.setParameter("testing.result.title", "stillTesting");
+                transResult2html.setParameter("testing.number.requested.tests", "" + numberOfTests);
+                transResult2html.transform(new DOMSource(result),
+                        new StreamResult(byteArrayOutputStream));
+            } catch (Exception e) {
+                sb.append("<p>Could not create folder. Exception: " + e + "</p>");
+                log.error(e.getMessage(), e);
+            }
 
         } else {
             request.getSession().removeAttribute("tmpResultDir");
             request.getSession().removeAttribute("exectime");
             request.getSession().removeAttribute("numberOfTests");
-            
-            // geting the test results
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document result = builder.newDocument();
-            Project aggregatorproject = new Project();
-            // aggregate all tests in the tmp dir
+
             try {
+                // geting the test results
+                DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                Document result = builder.newDocument();
+                Project aggregatorproject = new Project();
+                // aggregate all tests in the tmp dir
                 ResultAggregator junitreport = new ResultAggregator();
                 junitreport.setTaskName("JUnitReport");
                 junitreport.setProject(aggregatorproject);
@@ -307,118 +414,63 @@ public class TestingControlResource extends Resource implements ViewableV1 {
                 junitreport.init();
                 // get the result to show for this request
                 result = junitreport.getDocument();
+
+                // write test result to repo
+                org.wyona.yarep.core.Repository Repo = this.getRealm().getRepository();
+                org.wyona.commons.io.Path newPath = new org.wyona.commons.io.Path("/test-results-archive/"
+                        + resultName);
+                log.error("DEBUG: " + newPath);
+                org.wyona.yanel.core.util.YarepUtil.addNodes(Repo,
+                        newPath.toString(),
+                        org.wyona.yarep.core.NodeType.RESOURCE);
+
+                OutputStream out = Repo.getNode(newPath.toString()).getOutputStream();
+                javax.xml.transform.TransformerFactory.newInstance()
+                        .newTransformer()
+                        .transform(new javax.xml.transform.dom.DOMSource(result),
+                                new javax.xml.transform.stream.StreamResult(out));
+                out.close();
+
+                // delete the test dir
+                FileUtils.deleteDirectory(tmpResultDir);
+
+                File result2htmlXsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
+                        .getParentFile()
+                        .getAbsolutePath(), "xslt" + File.separator + "result2html.xsl");
+                Transformer transResult2html = TransformerFactory.newInstance()
+                        .newTransformer(new StreamSource(result2htmlXsltFile));
+                transResult2html.setParameter("testing.result.title", "testDone");
+                transResult2html.transform(new DOMSource(result),
+                        new StreamResult(byteArrayOutputStream));
             } catch (Exception e) {
-                log.error(e);
+                sb.append("<p>Could not create folder. Exception: " + e + "</p>");
+                log.error(e.getMessage(), e);
             }
+        }
+        sb.append(byteArrayOutputStream);
+        return sb;
+    }
 
-            // write test result to repo
-            OutputStream out = contentRepo.getOutputStream(new Path("/test-results-archive/"
-                    + resultName));
-            javax.xml.transform.TransformerFactory.newInstance()
-                    .newTransformer()
-                    .transform(new javax.xml.transform.dom.DOMSource(result),
-                            new javax.xml.transform.stream.StreamResult(out));
-            out.close();
-            
-            //delete the test dir
-            FileUtils.deleteDirectory(tmpResultDir);   
-            
-            File result2htmlXsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
-                    .getParentFile()
-                    .getAbsolutePath(), "xslt" + File.separator + "result2html.xsl");
-            Transformer transResult2html = TransformerFactory.newInstance()
-                    .newTransformer(new StreamSource(result2htmlXsltFile));
-            transResult2html.setParameter("testing.result.title", "testDone");
-            transResult2html.transform(new DOMSource(result),
-                    new StreamResult(byteArrayOutputStream));
+    private void setLocations() throws Exception {
+        String WEBINFPath = request.getSession().getServletContext().getRealPath("WEB-INF");
+        HtmlunitJarLocation = new File(WEBINFPath + File.separator + "lib" + File.separator
+                + HTMLUNIT_JAR);
+        JunitJarLocation = new File(WEBINFPath + File.separator + "lib" + File.separator
+                + JUNIT_JAR);
+
+        if (!HtmlunitJarLocation.exists()) {
+            throw new Exception("HtmlUnit-Tests not found");
+        }
+        if (!JunitJarLocation.exists()) {
+            throw new Exception("JUnit-Tests not found");
         }
 
-        Transformer transformer = globalTransformer(path, contentRepo);
-        // TODO: Is this the best way to generate an InputStream from an
-        // OutputStream?
-        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-        transformer.transform(new StreamSource(new ByteArrayInputStream(byteArrayOutputStream.toByteArray())),
-                new StreamResult(baos));
-        defaultView.setMimeType("application/xhtml+xml");
-        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
-        return defaultView;
-    }
-
-    private View showArchive(Path path, View defaultView, String archivedResults) throws Exception,
-            TransformerConfigurationException, TransformerFactoryConfigurationError,
-            NoSuchNodeException, TransformerException {
-        Repository contentRepo;
-        RepoPath rp = contentRepo(path);
-        contentRepo = rp.getRepo();
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        File result2htmlXsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
-                .getParentFile()
-                .getAbsolutePath(), "xslt" + File.separator + "result2html.xsl");
-        Transformer transResult2html = TransformerFactory.newInstance()
-                .newTransformer(new StreamSource(result2htmlXsltFile));
-        transResult2html.setParameter("testing.result.title",
-                archivedResults.substring(archivedResults.lastIndexOf("/") + 1,
-                        archivedResults.length()));
-
-        InputStream inputStream = rp.getRepo()
-                .getInputStream(new org.wyona.yarep.core.Path(archivedResults));
-        transResult2html.transform(new StreamSource(inputStream),
-                new StreamResult(byteArrayOutputStream));
-
-        Transformer transformer = globalTransformer(path, contentRepo);
-        // TODO: Is this the best way to generate an InputStream from an
-        // OutputStream?
-        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-        transformer.transform(new StreamSource(new ByteArrayInputStream(byteArrayOutputStream.toByteArray())),
-                new StreamResult(baos));
-        defaultView.setMimeType("application/xhtml+xml");
-        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
-        return defaultView;
-    }
-
-    private RepoPath contentRepo(Path path) throws Exception {
-        return new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
-                getRepositoryFactory());
-    }
-
-    private Transformer globalTransformer(Path path, Repository repo) throws Exception,
-            TransformerConfigurationException {
-        RepoPath rp = contentRepo(path);
-        if (getXSLTPath(path) != null) {
-            Transformer transformer = TransformerFactory.newInstance()
-                    .newTransformer(new StreamSource(repo.getInputStream(getXSLTPath(path))));
-            transformer.setParameter("yanel.path.name", path.getName());
-            transformer.setParameter("yanel.path", path.toString());
-            transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
-            transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
-            return transformer;
-        } else {
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            return transformer;
+        // create tmp-directory to write the tests
+        if (!new File(request.getSession().getServletContext().getRealPath("tmp")).exists()) {
+            if (!new File(request.getSession().getServletContext().getRealPath("tmp")).mkdir()) {
+                throw new Exception("Creation of tmp directory faild.");
+            }
         }
-    }
-
-    /**
-     * Get XSLTPath returns the path to the configured xslt or null
-     * @param path 
-     * @return Path
-     */
-    private Path getXSLTPath(Path path) {
-    	try {
-    		return new Path(getResourceConfigProperty("xslt"));
-		} catch (Exception e) {
-			log.info("No XSLT Path within: " + path);
-			return null;
-		}
-    }
-    
-    protected RepositoryFactory getRepositoryFactory() {
-        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
-    }
-
-    protected RepositoryFactory getRTIRepositoryFactory() {
-        return yanel.getRepositoryFactory("RTIRepositoryFactory");
     }
 
     /**
@@ -466,26 +518,13 @@ public class TestingControlResource extends Resource implements ViewableV1 {
     }
 
     /**
-     * get an error screen
-     * @return a view with an error screen
+     * Get XSLT path
      */
-    private View error() {
-        View defaultView = new View();
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-        sb.append("<head>");
-        sb.append("<title>Testing Control</title>");
-        sb.append("</head>");
-        sb.append("<body>");
-        sb.append("<div id=\"contenBody\">");
-        sb.append("<h1>Testing Control, something is wrong:</h1>");
-        sb.append(errorMessage);
-        sb.append("</div>");
-        sb.append("</body>");
-        sb.append("</html>");
-
-        defaultView.setMimeType("application/xhtml+xml");
-        defaultView.setInputStream(new java.io.StringBufferInputStream(sb.toString()));
-        return defaultView;
+    private String[] getXSLTPath(String path) throws Exception {
+        String[] xsltPath = getResourceConfigProperties("xslt");
+        if (xsltPath != null)
+            return xsltPath;
+        log.info("No XSLT Path within: " + path);
+        return null;
     }
 }
