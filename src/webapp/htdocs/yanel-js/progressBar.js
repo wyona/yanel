@@ -15,8 +15,8 @@ function moveProgressBar () {
     i = i - 1;
     flag = "d";
   }
-  if (document.getElementById("yanelprogressbarindicator") != null) {
-    document.getElementById('yanelprogressbarindicator').style.left = i-80 + '%';
+  if ($('yanelprogressbarindicator') != null) {
+    $('yanelprogressbarindicator').style.left = i-80 + '%';
   } else {
     window.clearInterval(yanelProgressBarActive); 
   }
@@ -25,4 +25,8 @@ function moveProgressBar () {
 function createProgressBar (target) {
   $(target).update('<div id="yanelprogressbar"><div id="yanelprogressbarindicator">|||||||||</div></div>');
   startMoveProgressBar();
+}
+
+function stopProgressBar (target) {
+  $(target).remove();
 }
