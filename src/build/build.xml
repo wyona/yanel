@@ -954,9 +954,9 @@
     <ant dir="../test" target="test" inheritall="false"/>
   </target>
   
-  <target name="source-snapshot" description="Create a source code snapshot" depends="init">
+  <target name="source-snapshot" description="Create a source code snapshot" depends="init, clean-all">
     <delete dir="${build.dir}/source-snapshots"/>
-    <property name="snapshot.dir" value="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-r${yanel.revision}-src"/>
+    <property name="snapshot.dir" value="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src"/>
     <mkdir dir="${snapshot.dir}/src"/>
     <copy file="${yanel.home.dir}/README.txt" todir="${snapshot.dir}"/>
     <copy file="${yanel.home.dir}/configure.sh" todir="${snapshot.dir}"/>
@@ -978,8 +978,8 @@
     <copy todir="${snapshot.dir}/conf">
       <fileset dir="${yanel.home.dir}/conf" excludes="local/**"/>
     </copy>
-    <zip destfile="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-r${yanel.revision}-src.zip">
-      <zipfileset dir="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-r${yanel.revision}-src" prefix="wyona-yanel-SNAPSHOT-r${yanel.revision}-src" filemode="755"/>
+    <zip destfile="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src.zip">
+      <zipfileset dir="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src" filemode="755"/>
     </zip>
   </target>
 
