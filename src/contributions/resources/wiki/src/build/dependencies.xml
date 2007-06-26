@@ -21,7 +21,7 @@
       <dependency groupId="spring" artifactId="spring"
                   version="2.0"/>
       <dependency groupId="com-ecyrd-jspwiki" artifactId="JSPWiki-patched"
-                  version="2.4.71"/>
+                  version="2.4.71-r25408"/>
 
       <dependency groupId="wyona-org-wiki-parser" artifactId="jsp-wiki-parser"
                   version="0.0.1-dev-r24881"/>
