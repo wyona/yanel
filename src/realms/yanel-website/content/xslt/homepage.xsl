@@ -78,7 +78,7 @@ en/download/<xsl:value-of select="$os"/>.html
 </xsl:otherwise>
 </xsl:choose>
 </xsl:attribute>
-<span id="download-download">DOWNLOAD</span>
+<span id="download-download">NOW AVAILABLE</span>
 <br/>
 <span id="download-yanel-version">Yanel<br/>
 <xsl:choose>
