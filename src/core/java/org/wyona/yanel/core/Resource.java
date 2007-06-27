@@ -211,53 +211,50 @@ public abstract class Resource {
     }
 
     /**
-     * Get language with the following priorization: 
-     * 1) yanel.meta.language query string parameter 
-     * 2) Translation Manager (if translatable)
-     * 3) Resource Configuration property 
-     * 4) Accept-Language header
-     * 5) Realm default language
-     * 6) Default "en"
+     * Get language with the following priorization: <br><br>
+     * 1) yanel.meta.language query string parameter<br> 
+     * 2) Translation Manager (if translatable)<br>
+     * 3) Resource Configuration property<br>
+     * 4) Accept-Language header<br>
+     * 5) Realm default language<br>
+     * 6) Default "en"<br>
      */
     public String getRequestedLanguage() throws Exception {
         // TODO: Make this reusable. Also see org/wyona/yanel/servlet/YanelServlet.java
+
+        // (1)
         String language = getRequest().getParameter("yanel.meta.language");
+        if (language != null) return language;
         
-        if (language == null && ResourceAttributeHelper.hasAttributeImplemented(this, 
-                "Translatable", "1")) {
-            // get language from translation manager: 
+        // (2)
+        if (ResourceAttributeHelper.hasAttributeImplemented(this, "Translatable", "1")) {
             language = ((TranslatableV1)this).getLanguage(); 
         }
+        if (language != null) return language;
 
-        if (language == null) {
-            ResourceConfiguration rc = getConfiguration();
-            if (rc != null) {
-                language = rc.getProperty("language");
+        // (3)
+        language = getResourceConfigProperty("language");
+        if (language != null) return language;
+
+        // (4)
+        language = getRequest().getHeader("Accept-Language");
+        if (language != null) {
+            if (language.indexOf(",") > 0) {
+                language = language.substring(0, language.indexOf(","));
+            }
+            int dashIndex = language.indexOf("-");
+            if (dashIndex > 0) {
+                language = language.substring(0, dashIndex);
             }
         }
+        if (language != null) return language;
 
-        if (language == null) {
-            language = getRequest().getHeader("Accept-Language");
-            if (language != null) {
-                if (language.indexOf(",") > 0) {
-                    language = language.substring(0, language.indexOf(","));
-                }
-                int dashIndex = language.indexOf("-");
-                if (dashIndex > 0) {
-                    language = language.substring(0, dashIndex);
-                }
-            }
-        }
+        // (5)
+        language = getRealm().getDefaultLanguage();
+        if (language != null) return language;
         
-        if (language == null) {
-            language = getRealm().getDefaultLanguage();
-        }
-        
-        if (language == null || language.length() == 0) {
-            language = "en";
-        }
-        
-        return language;
+        // (6)
+        return "en";
     }
 
     /**
