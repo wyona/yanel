@@ -183,8 +183,6 @@ public class NutchResource extends Resource implements ViewableV1 {
             hitsPerPage = _hitsPerPage;
         }
 
-        String language = getLanguage();
-
         int idx = 0;
         try {
             idx = Integer.parseInt(request.getParameter("idx"));
@@ -199,7 +197,7 @@ public class NutchResource extends Resource implements ViewableV1 {
         }
 
         searchTerm = request.getParameter("query");
-        return getView(new Path(request.getServletPath()), viewId, idx, id, language);
+        return getView(new Path(request.getServletPath()), viewId, idx, id, getLanguage());
     }
 
     /**
@@ -372,7 +370,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                 transformer.setParameter("totalHits", "" + totalHits);
                 transformer.setParameter("query", "" + searchTerm);
                 transformer.setParameter("start", "" + start);
-                transformer.setParameter("yanel.meta.lanugage", getLanguage());
+                transformer.setParameter("yanel.meta.language", getLanguage());
                 transformer.setParameter("show", getShowParameterValue());
 
                 // create xinclude transformer:
@@ -647,14 +645,8 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @return StreamSource
      */
     private StreamSource getGlobalXSLTStreamSource() throws Exception {
-        String xsltPath;
-        ResourceConfiguration rc = getConfiguration();
-        if (rc != null) {
-            xsltPath = rc.getProperty("global-xslt");
-        } else {
-            xsltPath = getRTI().getProperty("global-xslt");
-        }
-        log.debug("XSLT: " + xsltPath);
+        String xsltPath = getResourceConfigProperty("global-xslt");
+        if(log.isDebugEnabled()) log.debug("XSLT: " + xsltPath);
         if (xsltPath != null) {
             return new StreamSource(getRealm().getRepository().getInputStream(new org.wyona.yarep.core.Path(xsltPath)));
         } else {
@@ -721,6 +713,10 @@ public class NutchResource extends Resource implements ViewableV1 {
      * Get language
      */
     private String getLanguage() throws Exception {
+/*
+        log.debug("Res config property: " + getResourceConfigProperty("language"));
+        log.debug("Requested language: " + getRequestedLanguage());
+*/
         return getRequestedLanguage();
     }
 
