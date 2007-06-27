@@ -191,6 +191,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-css/progressBar.css\"/>");
         sb.append("<script src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-js/prototype.js\" type=\"text/javascript\"></script>");
         sb.append("<script src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-js/progressBar.js\" type=\"text/javascript\"></script>");
+        sb.append("<script src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-js/sorttable.js\" type=\"text/javascript\"></script>");
         sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPath(this)+ "js/ajaxlookup.js\" type=\"text/javascript\"></script>");
         sb.append("</head>");
         sb.append("<body>");
@@ -619,7 +620,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         String resName = rtps.substring(rtps.indexOf("::") + 2);
         
         sb.append("<table id=\"resourceCreatorSaveAsTable\"><tr><td colspan=\"2\">Save as:</td></tr>");
-        sb.append("<tr><td>Look in: " + node.getPath() + "&#160;&#160;&#160;</td><td>New folder: <input type=\"text\" name=\"create-new-folder\"/><input type=\"image\" src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/folder-new.png\" alt=\"make a new folder\"/> ");
+        sb.append("<tr><td>Look in: " + node.getPath() + "&#160;&#160;&#160;</td><td>New folder: <input type=\"text\" name=\"create-new-folder\"/>&#160;<input type=\"image\" src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/folder-new.png\" alt=\"make a new folder\"/> ");
         
         String parent = "/";
         if (!node.getPath().equals("/")) {
@@ -637,23 +638,35 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         sb.append("<tr><td colspan=\"2\">");
 
         sb.append("<div id=\"lookupfiles\">");
-        sb.append("<table id=\"lookupfilesTable\">");
-        sb.append("<tr><th align=\"left\">Name</th><th align=\"left\">Resource Type</th></tr>");
+        sb.append("<table id=\"lookupfilesTable\" class=\"sortable\">");
+        sb.append("<thead>");
+        sb.append("<tr><th>Type</th><th>Name</th><th>Resource Type</th></tr>");
+        sb.append("</thead>");
+        sb.append("<tbody>");
                 Node[] children = node.getChildren();
                 for (int i = 0; i < children.length; i++) {
+                    String resourceTypeName;
+                    try {
+                        resourceTypeName = yanel.getResourceManager().getResource(request, response, realm, children[i].getPath()).getResourceTypeLocalName();
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        resourceTypeName = "?";
+                    }
                     if (children[i].isCollection()) {
                         // TODO: Also append resource specific parameters (AJAX ...)
                         if (ajaxBrowser) {
-                            sb.append("<tr><td>Collection: <a href='JavaScript:ajaxlookup(\"" + resNamespace + "::" + resName + "\", \"" + node.getPath() + children[i].getName() + "/\")'>" + children[i].getName() + "</a></td><td>TBD</td></tr>");
+                            sb.append("<tr><td sorttable_customkey=\"Collection\"><img src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/folder.png\" alt=\"Collection:\"/></td><td><a href='JavaScript:ajaxlookup(\"" + resNamespace + "::" + resName + "\", \"" + node.getPath() + children[i].getName() + "/\")'>" + children[i].getName() + "</a></td><td>" + resourceTypeName  + "</td></tr>");
                         } else {
-                            sb.append("<tr><td>Collection: <a href=\"?lookin=" + node.getPath() + children[i].getName() + "/&amp;resource-type=" + resNamespace + "::" + resName + "\">" + children[i].getName() + "</a></td><td>TBD</td></tr>");
+                            sb.append("<tr><td sorttable_customkey=\"Collection\"><img src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/folder.png\" alt=\"Collection:\"/></td><td><a href=\"?lookin=" + node.getPath() + children[i].getName() + "/&amp;resource-type=" + resNamespace + "::" + resName + "\">" + children[i].getName() + "</a></td><td>" + resourceTypeName  + "</td></tr>");
                         }
                     } else if (children[i].isResource()) {
-                sb.append("<tr><td>Resource: "+children[i].getName()+"</td><td>TBD</td></tr>");
+                sb.append("<tr><td sorttable_customkey=\"Resource\"><img src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/text-x-generic.png\" alt=\"Resource:\"/></td><td>"+children[i].getName()+"</td><td>" + resourceTypeName  + "</td></tr>");
                     } else {
-                sb.append("<tr><td>Neither Collection nor Resource: "+children[i].getName()+"</td><td>-</td></tr>");
+                sb.append("<tr><td>?</td><td>"+children[i].getName()+"</td><td>-</td></tr>");
                     }
                 }
+        
+        sb.append("</tbody>");
         sb.append("</table>");
         sb.append("</div>");
         sb.append("</td></tr>");
