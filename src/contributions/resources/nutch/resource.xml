@@ -10,7 +10,7 @@ Getting Search results from a Nutch crawl (version 0.8.x)
 </description>
 
 <rtd>
-  <property name="xslt"/>
+  <property name="global-xslt"/>
   <property name="i18n-bundle-name"/>
   <property name="language"/>
   <property name="nutch-config" value="file:/..."/>
