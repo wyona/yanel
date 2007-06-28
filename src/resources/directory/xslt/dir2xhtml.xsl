@@ -27,6 +27,7 @@
 </head>
 
 <body>
+<div>
 <p>
 <b>Yanel Path (with regard to realm):</b>&#160;<xsl:value-of select="/dir:directory/@yanel:path"/>
 </p>
@@ -43,6 +44,7 @@
 <b>Children:</b><br/>
 <xsl:apply-templates select="/dir:directory/*"/>
 </p>
+</div>
 </body>
 </html>
 </xsl:template>
