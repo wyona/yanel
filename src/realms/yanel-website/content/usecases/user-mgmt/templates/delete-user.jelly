@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+      <h1>Delete User: ${resource.getParameterAsString('userID')}</h1>
+      <p>${resource.getErrorMessages()}</p>
+      <form action="" >
+        <input type="hidden" name="userID" value="${resource.getParameterAsString('userID')}"/>
+        <p style="width: 500px; text-align: left">Are you sure you want to permanently delete the user ${resource.getParameterAsString('userID')} (${resource.getUser().getName()})?</p>
+        <input type="submit" name="submit" value="Ok"/>
+        <input type="submit" name="cancel" value="Cancel"/>
+      </form>
+    </body>
+  </html>
+</j:jelly>

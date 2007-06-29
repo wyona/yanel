@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+      <h1>Update User: ${resource.getParameterAsString('userID')}</h1>
+      <p>${resource.getErrorMessages()}</p>
+      <form action="" >
+        <input type="hidden" name="userID" value="${resource.getParameterAsString('userID')}"/>
+        <input type="hidden" name="usecaseState" value="${resource.getParameterAsString('usecaseState')}"/>
+        Name: <input type="text" name="name" value="${resource.getParameterAsString('name')}"/>
+        <br/>
+        Email: <input type="text" name="email" value="${resource.getParameterAsString('email')}"/>
+        <br/>
+        Current Password: <input type="password" name="oldPassword"/>
+        <br/>
+        New Password: <input type="password" name="password1"/>
+        <br/>
+        New Password: <input type="password" name="password2"/>
+        <br/>
+        
+        Group Affiliation:
+        <table border="1">
+          <j:forEach var="group" items="${resource.getGroups()}">
+            <tr>
+              <td>${group.getName()}</td>
+              <td>
+                <j:choose>
+                  <j:when test="${resource.isGroupSelected(group)}">
+                    <input disabled="disabled" type="checkbox" checked="checked" name="groups" value="${group.getID()}"/>
+                  </j:when>
+                  <j:otherwise>
+                    <input disabled="disabled" type="checkbox" name="groups" value="${group.getID()}"/>
+                  </j:otherwise>
+                </j:choose>
+              </td>
+            </tr>
+          </j:forEach>
+        </table>
+
+        <input type="submit" name="submit" value="Ok"/>
+        <input type="submit" name="cancel" value="Cancel"/>
+      </form>
+    </body>
+  </html>
+</j:jelly>

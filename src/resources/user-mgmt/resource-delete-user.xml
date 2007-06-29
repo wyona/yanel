@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="delete-user"
+  namespace="http://www.wyona.org/yanel/resource/1.0"
+  class="org.wyona.yanel.impl.resources.DeleteUserResource"
+  >
+<description>
+Delete user
+</description>
+
+<rtd>
+  <property name="xslt"/>
+</rtd>
+</resource>

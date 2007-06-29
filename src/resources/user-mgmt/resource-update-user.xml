@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="update-user"
+  namespace="http://www.wyona.org/yanel/resource/1.0"
+  class="org.wyona.yanel.impl.resources.UpdateUserResource"
+  >
+<description>
+Update user
+</description>
+
+<rtd>
+  <property name="xslt"/>
+</rtd>
+</resource>

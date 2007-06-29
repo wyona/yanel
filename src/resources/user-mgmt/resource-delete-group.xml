@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="delete-group"
+  namespace="http://www.wyona.org/yanel/resource/1.0"
+  class="org.wyona.yanel.impl.resources.DeleteGroupResource"
+  >
+<description>
+Delete group
+</description>
+
+<rtd>
+  <property name="xslt"/>
+</rtd>
+</resource>

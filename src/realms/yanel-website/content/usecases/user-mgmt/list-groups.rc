@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="list-groups" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="xslt" value="/xslt/usecase.xsl"/>
+  
+  <yanel:custom-config>
+    <views>
+      <view id="default" type="jelly">
+        <template>/usecases/user-mgmt/templates/list-groups.jelly</template>
+      </view>
+    </views>
+  </yanel:custom-config>
+  
+</yanel:resource-config>

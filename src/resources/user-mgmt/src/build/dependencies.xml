@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<project name="wiki-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <target name="dependencies" description="Dependencies">
+    <!-- INFO: http://maven.apache.org/ant-tasks.html -->
+    <artifact:remoteRepository id="wyona.remote.repository" url="http://www.wyona.org/maven2/"/>
+
+    <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-core" version="${yanel.source.version}"/>
+      <dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3"/>
+      <dependency groupId="xml-resolver" artifactId="xml-resolver" version="1.1"/>
+      <dependency groupId="xalan" artifactId="xalan" version="2.7.0"/>
+    </artifact:dependencies>
+
+    <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-impl" version="${yanel.source.version}"/>
+      <dependency groupId="commons-jelly" artifactId="commons-jelly" version="1.0"/>
+      <dependency groupId="commons-jexl" artifactId="commons-jexl" version="1.0"/>
+      <dependency groupId="commons-beanutils" artifactId="commons-beanutils" version="1.6"/>
+      <dependency groupId="dom4j" artifactId="dom4j" version="1.5.2"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.0.1-dev-r23969"/>
+      <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
+      <dependency groupId="avalon-framework" artifactId="avalon-framework-impl" version="4.3"/>
+    </artifact:dependencies>
+
+    <property name="maven2.cp" refid="maven2.classpath"/>
+    <property name="maven2.resource.cp" refid="maven2.resource.classpath"/>
+    <!--<echo>Maven2 classpath: ${maven2.cp}</echo>-->
+  </target>
+
+</project>

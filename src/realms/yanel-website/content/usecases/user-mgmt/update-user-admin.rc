@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="update-user" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="xslt" value="/xslt/usecase.xsl"/>
+  <yanel:property name="allowEditGroups" value="true"/>
+  <yanel:property name="verifyPassword" value="false"/>
+  
+  <yanel:custom-config>
+    <views>
+      <view id="default" type="jelly">
+        <template>/usecases/user-mgmt/templates/update-user-admin.jelly</template>
+      </view>
+      <view id="done" type="jelly">
+        <template>/usecases/user-mgmt/templates/usecase-done.jelly</template>
+      </view>
+      <view id="cancel" type="jelly">
+        <template>/usecases/user-mgmt/templates/usecase-cancel.jelly</template>
+      </view>
+    </views>
+  </yanel:custom-config>
+  
+</yanel:resource-config>
