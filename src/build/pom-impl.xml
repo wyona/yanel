@@ -9,7 +9,7 @@
     <dependency>
       <groupId>wyona-org-yanel</groupId>
       <artifactId>yanel-core</artifactId>
-      <version>1.0-dev-rREVISION</version>
+      <version>@VERSION@</version>
     </dependency>
   </dependencies>
 </project>
