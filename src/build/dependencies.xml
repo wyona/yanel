@@ -82,6 +82,10 @@
                   version="1.0"/>
       <dependency groupId="jakarta" artifactId="jakarta-regexp"
                   version="1.4"/>
+      <dependency groupId="commons-jelly" artifactId="commons-jelly" version="1.0"/>
+      <dependency groupId="commons-jexl" artifactId="commons-jexl" version="1.0"/>
+      <dependency groupId="commons-beanutils" artifactId="commons-beanutils" version="1.6"/>
+      <dependency groupId="dom4j" artifactId="dom4j" version="1.5.2"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
