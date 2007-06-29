@@ -24,11 +24,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.WildcardFilter;
 import org.apache.log4j.Category;
 
 import org.wyona.commons.io.FileUtil;
@@ -162,10 +166,19 @@ public class ResourceTypeRegistry {
                 }
 
                 if (resConfigFile.isDirectory()) {
-                    resConfigFile = new File(resConfigFile, RESOURCE_DEFAULT_CONFIG_NAME);
-                }
+                    File resDir = resConfigFile;
+                    
+                    Iterator iter = FileUtils.listFiles(resDir, new WildcardFilter("resource*.xml"), null).iterator();
+                    while (iter.hasNext()) {
+                        resConfigFile = (File)iter.next();
+                        log.debug("found resource config: " + resConfigFile);
+                        ResourceTypeDefinition rtd = new ResourceTypeDefinition(resConfigFile);
+                        log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
+                        log.debug("Classname: " + rtd.getResourceTypeClassname());
+                        hm.put(rtd.getResourceTypeUniversalName(), rtd);
+                    }
 
-                if (resConfigFile.isFile()) {
+                } else if (resConfigFile.isFile()) {
                     ResourceTypeDefinition rtd = new ResourceTypeDefinition(resConfigFile);
                     log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
                     log.debug("Classname: " + rtd.getResourceTypeClassname());
