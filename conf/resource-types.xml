@@ -4,7 +4,7 @@
 <resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2007061100">
 
   <changes>
-    <change version="2007061100">data-repo-sitetree resource type added</change>
+    <change version="2007062900">data-repo-sitetree resource type added</change>
   </changes>
 
   <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
@@ -19,6 +19,7 @@
   <resource-type src="../src/resources/add-realm/"                  compile="true"/>
   <resource-type src="../src/resources/odt/"                         compile="true"/>
   <resource-type src="../src/resources/xml/"                         compile="true"/>
+  <resource-type src="../src/resources/user-mgmt/"                   compile="true"/>
   <resource-type src="../src/realms/welcome-admin/yanel/resources/show-realms/"                 compile="true"/>
   <resource-type src="../src/realms/welcome-admin/yanel/resources/update-webapp/"                 compile="true"/>
 <!--
