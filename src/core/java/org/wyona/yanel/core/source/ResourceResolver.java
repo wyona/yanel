@@ -55,7 +55,7 @@ public class ResourceResolver implements SourceResolver {
                 uri = uri.substring(0, uri.indexOf("?"));
             }
             ResourceManager manager = Yanel.getInstance().getResourceManager();
-            Resource targetResource = manager.getResource(resource.getRequest(), resource.getResponse(), 
+            Resource targetResource = manager.getResource(resource.getEnvironment(), 
                     resource.getRealm(), uri);
             targetResource.setParameters(parameters);
             if (ResourceAttributeHelper.hasAttributeImplemented(targetResource, "Viewable", "1")) {

@@ -93,7 +93,7 @@ public abstract class AbstractPathTranslationManager extends DefaultTranslationM
     protected Resource getResource(Resource resource, String language) throws Exception {
         String possiblePath = getPath(resource.getPath(), language);
         if (possiblePath != null) {
-            Resource possibleResource = getResourceManager().getResource(resource.getRequest(), resource.getResponse(), resource.getRealm(), possiblePath);
+            Resource possibleResource = getResourceManager().getResource(resource.getEnvironment(), resource.getRealm(), possiblePath);
             if (ResourceAttributeHelper.hasAttributeImplemented(possibleResource, "Viewable", "2")) {
                 ViewableV2 viewable = (ViewableV2)possibleResource;
                 if (viewable.exists()) {
@@ -141,7 +141,7 @@ public abstract class AbstractPathTranslationManager extends DefaultTranslationM
         if (page != null && page.containsKey(language)) {
             LanguageVersion target = (LanguageVersion)page.get(language);
             try {
-                return getResourceManager().getResource(resource.getRequest(), resource.getResponse(), resource.getRealm(), target.path);
+                return getResourceManager().getResource(resource.getEnvironment(), resource.getRealm(), target.path);
             } catch (Exception e) {
                 throw new TranslationException(e.getMessage(), e);
             }

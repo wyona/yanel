@@ -53,8 +53,8 @@ public class ResourceManager {
      *
      * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
      */
-    public Resource getResource(HttpServletRequest request, HttpServletResponse response, 
-            Realm realm, String path, ResourceTypeDefinition rtd, ResourceTypeIdentifier rti) 
+    public Resource getResource(Environment environment, Realm realm, String path, 
+            ResourceTypeDefinition rtd, ResourceTypeIdentifier rti) 
     throws Exception {
         String universalName = rtd.getResourceTypeUniversalName();
         if (rtd != null) {
@@ -65,10 +65,9 @@ public class ResourceManager {
             resource.setRealm(realm);
             resource.setPath(path);
             resource.setRTI(rti);
-            resource.setRequest(request);
-            resource.setResponse(response);
+            resource.setEnvironment(environment);
             
-            passParameters(resource, request);
+            passParameters(resource, environment.getRequest());
             
             return resource;
         } else {
@@ -82,7 +81,7 @@ public class ResourceManager {
      *
      * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
      */
-    public Resource getResource(HttpServletRequest request, HttpServletResponse response, Realm realm, String path, ResourceConfiguration rc) throws Exception {
+    public Resource getResource(Environment environment, Realm realm, String path, ResourceConfiguration rc) throws Exception {
         ResourceTypeDefinition rtd = rtRegistry.getResourceTypeDefinition(rc.getUniversalName());
 
         if (rtd != null) {
@@ -94,10 +93,9 @@ public class ResourceManager {
             resource.setRealm(realm);
             resource.setPath(path);
             resource.setConfiguration(rc);
-            resource.setRequest(request);
-            resource.setResponse(response);
+            resource.setEnvironment(environment);
             
-            passParameters(resource, request);
+            passParameters(resource, environment.getRequest());
             
             return resource;
         } else {
@@ -111,10 +109,10 @@ public class ResourceManager {
      *
      * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
      */
-    public Resource getResource(HttpServletRequest request, HttpServletResponse response, Realm realm, String path) throws Exception {
+    public Resource getResource(Environment environment, Realm realm, String path) throws Exception {
         if (realm.getRTIRepository().exists(new Path(PathUtil.getRCPath(path)))) {
             ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getInputStream(new Path(PathUtil.getRCPath(path))));
-            if (rc != null) return getResource(request, response, realm, path, rc);
+            if (rc != null) return getResource(environment, realm, path, rc);
         }
 
         if (realm.getRTIRepository().exists(new Path(PathUtil.getRTIPath(path)))) {
@@ -122,16 +120,16 @@ public class ResourceManager {
             log.warn("DEPRECATED: RTI should be replaced by ResourceConfiguration: " + realm + ", " + path);
             ResourceTypeIdentifier rti = getResourceTypeIdentifier(realm, path);
             ResourceTypeDefinition rtd = rtRegistry.getResourceTypeDefinition(rti.getUniversalName());
-            return getResource(request, response, realm, path, rtd, rti);
+            return getResource(environment, realm, path, rtd, rti);
         } 
 
         String rcPath = ResourceConfigurationMap.getRCPath(realm, path);
         if (rcPath != null && realm.getRTIRepository().exists(new Path(rcPath))) {
             ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getInputStream(new Path(ResourceConfigurationMap.getRCPath(realm, path))));
-            if (rc != null) return getResource(request, response, realm, path, rc);
+            if (rc != null) return getResource(environment, realm, path, rc);
         } 
         
-        return getResource(request, response, realm, path, new ResourceConfiguration("file", "http://www.wyona.org/yanel/resource/1.0", null));
+        return getResource(environment, realm, path, new ResourceConfiguration("file", "http://www.wyona.org/yanel/resource/1.0", null));
         
     }
 

@@ -454,7 +454,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         String rtps = resourceType;
         String resNamespace = rtps.substring(0, rtps.indexOf("::"));
         String resName = rtps.substring(rtps.indexOf("::") + 2);
-        Resource newResource = yanel.getResourceManager().getResource(request, response, realm, pathOfNewResource.toString(), new ResourceConfiguration(resName, resNamespace, null));
+        Resource newResource = yanel.getResourceManager().getResource(getEnvironment(), realm, pathOfNewResource.toString(), new ResourceConfiguration(resName, resNamespace, null));
         
         if (newResource != null) {
             if (ResourceAttributeHelper.hasAttributeImplemented(newResource, "Creatable", "2")) {
@@ -647,7 +647,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 for (int i = 0; i < children.length; i++) {
                     String resourceTypeName;
                     try {
-                        resourceTypeName = yanel.getResourceManager().getResource(request, response, realm, children[i].getPath()).getResourceTypeLocalName();
+                        resourceTypeName = yanel.getResourceManager().getResource(getEnvironment(), realm, children[i].getPath()).getResourceTypeLocalName();
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         resourceTypeName = "?";

@@ -27,8 +27,9 @@ import org.wyona.yanel.core.attributes.viewable.View;
 public interface VersionableV2 {
 
     /**
-     * Gets an array of revision information objects.
-     * @return informations of the various revisions
+     * Gets an array of revision information objects, oldest revision at the first array
+     * position, newest at the last position.
+     * @return informations of the various revisions, or empty array if there are no revisions.
      * @throws Exception
      */
     public RevisionInformation[] getRevisions() throws Exception;

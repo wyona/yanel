@@ -143,7 +143,7 @@ public class Yanel {
      * use getResourceManager().getResource() instead 
      */
     public Resource getResource(Realm realm, String path) throws Exception {
-        return resourceManager.getResource(null, null, realm, path);
+        return resourceManager.getResource(null, realm, path);
     }
 
     /**

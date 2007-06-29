@@ -213,7 +213,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     private InputStream getContentXML(Repository repo, String yanelPath, String revisionName) throws Exception {
         if (yanelPath != null) {
             log.debug("Yanel Path: " + yanelPath);
-            Resource res = yanel.getResourceManager().getResource(getRequest(), getResponse(), getRealm(), yanelPath);
+            Resource res = yanel.getResourceManager().getResource(getEnvironment(), 
+                    getRealm(), yanelPath);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                 // TODO: Pass the request ...
                 String viewV1path = getRealm().getMountPoint() + yanelPath.substring(1);
@@ -346,7 +347,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.VersionableV2#getRevisions()
      */
     public RevisionInformation[] getRevisions() throws Exception {
         Revision[] revisions = getRealm().getRepository().getNode(getPath()).getRevisions();
@@ -650,12 +651,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     }
     
     public View getLiveView(String viewid) throws Exception {
-        if (WorkflowHelper.isLive(this)) {
-            String liveRevision = WorkflowHelper.getLiveRevision(this);
-            return getView(viewid, liveRevision);
-        } else {
-            return null;
-        }
+        return WorkflowHelper.getLiveView(this, viewid);
     }
 
     public boolean isLive() throws WorkflowException {

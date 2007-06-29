@@ -116,7 +116,7 @@ public class DefaultTranslationManager implements TranslationManager {
             ResourceManager resourceManager;
             try {
                 resourceManager = Yanel.getInstance().getResourceManager();
-                return resourceManager.getResource(resource.getRequest(), resource.getResponse(), resource.getRealm(), target.path);
+                return resourceManager.getResource(resource.getEnvironment(), resource.getRealm(), target.path);
             } catch (Exception e) {
                 throw new TranslationException(e.getMessage(), e);
             }

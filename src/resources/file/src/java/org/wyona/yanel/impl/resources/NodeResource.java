@@ -224,22 +224,20 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
     
     /**
-     * Get revisions
+     * @see org.wyona.yanel.core.api.attributes.VersionableV2#getRevisions()
      */
     public RevisionInformation[] getRevisions() throws Exception {
         Revision[] revisions = getRealm().getRepository().getNode(getPath()).getRevisions();
 
-        if (revisions != null && revisions.length > 0) {
-            RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
-       
-            for (int i = 0; i < revisions.length; i++) {
-                revisionInfos[i] = new RevisionInformation(revisions[i]);
-            }
-            return revisionInfos;
-        } else {
-            log.warn("Node \"" + getPath() + "\" does not seem to have any revisions! The repository \"" + getRealm().getRepository() + "\"  might not support revisions!");
-            return null;
+        RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
+   
+        for (int i = 0; i < revisions.length; i++) {
+            revisionInfos[i] = new RevisionInformation(revisions[i]);
         }
+        if (revisions.length > 0) {
+            log.warn("Node \"" + getPath() + "\" does not seem to have any revisions! The repository \"" + getRealm().getRepository() + "\"  might not support revisions!");
+        }
+        return revisionInfos;
     }
    
     public void checkin(String comment) throws Exception {
@@ -444,12 +442,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public View getLiveView(String viewid) throws Exception {
-        if (WorkflowHelper.isLive(this)) {
-            String liveRevision = WorkflowHelper.getLiveRevision(this);
-            return getView(viewid, liveRevision);
-        } else {
-            return null;
-        }
+        return WorkflowHelper.getLiveView(this, viewid);
     }
 
     /**

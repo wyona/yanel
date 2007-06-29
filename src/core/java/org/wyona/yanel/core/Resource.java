@@ -35,6 +35,7 @@ public abstract class Resource {
 
     private static Category log = Category.getInstance(Resource.class);
 
+    // TODO: make protected members private (access in subclasses via getter/setter methods)
     protected ResourceTypeDefinition rtd;
     protected ResourceTypeIdentifier rti;
     protected ResourceConfiguration rc;
@@ -43,6 +44,7 @@ public abstract class Resource {
     protected Realm realm;
     protected HttpServletRequest request;
     protected HttpServletResponse response;
+    private Environment environment;
     protected Map parameters;
 
     /**
@@ -150,20 +152,32 @@ public abstract class Resource {
         return rc;
     }
 
+    /**
+     * @deprecated use getEnvironment().getRequest() instead  
+     */
     public HttpServletRequest getRequest() {
-        return request;
+        return environment.getRequest();
     }
 
+    /**
+     * @deprecated use getEnvironment().setRequest() instead 
+     */
     public void setRequest(HttpServletRequest request) {
-        this.request = request;
+        environment.setRequest(request);
     }
 
+    /**
+     * @deprecated use getEnvironment().getResponse() instead  
+     */
     public HttpServletResponse getResponse() {
-        return response;
+        return environment.getResponse();
     }
 
+    /**
+     * @deprecated use getEnvironment().setResponse() instead
+     */
     public void setResponse(HttpServletResponse response) {
-        this.response = response;
+        environment.setResponse(response);
     }
 
     /**
@@ -198,7 +212,32 @@ public abstract class Resource {
      * @return parameter string or null if no parameter with this name exists.
      */
     public String getParameterAsString(String name) {
-        return this.parameters.get(name).toString();
+        Object param = this.parameters.get(name);
+        if (param == null) {
+            return null;
+        } else {
+            return param.toString();
+        }
+    }
+
+    /**
+     * Gets the parameter values with the given name as a string array.
+     * @param name
+     * @return array containing the parameter values, or empty array if parameter does not exist.
+     */
+    public String[] getParameterAsStringValues(String name) {
+        Object param = this.parameters.get(name);
+        if (param == null) {
+            return new String[0];
+        }
+        if (param instanceof String) {
+            String[] values = new String[1];
+            values[0] = (String)param;
+            return values;
+        } else if (param instanceof String[]) {
+            return (String [])param;
+        }
+        return null;
     }
 
     /**
@@ -273,6 +312,16 @@ public abstract class Resource {
         ResourceConfiguration rc = getConfiguration();
         if (rc != null) return rc.getProperties(name);
         return getRTI().getProperties(name);
+    }
+
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+        this.request = environment.getRequest();
+        this.response = environment.getResponse();
     }
 
 

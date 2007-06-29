@@ -26,6 +26,7 @@ import java.io.File;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.Environment;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
@@ -47,7 +48,8 @@ public class NutchResourceTest extends AbstractYanelTest {
         Map map = yanel.getMap();
         Realm realm = yanel.getMap().getRealm(url);
         String path = yanel.getMap().getPath(realm, url);
-        this.resource = (NutchResource)yanel.getResourceManager().getResource(null, null, realm, path);
+        Environment environment = new Environment(null, null, null, null);
+        this.resource = (NutchResource)yanel.getResourceManager().getResource(environment, realm, path);
         confDir = this.resource.getRTD().getConfigFile().getParentFile().getAbsolutePath() + 
                     File.separator + "conf" + File.separator;
     }

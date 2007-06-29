@@ -21,8 +21,10 @@ import java.util.Date;
 import org.apache.log4j.Category;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
+import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
+import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.util.DateUtil;
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Property;
@@ -30,7 +32,7 @@ import org.wyona.yarep.core.Revision;
 
 /**
  * This class provides some helper methods related to workflow for resources 
- * which are WorkflowableV1 and VersionableV2 and which implement workflow
+ * which are WorkflowableV1, VersionableV2, and ViewableV2 and which implement workflow
  * according to the following conditions:
  * - there is a resource config property 'workflow-schema' which points to the schema
  * - the workflow information is stored as properties of a repository node in the repository
@@ -108,17 +110,35 @@ public class WorkflowHelper {
     public static String getLiveRevision(Resource resource) throws WorkflowException {
         try {
             WorkflowableV1 workflowable = (WorkflowableV1)resource;
-            return workflowable.getWorkflowVariable(LIVE_REVISION_PROPERTY);
+            if (getWorkflow(resource) == null) {
+                RevisionInformation[] revisions = ((VersionableV2)resource).getRevisions();
+                if (revisions.length == 0) {
+                    return null;
+                } else {
+                    return revisions[revisions.length-1].getName();
+                }
+            } else {
+                return workflowable.getWorkflowVariable(LIVE_REVISION_PROPERTY);
+            }
         } catch (Exception e) {
             log.error(e, e);
             throw new WorkflowException(e.getMessage(), e);
         }
     }
 
+    /**
+     * Indicates whether the given resource is live, i.e. if the workflow variable
+     * &quot;live-revision&quot; has a defined value.
+     * If a resource does not have an associated workflow, it is considered as live.
+     * @param resource
+     * @return true if live, false otherwise
+     * @throws WorkflowException
+     */
     public static boolean isLive(Resource resource) throws WorkflowException {
         try {
             WorkflowableV1 workflowable = (WorkflowableV1)resource;
-            if (workflowable.getWorkflowVariable(LIVE_REVISION_PROPERTY) != null) {
+            if (getWorkflow(resource) == null ||
+                    workflowable.getWorkflowVariable(LIVE_REVISION_PROPERTY) != null) {
                 return true;
             } else {
                 return false;
@@ -129,6 +149,20 @@ public class WorkflowHelper {
         }
     }
     
+    public static View getLiveView(Resource resource, String viewid) throws Exception {
+        if (((WorkflowableV1)resource).isLive()) {
+            String liveRevision = getLiveRevision(resource);
+            if (liveRevision != null) {
+                return ((VersionableV2)resource).getView(viewid, liveRevision);
+            } else {
+                // if there are no revisions, show the normal view:
+                return ((ViewableV2)resource).getView(viewid);
+            }
+        } else {
+            return null;
+        }
+    }
+
     public static Workflow getWorkflow(Resource resource) throws WorkflowException {
         try {
             String workflowSchema = resource.getResourceConfigProperty("workflow-schema");

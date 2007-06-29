@@ -100,7 +100,7 @@ public class TranslationResource extends Resource implements ViewableV2 {
         
         
         try {
-            Resource resource = getYanel().getResourceManager().getResource(getRequest(), getResponse(), getRealm(), currentPath);
+            Resource resource = getYanel().getResourceManager().getResource(getEnvironment(), getRealm(), currentPath);
             
             Repository repo = getRealm().getRepository();
 

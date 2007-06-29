@@ -31,6 +31,8 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 
+import org.wyona.yanel.core.Area;
+import org.wyona.yanel.core.Environment;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
@@ -329,10 +331,12 @@ public class YanelServlet extends HttpServlet {
 
         String usecase = request.getParameter("yanel.resource.usecase");
 
+        
         Resource res = null;
         long lastModified = -1;
         long size = -1;
             try {
+                Environment environment = getEnvironment(request, response);
                 res = getResource(request, response);
                 if (res != null) {
 
@@ -422,6 +426,20 @@ public class YanelServlet extends HttpServlet {
                             String revisionName = request.getParameter("yanel.resource.revision");
                             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2") && revisionName != null) {
                                 view = ((VersionableV2) res).getView(viewId, revisionName);
+                            } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1") && environment.getArea().equals(Area.LIVE)) {
+                                WorkflowableV1 workflowable = (WorkflowableV1)res;
+                                if (workflowable.isLive()) {
+                                    view = workflowable.getLiveView(viewId);
+                                } else {
+                                    String message = "This document has not been published yet.";
+                                    log.warn(message);
+                                    Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                                    exceptionElement.appendChild(doc.createTextNode(message));
+                                    exceptionElement.setAttributeNS(NAMESPACE, "status", "404");
+                                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
+                                    setYanelOutput(request, response, doc);
+                                    return;
+                                }
                             } else {
                                 view = ((ViewableV2) res).getView(viewId);
                             }
@@ -492,8 +510,7 @@ public class YanelServlet extends HttpServlet {
                         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
                             // note: this will throw an exception if the document is checked out already
                             // by another user.
-                            Identity identity = getIdentity(request);
-                            String userID = identity.getUsername();
+                            String userID = environment.getIdentity().getUsername();
                             VersionableV2 versionable = (VersionableV2)res;
                             if (versionable.isCheckedOut()) {
                                 String checkoutUserID = versionable.getCheckoutUserID(); 
@@ -644,7 +661,7 @@ public class YanelServlet extends HttpServlet {
                     String newEntryPath = yanel.getMap().getPath(realm, request.getServletPath() + "/" + new java.util.Date().getTime() + ".xml");
 
                     log.error("DEBUG: Realm and Path of new Atom entry: " + realm + " " + newEntryPath);
-                    Resource atomEntryResource = yanel.getResourceManager().getResource(request, response, realm, newEntryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new ResourceTypeIdentifier(atomEntryUniversalName, null));
+                    Resource atomEntryResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, newEntryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new ResourceTypeIdentifier(atomEntryUniversalName, null));
                     
                     ((ModifiableV2)atomEntryResource).write(in);
 
@@ -706,7 +723,7 @@ public class YanelServlet extends HttpServlet {
 
                     log.error("DEBUG: Realm and Path of new Atom entry: " + realm + " " + entryPath);
 
-                    Resource atomEntryResource = yanel.getResourceManager().getResource(request, response, realm, entryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new ResourceTypeIdentifier(atomEntryUniversalName, null));
+                    Resource atomEntryResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, entryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new ResourceTypeIdentifier(atomEntryUniversalName, null));
                     
                     // TODO: There seems to be a problem ...
                     ((ModifiableV2)atomEntryResource).write(in);
@@ -774,7 +791,7 @@ public class YanelServlet extends HttpServlet {
             String path = map.getPath(realm, request.getServletPath());
             HttpRequest httpRequest = new HttpRequest(request);
             HttpResponse httpResponse = new HttpResponse(response);
-            Resource res = yanel.getResourceManager().getResource(httpRequest, httpResponse, realm, path);
+            Resource res = yanel.getResourceManager().getResource(getEnvironment(httpRequest, httpResponse), realm, path);
             
             return res;
         } catch(Exception e) {
@@ -782,6 +799,35 @@ public class YanelServlet extends HttpServlet {
                     ": " + e.getMessage();
             log.error(errorMsg, e);
             throw new ServletException(errorMsg, e);
+        }
+    }
+
+    /**
+     *
+     */
+    private Environment getEnvironment(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        Identity identity;
+        try {
+            identity = getIdentity(request);
+            if (identity == null) {
+                identity = new Identity(); // world
+            }
+            // TODO: implement detection of area
+            String area = Area.AUTHORING;
+            //String area = map.getArea(request.getServletPath());
+            //System.out.println("url: " + request.getServletPath());
+            //System.out.println("area: " + area);
+            /*String area = null;
+            Object toolbarAttr = request.getSession().getAttribute(TOOLBAR_KEY); 
+            if (toolbarAttr != null && toolbarAttr.equals("on")) {
+                area = "authoring";
+            } else {
+                area = "live";
+            }*/
+            Environment environment = new Environment(request, response, identity, area);
+            return environment;
+        } catch (Exception e) {
+            throw new ServletException(e.getMessage(), e);
         }
     }
 
@@ -1965,7 +2011,7 @@ public class YanelServlet extends HttpServlet {
                 properties.put("user", userName);
                 ResourceConfiguration rc = new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
                 Realm realm = yanel.getMap().getRealm(request.getServletPath());
-                Resource yanelUserResource = yanel.getResourceManager().getResource(request, response, realm, path, rc);
+                Resource yanelUserResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
                 View view = ((ViewableV2) yanelUserResource).getView(viewId);
                 if (view != null) {
                     if (generateResponse(view, yanelUserResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
@@ -1991,7 +2037,7 @@ public class YanelServlet extends HttpServlet {
                 //properties.put("user", userName);
                 ResourceConfiguration rc = new ResourceConfiguration("data-repo-sitetree", "http://www.wyona.org/yanel/resource/1.0", properties);
                 Realm realm = yanel.getMap().getRealm(request.getServletPath());
-                Resource sitetreeResource = yanel.getResourceManager().getResource(request, response, realm, path, rc);
+                Resource sitetreeResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
                 View view = ((ViewableV2) sitetreeResource).getView(viewId);
                 if (view != null) {
                     if (generateResponse(view, sitetreeResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
@@ -2010,7 +2056,7 @@ public class YanelServlet extends HttpServlet {
                 java.util.Map properties = new HashMap();
                 Realm realm = yanel.getMap().getRealm(request.getServletPath());
                 ResourceConfiguration rc = new ResourceConfiguration(name, namespace, properties);
-                Resource resourceOfPrefix = yanel.getResourceManager().getResource(request, response, realm, path, rc);
+                Resource resourceOfPrefix = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
                 File resourceFile = org.wyona.commons.io.FileUtil.file(resourceOfPrefix.getRTD().getConfigFile().getParentFile().getAbsolutePath(), "htdocs" + htdocsPath);
 
                 if (resourceFile.exists()) {
