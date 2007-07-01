@@ -282,24 +282,17 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
     }
 
     /**
-     * Get property from RTI
+     * Get property from resource instance configuration
      */
     private String getProperty(String path, String name, String defaultValue) {
-        String propertyValue = defaultValue;
+        String propertyValue = null;
+	
         try {
-            java.io.BufferedReader br = new java.io.BufferedReader(getRealm().getRTIRepository().getReader(new org.wyona.yarep.core.Path(PathUtil.getRTIPath(getPath()))));
-
-            String property = null;
-            while ((property = br.readLine()) != null) {
-                if (property.indexOf(name + ":") == 0) {
-                    propertyValue = property.substring(name.length() + 2);
-                    log.info("*" + propertyValue + "*");
-                    return propertyValue;
-                }
-            }
-        } catch(Exception e) {
-            log.warn(e);
+	    propertyValue = getResourceConfigProperty(name);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
+        if (propertyValue == null) propertyValue = defaultValue;
 
         return propertyValue;
     }
