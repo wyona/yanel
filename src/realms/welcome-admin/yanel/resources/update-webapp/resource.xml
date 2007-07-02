@@ -3,7 +3,7 @@
 <resource xmlns="http://www.wyona.org/yanel/1.0"
   name="update-webapp"
   namespace="http://www.wyona.org/yanel/resource/1.0"
-  class="org.wyona.yanel.impl.resources.UpdateResource"
+  class="org.wyona.yanel.impl.resources.updatefinder.UpdateFinder"
   >
 <description>
 Check for updates of Yanel webapp. Uses local install.rdf from the classpath (e.g. webapps/yanel/WEB-INF/classes/install.rdf)
