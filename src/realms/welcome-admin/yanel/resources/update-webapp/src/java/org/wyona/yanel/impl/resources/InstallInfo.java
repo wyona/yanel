@@ -22,6 +22,7 @@ public class InstallInfo {
     private static Category log = Category.getInstance(InstallInfo.class);
     private String id;
     private String version;
+    private String revision;
     private String installtype;
     private String contextPrefix;
     private String updateURL;
@@ -60,6 +61,8 @@ public class InstallInfo {
         id = install.getRequiredProperty(idProperty).getString();
         Property versionProperty = new PropertyImpl(updateManagerNS, "version");
         version = install.getRequiredProperty(versionProperty).getString();
+        Property revisionProperty = new PropertyImpl(updateManagerNS, "revision");
+        revision = install.getRequiredProperty(revisionProperty).getString();
         Property installtypeProperty = new PropertyImpl(updateManagerNS, "installtype");
         installtype = install.getRequiredProperty(installtypeProperty).getString();
         //Property contextPrefixProperty = new PropertyImpl(updateManagerNS, "contextprefix");
@@ -119,6 +122,10 @@ public class InstallInfo {
 
     public String getVersion() {
         return version;
+    }
+
+    public String getRevision() {
+        return revision;
     }
 
     public String getJavaVersion() {
