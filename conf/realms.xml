@@ -14,7 +14,6 @@
   <config src="@REALMS_DIR@/javadoc/"/>
 </realm>
 
-<!-- ROOT realm -->
 <realm id="yanel-website" mount-point="/yanel-website/">
   <name>Yanel Website</name>
   <config src="@REALMS_DIR@/yanel-website/"/>
@@ -98,6 +97,7 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
   <config src="@REALMS_DIR@/from-scratch-realm-template/"/>
 </realm>
 
+<!-- ROOT realm -->
 <realm id="welcome" mount-point="/" root="true">
   <name>Yanel Welcome and General Administration</name>
   <config src="@REALMS_DIR@/welcome-admin/"/>
