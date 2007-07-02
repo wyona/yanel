@@ -6,7 +6,7 @@
   class="org.wyona.yanel.impl.resources.UpdateResource"
   >
 <description>
-Check for updates of Yanel webapp
+Check for updates of Yanel webapp. Uses local install.rdf from the classpath (e.g. webapps/yanel/WEB-INF/classes/install.rdf)
 </description>
 
 <rtd>
