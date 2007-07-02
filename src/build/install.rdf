@@ -12,9 +12,7 @@
     <um:description>Content Management Software</um:description>
     <um:creator>Wyona</um:creator>
     <um:homepageURL>http://yanel.wyona.org/</um:homepageURL>
-    <!-- <um:updateURL>http://localhost:8081/yanel/downloads/update.rdf</um:updateURL>
-    <um:updateURL>http://yanel.wyona.org/downloads/update.rdf</um:updateURL> -->
-    <um:updateURL>http://yanel.wyona.org/download/update.rdf</um:updateURL>
+    <um:updateURL>http://yanel.wyona.org/downloads/update.rdf</um:updateURL> 
     <um:protectedFiles>
       <rdf:Seq>
        <rdf:li>WEB-INF/classes/yanel.xml</rdf:li>
