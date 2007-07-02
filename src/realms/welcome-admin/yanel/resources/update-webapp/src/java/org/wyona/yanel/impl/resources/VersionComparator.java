@@ -78,9 +78,9 @@ public class VersionComparator {
    * Compare two version strings
    * @param A   a version string
    * @param B   a version string
-   * @return a value less than 0 if A < B;
-   *         the value 0 if A == B;
-   *         or a value greater than 0 if A > B
+   * @return a value less than 0 if A < B; <br>
+   *         the value 0 if A == B; <br>
+   *         or a value greater than 0 if A > B <br>
    */
   public int compare(String A, String B) {
     int result;
