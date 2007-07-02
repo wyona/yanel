@@ -6,16 +6,20 @@
   <rdf:Description rdf:about="urn:wyona:application:install">
     <um:id>yanel-webapp@wyona.org</um:id>
     <um:version>@VERSION@</um:version>
+    <um:revision>@REVISION@</um:revision>
     <um:installtype>@INSTALLTYPE@</um:installtype>
     <um:name>Wyona Yanel Webapp</um:name>
     <um:description>Content Management Software</um:description>
     <um:creator>Wyona</um:creator>
     <um:homepageURL>http://yanel.wyona.org/</um:homepageURL>
+    <!-- <um:updateURL>http://localhost:8081/yanel/downloads/update.rdf</um:updateURL>
+    <um:updateURL>http://yanel.wyona.org/downloads/update.rdf</um:updateURL> -->
     <um:updateURL>http://yanel.wyona.org/download/update.rdf</um:updateURL>
     <um:protectedFiles>
       <rdf:Seq>
-       <rdf:li>WEB-INF/classes/yanel.properties</rdf:li>
+       <rdf:li>WEB-INF/classes/yanel.xml</rdf:li>
        <rdf:li>WEB-INF/classes/realms.xml</rdf:li>
+       <rdf:li>WEB-INF/classes/resource-types.xml</rdf:li>
       </rdf:Seq>
     </um:protectedFiles>
   </rdf:Description>
