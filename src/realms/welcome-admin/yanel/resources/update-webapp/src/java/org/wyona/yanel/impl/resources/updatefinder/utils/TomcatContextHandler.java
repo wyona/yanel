@@ -59,17 +59,19 @@ public class TomcatContextHandler {
         Map contextAndWebapps = new HashMap();
         for (int i = 0; i < this.contextConfDirectory.listFiles().length; i++) {
             String context = this.contextConfDirectory.listFiles()[i].getName().replaceAll(".xml", "");;
+            String webapp = getWebappOfContext(context);
             if (context.equals("ROOT")) {
                 context = "/";
             }
-            String webapp = getWebappOfContext(context);
-            contextAndWebapps.put(context, webapp);
+            if (webapp != "") {
+                contextAndWebapps.put(context, webapp);
+            }
         }
         return contextAndWebapps;
     }
     
     public String getWebappOfContext (String context) throws FileNotFoundException, IOException {
-        File file = new File( contextConfPath +  context);
+        File file = new File( contextConfPath +  context + ".xml");
         String line = "";
         String webapp = "";
 
@@ -82,10 +84,12 @@ public class TomcatContextHandler {
         fis.close();
         bis.close();
         dis.close();
-        
+        if (line.indexOf("yanel-webapps") <= 0) {
+            return "";
+        }
         line = line.replaceAll("[ ]+", " ");
         line = line.replaceAll("\"/>", "");
-        webapp = line.split(File.separator)[line.split(File.separator).length];
+        webapp = line.split(File.separator)[line.split(File.separator).length -1 ];
         
         return webapp;
     }
