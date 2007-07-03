@@ -208,7 +208,7 @@ public class UpdateInfo {
             }
         }
         Collections.sort(selectedUpdateVersions, new UpdateInfoVersionComparator());
-        return (HashMap) selectedUpdateVersions.get(0);
+        return (HashMap) selectedUpdateVersions.get(selectedUpdateVersions.size() - 1);
     }    
 
     /**
