@@ -24,6 +24,12 @@
     <group id="admin" permission="true"/>
   </role>
 
+  <role id="introspection">
+    <group id="editor" permission="true"/>
+    <group id="reviewer" permission="true"/>
+    <group id="admin" permission="true"/>
+  </role>
+
   <role id="review">
     <user id="lenya" permission="true"/>
     <group id="reviewer" permission="true"/>
