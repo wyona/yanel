@@ -177,8 +177,10 @@ public class UpdateInfo {
      * @return ArrayList with version which are matching the value of the key, and fits in the version requirement
      * @param String key
      * @param String value 
+     * @param String installInfoVersion 
+     * @param String installInfoRevision 
      */
-    public ArrayList getUpdateVersionsOf(String key, String value, String installInfoVersion) {
+    public ArrayList getUpdateVersionsOf(String key, String value, String installInfoVersion, String InstallInfoRevision) {
         ArrayList selectedUpdateVersions = getUpdateVersionsOf(key, value);
         VersionComparator versionComparator = new VersionComparator();  
         for (int i = 0; i < selectedUpdateVersions.size(); i++) {
@@ -187,6 +189,12 @@ public class UpdateInfo {
                 selectedUpdateVersions.remove(i);
             }
             if (versionComparator.compare((String) versionDetail.get("targetApllicationMaxVersion"), installInfoVersion) < 0 ) {
+                selectedUpdateVersions.remove(i);
+            }
+            if (versionComparator.compare((String) versionDetail.get("targetApllicationMinRevision"), InstallInfoRevision) > 0 ) {
+                selectedUpdateVersions.remove(i);
+            }
+            if (versionComparator.compare((String) versionDetail.get("targetApllicationMaxRevision"), InstallInfoRevision) < 0 ) {
                 selectedUpdateVersions.remove(i);
             }
         }
