@@ -59,6 +59,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import src.java.org.wyona.yanel.impl.resources.updatefinder.utils.VersionComparator;
+
 import com.hp.hpl.jena.rdf.model.*;
 
 /**
@@ -215,7 +217,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 getUpdateConfirmScreen(sbContent);
             } else if (request.getParameter("updateconfirmed") != null && request.getParameter("updateconfirmed").equals("updateconfirmed")) {    
                 getUpdateScreen(sbContent);
-                sbHeader.append("<meta http-equiv=\"refresh\" content=\"10; URL=" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/updater/" + "\"/>");
+                sbHeader.append("<meta http-equiv=\"refresh\" content=\"10; URL=" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/updater/" + "?updatelink=" + request.getParameter("updatelink") + "\"/>");
             } else {
                 log.info("Fallback ...");
                 plainRequest(sbContent);
@@ -256,16 +258,24 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             sb.append("</p>");
         } else {
             updateInfo = getUpdateInfo(sb);
-
+            String idVersionRevisionCurent = installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision();
+            
             sb.append("<p>");
             sb.append("Your installed yanel is: " + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision());
             sb.append("</p>");
             HashMap newestYanel = updateInfo.getNewestUpdateVersionsOf("id", "wyona-yanel-webapp");
-            sb.append("<p>");
-            sb.append("Newest yanel is: " + newestYanel.get("id") + "-v-" + newestYanel.get("version") + "-r-" + newestYanel.get("revision"));
-            sb.append("<form method=\"post\"><input type=\"submit\" name=\"button\" value=\"update\"></input><input type=\"hidden\" name=\"update\" value=\"update\"></input><input type=\"hidden\" name=\"updatelink\" value=\""
-            + newestYanel.get("updateLink") + "\"/></form>");
-            sb.append("</p>");
+            String idVersionRevisionNewest = (String) newestYanel.get("id") + "-v-" + (String) newestYanel.get("version") + "-r-" + (String) newestYanel.get("revision");
+            if (idVersionRevisionNewest.equals(idVersionRevisionCurent)) {
+                sb.append("<p>");
+                sb.append("Your yanel is already the newest version.");
+                sb.append("</p>");
+            }else {
+                sb.append("<p>");
+                sb.append("Newest yanel is: " + idVersionRevisionNewest);
+                sb.append("<form method=\"post\"><input type=\"submit\" name=\"button\" value=\"update\"></input><input type=\"hidden\" name=\"update\" value=\"update\"></input><input type=\"hidden\" name=\"updatelink\" value=\""
+                        + newestYanel.get("updateLink") + "\"/></form>");
+                sb.append("</p>");
+            }
 
             sb.append("<p>");
             sb.append("Other versions you can get:");
@@ -273,13 +283,14 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             sb.append("<ul>");
             for (int i = 0; i < updateInfo.getUpdateVersions().size(); i++) {
                 HashMap versionDetails = (HashMap) updateInfo.getUpdateVersionsOf("id", "wyona-yanel-webapp").get(i);
-                if ((versionDetails.get("version") != installInfo.getVersion() && versionDetails.get("revision") != installInfo.getRevision()) || ( versionDetails.get("idd") != newestYanel.get("id") && versionDetails.get("version") != newestYanel.get("version") && versionDetails.get("revision") != newestYanel.get("revision"))) {
+                String idVersionRevisionItem = (String) versionDetails.get("id") + "-v-" + (String) versionDetails.get("version") + "-r-" + (String) versionDetails.get("revision");
+                
+                if ( !idVersionRevisionItem.equals(idVersionRevisionCurent) && !idVersionRevisionItem.equals(idVersionRevisionNewest)) {
                     sb.append("<li>"
                             + versionDetails.get("title")
                             + "<ul>"
                             + "<li>Version: "
-                            + versionDetails.get("version")
-                            + "Revision:" + versionDetails.get("revision")
+                            + idVersionRevisionItem
                             + "</li>"
                             + "<li>Type: "
                             + versionDetails.get("type")
@@ -345,31 +356,21 @@ public class UpdateFinder extends Resource implements ViewableV2 {
     }
     
     private void getUpdateScreen(StringBuffer sb) {
-        UpdateInfo updateInfo = getUpdateInfo(sb);
+        
         WarFetcher warFetcher = null;
         try {
-            String destDir = request.getSession().getServletContext().getRealPath(".")
-                    + File.separator + "..";
-            warFetcher = new WarFetcher(request, request.getParameter("updatelink"), destDir);
-
-            HashMap versionDetails = updateInfo.getUpdateVersionDetail("updateLink",
-                    request.getParameter("updatelink"));
-            String version = (String) versionDetails.get("version");
-            String revision = (String) versionDetails.get("revision");
-            String id = (String) versionDetails.get("id");
-
+            String destDir = request.getSession().getServletContext().getRealPath(".") + File.separator + "..";
+            Map bestUpdater = getBestUpdater(sb);
+            
+            warFetcher = new WarFetcher(request, bestUpdater.get("updateLink"), destDir);
             warFetcher.fetch();
 
             TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
-            tomcatContextHandler.setContext("updater", id + "-v-" + version + "-r-" + revision);
-            String pathToUpdater = "http://" + request.getServerName() + ":"
-                    + request.getServerPort() + "/updater/";
+            tomcatContextHandler.setContext("updater", bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"));
 
             sb.append("<p>");
-            sb.append("Update done.");
-            sb.append("<a href=\"" + pathToUpdater + "\">");
-            sb.append("go to the Updater!");
-            sb.append("</a>");
+            sb.append("Update done.<br/>");
+            sb.append("You will be redirected to the updater which will automaticaly download and install the requested yanel.");
             sb.append("</p>");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -401,6 +402,36 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             sb.append("</p>");
             return null;
         }
+    }
+    
+    private HashMap getBestUpdater(StringBuffer sb) {
+        UpdateInfo updateInfo = getUpdateInfo(sb);
+        InstallInfo installInfo = getInstallInfo(sb);
+        
+        HashMap updateVersionDetails = updateInfo.getUpdateVersionDetail("updateLink",
+                request.getParameter("updatelink"));
+        String updateId = (String) updateVersionDetails.get("id");
+        String updateVersion = (String) updateVersionDetails.get("version");
+        String updateRevision = (String) updateVersionDetails.get("revision");
+        
+        ArrayList updaters = getUpdateVersionsOf("type", "updater", installInfo.getVersion(), installInfo.getRevision());
+        VersionComparator versionComparator = new VersionComparator();  
+        for (int i = 0; i < updaters.size(); i++) {
+            HashMap versionDetail = (HashMap) updaters.get(i);
+            if (versionComparator.compare((String) versionDetail.get("targetApllicationMinVersion"), updateVersion) > 0 ) {
+                updaters.remove(i);
+            }
+            if (versionComparator.compare((String) versionDetail.get("targetApllicationMaxVersion"), updateVersion) < 0 ) {
+                updaters.remove(i);
+            }
+            if (versionComparator.compare((String) versionDetail.get("targetApllicationMinRevision"), updateRevision) > 0 ) {
+                updaters.remove(i);
+            }
+            if (versionComparator.compare((String) versionDetail.get("targetApllicationMaxRevision"), updateRevision) < 0 ) {
+                updaters.remove(i);
+            }
+        }
+        Map bestUpdater = (HashMap) updaters.get(updaters.size() - 1);
     }
 
     /**
