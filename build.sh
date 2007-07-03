@@ -33,7 +33,7 @@ PATH=$PWD/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 ant -version
 # One might want to use the option "-f" for building resources, e.g. "./build.sh -f src/resources/xml/build.xml" instead having to build everything
 if [ "$1" = "-f" ];then
-  ant -f $2
+  ant -f $2 $3
   exit 0
 fi
 # Build everything by default
