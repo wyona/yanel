@@ -59,7 +59,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import src.java.org.wyona.yanel.impl.resources.updatefinder.utils.VersionComparator;
 
 import com.hp.hpl.jena.rdf.model.*;
 
@@ -362,7 +361,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             String destDir = request.getSession().getServletContext().getRealPath(".") + File.separator + "..";
             Map bestUpdater = getBestUpdater(sb);
             
-            warFetcher = new WarFetcher(request, bestUpdater.get("updateLink"), destDir);
+            warFetcher = new WarFetcher(request, (String) bestUpdater.get("updateLink"), destDir);
             warFetcher.fetch();
 
             TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
@@ -414,7 +413,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         String updateVersion = (String) updateVersionDetails.get("version");
         String updateRevision = (String) updateVersionDetails.get("revision");
         
-        ArrayList updaters = getUpdateVersionsOf("type", "updater", installInfo.getVersion(), installInfo.getRevision());
+        ArrayList updaters = updateInfo.getUpdateVersionsOf("type", "updater", installInfo.getVersion(), installInfo.getRevision());
         VersionComparator versionComparator = new VersionComparator();  
         for (int i = 0; i < updaters.size(); i++) {
             HashMap versionDetail = (HashMap) updaters.get(i);
@@ -431,7 +430,8 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 updaters.remove(i);
             }
         }
-        Map bestUpdater = (HashMap) updaters.get(updaters.size() - 1);
+        HashMap bestUpdater = (HashMap) updaters.get(updaters.size() - 1);
+        return bestUpdater;
     }
 
     /**
