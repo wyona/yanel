@@ -505,7 +505,7 @@ public class YanelServlet extends HttpServlet {
                     }
                     
                     if (usecase != null && usecase.equals("checkout")) {
-                        log.debug("Checkout data ...");
+                        if(log.isDebugEnabled()) log.debug("Checkout data ...");
                         
                         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
                             // note: this will throw an exception if the document is checked out already
@@ -522,12 +522,11 @@ public class YanelServlet extends HttpServlet {
                             } else {
                                 versionable.checkout(userID);
                             }
+                        } else {
+                            log.warn("Acquire lock has not been implemented yet ...!");
+                            // acquireLock();
                         }
-                        
-                        log.warn("Acquire lock has not been implemented yet ...!");
-                        // acquireLock();
                     }
-
                 } else {
                         Element resourceIsNullElement = (Element) rootElement.appendChild(doc.createElement("resource-is-null"));
                 }
@@ -1002,6 +1001,9 @@ public class YanelServlet extends HttpServlet {
         } else if (value != null && value.equals("checkin")) {
             log.debug("Checkin data ...");
             role = new Role("write");
+        } else if (value != null && value.equals("introspection")) {
+            if(log.isDebugEnabled()) log.debug("Dynamically generated introspection ...");
+            role = new Role("introspection");
         } else if (value != null && value.equals("checkout")) {
             log.debug("Checkout data ...");
             role = new Role("open");
