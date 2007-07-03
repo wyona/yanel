@@ -183,6 +183,15 @@ public class YanelServlet extends HttpServlet {
             getGlobalData(request, response);
             return;
         }
+        
+        // Delete node
+        String value = request.getParameter("yanel.resource.usecase");
+        if (value != null && value.equals("delete")) {
+            log.warn("DEBUG: delete " + path);
+            doDelete(request, response);
+            // TODO: Implement a response
+            return;
+        }
 
         // Delegate ...
         String method = request.getMethod();
