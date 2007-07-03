@@ -426,7 +426,7 @@ public class YanelServlet extends HttpServlet {
                             String revisionName = request.getParameter("yanel.resource.revision");
                             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2") && revisionName != null) {
                                 view = ((VersionableV2) res).getView(viewId, revisionName);
-                            } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1") && environment.getArea().equals(Area.LIVE)) {
+                            } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1") && environment.getStateOfView().equals(Area.LIVE)) {
                                 WorkflowableV1 workflowable = (WorkflowableV1)res;
                                 if (workflowable.isLive()) {
                                     view = workflowable.getLiveView(viewId);
@@ -811,11 +811,12 @@ public class YanelServlet extends HttpServlet {
             if (identity == null) {
                 identity = new Identity(); // world
             }
-            // TODO: implement detection of area
-            String area = Area.AUTHORING;
-            //String area = map.getArea(request.getServletPath());
-            //System.out.println("url: " + request.getServletPath());
-            //System.out.println("area: " + area);
+            Realm realm = map.getRealm(request.getServletPath());
+            // TODO: implement detection of state of view
+            String stateOfView = Area.AUTHORING;
+            //String area = map.getStateOfView(request.getServletPath());
+            //log.debug("url: " + request.getServletPath());
+            //log.debug("state of view: " + stateOfView);
             /*String area = null;
             Object toolbarAttr = request.getSession().getAttribute(TOOLBAR_KEY); 
             if (toolbarAttr != null && toolbarAttr.equals("on")) {
@@ -823,7 +824,7 @@ public class YanelServlet extends HttpServlet {
             } else {
                 area = "live";
             }*/
-            Environment environment = new Environment(request, response, identity, area);
+            Environment environment = new Environment(request, response, identity, stateOfView, null);
             return environment;
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);

@@ -16,6 +16,7 @@
 
 package org.wyona.yanel.impl.resources;
 
+import org.wyona.yanel.core.Environment;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
@@ -58,6 +59,8 @@ import java.util.LinkedHashSet;
 public class DirectoryResource extends Resource implements ViewableV2, CreatableV2 {
 
     private static Category log = Category.getInstance(DirectoryResource.class);
+    
+    private Environment environment;
 
     /**
      * 
@@ -76,6 +79,7 @@ public class DirectoryResource extends Resource implements ViewableV2, Creatable
      * 
      */
     public View getView(String viewId) {
+        environment = getEnvironment();
         View defaultView = new View();
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
 
@@ -249,10 +253,24 @@ public class DirectoryResource extends Resource implements ViewableV2, Creatable
         String backToRoot = "";
         int steps;
         
-        if (getPath().endsWith("/") && !getPath().equals("/")) {
-            steps = getPath().split("/").length - 1;
+        // TODO: Wouldn't it make more sense to use "tokens" and use a URL rewriter at the very end (also see the portlet specificatio http://jcp.org/aboutJava/communityprocess/review/jsr168/)
+        String resourceContainerPath = environment.getResourceContainerPath();
+        if (log.isDebugEnabled()) {
+            log.debug("Resource container path: " + resourceContainerPath);
+            log.debug("Resource path: " + getPath());
+        }
+        if (resourceContainerPath != null) {
+            if (resourceContainerPath.endsWith("/") && !resourceContainerPath.equals("/")) {
+                steps = resourceContainerPath.split("/").length - 1;
+            } else {
+                steps = resourceContainerPath.split("/").length - 2;
+            }
         } else {
-            steps = getPath().split("/").length - 2;
+            if (getPath().endsWith("/") && !getPath().equals("/")) {
+                steps = getPath().split("/").length - 1;
+            } else {
+                steps = getPath().split("/").length - 2;
+            }
         }
         
         for (int i = 0; i < steps; i++) {

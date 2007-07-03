@@ -24,7 +24,7 @@ import org.wyona.security.core.api.Identity;
 
 /**
  * The environment stores items which belong to the environment from which a resource
- * is called, i.e. the request, the response, the identity, and the area.
+ * is called, i.e. the request, the response, the identity, the state of view, and the resource container path.
  */
 public class Environment {
 
@@ -33,13 +33,15 @@ public class Environment {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private Identity identity;
-    private String area;
+    private String sov;
+    private String rcp;
     
-    public Environment(HttpServletRequest request, HttpServletResponse response, Identity identity, String area) {
+    public Environment(HttpServletRequest request, HttpServletResponse response, Identity identity, String stateOfView, String resourceContainerPath) {
         this.request = request;
         this.response = response;
         this.identity = identity;
-        this.area = area;
+        this.sov = stateOfView;
+        this.rcp = resourceContainerPath;
     }
 
     public Identity getIdentity() {
@@ -54,12 +56,20 @@ public class Environment {
         return response;
     }
 
-    public String getArea() {
-        return area;
+    public String getStateOfView() {
+        return sov;
+    }
+    
+    public String getResourceContainerPath() {
+    	return rcp;
+    }
+    
+    public void setResourceContainerPath(String path) {
+        this.rcp = path;
     }
 
-    public void setArea(String area) {
-        this.area = area;
+    public void setStateOfView(String state) {
+        this.sov = state;
     }
 
     public void setIdentity(Identity identity) {
