@@ -19,7 +19,7 @@ package org.wyona.yanel.core;
 /**
  *
  */
-public class Area {
+public class StateOfView {
 
     public static final String AUTHORING = "authoring";
     

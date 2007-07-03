@@ -31,7 +31,7 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 
-import org.wyona.yanel.core.Area;
+import org.wyona.yanel.core.StateOfView;
 import org.wyona.yanel.core.Environment;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
@@ -426,7 +426,7 @@ public class YanelServlet extends HttpServlet {
                             String revisionName = request.getParameter("yanel.resource.revision");
                             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2") && revisionName != null) {
                                 view = ((VersionableV2) res).getView(viewId, revisionName);
-                            } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1") && environment.getStateOfView().equals(Area.LIVE)) {
+                            } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1") && environment.getStateOfView().equals(StateOfView.LIVE)) {
                                 WorkflowableV1 workflowable = (WorkflowableV1)res;
                                 if (workflowable.isLive()) {
                                     view = workflowable.getLiveView(viewId);
@@ -813,7 +813,7 @@ public class YanelServlet extends HttpServlet {
             }
             Realm realm = map.getRealm(request.getServletPath());
             // TODO: implement detection of state of view
-            String stateOfView = Area.AUTHORING;
+            String stateOfView = StateOfView.AUTHORING;
             //String area = map.getStateOfView(request.getServletPath());
             //log.debug("url: " + request.getServletPath());
             //log.debug("state of view: " + stateOfView);
