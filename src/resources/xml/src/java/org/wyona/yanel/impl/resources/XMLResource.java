@@ -163,7 +163,10 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                     if (os != null) xsltHandlers[i].getTransformer().setParameter("os", os);
                     String client = getClient(userAgent);
                     if (client != null) xsltHandlers[i].getTransformer().setParameter("client", client);
+                    // localization
                     xsltHandlers[i].getTransformer().setParameter("language", getRequestedLanguage());
+                    // language of this translation
+                    xsltHandlers[i].getTransformer().setParameter("content-language", getContentLanguage());
                 }
                 
                 // create i18n transformer:
