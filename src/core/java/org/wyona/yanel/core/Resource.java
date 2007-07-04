@@ -250,30 +250,51 @@ public abstract class Resource {
     }
 
     /**
-     * Get language with the following priorization: <br><br>
-     * 1) yanel.meta.language query string parameter<br> 
-     * 2) Translation Manager (if translatable)<br>
-     * 3) Resource Configuration property<br>
-     * 4) Accept-Language header<br>
-     * 5) Realm default language<br>
-     * 6) Default "en"<br>
+     * Get content language resp. the language of this translation (see getRequestedLanguage re localization)
      */
-    public String getRequestedLanguage() throws Exception {
-        // TODO: Make this reusable. Also see org/wyona/yanel/servlet/YanelServlet.java
-
-        // (1)
-        String language = getRequest().getParameter("yanel.meta.language");
-        if (language != null) return language;
-        
-        // (2)
+    public String getContentLanguage() throws Exception {
+        String language = null;
         if (ResourceAttributeHelper.hasAttributeImplemented(this, "Translatable", "1")) {
             language = ((TranslatableV1)this).getLanguage(); 
         }
         if (language != null) return language;
 
+        language = getResourceConfigProperty("language");
+        if (language != null) return language;
+
+        return language;
+    }
+
+    /**
+     * Get language (localization) with the following priorization: <br><br>
+     * 1) yanel.meta.language query string parameter<br> 
+     * 2) Accept-Language header<br>
+     * 3) Realm default language<br>
+     * 4) Default "en"<br>
+     */
+    public String getRequestedLanguage() throws Exception {
+        // TODO: Make this reusable. Also see org/wyona/yanel/servlet/YanelServlet.java
+
+        // TODO: Use user profile setting resp. session (allow switching the locale)
+	    
+        // (1)
+        String language = getRequest().getParameter("yanel.meta.language");
+        if (language != null) return language;
+        
+/*
+        // TODO: Does this really belong here resp. shouldn't it be used with a different priority?
+        // (2)
+        if (ResourceAttributeHelper.hasAttributeImplemented(this, "Translatable", "1")) {
+            language = ((TranslatableV1)this).getLanguage(); 
+        }
+        if (language != null) return language;
+*/
+
+/*
         // (3)
         language = getResourceConfigProperty("language");
         if (language != null) return language;
+*/
 
         // (4)
         language = getRequest().getHeader("Accept-Language");
