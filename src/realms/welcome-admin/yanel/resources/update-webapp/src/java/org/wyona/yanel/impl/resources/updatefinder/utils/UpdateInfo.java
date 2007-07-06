@@ -174,23 +174,16 @@ public class UpdateInfo {
     }
 
     /**
-     * @return ArrayList with version which are matching the value of the key, and fits in the version requirement
+     * @return ArrayList with version which are matching the value of the key, and fits in the revision requirement
      * @param String key
      * @param String value 
-     * @param String installInfoVersion 
      * @param String installInfoRevision 
      */
-    public ArrayList getUpdateVersionsOf(String key, String value, String installInfoVersion, String InstallInfoRevision) {
+    public ArrayList getUpdateVersionsOf(String key, String value, String InstallInfoRevision) {
         ArrayList selectedUpdateVersions = getUpdateVersionsOf(key, value);
         VersionComparator versionComparator = new VersionComparator();  
         for (int i = 0; i < selectedUpdateVersions.size(); i++) {
             HashMap versionDetail = (HashMap) selectedUpdateVersions.get(i);
-            if (versionComparator.compare((String) versionDetail.get("targetApllicationMinVersion"), installInfoVersion) > 0 ) {
-                selectedUpdateVersions.remove(i);
-            }
-            if (versionComparator.compare((String) versionDetail.get("targetApllicationMaxVersion"), installInfoVersion) < 0 ) {
-                selectedUpdateVersions.remove(i);
-            }
             if (versionComparator.compare((String) versionDetail.get("targetApllicationMinRevision"), InstallInfoRevision) > 0 ) {
                 selectedUpdateVersions.remove(i);
             }
@@ -220,24 +213,24 @@ public class UpdateInfo {
     }    
 
     /**
-     * @return HashMap with the newest version which are matching the value of the key
+     * @return HashMap with the newest version which are matching the value of the key, and fits in the revision requirement
      * @param String key
      * @param String value 
      */
-    public HashMap getNewestUpdateVersionsOf(String key, String value, String installInfoVersion) {
+    public HashMap getNewestUpdateVersionsOf(String key, String value, String installInfoRevision) {
         ArrayList selectedUpdateVersions = getUpdateVersionsOf(key, value);
         VersionComparator versionComparator = new VersionComparator();  
         for (int i = 0; i < selectedUpdateVersions.size(); i++) {
             HashMap versionDetail = (HashMap) selectedUpdateVersions.get(i);
-            if (versionComparator.compare((String) versionDetail.get("targetApllicationMinVersion"), installInfoVersion) > 0 ) {
+            if (versionComparator.compare((String) versionDetail.get("targetApllicationMinRevision"), installInfoRevision) > 0 ) {
                 selectedUpdateVersions.remove(i);
             }
-            if (versionComparator.compare((String) versionDetail.get("targetApllicationMaxVersion"), installInfoVersion) < 0 ) {
+            if (versionComparator.compare((String) versionDetail.get("targetApllicationMaxRevision"), installInfoRevision) < 0 ) {
                 selectedUpdateVersions.remove(i);
             }
         }
         Collections.sort(selectedUpdateVersions, new UpdateInfoVersionComparator());
-        return (HashMap) selectedUpdateVersions.get(0);
+        return (HashMap) selectedUpdateVersions.get(selectedUpdateVersions.size() -1);
     }    
     
     
