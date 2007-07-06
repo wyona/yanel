@@ -37,6 +37,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.Collections;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -70,6 +71,8 @@ public class UpdateFinder extends Resource implements ViewableV2 {
     private static Category log = Category.getInstance(UpdateFinder.class);
     private String defaultLanguage;
     private String language = null;
+    private StringBuffer htmlHeadContent = new StringBuffer();
+    private StringBuffer htmlBodyContent = new StringBuffer();
 
     /**
      * 
@@ -204,28 +207,25 @@ public class UpdateFinder extends Resource implements ViewableV2 {
      * 
      */
     private String getScreen() {
-        StringBuffer sbContent = new StringBuffer();
-        StringBuffer sbHeader = new StringBuffer();
         Enumeration parameters = request.getParameterNames();
         if (!parameters.hasMoreElements()) {
-            plainRequest(sbContent);
+            plainRequest();
         } else {
             if (request.getParameter("save-as") != null) {
-                plainRequest(sbContent);
+                plainRequest();
             } else if (request.getParameter("update") != null && request.getParameter("update").equals("update")) {
-                getUpdateConfirmScreen(sbContent);
+                getUpdateConfirmScreen();
             } else if (request.getParameter("updateconfirmed") != null && request.getParameter("updateconfirmed").equals("updateconfirmed")) {    
-                getUpdateScreen(sbContent);
-                sbHeader.append("<meta http-equiv=\"refresh\" content=\"10; URL=" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/updater/" + "?updatelink=" + request.getParameter("updatelink") + "\"/>");
+                getUpdateScreen();
             } else {
                 log.info("Fallback ...");
-                plainRequest(sbContent);
+                plainRequest();
             }
         }
 
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-        sb.append("<head><title>create resource</title>");
+        sb.append("<head><title>Yanel Updater</title>");
         sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""
                 + PathUtil.getResourcesHtdocsPath(this) + "css/resource-creator.css\"/>");
         sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""
@@ -238,54 +238,66 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 + "yanel-js/sorttable.js\" type=\"text/javascript\"></script>");
         sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPath(this)
                 + "js/ajaxlookup.js\" type=\"text/javascript\"></script>");
-        sb.append(sbHeader);
+        sb.append(htmlHeadContent);
         sb.append("</head>");
         sb.append("<body>");
-        sb.append(sbContent);
+        sb.append(htmlBodyContent);
         sb.append("</body>");
         sb.append("</html>");
         return sb.toString();
     }
 
-    private void plainRequest(StringBuffer sb) {
+    private void plainRequest() {
         UpdateInfo updateInfo = null;
-        InstallInfo installInfo = getInstallInfo(sb);
+        InstallInfo installInfo = null;
+        try {
+            installInfo = getInstallInfo();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            htmlBodyContent.append("<p>Failed to get install information. Exception: " + e.getMessage() + "</p>");
+        }
+        
         if (!installInfo.getInstalltype().equals("bin-snapshot")) {
 
-            sb.append("<p>");
-            sb.append("This Yanel was not installed from binary. You can only use the updater if you installed yanel from binary. Please use svn up, build.sh");
-            sb.append("</p>");
+            htmlBodyContent.append("<p>");
+            htmlBodyContent.append("This Yanel was not installed from binary. You can only use the updater if you installed yanel from binary. Please use svn up, build.sh");
+            htmlBodyContent.append("</p>");
         } else {
-            updateInfo = getUpdateInfo(sb);
+            try {
+                updateInfo = getUpdateInfo();
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                htmlBodyContent.append("<p>Failed to get update information. Exception: " + e.getMessage() + "</p>");                // TODO: handle exception
+            }
             String idVersionRevisionCurent = installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision();
             
-            sb.append("<p>");
-            sb.append("Your installed yanel is: " + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision());
-            sb.append("</p>");
+            htmlBodyContent.append("<p>");
+            htmlBodyContent.append("Your installed yanel is: " + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision());
+            htmlBodyContent.append("</p>");
             HashMap newestYanel = updateInfo.getNewestUpdateVersionsOf("id", "wyona-yanel-webapp");
             String idVersionRevisionNewest = (String) newestYanel.get("id") + "-v-" + (String) newestYanel.get("version") + "-r-" + (String) newestYanel.get("revision");
             if (idVersionRevisionNewest.equals(idVersionRevisionCurent)) {
-                sb.append("<p>");
-                sb.append("Your yanel is already the newest version.");
-                sb.append("</p>");
+                htmlBodyContent.append("<p>");
+                htmlBodyContent.append("Your yanel is already the newest version.");
+                htmlBodyContent.append("</p>");
             }else {
-                sb.append("<p>");
-                sb.append("Newest yanel is: " + idVersionRevisionNewest);
-                sb.append("<form method=\"post\"><input type=\"submit\" name=\"button\" value=\"update\"></input><input type=\"hidden\" name=\"update\" value=\"update\"></input><input type=\"hidden\" name=\"updatelink\" value=\""
+                htmlBodyContent.append("<p>");
+                htmlBodyContent.append("Newest yanel is: " + idVersionRevisionNewest);
+                htmlBodyContent.append("<form method=\"post\"><input type=\"submit\" name=\"button\" value=\"update\"></input><input type=\"hidden\" name=\"update\" value=\"update\"></input><input type=\"hidden\" name=\"updatelink\" value=\""
                         + newestYanel.get("updateLink") + "\"/></form>");
-                sb.append("</p>");
+                htmlBodyContent.append("</p>");
             }
 
-            sb.append("<p>");
-            sb.append("Other versions you can get:");
-            sb.append("</p>");
-            sb.append("<ul>");
+            htmlBodyContent.append("<p>");
+            htmlBodyContent.append("Other versions you can get:");
+            htmlBodyContent.append("</p>");
+            htmlBodyContent.append("<ul>");
             for (int i = 0; i < updateInfo.getUpdateVersions().size(); i++) {
                 HashMap versionDetails = (HashMap) updateInfo.getUpdateVersionsOf("id", "wyona-yanel-webapp").get(i);
                 String idVersionRevisionItem = (String) versionDetails.get("id") + "-v-" + (String) versionDetails.get("version") + "-r-" + (String) versionDetails.get("revision");
                 
                 if ( !idVersionRevisionItem.equals(idVersionRevisionCurent) && !idVersionRevisionItem.equals(idVersionRevisionNewest)) {
-                    sb.append("<li>"
+                    htmlBodyContent.append("<li>"
                             + versionDetails.get("title")
                             + "<ul>"
                             + "<li>Version: "
@@ -301,11 +313,11 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                             + versionDetails.get("updateLink") + "\"/></form></li>" + "</ul></li>");
                 }
             }
-            sb.append("</ul>");
+            htmlBodyContent.append("</ul>");
             
-            sb.append("<p>");
-            sb.append("Installed versions:");
-            sb.append("</p>");
+            htmlBodyContent.append("<p>");
+            htmlBodyContent.append("Installed versions:");
+            htmlBodyContent.append("</p>");
             TomcatContextHandler tomcatContextHandler = null;
             Map contextAndWebapp = null;
             try {
@@ -313,125 +325,133 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 contextAndWebapp = tomcatContextHandler.getContextAndWebapp();
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-                sb.append("<p>Lookup for context and webabs failed. Exception: " + e.getMessage() + "</p>");
+                htmlBodyContent.append("<p>Lookup for context and webabs failed. Exception: " + e.getMessage() + "</p>");
             }
 
-            sb.append("<table class=\"sortable\">");
-            sb.append("<thead>");
-            sb.append("<tr><th>Context</th><th>Webapp</th></tr>");
-            sb.append("</thead>");
-            sb.append("<tbody>");
+            htmlBodyContent.append("<table class=\"sortable\">");
+            htmlBodyContent.append("<thead>");
+            htmlBodyContent.append("<tr><th>Context</th><th>Webapp</th></tr>");
+            htmlBodyContent.append("</thead>");
+            htmlBodyContent.append("<tbody>");
             Iterator iterator = contextAndWebapp.keySet().iterator();
             
             while (iterator.hasNext()) {
                 String context = (String) iterator.next();
                 String webapp = (String) contextAndWebapp.get(context);
-                sb.append("<tr><td><a href=\"" + "http://" + request.getServerName() + ":"
+                htmlBodyContent.append("<tr><td><a href=\"" + "http://" + request.getServerName() + ":"
                     + request.getServerPort() + "/" + context.replaceAll("/", "") + "\">" + context + "</a></td><td>" + webapp + "</td></tr>");
             }
-            sb.append("</tbody>");
-            sb.append("</table>");
+            htmlBodyContent.append("</tbody>");
+            htmlBodyContent.append("</table>");
         }
     }
 
-    private void getUpdateConfirmScreen(StringBuffer sb) {
-        UpdateInfo updateInfo = getUpdateInfo(sb);
-        HashMap versionDetails = updateInfo.getUpdateVersionDetail("updateLink", request.getParameter("updatelink"));
-        String version = (String) versionDetails.get("version");
-        String revision = (String) versionDetails.get("revision");
-        String id = (String) versionDetails.get("id");
-        
-        sb.append("<p>Yanel will download the update-manager which will download and install " + id + "-v-" + version + "-r-" + revision  + "</p>");
-        sb.append("<p>Do you want to continue?</p>");
-        sb.append("<p>");
-        sb.append("<form method=\"post\">");
-        sb.append("<input type=\"submit\" name=\"button\" value=\"YES\"></input><input type=\"hidden\" name=\"updateconfirmed\" value=\"updateconfirmed\"/><input type=\"hidden\" name=\"updatelink\" value=\""
-        + request.getParameter("updatelink") + "\"/>");
-        sb.append("</form>");
-        sb.append("<form method=\"post\">");
-        sb.append("<input type=\"submit\" name=\"button\" value=\"NO\"></input>");
-        sb.append("</form>");
-        sb.append("</p>");
+    private void getUpdateConfirmScreen() {
+        try {
+            UpdateInfo updateInfo = getUpdateInfo();
+            Map bestUpdater = getBestUpdater();
+            TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
+            
+            HashMap versionDetails = updateInfo.getUpdateVersionDetail("updateLink", request.getParameter("updatelink"));
+            String version = (String) versionDetails.get("version");
+            String revision = (String) versionDetails.get("revision");
+            String id = (String) versionDetails.get("id");
+            
+            if (tomcatContextHandler.getWebappOfContext(bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision")) != null) {
+                htmlBodyContent.append("<p>Yanel will redirect you to the update-manager which will download and install " + id + "-v-" + version + "-r-" + revision  + "</p>");
+                htmlBodyContent.append("<p>Do you want to continue?</p>");
+                htmlBodyContent.append("<p>");
+                htmlBodyContent.append("<form method=\"post\" action=\"" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/\">");
+                htmlBodyContent.append("<input type=\"submit\" name=\"button\" value=\"YES\"/>");
+                htmlBodyContent.append("<input type=\"hidden\" name=\"updateconfirmed\" value=\"updateconfirmed\"/>");
+                htmlBodyContent.append("<input type=\"hidden\" name=\"updatelink\" value=\"" + request.getParameter("updatelink") + "\"/>");
+                htmlBodyContent.append("</form>");
+                htmlBodyContent.append("<form method=\"post\">");
+                htmlBodyContent.append("<input type=\"submit\" name=\"button\" value=\"Cancel\"></input>");
+                htmlBodyContent.append("</form>");
+                htmlBodyContent.append("</p>");
+            } else {
+                htmlBodyContent.append("<p>Yanel will download the update-manager (" + tomcatContextHandler.getWebappOfContext(bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision")) + ") which will download and install " + id + "-v-" + version + "-r-" + revision  + "</p>");
+                htmlBodyContent.append("<p>Do you want to continue?</p>");
+                htmlBodyContent.append("<p>");
+                htmlBodyContent.append("<form method=\"post\">");
+                htmlBodyContent.append("<input type=\"submit\" name=\"button\" value=\"YES\"/>");
+                htmlBodyContent.append("<input type=\"hidden\" name=\"updateconfirmed\" value=\"updateconfirmed\"/>");
+                htmlBodyContent.append("<input type=\"hidden\" name=\"updatelink\" value=\"" + request.getParameter("updatelink") + "\"/>");
+                htmlBodyContent.append("</form>");
+                htmlBodyContent.append("<form method=\"post\">");
+                htmlBodyContent.append("<input type=\"submit\" name=\"button\" value=\"Cancel\"></input>");
+                htmlBodyContent.append("</form>");
+                htmlBodyContent.append("</p>");
+            }
+        }  catch (Exception e) {
+            log.error(e.getMessage(), e);
+            htmlBodyContent.append("<p>An error occoured. Exception: " + e.getMessage() + "</p>");
+        }
+
     }
     
-    private void getUpdateScreen(StringBuffer sb) {
-        
-        WarFetcher warFetcher = null;
+    private void getUpdateScreen() {
         try {
             String destDir = request.getSession().getServletContext().getRealPath(".") + File.separator + "..";
-            Map bestUpdater = getBestUpdater(sb);
+            Map bestUpdater = getBestUpdater();
             
-            warFetcher = new WarFetcher(request, (String) bestUpdater.get("updateLink"), destDir);
+            WarFetcher warFetcher = new WarFetcher(request, (String) bestUpdater.get("updateLink"), destDir);
             warFetcher.fetch();
-
+            
             TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
-            tomcatContextHandler.setContext("updater", bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"));
-
-            sb.append("<p>");
-            sb.append("Update done.<br/>");
-            sb.append("You will be redirected to the updater which will automaticaly download and install the requested yanel.");
-            sb.append("</p>");
+            tomcatContextHandler.setContext(bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"), bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"));
+            
+            htmlBodyContent.append("<p>");
+            htmlBodyContent.append("Update done.<br/>");
+            htmlBodyContent.append("You will be redirected to the updater which will automaticaly download and install the requested yanel.");
+            htmlBodyContent.append("</p>");
+            
+            htmlHeadContent.append("<meta http-equiv=\"refresh\" content=\"10; URL=" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/" + "?updatelink=" + request.getParameter("updatelink") + "\"/>");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            sb.append("<p>Update failed. Exception: " + e.getMessage() + "</p>");
+            htmlBodyContent.append("<p>Update failed. Exception: " + e.getMessage() + "</p>");
         }
     }
 
-    private InstallInfo getInstallInfo(StringBuffer sb) {
+    private InstallInfo getInstallInfo() throws Exception {
         InstallInfo installInfo = null;
-        try {
-            return installInfo = new InstallInfo(request);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            sb.append("<p>Exception: " + e.getMessage() + "</p>");
-            return null;
-        }
+        return installInfo = new InstallInfo(request);
+
     }
 
-    private UpdateInfo getUpdateInfo(StringBuffer sb) {
+    private UpdateInfo getUpdateInfo() throws Exception {
         UpdateInfo updateInfo = null;
-        try {
-            URL UpdateRdfUrl = new URL(getInstallInfo(sb).getUpdateURL());
-            InputStream updateRdfIn = UpdateRdfUrl.openStream();
-            return updateInfo = new UpdateInfo(updateRdfIn, getInstallInfo(sb));
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            sb.append("<p>");
-            sb.append("Yanel could not get the Update information! " + e);
-            sb.append("</p>");
-            return null;
-        }
+        URL UpdateRdfUrl = new URL(getInstallInfo().getUpdateURL());
+        InputStream updateRdfIn = UpdateRdfUrl.openStream();
+        return updateInfo = new UpdateInfo(updateRdfIn, getInstallInfo());
     }
     
-    private HashMap getBestUpdater(StringBuffer sb) {
-        UpdateInfo updateInfo = getUpdateInfo(sb);
-        InstallInfo installInfo = getInstallInfo(sb);
+    private HashMap getBestUpdater() throws Exception {
+        InstallInfo installInfo = getInstallInfo();
+        UpdateInfo updateInfo = getUpdateInfo();
         
         HashMap updateVersionDetails = updateInfo.getUpdateVersionDetail("updateLink",
                 request.getParameter("updatelink"));
+        VersionComparator versionComparator = new VersionComparator();
         String updateId = (String) updateVersionDetails.get("id");
         String updateVersion = (String) updateVersionDetails.get("version");
         String updateRevision = (String) updateVersionDetails.get("revision");
-        
-        ArrayList updaters = updateInfo.getUpdateVersionsOf("type", "updater", installInfo.getVersion(), installInfo.getRevision());
-        VersionComparator versionComparator = new VersionComparator();  
-        for (int i = 0; i < updaters.size(); i++) {
-            HashMap versionDetail = (HashMap) updaters.get(i);
-            if (versionComparator.compare((String) versionDetail.get("targetApllicationMinVersion"), updateVersion) > 0 ) {
-                updaters.remove(i);
-            }
-            if (versionComparator.compare((String) versionDetail.get("targetApllicationMaxVersion"), updateVersion) < 0 ) {
-                updaters.remove(i);
-            }
+        ArrayList bestUpdater = updateInfo.getUpdateVersionsOf("type", "updater", installInfo.getRevision());
+        for (int i = 0; i < bestUpdater.size(); i++) {
+            HashMap versionDetail = (HashMap) bestUpdater.get(i);
             if (versionComparator.compare((String) versionDetail.get("targetApllicationMinRevision"), updateRevision) > 0 ) {
-                updaters.remove(i);
+                bestUpdater.remove(i);
             }
             if (versionComparator.compare((String) versionDetail.get("targetApllicationMaxRevision"), updateRevision) < 0 ) {
-                updaters.remove(i);
+                bestUpdater.remove(i);
             }
         }
-        HashMap bestUpdater = (HashMap) updaters.get(updaters.size() - 1);
-        return bestUpdater;
+        Collections.sort(bestUpdater, new UpdateInfoVersionComparator());
+        if (bestUpdater.size() < 1) {
+            throw new Exception("No updater found for updating your current version(" + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision() + ") to your requested version (" + updateId + "-v-" + updateVersion + "-r-" + updateRevision + ")");
+        }
+        return (HashMap) bestUpdater.get(bestUpdater.size() - 1);
     }
 
     /**
