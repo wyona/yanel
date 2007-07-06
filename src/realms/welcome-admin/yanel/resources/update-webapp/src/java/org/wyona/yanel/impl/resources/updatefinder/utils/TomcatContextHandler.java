@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,8 +71,15 @@ public class TomcatContextHandler {
         return contextAndWebapps;
     }
     
+    /**
+     * @param String context
+     * @return String webapp or null if webapp not exists or null if context points to webapp which does not exist
+     */
     public String getWebappOfContext (String context) throws FileNotFoundException, IOException {
         File file = new File( contextConfPath +  context + ".xml");
+        if(!file.exists()) {
+            return null;
+        }
         String line = "";
         String webapp = "";
 
@@ -91,17 +99,51 @@ public class TomcatContextHandler {
         line = line.replaceAll("\"/>", "");
         webapp = line.split(File.separator)[line.split(File.separator).length -1 ];
         
+        if (!new File( webappsDirectoryPath +  webapp ).exists()) {
+            return null;
+        }
         return webapp;
     }
 
+    /**
+    * @param ArrayList contexts
+    * @return ArrayList with all contexts which pionts to the webapp or null if webapp not exists or no conext points to this webapp (will never return ROOT as context)
+    */
+    public ArrayList getContextsOfWebapp (String webapp) throws FileNotFoundException, IOException {
+        ArrayList contexts = new ArrayList();
+        File file = new File( webappsDirectory +  webapp );
+        if(!file.exists()) {
+            return null;
+        }
+        for (int i = 0; i < this.contextConfDirectory.listFiles().length; i++) {
+            String line = "";
+            FileInputStream fis = new FileInputStream(file);
+            BufferedInputStream  bis = new BufferedInputStream(fis);
+            DataInputStream  dis = new DataInputStream(bis);
+            while (dis.available() != 0) {
+              line = line + dis.readLine();
+            }
+            fis.close();
+            bis.close();
+            dis.close();
+            if (line.indexOf(webapp) > 0){
+                contexts.add(file.getName().replaceAll(".xml", ""));
+            }
+        }
+        if (contexts.size() < 1) {
+            return null;
+        }
+        return contexts;
+    }    
+    
     public void setContext (String context, String webapp) throws Exception, IOException {
         if (context.equals("/")) {
             context = "ROOT";
         }
-        if (!context.equals(webapp) && new  File(contextConfPath + context + ".xml").exists()){
-            log.debug("Its prohibited to modify a context if context name and webapp name are the same.");
-            throw new Exception("Its prohibited to modify a context if context name and webapp name are the same."); 
-        }
+//        if (!context.equals(webapp) && new  File(contextConfPath + context + ".xml").exists()){
+//            log.debug("Its prohibited to modify a context if context name and webapp name are the same.");
+//            throw new Exception("Its prohibited to modify a context if context name and webapp name are the same."); 
+//        }
         String contextEntry = "<Context docBase=\"${catalina.home}/yanel-webapps/" + webapp + "\"/>";
         BufferedWriter out = new BufferedWriter(new FileWriter(contextConfPath + context + ".xml"));
         out.write(contextEntry);
