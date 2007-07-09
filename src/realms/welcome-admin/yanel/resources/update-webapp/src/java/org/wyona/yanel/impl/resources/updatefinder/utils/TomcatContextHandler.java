@@ -111,13 +111,9 @@ public class TomcatContextHandler {
     */
     public ArrayList getContextsOfWebapp (String webapp) throws FileNotFoundException, IOException {
         ArrayList contexts = new ArrayList();
-        File file = new File( webappsDirectory +  webapp );
-        if(!file.exists()) {
-            return null;
-        }
         for (int i = 0; i < this.contextConfDirectory.listFiles().length; i++) {
             String line = "";
-            FileInputStream fis = new FileInputStream(file);
+            FileInputStream fis = new FileInputStream(contextConfDirectory.listFiles()[i]);
             BufferedInputStream  bis = new BufferedInputStream(fis);
             DataInputStream  dis = new DataInputStream(bis);
             while (dis.available() != 0) {
@@ -127,7 +123,7 @@ public class TomcatContextHandler {
             bis.close();
             dis.close();
             if (line.indexOf(webapp) > 0){
-                contexts.add(file.getName().replaceAll(".xml", ""));
+                contexts.add(contextConfDirectory.listFiles()[i].getName().replaceAll(".xml", ""));
             }
         }
         if (contexts.size() < 1) {
