@@ -25,6 +25,7 @@ public class InstallInfo {
     private String revision;
     private String installtype;
     private String contextPrefix;
+    private String webappName;
     private String updateURL;
     private String osName; //platform
     private String javaVersion;
@@ -36,6 +37,7 @@ public class InstallInfo {
     
     public InstallInfo(HttpServletRequest request)  throws java.io.FileNotFoundException{
         String WEBINFPath = request.getSession().getServletContext().getRealPath("WEB-INF");
+        webappName = new File(request.getSession().getServletContext().getRealPath(".")).getParentFile().getName();
         contextPrefix = request.getSession().getServletContext().getServletContextName();
         if (contextPrefix.equalsIgnoreCase("ROOT")) {
             contextPrefix = "ROOT";
@@ -43,6 +45,29 @@ public class InstallInfo {
             contextPrefix = contextPrefix.toLowerCase();
         }
         InputStream installRdfIn = new FileInputStream(new File(WEBINFPath + File.separator + "classes" + File.separator + "install.rdf"));
+        Model model = ModelFactory.createDefaultModel();
+        //read the RDF/XML file
+        model.read(installRdfIn, "");
+        parseModel(model);
+        
+        setServerInfoDetail(request);
+        
+        osName = System.getProperty("os.name");
+        javaVersion = System.getProperty("java.version");
+    }
+
+    public InstallInfo(HttpServletRequest request, String webapp)  throws java.io.FileNotFoundException, Exception{
+        String webappsDirectoryPath = request.getSession().getServletContext().getRealPath(".") + File.separator + ".." + File.separator;
+        TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
+        webappName = webapp;
+        contextPrefix = (String) tomcatContextHandler.getContextsOfWebapp(webapp).get(0);
+        
+        if (contextPrefix.equalsIgnoreCase("ROOT")) {
+            contextPrefix = "ROOT";
+        } else {
+            contextPrefix = contextPrefix.toLowerCase();
+        }
+        InputStream installRdfIn = new FileInputStream(new File(webappsDirectoryPath + webapp + File.separator + "WEB-INF" + File.separator + "classes" + File.separator + "install.rdf"));
         Model model = ModelFactory.createDefaultModel();
         //read the RDF/XML file
         model.read(installRdfIn, "");
@@ -112,8 +137,13 @@ public class InstallInfo {
     public String getInstalltype() {
         return installtype;
     }
+    
     public String getContextPrefix() {
         return contextPrefix;
+    }
+    
+    public String getWebaName() {
+        return webappName;
     }
 
     public String getUpdateURL() {
