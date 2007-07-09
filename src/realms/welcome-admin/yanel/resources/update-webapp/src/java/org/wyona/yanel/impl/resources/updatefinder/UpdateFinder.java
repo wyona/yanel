@@ -274,6 +274,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             htmlBodyContent.append("<p>");
             htmlBodyContent.append("Your installed yanel is: " + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision());
             htmlBodyContent.append("</p>");
+            //TODO implement getBestYanelWebapp() to get all yanel-webapp version which has an yanel-updater which fits the targetRevision requirement of the current yanel.
             HashMap newestYanel = updateInfo.getNewestUpdateVersionsOf("id", "wyona-yanel-webapp");
             String idVersionRevisionNewest = (String) newestYanel.get("id") + "-v-" + (String) newestYanel.get("version") + "-r-" + (String) newestYanel.get("revision");
             if (idVersionRevisionNewest.equals(idVersionRevisionCurent)) {
@@ -349,6 +350,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
     private void getUpdateConfirmScreen() {
         try {
             UpdateInfo updateInfo = getUpdateInfo();
+            InstallInfo installInfo = getInstallInfo();
             Map bestUpdater = getBestUpdater();
             TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
             
@@ -365,19 +367,21 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 htmlBodyContent.append("<input type=\"submit\" name=\"button\" value=\"YES\"/>");
                 htmlBodyContent.append("<input type=\"hidden\" name=\"updateconfirmed\" value=\"updateconfirmed\"/>");
                 htmlBodyContent.append("<input type=\"hidden\" name=\"updatelink\" value=\"" + request.getParameter("updatelink") + "\"/>");
+                htmlBodyContent.append("<input type=\"hidden\" name=\"requestingwebapp\" value=\"" + installInfo.getWebaName() + "\"/>");
                 htmlBodyContent.append("</form>");
                 htmlBodyContent.append("<form method=\"post\">");
                 htmlBodyContent.append("<input type=\"submit\" name=\"button\" value=\"Cancel\"></input>");
                 htmlBodyContent.append("</form>");
                 htmlBodyContent.append("</p>");
             } else {
-                htmlBodyContent.append("<p>Yanel will download the update-manager (" + tomcatContextHandler.getWebappOfContext(bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision")) + ") which will download and install " + id + "-v-" + version + "-r-" + revision  + "</p>");
+                htmlBodyContent.append("<p>Yanel will download the update-manager (" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + ") which will download and install " + id + "-v-" + version + "-r-" + revision  + "</p>");
                 htmlBodyContent.append("<p>Do you want to continue?</p>");
                 htmlBodyContent.append("<p>");
                 htmlBodyContent.append("<form method=\"post\">");
                 htmlBodyContent.append("<input type=\"submit\" name=\"button\" value=\"YES\"/>");
                 htmlBodyContent.append("<input type=\"hidden\" name=\"updateconfirmed\" value=\"updateconfirmed\"/>");
                 htmlBodyContent.append("<input type=\"hidden\" name=\"updatelink\" value=\"" + request.getParameter("updatelink") + "\"/>");
+                htmlBodyContent.append("<input type=\"hidden\" name=\"requestingwebapp\" value=\"" + installInfo.getWebaName() + "\"/>");
                 htmlBodyContent.append("</form>");
                 htmlBodyContent.append("<form method=\"post\">");
                 htmlBodyContent.append("<input type=\"submit\" name=\"button\" value=\"Cancel\"></input>");
@@ -388,7 +392,6 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             log.error(e.getMessage(), e);
             htmlBodyContent.append("<p>An error occoured. Exception: " + e.getMessage() + "</p>");
         }
-
     }
     
     private void getUpdateScreen() {
@@ -407,7 +410,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             htmlBodyContent.append("You will be redirected to the updater which will automaticaly download and install the requested yanel.");
             htmlBodyContent.append("</p>");
             
-            htmlHeadContent.append("<meta http-equiv=\"refresh\" content=\"10; URL=" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/" + "?updatelink=" + request.getParameter("updatelink") + "\"/>");
+            htmlHeadContent.append("<meta http-equiv=\"refresh\" content=\"10; URL=" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/" + "?updatelink=" + request.getParameter("updatelink") + "&amp;requestingwebapp=" + request.getParameter("requestingwebapp") + "\"/>");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             htmlBodyContent.append("<p>Update failed. Exception: " + e.getMessage() + "</p>");
@@ -452,6 +455,15 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             throw new Exception("No updater found for updating your current version(" + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision() + ") to your requested version (" + updateId + "-v-" + updateVersion + "-r-" + updateRevision + ")");
         }
         return (HashMap) bestUpdater.get(bestUpdater.size() - 1);
+    }
+    
+    private HashMap getBestYanelWebapp() throws Exception {
+        InstallInfo installInfo = getInstallInfo();
+        UpdateInfo updateInfo = getUpdateInfo();
+        for (int i = 0; i < updateInfo.getUpdateVersions().size(); i++) {
+            //TODO not implemented yet.
+        }
+        return null;
     }
 
     /**
