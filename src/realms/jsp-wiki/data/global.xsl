@@ -21,6 +21,7 @@
 <xsl:param name="language" select="'LANGUAGE_IS_NULL'"/>
 <xsl:param name="yanel.last.modified" select="'LAST_MODIFIED_IS_NULL'"/>
 <xsl:param name="yanel.username" select="'USERNAME_IS_NULL'"/>
+<xsl:param name="yanel.realm.name" select="'REALM_NAME_IS_NULL'"/>
 
 <xsl:param name="yanel.meta.language" select="'en'"/>
 
@@ -73,13 +74,20 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <tr>
   <td colspan="2">
     <h1 id="header">
-    HEADER
+<xsl:value-of select="$yanel.realm.name"/>
     </h1>
   </td>
   <td align="right">
+<xsl:choose>
+<xsl:when test="$yanel.username = 'USERNAME_IS_NULL'">
+Not signed in!
+</xsl:when>
+<xsl:otherwise>
 Signed in as: <a href="{$yarep.back2realm}yanel/users/{$yanel.username}.html"><xsl:value-of select="$yanel.username"/></a>
 <br/>
 <a href="?yanel.usecase=logout">Logout</a>
+</xsl:otherwise>
+</xsl:choose>
   </td>
 </tr>
 
