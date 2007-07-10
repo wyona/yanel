@@ -101,6 +101,8 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 
     <i18n:message key="poweredBy"/><xsl:text> </xsl:text><a href="http://yanel.wyona.org">Wyona Yanel</a> - Copyright &#169; 2007 <a href="http://www.wyona.com">Wyona</a>. <i18n:message key="allRightsReserved"/>. - <a href="?yanel.resource.meta"><i18n:message key="pageInfo"/></a> - <a href="?yanel.toolbar=on">Toolbar</a><br/>
 <i>This page last changed on <xsl:value-of select="$yanel.last.modified"/> by SOMEBODY.</i>
+<br/>
+<a href="?yanel.resource.viewid=source">XML</a> | <a href="?yanel.resource.viewid=txt">TXT</a>
 
   </td>
 </tr>
@@ -119,9 +121,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 
 <xsl:template name="navigation">
 NAVIGATION
-<!--
-<xi:include href="yanelresource:/navigation/menu.xml?path={$yanel.path}&amp;language={$language}"/>
--->
+<xi:include href="yanelresource:/LeftMenu.html"/>
 </xsl:template>
 
 </xsl:stylesheet>
