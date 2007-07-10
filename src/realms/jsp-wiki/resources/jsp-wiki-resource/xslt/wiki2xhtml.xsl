@@ -55,6 +55,7 @@
 -->
       </head>
       <body>
+        <a href="?yanel.resource.viewid=source">XML</a> | <a href="?yanel.resource.viewid=txt">TXT</a>
         <xsl:apply-templates/>
       </body>
     </html>
