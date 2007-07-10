@@ -118,7 +118,8 @@ public class JSPWikiResource extends Resource implements ViewableV1, CreatableV2
             path2Resource = path2Resource.substring(0, path2Resource.lastIndexOf("/") + 1);
             
             String wikiParserBeanId = getWikiSyntax(path);
-            InputStream inputStream = dataRepo.getInputStream(new org.wyona.yarep.core.Path(getPath()));
+            InputStream inputStream = dataRepo.getInputStream(getJSPWikiPath());
+            //InputStream inputStream = dataRepo.getInputStream(new org.wyona.yarep.core.Path(getPath()));
             IWikiParser wikiParser = (IWikiParser) yanel.getBeanFactory().getBean(wikiParserBeanId);
             wikiParser.parse(inputStream);
             
@@ -421,10 +422,11 @@ public class JSPWikiResource extends Resource implements ViewableV1, CreatableV2
     }
 
     /**
-     *
+     * Get output stream in order to write new content (jsp wiki syntax)
      */
     public OutputStream getOutputStream() throws Exception {
-        return getRealm().getRepository().getOutputStream(new Path(getPath()));
+        return getRealm().getRepository().getOutputStream(getJSPWikiPath());
+        //return getRealm().getRepository().getOutputStream(new Path(getPath()));
     }
 
     /**
@@ -448,5 +450,15 @@ public class JSPWikiResource extends Resource implements ViewableV1, CreatableV2
      */
     public void write(InputStream in) {
         log.warn("No implemented yet!");
+    }
+
+    /**
+     *
+     */
+    private org.wyona.yarep.core.Path getJSPWikiPath() {
+        String path = getPath();
+        path = path.substring(0, path.lastIndexOf(".")) + ".txt";
+        log.error("DEBUG: JSP Wiki Path: " + path);
+        return new org.wyona.yarep.core.Path(path);
     }
 }
