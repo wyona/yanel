@@ -71,10 +71,15 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 
 <table id="bodytable" cellpadding="0" cellspacing="0" border="1">
 <tr>
-  <td colspan="3">
+  <td colspan="2">
     <h1 id="header">
     HEADER
     </h1>
+  </td>
+  <td align="right">
+Signed in as: <a href="{$yarep.back2realm}yanel/users/{$yanel.username}.html"><xsl:value-of select="$yanel.username"/></a>
+<br/>
+<a href="?yanel.usecase=logout">Logout</a>
   </td>
 </tr>
 
@@ -86,6 +91,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 </div>
 </td>
 
+<td>&#160;</td>
 
 
 <!-- CONTENT -->
@@ -96,6 +102,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
   </div>
 </td>
 </tr>
+
 <tr>
   <td colspan="3" id="footer">
 
