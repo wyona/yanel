@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<repository class="org.wyona.yarep.impl.repo.vfs.VirtualFileSystemRepository">
+  <name>JSP Wiki Data Repository</name>
+
+  <content src="../data"/>
+
+  <directory alternative="Main.txt" mime-type="application/xhtml+xml"/>
+</repository>
