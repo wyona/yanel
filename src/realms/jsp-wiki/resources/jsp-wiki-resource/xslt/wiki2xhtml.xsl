@@ -39,7 +39,10 @@
     <html>
       <head>
         <title>A Wiki page</title>
+          <link rel="neutron-introspection" href="?yanel.resource.usecase=introspection" type="application/neutron+xml"/>
+<!--
           <link rel="neutron-introspection" href="introspection-{$yanel.path.name}.xml" type="application/neutron+xml"/>
+-->
 <!--
         <xsl:choose>
           <xsl:when test="string-length($name-without-suffix) > 0">
