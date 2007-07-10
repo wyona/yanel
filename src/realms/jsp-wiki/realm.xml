@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<realm-config xmlns="http://www.wyona.org/yanel/realm/1.0">
+<name>JSP Wiki</name>
+
+<rti>config/rti-repository.xml</rti>
+<data>config/data-repository.xml</data>
+<ac-policies>config/ac-policies-repository.xml</ac-policies>
+<ac-identities>config/ac-identities-repository.xml</ac-identities>
+</realm-config>
