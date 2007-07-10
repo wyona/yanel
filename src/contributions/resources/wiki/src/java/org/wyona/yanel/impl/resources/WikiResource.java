@@ -107,18 +107,15 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
             Repository dataRepo = getRealm().getRepository();
             if (viewId != null && viewId.equals("txt")) {
                 View view = new View();
-                view.setInputStream(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getPath())));
+                view.setInputStream(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getDataPathImplementation().getDataPath(getPath()))));
                 view.setMimeType("text/plain");
                 return view;
             }
 
             View defaultView = new View();
             
-            String path2Resource = path.toString();
-            path2Resource = path2Resource.substring(0, path2Resource.lastIndexOf("/") + 1);
-            
             String wikiParserBeanId = getWikiSyntax(path);
-            InputStream inputStream = dataRepo.getInputStream(new org.wyona.yarep.core.Path(getPath()));
+            InputStream inputStream = dataRepo.getInputStream(new org.wyona.yarep.core.Path(getDataPathImplementation().getDataPath(getPath())));
             IWikiParser wikiParser = (IWikiParser) yanel.getBeanFactory().getBean(wikiParserBeanId);
             wikiParser.parse(inputStream);
             
@@ -134,7 +131,14 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
                 transformer.setParameter("yanel.path", getPath());
                 defaultView.setMimeType("application/xhtml+xml");
             }
-            LinkChecker linkChecker = new LinkChecker(path2Resource);
+            
+/*
+            String path2Resource = path.toString();
+            path2Resource = path2Resource.substring(0, path2Resource.lastIndexOf("/") + 1);
+            log.error("DEBUG: Path 2 resource: " + path2Resource);
+*/
+
+            LinkChecker linkChecker = new LinkChecker(getRealm().getRepository(), getPath(), getDataPathImplementation());
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(wikiParser.getInputStream(), linkChecker);
             
@@ -421,10 +425,10 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
     }
 
     /**
-     *
+     * Get output stream in order to write new content
      */
     public OutputStream getOutputStream() throws Exception {
-        return getRealm().getRepository().getOutputStream(new Path(getPath()));
+        return getRealm().getRepository().getOutputStream(new org.wyona.yarep.core.Path(getDataPathImplementation().getDataPath(getPath())));
     }
 
     /**
@@ -438,9 +442,8 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
     /**
      *
      */
-    public long getLastModified() {
-        log.warn("No implemented yet!");
-        return -1;
+    public long getLastModified() throws Exception {
+        return getRealm().getRepository().getNode(getDataPathImplementation().getDataPath(getPath())).getLastModified();
     }
 
     /**
@@ -448,5 +451,12 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
      */
     public void write(InputStream in) {
         log.warn("No implemented yet!");
+    }
+
+    /**
+     *
+     */
+    protected DataPath getDataPathImplementation() {
+        return new DefaultDataPath();
     }
 }

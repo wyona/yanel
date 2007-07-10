@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 
 import org.apache.log4j.Category;
+import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
 import org.wyona.yanel.core.Yanel;
@@ -16,7 +17,9 @@ public class LinkChecker extends DefaultHandler {
     private static Category log = Category.getInstance(LinkChecker.class);
     private ByteArrayInputStream byteArrayInputStream = null;
     private StringBuffer transformedXmlAsBuffer = null;
-    private String path2Resource = null;
+    private Repository dataRepo = null;
+    private String refererPath = null;
+    private DataPath dataPathImpl = null;
     /**
      * this array with protocols will all be handled as external links
      * and therefor they dont have to be checked if they exist in repository
@@ -33,8 +36,10 @@ public class LinkChecker extends DefaultHandler {
         "h323:", "ipp:", "tftp:", "mupdate:", "pres:",
         "im:", "mtqp", "smb:" };
     
-    public LinkChecker(String path2Resource) {
-        this.path2Resource = path2Resource;
+    public LinkChecker(Repository dataRepo, String refererPath, DataPath dataPathImpl) {
+        this.dataRepo = dataRepo;
+        this.refererPath = refererPath;
+        this.dataPathImpl = dataPathImpl;
     }
     
     public void startDocument() throws SAXException {
@@ -58,9 +63,10 @@ public class LinkChecker extends DefaultHandler {
                     if(aValue.startsWith("external_")) {
                         //do not check this link cause it is EXTERNAL 
                         aValue = aValue.substring(9);
-                    } else {//check internal links if they already exist
+                    } else {
+                        //check internal links if they already exist
                         boolean externalLink = false;
-                        for(int j=0; j<externalLinks.length; j++) {
+                        for(int j = 0; j < externalLinks.length; j++) {
                             if(aValue.startsWith(externalLinks[j])) {
                                 externalLink = true;
                                 break;
@@ -121,15 +127,15 @@ public class LinkChecker extends DefaultHandler {
         return this.byteArrayInputStream;
     }
     
+    /**
+     * Check if resource exists within repository
+     */
     private boolean resourceExists(String path) {
-        if(!path.startsWith("/")) {
-            path = path2Resource + path;
-        }
-        log.debug("checking link --> " + path);
-        RepoPath rp;
         try {
-            rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path), Yanel.getInstance().getRepositoryFactory("DefaultRepositoryFactory"));
-            return rp.getRepo().isResource(new org.wyona.yarep.core.Path(rp.getPath().toString()));
+            String absolutePath = org.wyona.commons.io.PathUtil.concat(refererPath, path);
+            //log.error("DEBUG: Referer: " + refererPath + ", path: " + path);
+            //log.error("DEBUG: Absolute Path: " + absolutePath);
+            return dataRepo.existsNode(dataPathImpl.getDataPath(absolutePath));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
