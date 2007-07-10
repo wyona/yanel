@@ -133,8 +133,8 @@ public class LinkChecker extends DefaultHandler {
     private boolean resourceExists(String path) {
         try {
             String absolutePath = org.wyona.commons.io.PathUtil.concat(refererPath, path);
-            //log.error("DEBUG: Referer: " + refererPath + ", path: " + path);
-            //log.error("DEBUG: Absolute Path: " + absolutePath);
+            //log.debug("Referer: " + refererPath + ", path: " + path);
+            //log.debug("Absolute Path: " + absolutePath);
             return dataRepo.existsNode(dataPathImpl.getDataPath(absolutePath));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
