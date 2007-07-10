@@ -124,20 +124,16 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
                 transformer = TransformerFactory.newInstance().newTransformer();
                 defaultView.setMimeType(XML_MIME_TYPE);
             } else {
+                // "Body XSLT"
                 File xsltFile = org.wyona.commons.io.FileUtil.file(getRTD().getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "wiki2xhtml.xsl");
                 log.debug("XSLT file: " + xsltFile);
                 transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
                 transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
                 transformer.setParameter("yanel.path", getPath());
+                transformer.setParameter("yanel.last.modified", new java.util.Date(getLastModified()));
                 defaultView.setMimeType("application/xhtml+xml");
             }
             
-/*
-            String path2Resource = path.toString();
-            path2Resource = path2Resource.substring(0, path2Resource.lastIndexOf("/") + 1);
-            log.error("DEBUG: Path 2 resource: " + path2Resource);
-*/
-
             LinkChecker linkChecker = new LinkChecker(getRealm().getRepository(), getPath(), getDataPathImplementation());
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(wikiParser.getInputStream(), linkChecker);
@@ -158,10 +154,9 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
             CatalogResolver catalogResolver = new CatalogResolver();
             xmlReader.setEntityResolver(catalogResolver);
 
-            // create xslt transformer:
+            // create xslt transformer (global, e.g. navigation, header, footer):
             TransformerHandler xsltHandler = null;
             if(getXSLTPath() != null) {
-                
                 SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
                 xsltHandler = tf.newTransformerHandler(new StreamSource(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath().toString()))));
                 transformer = xsltHandler.getTransformer();
@@ -169,7 +164,8 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
                 transformer.setParameter("yanel.path", getPath());
                 transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
                 transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
-                
+                transformer.setParameter("yanel.last.modified", new java.util.Date(getLastModified()));
+                transformer.setParameter("yanel.username", "hugo");
             }
 
             // create xinclude transformer:
