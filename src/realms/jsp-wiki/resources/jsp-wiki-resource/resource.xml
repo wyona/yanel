@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="jsp-wiki"
+  namespace="http://www.wyona.org/yanel/resource/1.0"
+  class="org.wyona.yanel.impl.resources.JSPWikiResource"
+  >
+<description>
+Wiki (tested with JSPWiki content)
+</description>
+
+<rtd>
+  <property name="wiki-syntax" default-value="jspWikiParser"/>
+  <property name="xslt"/>
+</rtd>
+</resource>

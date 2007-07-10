@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+<project name="wiki-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <target name="dependencies" description="Dependencies">
+    <!-- INFO: http://maven.apache.org/ant-tasks.html -->
+    <artifact:remoteRepository id="wyona.remote.repository" url="http://www.wyona.org/maven2/"/>
+
+    <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-core"
+                  version="${yanel.source.version}"/>
+      <dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3"/>
+      <dependency groupId="xml-resolver" artifactId="xml-resolver" version="1.1"/>
+      <dependency groupId="xalan" artifactId="xalan" version="2.7.0"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-resource-wiki" version="1.0-dev-r25843"/>
+    </artifact:dependencies>
+
+    <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+
+      <dependency groupId="spring" artifactId="spring"
+                  version="2.0"/>
+      <dependency groupId="com-ecyrd-jspwiki" artifactId="JSPWiki-patched"
+                  version="2.4.71-r25408"/>
+
+      <dependency groupId="wyona-org-wiki-parser" artifactId="jsp-wiki-parser"
+                  version="0.0.1-dev-r24881"/>
+      <dependency groupId="wyona-org-wiki-parser" artifactId="wiki-parser-factory"
+                  version="r19560"/>
+      <dependency groupId="wyona-org-wiki-parser" artifactId="wyona-wiki-parser"
+                  version="r20641"/>
+      <dependency groupId="apache-org-lucene" artifactId="lucene-highlighter"
+                  version="1.x"/>
+      <dependency groupId="apache-org-commons" artifactId="jrcs-diff"
+                  version="1.x"/>
+      <dependency groupId="opensymphony" artifactId="oscache"
+                  version="2.3"/>
+      <dependency groupId="commons-lang" artifactId="commons-lang"
+                  version="2.2"/>
+      <dependency groupId="oro" artifactId="oro"
+                  version="2.0.8"/>
+      <dependency groupId="jdom" artifactId="jdom"
+                  version="1.0"/>
+
+      <dependency groupId="ecs" artifactId="ecs"
+                  version="1.4.2"/>
+      <dependency groupId="jaxen" artifactId="jaxen"
+                  version="1.1-beta-10"/>
+
+
+    </artifact:dependencies>
+
+    <property name="maven2.cp" refid="maven2.classpath"/>
+    <property name="maven2.resource.cp" refid="maven2.resource.classpath"/>
+  </target>
+
+</project>
