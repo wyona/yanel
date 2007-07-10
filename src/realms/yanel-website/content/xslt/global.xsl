@@ -67,7 +67,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 
 <table id="bodytable" cellpadding="0" cellspacing="0">
 <tr>
-  <td colspan="3">
+  <td colspan="2">
     <h1 id="header">
       <a href="{$yarep.back2realm}index.html">
         <img id="logo" src="{$yarep.back2realm}img/yanel.png"/>
@@ -96,7 +96,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 </td>
 </tr>
 <tr>
-  <td colspan="3" id="footer">
+  <td colspan="2" id="footer">
 
     <i18n:message key="poweredBy"/><xsl:text> </xsl:text><a href="http://yanel.wyona.org">Wyona Yanel</a> | <a href="https://svn.wyona.org/repos/public/tomcat-cluster/">Wyona Balancer</a> | <a href="http://tomcat.apache.org">Apache Tomcat</a> | <a href="http://httpd.apache.org">Apache HTTP Server</a><br/>
     Copyright &#169; 2007 <a href="http://www.wyona.com">Wyona</a>. <i18n:message key="allRightsReserved"/>. - <a href="?yanel.resource.meta"><i18n:message key="pageInfo"/></a> - <a href="?yanel.toolbar=on">Toolbar</a>
