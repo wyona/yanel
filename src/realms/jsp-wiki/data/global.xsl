@@ -114,7 +114,7 @@ Signed in as: <a href="{$yarep.back2realm}yanel/users/{$yanel.username}.html"><x
 <tr>
   <td colspan="3" id="footer">
 
-    <i18n:message key="poweredBy"/><xsl:text> </xsl:text><a href="http://yanel.wyona.org">Wyona Yanel</a> - Copyright &#169; 2007 <a href="http://www.wyona.com">Wyona</a>. <i18n:message key="allRightsReserved"/>. - <a href="?yanel.resource.meta"><i18n:message key="pageInfo"/></a> - <a href="?yanel.toolbar=on">Toolbar</a><br/>
+    <i18n:message key="poweredBy"/><xsl:text> </xsl:text><a href="http://yanel.wyona.org">Wyona Yanel</a> - Copyright &#169; 2007 <a href="http://www.wyona.com">Wyona</a>. <i18n:message key="allRightsReserved"/>. - <a href="?yanel.resource.meta"><!--<i18n:message key="pageInfo"/>-->More info ...</a> - <a href="?yanel.toolbar=on">Toolbar</a><br/>
 <i>This page last changed on <xsl:value-of select="$yanel.last.modified"/> by SOMEBODY.</i>
 <br/>
 <a href="?yanel.resource.viewid=source">XML</a> | <a href="?yanel.resource.viewid=txt">TXT</a>
