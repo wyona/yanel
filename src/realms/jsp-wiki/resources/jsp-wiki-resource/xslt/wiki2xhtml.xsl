@@ -193,10 +193,10 @@
       <xsl:otherwise>
         <xsl:choose>
           <xsl:when test="@label">
-            <a href="{@href}"><xsl:value-of select="@label"/></a>
+            <a href="{@href}.html"><xsl:value-of select="@label"/></a>
           </xsl:when>
           <xsl:otherwise>
-            <a href="{@href}"><xsl:value-of select="@href"/></a>
+            <a href="{@href}.html"><xsl:value-of select="@href"/>.html</a>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:otherwise>
