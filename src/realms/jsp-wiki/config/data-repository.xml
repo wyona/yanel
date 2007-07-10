@@ -6,4 +6,6 @@
   <content src="../data"/>
 
   <directory alternative="Main.txt" mime-type="application/xhtml+xml"/>
+
+  <meta src="../yarep-meta"/>
 </repository>
