@@ -116,40 +116,6 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 
 <xsl:template name="navigation">
 <xi:include href="yanelresource:/navigation/menu.xml?path={$yanel.path}&amp;language={$language}"/>
-<!--
-<b>All You Need</b><br/>
-&#160;<a href="{$yarep.back2realm}{$yanel.meta.language}/about.html">About</a><br/>
-&#160;<a href="{$yarep.back2realm}en/download/index.html">Download</a><br/>
-&#160;<a href="{$yarep.back2realm}{$yanel.meta.language}/usp.html">Unique Selling Proposition</a><br/>
-&#160;<a href="{$yarep.back2realm}license.html">License</a><br/>
-&#160;<a href="{$yarep.back2realm}{$yanel.meta.language}/getting-started.html">Getting Started</a><br/>
-&#160;Features<br/>
-<!- -
-&#160;News<br/>
- - ->
-&#160;<a href="{$yarep.back2realm}news/index.html">News</a><br/>
-
-&#160;<a href="{$yarep.back2realm}en/documentation/index.html">Documentation</a><br/>
-<br/>
-<b>Development/Community</b><br/>
-&#160;<a href="{$yarep.back2realm}download/source-repository.html">Get the Source</a><br/>
-&#160;<a href="{$yarep.back2realm}mailing-lists.html">Mailing Lists</a><br/>
-&#160;<a href="{$yarep.back2realm}roadmap.html">Roadmap</a><br/>
-&#160;<a href="{$yarep.back2realm}en/task-bug-tracker.html">Task/Bug Tracker</a><br/>
-&#160;<a href="{$yarep.back2realm}testing.html">Continuous Integration</a><br/>
-&#160;<a href="{$yarep.back2realm}en/governance.html">Governance</a><br/>
-&#160;<a href="{$yarep.back2realm}principles.html">Principles</a><br/>
-&#160;<a href="{$yarep.back2realm}en/development/processes/index.html">Processes</a><br/>
-&#160;<a href="{$yarep.back2realm}acknowledgements.html">Acknowledgements</a><br/>
-&#160;<a href="{$yarep.back2realm}references.html">References</a><br/>
-<br/>
-<b>Professional Services</b><br/>
-&#160;<a href="{$yarep.back2realm}en/professional-services/support.html">Support</a><br/>
-&#160;<a href="{$yarep.back2realm}en/professional-services/consulting.html">Consulting</a><br/>
-&#160;<a href="{$yarep.back2realm}en/professional-services/training.html">Training</a><br/>
-&#160;<a href="{$yarep.back2realm}en/professional-services/solutions.html">Solutions</a><br/>
-&#160;<a href="{$yarep.back2realm}en/contact.html">Contact</a><br/>
--->
 <br/>
 <b><i18n:message key="search"/></b>
 &#160;<form action="{$yarep.back2realm}en/search.html" method="GET"><input type="text" name="query" class="searchbox" size="14"/></form>
