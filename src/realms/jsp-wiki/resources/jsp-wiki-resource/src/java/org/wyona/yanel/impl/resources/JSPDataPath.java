@@ -19,7 +19,6 @@ public class JSPDataPath implements DataPath {
         } else {
             dataPath = path + ".txt";
         }
-        log.error("DEBUG: Path: " + path + ", Data path: " + dataPath);
         return dataPath;
     }
 }
