@@ -19,6 +19,8 @@
 <xsl:param name="yanel.back2context" select="'BACK2CONTEXT_IS_NULL'"/>
 <xsl:param name="yarep.back2realm" select="'BACK2REALM_IS_NULL'"/>
 <xsl:param name="language" select="'LANGUAGE_IS_NULL'"/>
+<xsl:param name="yanel.last.modified" select="'LAST_MODIFIED_IS_NULL'"/>
+<xsl:param name="yanel.username" select="'USERNAME_IS_NULL'"/>
 
 <xsl:param name="yanel.meta.language" select="'en'"/>
 
@@ -44,8 +46,10 @@ WARNING: This content has been generated dynamically. All changes will be lost.
   <meta name="DC.Creator" content="TODO"/>
   <meta name="DC.Language" content="TODO"/>
 
+<!--
   <link rel="shortcut icon" href="{$yarep.back2realm}favicon.ico" type="image/vnd.microsoft.icon" />
   <link rel="stylesheet" href="{$yarep.back2realm}css/global.css" type="text/css"/>
+-->
   <base target="_top"/>
   <xsl:copy-of select="/xhtml:html/xhtml:head/*[name(.) != 'title']"/>
 
@@ -95,7 +99,8 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <tr>
   <td colspan="3" id="footer">
 
-    <i18n:message key="poweredBy"/><xsl:text> </xsl:text><a href="http://yanel.wyona.org">Wyona Yanel</a> - Copyright &#169; 2007 <a href="http://www.wyona.com">Wyona</a>. <i18n:message key="allRightsReserved"/>. - <a href="?yanel.resource.meta"><i18n:message key="pageInfo"/></a> - <a href="?yanel.toolbar=on">Toolbar</a>
+    <i18n:message key="poweredBy"/><xsl:text> </xsl:text><a href="http://yanel.wyona.org">Wyona Yanel</a> - Copyright &#169; 2007 <a href="http://www.wyona.com">Wyona</a>. <i18n:message key="allRightsReserved"/>. - <a href="?yanel.resource.meta"><i18n:message key="pageInfo"/></a> - <a href="?yanel.toolbar=on">Toolbar</a><br/>
+<i>This page last changed on <xsl:value-of select="$yanel.last.modified"/> by SOMEBODY.</i>
 
   </td>
 </tr>
