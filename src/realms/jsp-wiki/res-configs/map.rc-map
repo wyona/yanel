@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<rc-map>
+<!--
+  <matcher pattern="/*.html" rcpath="/global-resource-config.xml"/>
+-->
+  <!-- Use ** to also include all subpages, e.g. about/org-chart_en.html -->
+  <matcher pattern="/**.html" rcpath="/html-suffix-resource-config.xml"/>
+</rc-map>
