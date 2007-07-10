@@ -135,7 +135,6 @@ Signed in as: <a href="{$yarep.back2realm}yanel/users/{$yanel.username}.html"><x
 </xsl:template>
 
 <xsl:template name="navigation">
-NAVIGATION
 <xi:include href="yanelresource:/LeftMenu.html"/>
 </xsl:template>
 
