@@ -444,7 +444,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         } else if(parent.toString().equals("/")){
             pathOfNewResource = new Path(parent + "/" + lookinPath + "/" + createName);
         } else {
-            pathOfNewResource = new Path(parent + "/" + lookinPath + "/" + createName);            
+            log.error("DEBUG: Parent: " + parent + ", Lookin-path: " + lookinPath + ", Create Name: " + createName);
+            pathOfNewResource = new Path("/" + lookinPath + "/" + createName);
         }
         
         log.error("DEBUG: Path of new resource: " + pathOfNewResource);
