@@ -47,6 +47,7 @@ import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
+import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
@@ -72,7 +73,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 /**
  * 
  */
-public class WikiResource extends Resource implements ViewableV1, CreatableV2, ModifiableV2 {
+public class WikiResource extends Resource implements ViewableV1, CreatableV2, IntrospectableV1, ModifiableV2 {
 
     private static Category log = Category.getInstance(WikiResource.class);
     private final String XML_MIME_TYPE = "application/xml";
@@ -466,5 +467,24 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, M
      */
     protected DataPath getDataPathImplementation() {
         return new DefaultDataPath();
+    }
+
+    /**
+     *
+     */
+    public String getIntrospection() throws Exception {
+        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        sb.append("<introspection xmlns=\"http://www.wyona.org/neutron/2.0\">");
+
+        sb.append("<resource name=\"Some Wiki Page\">");
+        sb.append("<edit mime-type=\"text/plain\">");
+        sb.append("<checkout url=\"?yanel.resource.viewid=txt&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
+        sb.append("<checkin  url=\"?yanel.resource.usecase=checkin\"  method=\"PUT\"/>");
+        sb.append("<release-lock url=\"?yanel.resource.usecase=release-lock\" method=\"GET\"/>");
+        sb.append("</edit>");
+        sb.append("</resource>");
+
+        sb.append("</introspection>");
+        return sb.toString();
     }
 }
