@@ -1310,6 +1310,11 @@ public class YanelServlet extends HttpServlet {
                 sb.append("        <resourcetype/>");
                 // TODO: Set mime type of node!
                 sb.append("        <getcontenttype>application/octet-stream</getcontenttype>");
+                // TODO: Set content length and last modified!
+                sb.append("        <getcontentlength>0</getcontentlength>");
+                sb.append("        <getlastmodified>1969.02.16</getlastmodified>");
+
+                // See http://www.webdav.org/specs/rfc2518.html#PROPERTY_source, http://wiki.zope.org/HiperDom/RoundtripEditingDiscussion
                 sb.append("        <source>\n");
                 sb.append("          <link>\n");
                 sb.append("            <src>" + request.getRequestURI() + "</src>\n");
@@ -1349,7 +1354,11 @@ public class YanelServlet extends HttpServlet {
                         sb.append("        <resourcetype/>\n");
                         // TODO: Set mime type of node!
                         sb.append("        <getcontenttype>application/octet-stream</getcontenttype>\n");
-                        // http://www.webdav.org/specs/rfc2518.html#PROPERTY_source, http://wiki.zope.org/HiperDom/RoundtripEditingDiscussion
+                        // TODO: Set content length and last modified!
+                        sb.append("        <getcontentlength>0</getcontentlength>");
+                        sb.append("        <getlastmodified>1969.02.16</getlastmodified>");
+
+                        // See http://www.webdav.org/specs/rfc2518.html#PROPERTY_source, http://wiki.zope.org/HiperDom/RoundtripEditingDiscussion
                         sb.append("        <source>\n");
                         sb.append("          <link>\n");
                         sb.append("            <src>" + request.getRequestURI() + "/" + children[i].getName() + "</src>\n");
