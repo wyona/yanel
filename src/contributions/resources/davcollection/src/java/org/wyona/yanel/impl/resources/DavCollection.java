@@ -85,7 +85,8 @@ public class DavCollection extends XmlViewResource implements ViewableV2 {
             org.wyona.yarep.core.Path[] children = contentRepo.getChildren(p);
             for (int i = 0; i < children.length; i++) {
                 if (contentRepo.isResource(children[i])) {
-                    this.propfindAddResource(request.getContextPath() + "/" + getRealm().getMountPoint() + children[i].toString(), "R: " + children[i].getName(), WEBDAV_EL_RES, "httpd/unix-directory", new Date(contentRepo.getLastModified(children[i])).toGMTString());
+                    // TODO: Set mime type instead application/octet-stream!
+                    this.propfindAddResource(request.getContextPath() + "/" + getRealm().getMountPoint() + children[i].toString(), "R: " + children[i].getName(), WEBDAV_EL_RES, "application/octet-stream", new Date(contentRepo.getLastModified(children[i])).toGMTString());
                     
                 } else if (contentRepo.isCollection(children[i])) {
                     this.propfindAddResource(request.getContextPath() + "/" + getRealm().getMountPoint() + children[i].toString(), "C: " + children[i].getName(), WEBDAV_EL_COLL, "httpd/unix-directory", new Date(contentRepo.getLastModified(children[i])).toGMTString());
