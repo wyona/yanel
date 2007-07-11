@@ -1297,7 +1297,7 @@ public class YanelServlet extends HttpServlet {
                 sb.append("    <propstat>");
                 sb.append("      <prop>");
                 sb.append("        <resourcetype><collection/></resourcetype>");
-                sb.append("        <getcontenttype>http/unix-directory</getcontenttype>");
+                sb.append("        <getcontenttype>httpd/unix-directory</getcontenttype>");
                 sb.append("      </prop>");
                 sb.append("      <status>HTTP/1.1 200 OK</status>");
                 sb.append("    </propstat>");
@@ -1308,8 +1308,8 @@ public class YanelServlet extends HttpServlet {
                 sb.append("    <propstat>");
                 sb.append("      <prop>");
                 sb.append("        <resourcetype/>");
-                // TODO: Does getcontenttype also be set for resources?
-                sb.append("        <getcontenttype>http/unix-directory</getcontenttype>");
+                // TODO: Set mime type of node!
+                sb.append("        <getcontenttype>application/octet-stream</getcontenttype>");
                 sb.append("        <source>\n");
                 sb.append("          <link>\n");
                 sb.append("            <src>" + request.getRequestURI() + "</src>\n");
@@ -1335,7 +1335,7 @@ public class YanelServlet extends HttpServlet {
                         sb.append("      <prop>\n");
                         sb.append("        <displayname>" + children[i].getName() + "</displayname>\n");
                         sb.append("        <resourcetype><collection/></resourcetype>\n");
-                        sb.append("        <getcontenttype>http/unix-directory</getcontenttype>\n");
+                        sb.append("        <getcontenttype>httpd/unix-directory</getcontenttype>\n");
                         sb.append("      </prop>\n");
                         sb.append("      <status>HTTP/1.1 200 OK</status>\n");
                         sb.append("    </propstat>\n");
@@ -1347,7 +1347,8 @@ public class YanelServlet extends HttpServlet {
                         sb.append("      <prop>\n");
                         sb.append("        <displayname>" + children[i].getName() + "</displayname>\n");
                         sb.append("        <resourcetype/>\n");
-                        sb.append("        <getcontenttype>http/unix-directory</getcontenttype>\n");
+                        // TODO: Set mime type of node!
+                        sb.append("        <getcontenttype>application/octet-stream</getcontenttype>\n");
                         // http://www.webdav.org/specs/rfc2518.html#PROPERTY_source, http://wiki.zope.org/HiperDom/RoundtripEditingDiscussion
                         sb.append("        <source>\n");
                         sb.append("          <link>\n");
@@ -2034,6 +2035,7 @@ public class YanelServlet extends HttpServlet {
 
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
             return;
+        } else if (path.indexOf("user-mgmt/list-users.html") >= 0) {
         } else if (path.indexOf("about.html") >= 0) {
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             StringBuffer sb = new StringBuffer("<html>");
