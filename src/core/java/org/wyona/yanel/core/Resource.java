@@ -47,6 +47,8 @@ public abstract class Resource {
     private Environment environment;
     protected Map parameters;
 
+    static private String DEFAULT_LANGUAGE = "en";
+
     /**
      *
      */
@@ -262,7 +264,7 @@ public abstract class Resource {
         language = getResourceConfigProperty("language");
         if (language != null) return language;
 
-        return language;
+        return DEFAULT_LANGUAGE;
     }
 
     /**
@@ -314,7 +316,7 @@ public abstract class Resource {
         if (language != null) return language;
         
         // (6)
-        return "en";
+        return DEFAULT_LANGUAGE;
     }
 
     /**
