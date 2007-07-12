@@ -74,9 +74,7 @@ public class WarFetcher {
         JarURLConnection URLcon=(JarURLConnection)(updateWarUrl.openConnection());
         JarFile jar=URLcon.getJarFile();
         
-        URL UpdateRdfUrl = new URL(installInfo.getUpdateURL());
-        InputStream updateRdfIn = UpdateRdfUrl.openStream();
-        UpdateInfo updateInfo = new UpdateInfo(updateRdfIn, installInfo);
+        UpdateInfo updateInfo = new UpdateInfo(installInfo.getUpdateURL(), installInfo);
         HashMap versionDetails = updateInfo.getUpdateVersionDetail("updateLink", updateLink);
         String version = (String) versionDetails.get("version");
         String revision = (String) versionDetails.get("revision");

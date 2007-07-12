@@ -9,6 +9,7 @@ import org.apache.log4j.Category;
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileInputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -29,16 +30,25 @@ public class UpdateInfo {
     
     private String updateManagerNS = "http://www.wyona.org/update-manager/1.0#"; 
     
-    public UpdateInfo(InputStream in, InstallInfo installInfo) throws Exception{
+    public UpdateInfo(String updateRdfUrlString, InstallInfo installInfo) throws Exception{
         if (installInfo == null) {
             throw new Exception("InstallInfo should not be null");
         }
-        if (in == null) {
+        if (updateRdfUrlString == null) {
             throw new Exception("InputStream should not be null");
         }
+        
+        URL updateRdfUrl = new URL(updateRdfUrlString);
+        InputStream updateRdfIn = null;
+        try {
+            updateRdfIn = updateRdfUrl.openStream();
+        } catch (Exception e) {
+            throw new Exception("Could not get update information from: " + updateRdfUrlString);
+        }
+        
         Model model = ModelFactory.createDefaultModel();
         //read the RDF/XML file
-        model.read(in, "");
+        model.read(updateRdfIn, "");
         this.updateRdfModel = model;
         this.installInfo = installInfo;
 

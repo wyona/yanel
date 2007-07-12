@@ -255,6 +255,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             htmlBodyContent.append("<p>Failed to get install information. Exception: " + e.getMessage() + "</p>");
+            return;
         }
         
         if (!installInfo.getInstalltype().equals("bin-snapshot")) {
@@ -267,7 +268,8 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 updateInfo = getUpdateInfo();
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-                htmlBodyContent.append("<p>Failed to get update information. Exception: " + e.getMessage() + "</p>");                // TODO: handle exception
+                htmlBodyContent.append("<p>Failed to get update information. Exception: " + e.getMessage() + "</p>");
+                return;
             }
             String idVersionRevisionCurent = installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision();
             
@@ -418,16 +420,12 @@ public class UpdateFinder extends Resource implements ViewableV2 {
     }
 
     private InstallInfo getInstallInfo() throws Exception {
-        InstallInfo installInfo = null;
-        return installInfo = new InstallInfo(request);
+        return new InstallInfo(request);
 
     }
 
     private UpdateInfo getUpdateInfo() throws Exception {
-        UpdateInfo updateInfo = null;
-        URL UpdateRdfUrl = new URL(getInstallInfo().getUpdateURL());
-        InputStream updateRdfIn = UpdateRdfUrl.openStream();
-        return updateInfo = new UpdateInfo(updateRdfIn, getInstallInfo());
+        return new UpdateInfo(getInstallInfo().getUpdateURL(), getInstallInfo());
     }
     
     private HashMap getBestUpdater() throws Exception {
