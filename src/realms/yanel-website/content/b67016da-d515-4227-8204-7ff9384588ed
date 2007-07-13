@@ -1,25 +1,13 @@
-<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Created from template ...</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <p><h1>Access Control Policies</h1>
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Created from template ...</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>
+<h1>Access Control Policies</h1><br/>One can block inherited policies for <b>all</b> roles
+<p>
+</p><pre>&lt;?xml version=&quot;1.0&quot;?&gt;<br/><br/>&lt;policy xmlns=&quot;http://www.wyona.org/security/1.0&quot; use-inherited-policies=&quot;false&quot;&gt;<br/><br/>  &lt;role id=&quot;view&quot;&gt;<br/>    &lt;!--&lt;world permission=&quot;false&quot;/&gt;--&gt;<br/>    &lt;user id=&quot;lenya&quot; permission=&quot;true&quot;/&gt;<br/>  &lt;/role&gt;<br/><br/>  &lt;role id=&quot;open&quot;&gt;<br/>    &lt;user id=&quot;lenya&quot; permission=&quot;true&quot;/&gt;<br/>  &lt;/role&gt;<br/><br/>  &lt;role id=&quot;write&quot;&gt;<br/>    &lt;user id=&quot;lenya&quot; permission=&quot;true&quot;/&gt;<br/>  &lt;/role&gt;<br/><br/>&lt;/policy&gt;<br/></pre>
 
-<pre>
-&lt;?xml version="1.0"?>
+<p>
+or also for a particular role<br/>
+</p>
+<p>
+</p><pre>&lt;?xml version=&quot;1.0&quot;?&gt;<br/><br/>&lt;policy xmlns=&quot;http://www.wyona.org/security/1.0&quot;&gt;<br/><br/>  &lt;role id=&quot;view&quot; use-inherited-policies=&quot;false&quot;<br/>    &lt;!--&lt;world permission=&quot;false&quot;/&gt;--&gt;<br/>    &lt;user id=&quot;lenya&quot; permission=&quot;true&quot;/&gt;<br/>  &lt;/role&gt;<br/><br/>&lt;/policy&gt;<br/></pre>
 
-&lt;policy xmlns="http://www.wyona.org/security/1.0" use-inherited-policies="false">
-
-  &lt;role id="view">
-    &lt;!--&lt;world permission="false"/>-->
-    &lt;user id="lenya" permission="true"/>
-  &lt;/role>
-
-  &lt;role id="open">
-    &lt;user id="lenya" permission="true"/>
-  &lt;/role>
-
-  &lt;role id="write">
-    &lt;user id="lenya" permission="true"/>
-  &lt;/role>
-
-&lt;/policy>
-</pre>
-
-</p></body>
+</body>
 </html>
