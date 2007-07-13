@@ -276,7 +276,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             htmlBodyContent.append("<p>");
             htmlBodyContent.append("Your installed yanel is: " + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision());
             htmlBodyContent.append("</p>");
-            //TODO implement getBestYanelWebapp() to get all yanel-webapp version which has an yanel-updater which fits the targetRevision requirement of the current yanel.
+            //TODO implement getBestYanelWebapp() to get all yanel-webapp version which has an yanel-updater which fits the targetRevision requirement of the current yanel and is not allready installed.
             HashMap newestYanel = updateInfo.getNewestUpdateVersionsOf("id", "wyona-yanel-webapp");
             String idVersionRevisionNewest = (String) newestYanel.get("id") + "-v-" + (String) newestYanel.get("version") + "-r-" + (String) newestYanel.get("revision");
             if (idVersionRevisionNewest.equals(idVersionRevisionCurent)) {
@@ -370,6 +370,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 htmlBodyContent.append("<input type=\"hidden\" name=\"updateconfirmed\" value=\"updateconfirmed\"/>");
                 htmlBodyContent.append("<input type=\"hidden\" name=\"updatelink\" value=\"" + request.getParameter("updatelink") + "\"/>");
                 htmlBodyContent.append("<input type=\"hidden\" name=\"requestingwebapp\" value=\"" + installInfo.getWebaName() + "\"/>");
+                //TODO here it should ask for a password which shoudl be set in the new updater
                 htmlBodyContent.append("</form>");
                 htmlBodyContent.append("<form method=\"post\">");
                 htmlBodyContent.append("<input type=\"submit\" name=\"button\" value=\"Cancel\"></input>");
@@ -403,6 +404,8 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             
             WarFetcher warFetcher = new WarFetcher(request, (String) bestUpdater.get("updateLink"), destDir);
             warFetcher.fetch();
+            
+            //TODO here it should set a password for the updater
             
             TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
             tomcatContextHandler.setContext(bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"), bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"));
@@ -460,6 +463,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         UpdateInfo updateInfo = getUpdateInfo();
         for (int i = 0; i < updateInfo.getUpdateVersions().size(); i++) {
             //TODO not implemented yet.
+            //TODO implement getBestYanelWebapp() to get all yanel-webapp version which has an yanel-updater which fits the targetRevision requirement of the current yanel and is not allready installed.
         }
         return null;
     }
