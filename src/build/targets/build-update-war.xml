@@ -61,7 +61,7 @@
       <replacetoken>@INSTALLTYPE@</replacetoken>
     </replace>
     
-    <jar jarfile="${build.dir}/update-war/wyona-yanel-UPDATE-${yanel.version}-r${yanel.revision}.war" basedir="${update.dir}/${servlet.context.prefix}"/>
+    <jar jarfile="${build.dir}/update-war/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}.war" basedir="${update.dir}/${servlet.context.prefix}"/>
     
     <delete dir="${update.dir}"/>
   </target>  
