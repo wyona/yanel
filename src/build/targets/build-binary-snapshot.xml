@@ -49,12 +49,12 @@
     
     <mkdir dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/yanel-webapps"/>
     <!-- Add context file -->
-    <copy file="${yanel.home.dir}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/yanel-${yanel.version}-r${yanel.revision}.xml"/>
-    <replace file="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/yanel-${yanel.version}-r${yanel.revision}.xml" value="yanel-${yanel.version}-r${yanel.revision}">
+    <copy file="${yanel.home.dir}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}.xml"/>
+    <replace file="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}.xml" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
       <replacetoken>@YANEL_VERSION@</replacetoken>
     </replace>
     <copy file="${yanel.home.dir}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/${target.servlet.context.prefix}.xml"/>
-    <replace file="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/${target.servlet.context.prefix}.xml" value="yanel-${yanel.version}-r${yanel.revision}">
+    <replace file="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/${target.servlet.context.prefix}.xml" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
       <replacetoken>@YANEL_VERSION@</replacetoken>
     </replace>
   </target>
@@ -116,13 +116,13 @@
     </replace>
 
     <copy file="${yanel.home.dir}/src/binary-dist/log4j.properties" todir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
-    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${target.servlet.context.prefix}">
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace>
     <mkdir dir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/logs"/>
 
     <copy file="${yanel.home.dir}/src/build/install.rdf" todir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
-    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}-r${yanel.revision}">
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/install.rdf" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
       <replacetoken>@VERSION@</replacetoken>
     </replace>
     <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/install.rdf" value="bin-snapshot">
@@ -136,7 +136,7 @@
     <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}">
       <fileset dir="${snapshot.dir}/apache-tomcat-${tomcat.version}" />
     </copy>
-    <copy todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/yanel-webapps/yanel-${yanel.version}-r${yanel.revision}">
+    <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/yanel-webapps/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
       <fileset dir="${snapshot.dir}/${target.servlet.context.prefix}"/>
     </copy>
     <!-- <move file="${snapshot.dir}/${servlet.context.prefix}.war" todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps"/> -->
@@ -164,7 +164,7 @@
   </target>
   
   <target name="bin-snapshot-unix">
-    <copy todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/yanel-webapps/yanel-${yanel.version}-r${yanel.revision}">
+    <copy todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/yanel-webapps/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
       <fileset dir="${snapshot.dir}/${target.servlet.context.prefix}"/>
     </copy>
     <delete dir="${snapshot.dir}/${target.servlet.context.prefix}"/>
