@@ -15,7 +15,7 @@
     ---------------
 
     1) Start Yanel by executing ./start.sh
-       IMPORTANT: Please make sure that there is no other server running on port 8080
+       IMPORTANT: Please make sure that there is no other server running on port 8080 (netstat -nt -l)
        
     2) Browse to http://localhost:8080/
 
