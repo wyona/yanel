@@ -167,6 +167,9 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                     xsltHandlers[i].getTransformer().setParameter("language", getRequestedLanguage());
                     // language of this translation
                     xsltHandlers[i].getTransformer().setParameter("content-language", getContentLanguage());
+
+                    // Username
+                    xsltHandlers[i].getTransformer().setParameter("username", "HUGO");
                 }
                 
                 // create i18n transformer:
