@@ -18,6 +18,8 @@ import com.hp.hpl.jena.vocabulary.*;
 import com.hp.hpl.jena.rdf.model.impl.PropertyImpl;
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * 
  */
@@ -87,11 +89,6 @@ public class UpdateInfo {
         while (iter2.hasNext()) {
             Resource versionResource = ((Resource) iter2.next());
             
-            
-            
-            
-            
-            
             HashMap updateVersionDetail = new HashMap();
             updateVersionDetail.put("type", typeResource.getProperty(typeProperty).getString());
             updateVersionDetail.put("title", versionResource.getProperty(titleProperty).getString());
@@ -106,55 +103,23 @@ public class UpdateInfo {
             updateVersionDetail.put("targetApllicationMinRevision", versionResource.getProperty(targetApplicationminRevisionProperty).getString());
             updateVersionDetail.put("targetApllicationMaxRevision", versionResource.getProperty(targetApplicationmaxRevisionProperty).getString());
             this.updateVersions.add(updateVersionDetail);
-            
-            
-            
-            //check id
-            //if (versionResource.getProperty(idProperty).getString().equals(installInfo.getId())) {
-                //check for targetApplicationId
-//                Seq targetApplicationSeq = versionResource.getProperty(targetApplicationProperty).getSeq();
-//                NodeIterator targetApplicationIter = targetApplicationSeq.iterator();
-//                while (targetApplicationIter.hasNext()) {
-//                    Resource targetApplicationResource = ((Resource) targetApplicationIter.next());
-//                    String test1 = targetApplicationResource.getProperty(idProperty).getString();
-//                    String test2 = installInfo.getTargetApplicationId();
-//                    System.out.println("taid: "+test1 +" install: "+ test2);
-//                    
-//                    //if (targetApplicationResource.getProperty(idProperty).getString().equals(installInfo.getTargetApplicationId())) {
-//
-//                        //check for minorVersion
-//                        //String minVersion = targetApplicationResource.getProperty(minVersionProperty).getString();
-//                        //String installVersion = installInfo.getTargetApplicationVersion();
-//                        //VersionComparator versionComparator = new VersionComparator(); 
-//                        //if (versionComparator.compare(installVersion, minVersion) >= 0) {
-//                            //check for maxVersion
-//                            //String maxVersion = targetApplicationResource.getProperty(maxVersionProperty).getString();
-//                            //if (versionComparator.compare(maxVersion, installVersion) >= 0) {
-//                                HashMap updateVersionDetail = new HashMap();
-//                                updateVersionDetail.put("type", typeResource.getProperty(typeProperty).getString());
-//                                updateVersionDetail.put("title", versionResource.getProperty(titleProperty).getString());
-//                                updateVersionDetail.put("id", versionResource.getProperty(idProperty).getString());
-//                                updateVersionDetail.put("version", versionResource.getProperty(versionProperty).getString());
-//                                updateVersionDetail.put("revision", versionResource.getProperty(revisionProperty).getString());
-//                                updateVersionDetail.put("changeLog", versionResource.getProperty(changeLogProperty).getString());
-//                                updateVersionDetail.put("updateLink", targetApplicationResource.getProperty(updateLinkProperty).getString());
-//                                updateVersionDetail.put("targetApllication", targetApplicationResource.getProperty(idProperty).getString());
-//                                updateVersionDetail.put("targetApllicationMinVersion", targetApplicationResource.getProperty(minVersionProperty).getString());
-//                                updateVersionDetail.put("targetApllicationMaxVersion", targetApplicationResource.getProperty(maxVersionProperty).getString());
-//                                this.updateVersions.add(updateVersionDetail);
-//                            //}
-//                        //}
-//                    //}
-//                //}
-//                }
             }
         }
     }
-
+    
+    /**
+     * @return ArrayList with all update version
+     */
     public ArrayList getUpdateVersions() {
+        
         return updateVersions;
     }
     
+    /**
+     * @return HashMap with version details which are matching the value of the key
+     * @param String key
+     * @param String value 
+     */    
     public HashMap getUpdateVersionDetail(String key, String value) {
         for (int i = 0; i < updateVersions.size(); i++) {
             HashMap versionDetail = (HashMap) updateVersions.get(i);
@@ -172,25 +137,29 @@ public class UpdateInfo {
      * @param String value 
      */
     public ArrayList getUpdateVersionsOf(String key, String value) {
-        ArrayList selectedUpdateVersions = updateVersions;
-        for (int i = 0; i < selectedUpdateVersions.size(); i++) {
-            HashMap versionDetail = (HashMap) selectedUpdateVersions.get(i);
-            if (!versionDetail.get(key).equals(value)) {
-                selectedUpdateVersions.remove(i);
+        ArrayList allUpdateVersions = getUpdateVersions();
+        ArrayList selectedUpdateVersions = new ArrayList();
+        if (allUpdateVersions == null) return null;
+        for (int i = 0; i < allUpdateVersions.size(); i++) {
+            HashMap versionDetail = (HashMap) allUpdateVersions.get(i);
+            if (versionDetail.get(key).equals(value)) {
+                selectedUpdateVersions.add(allUpdateVersions.get(i));
             }
         }
+        if (selectedUpdateVersions.size() < 1) return null;
         Collections.sort(selectedUpdateVersions, new UpdateInfoVersionComparator());
         return selectedUpdateVersions;
     }
 
     /**
-     * @return ArrayList with version which are matching the value of the key, and fits in the revision requirement
+     * @return ArrayList with version which are matching the value of the key, and fits in the revision requirement. Or null if none.
      * @param String key
      * @param String value 
      * @param String installInfoRevision 
      */
     public ArrayList getUpdateVersionsOf(String key, String value, String InstallInfoRevision) {
         ArrayList selectedUpdateVersions = getUpdateVersionsOf(key, value);
+        if (selectedUpdateVersions == null) return null;
         VersionComparator versionComparator = new VersionComparator();  
         for (int i = 0; i < selectedUpdateVersions.size(); i++) {
             HashMap versionDetail = (HashMap) selectedUpdateVersions.get(i);
@@ -201,6 +170,7 @@ public class UpdateInfo {
                 selectedUpdateVersions.remove(i);
             }
         }
+        if (selectedUpdateVersions.size() < 1) return null;           
         Collections.sort(selectedUpdateVersions, new UpdateInfoVersionComparator());
         return selectedUpdateVersions;
     }
@@ -210,7 +180,7 @@ public class UpdateInfo {
      * @param String key
      * @param String value 
      */
-    public HashMap getNewestUpdateVersionsOf(String key, String value) {
+/*    public HashMap getNewestUpdateVersionsOf(String key, String value) {
         ArrayList selectedUpdateVersions = getUpdateVersionsOf(key, value);
         for (int i = 0; i < selectedUpdateVersions.size(); i++) {
             HashMap versionDetail = (HashMap) selectedUpdateVersions.get(i);
@@ -218,18 +188,79 @@ public class UpdateInfo {
                 selectedUpdateVersions.remove(i);
             }
         }
+        if (selectedUpdateVersions.size() < 1) {
+            throw new Exception("There are no newest update for key: " + key + ", value: " + value + ".");
+        }             
         Collections.sort(selectedUpdateVersions, new UpdateInfoVersionComparator());
         return (HashMap) selectedUpdateVersions.get(selectedUpdateVersions.size() - 1);
-    }    
+    }   */ 
 
     /**
-     * @return HashMap with the newest version which are matching the value of the key, and fits in the revision requirement
+     * @return ArrayList with all updaters which are installable within the given YanelRevision. return null if non.
+     * @param String YanelRevision
+     */
+    public ArrayList getUpdatersForYanelRevision(String yanelRevision) {
+        VersionComparator versionComparator = new VersionComparator();
+        ArrayList bestUpdater = getUpdateVersionsOf("type", "updater");
+        if (bestUpdater == null) return null;
+        for (int i = 0; i < bestUpdater.size(); i++) {
+            HashMap versionDetail = (HashMap) bestUpdater.get(i);
+            if (versionComparator.compare((String) versionDetail.get("targetApllicationMinRevision"), yanelRevision) > 0 ) {
+                bestUpdater.remove(i);
+            }
+            if (versionComparator.compare((String) versionDetail.get("targetApllicationMaxRevision"), yanelRevision) < 0 ) {
+                bestUpdater.remove(i);
+            }
+        }
+        Collections.sort(bestUpdater, new UpdateInfoVersionComparator());
+        if (bestUpdater.size() < 1)  return null;
+        return bestUpdater;
+    }
+
+    /**
+     * @return ArrayList with all yanelUpdates which are installable within the given YanelRevision. return null if non.
+     * @param String YanelRevision
+     */
+    public ArrayList getYanelUpatesForYanelRevision(String yanelRevision) {
+        ArrayList updaters = getUpdatersForYanelRevision(yanelRevision);
+        if (updaters == null) return null;
+        ArrayList allUpdates = getUpdateVersionsOf("type", "updates");
+        if (allUpdates == null) return null;
+        VersionComparator versionComparator = new VersionComparator();
+        
+        for (int i = 0; i < allUpdates.size(); i++) {
+            HashMap updatesVersionDetail = (HashMap) allUpdates.get(i);
+            String revision = (String) updatesVersionDetail.get("revision");
+            
+            
+            for (int j = 0; j < updaters.size(); j++) {
+                HashMap updatersVersionDetail = (HashMap) updaters.get(j);
+                if (versionComparator.compare((String) updatersVersionDetail.get("targetApllicationMinRevision"), revision) > 0 ) {
+                    allUpdates.remove(i);
+                }
+                if (versionComparator.compare((String) updatersVersionDetail.get("targetApllicationMaxRevision"), revision) < 0 ) {
+                    allUpdates.remove(i);
+                }
+            }
+        }
+        
+        Collections.sort(allUpdates, new UpdateInfoVersionComparator());
+        if (allUpdates.size() < 1) {
+            return null;
+        }
+        return allUpdates;
+    }
+    
+    /**
+     * @return ArrayList with the versions which are matching the value of the key, and fits in the revision requirement and is not allready installed. returns null if now version fits.
      * @param String key
      * @param String value 
+     * @param String installInfoRevision 
      */
-    public HashMap getNewestUpdateVersionsOf(String key, String value, String installInfoRevision) {
+/*    public ArrayList getUpdateVersionsOf(String key, String value, String installInfoRevision, HttpServletRequest request) throws Exception{
         ArrayList selectedUpdateVersions = getUpdateVersionsOf(key, value);
-        VersionComparator versionComparator = new VersionComparator();  
+        VersionComparator versionComparator = new VersionComparator();
+        TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
         for (int i = 0; i < selectedUpdateVersions.size(); i++) {
             HashMap versionDetail = (HashMap) selectedUpdateVersions.get(i);
             if (versionComparator.compare((String) versionDetail.get("targetApllicationMinRevision"), installInfoRevision) > 0 ) {
@@ -238,10 +269,17 @@ public class UpdateInfo {
             if (versionComparator.compare((String) versionDetail.get("targetApllicationMaxRevision"), installInfoRevision) < 0 ) {
                 selectedUpdateVersions.remove(i);
             }
+            for (int j = 0; j < tomcatContextHandler.getWebappNames().length; j++) {
+                if (tomcatContextHandler.getWebappNames()[j].equals(versionDetail.get("id") + "-v-" + versionDetail.get("version") + "-r-" + versionDetail.get("revision"))) {
+                    selectedUpdateVersions.remove(i);
+                }
+            }
         }
+        if (selectedUpdateVersions.size() < 1) {
+            return null;
+        }                    
         Collections.sort(selectedUpdateVersions, new UpdateInfoVersionComparator());
-        return (HashMap) selectedUpdateVersions.get(selectedUpdateVersions.size() -1);
-    }    
-    
+        return selectedUpdateVersions;
+    }    */
     
 }
