@@ -4,7 +4,7 @@
   
   <target name="update-war" description="Create a war to update" depends="init, webapp">
     <delete dir="${build.dir}/update-war"/>
-    <property name="update.dir" value="${build.dir}/update-war/wyona-yanel-UPDATE-${yanel.version}-r${yanel.revision}"/>
+    <property name="update.dir" value="${build.dir}/update-war/wyona-yanel-UPDATE-v-${yanel.version}-r-${yanel.revision}"/>
     <mkdir dir="${update.dir}"/>
     
    <copy todir="${update.dir}/${servlet.context.prefix}">
@@ -48,14 +48,17 @@
       <replacetoken>../src/realms/welcome-admin/yanel/resources</replacetoken>
     </replace>
     <copy file="${yanel.home.dir}/src/binary-dist/log4j.properties" todir="${update.dir}/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
-    <replace file="${update.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${servlet.context.prefix}">
+    <replace file="${update.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace> 
     <mkdir dir="${update.dir}/${servlet.context.prefix}/WEB-INF/logs"/>
 
     <copy file="${yanel.home.dir}/src/build/install.rdf" todir="${update.dir}/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
-    <replace file="${update.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}-r${yanel.revision}">
+    <replace file="${update.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}">
       <replacetoken>@VERSION@</replacetoken>
+    </replace>
+    <replace file="${update.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.revision}">
+      <replacetoken>@REVISION@</replacetoken>
     </replace>
     <replace file="${update.dir}/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="update">
       <replacetoken>@INSTALLTYPE@</replacetoken>
