@@ -316,7 +316,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         }
 
         htmlBodyContent.append("<p>");
-        htmlBodyContent.append("Other versions you can get:");
+        htmlBodyContent.append("All versions you can get:");
         htmlBodyContent.append("</p>");
         htmlBodyContent.append("<ul>");
 
