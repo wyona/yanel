@@ -1,8 +1,17 @@
 <?xml version="1.0"?>
 
-<introspection xmlns="http://www.wyona.org/neutron/1.0">
-<edit mime-type="application/xml" name="Homepage">
+<introspection xmlns="http://www.wyona.org/neutron/2.0">
+<resource name="English Homepage">
+<edit mime-type="application/xml">
   <checkout url="homepage.xml?yanel.resource.usecase=checkout" method="GET"/>
   <checkin  url="homepage.xml?yanel.resource.usecase=checkin"  method="PUT"/>
 </edit>
+</resource>
+
+<resource name="Spanish Homepage">
+<edit mime-type="application/xml">
+  <checkout url="homepage-es.xml?yanel.resource.usecase=checkout" method="GET"/>
+  <checkin  url="homepage-es.xml?yanel.resource.usecase=checkin"  method="PUT"/>
+</edit>
+</resource>
 </introspection>
