@@ -175,7 +175,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                     xsltHandlers[i].getTransformer().setParameter("content-language", getContentLanguage());
 
                     // Username
-                    xsltHandlers[i].getTransformer().setParameter("username", getUsername());
+                    String username = getUsername();
+                    if (username != null) xsltHandlers[i].getTransformer().setParameter("username", username);
                 }
                 
                 // create i18n transformer:
@@ -704,7 +705,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     private String getUsername() {
         IdentityMap im = (IdentityMap) getRequest().getSession(true).getAttribute(IDENTITY_MAP_KEY);
         if (im != null) {
-            return ((Identity)im.get(getRealm().getID())).getUsername();
+            Identity identity = (Identity)im.get(getRealm().getID());
+            if (identity != null) return identity.getUsername();
         }
         return null;
     }
