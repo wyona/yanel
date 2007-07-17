@@ -2,4 +2,5 @@
 
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="update-webapp" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+  <yanel:property name="xslt" value="/xslt/global.xsl"/>
 </yanel:resource-config>
