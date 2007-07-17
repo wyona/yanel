@@ -18,8 +18,17 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
-  <title>Welcome to Yanel</title>
-  <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-homepage.xml"/>
+  
+  <xsl:choose>
+  <xsl:when test="$language = 'es'">
+    <title>Bienvenido a Yanel</title>  
+  </xsl:when>
+  <xsl:otherwise>
+    <title>Welcome to Yanel</title>  
+  </xsl:otherwise>
+  </xsl:choose>
+    <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-homepage.xml"/>
+  
   <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
   <link rel="stylesheet" href="css/global.css" type="text/css"/>
   <base target="_top"/>
