@@ -56,7 +56,6 @@ import org.wyona.yarep.core.Revision;
 import org.wyona.yarep.util.RepoPath;
 
 import org.wyona.security.core.api.Identity;
-import org.wyona.security.core.api.IdentityMap;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -101,8 +100,6 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
 
     private static Category log = Category.getInstance(XMLResource.class);
 
-    private static String IDENTITY_MAP_KEY = "identity-map";
-    
     /**
      *
      */
@@ -703,11 +700,8 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      * Get username from session
      */
     private String getUsername() {
-        IdentityMap im = (IdentityMap) getRequest().getSession(true).getAttribute(IDENTITY_MAP_KEY);
-        if (im != null) {
-            Identity identity = (Identity)im.get(getRealm().getID());
-            if (identity != null) return identity.getUsername();
-        }
+        Identity identity = getEnvironment().getIdentity();
+        if (identity != null) return identity.getUsername();
         return null;
     }
 }
