@@ -98,8 +98,6 @@ public class UpdateInfo {
             updateVersionDetail.put("changeLog", versionResource.getProperty(changeLogProperty).getString());
             updateVersionDetail.put("updateLink", versionResource.getProperty(updateLinkProperty).getString());
             updateVersionDetail.put("targetApllicationId", versionResource.getProperty(idProperty).getString());
-            updateVersionDetail.put("targetApllicationMinVersion", versionResource.getProperty(targetApplicationminVersionProperty).getString());
-            updateVersionDetail.put("targetApllicationMaxVersion", versionResource.getProperty(targetApplicationmaxVersionProperty).getString());
             updateVersionDetail.put("targetApllicationMinRevision", versionResource.getProperty(targetApplicationminRevisionProperty).getString());
             updateVersionDetail.put("targetApllicationMaxRevision", versionResource.getProperty(targetApplicationmaxRevisionProperty).getString());
             this.updateVersions.add(updateVersionDetail);
