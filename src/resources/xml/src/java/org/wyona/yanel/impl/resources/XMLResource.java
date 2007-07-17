@@ -54,6 +54,10 @@ import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.core.Revision;
 import org.wyona.yarep.util.RepoPath;
+
+import org.wyona.security.core.api.Identity;
+import org.wyona.security.core.api.IdentityMap;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -96,6 +100,8 @@ import org.apache.xml.serializer.Serializer;
 public class XMLResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2, IntrospectableV1, TranslatableV1, WorkflowableV1 {
 
     private static Category log = Category.getInstance(XMLResource.class);
+
+    private static String IDENTITY_MAP_KEY = "identity-map";
     
     /**
      *
@@ -169,7 +175,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                     xsltHandlers[i].getTransformer().setParameter("content-language", getContentLanguage());
 
                     // Username
-                    xsltHandlers[i].getTransformer().setParameter("username", "HUGO");
+                    xsltHandlers[i].getTransformer().setParameter("username", getUsername());
                 }
                 
                 // create i18n transformer:
@@ -692,4 +698,14 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         return WorkflowHelper.getWorkflowIntrospection(this);
     }
 
+    /**
+     * Get username from session
+     */
+    private String getUsername() {
+        IdentityMap im = (IdentityMap) getRequest().getSession(true).getAttribute(IDENTITY_MAP_KEY);
+        if (im != null) {
+            return ((Identity)im.get(getRealm().getID())).getUsername();
+        }
+        return null;
+    }
 }
