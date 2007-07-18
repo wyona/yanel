@@ -71,13 +71,18 @@ public class PDFResource extends Resource implements ViewableV2 {
         try {
             Repository repo = getRealm().getRepository();            
             
-            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-            
             Driver driver = new Driver();
             driver.setRenderer(Driver.RENDER_PDF);
-	    //java.io.FileOutputStream fout = new java.io.FileOutputStream("/home/michi/Desktop/yanel.pdf");
-            //driver.setOutputStream(fout);
+        
+/* Only for debugging ...
+	    java.io.FileOutputStream fout = new java.io.FileOutputStream("/home/michi/Desktop/yanel.pdf");
+            driver.setOutputStream(fout);
+*/
+
             driver.setOutputStream(getResponse().getOutputStream());
+
+            // TODO: This doesn't seem to work properly (see below)
+            //java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
             //driver.setOutputStream(baos);
             
             Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(getPath(),repo));           
@@ -90,10 +95,9 @@ public class PDFResource extends Resource implements ViewableV2 {
             
             transformer.transform(src,res);
             
-            log.debug("Result Size"+ baos.size());
-            
-            defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
-                   
+            // TODO: For some strange reason the stream seems to be truncated after a certain length ...!
+            //log.debug("Result Size"+ baos.size());
+            //defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
         } catch(Exception e) {
             log.error(e, e);
         }        
