@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <group id="admin">
-  <name>Admins</name>
+  <name>My Admins</name>
   <members>
     <member id="alice"/>
   </members>
