@@ -6,7 +6,7 @@
   <rti>config/repository.xml</rti>
   <data>config/repository.xml</data>
   <ac-policies>config/ac-policies-repository.xml</ac-policies>
-  <ac-identities>/home/ulysses/src/realms/wyona-com-website/yanel/conf/ac-identities-repository.xml</ac-identities>
+  <ac-identities>config/ac-identities-repository.xml</ac-identities>
 
   <default-language>en</default-language>
 
