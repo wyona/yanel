@@ -122,8 +122,11 @@
     <mkdir dir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/logs"/>
 
     <copy file="${yanel.home.dir}/src/build/install.rdf" todir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
-    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/install.rdf" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}">
       <replacetoken>@VERSION@</replacetoken>
+    </replace>
+    <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.revision}">
+      <replacetoken>@REVISION@</replacetoken>
     </replace>
     <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/install.rdf" value="bin-snapshot">
       <replacetoken>@INSTALLTYPE@</replacetoken>
