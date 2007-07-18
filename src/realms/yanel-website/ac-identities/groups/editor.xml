@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
+
 <group id="editor">
-<name>My Editors</name>
-<members>
-<member id="alice"/>
-<member id="lenya"/>
-</members>
+  <name>My Editors</name>
+  <members>
+    <member id="alice"/>
+    <member id="lenya"/>
+  </members>
 </group>

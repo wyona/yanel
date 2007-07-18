@@ -31,7 +31,6 @@
   </role>
 
   <role id="review">
-    <user id="lenya" permission="true"/>
     <group id="reviewer" permission="true"/>
   </role>
 

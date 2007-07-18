@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
+
 <group id="admin">
-<name>Admins</name>
-<members>
-<member id="alice"/>
-<member id="lenya"/>
-</members>
+  <name>Admins</name>
+  <members>
+    <member id="alice"/>
+  </members>
 </group>

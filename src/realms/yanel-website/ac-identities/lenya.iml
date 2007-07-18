@@ -5,9 +5,4 @@
   <description>Dummy User</description>
   <email>lenya@foo.bar</email>
   <password type="md5">8e07dafd13495561db9063ebe4db4b27</password>
-
-  <groups>
-    <group>editor</group>
-    <group>admin</group>
-  </groups>
 </identity>
