@@ -66,6 +66,7 @@ public class PDFResource extends Resource implements ViewableV2 {
     public View getView(String viewId) {
         View defaultView = new View();
         defaultView.setMimeType(getMimeType(viewId));
+        defaultView.setResponse(false); // This resource writes directly into the response output stream
        
         try {
             Repository repo = getRealm().getRepository();            
@@ -74,7 +75,10 @@ public class PDFResource extends Resource implements ViewableV2 {
             
             Driver driver = new Driver();
             driver.setRenderer(Driver.RENDER_PDF);
-            driver.setOutputStream(baos);
+	    //java.io.FileOutputStream fout = new java.io.FileOutputStream("/home/michi/Desktop/yanel.pdf");
+            //driver.setOutputStream(fout);
+            driver.setOutputStream(getResponse().getOutputStream());
+            //driver.setOutputStream(baos);
             
             Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(getPath(),repo));           
             
@@ -115,27 +119,27 @@ public class PDFResource extends Resource implements ViewableV2 {
   /**
   *
   */
- private StreamSource getXSLTStreamSource(String path, Repository repo) throws RepositoryException {
+ private StreamSource getXSLTStreamSource(String path, Repository repo) throws Exception {
      String xsltPath = getXSLTPath(path);
      if(xsltPath != null) {
          return new StreamSource(repo.getInputStream(new Path(xsltPath)));
      } else {
          File xsltFile = org.wyona.commons.io.FileUtil.file(
-                 rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "xml2fo.xsl");
+         rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "xml2fo.xsl");
          log.debug("XSLT file: " + xsltFile);
          return new StreamSource(xsltFile);
      }
  }
 
- /**
-  * 
-  */
- private String getXSLTPath(String path) {
-     String xsltPath = getRTI().getProperty("xslt");
-     if (xsltPath != null) return xsltPath;
-     log.info("No XSLT Path within: " + path);
-     return null;
- }
+    /**
+     * 
+     */
+    private String getXSLTPath(String path) throws Exception {
+        String xsltPath = getResourceConfigProperty("xslt");
+        if (xsltPath != null) return xsltPath;
+        log.info("No XSLT Path within: " + path);
+        return null;
+    }
 
     /**
      *
