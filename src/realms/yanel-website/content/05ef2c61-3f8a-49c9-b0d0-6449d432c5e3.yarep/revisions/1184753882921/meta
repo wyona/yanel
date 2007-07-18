@@ -1,0 +1,10 @@
+yarep_revisionComment<string>:updated
+yarep_type<string>:resource
+yarep_isCheckedOut<boolean>:false
+yarep_revisionCreator<string>:michi
+workflow-date<date>:2007-07-18T12:18:02+0200
+yarep_checkoutDate<date>:2007-07-18T12:17:21+0200
+yarep_checkoutUserID<string>:michi
+workflow-state<string>:draft
+yarep_checkinDate<date>:2007-07-18T12:14:50+0200
+yarep_revisionCreationDate<date>:2007-07-18T12:18:02+0200
