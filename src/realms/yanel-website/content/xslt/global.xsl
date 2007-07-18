@@ -19,6 +19,7 @@
 <xsl:param name="yanel.back2context" select="'BACK2CONTEXT_IS_NULL'"/>
 <xsl:param name="yarep.back2realm" select="'BACK2REALM_IS_NULL'"/>
 <xsl:param name="language" select="'LANGUAGE_IS_NULL'"/>
+<xsl:param name="content-language" select="'CONTENT_LANGUAGE_IS_NULL'"/>
 
 <xsl:param name="yanel.meta.language" select="'en'"/>
 
@@ -111,7 +112,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 
 
 <xsl:template name="translations">
-  <xi:include href="yanelresource:/navigation/translations.xml?path={$yanel.path}&amp;language={$language}"/>
+  <xi:include href="yanelresource:/navigation/translations.xml?path={$yanel.path}&amp;language={$content-language}"/>
 </xsl:template>
 
 <xsl:template name="navigation">
