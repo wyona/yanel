@@ -53,7 +53,7 @@
 </tr>
             <tr><td valign="top">Standard and Custom Meta Data</td><td valign="top">in progress</td><td valign="top">2007.06.30</td><td valign="top">Josias/Michael</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5298">5298</a></td></tr>
 <tr><td valign="top">Navigation Editor</td><td valign="top">in planning</td><td valign="top">2007.06.30</td><td valign="top">Simon, Jonathan</td><td>-</td></tr>
-<tr><td style="vertical-align: top;">Archive URL resource</td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.06.30</td><td style="vertical-align: top;">Michael</td><td>-</td></tr>
+<tr><td style="vertical-align: top;"><a href="specification/archive-url-resource.html">Archive URL resource</a></td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.06.30</td><td style="vertical-align: top;">Michael</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5425">5425</a></td></tr>
 <tr><td valign="top">User Interface for Versioning</td><td valign="top">in progress</td><td valign="top">2007.06.30</td><td valign="top">Josias</td><td>-</td></tr><tr>
 <td style="vertical-align: top;"><a href="specification/pdf-fop-resource.html">FOP/PDF resource</a></td><td style="vertical-align: top;">mostly done</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Jonathan</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5278">5278</a></td>
 </tr>
@@ -115,7 +115,7 @@
               <td>not started<br/></td>
 <td>TBD<br/></td>
               <td>TBD<br/></td>
-            </tr><tr><td style="vertical-align: top;">Validation re RelaxNG and XML Schema</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;">Page moved functionality</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></tr><tr><td style="vertical-align: top;"><a href="http://www.elml.ch">eLML</a> resource</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td valign="top"><a href="specification/foaf/index.html" shape="rect">FOAF Provider Server</a></td><td valign="top">in planning</td><td valign="top">TBD</td><td valign="top">Michael</td></tr>
+            </tr><tr><td style="vertical-align: top;">Validation re RelaxNG and XML Schema</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;">Page moved functionality</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></tr><tr><td style="vertical-align: top;"><a href="http://www.elml.ch">eLML</a> resource</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td valign="top"><a shape="rect" href="specification/foaf/index.html">FOAF Provider Server</a></td><td valign="top">in planning</td><td valign="top">TBD</td><td valign="top">Michael</td></tr>
           </tbody></table><br/>
 </body>
 </html>
