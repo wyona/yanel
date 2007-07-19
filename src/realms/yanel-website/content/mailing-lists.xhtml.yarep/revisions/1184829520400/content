@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Mailing Lists</title>
+</head>
+<body>
+<h1>Mailing Lists</h1>
+<p>
+</p><h3>Usage</h3>
+<a href="http://lists.wyona.org/cgi-bin/mailman/listinfo/yanel-usage/" shape="rect">Subscribe/Unsubscribe</a><br/>
+<a href="http://lists.wyona.org/pipermail/yanel-usage/" shape="rect">Archives</a>
+
+<p>
+</p><h3>Development</h3>
+<a href="http://lists.wyona.org/cgi-bin/mailman/listinfo/yanel-development/" shape="rect">Subscribe/Unsubscribe</a><br/>
+<a href="http://lists.wyona.org/pipermail/yanel-development/" shape="rect">Archives</a>
+
+<p>
+</p><h3>Commit Messages</h3>
+<a href="http://lists.wyona.org/cgi-bin/mailman/listinfo/yanel-commits/" shape="rect">Subscribe/Unsubscribe</a><br/>
+<a href="http://lists.wyona.org/pipermail/yanel-commits/" shape="rect">Archives</a>
+
+<p>
+</p><h3>All Other Enquiries</h3>
+For all other enquiries please use our <a href="en/contact.html">contact page</a>.
+<p>
+</p><h3>Search Archives</h3>
+<form action="mailing-lists/search.html">
+<input type="text" size="14" class="searchbox" name="query"/>
+<input type="submit" value="Search" name="submit"/>
+<!--
+<input type="submit" name="query" value="i18n:attr key=search"/>
+-->
+</form>
+
+</body>
+</html>
