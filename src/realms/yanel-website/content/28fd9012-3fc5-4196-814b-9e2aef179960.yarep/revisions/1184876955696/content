@@ -1,0 +1,20 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Deployment of Yanel behind a reverse proxy</title></head><body>
+<h1>Deployment of Yanel behind a reverse proxy</h1>
+<ul>
+  <li>Requirements for Ubuntu
+    <ul>
+     <li>apt-get install gcc</li><li>apt-get install libc6-dev</li><li>apt-get install make</li>
+    </ul>
+  </li>
+  <li>Download Apache <a href="http://httpd.apache.org/download.cgi">httpd 2.2.x</a> (e.g. httpd-2.2.3)</li>
+  <li>Install as proxy: ./configure --prefix=/usr/local/httpd-2.2.3 --enable-proxy --enable-proxy-http</li>
+  <li>make</li>
+  <li>make install</li>
+  <li>Configure virtual hosts within /usr/local/httpd-2.2.3/conf/extra/httpd-vhosts.conf</li><ul><li>A sample can be found at <a href="https://svn.wyona.org/repos/public/yanel/trunk/src/httpd-2.2.3/conf/extra/httpd-vhosts.conf">yanel/trunk/src/httpd-2.2.3/conf/extra/httpd-vhosts.conf</a>
+</li></ul>
+  <li>Add proxy settings to realm configuration (realms.xml), e.g.:</li><ul><li>  &lt;realm id=&quot;...<br/>&lt;reverse-proxy&gt;<br/>  &lt;host-name&gt;www.yulup.org&lt;/host-name&gt;<br/>  &lt;port&gt;80&lt;/port&gt;<br/>  &lt;ssl-port&gt;443&lt;/ssl-port&gt;<br/>  &lt;prefix&gt;/yanel/yulup-website&lt;/prefix&gt;<br/>  &lt;/reverse-proxy&gt;<br/>&lt;/realm&gt;</li></ul>
+  <li>Activate vhosts config within /usr/local/httpd-2.2.3/conf/httpd.conf:</li><ul><li>Include conf/extra/httpd-vhosts.conf</li></ul>
+<li>UNIX: Add apachectl to various runlevels:</li><ul><li>Copy bin/apachtctl to /etc/init.d/apachectl</li><li>Create symbolic link at /etc/rc0.d/K91apachectl</li><li>Create symbolic link at /etc/rc1.d/K91apachectl</li><li>Create symbolic link at /etc/rc2.d/S91apachectl</li><li>Create symbolic link at /etc/rc3.d/S91apachectl</li><li>Create symbolic link at /etc/rc4.d/S91apachectl</li><li>Create symbolic link at /etc/rc5.d/S91apachectl</li><li>Create symbolic link at /etc/rc6.d/K91apachectl</li></ul>
+</ul>
+</body>
+</html>
