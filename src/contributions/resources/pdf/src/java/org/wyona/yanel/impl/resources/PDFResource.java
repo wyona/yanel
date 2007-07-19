@@ -25,8 +25,14 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
 
+//import org.apache.avalon.framework.logger.Logger; 
+//import org.apache.avalon.framework.logger.ConsoleLogger;
+
 import org.apache.log4j.Category;
+
 import org.apache.fop.apps.Driver;
+//import org.apache.fop.configuration.Configuration;
+//import org.apache.fop.messaging.MessageHandler;
 
 import java.io.File;
 
@@ -71,13 +77,28 @@ public class PDFResource extends Resource implements ViewableV2 {
         try {
             Repository repo = getRealm().getRepository();            
             
+/*
+            Configuration.put("version", "FOP 0.20.5");
+            Configuration.put("stream-filter-list", "flate");
+            Configuration.put("stream-filter-list", "ascii-85");
+            java.util.List streamFilterList = new java.util.ArrayList();
+            streamFilterList.add("flate");
+            streamFilterList.add("ascii-85");
+            Configuration.put("stream-filter-list", streamFilterList, Configuration.PDF);
+*/
+            
             Driver driver = new Driver();
+/*
+            Logger logger = new ConsoleLogger(ConsoleLogger.LEVEL_INFO);
+            MessageHandler.setScreenLogger(logger);
+            driver.setLogger(logger);
+*/
             driver.setRenderer(Driver.RENDER_PDF);
         
-/* Only for debugging ...
-	    java.io.FileOutputStream fout = new java.io.FileOutputStream("/home/michi/Desktop/yanel.pdf");
+            /* Only for debugging ...
+            java.io.FileOutputStream fout = new java.io.FileOutputStream("/home/michi/Desktop/yanel.pdf");
             driver.setOutputStream(fout);
-*/
+            */
 
             driver.setOutputStream(getResponse().getOutputStream());
 
