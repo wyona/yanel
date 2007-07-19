@@ -16,7 +16,7 @@
       <groupId>wyona-org-commons</groupId>
       <artifactId>wyona-org-commons</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>1.0-dev-r25879</version>
+      <version>1.0-dev-r26137</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
