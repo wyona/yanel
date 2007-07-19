@@ -96,28 +96,10 @@ import org.apache.xml.serializer.Serializer;
 /**
  *
  */
-public class XMLResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2, IntrospectableV1, TranslatableV1, WorkflowableV1 {
+public class XMLResource extends BasicXMLResource implements ModifiableV2, VersionableV2, CreatableV2, IntrospectableV1, TranslatableV1, WorkflowableV1 {
 
     private static Category log = Category.getInstance(XMLResource.class);
 
-    /**
-     *
-     */
-    public XMLResource() {
-    }
-
-    /**
-     *
-     */
-    public ViewDescriptor[] getViewDescriptors() {
-        ViewDescriptor[] vd = new ViewDescriptor[2];
-        vd[0] = new ViewDescriptor("default");
-        // NOTE: depends on XSLT ...
-        vd[0].setMimeType(null);
-        vd[1] = new ViewDescriptor("source");
-        vd[1].setMimeType("application/xml");
-        return vd;
-    }
 
     public View getView(String viewId) throws Exception {
         return getView(viewId, null);
@@ -127,95 +109,12 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
      * Generates view
      */
     public View getView(String viewId, String revisionName) throws Exception {
-        View defaultView = new View();
-        String mimeType = getMimeType(viewId);
-        defaultView.setMimeType(mimeType);
-
+        Repository repo = getRealm().getRepository();
         String yanelPath = getResourceConfigProperty("yanel-path");
-        //if (yanelPath == null) yanelPath = path.toString();
-
-        try {
-            Repository repo = getRealm().getRepository();
-
-            if (viewId != null && viewId.equals("source")) {
-                defaultView.setInputStream(getContentXML(repo, yanelPath, revisionName));
-                defaultView.setMimeType("application/xml");
-                return defaultView;
-            }
-
-            String[] xsltPath = getXSLTPath(getPath());
-            if (xsltPath != null) {
-                
-                // create reader:
-                XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-                CatalogResolver catalogResolver = new CatalogResolver();
-                xmlReader.setEntityResolver(catalogResolver);
-                
-                // create xslt transformer:
-                SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
-                
-                TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPath.length];
-                for (int i = 0; i < xsltPath.length; i++) {
-                    xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath[i]).getInputStream()));
-                    xsltHandlers[i].getTransformer().setParameter("yanel.path.name", PathUtil.getName(getPath()));
-                    xsltHandlers[i].getTransformer().setParameter("yanel.path", getPath());
-                    xsltHandlers[i].getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
-                    xsltHandlers[i].getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
-                    String userAgent = getRequest().getHeader("User-Agent");
-                    String os = getOS(userAgent);
-                    if (os != null) xsltHandlers[i].getTransformer().setParameter("os", os);
-                    String client = getClient(userAgent);
-                    if (client != null) xsltHandlers[i].getTransformer().setParameter("client", client);
-                    // localization
-                    xsltHandlers[i].getTransformer().setParameter("language", getRequestedLanguage());
-                    // language of this translation
-                    xsltHandlers[i].getTransformer().setParameter("content-language", getContentLanguage());
-
-                    // Username
-                    String username = getUsername();
-                    if (username != null) xsltHandlers[i].getTransformer().setParameter("username", username);
-                }
-                
-                // create i18n transformer:
-                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getRequestedLanguage(), getRealm().getDefaultLanguage());
-                i18nTransformer.setEntityResolver(catalogResolver);
-                
-                // create xinclude transformer:
-                XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
-                ResourceResolver resolver = new ResourceResolver(this);
-                xIncludeTransformer.setResolver(resolver);
-                
-                // create serializer:
-                Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                
-                // chain everything together (create a pipeline):
-                xmlReader.setContentHandler(xsltHandlers[0]);
-                for (int i=0; i<xsltHandlers.length-1; i++) {
-                    xsltHandlers[i].setResult(new SAXResult(xsltHandlers[i+1]));
-                }
-                xsltHandlers[xsltHandlers.length-1].setResult(new SAXResult(xIncludeTransformer));
-                xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
-                i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
-                serializer.setOutputStream(baos);
-                
-                // execute pipeline:
-                xmlReader.parse(new InputSource(getContentXML(repo, yanelPath, revisionName)));
-                
-                // write result into view:
-                defaultView.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
-                return defaultView;
-            } else {
-                log.debug("Mime-Type: " + mimeType);
-                defaultView.setInputStream(getContentXML(repo, yanelPath, revisionName));
-            }
-        } catch(Exception e) {
-            log.error(e + " (" + getPath() + ", " + getRealm() + ")", e);
-            throw new Exception(e);
-        }
-
-        return defaultView;
+        InputStream xmlInputStream = getContentXML(repo, yanelPath, revisionName);
+        return getXMLView(viewId, xmlInputStream);
     }
+    
 
     /**
      * Get initial content as XML
@@ -236,7 +135,7 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
                 } else {
                     log.error("No XML like mime-type: " + getPath() + " (yanel-path: " + yanelPath + ")");
                 }
-	    } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
+            } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
                 // TODO: Pass the request ...
                 View view = ((ViewableV2) res).getView(null);
                 if (view.getMimeType().indexOf("xml") >= 0) {
@@ -338,17 +237,6 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
     }
 
     /**
-     * Get XSLT path
-     */
-    private String[] getXSLTPath(String path) throws Exception {
-        String[] xsltPath = getResourceConfigProperties("xslt");
-        if (xsltPath != null) return xsltPath;
-        log.info("No XSLT Path within: " + path);
-        return null;
-    }
-
-
-    /**
      *
      */
     public boolean delete() throws Exception {
@@ -433,11 +321,6 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         return node.isCheckedOut();
     }
 
-
-    public boolean exists() throws Exception {
-        return getRealm().getRepository().existsNode(getPath());
-    }
-
     /**
      * Get size of generated page
      */
@@ -456,36 +339,6 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         return -1;
     }
 
-    /**
-     * Get operating system
-     */
-    public String getOS(String userAgent) {
-        if (userAgent.indexOf("Linux") > 0) {
-            return "unix";
-        } else if (userAgent.indexOf("Mac OS X") > 0) {
-            return "unix";
-        } else if (userAgent.indexOf("Windows") > 0) {
-            return "windows";
-        } else {
-            log.warn("Operating System could not be recognized: " + userAgent);
-            return null;
-        }
-    }
-
-    /**
-     * Get client
-     */
-    public String getClient(String userAgent) {
-        if (userAgent.indexOf("Firefox") > 0) {
-            return "firefox";
-        } else if (userAgent.indexOf("MSIE") > 0) {
-            return "msie";
-        } else {
-            log.warn("Client could not be recognized: " + userAgent);
-            return null;
-        }
-    }
-    
 
     /**
      *
@@ -696,12 +549,4 @@ public class XMLResource extends Resource implements ViewableV2, ModifiableV2, V
         return WorkflowHelper.getWorkflowIntrospection(this);
     }
 
-    /**
-     * Get username from session
-     */
-    private String getUsername() {
-        Identity identity = getEnvironment().getIdentity();
-        if (identity != null) return identity.getUsername();
-        return null;
-    }
 }
