@@ -568,7 +568,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
                 getYanel().getRealmConfiguration().copyRealm(getTemplateRealmId(), realmidip.getValue(), realmnameip.getValue(), "/" + realmidip.getValue() + "/", new File(fsLocationValue));
                 fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "realm-created"));
 
-                importSite(urlip.getValue(), scopeip.getValue(), new Integer(cmpip.getValue()).intValue(), new Integer(cdip.getValue()).intValue(), new Integer(cmsip.getValue()).intValue(), realmidip.getValue());
+                importSite(urlip.getValue(), scopeip.getValue(), new Integer(cmpip.getValue()).intValue(), new Integer(cdip.getValue()).intValue(), new Integer(cmsip.getValue()).intValue(), realmidip.getValue(), fsLocationValue);
                 fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "crawler-running"));
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
@@ -643,7 +643,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
      * @param realmID
      * @throws Exception
      */
-    protected void importSite(String crawlStartURL, String crawlScopeURL, int maxPages, int maxDepth, int maxPageSize, String realmID) throws Exception {
+    protected void importSite(String crawlStartURL, String crawlScopeURL, int maxPages, int maxDepth, int maxPageSize, String realmID, String baseDir) throws Exception {
         String[] crawlScopeURLs = null;
         if (crawlScopeURL == null || crawlScopeURL.length() == 0) {
             String path = new URL(crawlStartURL).getPath();
@@ -657,7 +657,9 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
             crawlScopeURLs = crawlScopeURL.split(",");
         }
         
-        String dumpDir = System.getProperty("java.io.tmpdir") + File.separator + "import_" + System.currentTimeMillis();
+        //String dumpDir = System.getProperty("java.io.tmpdir") + File.separator + "import_" + System.currentTimeMillis();
+        String dumpDir = baseDir + File.separator + realmID + File.separator + "import_" + System.currentTimeMillis();
+        if (log.isDebugEnabled()) log.debug("Dump dir: " + dumpDir);
         DumpingCrawler crawler = new DumpingCrawler(crawlStartURL, crawlScopeURLs, dumpDir);
         crawler.setMaxPages(maxPages);
         crawler.setMaxDepth(maxDepth);
