@@ -104,7 +104,7 @@ public class YanelServlet extends HttpServlet {
     Sitetree sitetree;
 
     File xsltInfoAndException;
-    File xsltLoginScreen;
+    String xsltLoginScreenDefault;
 
     public static String IDENTITY_MAP_KEY = "identity-map";
     private static String TOOLBAR_KEY = "toolbar";
@@ -137,7 +137,7 @@ public class YanelServlet extends HttpServlet {
         servletContextRealPath = config.getServletContext().getRealPath("/");
 
         xsltInfoAndException = org.wyona.commons.io.FileUtil.file(servletContextRealPath, config.getInitParameter("exception-and-info-screen-xslt"));
-        xsltLoginScreen = org.wyona.commons.io.FileUtil.file(servletContextRealPath, config.getInitParameter("login-screen-xslt"));
+        xsltLoginScreenDefault = config.getInitParameter("login-screen-xslt");
         try {
             yanel = Yanel.getInstance();
             yanel.init();
@@ -1753,7 +1753,13 @@ public class YanelServlet extends HttpServlet {
             } else {
                 String mimeType = patchMimeType("application/xhtml+xml", request);
                 response.setContentType(mimeType + "; charset=" + DEFAULT_ENCODING);
-                response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);            
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+
+                File realmDir = realm.getRootDir();
+                if (realmDir == null) realmDir = new File(realm.getConfigFile().getParent());
+                File xsltLoginScreen = org.wyona.commons.io.FileUtil.file(realmDir.getAbsolutePath(), "src" + File.separator + "webapp" + File.separator + xsltLoginScreenDefault);
+                if (!xsltLoginScreen.isFile()) xsltLoginScreen = org.wyona.commons.io.FileUtil.file(servletContextRealPath, xsltLoginScreenDefault);
+
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltLoginScreen));
                 transformer.setParameter("yanel.back2realm", backToRealm);
                 transformer.setParameter("yanel.reservedPrefix", reservedPrefix);
