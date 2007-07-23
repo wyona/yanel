@@ -68,7 +68,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(java.lang.String)
      */
     public View getView(String viewId) throws Exception {
-        InputStream xmlInputStream = getContentXML();
+        InputStream xmlInputStream = getContentXML(viewId);
         return getXMLView(viewId, xmlInputStream);
     }
     
@@ -176,7 +176,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
         transformer.setParameter("yanel.path", getPath());
         transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
-        transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
+        String backToRealm = PathUtil.backToRealm(getPath());
+        transformer.setParameter("yanel.back2realm", backToRealm);
+        transformer.setParameter("yarep.back2realm", backToRealm); // for backwards compatibility
         String userAgent = getEnvironment().getRequest().getHeader("User-Agent");
         transformer.setParameter("language", getRequestedLanguage());
         String os = getOS(userAgent);
@@ -197,7 +199,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * @return xml stream
      * @throws Exception
      */
-    protected InputStream getContentXML() throws Exception {
+    protected InputStream getContentXML(String viewId) throws Exception {
         return getRealm().getRepository().getNode(getPath()).getInputStream();
     }
 
