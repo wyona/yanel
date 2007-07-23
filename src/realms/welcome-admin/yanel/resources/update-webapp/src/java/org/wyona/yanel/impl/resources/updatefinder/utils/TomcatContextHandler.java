@@ -97,7 +97,7 @@ public class TomcatContextHandler {
         }
         line = line.replaceAll("[ ]+", " ");
         line = line.replaceAll("\"/>", "");
-        webapp = line.split(File.separator)[line.split(File.separator).length -1 ];
+        webapp = line.split("/")[line.split("/").length -1 ];
         
         if (!new File( webappsDirectoryPath +  webapp ).exists()) {
             return null;
