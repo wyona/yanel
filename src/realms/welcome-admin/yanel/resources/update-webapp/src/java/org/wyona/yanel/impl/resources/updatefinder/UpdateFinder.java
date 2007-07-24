@@ -282,7 +282,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         }
 
         if (!installInfo.getInstalltype().equals("bin-snapshot")) {
-            return new StringBuffer("<p>This Yanel was not installed from binary. You can only use the updater if you installed yanel from binary. Please use Subversion or get another source snapshot.</p><p>NOTE: In order to enhance the Yanel Updater resource developers might want to modify " + installInfo.getInstallRdfFilename() + " by replacing the installtype \"source\" with \"bin-snapshot\" and also customize the version and revision!</p>");
+            return new StringBuffer("<p>This Yanel was not installed from binary. You can only use the updater if you installed yanel from binary. Please use Subversion or get another source snapshot.</p><p>NOTE: In order to enhance the Yanel Updater resource developers might want to modify <a href=\"file://" + installInfo.getInstallRdfFilename() + "\">" + installInfo.getInstallRdfFilename() + "</a> by replacing the installtype \"source\" with \"bin-snapshot\" and also customize the version and revision!</p>");
         }
 
         String idVersionRevisionCurrent = installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision();
@@ -511,10 +511,13 @@ public class UpdateFinder extends Resource implements ViewableV2 {
     private ArrayList getSuitableYanelUpdates(InstallInfo installInfo, UpdateInfo updateInfo) throws Exception {
         TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
         
-        ArrayList updates = updateInfo.getYanelUpatesForYanelRevision(installInfo.getRevision());
+        ArrayList updates = updateInfo.getYanelUpdatesForYanelRevision(installInfo.getRevision());
         if (updates == null) return null;
+
         for (int i = 0; i < updates.size(); i++) {
             HashMap versionDetail = (HashMap) updates.get(i);
+            log.error("DEBUG: Update: " + versionDetail.get("id") + "-v-" + versionDetail.get("version") + "-r-" + versionDetail.get("revision"));
+
             for (int j = 0; j < tomcatContextHandler.getWebappNames().length; j++) {
                 if (tomcatContextHandler.getWebappNames()[j].equals(versionDetail.get("id") + "-v-" + versionDetail.get("version") + "-r-" + versionDetail.get("revision"))) {
                     updates.remove(i);
