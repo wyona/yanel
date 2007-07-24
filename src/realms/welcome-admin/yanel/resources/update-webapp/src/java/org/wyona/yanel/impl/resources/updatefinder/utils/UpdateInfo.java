@@ -225,7 +225,7 @@ public class UpdateInfo {
      * @return ArrayList with all yanelUpdates which are installable within the given YanelRevision. return null if non.
      * @param String YanelRevision
      */
-    public ArrayList getYanelUpatesForYanelRevision(String yanelRevision) {
+    public ArrayList getYanelUpdatesForYanelRevision(String yanelRevision) {
         // Get all updaters which work for a  specific yanel revision
         ArrayList updaters = getUpdatersForYanelRevision(yanelRevision);
         if (updaters == null) return null;
