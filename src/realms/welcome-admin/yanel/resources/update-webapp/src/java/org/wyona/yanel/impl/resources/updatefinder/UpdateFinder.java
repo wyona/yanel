@@ -321,7 +321,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             } else {
                 htmlBodyContent.append("<p>");
                 htmlBodyContent.append("Newest yanel is: " + newestYanelName);
-                htmlBodyContent.append("<form method=\"post\"><input type=\"submit\" name=\"button\" value=\"update\"></input><input type=\"hidden\" name=\"update\" value=\"update\"></input><input type=\"hidden\" name=\"updatelink\" value=\"" + newestYanel.get("updateLink") + "\"/></form>");
+                htmlBodyContent.append("<form method=\"GET\"><input type=\"submit\" name=\"button\" value=\"update\"></input><input type=\"hidden\" name=\"update\" value=\"update\"></input><input type=\"hidden\" name=\"updatelink\" value=\"" + newestYanel.get("updateLink") + "\"/></form>");
                 htmlBodyContent.append("</p>");
             }
 
@@ -348,7 +348,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                         + "<li> ChangeLog: "
                         + versionDetails.get("changeLog")
                         + "</li>"
-                        + "<li> <form method=\"post\"><input type=\"submit\" name=\"button\" value=\"update\"></input><input type=\"hidden\" name=\"update\" value=\"update\"/><input type=\"hidden\" name=\"updatelink\" value=\""
+                        + "<li> <form method=\"GET\"><input type=\"submit\" name=\"button\" value=\"update\"></input><input type=\"hidden\" name=\"update\" value=\"update\"/><input type=\"hidden\" name=\"updatelink\" value=\""
                         + versionDetails.get("updateLink") + "\"/></form></li>" + "</ul></li>");
         }
         htmlBodyContent.append("</ul>");
