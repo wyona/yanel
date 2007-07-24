@@ -1,0 +1,2 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Created from template ...</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <p><h1>Neutron Test Client Resource</h1></p><ul><li><a href="http://www.tbray.org/ape/">APP client by Tim Bray</a><br/></li><li><a href="http://bitworking.org/projects/apptestclient/">APP client by Joe Gregorio</a><br/></li></ul></body>
+</html>
