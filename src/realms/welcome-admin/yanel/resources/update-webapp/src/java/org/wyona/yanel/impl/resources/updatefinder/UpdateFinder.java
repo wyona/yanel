@@ -76,8 +76,6 @@ public class UpdateFinder extends Resource implements ViewableV2 {
     private static Category log = Category.getInstance(UpdateFinder.class);
     private String defaultLanguage;
     private String language = null;
-    private StringBuffer htmlHeadContent = new StringBuffer();
-    private StringBuffer htmlBodyContent = new StringBuffer();
 
     /**
      * 
@@ -208,25 +206,9 @@ public class UpdateFinder extends Resource implements ViewableV2 {
     }
 
     /**
-     * 
+     * Generate screen
      */
     private String getScreen() {
-        Enumeration parameters = request.getParameterNames();
-        if (!parameters.hasMoreElements()) {
-            plainRequest();
-        } else {
-            if (request.getParameter("save-as") != null) {
-                plainRequest();
-            } else if (request.getParameter("update") != null && request.getParameter("update").equals("update")) {
-                getUpdateConfirmScreen();
-            } else if (request.getParameter("updateconfirmed") != null && request.getParameter("updateconfirmed").equals("updateconfirmed")) {    
-                getUpdateScreen();
-            } else {
-                log.info("Fallback ...");
-                plainRequest();
-            }
-        }
-
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
         sb.append("<head><title>Yanel Updater</title>");
@@ -242,17 +224,49 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 + "yanel-js/sorttable.js\" type=\"text/javascript\"></script>");
         sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPath(this)
                 + "js/ajaxlookup.js\" type=\"text/javascript\"></script>");
-        sb.append(htmlHeadContent);
+
+        if (request.getParameter("updateconfirmed") != null && request.getParameter("updateconfirmed").equals("updateconfirmed")) {    
+            try {
+                Map bestUpdater = getBestUpdater();
+                String htmlHeadContent = "<meta http-equiv=\"refresh\" content=\"10; URL=" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/" + "?updatelink=" + request.getParameter("updatelink") + "&amp;requestingwebapp=" + request.getParameter("requestingwebapp") + "\"/>";
+                sb.append(htmlHeadContent);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+
         sb.append("</head>");
         sb.append("<body>");
         sb.append("<h1>Yanel Updater</h1>");
-        sb.append(htmlBodyContent);
+
+        StringBuffer body = new StringBuffer();
+        Enumeration parameters = request.getParameterNames();
+        if (!parameters.hasMoreElements()) {
+            body = plainRequest();
+        } else {
+            if (request.getParameter("save-as") != null) {
+                body = plainRequest();
+            } else if (request.getParameter("update") != null && request.getParameter("update").equals("update")) {
+                body = getUpdateConfirmScreen();
+            } else if (request.getParameter("updateconfirmed") != null && request.getParameter("updateconfirmed").equals("updateconfirmed")) {    
+                body = getUpdateScreen();
+            } else {
+                log.info("Fallback ...");
+                body = plainRequest();
+            }
+        }
+        sb.append(body);
+
         sb.append("</body>");
         sb.append("</html>");
         return sb.toString();
     }
 
-    private void plainRequest() {
+    /**
+     *
+     */
+    private StringBuffer plainRequest() {
+        StringBuffer htmlBodyContent = new StringBuffer();
 
         UpdateInfo updateInfo = null;
         InstallInfo installInfo = null;
@@ -262,21 +276,21 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             htmlBodyContent.append("<p>Could not get install information. " + e.getMessage() + "</p>");
-            return;
+            return htmlBodyContent;
         }
         try {
             updateInfo = getUpdateInfo();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             htmlBodyContent.append("<p>Could not get update information. " + e.getMessage() + "</p>");
-            return;
+            return htmlBodyContent;
         }
 
         if (!installInfo.getInstalltype().equals("bin-snapshot")) {
             htmlBodyContent.append("<p>");
             htmlBodyContent.append("This Yanel was not installed from binary. You can only use the updater if you installed yanel from binary. Please use svn up, build.sh");
             htmlBodyContent.append("</p>");
-            return;
+            return htmlBodyContent;
         }
 
         String idVersionRevisionCurent = installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision();
@@ -376,11 +390,16 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             htmlBodyContent.append("<p>Could not get installed versions. " + e.getMessage() + "</p>");
-            return;
+            //return;
         }
+        return htmlBodyContent;
     }
 
-    private void getUpdateConfirmScreen() {
+    /**
+     *
+     */
+    private StringBuffer getUpdateConfirmScreen() {
+        StringBuffer htmlBodyContent = new StringBuffer();
         try {
             UpdateInfo updateInfo = getUpdateInfo();
             InstallInfo installInfo = getInstallInfo();
@@ -426,9 +445,14 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             log.error(e.getMessage(), e);
             htmlBodyContent.append("<p>An error occoured. Exception: " + e.getMessage() + "</p>");
         }
+        return htmlBodyContent;
     }
     
-    private void getUpdateScreen() {
+    /**
+     *
+     */
+    private StringBuffer getUpdateScreen() {
+        StringBuffer htmlBodyContent = new StringBuffer();
         try {
             String destDir = request.getSession().getServletContext().getRealPath(".") + File.separator + "..";
             Map bestUpdater = getBestUpdater();
@@ -446,11 +470,11 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             htmlBodyContent.append("You will be redirected to the updater which will automaticaly download and install the requested yanel.");
             htmlBodyContent.append("</p>");
             
-            htmlHeadContent.append("<meta http-equiv=\"refresh\" content=\"10; URL=" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/" + "?updatelink=" + request.getParameter("updatelink") + "&amp;requestingwebapp=" + request.getParameter("requestingwebapp") + "\"/>");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             htmlBodyContent.append("<p>Update failed. Exception: " + e.getMessage() + "</p>");
         }
+        return htmlBodyContent;
     }
 
     private InstallInfo getInstallInfo() throws Exception {
