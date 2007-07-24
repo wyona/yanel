@@ -5,15 +5,18 @@
 package org.wyona.yanel.impl.resources.updatefinder.utils;
 
 import org.apache.log4j.Category;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.*;
 import com.hp.hpl.jena.rdf.model.impl.PropertyImpl;
-import javax.servlet.http.HttpServletRequest;
+
 /**
  * 
  */
@@ -34,7 +37,12 @@ public class InstallInfo {
     private ArrayList protectedFiles = new ArrayList();
     
     private String updateManagerNS = "http://www.wyona.org/update-manager/1.0#"; 
+
+    private File installRdfFile;
     
+    /**
+     *
+     */
     public InstallInfo(HttpServletRequest request)  throws java.io.FileNotFoundException{
         String WEBINFPath = request.getSession().getServletContext().getRealPath("WEB-INF");
         webappName = new File(request.getSession().getServletContext().getRealPath(".")).getParentFile().getName();
@@ -44,7 +52,8 @@ public class InstallInfo {
         } else {
             contextPrefix = contextPrefix.toLowerCase();
         }
-        InputStream installRdfIn = new FileInputStream(new File(WEBINFPath + File.separator + "classes" + File.separator + "install.rdf"));
+        installRdfFile = new File(WEBINFPath + File.separator + "classes" + File.separator + "install.rdf");
+        InputStream installRdfIn = new FileInputStream(installRdfFile);
         Model model = ModelFactory.createDefaultModel();
         //read the RDF/XML file
         model.read(installRdfIn, "");
@@ -67,7 +76,8 @@ public class InstallInfo {
         } else {
             contextPrefix = contextPrefix.toLowerCase();
         }
-        InputStream installRdfIn = new FileInputStream(new File(webappsDirectoryPath + webapp + File.separator + "WEB-INF" + File.separator + "classes" + File.separator + "install.rdf"));
+        installRdfFile = new File(webappsDirectoryPath + webapp + File.separator + "WEB-INF" + File.separator + "classes" + File.separator + "install.rdf");
+        InputStream installRdfIn = new FileInputStream(installRdfFile);
         Model model = ModelFactory.createDefaultModel();
         //read the RDF/XML file
         model.read(installRdfIn, "");
@@ -177,5 +187,11 @@ public class InstallInfo {
     public ArrayList getProtectedFiles() {
         return protectedFiles;
     }
-    
+
+    /**
+     * Get filename of install RDF
+     */
+    public String getInstallRdfFilename() {
+        return installRdfFile.getAbsolutePath();
+    }
 }
