@@ -244,7 +244,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         } else {
             if (request.getParameter("save-as") != null) {
                 body = plainRequest();
-            } else if (request.getParameter("update") != null && request.getParameter("update").equals("update")) {
+            } else if (request.getParameter("usecase") != null && request.getParameter("usecase").equals("update")) {
                 body = getUpdateConfirmScreen();
             } else if (request.getParameter("updateconfirmed") != null && request.getParameter("updateconfirmed").equals("updateconfirmed")) {    
                 body = getUpdateScreen();
@@ -321,7 +321,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             } else {
                 htmlBodyContent.append("<p>");
                 htmlBodyContent.append("Newest yanel is: " + newestYanelName);
-                htmlBodyContent.append("<form method=\"GET\"><input type=\"submit\" name=\"button\" value=\"update\"></input><input type=\"hidden\" name=\"update\" value=\"update\"></input><input type=\"hidden\" name=\"updatelink\" value=\"" + newestYanel.get("updateLink") + "\"/></form>");
+                htmlBodyContent.append("<form method=\"GET\"><input type=\"submit\" name=\"button\" value=\"update\"></input><input type=\"hidden\" name=\"usecase\" value=\"update\"></input><input type=\"hidden\" name=\"updatelink\" value=\"" + newestYanel.get("updateLink") + "\"/></form>");
                 htmlBodyContent.append("</p>");
             }
 
@@ -348,7 +348,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                         + "<li> ChangeLog: "
                         + versionDetails.get("changeLog")
                         + "</li>"
-                        + "<li> <form method=\"GET\"><input type=\"submit\" name=\"button\" value=\"update\"></input><input type=\"hidden\" name=\"update\" value=\"update\"/><input type=\"hidden\" name=\"updatelink\" value=\""
+                        + "<li> <form method=\"GET\"><input type=\"submit\" name=\"button\" value=\"update\"></input><input type=\"hidden\" name=\"usecase\" value=\"update\"/><input type=\"hidden\" name=\"updatelink\" value=\""
                         + versionDetails.get("updateLink") + "\"/></form></li>" + "</ul></li>");
         }
         htmlBodyContent.append("</ul>");
@@ -478,6 +478,9 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         return new UpdateInfo(getInstallInfo().getUpdateURL(), getInstallInfo());
     }
     
+    /**
+     * Get Updater
+     */
     private HashMap getBestUpdater() throws Exception {
         InstallInfo installInfo = getInstallInfo();
         UpdateInfo updateInfo = getUpdateInfo();
@@ -490,6 +493,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         ArrayList bestUpdater = updateInfo.getUpdateVersionsOf("type", "updater", installInfo.getRevision());
         for (int i = 0; i < bestUpdater.size(); i++) {
             HashMap versionDetail = (HashMap) bestUpdater.get(i);
+            log.error("DEBUG: Updater details: " + versionDetail);
             if (versionComparator.compare((String) versionDetail.get("targetApllicationMinRevision"), updateRevision) > 0 ) {
                 bestUpdater.remove(i);
             }
@@ -499,7 +503,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         }
         Collections.sort(bestUpdater, new UpdateInfoVersionComparator());
         if (bestUpdater.size() < 1) {
-            throw new Exception("No updater found for updating your current version(" + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision() + ") to your requested version (" + updateId + "-v-" + updateVersion + "-r-" + updateRevision + ")");
+            throw new Exception("No updater found for updating your current version (" + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision() + ") to your requested version (" + updateId + "-v-" + updateVersion + "-r-" + updateRevision + ")");
         }
         return (HashMap) bestUpdater.get(bestUpdater.size() - 1);
     }
