@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2007 Wyona
  */
 
 package org.wyona.yanel.impl.resources.updatefinder;
@@ -7,13 +7,13 @@ package org.wyona.yanel.impl.resources.updatefinder;
 import org.apache.log4j.Category;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
+
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
-import javax.servlet.http.HttpServletRequest;
 
 import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.ResourceResolver;
@@ -23,15 +23,14 @@ import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.impl.resources.updatefinder.utils.*;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
+
+import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -39,19 +38,26 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.Collections;
 
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.File;
 
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.net.URL;
-import java.io.InputStream;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -59,8 +65,6 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
-
-
 
 import com.hp.hpl.jena.rdf.model.*;
 
@@ -99,8 +103,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
      * 
      */
     public String getMimeType(String viewId) {
-        if (viewId != null && viewId.equals("source"))
-            return "application/xml";
+        if (viewId != null && viewId.equals("source")) return "application/xml";
         return "application/xhtml+xml";
     }
 
@@ -242,6 +245,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         sb.append(htmlHeadContent);
         sb.append("</head>");
         sb.append("<body>");
+        sb.append("<h1>Yanel Updater</h1>");
         sb.append(htmlBodyContent);
         sb.append("</body>");
         sb.append("</html>");
