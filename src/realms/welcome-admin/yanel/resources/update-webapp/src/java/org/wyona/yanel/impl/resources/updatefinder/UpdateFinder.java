@@ -494,10 +494,10 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         for (int i = 0; i < bestUpdater.size(); i++) {
             HashMap versionDetail = (HashMap) bestUpdater.get(i);
             log.error("DEBUG: Updater details: " + versionDetail);
-            if (versionComparator.compare((String) versionDetail.get("targetApllicationMinRevision"), updateRevision) > 0 ) {
+            if (versionComparator.compare((String) versionDetail.get(UpdateInfo.TARGET_APPLICATION_MIN_REVISION), updateRevision) > 0 ) {
                 bestUpdater.remove(i);
             }
-            if (versionComparator.compare((String) versionDetail.get("targetApllicationMaxRevision"), updateRevision) < 0 ) {
+            if (versionComparator.compare((String) versionDetail.get(UpdateInfo.TARGET_APPLICATION_MAX_REVISION), updateRevision) < 0 ) {
                 bestUpdater.remove(i);
             }
         }
