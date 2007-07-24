@@ -211,8 +211,10 @@ public class UpdateFinder extends Resource implements ViewableV2 {
     private String getScreen() {
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-        sb.append("<head><title>Yanel Updater</title>");
-        //sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + PathUtil.getResourcesHtdocsPath(this) + "css/resource-creator.css\"/>");
+        sb.append("<head>");
+        sb.append("<title>Yanel Updater</title>");
+
+/*
         sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""
                 + PathUtil.getGlobalHtdocsPath(this) + "yanel-css/progressBar.css\"/>");
         sb.append("<script src=\"" + PathUtil.getGlobalHtdocsPath(this)
@@ -221,8 +223,9 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 + "yanel-js/progressBar.js\" type=\"text/javascript\"></script>");
         sb.append("<script src=\"" + PathUtil.getGlobalHtdocsPath(this)
                 + "yanel-js/sorttable.js\" type=\"text/javascript\"></script>");
-        //sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPath(this) + "js/ajaxlookup.js\" type=\"text/javascript\"></script>");
+*/
 
+/*
         if (request.getParameter("usecase") != null && request.getParameter("usecase").equals("updateconfirmed")) {    
             try {
                 Map bestUpdater = getBestUpdater();
@@ -232,6 +235,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 log.error(e.getMessage(), e);
             }
         }
+*/
 
         sb.append("</head>");
         sb.append("<body>");
