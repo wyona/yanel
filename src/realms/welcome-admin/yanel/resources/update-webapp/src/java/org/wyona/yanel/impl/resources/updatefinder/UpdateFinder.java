@@ -212,8 +212,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
         sb.append("<head><title>Yanel Updater</title>");
-        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""
-                + PathUtil.getResourcesHtdocsPath(this) + "css/resource-creator.css\"/>");
+        //sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + PathUtil.getResourcesHtdocsPath(this) + "css/resource-creator.css\"/>");
         sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""
                 + PathUtil.getGlobalHtdocsPath(this) + "yanel-css/progressBar.css\"/>");
         sb.append("<script src=\"" + PathUtil.getGlobalHtdocsPath(this)
@@ -222,8 +221,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 + "yanel-js/progressBar.js\" type=\"text/javascript\"></script>");
         sb.append("<script src=\"" + PathUtil.getGlobalHtdocsPath(this)
                 + "yanel-js/sorttable.js\" type=\"text/javascript\"></script>");
-        sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPath(this)
-                + "js/ajaxlookup.js\" type=\"text/javascript\"></script>");
+        //sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPath(this) + "js/ajaxlookup.js\" type=\"text/javascript\"></script>");
 
         if (request.getParameter("updateconfirmed") != null && request.getParameter("updateconfirmed").equals("updateconfirmed")) {    
             try {
@@ -266,35 +264,30 @@ public class UpdateFinder extends Resource implements ViewableV2 {
      *
      */
     private StringBuffer plainRequest() {
-        StringBuffer htmlBodyContent = new StringBuffer();
 
-        UpdateInfo updateInfo = null;
         InstallInfo installInfo = null;
-
         try {
             installInfo = getInstallInfo();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            htmlBodyContent.append("<p>Could not get install information. " + e.getMessage() + "</p>");
-            return htmlBodyContent;
+            return new StringBuffer("<p>Could not get install information. " + e.getMessage() + "</p>");
         }
+
+        UpdateInfo updateInfo = null;
         try {
             updateInfo = getUpdateInfo();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            htmlBodyContent.append("<p>Could not get update information. " + e.getMessage() + "</p>");
-            return htmlBodyContent;
+            return new StringBuffer("<p>Could not get update information. " + e.getMessage() + "</p>");
         }
 
         if (!installInfo.getInstalltype().equals("bin-snapshot")) {
-            htmlBodyContent.append("<p>");
-            htmlBodyContent.append("This Yanel was not installed from binary. You can only use the updater if you installed yanel from binary. Please use svn up, build.sh");
-            htmlBodyContent.append("</p>");
-            return htmlBodyContent;
+            return new StringBuffer("<p>This Yanel was not installed from binary. You can only use the updater if you installed yanel from binary. Please use Subversion or get another source snapshot.</p><p>NOTE: In order to enhance the Yanel Updater resource developers might want to modify " + installInfo.getInstallRdfFilename() + " by replacing the installtype \"source\" with \"bin-snapshot\" and also customize the version and revision!</p>");
         }
 
         String idVersionRevisionCurent = installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision();
 
+        StringBuffer htmlBodyContent = new StringBuffer();
         // show installed version
         htmlBodyContent.append("<p>");
         htmlBodyContent.append("Your installed yanel is: " + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision());
