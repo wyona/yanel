@@ -285,7 +285,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             return new StringBuffer("<p>This Yanel was not installed from binary. You can only use the updater if you installed yanel from binary. Please use Subversion or get another source snapshot.</p><p>NOTE: In order to enhance the Yanel Updater resource developers might want to modify " + installInfo.getInstallRdfFilename() + " by replacing the installtype \"source\" with \"bin-snapshot\" and also customize the version and revision!</p>");
         }
 
-        String idVersionRevisionCurent = installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision();
+        String idVersionRevisionCurrent = installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision();
 
         StringBuffer htmlBodyContent = new StringBuffer();
         // show installed version
@@ -293,13 +293,13 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         htmlBodyContent.append("Your installed yanel is: " + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision());
         htmlBodyContent.append("</p>");
 
-        // TODO implement getBestYanelWebapp() to get all yanel-webapp version which has an
+        // TODO: implement getBestYanelWebapp() to get all yanel-webapp version which has an
         // yanel-updater which fits the targetRevision requirement of the current yanel and is not
-        // allready installed.
+        // already installed.
 
         ArrayList updatebleYanelVersions = null;
         try {
-            updatebleYanelVersions = getSuiteableYanelUpdates();
+            updatebleYanelVersions = getSuitableYanelUpdates(installInfo, updateInfo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             htmlBodyContent.append("<p>Could not get Updates. " + e.getMessage() + "</p>");
@@ -310,21 +310,20 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             htmlBodyContent.append("No updates found.");
             htmlBodyContent.append("</p>");
         } else {
-        
-        HashMap newestYanel = (HashMap) updatebleYanelVersions.get(updatebleYanelVersions.size() - 1);
-        String newestYanelName = (String) newestYanel.get("id") + "-v-"
-                + (String) newestYanel.get("version") + "-r-"
-                + (String) newestYanel.get("revision");
-        if (newestYanelName.equals(idVersionRevisionCurent)) {
-            htmlBodyContent.append("<p>");
-            htmlBodyContent.append("Your yanel is already the newest version.");
-            htmlBodyContent.append("</p>");
-        } else {
-            htmlBodyContent.append("<p>");
-            htmlBodyContent.append("Newest yanel is: " + newestYanelName);
-            htmlBodyContent.append("<form method=\"post\"><input type=\"submit\" name=\"button\" value=\"update\"></input><input type=\"hidden\" name=\"update\" value=\"update\"></input><input type=\"hidden\" name=\"updatelink\" value=\"" + newestYanel.get("updateLink") + "\"/></form>");
-            htmlBodyContent.append("</p>");
-        }
+            HashMap newestYanel = (HashMap) updatebleYanelVersions.get(updatebleYanelVersions.size() - 1);
+            String newestYanelName = (String) newestYanel.get("id") + "-v-"
+                    + (String) newestYanel.get("version") + "-r-"
+                    + (String) newestYanel.get("revision");
+            if (newestYanelName.equals(idVersionRevisionCurrent)) {
+                htmlBodyContent.append("<p>");
+                htmlBodyContent.append("Your yanel is already the newest version.");
+                htmlBodyContent.append("</p>");
+            } else {
+                htmlBodyContent.append("<p>");
+                htmlBodyContent.append("Newest yanel is: " + newestYanelName);
+                htmlBodyContent.append("<form method=\"post\"><input type=\"submit\" name=\"button\" value=\"update\"></input><input type=\"hidden\" name=\"update\" value=\"update\"></input><input type=\"hidden\" name=\"updatelink\" value=\"" + newestYanel.get("updateLink") + "\"/></form>");
+                htmlBodyContent.append("</p>");
+            }
 
         htmlBodyContent.append("<p>");
         htmlBodyContent.append("All versions you can get:");
@@ -509,9 +508,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
      * @return ArrayList with all updates which are matching the revision requirement and are not installed yet. or null if none.
      * @throws Exception
      */
-    private ArrayList getSuiteableYanelUpdates() throws Exception {
-        InstallInfo installInfo = getInstallInfo();
-        UpdateInfo updateInfo = getUpdateInfo();
+    private ArrayList getSuitableYanelUpdates(InstallInfo installInfo, UpdateInfo updateInfo) throws Exception {
         TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
         
         ArrayList updates = updateInfo.getYanelUpatesForYanelRevision(installInfo.getRevision());
