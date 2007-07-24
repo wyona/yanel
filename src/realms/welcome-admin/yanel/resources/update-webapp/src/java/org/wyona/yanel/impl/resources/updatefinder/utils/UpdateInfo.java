@@ -32,8 +32,8 @@ public class UpdateInfo {
     
     private String updateManagerNS = "http://www.wyona.org/update-manager/1.0#"; 
 
-    private static String TARGET_APPLICATION_MIN_REVISION = "targetApplicationMinRevision";
-    private static String TARGET_APPLICATION_MAX_REVISION = "targetApplicationMaxRevision";
+    public static String TARGET_APPLICATION_MIN_REVISION = "targetApplicationMinRevision";
+    public static String TARGET_APPLICATION_MAX_REVISION = "targetApplicationMaxRevision";
     private static String TARGET_APPLICATION_ID = "targetApplicationId";
     
     public UpdateInfo(String updateRdfUrlString, InstallInfo installInfo) throws Exception{
