@@ -65,7 +65,7 @@
 <tr><td style="vertical-align: top;"><a href="specification/annotations.html">Annotations</a></td><td style="vertical-align: top;">done<br/></td><td style="vertical-align: top;">2007.02.28</td><td style="vertical-align: top;">Florian, Ilhan</td><td>-</td></tr>
 <tr><td style="vertical-align: top;">Personalization</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td><td>-</td></tr>
 <tr><td style="vertical-align: top;">Related Search</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td><td>-</td></tr>
-<tr><td valign="top">Sitemap Protocol (<a href="https://www.google.com/webmasters/tools/docs/en/protocol.html">on Google</a>)</td><td valign="top">in planning</td><td valign="top">TBD</td><td valign="top">TBD</td><td>-</td></tr>
+<tr><td valign="top">Sitemap Protocol (<a href="https://www.google.com/webmasters/tools/docs/en/protocol.html">on Google</a>)</td><td valign="top">in planning</td><td valign="top">TBD</td><td valign="top">TBD</td><td>-</td></tr><tr><td valign="top"><a href="specification/neutron-test-client-resource.html">Neutron Test Client Resource</a></td><td valign="top">in planning</td><td valign="top">TBD</td><td valign="top">TBD</td><td valign="top">-</td></tr>
 </tbody>
 </table>
 <h4>Release 1.2</h4>
@@ -115,7 +115,7 @@
               <td>not started<br/></td>
 <td>TBD<br/></td>
               <td>TBD<br/></td>
-            </tr><tr><td style="vertical-align: top;">Validation re RelaxNG and XML Schema</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;">Page moved functionality</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></tr><tr><td style="vertical-align: top;"><a href="http://www.elml.ch">eLML</a> resource</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td valign="top"><a shape="rect" href="specification/foaf/index.html">FOAF Provider Server</a></td><td valign="top">in planning</td><td valign="top">TBD</td><td valign="top">Michael</td></tr>
+            </tr><tr><td style="vertical-align: top;">Validation re RelaxNG and XML Schema</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td style="vertical-align: top;">Page moved functionality</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></tr><tr><td style="vertical-align: top;"><a href="http://www.elml.ch">eLML</a> resource</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></tr><tr><td valign="top"><a href="specification/foaf/index.html" shape="rect">FOAF Provider Server</a></td><td valign="top">in planning</td><td valign="top">TBD</td><td valign="top">Michael</td></tr>
           </tbody></table><br/>
 </body>
 </html>
