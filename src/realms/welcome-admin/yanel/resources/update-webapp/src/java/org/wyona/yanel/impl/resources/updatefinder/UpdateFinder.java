@@ -223,7 +223,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 + "yanel-js/sorttable.js\" type=\"text/javascript\"></script>");
         //sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPath(this) + "js/ajaxlookup.js\" type=\"text/javascript\"></script>");
 
-        if (request.getParameter("updateconfirmed") != null && request.getParameter("updateconfirmed").equals("updateconfirmed")) {    
+        if (request.getParameter("usecase") != null && request.getParameter("usecase").equals("updateconfirmed")) {    
             try {
                 Map bestUpdater = getBestUpdater();
                 String htmlHeadContent = "<meta http-equiv=\"refresh\" content=\"10; URL=" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/" + "?updatelink=" + request.getParameter("updatelink") + "&amp;requestingwebapp=" + request.getParameter("requestingwebapp") + "\"/>";
@@ -246,7 +246,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 body = plainRequest();
             } else if (request.getParameter("usecase") != null && request.getParameter("usecase").equals("update")) {
                 body = getUpdateConfirmScreen();
-            } else if (request.getParameter("updateconfirmed") != null && request.getParameter("updateconfirmed").equals("updateconfirmed")) {    
+            } else if (request.getParameter("usecase") != null && request.getParameter("usecase").equals("updateconfirmed")) {    
                 body = getUpdateScreen();
             } else {
                 log.info("Fallback ...");
@@ -409,26 +409,29 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 htmlBodyContent.append("<p>");
                 htmlBodyContent.append("<form method=\"post\" action=\"" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/\">");
                 htmlBodyContent.append("<input type=\"submit\" name=\"button\" value=\"YES\"/>");
-                htmlBodyContent.append("<input type=\"hidden\" name=\"updateconfirmed\" value=\"updateconfirmed\"/>");
+                htmlBodyContent.append("<input type=\"hidden\" name=\"usecase\" value=\"updateconfirmed\"/>");
                 htmlBodyContent.append("<input type=\"hidden\" name=\"updatelink\" value=\"" + request.getParameter("updatelink") + "\"/>");
                 htmlBodyContent.append("<input type=\"hidden\" name=\"requestingwebapp\" value=\"" + installInfo.getWebaName() + "\"/>");
-                //TODO here it should ask for a password which shoudl be set in the new updater
+                // TODO: here it should ask for a password which should be set in the new updater
+		// NOTE: One can protect the URL itself and hence a specific authentication/authorization is not really necessary!
                 htmlBodyContent.append("</form>");
-                htmlBodyContent.append("<form method=\"post\">");
+
+                htmlBodyContent.append("<form method=\"GET\">");
                 htmlBodyContent.append("<input type=\"submit\" name=\"button\" value=\"Cancel\"></input>");
                 htmlBodyContent.append("</form>");
+
                 htmlBodyContent.append("</p>");
             } else {
-                htmlBodyContent.append("<p>Yanel will download the update-manager (" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + ") which will download and install " + id + "-v-" + version + "-r-" + revision  + "</p>");
+                htmlBodyContent.append("<p>In order to download and install the Yanel update \"" + id + "-v-" + version + "-r-" + revision  + "\" the update-manager \"" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "\" needs to be downloaded first.</p>");
                 htmlBodyContent.append("<p>Do you want to continue?</p>");
                 htmlBodyContent.append("<p>");
-                htmlBodyContent.append("<form method=\"post\">");
+                htmlBodyContent.append("<form method=\"GET\">");
                 htmlBodyContent.append("<input type=\"submit\" name=\"button\" value=\"YES\"/>");
-                htmlBodyContent.append("<input type=\"hidden\" name=\"updateconfirmed\" value=\"updateconfirmed\"/>");
+                htmlBodyContent.append("<input type=\"hidden\" name=\"usecase\" value=\"updateconfirmed\"/>");
                 htmlBodyContent.append("<input type=\"hidden\" name=\"updatelink\" value=\"" + request.getParameter("updatelink") + "\"/>");
                 htmlBodyContent.append("<input type=\"hidden\" name=\"requestingwebapp\" value=\"" + installInfo.getWebaName() + "\"/>");
                 htmlBodyContent.append("</form>");
-                htmlBodyContent.append("<form method=\"post\">");
+                htmlBodyContent.append("<form method=\"GET\">");
                 htmlBodyContent.append("<input type=\"submit\" name=\"button\" value=\"Cancel\"></input>");
                 htmlBodyContent.append("</form>");
                 htmlBodyContent.append("</p>");
@@ -457,11 +460,9 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
             tomcatContextHandler.setContext(bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"), bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"));
             
-            htmlBodyContent.append("<p>");
-            htmlBodyContent.append("Update done.<br/>");
-            htmlBodyContent.append("You will be redirected to the updater which will automaticaly download and install the requested yanel.");
-            htmlBodyContent.append("</p>");
-            
+            htmlBodyContent.append("<p>Update-Manager has been downloaded and installed.</p>");
+            htmlBodyContent.append("<p>You will be <a href=\""+"http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/"+"\">redirected</a> to the update-manager which will automatically download and install the requested yanel.</p>");
+            //String htmlHeadContent = "<meta http-equiv=\"refresh\" content=\"10; URL=" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/" + "?updatelink=" + request.getParameter("updatelink") + "&amp;requestingwebapp=" + request.getParameter("requestingwebapp") + "\"/>";
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             htmlBodyContent.append("<p>Update failed. Exception: " + e.getMessage() + "</p>");
