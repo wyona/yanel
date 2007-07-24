@@ -31,6 +31,10 @@ public class UpdateInfo {
     private InstallInfo installInfo;
     
     private String updateManagerNS = "http://www.wyona.org/update-manager/1.0#"; 
+
+    private static String TARGET_APPLICATION_MIN_REVISION = "targetApplicationMinRevision";
+    private static String TARGET_APPLICATION_MAX_REVISION = "targetApplicationMaxRevision";
+    private static String TARGET_APPLICATION_ID = "targetApplicationId";
     
     public UpdateInfo(String updateRdfUrlString, InstallInfo installInfo) throws Exception{
         if (installInfo == null) {
@@ -77,7 +81,7 @@ public class UpdateInfo {
         
         NodeIterator iter2 = versionsSeq.iterator();
         Property idProperty = new PropertyImpl(updateManagerNS, "id");
-        Property targetApplicationIdProperty = new PropertyImpl(updateManagerNS, "targetApplicationId");
+        Property targetApplicationIdProperty = new PropertyImpl(updateManagerNS, TARGET_APPLICATION_ID);
         Property targetApplicationminVersionProperty = new PropertyImpl(updateManagerNS, "targetApplicationMinVersion");
         Property targetApplicationmaxVersionProperty = new PropertyImpl(updateManagerNS, "targetApplicationMaxVersion");
         Property targetApplicationminRevisionProperty = new PropertyImpl(updateManagerNS, "targetApplicationMinRevision");
@@ -97,9 +101,9 @@ public class UpdateInfo {
             updateVersionDetail.put("revision", versionResource.getProperty(revisionProperty).getString());
             updateVersionDetail.put("changeLog", versionResource.getProperty(changeLogProperty).getString());
             updateVersionDetail.put("updateLink", versionResource.getProperty(updateLinkProperty).getString());
-            updateVersionDetail.put("targetApllicationId", versionResource.getProperty(idProperty).getString());
-            updateVersionDetail.put("targetApllicationMinRevision", versionResource.getProperty(targetApplicationminRevisionProperty).getString());
-            updateVersionDetail.put("targetApllicationMaxRevision", versionResource.getProperty(targetApplicationmaxRevisionProperty).getString());
+            updateVersionDetail.put(TARGET_APPLICATION_ID, versionResource.getProperty(idProperty).getString());
+            updateVersionDetail.put(TARGET_APPLICATION_MIN_REVISION, versionResource.getProperty(targetApplicationminRevisionProperty).getString());
+            updateVersionDetail.put(TARGET_APPLICATION_MAX_REVISION, versionResource.getProperty(targetApplicationmaxRevisionProperty).getString());
             this.updateVersions.add(updateVersionDetail);
             }
         }
@@ -161,10 +165,10 @@ public class UpdateInfo {
         VersionComparator versionComparator = new VersionComparator();  
         for (int i = 0; i < selectedUpdateVersions.size(); i++) {
             HashMap versionDetail = (HashMap) selectedUpdateVersions.get(i);
-            if (versionComparator.compare((String) versionDetail.get("targetApllicationMinRevision"), InstallInfoRevision) > 0 ) {
+            if (versionComparator.compare((String) versionDetail.get(TARGET_APPLICATION_MIN_REVISION), InstallInfoRevision) > 0 ) {
                 selectedUpdateVersions.remove(i);
             }
-            if (versionComparator.compare((String) versionDetail.get("targetApllicationMaxRevision"), InstallInfoRevision) < 0 ) {
+            if (versionComparator.compare((String) versionDetail.get(TARGET_APPLICATION_MAX_REVISION), InstallInfoRevision) < 0 ) {
                 selectedUpdateVersions.remove(i);
             }
         }
@@ -203,10 +207,12 @@ public class UpdateInfo {
         if (bestUpdater == null) return null;
         for (int i = 0; i < bestUpdater.size(); i++) {
             HashMap versionDetail = (HashMap) bestUpdater.get(i);
-            if (versionComparator.compare((String) versionDetail.get("targetApllicationMinRevision"), yanelRevision) > 0 ) {
+            log.error("DEBUG: Updater MinRevision: " + (String) versionDetail.get(TARGET_APPLICATION_MIN_REVISION));
+            log.error("DEBUG: Updater MaxRevision: " + (String) versionDetail.get(TARGET_APPLICATION_MAX_REVISION));
+            if (versionComparator.compare((String) versionDetail.get(TARGET_APPLICATION_MIN_REVISION), yanelRevision) > 0 ) {
                 bestUpdater.remove(i);
             }
-            if (versionComparator.compare((String) versionDetail.get("targetApllicationMaxRevision"), yanelRevision) < 0 ) {
+            if (versionComparator.compare((String) versionDetail.get(TARGET_APPLICATION_MAX_REVISION), yanelRevision) < 0 ) {
                 bestUpdater.remove(i);
             }
         }
@@ -220,23 +226,29 @@ public class UpdateInfo {
      * @param String YanelRevision
      */
     public ArrayList getYanelUpatesForYanelRevision(String yanelRevision) {
+        // Get all updaters which work for a  specific yanel revision
         ArrayList updaters = getUpdatersForYanelRevision(yanelRevision);
         if (updaters == null) return null;
+
+        // Get all updates
         ArrayList allUpdates = getUpdateVersionsOf("type", "updates");
         if (allUpdates == null) return null;
+
+        // Match updates with updaters
         VersionComparator versionComparator = new VersionComparator();
-        
         for (int i = 0; i < allUpdates.size(); i++) {
             HashMap updatesVersionDetail = (HashMap) allUpdates.get(i);
             String revision = (String) updatesVersionDetail.get("revision");
+            log.error("DEBUG: Update revision: " + revision);
             
             
             for (int j = 0; j < updaters.size(); j++) {
                 HashMap updatersVersionDetail = (HashMap) updaters.get(j);
-                if (versionComparator.compare((String) updatersVersionDetail.get("targetApllicationMinRevision"), revision) > 0 ) {
+                log.error("DEBUG: Updater revision: " + (String) updatersVersionDetail.get("revision"));
+                if (versionComparator.compare((String) updatersVersionDetail.get(TARGET_APPLICATION_MIN_REVISION), revision) > 0 ) {
                     allUpdates.remove(i);
                 }
-                if (versionComparator.compare((String) updatersVersionDetail.get("targetApllicationMaxRevision"), revision) < 0 ) {
+                if (versionComparator.compare((String) updatersVersionDetail.get(TARGET_APPLICATION_MAX_REVISION), revision) < 0 ) {
                     allUpdates.remove(i);
                 }
             }
@@ -261,10 +273,10 @@ public class UpdateInfo {
         TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
         for (int i = 0; i < selectedUpdateVersions.size(); i++) {
             HashMap versionDetail = (HashMap) selectedUpdateVersions.get(i);
-            if (versionComparator.compare((String) versionDetail.get("targetApllicationMinRevision"), installInfoRevision) > 0 ) {
+            if (versionComparator.compare((String) versionDetail.get(TARGET_APPLICATION_MIN_REVISION), installInfoRevision) > 0 ) {
                 selectedUpdateVersions.remove(i);
             }
-            if (versionComparator.compare((String) versionDetail.get("targetApllicationMaxRevision"), installInfoRevision) < 0 ) {
+            if (versionComparator.compare((String) versionDetail.get(TARGET_APPLICATION_MAX_REVISION), installInfoRevision) < 0 ) {
                 selectedUpdateVersions.remove(i);
             }
             for (int j = 0; j < tomcatContextHandler.getWebappNames().length; j++) {
