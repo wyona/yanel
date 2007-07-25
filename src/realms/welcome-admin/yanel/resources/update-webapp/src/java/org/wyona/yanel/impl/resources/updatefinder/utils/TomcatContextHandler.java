@@ -33,6 +33,12 @@ public class TomcatContextHandler {
     public TomcatContextHandler(HttpServletRequest request) throws Exception {
         this.webappsDirectoryPath = request.getSession().getServletContext().getRealPath(".") + File.separator + ".." + File.separator;
         this.webappsDirectory = new File(webappsDirectoryPath);
+
+        // TODO: This directory should not be hardcoded here, but rather configurable somewhere!
+        // resp. see
+        // http://svn.apache.org/repos/asf/tomcat/trunk/java/org/apache/catalina/manager/ManagerServlet.java
+        // http://svn.apache.org/repos/asf/tomcat/trunk/java/org/apache/catalina/manager/HTMLManagerServlet.java
+        // which generates the context overview: http://127.0.0.1:8080/manager/html (whereas add roles manager to conf/tomcat-users.xml and restart Tomcat)
         this.contextConfPath = webappsDirectoryPath  + ".." + File.separator + "conf" + File.separator + "Catalina" + File.separator + "localhost" + File.separator;
         this.contextConfDirectory = new File(contextConfPath);
     }
