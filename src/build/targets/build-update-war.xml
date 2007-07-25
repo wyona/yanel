@@ -4,7 +4,7 @@
   
   <target name="update-war" description="Create a war to update" depends="init, webapp">
     <delete dir="${build.dir}/update-war"/>
-    <property name="update.dir" value="${build.dir}/update-war/wyona-yanel-UPDATE-v-${yanel.version}-r-${yanel.revision}"/>
+    <property name="update.dir" value="${build.dir}/update-war/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}"/>
     <mkdir dir="${update.dir}"/>
     
    <copy todir="${update.dir}/${servlet.context.prefix}">
