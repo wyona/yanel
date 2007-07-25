@@ -137,6 +137,10 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
                 mimeType = "application/x-xpinstall";
 	    } else if (suffix.equals("zip")) {
                 mimeType = "application/zip";
+	    } else if (suffix.equals("jar")) { // http://en.wikipedia.org/wiki/Jar_(file_format)
+                mimeType = "application/java-archive";
+	    } else if (suffix.equals("war")) {
+                mimeType = "application/java-archive";
 	    } else if (suffix.equals("flv")) {
                 mimeType = "video/x-flv";
 	    } else if (suffix.equals("swf")) {
