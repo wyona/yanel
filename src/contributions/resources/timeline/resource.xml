@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="timeline"
+  namespace="http://simile.mit.edu/yanel/resource/timeline/1.0"
+  class="edu.mit.simile.yanel.impl.resources.timeline.TimelineResource"
+  >
+<description>
+Timline http://simile.mit.edu/timeline/
+</description>
+
+<rtd>
+<!--
+  <property name="foo" default-value="bar"/>
+-->
+</rtd>
+</resource>
