@@ -1,6 +1,6 @@
 yarep_type<string>:resource
 yarep_isCheckedOut<boolean>:false
-yarep_checkoutDate<date>:2007-07-24T09:38:26+0200
+yarep_checkoutDate<date>:2007-07-26T21:26:25+0200
 live-revision<string>:1182159317229
 yarep_checkoutUserID<string>:michi
-yarep_checkinDate<date>:2007-07-24T09:40:13+0200
+yarep_checkinDate<date>:2007-07-26T21:30:10+0200
