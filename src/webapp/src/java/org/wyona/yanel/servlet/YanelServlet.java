@@ -456,7 +456,6 @@ public class YanelServlet extends HttpServlet {
                             // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
                             String message = "No such node exception: " + e;
                             log.warn(e);
-                            //log.error(e.getMessage(), e);
                             Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
                             exceptionElement.appendChild(doc.createTextNode(message));
                             exceptionElement.setAttributeNS(NAMESPACE, "status", "404");
@@ -466,7 +465,15 @@ public class YanelServlet extends HttpServlet {
                         }
                     } else {
                          Element noViewElement = (Element) resourceElement.appendChild(doc.createElement("not-viewable"));
+                         String message = res.getClass().getName() + " is not viewable! (" + res.getPath() + ", " + res.getRealm() + ")";
                          noViewElement.appendChild(doc.createTextNode(res.getClass().getName() + " is not viewable!"));
+                         log.error(message);
+                         Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                         exceptionElement.appendChild(doc.createTextNode(message));
+                         exceptionElement.setAttributeNS(NAMESPACE, "status", "501");
+                         response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_IMPLEMENTED);
+                         setYanelOutput(request, response, doc);
+                         return;
                     }
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
                         lastModified = ((ModifiableV2) res).getLastModified();
