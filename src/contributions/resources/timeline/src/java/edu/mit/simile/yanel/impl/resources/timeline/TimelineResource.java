@@ -8,6 +8,7 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.util.PathUtil;
 
 import org.apache.log4j.Category;
 
@@ -80,13 +81,14 @@ public class TimelineResource extends Resource implements ViewableV2 {
     /**
      *
      */
-    private StringBuffer getXHTML() {
+    private StringBuffer getXHTML() throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<?xml version=\"1.0\"?>");
 
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
         sb.append("<head>");
-        sb.append("<script src=\"http://simile.mit.edu/timeline/api/timeline-api.js\" type=\"text/javascript\"></script>");
+        //sb.append("<script src=\"http://simile.mit.edu/timeline/api/timeline-api.js\" type=\"text/javascript\"></script>");
+        sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPath(this) + "timeline-api.js\" type=\"text/javascript\"></script>");
 
         sb.append("<script type=\"text/javascript\">");
         sb.append("var tl;");
@@ -129,14 +131,13 @@ public class TimelineResource extends Resource implements ViewableV2 {
         sb.append("  bandInfos[1].highlight = true;");
   
         sb.append("  tl = Timeline.create(document.getElementById(\"my-timeline\"), bandInfos);");
-        //sb.append("  Timeline.loadXML(\"@HREF@\", function(xml, url) { eventSource.loadXML(xml, url); });");
-        sb.append("  Timeline.loadXML(\"roadmap.xml\", function(xml, url) { eventSource.loadXML(xml, url); });");
+        sb.append("  Timeline.loadXML(\"" + getResourceConfigProperty("href") + "\", function(xml, url) { eventSource.loadXML(xml, url); });");
         sb.append("}");
         sb.append("</script>");
         sb.append("</head>");
 
         sb.append("<body onload=\"onLoad();\" onresize=\"onResize();\">");
-        sb.append("<h3>@TITLE@</h3>");
+        sb.append("<h3>" + getResourceConfigProperty("title") + "</h3>");
         sb.append("<div id=\"my-timeline\" style=\"height: 250px; border: 1px solid #aaa\"></div>");
         sb.append("</body>");
         sb.append("</html>");
