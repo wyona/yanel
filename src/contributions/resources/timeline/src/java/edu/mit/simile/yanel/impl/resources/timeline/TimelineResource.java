@@ -68,11 +68,78 @@ public class TimelineResource extends Resource implements ViewableV2 {
     public View getView(String viewId) {
         View view = new View();
         try {
-            view.setInputStream(getRealm().getRepository().getNode("/timeline.xhtml").getInputStream());
+            view.setInputStream(new java.io.StringBufferInputStream(getXHTML().toString()));
+            //view.setInputStream(getRealm().getRepository().getNode("/timeline.xhtml").getInputStream());
             view.setMimeType(getMimeType(null));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
         return view;
+    }
+
+    /**
+     *
+     */
+    private StringBuffer getXHTML() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<?xml version=\"1.0\"?>");
+
+        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+        sb.append("<head>");
+        sb.append("<script src=\"http://simile.mit.edu/timeline/api/timeline-api.js\" type=\"text/javascript\"></script>");
+
+        sb.append("<script type=\"text/javascript\">");
+        sb.append("var tl;");
+
+        sb.append("var resizeTimerID = null;");
+        sb.append("function onResize() {");
+        sb.append("    if (resizeTimerID == null) {");
+        sb.append("        resizeTimerID = window.setTimeout(function() {");
+        sb.append("            resizeTimerID = null;");
+        sb.append("            tl.layout();");
+        sb.append("        }, 500);");
+        sb.append("    }");
+        sb.append("}");
+
+        sb.append("function onLoad() {");
+        sb.append("  var eventSource = new Timeline.DefaultEventSource();");
+        sb.append("  var bandInfos = [");
+        sb.append("    Timeline.createBandInfo({");
+        sb.append("        eventSource:    eventSource,");
+        //sb.append("        date:           \"@TODAY@\",");
+        sb.append("        date:           \"Jul 27 2007 00:00:00 GMT\",");
+        sb.append("        width:          \"70%\",");
+        sb.append("        intervalUnit:   Timeline.DateTime.MONTH,");
+        sb.append("        intervalPixels: 100");
+        sb.append("    }),");
+        sb.append("    Timeline.createBandInfo({");
+        sb.append("showEventText:  false,");
+        sb.append("        trackHeight:    0.5,");
+        sb.append("        trackGap:       0.2,");
+
+        sb.append("        eventSource:    eventSource,");
+        //sb.append("        date:           \"@TODAY@\",");
+        sb.append("        date:           \"Jul 27 2007 00:00:00 GMT\",");
+        sb.append("        width:          \"30%\",");
+        sb.append("        intervalUnit:   Timeline.DateTime.YEAR,"); 
+        sb.append("        intervalPixels: 200");
+        sb.append("    })");
+        sb.append("  ];");
+        sb.append("  bandInfos[1].syncWith = 0;");
+        sb.append("  bandInfos[1].highlight = true;");
+  
+        sb.append("  tl = Timeline.create(document.getElementById(\"my-timeline\"), bandInfos);");
+        //sb.append("  Timeline.loadXML(\"@HREF@\", function(xml, url) { eventSource.loadXML(xml, url); });");
+        sb.append("  Timeline.loadXML(\"roadmap.xml\", function(xml, url) { eventSource.loadXML(xml, url); });");
+        sb.append("}");
+        sb.append("</script>");
+        sb.append("</head>");
+
+        sb.append("<body onload=\"onLoad();\" onresize=\"onResize();\">");
+        sb.append("<h3>@TITLE@</h3>");
+        sb.append("<div id=\"my-timeline\" style=\"height: 250px; border: 1px solid #aaa\"></div>");
+        sb.append("</body>");
+        sb.append("</html>");
+        return sb;
     }
 }
