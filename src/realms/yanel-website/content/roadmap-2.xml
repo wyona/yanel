@@ -3,7 +3,6 @@
 <roadmap xmlns="http://yanel.wyona.org/roadmap/1.0">
 
 <release version="1.0">
-<table width="100%" border="1">
 <tbody><tr>
 <th width="55%">Feature</th><th width="15%">Status</th><th width="15%">Due Date</th><th width="15%">Assigned To</th><th>Task Tracker</th>
 </tr>
@@ -37,7 +36,6 @@
 <tr><td style="vertical-align: top;"><a href="http://yanel.wyona.org/specification/access-control-user-interface.html">Access Control User Interface</a></td><td style="vertical-align: top;">mostly done<br/></td><td style="vertical-align: top;">2007.08.01</td><td style="vertical-align: top;">Josias/Michael</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5116">5116</a></td></tr>
 <tr><td valign="top">Toolbar</td><td valign="top">done<br/></td><td valign="top">2007.04.13</td><td valign="top">Josias/Michael</td><td>-</td></tr><tr><td valign="top">Misc resp. Release 1.0 Tracking Task<br/></td><td valign="top">in progress</td><td valign="top">2007.08.01</td><td valign="top">All</td><td valign="top"><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5163">5163</a></td></tr>
 </tbody>
-</table>
 </release>
 
 
@@ -66,8 +64,7 @@
 
 
 
-<h4>Release 1.2</h4>
-<table width="100%" cellspacing="1" cellpadding="1" border="1">
+<release version="1.2">
 <tbody><tr>
 <th width="55%">Feature</th><th width="15%">Status</th><th width="15%">Due Date</th><th width="15%">Assigned To</th>
 </tr>
@@ -102,7 +99,10 @@
               <td>TBD</td>
 </tr>
 <tr><td style="vertical-align: top;"><a href="specification/ldap.html">LDAP Integration</a></td><td style="vertical-align: top;">not yet started</td><td>TBD</td><td>Simon/Michael</td></tr><tr><td style="vertical-align: top;"><a href="specification/openid.html">OpenID Integration</a></td><td style="vertical-align: top;">not yet started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Andreas/Michael</td></tr><tr><td style="vertical-align: top;"><a href="specification/webdav.html">WebDAV</a></td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></tr><tr><td style="vertical-align: top;">References between translations</td><td style="vertical-align: top;">not yet started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Paloma</td></tr><tr><td style="vertical-align: top;">EBPP (Electronic Billing Presentation and Payment) Resource</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Donat</td></tr>
-          </tbody></table>
+</tbody>
+</release>
+
+
 <h4>Release 1.3</h4>
 <table width="100%" cellspacing="1" cellpadding="1" border="1">
             <tbody><tr>
