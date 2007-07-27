@@ -2,4 +2,7 @@
 
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="timeline" namespace="http://simile.mit.edu/yanel/resource/timeline/1.0"/>
+
+  <yanel:property name="title" value="Timeline of Yanel Roadmap"/>
+  <yanel:property name="href" value="roadmap.xml"/>
 </yanel:resource-config>
