@@ -8,4 +8,4 @@
 
 __Getting started with your new resource type:__
 * Implement the most recent [Viewable|http://yanel.wyona.org/javadoc/org/wyona/yanel/core/api/attributes/package-summary.html] interface. A very simple implementation example is the [World Time Resource|http://svn.wyona.com/repos/public/yanel/contributions/resources/world-time/src/java/org/wyona/yanel/impl/resources/ExampleResource.java].
-* Implement the most recent Creatable interface and test it by applying the query string ?yanel.usecase=create
+* Implement the most recent [Creatable|http://yanel.wyona.org/javadoc/org/wyona/yanel/core/api/attributes/package-summary.html] interface and test it by applying the query string ''?yanel.usecase=create''
