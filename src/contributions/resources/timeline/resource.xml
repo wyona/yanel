@@ -10,8 +10,7 @@ Timeline http://simile.mit.edu/timeline/
 </description>
 
 <rtd>
-<!--
-  <property name="foo" default-value="bar"/>
--->
+  <property name="href"/>
+  <property name="title"/>
 </rtd>
 </resource>
