@@ -49,7 +49,7 @@
   <td><xsl:value-of select="rm:td[2]"/></td>
   <td><xsl:value-of select="rm:td[3]"/></td>
   <td><xsl:value-of select="rm:td[4]"/></td>
-  <td><xsl:choose><xsl:when test="rm:td[5] and rm:td[5] != '-'"><a href=""><xsl:value-of select="rm:td[5]"/></a></xsl:when><xsl:otherwise>-</xsl:otherwise></xsl:choose></td>
+  <td><xsl:choose><xsl:when test="rm:td[5] and rm:td[5] != '-'"><xsl:choose><xsl:when test="rm:td[2] = 'done'"><strike><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id={rm:td[5]}"><xsl:value-of select="rm:td[5]"/></a></strike></xsl:when><xsl:otherwise><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id={rm:td[5]}"><xsl:value-of select="rm:td[5]"/></a></xsl:otherwise></xsl:choose></xsl:when><xsl:otherwise>-</xsl:otherwise></xsl:choose></td>
 </tr>
 </xsl:template>
 
