@@ -13,5 +13,6 @@ XML whereas an XSLT or multiple XSLTs can be specified and applied
   <property name="mime-type"/>
   <property name="xslt" multiple="true"/>
   <property name="yanel-path"/>
+  <property name="workflow-schema"/>
 </rtd>
 </resource>
