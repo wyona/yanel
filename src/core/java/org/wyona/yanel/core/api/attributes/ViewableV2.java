@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2007 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,29 +27,27 @@ import java.io.OutputStream;
 public interface ViewableV2 {
 
     /**
-     *
+     * List of all view types of this resource
      */
     public ViewDescriptor[] getViewDescriptors();
 
+    /**
+     * View of this resource
+     */
     public View getView(String viewId) throws Exception;
     
     /**
-     * NOTE: A resource does not necessarily have a path
-     */
-    //public View getView(Path path, OutputStream out, String viewId) throws Exception;
-
-    /**
-     * 
+     * Allows to check if a view of this resource exists
      */
     public boolean exists() throws Exception;
     
     /**
-     * 
+     * Size of view. Return -1 in case the size is unknown.
      */
     public long getSize() throws Exception;
     
     /**
-     * 
+     * Mime type of resource, e.g. application/xhtml+xml, whereas it can depend on view id
      */
     public String getMimeType(String viewId) throws Exception;
 }
