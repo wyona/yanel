@@ -3,12 +3,22 @@
 <roadmap xmlns="http://yanel.wyona.org/roadmap/1.0">
 
 <release version="1.0">
+<!--
 <feature>
   <descr>Neutron Spec v0 implemented</descr>
   <status>done</status>
   <due-date>2006.12.31</due-date>
   <assigned-to>Michael</assigned-to>
-  <!--<task-tracker-id>-</task-tracker-id>-->
+  <task-tracker-id/>
+</feature>
+-->
+
+<feature>
+  <td>Neutron Spec v0 implemented</td>
+  <td>done</td>
+  <td>2006.12.31</td>
+  <td>Michael</td>
+  <td>-</td>
 </feature>
 
 <feature><td style="vertical-align: top;">RSS Feed</td><td style="vertical-align: top;">done</td><td style="vertical-align: top;">2006.12.31</td><td style="vertical-align: top;">Paloma</td><td>-</td></feature>
