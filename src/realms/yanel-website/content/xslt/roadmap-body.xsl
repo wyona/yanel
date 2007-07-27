@@ -26,6 +26,9 @@
 </head>
 <body>
 <h3>Roadmap</h3>
+<p>
+Also see the <a href="roadmap-timeline.html">Timeline</a> of this roadmap.
+</p>
 <xsl:apply-templates/>
 </body>
 </html>
