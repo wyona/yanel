@@ -105,13 +105,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         try {
             Repository repo = getRealm().getRepository();
 
-            if (viewId != null && viewId.equals("source")) {
+            String[] xsltPath = getXSLTPath(getPath());
+            if (xsltPath.length == 0 || viewId != null && viewId.equals("source")) {
                 view.setInputStream(xmlInputStream);
                 view.setMimeType("application/xml");
                 return view;
             }
 
-            String[] xsltPath = getXSLTPath(getPath());
            
             // create reader:
             XMLReader xmlReader = XMLReaderFactory.createXMLReader();
