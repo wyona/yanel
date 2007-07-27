@@ -13,9 +13,7 @@
 <xsl:template match="/">
 <data>
 <xsl:apply-templates select="/rm:roadmap/rm:release"/>
-<!--
 <xsl:apply-templates select="/rm:roadmap/rm:release/rm:feature"/>
--->
 </data>
 </xsl:template>
 
@@ -31,8 +29,15 @@
     </event>
 </xsl:template>
 
-<!--
 <xsl:template match="rm:feature">
+    <event
+        start="Aug 01 2007 00:00:00 GMT"
+        title="{rm:td[1]}"
+        link="http://yanel.wyona.org/specification/access-control-user-interface.html"
+        >
+        <xsl:value-of select="rm:td[1]"/>
+    </event>
+<!--
 <tr>
   <xsl:copy-of select="rm:td[1]"/>
   <td><xsl:value-of select="rm:td[2]"/></td>
@@ -40,7 +45,7 @@
   <td><xsl:value-of select="rm:td[4]"/></td>
   <td><xsl:choose><xsl:when test="rm:td[5] and rm:td[5] != '-'"><xsl:choose><xsl:when test="rm:td[2] = 'done'"><strike><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id={rm:td[5]}"><xsl:value-of select="rm:td[5]"/></a></strike></xsl:when><xsl:otherwise><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id={rm:td[5]}"><xsl:value-of select="rm:td[5]"/></a></xsl:otherwise></xsl:choose></xsl:when><xsl:otherwise>-</xsl:otherwise></xsl:choose></td>
 </tr>
-</xsl:template>
 -->
+</xsl:template>
 
 </xsl:stylesheet>
