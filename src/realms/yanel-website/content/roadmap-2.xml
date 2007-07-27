@@ -5,7 +5,7 @@
 <release version="1.0">
 <feature>
   <descr>Neutron Spec v0 implemented</descr>
-  <state>done</state>
+  <status>done</status>
   <due-date>2006.12.31</due-date>
   <assigned-to>Michael</assigned-to>
   <!--<task-tracker-id>-</task-tracker-id>-->
