@@ -137,7 +137,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             xIncludeTransformer.setResolver(resolver);
            
             // create serializer:
-            Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
+            Serializer serializer = null;
+            // TODO: Should it also check for text/html?!
+            if (getMimeType(viewId).equals("application/xhtml+xml")) {
+                serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
+            } else {
+                serializer = SerializerFactory.getSerializer(SerializerFactory.XML);
+            }
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
            
             // chain everything together (create a pipeline):
