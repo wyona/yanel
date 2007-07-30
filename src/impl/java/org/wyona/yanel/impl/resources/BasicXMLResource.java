@@ -105,8 +105,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         try {
             Repository repo = getRealm().getRepository();
 
-            String[] xsltPath = getXSLTPath(getPath());
-            if (xsltPath.length == 0 || viewId != null && viewId.equals("source")) {
+            if (viewId != null && viewId.equals("source")) {
                 view.setInputStream(xmlInputStream);
                 view.setMimeType("application/xml");
                 return view;
@@ -121,6 +120,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             // create xslt transformer:
             SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
              
+            String[] xsltPath = getXSLTPath(getPath());
             TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPath.length];
             for (int i = 0; i < xsltPath.length; i++) {
                 xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath[i]).getInputStream()));
