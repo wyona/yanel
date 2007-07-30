@@ -35,8 +35,6 @@ import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
-import org.wyona.yanel.core.serialization.HTMLSerializer;
-import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.ResourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
@@ -91,7 +89,6 @@ import java.util.jar.JarInputStream;
 
 import org.apache.log4j.Category;
 import org.apache.xml.resolver.tools.CatalogResolver;
-import org.apache.xml.serializer.Serializer;
 
 /**
  *
