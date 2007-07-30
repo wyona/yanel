@@ -15,6 +15,7 @@ public class SerializerFactory {
     
     public static final int XHTML_STRICT = 1;
     public static final int HTML_TRANSITIONAL = 2;
+    public static final int XML = 3;
 
     public static Serializer getSerializer(Properties format) {
         Serializer serializer = new HTMLSerializer();
@@ -23,8 +24,9 @@ public class SerializerFactory {
     }
     
     public static Serializer getSerializer(int key) {
-        Serializer serializer = new HTMLSerializer();
+        Serializer serializer = null;
         if (key == XHTML_STRICT) {
+            serializer = new HTMLSerializer();
             Properties format = OutputPropertiesFactory.getDefaultMethodProperties("html");
             format.setProperty("indent", "yes");
             format.setProperty("doctype-public", "-//W3C//DTD XHTML 1.0 Strict//EN");
@@ -32,10 +34,17 @@ public class SerializerFactory {
             serializer.setOutputFormat(format);
         }
         if (key == HTML_TRANSITIONAL) {
+            serializer = new HTMLSerializer();
             Properties format = OutputPropertiesFactory.getDefaultMethodProperties("html");
             format.setProperty("indent", "yes");
             format.setProperty("doctype-public", "-//W3C//DTD HTML 4.01 Transitional//EN");
             format.setProperty("doctype-system", "http://www.w3.org/TR/html4/loose.dtd");
+            serializer.setOutputFormat(format);
+        }
+        if (key == XML) {
+            serializer = new XMLSerializer();
+            Properties format = OutputPropertiesFactory.getDefaultMethodProperties("xml");
+            format.setProperty("indent", "yes");
             serializer.setOutputFormat(format);
         }
         return serializer;

@@ -15,9 +15,9 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class HTMLSerializer extends AbstractSerializer implements Serializer, LexicalHandler {
+public class XMLSerializer extends AbstractSerializer implements Serializer, LexicalHandler {
 
-    private static Category log = Category.getInstance(HTMLSerializer.class);
+    private static Category log = Category.getInstance(XMLSerializer.class);
     private EntityResolver entityResolver;
     private String pendingElement = null;
     private boolean doIndent;
@@ -30,7 +30,7 @@ public class HTMLSerializer extends AbstractSerializer implements Serializer, Le
         "label", "q", "s", "samp", "select", "small", "span", "strike", "strong", "sub", "sup",
         "textarea", "tt", "u", "var"};
     
-    public HTMLSerializer() {
+    public XMLSerializer() {
     }
     
     public void startDocument() throws SAXException {
@@ -38,16 +38,6 @@ public class HTMLSerializer extends AbstractSerializer implements Serializer, Le
             String omitXMLDeclaration = this.properties.getProperty("omit-xml-declaration", "no");
             if (omitXMLDeclaration != null && !omitXMLDeclaration.equals("yes")) {
                 print("<?xml version=\"1.0\"?>\n");
-            }
-            String doctypePublic = this.properties.getProperty("doctype-public");
-            String doctypeSystem = this.properties.getProperty("doctype-system");
-            String method = this.properties.getProperty("method", "xml");
-            if (doctypePublic != null) {
-                print("<!DOCTYPE " + method + " PUBLIC \"" + doctypePublic);
-                if (doctypeSystem != null) {
-                    print("\" \"" + doctypeSystem);
-                }
-                print("\">\n");
             }
             this.doIndent = this.properties.getProperty("indent", "no").equals("yes");
         } catch (RuntimeException e) {
@@ -73,11 +63,6 @@ public class HTMLSerializer extends AbstractSerializer implements Serializer, Le
         StringBuffer element = new StringBuffer();
         element.append("<" + eName);
         
-        // add xhtml namespace to the root element:
-        if (!this.visitedRootElement) {
-            element.append(" xmlns=\"http://www.w3.org/1999/xhtml\"");
-            this.visitedRootElement = true;
-        }
         for(int i = 0; i < attrs.getLength(); i++) {
             String aLocalName = attrs.getLocalName(i);
             String aQName = attrs.getQName(i);

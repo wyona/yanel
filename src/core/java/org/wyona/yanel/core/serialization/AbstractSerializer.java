@@ -15,9 +15,9 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class HTMLSerializer extends AbstractSerializer implements Serializer, LexicalHandler {
+public abstract class AbstractSerializer extends DefaultHandler implements Serializer, LexicalHandler {
 
-    private static Category log = Category.getInstance(HTMLSerializer.class);
+    private static Category log = Category.getInstance(AbstractSerializer.class);
     private EntityResolver entityResolver;
     private String pendingElement = null;
     private boolean doIndent;
@@ -25,12 +25,7 @@ public class HTMLSerializer extends AbstractSerializer implements Serializer, Le
     
     protected static final String[] nonCollapsableElements = { "textarea", "script", "style", "div" };
 
-    protected static final String[] inlineElements = {"a", "abbr", "acronym", "b", "basefont",
-        "bdo", "big", "br", "cite", "code", "dfn", "em", "font", "i", "img", "input", "kbd", 
-        "label", "q", "s", "samp", "select", "small", "span", "strike", "strong", "sub", "sup",
-        "textarea", "tt", "u", "var"};
-    
-    public HTMLSerializer() {
+    public AbstractSerializer() {
     }
     
     public void startDocument() throws SAXException {
@@ -106,26 +101,12 @@ public class HTMLSerializer extends AbstractSerializer implements Serializer, Le
         } else {
             print("</" + eName + ">");
         }
-        if (this.doIndent && !isInlineElement(eName)) {
+        if (this.doIndent) {
             // Not a real indent yet, just add line breaks.
             // Don't add line breaks after inline-elements because it might break the
             // layout. see http://www.w3.org/TR/CSS21/text.html#q8
             print("\n");
         }
-    }
-    
-    /**
-     * Indicates whether an html element is a inline element or not.
-     * @param element element name
-     * @return true if it's an inline element, false otherwise.
-     */
-    protected boolean isInlineElement(String element) {
-        for (int i = 0; i < inlineElements.length; i++) {
-            if (element.equals(inlineElements[i])) {
-                return true;
-            }
-        }
-        return false;
     }
     
     /**
@@ -209,6 +190,28 @@ public class HTMLSerializer extends AbstractSerializer implements Serializer, Le
         }
     }
     
+    /**
+     * Replaces some characters by their corresponding xml entities.
+     * @param str
+     * @return
+     */
+    public String replaceEntities(String str) {
+        // there may be some &amp; and some & mixed in the input, so first transform all
+        // &amp; to & and then transform all & back to &amp;
+        // this way we don't get double escaped &amp;amp;
+        str = str.replaceAll("&amp;", "&");
+        str = str.replaceAll("&", "&amp;");
+        str = str.replaceAll("<", "&lt;");
+        str = str.replaceAll(">", "&gt;");
+        str = str.replaceAll("'", "&apos;");
+        str = str.replaceAll("\"", "&quot;");
+        return str;
+    }
+
+    public void setWriter(Writer writer) {
+        // TODO Auto-generated method stub
+    }
+    
     public Writer getWriter() {
         return null;
     }
@@ -231,5 +234,29 @@ public class HTMLSerializer extends AbstractSerializer implements Serializer, Le
         handlePendingElement();
         String s = new String(buf, offset, length);
         print("<!-- " + s + " -->");
+    }
+
+    public void endCDATA() throws SAXException {
+        // TODO Auto-generated method stub
+    }
+
+    public void endDTD() throws SAXException {
+        // TODO Auto-generated method stub
+    }
+
+    public void endEntity(String name) throws SAXException {
+        // TODO Auto-generated method stub
+    }
+
+    public void startCDATA() throws SAXException {
+        // TODO Auto-generated method stub
+    }
+
+    public void startDTD(String arg0, String arg1, String arg2) throws SAXException {
+        // TODO Auto-generated method stub
+    }
+
+    public void startEntity(String name) throws SAXException {
+        // TODO Auto-generated method stub
     }
 }
