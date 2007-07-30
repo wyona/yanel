@@ -82,6 +82,11 @@ public class TimelineResource extends Resource implements ViewableV2 {
      *
      */
     private StringBuffer getXHTML() throws Exception {
+        //java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("MMM dd yyyy hh:mm:ss z");
+        //String todaysDate = sdf.format(new java.util.Date());
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("MMM dd yyyy");
+        String todaysDate = sdf.format(new java.util.Date()) + " 00:00:00 GMT";
+
         StringBuffer sb = new StringBuffer();
         sb.append("<?xml version=\"1.0\"?>");
 
@@ -108,8 +113,7 @@ public class TimelineResource extends Resource implements ViewableV2 {
         sb.append("  var bandInfos = [");
         sb.append("    Timeline.createBandInfo({");
         sb.append("        eventSource:    eventSource,");
-        //sb.append("        date:           \"@TODAY@\",");
-        sb.append("        date:           \"Jul 27 2007 00:00:00 GMT\",");
+        sb.append("        date:           \"" + todaysDate + "\",");
         sb.append("        width:          \"70%\",");
         sb.append("        intervalUnit:   Timeline.DateTime.MONTH,");
         sb.append("        intervalPixels: 100");
@@ -120,8 +124,7 @@ public class TimelineResource extends Resource implements ViewableV2 {
         sb.append("        trackGap:       0.2,");
 
         sb.append("        eventSource:    eventSource,");
-        //sb.append("        date:           \"@TODAY@\",");
-        sb.append("        date:           \"Jul 27 2007 00:00:00 GMT\",");
+        sb.append("        date:           \"" + todaysDate + "\",");
         sb.append("        width:          \"30%\",");
         sb.append("        intervalUnit:   Timeline.DateTime.YEAR,"); 
         sb.append("        intervalPixels: 200");
@@ -134,10 +137,14 @@ public class TimelineResource extends Resource implements ViewableV2 {
         sb.append("  Timeline.loadXML(\"" + getResourceConfigProperty("href") + "\", function(xml, url) { eventSource.loadXML(xml, url); });");
         sb.append("}");
         sb.append("</script>");
+        sb.append("<title>" + getResourceConfigProperty("title") + "</title>");
         sb.append("</head>");
 
         sb.append("<body onload=\"onLoad();\" onresize=\"onResize();\">");
         sb.append("<h3>" + getResourceConfigProperty("title") + "</h3>");
+        sb.append("<p>Today's Date (server time): " + todaysDate + "</p>");
+        sb.append("<p>XML: <a href=\"" + getResourceConfigProperty("href") + "\">" + getResourceConfigProperty("href") + "</a></p>");
+
         sb.append("<div id=\"my-timeline\" style=\"height: 250px; border: 1px solid #aaa\"></div>");
         sb.append("</body>");
         sb.append("</html>");
