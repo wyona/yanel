@@ -182,8 +182,12 @@
           <span style="font-size:smaller;color:green;"><xsl:value-of select="yanel:url"/></span>
           <span style="font-size:smaller;">
             <xsl:text>&#0160;(</xsl:text><a href="?show=cache&amp;idx={$idx}&amp;id={$id}" style="font-size:smaller;"><i18n:message key="cached"/></a><xsl:text>)</xsl:text>
+
+<!-- TODO: Neither explanation nor anchors seem to work properly! -->
+<!--
             <xsl:text>&#0160;(</xsl:text><a href="?show=explain&amp;query={$query}&amp;yanel.meta.language={$yanel.meta.language}&amp;idx={$idx}&amp;id={$id}" style="font-size:smaller;"><i18n:message key="explain"/></a><xsl:text>)</xsl:text>
             <xsl:text>&#0160;(</xsl:text><a href="?show=anchors&amp;idx={$idx}&amp;id={$id}" style="font-size:smaller;"><i18n:message key="anchors"/></a><xsl:text>)</xsl:text>
+-->
           </span>
       </div>
     </div>
