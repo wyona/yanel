@@ -264,7 +264,7 @@ public abstract class Resource {
         language = getResourceConfigProperty("language");
         if (language != null) return language;
 
-        return DEFAULT_LANGUAGE;
+        return getRequestedLanguage();
     }
 
     /**
@@ -283,22 +283,7 @@ public abstract class Resource {
         String language = getRequest().getParameter("yanel.meta.language");
         if (language != null) return language;
         
-/*
-        // TODO: Does this really belong here resp. shouldn't it be used with a different priority?
         // (2)
-        if (ResourceAttributeHelper.hasAttributeImplemented(this, "Translatable", "1")) {
-            language = ((TranslatableV1)this).getLanguage(); 
-        }
-        if (language != null) return language;
-*/
-
-/*
-        // (3)
-        language = getResourceConfigProperty("language");
-        if (language != null) return language;
-*/
-
-        // (4)
         language = getRequest().getHeader("Accept-Language");
         if (language != null) {
             if (language.indexOf(",") > 0) {
@@ -311,11 +296,11 @@ public abstract class Resource {
         }
         if (language != null) return language;
 
-        // (5)
+        // (3)
         language = getRealm().getDefaultLanguage();
         if (language != null) return language;
         
-        // (6)
+        // (4)
         return DEFAULT_LANGUAGE;
     }
 
