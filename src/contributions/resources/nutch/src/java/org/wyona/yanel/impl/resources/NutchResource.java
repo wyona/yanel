@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2007 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -431,17 +431,20 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
     
     /**
-     * 
+     * Creates explanation document
+     *
      * @param idx
      * @param id
      * @param searchTerm
-     * @return
+     * @return Explanation document as input stream
      */
     private InputStream createExplanationDocument4SearchResult(int idx, int id, String searchTerm) {
         try {
             nutchBean = NutchBean.get(servletContext, configuration);
             Hit hit = new Hit(idx, id);
+            // TODO: Is the language really needed?!
             Query query = Query.parse(searchTerm, getContentLanguage(), configuration);
+
             String content = "<html xmlns:xhtml=\"http://www.w3.org/1999/xhtml\" " +
                     "xmlns=\"http://www.w3.org/1999/xhtml\">" +
                     "<head><title><i18n:message key=\"scoreExplanation\"/>: " + searchTerm + "</title></head>" +
@@ -501,31 +504,34 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
 
     /**
-     * This method creates a document for the given searchTerm starting at result <start> 
-     * and stores the informations within a xml 
-     * @param searchTerm 
-     * @param start position of found results for searchTerm 
+     * This method creates an XML document of the results for a given search term starting at a specific value and with a specified number of returned results per page
+     *
+     * @param rootElement Root element of DOM
+     * @param searchTerm Search term
+     * @param start Position of found results for searchTerm 
+     * @param hitsPerPage Number of hits per page
      */
     private void getSearchResults(Element rootElement, String searchTerm, int start, int hitsPerPage) {
         try {
-                nutchBean = new NutchBean(configuration);
-                Query query = Query.parse(searchTerm, configuration);
-                Hits hits = nutchBean.search(query, totalHitCount);
-                totalHits = hits.getTotal();
-                int range = (int) Math.min(hits.getTotal() - start, hitsPerPage);
-                Hit[] show = hits.getHits(start, range);
-                HitDetails[] details = nutchBean.getDetails(show);
-                Summary[] summaries = nutchBean.getSummary(details, query);
-                Element fetchedDateElement = null;
-                Element segmentElement = null;
-                Element digestElement = null;
-                Element urlElement = null;
-                Element titleElement = null;
-                Element hitIndexDocNoElement = null;
-                Element hitDedupValueElement = null;
-                Element hitIndexNoElement = null;
-                Element fragmentsElement = null;
-                Element fragmentElement = null;
+            Query query = Query.parse(searchTerm, configuration);
+            //log.error("DEBUG: Query: " + query);
+            nutchBean = new NutchBean(configuration);
+            Hits hits = nutchBean.search(query, totalHitCount);
+            totalHits = hits.getTotal();
+            int range = (int) Math.min(hits.getTotal() - start, hitsPerPage);
+            Hit[] show = hits.getHits(start, range);
+            HitDetails[] details = nutchBean.getDetails(show);
+            Summary[] summaries = nutchBean.getSummary(details, query);
+            Element fetchedDateElement = null;
+            Element segmentElement = null;
+            Element digestElement = null;
+            Element urlElement = null;
+            Element titleElement = null;
+            Element hitIndexDocNoElement = null;
+            Element hitDedupValueElement = null;
+            Element hitIndexNoElement = null;
+            Element fragmentsElement = null;
+            Element fragmentElement = null;
 
                 Element resultsElement = null;
                 if (show.length == 0) {
