@@ -87,9 +87,15 @@
   
   <xsl:template match="yanel:no-query" mode="title">Search</xsl:template>
   
+  <xsl:template match="yanel:no-results">
+    <div id="no-results">
+      <i18n:message key="noResults"/>
+    </div>
+  </xsl:template>
+  
   <xsl:template match="yanel:results">
     <div id="resultHits" hits="{$totalHits}"/>
-          <xsl:apply-templates select="yanel:exception"/>
+    <xsl:apply-templates select="yanel:exception"/>
     
     <xsl:if test="number(@yanel:totalHits) > 0">
       <div id="tableHeadline">
