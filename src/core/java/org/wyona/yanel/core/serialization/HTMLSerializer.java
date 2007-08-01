@@ -1,26 +1,12 @@
 package org.wyona.yanel.core.serialization;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
-import java.util.Properties;
 import org.apache.log4j.Category;
-import org.apache.xml.serializer.Serializer;
-import org.apache.xml.serializer.DOMSerializer;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.ext.LexicalHandler;
-import org.xml.sax.helpers.DefaultHandler;
 
-public class HTMLSerializer extends AbstractSerializer implements Serializer, LexicalHandler {
+public class HTMLSerializer extends XMLSerializer {
 
     private static Category log = Category.getInstance(HTMLSerializer.class);
-    private EntityResolver entityResolver;
-    private String pendingElement = null;
-    private boolean doIndent;
     private boolean visitedRootElement = false;
     
     protected static final String[] nonCollapsableElements = { "textarea", "script", "style", "div" };
@@ -31,39 +17,6 @@ public class HTMLSerializer extends AbstractSerializer implements Serializer, Le
         "textarea", "tt", "u", "var"};
     
     public HTMLSerializer() {
-    }
-    
-    public void startDocument() throws SAXException {
-        try {
-            String omitXMLDeclaration = this.properties.getProperty("omit-xml-declaration", "no");
-            if (omitXMLDeclaration != null && !omitXMLDeclaration.equals("yes")) {
-                print("<?xml version=\"1.0\"?>\n");
-            }
-            String doctypePublic = this.properties.getProperty("doctype-public");
-            String doctypeSystem = this.properties.getProperty("doctype-system");
-            String method = this.properties.getProperty("method", "xml");
-            if (doctypePublic != null) {
-                print("<!DOCTYPE " + method + " PUBLIC \"" + doctypePublic);
-                if (doctypeSystem != null) {
-                    print("\" \"" + doctypeSystem);
-                }
-                print("\">\n");
-            }
-            this.doIndent = this.properties.getProperty("indent", "no").equals("yes");
-        } catch (RuntimeException e) {
-            log.error(e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    public void endDocument() throws SAXException {
-        try {
-            os.flush();
-            os.close();
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new SAXException(e);
-        }
     }
     
     public void startElement(String namespaceURI, String localName, String qName, Attributes attrs) throws SAXException {
@@ -129,19 +82,6 @@ public class HTMLSerializer extends AbstractSerializer implements Serializer, Le
     }
     
     /**
-     * Writes the pending element if there is one.
-     * This method is called when we know that the element is either non-empty
-     * or non-collapsable.
-     * @throws SAXException
-     */
-    protected void handlePendingElement() throws SAXException {
-        if (this.pendingElement != null) {
-            print(this.pendingElement + ">");
-            this.pendingElement = null;
-        }
-    }
-
-    /**
      * Indicates whether an element may be collapsed in the output if it is empty.
      * Collapsing means to write e.g. &lt;textarea/&gt; instead of &lt;textarea&gt;&lt;/textarea&gt;.
      * Some browsers (e.g. IE) have problems with &lt;/textarea&gt;.
@@ -149,7 +89,7 @@ public class HTMLSerializer extends AbstractSerializer implements Serializer, Le
      * @return
      */
     private boolean isCollapsableElement(String elementName) {
-        for (int i=0; i< this.nonCollapsableElements.length; i++) {
+        for (int i=0; i< nonCollapsableElements.length; i++) {
             if (nonCollapsableElements[i].equals(elementName)) {
                 return false;
             }
@@ -157,79 +97,4 @@ public class HTMLSerializer extends AbstractSerializer implements Serializer, Le
         return true;
     }
 
-    public void characters(char[] buf, int offset, int len) throws SAXException {
-        handlePendingElement();
-        String s = replaceEntities(new String(buf, offset, len));
-        print(s);
-    }
-
-   
-    public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
-        try {
-            if (this.entityResolver != null) {
-                    return this.entityResolver.resolveEntity(publicId, systemId);
-            } else {
-                return super.resolveEntity(publicId, systemId);
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new SAXException(e);
-        }
-    }
-
-    public void setEntityResolver(EntityResolver entityResolver) {
-        this.entityResolver = entityResolver;
-    }
-
-    public ContentHandler asContentHandler() throws IOException {
-        return this;
-    }
-
-    public DOMSerializer asDOMSerializer() throws IOException {
-        return null;
-    }
-
-
-    protected OutputStream os;
-    
-    public void setOutputStream(OutputStream os) {
-        this.os = os;
-    }
-    
-    public OutputStream getOutputStream() {
-        return this.os;
-    }
-    
-    protected void print(String s) throws SAXException {
-        try {
-            this.os.write(s.getBytes("UTF-8"));
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new SAXException(e);
-        }
-    }
-    
-    public Writer getWriter() {
-        return null;
-    }
-
-    protected Properties properties;
-    
-    public void setOutputFormat(Properties properties) {
-        this.properties = properties;
-    }
-    
-    public Properties getOutputFormat() {
-        return properties;
-    }
-    
-    public boolean reset() {
-        return true;
-    }
-
-    public void comment(char[] buf, int offset, int length) throws SAXException {
-        handlePendingElement();
-        String s = new String(buf, offset, length);
-        print("<!-- " + s + " -->");
-    }
 }
