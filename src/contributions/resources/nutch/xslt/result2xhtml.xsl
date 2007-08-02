@@ -56,10 +56,11 @@
       <input type="hidden" name="yanel.meta.language" value="{$localization.language}"/>
       <input type="hidden" name="totalHits" value="{$totalHits}"/>
       <input type="submit" name="submit" value="i18n:attr key=search"/>
+
+      <xsl:apply-templates select="/yanel:nutch/yanel:groups" mode="form"/>
     </form>
-    <p>
-      <xsl:apply-templates/>
-    </p>
+
+    <xsl:apply-templates/>
     </body>
     </html>
   </xsl:template>
@@ -226,6 +227,10 @@
           </xsl:otherwise>
         </xsl:choose>
     </div>
+  </xsl:template>
+
+  <xsl:template match="yanel:groups" mode="form">
+    <br/><input type="radio" name="group" value="usage"/>Usage <input type="radio" name="group" value="dev" checked="true"/>Development
   </xsl:template>
 
 </xsl:stylesheet>
