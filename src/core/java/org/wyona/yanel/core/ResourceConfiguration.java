@@ -171,10 +171,10 @@ public class ResourceConfiguration {
     }
 
     /**
-     * Get yanel:custom-config
+     * Get yanel:custom-config. Returns null if resource config does not contain a custom-config element.
      */
     public org.w3c.dom.Document getCustomConfiguration() {
-        Configuration customConfig = config.getChild("custom-config");
+        Configuration customConfig = config.getChild("custom-config", false);
         if (customConfig != null) {
             org.w3c.dom.Document doc = null;
             javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
