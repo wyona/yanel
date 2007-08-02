@@ -14,9 +14,14 @@
   <xsl:output method="html"/>
   -->
   
-  <xsl:param name="yanel.meta.language" select="/yanel:nutch/@yanel:language"/>
+  <xsl:param name="localization.language" select="'LOCALIZATION_LANG_IS_NULL'"/>
+  <xsl:param name="translation.language" select="'TRANSLATION_LANG_IS_NULL'"/>
   
-  <xsl:param name="query" select="/yanel:nutch/yanel:query"/>
+  <xsl:variable name="query" select="/yanel:nutch/yanel:query"/>
+<!--
+  <xsl:param name="query" select="'QUERY_IS_NULL'"/>
+-->
+
   <xsl:param name="totalHits" select="/yanel:nutch/yanel:results/@yanel:totalHits" />
   <xsl:param name="hitsPerPage" select="/yanel:nutch/yanel:results/@yanel:hitsPerPage" />
   <xsl:variable name="currentPageNo" select="/yanel:nutch/yanel:results/@yanel:currentPageNo" />
@@ -30,14 +35,15 @@
                 </xsl:choose>
               </xsl:variable>
 
+
+
   <xsl:template match="/">
     <html>
-    
     <head>
       <title><xsl:apply-templates select="/yanel:nutch/yanel:no-query" mode="title"/><xsl:apply-templates select="/yanel:nutch/yanel:query" mode="title"/></title>
       <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
       <!-- No Introspection! -->
-      <link rel="neutron-introspection"/>
+      <!--<link rel="neutron-introspection"/>-->
     </head>
     
     <body>
@@ -46,21 +52,20 @@
         <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(@yanel:start)}&amp;yanel.resource.viewid=source"><i18n:message key="viewResultsAsXml"/></a>
       </div>
     <form name="search">
-            <input type="text" name="query" value="{$query}"/>
-            <input type="hidden" name="yanel.meta.language" value="{$yanel.meta.language}"/>
-            <input type="hidden" name="totalHits" value="{$totalHits}"/>
-            <input type="submit" name="submit" value="i18n:attr key=search"/>
+      <input type="text" name="query" value="{$query}"/>
+      <input type="hidden" name="yanel.meta.language" value="{$localization.language}"/>
+      <input type="hidden" name="totalHits" value="{$totalHits}"/>
+      <input type="submit" name="submit" value="i18n:attr key=search"/>
     </form>
-
-
     <p>
       <xsl:apply-templates/>
     </p>
-    
     </body>
     </html>
   </xsl:template>
   
+
+
   <xsl:template match="yanel:query">
     <!-- do nothing -->
   </xsl:template>
@@ -76,9 +81,10 @@
   </xsl:template>
   
   <xsl:template match="yanel:no-query">
-  <!--
+<xsl:comment>No query yet!</xsl:comment>
+<!--
   <p>No query yet.</p>
-  -->
+-->
   </xsl:template>
 
   <xsl:template match="yanel:query" mode="title">
@@ -153,7 +159,7 @@
           <xsl:otherwise>
             <xsl:if test="number($pageNo) &gt; number($minPage)">
               <xsl:if test="number($pageNo) &lt; number($maxPage)">
-                <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(number($pageNo - 1) * $hitsPerPage)}&amp;yanel.meta.language={$yanel.meta.language}"><xsl:value-of select="$pageNo" /></a>&#0160;
+                <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(number($pageNo - 1) * $hitsPerPage)}&amp;yanel.meta.language={$localization.language}"><xsl:value-of select="$pageNo" /></a>&#0160;
               </xsl:if>
             </xsl:if>
           </xsl:otherwise>
@@ -191,7 +197,7 @@
 
 <!-- TODO: Neither explanation nor anchors seem to work properly! -->
 <!--
-            <xsl:text>&#0160;(</xsl:text><a href="?show=explain&amp;query={$query}&amp;yanel.meta.language={$yanel.meta.language}&amp;idx={$idx}&amp;id={$id}" style="font-size:smaller;"><i18n:message key="explain"/></a><xsl:text>)</xsl:text>
+            <xsl:text>&#0160;(</xsl:text><a href="?show=explain&amp;query={$query}&amp;yanel.meta.language={$localization.language}&amp;idx={$idx}&amp;id={$id}" style="font-size:smaller;"><i18n:message key="explain"/></a><xsl:text>)</xsl:text>
             <xsl:text>&#0160;(</xsl:text><a href="?show=anchors&amp;idx={$idx}&amp;id={$id}" style="font-size:smaller;"><i18n:message key="anchors"/></a><xsl:text>)</xsl:text>
 -->
           </span>
