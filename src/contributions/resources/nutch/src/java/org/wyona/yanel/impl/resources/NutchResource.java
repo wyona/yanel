@@ -93,7 +93,6 @@ public class NutchResource extends Resource implements ViewableV1 {
     private Configuration configuration = null;
     private File crawlDir = null;
     private String exceptionMessage = null;
-    private Document document = null;
     private int start = 0;
     private int hitsPerPage = 10;
     private int numberOfPagesShown = 20;
@@ -231,9 +230,10 @@ public class NutchResource extends Resource implements ViewableV1 {
      * Create DOM document
      * @param searchTerm query
      */
-    private void getSearchResultsAsDOM(String searchTerm) throws Exception {
+    private Document getSearchPageAsDOM(String searchTerm) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
+        Document document = null;
         try {
             DocumentBuilder parser = dbf.newDocumentBuilder();
             document = parser.parse(new java.io.StringBufferInputStream("<nutch:nutch xmlns:nutch=\""+NAME_SPACE+"\" xmlns=\""+NAME_SPACE+"\"/>"));
@@ -268,13 +268,13 @@ public class NutchResource extends Resource implements ViewableV1 {
             try {
                 crawlDir = new File(configuration.get("searcher.dir"));
                 if (crawlDir != null && crawlDir.isDirectory()) {
-                    getSearchResults(rootElement, searchTerm, start, hitsPerPage);
+                    getSearchResults(document, rootElement, searchTerm, start, hitsPerPage);
                 } else {
                     Element exceptionElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "exception"));
                     exceptionMessage = "noSuchCrawlDirectory#" + crawlDir;
                     exceptionElement.appendChild(document.createTextNode(exceptionMessage));
                     log.error(exceptionMessage);
-                    return;
+                    return document;
                 }
             } catch (Exception e) {
                 log.error(e);
@@ -284,6 +284,7 @@ public class NutchResource extends Resource implements ViewableV1 {
         } else {
             rootElement.appendChild(document.createElementNS(NAME_SPACE, "no-query"));
         }
+        return document;
     }
     
     /**
@@ -298,18 +299,20 @@ public class NutchResource extends Resource implements ViewableV1 {
         } else if(show.equals("anchors")) {
             return createAnchorsDocument4SearchResult(idx, id, searchTerm);
         } else {
-            return getSearchResults(viewId, searchTerm);
+            return getSearchPage(viewId, searchTerm);
         }
     }
 
     /**
      * Generate results page as XHTML
+     *
      * @param viewId View ID
      * @param searchTerm Search term
-     * @return InputStream
+     *
+     * @return XHTML as input stream
      */
-    private InputStream getSearchResults(String viewId, String searchTerm) throws Exception {
-        getSearchResultsAsDOM(searchTerm);
+    private InputStream getSearchPage(String viewId, String searchTerm) throws Exception {
+        Document document = getSearchPageAsDOM(searchTerm);
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             if (viewId != null && viewId.equals("source")) {
@@ -513,7 +516,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @param start Position of found results for searchTerm 
      * @param hitsPerPage Number of hits per page
      */
-    private void getSearchResults(Element rootElement, String searchTerm, int start, int hitsPerPage) {
+    private void getSearchResults(Document document, Element rootElement, String searchTerm, int start, int hitsPerPage) {
         try {
             Query query = Query.parse(searchTerm, configuration);
             //log.error("DEBUG: Query: " + query);
