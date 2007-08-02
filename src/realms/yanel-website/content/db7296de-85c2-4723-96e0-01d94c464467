@@ -1,6 +1,31 @@
-!Nutch Resource
+<?xml version="1.0"?>
 
-__Configuration__:
-* URLs to start with: nutch-0.8.x/url/...
-* URLs to be parsed and followed: nutch-0.8.x/conf/crawl-urlfilter.txt (Intranet), nutch-0.8.x/conf/regex-urlfilter.txt (Internet)
-* Depth of Crawling: crawl.sh (e.g. -depth 10)
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Nutch Resource</title>
+  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head>
+  
+  <body>
+    <h1>Nutch Resource</h1>
+      <h2>Crawling</h2>
+      <h3>Configuration of Crawler</h3>
+       <p>See also <a href="http://lucene.apache.org/nutch/tutorial8.html">http://lucene.apache.org/nutch/tutorial8.html</a> for more information.</p>
+       <ul>
+        <li>URLs to start with:<ul>
+	  <li>e.g. nutch-0.8.x/url/yanel-website.txt (http://yanel.wyona.org/)</li>
+	  <li>e.g. nutch-0.8.x/url/yulup-website.txt (http://www.yulup.org/)</li>
+	  </ul>
+	   </li>
+        <li>The range of crawling resp. URLs to be parsed and followed (IMPORTANT: Both files below need to have an "accept hosts" entry):<ul>
+	  <li>nutch-0.8.x/conf/crawl-urlfilter.txt (+^http://yanel.wyona.org/)</li>
+	  <li>nutch-0.8.x/conf/regex-urlfilter.txt (+^http://yanel.wyona.org/)</li>
+	  </ul>
+	  </li>
+        <li>Depth of Crawling: crawl.sh (e.g. DEPTH=5)</li>
+       </ul>
+      <h3>Running Crawler</h3>
+        <ul>
+	<li>sh crawl.sh</li>
+	</ul>
+      </body>
+</html>
