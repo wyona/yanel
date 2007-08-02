@@ -8,9 +8,9 @@
     <!--
     <value>/home/ulysses/src/crawl_yanel_ml_20061222</value>
     -->
-    <!--
-    <value>/home/michi/src/wyona/extra/ipi/nutch/trunk/crawl_yanel_ml_20061222</value>
-    -->
+<!--
+    <value>/home/michi/src/wyona/extra/ipi/nutch/trunk/crawl_yanel_mls_2007.08.02</value>
+-->
     <description>
     Path to root of crawl.  This directory is searched (in
     order) for either the file search-servers.txt, containing a list of
@@ -25,6 +25,7 @@
      <value>nutch-extensionpoints|protocol-file|protocol-http|ontology|languageidentifier|analysis-(fr|en|de)|urlfilter-regex|parse-(text|pdf|mspowerpoint|msword|msexcel|rtf|rss|html|zip)|index-basic|query-(basic|site|url)|lib-jakarta-poi|lib-lucene-analyzers|scoring-opic</value>
   </property>
   
+<!--
   <property>
     <name>extension.ontology.extension-name</name>
     <value>org.apache.nutch.ontology.jena.OntologyImpl</value>
@@ -36,4 +37,5 @@
     <value>file:/home/USER/src/yanel/trunk/src/contributions/resources/nutch/conf/synonymously.owl</value>
     <description>Shows the owl file (synonymously map)</description>
   </property>
+-->
 </configuration>
