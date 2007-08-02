@@ -16,6 +16,8 @@
   
   <xsl:param name="localization.language" select="'LOCALIZATION_LANG_IS_NULL'"/>
   <xsl:param name="translation.language" select="'TRANSLATION_LANG_IS_NULL'"/>
+
+  <xsl:param name="group" select="'GROUP_IS_NULL'"/>
   
   <xsl:variable name="query" select="/yanel:nutch/yanel:query"/>
 <!--
@@ -230,7 +232,7 @@
   </xsl:template>
 
   <xsl:template match="yanel:groups" mode="form">
-    <br/><input type="radio" name="group" value="usage"/>Usage <input type="radio" name="group" value="dev" checked="true"/>Development
+    <br/><input type="radio" name="group" value="usage"><xsl:if test="$group = 'usage'"><xsl:attribute name="checked">true</xsl:attribute></xsl:if></input>Usage <input type="radio" name="group" value="dev"><xsl:if test="$group = 'dev'"><xsl:attribute name="checked">true</xsl:attribute></xsl:if></input>Development
   </xsl:template>
 
 </xsl:stylesheet>
