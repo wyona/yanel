@@ -7,7 +7,7 @@
 <!--
   <yanel:property name="i18n-bundle-name" value="nutch"/>
 -->
-  <yanel:property name="nutch-config" value="file:/home/michi/src/wyona/public/yanel/trunk/src/realms/yanel-website/content/nutch-config/nutch-local-yanel-mls.xml"/>
+  <yanel:property name="nutch-config" value="file:/home/michi/src/wyona/public/yanel/trunk/src/realms/yanel-website/content/nutch-config/nutch-local-yanel-ml-development.xml"/>
 
   <yanel:custom-config xmlns:nr="http://www.wyona.org/yanel/resource/nutch-resource/1.0">
     <nr:configs>
