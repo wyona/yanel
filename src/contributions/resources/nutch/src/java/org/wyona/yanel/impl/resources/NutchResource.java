@@ -211,7 +211,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             configuration.addDefaultResource(defaultResource);
 
             finalResource = new URL(confDir + File.separator + localFile);
-            String nutchConfig = getResourceConfigProperty("nutch-config");
+            String nutchConfig = getNutchConfigurationFile();
             if (log.isDebugEnabled()) log.debug("Local nutch config: " + nutchConfig);
             if(nutchConfig != null) {
                 if(nutchConfig.indexOf("file:") == 0) {
@@ -739,6 +739,19 @@ public class NutchResource extends Resource implements ViewableV1 {
             Element groupsElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "groups"));
         } else {
             rootElement.appendChild(document.createElementNS(NAME_SPACE, "no-custom-element-within-resource-config"));
+        }
+    }
+
+    /**
+     * Get nutch config from resource config depending on a group value
+     */
+    private String getNutchConfigurationFile() throws Exception {
+        String group = getRequest().getParameter("group");
+        if (group != null) {
+            log.error("DEBUG: Group: " + group);
+            return getResourceConfigProperty("nutch-config");
+        } else {
+            return getResourceConfigProperty("nutch-config");
         }
     }
 }
