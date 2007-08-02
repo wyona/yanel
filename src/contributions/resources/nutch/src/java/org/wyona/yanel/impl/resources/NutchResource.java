@@ -246,6 +246,8 @@ public class NutchResource extends Resource implements ViewableV1 {
         rootElement.setAttributeNS(NAME_SPACE, "translation-language", getContentLanguage());
         rootElement.setAttributeNS(NAME_SPACE, "local-nutch-config-url", finalResource.toString());
 
+        addGroups(document);
+
         if (searchTerm != null && searchTerm.length() > 0) {
             if(log.isDebugEnabled()) log.debug("Query: " + searchTerm);
             Element queryElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "query"));
@@ -723,5 +725,18 @@ public class NutchResource extends Resource implements ViewableV1 {
         transformer.setParameter("localization.language", getRequestedLanguage());
         transformer.setParameter("translation.language", getContentLanguage());
         transformer.setParameter("show", getShowParameterValue());
+    }
+
+    /**
+     * Add groups from resource instance configuration to DOM
+     */
+    private void addGroups(Document document) {
+        Document customResConfigDoc = getConfiguration().getCustomConfiguration();
+        Element rootElement = document.getDocumentElement();
+        if (customResConfigDoc != null) {
+            Element groupsElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "groups"));
+        } else {
+            rootElement.appendChild(document.createElementNS(NAME_SPACE, "no-custom-element-within-resource-config"));
+        }
     }
 }
