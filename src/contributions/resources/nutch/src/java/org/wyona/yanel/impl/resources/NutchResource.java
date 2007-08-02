@@ -247,6 +247,7 @@ public class NutchResource extends Resource implements ViewableV1 {
         rootElement.setAttributeNS(NAME_SPACE, "local-nutch-config-url", finalResource.toString());
 
         if (searchTerm != null && searchTerm.length() > 0) {
+            if(log.isDebugEnabled()) log.debug("Query: " + searchTerm);
             Element queryElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "query"));
             queryElement.appendChild(document.createTextNode(searchTerm));
 
@@ -703,7 +704,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
 
     /**
-     *
+     * Set transformer parameters
      */
     private void setParameters(Transformer transformer) throws Exception {
         transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
@@ -712,7 +713,9 @@ public class NutchResource extends Resource implements ViewableV1 {
         transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
         transformer.setParameter("hitsPerPage", "" + hitsPerPage);
         transformer.setParameter("totalHits", "" + totalHits);
-        transformer.setParameter("query", "" + searchTerm);
+        if (searchTerm != null && searchTerm.length() > 0) {
+            transformer.setParameter("query", "" + searchTerm);
+        }
         transformer.setParameter("start", "" + start);
         transformer.setParameter("localization.language", getRequestedLanguage());
         transformer.setParameter("translation.language", getContentLanguage());
