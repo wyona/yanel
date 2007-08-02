@@ -725,6 +725,8 @@ public class NutchResource extends Resource implements ViewableV1 {
         transformer.setParameter("localization.language", getRequestedLanguage());
         transformer.setParameter("translation.language", getContentLanguage());
         transformer.setParameter("show", getShowParameterValue());
+        String group = getRequest().getParameter("group");
+        if (group != null) transformer.setParameter("group", group);
     }
 
     /**
