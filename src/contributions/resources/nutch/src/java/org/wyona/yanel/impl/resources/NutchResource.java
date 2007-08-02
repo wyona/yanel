@@ -106,7 +106,6 @@ public class NutchResource extends Resource implements ViewableV1 {
     private NutchBean nutchBean = null;
     private ServletContext servletContext = null;
     private String cachedMimeType = null;
-    Ontology ontology = null;
 
     private URL finalResource;
     
@@ -214,7 +213,7 @@ public class NutchResource extends Resource implements ViewableV1 {
 
             finalResource = new URL(confDir + File.separator + localFile);
             String nutchConfig = getResourceConfigProperty("nutch-config");
-            log.debug("Local nutch config: " + nutchConfig);
+            if (log.isDebugEnabled()) log.debug("Local nutch config: " + nutchConfig);
             if(nutchConfig != null) {
                 if(nutchConfig.indexOf("file:") == 0) {
                     finalResource = new URL(nutchConfig);
@@ -241,15 +240,17 @@ public class NutchResource extends Resource implements ViewableV1 {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+
         Element rootElement = document.getDocumentElement();
         rootElement.setAttributeNS(NAME_SPACE, "localization-language", getRequestedLanguage());
         rootElement.setAttributeNS(NAME_SPACE, "translation-language", getContentLanguage());
         rootElement.setAttributeNS(NAME_SPACE, "local-nutch-config-url", finalResource.toString());
+
         if (searchTerm != null && searchTerm.length() > 0) {
             Element queryElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "query"));
             queryElement.appendChild(document.createTextNode(searchTerm));
 
-            loadOntology(); 
+            Ontology ontology = loadOntology(); 
             if (ontology != null) {
                 Iterator refinedQueryIterator = ontology.subclasses(searchTerm);
                 if (refinedQueryIterator.hasNext()) {
@@ -594,34 +595,27 @@ public class NutchResource extends Resource implements ViewableV1 {
     /**
      * Load Ontology
      */
-    private void loadOntology() {
+    private Ontology loadOntology() {
         try {
             // Configuration nutchConf = NutchConfiguration.get(application);
-            String urls = configuration.get("extension.ontology.urls");
-            log.debug("extension.ontology.urls: " + urls);
 
-            if (urls != null) {
-                ontology = (Ontology) Class.forName(configuration.get("extension.ontology.extension-name")).newInstance();
+            String className = configuration.get("extension.ontology.extension-name");
+            String urls = configuration.get("extension.ontology.urls");
+            if(log.isDebugEnabled()) log.debug("extension.ontology.urls: " + urls);
+
+            if (urls != null && className != null) {
+                Ontology ontology = (Ontology) Class.forName(configuration.get("extension.ontology.extension-name")).newInstance();
                 //ontology = (Ontology) Class.forName("org.apache.nutch.ontology.jena.OntologyImpl").newInstance();
                 //ontology = new org.apache.nutch.ontology.OntologyFactory(configuration).getOntology();
                 if (ontology != null) {
                     ontology.load(urls.split("\\s+"));
                 }
+                return ontology;
             }
-
-/*
-            // TODO: null is being returned!
-            ontology = new org.apache.nutch.ontology.OntologyFactory(configuration).getOntology();
-            if (urls==null || urls.trim().equals("")) {
-                // ignored siliently
-            } else {
-                log.error("is ontology null? : " + ontology);
-                ontology.load(urls.split("\\s+"));
-            }
-*/
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+        return null;
     }
 
     /**
