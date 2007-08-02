@@ -207,7 +207,7 @@ public class ResourceConfiguration {
             return doc; 
 */
         } else {
-            log.warn("No custom configuration: " + getUniversalName());
+            log.info("No custom configuration: " + getUniversalName());
         }
         return null;
     }
