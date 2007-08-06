@@ -752,7 +752,7 @@ public class NutchResource extends Resource implements ViewableV1 {
      */
     private String getNutchConfigurationFile() throws Exception {
         String group = getRequest().getParameter("group");
-        if (group != null) {
+        if (group != null && group.length() > 0) {
             org.jdom.Document jdomDocument = new org.jdom.input.DOMBuilder().build(getConfiguration().getCustomConfiguration());
 
             XPath xpath = XPath.newInstance("/yanel:custom-config/nr:groups/nr:group[@name='" + group + "']/nr:nutch-config/@name");
