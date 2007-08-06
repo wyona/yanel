@@ -233,7 +233,7 @@
   </xsl:template>
 
   <xsl:template match="yanel:groups" mode="form">
-    <br/><input type="radio" name="group" value="usage"><xsl:if test="$group = 'usage'"><xsl:attribute name="checked">true</xsl:attribute></xsl:if></input>Usage <input type="radio" name="group" value="dev"><xsl:if test="$group = 'dev'"><xsl:attribute name="checked">true</xsl:attribute></xsl:if></input>Development
+    <br/><input type="radio" name="group" value="usage"><xsl:if test="$group = 'usage'"><xsl:attribute name="checked">true</xsl:attribute></xsl:if></input>Usage <input type="radio" name="group" value="dev"><xsl:if test="$group = 'dev'"><xsl:attribute name="checked">true</xsl:attribute></xsl:if><xsl:if test="$group = ''"><xsl:attribute name="checked">true</xsl:attribute></xsl:if></input>Development
   </xsl:template>
 
 </xsl:stylesheet>
