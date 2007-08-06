@@ -7,7 +7,6 @@
 <!--
   <yanel:property name="i18n-bundle-name" value="nutch"/>
 -->
-  <yanel:property name="nutch-config" value="file:/home/michi/src/wyona/public/yanel/trunk/src/realms/yanel-website/content/nutch-config/nutch-local-yanel-ml-development.xml"/>
 
   <yanel:custom-config xmlns:nr="http://www.wyona.org/yanel/resource/nutch-resource/1.0">
     <nr:configs>
@@ -19,7 +18,7 @@
       <nr:group name="usage" label="Usage" i18n-key="mlusage">
         <nr:nutch-config name="ml-usage"/>
       </nr:group>
-      <nr:group name="dev" label="Development" i18n-key="mldevelopment">
+      <nr:group name="dev" label="Development" i18n-key="mldevelopment" selected="true">
         <nr:nutch-config name="ml-development"/>
       </nr:group>
       <nr:group name="all" label="All Lists" i18n-key="all-lists">
