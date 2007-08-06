@@ -80,7 +80,7 @@
      Refined Query:
      <span id="refined-query-terms">
      <xsl:for-each select="yanel:term">
-       <a href="?query={.}"><xsl:value-of select="."/></a>
+       <a href="?query={.}&amp;group={$group}"><xsl:value-of select="."/></a>
        <xsl:if test="position() != last()">, </xsl:if>
     </xsl:for-each>
     </span>
