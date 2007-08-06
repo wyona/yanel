@@ -18,17 +18,14 @@
   <xsl:param name="translation.language" select="'TRANSLATION_LANG_IS_NULL'"/>
 
   <xsl:param name="group" select="''"/>
-<!--
-  <xsl:param name="group" select="'GROUP_IS_NULL'"/>
--->
   
   <xsl:variable name="query" select="/yanel:nutch/yanel:query"/>
 <!--
   <xsl:param name="query" select="'QUERY_IS_NULL'"/>
 -->
 
-  <xsl:param name="totalHits" select="/yanel:nutch/yanel:results/@yanel:totalHits" />
-  <xsl:param name="hitsPerPage" select="/yanel:nutch/yanel:results/@yanel:hitsPerPage" />
+  <xsl:variable name="totalHits" select="/yanel:nutch/yanel:results/@yanel:totalHits" />
+  <xsl:variable name="hitsPerPage" select="/yanel:nutch/yanel:results/@yanel:hitsPerPage" />
   <xsl:variable name="currentPageNo" select="/yanel:nutch/yanel:results/@yanel:currentPageNo" />
   <xsl:variable name="numberOfPagesShown" select="/yanel:nutch/yanel:results/@yanel:numberOfPagesShown" />
   <xsl:variable name="range" select="number($numberOfPagesShown div 2)" />
@@ -52,7 +49,7 @@
     </head>
     
     <body>
-    <span id="pageInfo" itemsPerPage="{$hitsPerPage}"/>
+    <span id="pageInfo" itemsPerPage="{$hitsPerPage}" totalHits="{$totalHits}"/>
       <div style="text-align:right;font-size:smaller;width:auto;float:right;">
         <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(@yanel:start)}&amp;group={$group}&amp;yanel.resource.viewid=source"><i18n:message key="viewResultsAsXml"/></a>
       </div>
