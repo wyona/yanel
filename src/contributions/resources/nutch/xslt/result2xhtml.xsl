@@ -17,7 +17,10 @@
   <xsl:param name="localization.language" select="'LOCALIZATION_LANG_IS_NULL'"/>
   <xsl:param name="translation.language" select="'TRANSLATION_LANG_IS_NULL'"/>
 
+  <xsl:param name="group" select="''"/>
+<!--
   <xsl:param name="group" select="'GROUP_IS_NULL'"/>
+-->
   
   <xsl:variable name="query" select="/yanel:nutch/yanel:query"/>
 <!--
@@ -51,7 +54,7 @@
     <body>
     <span id="pageInfo" itemsPerPage="{$hitsPerPage}"/>
       <div style="text-align:right;font-size:smaller;width:auto;float:right;">
-        <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(@yanel:start)}&amp;yanel.resource.viewid=source"><i18n:message key="viewResultsAsXml"/></a>
+        <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(@yanel:start)}&amp;group={$group}&amp;yanel.resource.viewid=source"><i18n:message key="viewResultsAsXml"/></a>
       </div>
     <form name="search">
       <input type="text" name="query" value="{$query}"/>
@@ -135,8 +138,8 @@
     
     <xsl:if test="number(@yanel:totalHits) > 0">
       <div id="pagening">
-
             <div style="text-align:center;padding-top:12px;">
+              Result Pages:
               <xsl:call-template name="makeLinksForPagening">
                 <xsl:with-param name="pageNo">1</xsl:with-param>
               </xsl:call-template>
@@ -146,9 +149,10 @@
   </xsl:template>
   
   <xsl:template name="makeLinksForPagening">
-  	<xsl:param name="pageNo"/>
+    <xsl:param name="pageNo"/>
     <xsl:variable name="minPage"><xsl:value-of select="number($currentPageNo - $range - 1)" /></xsl:variable>
     <xsl:variable name="maxPage"><xsl:value-of select="number($currentPageNo + $range)" /></xsl:variable>
+
     <xsl:if test="number(floor($totalHits div $hitsPerPage)) != 0">
       <xsl:if test="number($pageNo - 1) != number(ceiling($totalHits div $hitsPerPage))">
         <xsl:choose>
@@ -162,7 +166,7 @@
           <xsl:otherwise>
             <xsl:if test="number($pageNo) &gt; number($minPage)">
               <xsl:if test="number($pageNo) &lt; number($maxPage)">
-                <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(number($pageNo - 1) * $hitsPerPage)}&amp;yanel.meta.language={$localization.language}"><xsl:value-of select="$pageNo" /></a>&#0160;
+                <a href="?query={$query}&amp;hitsPerPage={$hitsPerPage}&amp;start={number(number($pageNo - 1) * $hitsPerPage)}&amp;group={$group}&amp;yanel.meta.language={$localization.language}"><xsl:value-of select="$pageNo" /></a>&#0160;
               </xsl:if>
             </xsl:if>
           </xsl:otherwise>
