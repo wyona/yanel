@@ -81,6 +81,10 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import javax.servlet.ServletContext;
+
+import org.jdom.Attribute;
+import org.jdom.xpath.XPath;
+
 /**
  * 
  */
@@ -204,8 +208,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     private void getNutchConfiguration() throws Exception {
         configuration = new Configuration();
         try {
-            String confDir = "file:" + rtd.getConfigFile().getParentFile().getAbsolutePath()
-                    + File.separator + "conf";
+            String confDir = "file:" + rtd.getConfigFile().getParentFile().getAbsolutePath() + File.separator + "conf";
             log.debug("Conf Dir: " + confDir);
             URL defaultResource = new URL(confDir + File.separator + defaultFile);
             configuration.addDefaultResource(defaultResource);
@@ -217,8 +220,10 @@ public class NutchResource extends Resource implements ViewableV1 {
                 if(nutchConfig.indexOf("file:") == 0) {
                     finalResource = new URL(nutchConfig);
                 } else {
-                    log.error("file: protocol is missing: " + nutchConfig);
+                    log.error("file: protocol is missing: " + nutchConfig + ". Local config will be used: " + finalResource);
                 }
+            } else {
+                log.warn("No custom nutch config! Local config will be used: " + finalResource);
             }
             configuration.addFinalResource(finalResource);
         } catch (MalformedURLException e) {
@@ -748,8 +753,35 @@ public class NutchResource extends Resource implements ViewableV1 {
     private String getNutchConfigurationFile() throws Exception {
         String group = getRequest().getParameter("group");
         if (group != null) {
-            log.error("DEBUG: Group: " + group);
-            return getResourceConfigProperty("nutch-config");
+            org.jdom.Document jdomDocument = new org.jdom.input.DOMBuilder().build(getConfiguration().getCustomConfiguration());
+
+            XPath xpath = XPath.newInstance("/yanel:custom-config/nr:groups/nr:group[@name='" + group + "']/nr:nutch-config/@name");
+            xpath.addNamespace("yanel", "http://www.wyona.org/yanel/resource-config/1.0");
+            //xpath.addNamespace("yanel", "http://www.wyona.org/yanel/rti/1.0");
+            xpath.addNamespace("nr", "http://www.wyona.org/yanel/resource/nutch-resource/1.0");
+            Attribute nameAttr = (Attribute) xpath.selectSingleNode(jdomDocument);
+            if (nameAttr != null) {
+                String nutchConfigName = nameAttr.getValue();
+                xpath = org.jdom.xpath.XPath.newInstance("/yanel:custom-config/nr:configs/nr:config[@name='" + nutchConfigName + "']/@src");
+                xpath.addNamespace("yanel", "http://www.wyona.org/yanel/resource-config/1.0");
+                //xpath.addNamespace("yanel", "http://www.wyona.org/yanel/rti/1.0");
+                xpath.addNamespace("nr", "http://www.wyona.org/yanel/resource/nutch-resource/1.0");
+
+                Attribute srcAttribute = (Attribute) xpath.selectSingleNode(jdomDocument);
+                if (srcAttribute != null) {
+                    return srcAttribute.getValue();
+                } else {
+                    // TODO: Improve exception handling!
+                    String errMessage = "No resource config found for group " + group + " resp. nutch config name " + nutchConfigName + "!";
+                    log.error(errMessage);
+                    throw new Exception(errMessage);
+                }
+            } else {
+                // TODO: Improve exception handling!
+                String errMessage = "No such group: " + group;
+                log.error(errMessage);
+                throw new Exception(errMessage);
+            }
         } else {
             return getResourceConfigProperty("nutch-config");
         }
