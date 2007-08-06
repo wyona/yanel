@@ -98,10 +98,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     private File crawlDir = null;
     private String exceptionMessage = null;
     private int start = 0;
-    private int hitsPerPage = 10;
-    private int numberOfPagesShown = 20;
-    private int totalHitCount = 100;
-    private long totalHits = 0;
+    private int defaultNumberOfPagesShown = 20;
     private String defaultFile = "nutch-default.xml";
     private String localFile = "nutch-local.xml";
     private String searchTerm = "";
@@ -177,12 +174,6 @@ public class NutchResource extends Resource implements ViewableV1 {
             start = Integer.parseInt(request.getParameter("start"));
         } catch(Exception e) {
             start = _start;
-        }
-        int _hitsPerPage = 10;
-        try {
-            hitsPerPage = Integer.parseInt(request.getParameter("hitsPerPage"));
-        } catch(Exception e) {
-            hitsPerPage = _hitsPerPage;
         }
 
         int idx = 0;
@@ -275,7 +266,7 @@ public class NutchResource extends Resource implements ViewableV1 {
             try {
                 crawlDir = new File(configuration.get("searcher.dir"));
                 if (crawlDir != null && crawlDir.isDirectory()) {
-                    getSearchResults(document, rootElement, searchTerm, start, hitsPerPage);
+                    getSearchResults(document, rootElement, searchTerm, start);
                 } else {
                     Element exceptionElement = (Element) rootElement.appendChild(document.createElementNS(NAME_SPACE, "exception"));
                     exceptionMessage = "noSuchCrawlDirectory#" + crawlDir;
@@ -521,16 +512,18 @@ public class NutchResource extends Resource implements ViewableV1 {
      * @param rootElement Root element of DOM
      * @param searchTerm Search term
      * @param start Position of found results for searchTerm 
-     * @param hitsPerPage Number of hits per page
      */
-    private void getSearchResults(Document document, Element rootElement, String searchTerm, int start, int hitsPerPage) {
+    private void getSearchResults(Document document, Element rootElement, String searchTerm, int start) {
         try {
             Query query = Query.parse(searchTerm, configuration);
             //log.error("DEBUG: Query: " + query);
             nutchBean = new NutchBean(configuration);
+            int hitsPerPage = 10;
+            if (request.getParameter("hitsPerPage") != null) hitsPerPage = Integer.parseInt(request.getParameter("hitsPerPage"));
+            int totalHitCount = hitsPerPage * defaultNumberOfPagesShown;
             Hits hits = nutchBean.search(query, totalHitCount);
-            totalHits = hits.getTotal();
-            int range = (int) Math.min(hits.getTotal() - start, hitsPerPage);
+            long totalHits = hits.getTotal();
+            int range = (int) Math.min(totalHits - start, hitsPerPage);
             Hit[] show = hits.getHits(start, range);
             HitDetails[] details = nutchBean.getDetails(show);
             Summary[] summaries = nutchBean.getSummary(details, query);
@@ -555,7 +548,7 @@ public class NutchResource extends Resource implements ViewableV1 {
                     resultsElement.setAttributeNS(NAME_SPACE, "hitsPerPage", "" + hitsPerPage);
                     resultsElement.setAttributeNS(NAME_SPACE, "totalHits", "" + totalHits);
                     resultsElement.setAttributeNS(NAME_SPACE, "currentPageNo", "" + ((start / hitsPerPage) + 1));
-                resultsElement.setAttributeNS(NAME_SPACE, "numberOfPagesShown", "" + numberOfPagesShown);
+                resultsElement.setAttributeNS(NAME_SPACE, "numberOfPagesShown", "" + defaultNumberOfPagesShown);
                 }
                 for (int i = 0; i < show.length; i++) {
                     Element resultElement = (Element) resultsElement.appendChild(document.createElementNS(NAME_SPACE, "result"));
@@ -721,8 +714,6 @@ public class NutchResource extends Resource implements ViewableV1 {
         transformer.setParameter("yanel.path", getPath().toString());
         transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
         transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
-        transformer.setParameter("hitsPerPage", "" + hitsPerPage);
-        transformer.setParameter("totalHits", "" + totalHits);
         if (searchTerm != null && searchTerm.length() > 0) {
             transformer.setParameter("query", "" + searchTerm);
         }
