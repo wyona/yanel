@@ -20,9 +20,7 @@
 <head>
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
   <title>Roadmap</title>  
-<!--
-  <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-homepage.xml"/>
--->
+  <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-roadmap.xml"/>
 </head>
 <body>
 <h3>Roadmap</h3>
