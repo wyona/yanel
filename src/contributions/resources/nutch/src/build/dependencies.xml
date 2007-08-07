@@ -27,6 +27,9 @@
       <dependency groupId="apache-org-lucene" artifactId="lucene-misc"
                   version="1.9.1"/>
 
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-logging"
+                  version="1.0.4"/>
+
       <!-- Ontology plugin libs -->
       <!-- http://jena.sourceforge.net/ -->
       <dependency groupId="jena" artifactId="jena"
