@@ -1959,6 +1959,8 @@ public class YanelServlet extends HttpServlet {
         int c;
         int state = OUTSIDE_TAG;
         StringBuffer tagBuf = null;
+        int headcount = 0;
+        int bodycount = 0;
         while ((c = reader.read()) != -1) {
             switch (state) {
             case OUTSIDE_TAG:
@@ -1976,17 +1978,32 @@ public class YanelServlet extends HttpServlet {
                     tagBuf.append((char)c);
                     String tag = tagBuf.toString();
                     if (tag.startsWith("<head")) {
-                        writer.write(tag, 0, tag.length());
-                        String toolbarString = getToolbarHeader(resource, request);
-                        writer.write(toolbarString, 0, toolbarString.length());
+                        if (headcount == 0) {
+                            writer.write(tag, 0, tag.length());
+                            String toolbarString = getToolbarHeader(resource, request);
+                            writer.write(toolbarString, 0, toolbarString.length());
+                        } else {
+                            writer.write(tag, 0, tag.length());
+                        }
+                        headcount++;
                     } else if (tag.startsWith("<body")) {
-                        writer.write(tag, 0, tag.length());
-                        String toolbarString = getToolbarBodyStart(resource, request);
-                        writer.write(toolbarString, 0, toolbarString.length());
+                        if (bodycount == 0) {
+                            writer.write(tag, 0, tag.length());
+                            String toolbarString = getToolbarBodyStart(resource, request);
+                            writer.write(toolbarString, 0, toolbarString.length());
+                        } else {
+                            writer.write(tag, 0, tag.length());
+                        }
+                        bodycount++;
                     } else if (tag.equals("</body>")) {
-                        String toolbarString = getToolbarBodyEnd(resource, request);
-                        writer.write(toolbarString, 0, toolbarString.length());
-                        writer.write(tag, 0, tag.length());
+                        bodycount--;
+                        if (bodycount == 0) {
+                            String toolbarString = getToolbarBodyEnd(resource, request);
+                            writer.write(toolbarString, 0, toolbarString.length());
+                            writer.write(tag, 0, tag.length());
+                        } else {
+                            writer.write(tag, 0, tag.length());
+                        }
                     } else {
                         writer.write(tag, 0, tag.length());
                     }
