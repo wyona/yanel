@@ -3,7 +3,6 @@
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:rm="http://yanel.wyona.org/roadmap/1.0"
-  xmlns="http://simile.mit.edu/timeline/1.0"
 >
 
 <!--
@@ -30,13 +29,19 @@
 </xsl:template>
 
 <xsl:template match="rm:feature">
+    <xsl:variable name="date" select="rm:td[3]"/>
+    <xsl:variable name="year" select="substring-before($date, '.')"/>
+    <xsl:variable name="month-day" select="substring-after($date, '.')"/>
+    <xsl:variable name="month" select="substring-before($month-day, '.')"/>
+    <xsl:variable name="day" select="substring-after($month-day, '.')"/>
     <event
-        start="Aug 01 2007 00:00:00 GMT"
+        start="{$month} {$day} {$year} 00:00:00 GMT"
         title="{rm:td[1]}"
         link="http://yanel.wyona.org/specification/access-control-user-interface.html"
         >
         <xsl:value-of select="rm:td[1]"/>
     </event>
+
 <!--
 <tr>
   <xsl:copy-of select="rm:td[1]"/>
