@@ -12,5 +12,6 @@ Timeline http://simile.mit.edu/timeline/
 <rtd>
   <property name="href"/>
   <property name="title"/>
+  <property name="height"/> <!-- sample value 250px -->
 </rtd>
 </resource>

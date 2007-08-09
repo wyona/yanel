@@ -145,7 +145,9 @@ public class TimelineResource extends Resource implements ViewableV2 {
         sb.append("<p>Today's Date (server time): " + todaysDate + "</p>");
         sb.append("<p>XML: <a href=\"" + getResourceConfigProperty("href") + "\">" + getResourceConfigProperty("href") + "</a></p>");
 
-        sb.append("<div id=\"my-timeline\" style=\"height: 250px; border: 1px solid #aaa\"></div>");
+        String height = getResourceConfigProperty("height");
+        if (height == null) height = "250px";
+        sb.append("<div id=\"my-timeline\" style=\"height: " + height + "; border: 1px solid #aaa\"></div>");
         sb.append("</body>");
         sb.append("</html>");
         return sb;
