@@ -111,20 +111,18 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         InputStream xmlInputStream = getContentXML(repo, yanelPath, revisionName);
         return getXMLView(viewId, xmlInputStream);
     }
-    
 
     /**
      * Get initial content as XML
      */
     private InputStream getContentXML(Repository repo, String yanelPath, String revisionName) throws Exception {
         if (yanelPath != null) {
-            log.debug("Yanel Path: " + yanelPath);
-            Resource res = yanel.getResourceManager().getResource(getEnvironment(), 
-                    getRealm(), yanelPath);
+            if (log.isDebugEnabled()) log.debug("Yanel Path: " + yanelPath);
+            Resource res = yanel.getResourceManager().getResource(getEnvironment(), getRealm(), yanelPath);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                 // TODO: Pass the request ...
                 String viewV1path = getRealm().getMountPoint() + yanelPath.substring(1);
-                log.debug("including document: " + viewV1path);
+                log.warn("Path of view: " + viewV1path);
                 View view = ((ViewableV1) res).getView(new Path(viewV1path), null);
                 if (view.getMimeType().indexOf("xml") >= 0) {
                     // TODO: Shall the mime-type be transfered?
@@ -222,12 +220,18 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      *
      */
     public long getLastModified() throws Exception {
-        Node node = getRealm().getRepository().getNode(getPath());
         long lastModified;
-        if (node.isResource()) {
-            lastModified = node.getLastModified();
+        String yanelPath = getResourceConfigProperty("yanel-path");
+        if (yanelPath != null) {
+            log.warn("Get last modified for parameter yanel-path not implemented yet!");
+            lastModified = -1;
         } else {
-            lastModified = 0;
+            Node node = getRealm().getRepository().getNode(getPath());
+            if (node.isResource()) {
+                lastModified = node.getLastModified();
+            } else {
+                lastModified = 0;
+            }
         }
 
         return lastModified;
