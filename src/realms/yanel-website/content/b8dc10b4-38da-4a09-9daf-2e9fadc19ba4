@@ -4,9 +4,9 @@
 
 <resource name="Roadmap">
   <edit mime-type="application/xml">
-    <checkout url="roadmap-2.xml?yanel.resource.usecase=checkout" method="GET"/>
-    <checkin url="roadmap-2.xml?yanel.resource.usecase=checkin" method="PUT"/>
-    <release-lock url="roadmap-2.xml?yanel.resource.usecase=release-lock" method="GET"/>
+    <checkout url="roadmap.xml?yanel.resource.usecase=checkout" method="GET"/>
+    <checkin url="roadmap.xml?yanel.resource.usecase=checkin" method="PUT"/>
+    <release-lock url="roadmap.xml?yanel.resource.usecase=release-lock" method="GET"/>
   </edit>
 </resource>
 </introspection>
