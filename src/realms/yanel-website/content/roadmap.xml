@@ -4,7 +4,7 @@
 
 <roadmap xmlns="http://yanel.wyona.org/roadmap/1.0">
 
-<release version="1.0">
+<release version="1.0" start="11 29 2006 00:00:00 GMT" end="08 01 2007 00:00:00 GMT">
 <!--
 <feature>
   <descr>Neutron Spec v0 implemented</descr>
@@ -81,7 +81,7 @@
 </release>
 
 
-<release version="1.1">
+<release version="1.1" start="08 02 2007 00:00:00 GMT" end="09 01 2007 00:00:00 GMT">
             <feature><td valign="top">Standard and Custom Meta Data</td><td valign="top">in progress</td><td valign="top">2007.06.30</td><td valign="top">Josias/Michael</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5298">5298</a></td></feature>
 <feature><td valign="top">Navigation Editor</td><td valign="top">in planning</td><td valign="top">2007.06.30</td><td valign="top">Simon, Jonathan</td><td>-</td></feature>
 <feature><td style="vertical-align: top;"><a href="specification/archive-url-resource.html">Archive URL resource</a></td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.06.30</td><td style="vertical-align: top;">Michael</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5425">5425</a></td></feature>
@@ -104,7 +104,7 @@
 
 
 
-<release version="1.2">
+<release version="1.2" start="09 02 2007 00:00:00 GMT" end="10 01 2007 00:00:00 GMT">
 <feature>
               <td>Generic Workflow</td>
               <td>not started</td>
@@ -139,7 +139,7 @@
 </release>
 
 
-<release version="1.3">
+<release version="1.3" start="10 02 2007 00:00:00 GMT" end="11 01 2007 00:00:00 GMT">
             <feature>
               <td>Statistics (e.g. Integration of webalizer)<br/></td>
               <td>not started<br/></td>
