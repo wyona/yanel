@@ -5,9 +5,7 @@
   xmlns:rm="http://yanel.wyona.org/roadmap/1.0"
 >
 
-<!--
 <xsl:output method="xml"/>
--->
 
 <xsl:template match="/">
 <data>
@@ -18,8 +16,8 @@
 
 <xsl:template match="rm:release">
     <event
-        start="Nov 29 2006 00:00:00 GMT"
-        end="Aug 01 2007 00:00:00 GMT"
+        start="{@start}"
+        end="{@end}"
         isDuration="true"
         title="Release {@version}"
         image="http://simile.mit.edu/images/csail-logo.gif"
