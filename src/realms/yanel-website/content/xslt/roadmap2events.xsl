@@ -34,6 +34,8 @@
     <xsl:variable name="month-day" select="substring-after($date, '.')"/>
     <xsl:variable name="month" select="substring-before($month-day, '.')"/>
     <xsl:variable name="day" select="substring-after($month-day, '.')"/>
+
+    <!-- title length: src/contributions/resources/timeline/htdocs/bundle.js resp. grep for "dull-blue-circle" and then grep for "label" -->
     <event
         start="{$month} {$day} {$year} 00:00:00 GMT"
         title="{rm:td[1]}"
