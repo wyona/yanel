@@ -550,7 +550,8 @@ public class YanelServlet extends HttpServlet {
                 // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
                 String message = "No such node exception: " + e;
                 log.warn(e);
-                //log.error(e.getMessage(), e);
+                // Show the stack trace
+                //log.warn(e.getMessage(), e);
                 Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
                 exceptionElement.appendChild(doc.createTextNode(message));
                 exceptionElement.setAttributeNS(NAMESPACE, "status", "404");
