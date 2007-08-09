@@ -5,9 +5,6 @@
 
   <yanel:property name="mime-type" value="application/xml"/>
 
-  <yanel:property name="xslt" value="/xslt/roadmap2events.xsl"/>
-
   <yanel:property name="yanel-path" value="/roadmap.xml"/>
-
-  <yanel:property name="workflow-schema" value="/workflow/workflow-with-review.xml"/>
+  <yanel:property name="xslt" value="/xslt/roadmap2events.xsl"/>
 </yanel:resource-config>
