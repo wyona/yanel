@@ -39,6 +39,7 @@ public class TomcatContextHandler {
         // http://svn.apache.org/repos/asf/tomcat/trunk/java/org/apache/catalina/manager/ManagerServlet.java
         // http://svn.apache.org/repos/asf/tomcat/trunk/java/org/apache/catalina/manager/HTMLManagerServlet.java
         // which generates the context overview: http://127.0.0.1:8080/manager/html (whereas add roles manager to conf/tomcat-users.xml and restart Tomcat)
+        // NOTE: this is done by classes provided by catalina.jar which means we would have to deliver this as well.
         this.contextConfPath = webappsDirectoryPath  + ".." + File.separator + "conf" + File.separator + "Catalina" + File.separator + "localhost" + File.separator;
         this.contextConfDirectory = new File(contextConfPath);
     }
