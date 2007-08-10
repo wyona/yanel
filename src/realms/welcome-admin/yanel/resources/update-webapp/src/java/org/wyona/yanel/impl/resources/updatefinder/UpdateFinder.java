@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -67,6 +69,8 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.hp.hpl.jena.rdf.model.*;
+
+
 
 /**
  * 
@@ -209,14 +213,34 @@ public class UpdateFinder extends Resource implements ViewableV2 {
      * Generate screen
      */
     private String getScreen() {
+        
+        StringBuffer body = new StringBuffer();
+        StringBuffer head = new StringBuffer();
+        Enumeration parameters = request.getParameterNames();
+        if (!parameters.hasMoreElements()) {
+            plainRequest(body);
+        } else {
+            if (request.getParameter("save-as") != null) {
+                plainRequest(body);
+            } else if (request.getParameter("usecase") != null && request.getParameter("usecase").equals("update")) {
+                getUpdateConfirmScreen(body);
+            } else if (request.getParameter("usecase") != null && request.getParameter("usecase").equals("updateconfirmed")) {    
+                getUpdateScreen(body,head);
+            } else {
+                log.info("Fallback ...");
+                plainRequest(body);
+            }
+        }
+        
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
         sb.append("<head>");
         sb.append("<title>Yanel Updater</title>");
 
-/*
+
         sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""
-                + PathUtil.getGlobalHtdocsPath(this) + "yanel-css/progressBar.css\"/>");
+                + PathUtil.getGlobalHtdocsPath(this) + "yanel-css/progressBarTerminated.css\"/>");
+/*        
         sb.append("<script src=\"" + PathUtil.getGlobalHtdocsPath(this)
                 + "yanel-js/prototype.js\" type=\"text/javascript\"></script>");
         sb.append("<script src=\"" + PathUtil.getGlobalHtdocsPath(this)
@@ -236,27 +260,13 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             }
         }
 */
+        sb.append(head);
 
         sb.append("</head>");
         sb.append("<body>");
         sb.append("<h1>Yanel Updater</h1>");
 
-        StringBuffer body = new StringBuffer();
-        Enumeration parameters = request.getParameterNames();
-        if (!parameters.hasMoreElements()) {
-            body = plainRequest();
-        } else {
-            if (request.getParameter("save-as") != null) {
-                body = plainRequest();
-            } else if (request.getParameter("usecase") != null && request.getParameter("usecase").equals("update")) {
-                body = getUpdateConfirmScreen();
-            } else if (request.getParameter("usecase") != null && request.getParameter("usecase").equals("updateconfirmed")) {    
-                body = getUpdateScreen();
-            } else {
-                log.info("Fallback ...");
-                body = plainRequest();
-            }
-        }
+
         sb.append(body);
 
         sb.append("</body>");
@@ -267,14 +277,15 @@ public class UpdateFinder extends Resource implements ViewableV2 {
     /**
      *
      */
-    private StringBuffer plainRequest() {
+    private void plainRequest(StringBuffer htmlBodyContent) {
 
         InstallInfo installInfo = null;
         try {
             installInfo = getInstallInfo();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return new StringBuffer("<p>Could not get install information. " + e.getMessage() + "</p>");
+            htmlBodyContent.append("<p>Could not get install information. " + e.getMessage() + "</p>");
+            return;
         }
 
         UpdateInfo updateInfo = null;
@@ -282,16 +293,17 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             updateInfo = getUpdateInfo();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return new StringBuffer("<p>Could not get update information. " + e.getMessage() + "</p>");
+            htmlBodyContent.append("<p>Could not get update information. " + e.getMessage() + "</p>");
+            return;
         }
 
         if (!installInfo.getInstalltype().equals("bin-snapshot")) {
-            return new StringBuffer("<p>This Yanel was not installed from binary. You can only use the updater if you installed yanel from binary. Please use Subversion or get another source snapshot.</p><p>NOTE: In order to enhance the Yanel Updater resource developers might want to modify <a href=\"file://" + installInfo.getInstallRdfFilename() + "\">" + installInfo.getInstallRdfFilename() + "</a> by replacing the installtype \"source\" with \"bin-snapshot\" and also customize the version and revision!</p>");
+            htmlBodyContent.append("<p>This Yanel was not installed from binary. You can only use the updater if you installed yanel from binary. Please use Subversion or get another source snapshot.</p><p>NOTE: In order to enhance the Yanel Updater resource developers might want to modify <a href=\"file://" + installInfo.getInstallRdfFilename() + "\">" + installInfo.getInstallRdfFilename() + "</a> by replacing the installtype \"source\" with \"bin-snapshot\" and also customize the version and revision!</p>");
+            return;
         }
 
         String idVersionRevisionCurrent = installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision();
 
-        StringBuffer htmlBodyContent = new StringBuffer();
         // show installed version
         htmlBodyContent.append("<p>");
         htmlBodyContent.append("Your installed yanel is: " + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision());
@@ -388,14 +400,12 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             htmlBodyContent.append("<p>Could not get installed versions. " + e.getMessage() + "</p>");
             //return;
         }
-        return htmlBodyContent;
     }
 
     /**
      *
      */
-    private StringBuffer getUpdateConfirmScreen() {
-        StringBuffer htmlBodyContent = new StringBuffer();
+    private void getUpdateConfirmScreen(StringBuffer htmlBodyContent) {
         try {
             UpdateInfo updateInfo = getUpdateInfo();
             InstallInfo installInfo = getInstallInfo();
@@ -444,34 +454,64 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             log.error(e.getMessage(), e);
             htmlBodyContent.append("<p>An error occoured. Exception: " + e.getMessage() + "</p>");
         }
-        return htmlBodyContent;
     }
     
     /**
      *
      */
-    private StringBuffer getUpdateScreen() {
-        StringBuffer htmlBodyContent = new StringBuffer();
+    private void getUpdateScreen(StringBuffer htmlBodyContent, StringBuffer head) {
+        HttpSession session = request.getSession();
         try {
             String destDir = request.getSession().getServletContext().getRealPath(".") + File.separator + "..";
             Map bestUpdater = getBestUpdater();
             
-            WarFetcher warFetcher = new WarFetcher(request, (String) bestUpdater.get("updateLink"), destDir);
-            warFetcher.fetch();
+            URL updaterURL = new URL("http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"));
+            HttpURLConnection updaterURLConn = (HttpURLConnection)updaterURL.openConnection();
+            if (updaterURLConn.getResponseCode() == 200) {
+                session.removeAttribute(WarFetcher.SESSION_ATTR_TASK);
+                session.removeAttribute(WarFetcher.SESSION_ATTR_PROGRESS);
+                session.removeAttribute(WarFetcher.SESSION_ATTR_ITEMS_DONE);
+                session.removeAttribute(WarFetcher.SESSION_ATTR_ITEMS_TO_BE_DONE);
+                head.append("<meta http-equiv=\"refresh\" content=\"0; URL=http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/?updatelink=" + request.getParameter("updatelink") + "&amp;requestingwebapp=" + request.getParameter("requestingwebapp") + "\"/>");
+                htmlBodyContent.append("<p>Update-Manager has been downloaded and installed.</p>");
+                htmlBodyContent.append("<p>You will be <a href=\""+"http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/?updatelink=" + request.getParameter("updatelink") + "&amp;requestingwebapp=" + request.getParameter("requestingwebapp") + ""+"\">redirected</a> to the update-manager which will automatically download and install the requested yanel.</p>");
+                return;
+            }
+            
+            if (session.getAttribute(WarFetcher.SESSION_ATTR_TASK) == null ){
+                Runnable runFetcher = new WarFetcher(request, (String) bestUpdater.get("updateLink"), destDir);
+                new Thread(runFetcher).start();
+                session.setAttribute(WarFetcher.SESSION_ATTR_TASK, "started");
+                session.setAttribute(WarFetcher.SESSION_ATTR_PROGRESS, "0");
+            }
             
             //TODO here it should set a password for the updater
             
-            TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
-            tomcatContextHandler.setContext(bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"), bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"));
+            if (session.getAttribute(WarFetcher.SESSION_ATTR_TASK) != null && session.getAttribute("org.wyona.yanel.updater.warfetcher.task").equals("loading")) {
+                TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
+                tomcatContextHandler.setContext(bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"), bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"));
+                htmlBodyContent.append("<p>Tomcat is loading and startup the update-manager</p>");
+                head.append("<meta http-equiv=\"refresh\" content=\"2; URL=?usecase=updateconfirmed&amp;updatelink=" + request.getParameter("updatelink") + "\"/>");
+            }
             
-            htmlBodyContent.append("<p>Update-Manager has been downloaded and installed.</p>");
-            htmlBodyContent.append("<p>You will be <a href=\""+"http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/?updatelink=" + request.getParameter("updatelink") + "&amp;requestingwebapp=" + request.getParameter("requestingwebapp") + ""+"\">redirected</a> to the update-manager which will automatically download and install the requested yanel.</p>");
-            //String htmlHeadContent = "<meta http-equiv=\"refresh\" content=\"10; URL=" + "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/" + "?updatelink=" + request.getParameter("updatelink") + "&amp;requestingwebapp=" + request.getParameter("requestingwebapp") + "\"/>";
+            if (session.getAttribute(WarFetcher.SESSION_ATTR_TASK) != null && !session.getAttribute("org.wyona.yanel.updater.warfetcher.task").equals("loading")) {
+                head.append("<meta http-equiv=\"refresh\" content=\"2; URL=?usecase=updateconfirmed&amp;updatelink=" + request.getParameter("updatelink") + "\"/>");
+                htmlBodyContent.append("<p>Working: " + session.getAttribute(WarFetcher.SESSION_ATTR_TASK));
+                if (session.getAttribute(WarFetcher.SESSION_ATTR_ITEMS_DONE) != null) {
+                    if (session.getAttribute(WarFetcher.SESSION_ATTR_TASK).equals("download")) {
+                        htmlBodyContent.append(" " + session.getAttribute(WarFetcher.SESSION_ATTR_ITEMS_DONE) + " bytes of " + session.getAttribute(WarFetcher.SESSION_ATTR_ITEMS_TO_BE_DONE) + " bytes");
+                    }
+                    if (session.getAttribute(WarFetcher.SESSION_ATTR_TASK).equals("extract")) {
+                        htmlBodyContent.append(" " + session.getAttribute(WarFetcher.SESSION_ATTR_ITEMS_DONE) + " items of " + session.getAttribute(WarFetcher.SESSION_ATTR_ITEMS_TO_BE_DONE) + " items");
+                    }
+                }
+                htmlBodyContent.append("</p>");
+                htmlBodyContent.append("<p>Progress: <div id=\"yanelprogressbarterminated\"><div id=\"yanelprogressbarindicatorterminated\" style=\"width:" + session.getAttribute(WarFetcher.SESSION_ATTR_PROGRESS) + "%\">" + session.getAttribute(WarFetcher.SESSION_ATTR_PROGRESS) +"%</div></div></p>");
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             htmlBodyContent.append("<p>Update failed. Exception: " + e.getMessage() + "</p>");
         }
-        return htmlBodyContent;
     }
 
     private InstallInfo getInstallInfo() throws Exception {
