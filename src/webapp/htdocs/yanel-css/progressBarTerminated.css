@@ -1,0 +1,10 @@
+#yanelprogressbarterminated {
+  border:1px solid #d8dfea;
+  width:200px;
+  height:20px;
+  background-color:#f7f7f7; 
+}
+
+#yanelprogressbarindicatorterminated {
+  background-color: #4682b4;
+}
