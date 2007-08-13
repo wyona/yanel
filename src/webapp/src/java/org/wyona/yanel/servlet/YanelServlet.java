@@ -1458,7 +1458,7 @@ public class YanelServlet extends HttpServlet {
 
                     Configuration originalRequestConfig = config.getChild("original-request");
                     originalRequest = originalRequestConfig.getAttribute("url", null);
-
+                    
                     Configuration[] paramConfig = config.getChildren("param");
                     for (int i = 0; i < paramConfig.length; i++) {
                         String paramName = paramConfig[i].getAttribute("name", null);
@@ -1508,11 +1508,11 @@ public class YanelServlet extends HttpServlet {
                         sb.append("<message>Authentication failed!</message>");
                         sb.append("<authentication>");
                         // TODO: ...
-                        sb.append("<original-request url=\"" + originalRequest + "\"/>");
+                        sb.append("<original-request url=\"" + encodeXML(originalRequest) + "\"/>");
                         //sb.append("<original-request url=\"" + getRequestURLQS(request, null, true) + "\"/>");
                         //TODO: Also support https ...
                         // TODO: ...
-                        sb.append("<login url=\"" + originalRequest + "&amp;yanel.usecase=neutron-auth" + "\" method=\"POST\">");
+                        sb.append("<login url=\"" + encodeXML(originalRequest) + "&amp;yanel.usecase=neutron-auth" + "\" method=\"POST\">");
                         //sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
                         sb.append("<form>");
                         sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
@@ -1522,7 +1522,7 @@ public class YanelServlet extends HttpServlet {
                         sb.append("</login>");
                         // NOTE: Needs to be a full URL, because user might switch the server ...
                         // TODO: ...
-                        sb.append("<logout url=\"" + originalRequest + "&amp;yanel.usecase=logout" + "\" realm=\"" + realm.getName() + "\"/>");
+                        sb.append("<logout url=\"" + encodeXML(originalRequest) + "&amp;yanel.usecase=logout" + "\" realm=\"" + realm.getName() + "\"/>");
                         sb.append("</authentication>");
                         sb.append("</exception>");
 
@@ -1546,11 +1546,11 @@ public class YanelServlet extends HttpServlet {
                     sb.append("<message>Authentication failed because no username was sent!</message>");
                     sb.append("<authentication>");
                     // TODO: ...
-                    sb.append("<original-request url=\"" + originalRequest + "\"/>");
+                    sb.append("<original-request url=\"" + encodeXML(originalRequest) + "\"/>");
                     //sb.append("<original-request url=\"" + getRequestURLQS(request, null, true) + "\"/>");
                     //TODO: Also support https ...
                     // TODO: ...
-                    sb.append("<login url=\"" + originalRequest + "&amp;yanel.usecase=neutron-auth" + "\" method=\"POST\">");
+                    sb.append("<login url=\"" + encodeXML(originalRequest) + "&amp;yanel.usecase=neutron-auth" + "\" method=\"POST\">");
                     //sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
                     sb.append("<form>");
                     sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
@@ -1560,7 +1560,7 @@ public class YanelServlet extends HttpServlet {
                     sb.append("</login>");
                     // NOTE: Needs to be a full URL, because user might switch the server ...
                     // TODO: ...
-                    sb.append("<logout url=\"" + originalRequest + "&amp;yanel.usecase=logout" + "\" realm=\"" + realm.getName() + "\"/>");
+                    sb.append("<logout url=\"" + encodeXML(originalRequest) + "&amp;yanel.usecase=logout" + "\" realm=\"" + realm.getName() + "\"/>");
                     sb.append("</authentication>");
                     sb.append("</exception>");
 
@@ -1582,6 +1582,19 @@ public class YanelServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Escapes all reserved xml characters (&amp; &lt; &gt; &apos; &quot;) in a string.
+     * @param s input string
+     * @return string with escaped characters
+     */
+    private String encodeXML(String s) {
+        s = s.replaceAll("&", "&amp;");
+        s = s.replaceAll("<", "&lt;");
+        s = s.replaceAll(">", "&gt;");
+        s = s.replaceAll("'", "&apos;");
+        s = s.replaceAll("\"", "&quot;");
+        return s;
+    }
     /**
      *
      */
