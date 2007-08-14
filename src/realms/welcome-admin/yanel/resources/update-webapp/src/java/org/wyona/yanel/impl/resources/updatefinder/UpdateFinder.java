@@ -443,7 +443,6 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 htmlBodyContent.append("<input type=\"submit\" name=\"button\" value=\"YES\"/>");
                 htmlBodyContent.append("<input type=\"hidden\" name=\"usecase\" value=\"updateconfirmed\"/>");
                 htmlBodyContent.append("<input type=\"hidden\" name=\"updatelink\" value=\"" + request.getParameter("updatelink") + "\"/>");
-                htmlBodyContent.append("<input type=\"hidden\" name=\"requestingwebapp\" value=\"" + installInfo.getWebaName() + "\"/>");
                 htmlBodyContent.append("</form>");
                 htmlBodyContent.append("<form method=\"GET\">");
                 htmlBodyContent.append("<input type=\"submit\" name=\"button\" value=\"Cancel\"></input>");
@@ -464,6 +463,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         try {
             String destDir = request.getSession().getServletContext().getRealPath(".") + File.separator + "..";
             Map bestUpdater = getBestUpdater();
+            InstallInfo installInfo = getInstallInfo();
             
             URL updaterURL = new URL("http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"));
             HttpURLConnection updaterURLConn = (HttpURLConnection)updaterURL.openConnection();
@@ -472,9 +472,9 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 session.removeAttribute(WarFetcher.SESSION_ATTR_PROGRESS);
                 session.removeAttribute(WarFetcher.SESSION_ATTR_ITEMS_DONE);
                 session.removeAttribute(WarFetcher.SESSION_ATTR_ITEMS_TO_BE_DONE);
-                head.append("<meta http-equiv=\"refresh\" content=\"0; URL=http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/?updatelink=" + request.getParameter("updatelink") + "&amp;requestingwebapp=" + request.getParameter("requestingwebapp") + "\"/>");
+                head.append("<meta http-equiv=\"refresh\" content=\"0; URL=http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/?updatelink=" + request.getParameter("updatelink") + "&amp;requestingwebapp=" + installInfo.getWebaName() + "\"/>");
                 htmlBodyContent.append("<p>Update-Manager has been downloaded and installed.</p>");
-                htmlBodyContent.append("<p>You will be <a href=\""+"http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/?updatelink=" + request.getParameter("updatelink") + "&amp;requestingwebapp=" + request.getParameter("requestingwebapp") + ""+"\">redirected</a> to the update-manager which will automatically download and install the requested yanel.</p>");
+                htmlBodyContent.append("<p>You will be <a href=\""+"http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision") + "/?updatelink=" + request.getParameter("updatelink") + "&amp;requestingwebapp=" + installInfo.getWebaName() + ""+"\">redirected</a> to the update-manager which will automatically download and install the requested yanel.</p>");
                 return;
             }
             
@@ -487,22 +487,28 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             
             //TODO here it should set a password for the updater
             
-            if (session.getAttribute(WarFetcher.SESSION_ATTR_TASK) != null && session.getAttribute("org.wyona.yanel.updater.warfetcher.task").equals("loading")) {
+            if (session.getAttribute(WarFetcher.SESSION_ATTR_TASK) != null && session.getAttribute(WarFetcher.SESSION_ATTR_TASK).equals("downloaded")) {
                 TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
                 tomcatContextHandler.setContext(bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"), bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"));
-                htmlBodyContent.append("<p>Tomcat is loading and startup the update-manager</p>");
-                head.append("<meta http-equiv=\"refresh\" content=\"2; URL=?usecase=updateconfirmed&amp;updatelink=" + request.getParameter("updatelink") + "\"/>");
+                session.setAttribute(WarFetcher.SESSION_ATTR_TASK, "loading");
+                //htmlBodyContent.append("<p>Tomcat is loading and startup the update-manager</p>");
+                //head.append("<meta http-equiv=\"refresh\" content=\"2; URL=?usecase=updateconfirmed&amp;updatelink=" + request.getParameter("updatelink") + "\"/>");
+            }
+
+            if (session.getAttribute(WarFetcher.SESSION_ATTR_TASK) != null && session.getAttribute(WarFetcher.SESSION_ATTR_TASK).equals("loading")) {
+                int pseudoprogress = Integer.valueOf((String) session.getAttribute(WarFetcher.SESSION_ATTR_PROGRESS)).intValue() + 1;
+                session.setAttribute(WarFetcher.SESSION_ATTR_PROGRESS, "" + pseudoprogress);
             }
             
-            if (session.getAttribute(WarFetcher.SESSION_ATTR_TASK) != null && !session.getAttribute("org.wyona.yanel.updater.warfetcher.task").equals("loading")) {
+            if (session.getAttribute(WarFetcher.SESSION_ATTR_TASK) != null) {
                 head.append("<meta http-equiv=\"refresh\" content=\"2; URL=?usecase=updateconfirmed&amp;updatelink=" + request.getParameter("updatelink") + "\"/>");
-                htmlBodyContent.append("<p>Working: " + session.getAttribute(WarFetcher.SESSION_ATTR_TASK));
+                htmlBodyContent.append("<p>Working: " + session.getAttribute(WarFetcher.SESSION_ATTR_TASK) + "</p><p>");
                 if (session.getAttribute(WarFetcher.SESSION_ATTR_ITEMS_DONE) != null) {
                     if (session.getAttribute(WarFetcher.SESSION_ATTR_TASK).equals("download")) {
-                        htmlBodyContent.append(" " + session.getAttribute(WarFetcher.SESSION_ATTR_ITEMS_DONE) + " bytes of " + session.getAttribute(WarFetcher.SESSION_ATTR_ITEMS_TO_BE_DONE) + " bytes");
+                        htmlBodyContent.append("Downloaded " + session.getAttribute(WarFetcher.SESSION_ATTR_ITEMS_DONE) + " bytes of " + session.getAttribute(WarFetcher.SESSION_ATTR_ITEMS_TO_BE_DONE) + " bytes");
                     }
                     if (session.getAttribute(WarFetcher.SESSION_ATTR_TASK).equals("extract")) {
-                        htmlBodyContent.append(" " + session.getAttribute(WarFetcher.SESSION_ATTR_ITEMS_DONE) + " items of " + session.getAttribute(WarFetcher.SESSION_ATTR_ITEMS_TO_BE_DONE) + " items");
+                        htmlBodyContent.append("Extracted " + session.getAttribute(WarFetcher.SESSION_ATTR_ITEMS_DONE) + " items of " + session.getAttribute(WarFetcher.SESSION_ATTR_ITEMS_TO_BE_DONE) + " items");
                     }
                 }
                 htmlBodyContent.append("</p>");
