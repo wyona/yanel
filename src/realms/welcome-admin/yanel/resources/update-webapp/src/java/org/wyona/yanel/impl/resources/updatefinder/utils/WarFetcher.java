@@ -95,7 +95,7 @@ public class WarFetcher implements Runnable {
         
         new File(DestinationDirectoryPath + File.separator + id + "-v-" + version + "-r-" + revision + ".war").delete();
         
-        session.setAttribute(SESSION_ATTR_TASK, "loading");
+        session.setAttribute(SESSION_ATTR_TASK, "downloaded");
         session.setAttribute(SESSION_ATTR_PROGRESS, "0");
     }
     
