@@ -668,6 +668,7 @@ public class YanelServlet extends HttpServlet {
             log.info("No parameter yanel.resource.usecase!");
 
             String contentType = request.getContentType();
+            // TODO: Check for type (see section 9.2 of APP spec (e.g. draft 16)
             if (contentType.indexOf("application/atom+xml") >= 0) {
                 InputStream in = intercept(request.getInputStream());
                 // Create new Atom entry
