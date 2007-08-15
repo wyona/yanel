@@ -116,6 +116,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             XMLReader xmlReader = XMLReaderFactory.createXMLReader();
             CatalogResolver catalogResolver = new CatalogResolver();
             xmlReader.setEntityResolver(catalogResolver);
+            xmlReader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
             
             // create xslt transformer:
             SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
