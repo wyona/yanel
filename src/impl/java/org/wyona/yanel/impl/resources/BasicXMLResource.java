@@ -129,7 +129,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             }
            
             // create i18n transformer:
-            I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getRequestedLanguage(), getRealm().getDefaultLanguage());
+            I18nTransformer2 i18nTransformer = new I18nTransformer2(getI18NCatalogueNames(), getRequestedLanguage(), getRealm().getDefaultLanguage());
             i18nTransformer.setEntityResolver(catalogResolver);
            
             // create xinclude transformer:
@@ -174,6 +174,20 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     }
    
+    /**
+     * Gets the names of the i18n message catalogues used for the i18n transformation.
+     * Looks for an rc config property named 'i18n-catalogue'. Defaults to 'global'.
+     * @return i18n catalogue name
+     */
+    protected String[] getI18NCatalogueNames() throws Exception {
+        String[] catalogueNames = getResourceConfigProperties("i18n-catalogue");
+        if (catalogueNames == null || catalogueNames.length == 0) {
+            catalogueNames = new String[1];
+            catalogueNames[0] = "global";
+        }
+        return catalogueNames;
+    }
+    
     /**
      * Pass parameters to xslt transformer.
      * @param transformer

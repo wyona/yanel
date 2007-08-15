@@ -36,8 +36,7 @@ import org.xml.sax.helpers.AttributesImpl;
 public class I18nTransformer2 extends AbstractTransformer {
 
     private static Category log = Category.getInstance(I18nTransformer2.class);
-    private Locale currentLocale = null;
-    private ResourceBundle messageBundle = null;
+    private ResourceBundle[] messageBundles;
     private boolean insideI18n;
     private String key;
     private StringBuffer textBuffer;
@@ -45,15 +44,43 @@ public class I18nTransformer2 extends AbstractTransformer {
     public static final String NS_URI = "http://www.wyona.org/yanel/i18n/1.0";
     
     public I18nTransformer2(String messages, String language, String defaultLanguage) {
-        try {
-            currentLocale = new Locale(language);
-            messageBundle = ResourceBundle.getBundle(messages, currentLocale);
-        } catch (MissingResourceException e) {
-            currentLocale = new Locale(defaultLanguage);
-            messageBundle = ResourceBundle.getBundle(messages, currentLocale);
-        } 
+        String[] messagesArray = new String[1];
+        messagesArray[0] = messages;
+        this.messageBundles = getMessageBundles(messagesArray, language, defaultLanguage);
     }
 
+    public I18nTransformer2(String[] messagesArray, String language, String defaultLanguage) {
+        this.messageBundles = getMessageBundles(messagesArray, language, defaultLanguage);
+    }
+    
+    protected ResourceBundle[] getMessageBundles(String[] messages, String language, String defaultLanguage) {
+        Locale currentLocale = new Locale(language);
+        Locale defaultLocale = new Locale(defaultLanguage);
+        ResourceBundle[] messageBundles = new ResourceBundle[messages.length];
+        for (int i = 0; i < messages.length; i++) {
+            try {
+                messageBundles[i] = ResourceBundle.getBundle(messages[i], currentLocale);
+            } catch (MissingResourceException e) {
+                messageBundles[i] = ResourceBundle.getBundle(messages[i], defaultLocale);
+            } 
+        }
+        return messageBundles;
+    }
+
+    protected String getMessage(String key) {
+        String value = null;
+        for (int i = 0; i < this.messageBundles.length; i++) {
+            try {
+                value = this.messageBundles[i].getString(key);
+                return value;
+            } catch (MissingResourceException e) {
+                // ignore
+            }
+        }
+        log.error("cannot find message for key: " + key);
+        return null;
+    }
+    
     public void startElement(String namespaceURI, String localName, String qName, Attributes attrs) throws SAXException {
         
         if (this.insideI18n) {
@@ -83,11 +110,8 @@ public class I18nTransformer2 extends AbstractTransformer {
                     
                     if (!attrLocalName.equals("attr") || !attrUri.equals(NS_URI)) {
                         if (i18nAttrs.contains(attrQName)) {
-                            String i18nValue;
-                            try {
-                                i18nValue = messageBundle.getString(attrValue);
-                            } catch (Exception e) {
-                                log.error("cannot find message for key: " + attrValue);
+                            String i18nValue = getMessage(attrValue);
+                            if (i18nValue == null) {
                                 i18nValue = attrValue;
                             }
                             newAttrs.addAttribute(attrUri, attrLocalName, attrQName, attrType, i18nValue);
@@ -112,11 +136,8 @@ public class I18nTransformer2 extends AbstractTransformer {
                     if (attrValue.indexOf("i18n:attr key=") != -1) {
                         String key = attrValue.substring(14);
 
-                        String i18nValue;
-                        try {
-                            i18nValue = messageBundle.getString(key);
-                        } catch (Exception e) {
-                            log.error("cannot find message for key: " + key);
+                        String i18nValue = getMessage(key);
+                        if (i18nValue == null) {
                             i18nValue = key;
                         }
                         newAttrs.addAttribute(attrUri, attrLocalName, attrQName, attrType, i18nValue);
@@ -135,12 +156,12 @@ public class I18nTransformer2 extends AbstractTransformer {
             if (this.key == null) {
                 this.key = defaultText;
             }
-            String i18nText;
-            try {
-                i18nText = messageBundle.getString(this.key);
-            } catch (Exception e) {
-                log.error("cannot find message for key: " + this.key);
-                i18nText = defaultText.length() == 0 ? this.key : defaultText;
+            String i18nText = getMessage(key);
+            if (i18nText == null) {
+                i18nText = defaultText;
+            }
+            if (i18nText.length() == 0) {
+                i18nText = key;
             }
             
             if (log.isDebugEnabled()) {
