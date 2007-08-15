@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2007 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -64,7 +64,21 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
      *
      */
     public ViewDescriptor[] getViewDescriptors() {
-        return null;
+        ViewDescriptor[] vd = new ViewDescriptor[4];
+
+        vd[0] = new ViewDescriptor("default");
+        vd[0].setMimeType(getMimeType(null));
+
+        vd[1] = new ViewDescriptor("source");
+        vd[1].setMimeType("application/xml");
+
+        vd[2] = new ViewDescriptor("atom");
+        vd[2].setMimeType("application/atom+xml");
+
+        vd[3] = new ViewDescriptor("rss2.0");
+        vd[3].setMimeType("text/xml");
+
+        return vd;
     }
 
     /**
@@ -118,7 +132,9 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
 
             // TODO: Add realm prefix, e.g. realm-prefix="ulysses-demo"
             // NOTE: The schema is according to http://cocoon.apache.org/2.1/userdocs/directory-generator.html
-	    sb.append("<atom:feed yanel:path=\"" + path + "\" dir:name=\"" + PathUtil.getName(entriesPath) + "\" dir:path=\"" + entriesPath + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
+	    //sb.append("<atom:feed yanel:path=\"" + path + "\" dir:name=\"" + PathUtil.getName(entriesPath) + "\" dir:path=\"" + entriesPath + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
+
+	    sb.append("<atom:feed xmlns:atom=\"http://www.w3.org/2005/Atom\">");
 
             sb.append("<atom:title>" + getFeedTitle(path) + "</atom:title>");
 
@@ -165,7 +181,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
             for (int i = 0; i < orderedEntries.size(); i++) {
                 Entry entry = (Entry) orderedEntries.elementAt(i);
 
-	        sb.append("<dir:file name=\"" + entry.getLink("edit").getHref() + "\"/>");
+	        //sb.append("<dir:file name=\"" + entry.getLink("edit").getHref() + "\"/>");
 
                 java.io.StringWriter sw = new java.io.StringWriter();
                 //org.apache.abdera.writer.Writer writer = org.apache.abdera.writer.Writer.INSTANCE;
