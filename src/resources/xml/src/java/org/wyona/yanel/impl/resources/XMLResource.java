@@ -33,7 +33,6 @@ import org.wyona.yanel.core.attributes.translatable.TranslationException;
 import org.wyona.yanel.core.attributes.translatable.TranslationManager;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
-import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.wyona.yanel.core.source.ResourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
