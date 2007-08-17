@@ -17,7 +17,9 @@
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
       <dependency groupId="fop" artifactId="fop"
-                  version="0.20.5"/>
+                  version="0.93"/>
+      <!--<dependency groupId="fop" artifactId="fop"
+                  version="0.20.5"/>-->
       <!-- IMPORTANT: Fop 0.20.5 seems to depend on avalon-framework-4.0: ~/.m2/repository/fop/fop/0.20.5/fop-0.20.5.pom (One should comment avalon-framework-4.0 within pom file!) -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api"
                   version="4.3"/>
@@ -25,6 +27,8 @@
                   version="4.3"/>
       <dependency groupId="batik" artifactId="batik-all"
                   version="1.6"/>
+      <dependency groupId="serializer" artifactId="serializer"
+                  version="2.7.0"/>
       <dependency groupId="xalan" artifactId="xalan"
                   version="2.7.0"/>
       <dependency groupId="xerces" artifactId="xercesImpl"
@@ -32,6 +36,8 @@
       <dependency groupId="xml-apis" artifactId="xml-apis"
                   version="1.3.02"/>
       <dependency groupId="xml-resolver" artifactId="xml-resolver"
+                  version="1.1"/>
+      <dependency groupId="xmlgraphics-commons" artifactId="xmlgraphics-commons"
                   version="1.1"/>
     </artifact:dependencies>
 

@@ -30,7 +30,9 @@ import org.wyona.yarep.core.Repository;
 
 import org.apache.log4j.Category;
 
-import org.apache.fop.apps.Driver;
+import org.apache.fop.apps.FopFactory;
+import org.apache.fop.apps.Fop;
+import org.apache.fop.apps.MimeConstants;
 //import org.apache.fop.configuration.Configuration;
 //import org.apache.fop.messaging.MessageHandler;
 
@@ -77,30 +79,17 @@ public class PDFResource extends Resource implements ViewableV2 {
         try {
             Repository repo = getRealm().getRepository();            
             
-/*
-            Configuration.put("version", "FOP 0.20.5");
-            Configuration.put("stream-filter-list", "flate");
-            Configuration.put("stream-filter-list", "ascii-85");
-            java.util.List streamFilterList = new java.util.ArrayList();
-            streamFilterList.add("flate");
-            streamFilterList.add("ascii-85");
-            Configuration.put("stream-filter-list", streamFilterList, Configuration.PDF);
-*/
-            
-            Driver driver = new Driver();
-/*
-            Logger logger = new ConsoleLogger(ConsoleLogger.LEVEL_INFO);
-            MessageHandler.setScreenLogger(logger);
-            driver.setLogger(logger);
-*/
-            driver.setRenderer(Driver.RENDER_PDF);
+            // Step 1: Construct a FopFactory
+            // (reuse if you plan to render multiple documents!)
+            FopFactory fopFactory = FopFactory.newInstance();
+
+            // Step 2: Construct fop with desired output format
+            Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, getResponse().getOutputStream());
         
             /* Only for debugging ...
             java.io.FileOutputStream fout = new java.io.FileOutputStream("/home/michi/Desktop/yanel.pdf");
             driver.setOutputStream(fout);
             */
-
-            driver.setOutputStream(getResponse().getOutputStream());
 
             // TODO: This doesn't seem to work properly (see below)
             //java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
@@ -112,7 +101,7 @@ public class PDFResource extends Resource implements ViewableV2 {
             xmlReader.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
             Source src = new SAXSource(xmlReader, new org.xml.sax.InputSource(repo.getInputStream(new Path(getPath()))));
             
-            Result res = new SAXResult(driver.getContentHandler());
+            Result res = new SAXResult(fop.getDefaultHandler());
             
             transformer.transform(src,res);
             
