@@ -31,7 +31,7 @@
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="yarep" artifactId="yarep-core"
-                  version="0.0.1-dev-r26207"/>
+                  version="0.0.1-dev-r26817"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons"
@@ -67,7 +67,7 @@
                   version="0.0.1-dev-r25041"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="yarep" artifactId="yarep-impl"
-                  version="0.0.1-dev-r26207"/>
+                  version="0.0.1-dev-r26817"/>
       <dependency groupId="spring" artifactId="spring"
                   version="2.0"/>
       <dependency groupId="svnkit" artifactId="svnkit"
