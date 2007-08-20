@@ -134,7 +134,9 @@ public class TimelineResource extends Resource implements ViewableV2 {
         sb.append("  bandInfos[1].highlight = true;");
   
         sb.append("  tl = Timeline.create(document.getElementById(\"my-timeline\"), bandInfos);");
-        sb.append("  Timeline.loadXML(\"" + getResourceConfigProperty("href") + "\", function(xml, url) { eventSource.loadXML(xml, url); });");
+        // TODO: Check first if a query string already exists!
+        sb.append("  Timeline.loadXML(\"" + getResourceConfigProperty("href") + "?do-not-cache-timestamp=" + new java.util.Date().getTime() + "\", function(xml, url) { eventSource.loadXML(xml, url); });");
+        //sb.append("  Timeline.loadXML(\"" + getResourceConfigProperty("href") + "\", function(xml, url) { eventSource.loadXML(xml, url); });");
         sb.append("}");
         sb.append("</script>");
         sb.append("<title>" + getResourceConfigProperty("title") + "</title>");
