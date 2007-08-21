@@ -9,6 +9,7 @@
 
 <xsl:param name="servlet.context.prefix" select="'NULL_servlet_context_prefix'"/>
 <xsl:param name="yanel.source.version" select="'NULL_yanel_source_version'"/>
+<xsl:param name="maven.url" select="'NULL_maven_url'"/>
 
 <xsl:template match="/">
 
@@ -35,11 +36,13 @@
         <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
     <ant inheritAll="false" antfile="{@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
+      <property name="maven.url" value="{$maven.url}"/>
     </ant>
         </xsl:when>
         <xsl:otherwise>
     <ant inheritAll="false" antfile="${{build.dir}}/{@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
+      <property name="maven.url" value="{$maven.url}"/>
     </ant>
         </xsl:otherwise>
       </xsl:choose>
@@ -94,6 +97,7 @@
       <property name="build.dir" value="${{build.dir}}"/>
       <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
+      <property name="maven.url" value="{$maven.url}"/>
     </ant>
       </xsl:when>
       <xsl:otherwise>
@@ -101,6 +105,7 @@
       <property name="build.dir" value="${{build.dir}}"/>
       <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
+      <property name="maven.url" value="{$maven.url}"/>
     </ant>
       </xsl:otherwise>
     </xsl:choose>

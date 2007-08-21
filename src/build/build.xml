@@ -854,6 +854,7 @@
     <xslt in="${yanel.home.dir}/conf/resource-types.xml" out="../../build/build-resource-types.xml" style="yanel2resources.xsl" force="false">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
+      <param name="maven.url" expression="${maven.url}"/>
     </xslt>
   </target>
 
@@ -861,6 +862,7 @@
     <xslt in="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" out="../../build/build-resource-types.xml" style="yanel2resources.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
+      <param name="maven.url" expression="${maven.url}"/>
     </xslt>
   </target>
 
@@ -911,6 +913,7 @@
     <xslt in="${yanel.home.dir}/conf/realms.xml" out="../../build/build-realms.xml" style="yanel2realms.xsl" force="false">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
+      <param name="maven.url" expression="${maven.url}"/>
     </xslt>
     <replace file="../../build/build-realms.xml" value="${yanel.home.dir.forward.slashes}/src/realms">
       <replacetoken>@REALMS_DIR@</replacetoken>
@@ -921,6 +924,7 @@
     <xslt in="${yanel.home.dir}/${local.config.dir}/local.realms.xml" out="../../build/build-realms.xml" style="yanel2realms.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
+      <param name="maven.url" expression="${maven.url}"/>
     </xslt>
     <replace file="../../build/build-realms.xml" value="${yanel.home.dir.forward.slashes}/src/realms">
       <replacetoken>@REALMS_DIR@</replacetoken>

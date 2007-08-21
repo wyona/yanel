@@ -9,6 +9,7 @@
 
 <xsl:param name="servlet.context.prefix" select="'NULL_servlet_context_prefix'"/>
 <xsl:param name="yanel.source.version" select="'NULL_yanel_source_version'"/>
+<xsl:param name="maven.url" select="'NULL_maven_url'"/>
 
 <xsl:template match="/">
 
@@ -32,11 +33,13 @@
         <xsl:when test="starts-with(yanel:config/@src, '/') or string-length(substring-before(yanel:config/@src, ':/'))='1'">
     <ant inheritAll="false" antfile="{yanel:config/@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
+      <property name="maven.url" value="{$maven.url}"/>
     </ant>
         </xsl:when>
         <xsl:otherwise>
     <ant inheritAll="false" antfile="${{build.dir}}/{yanel:config/@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
+      <property name="maven.url" value="{$maven.url}"/>
     </ant>
         </xsl:otherwise>
       </xsl:choose>
@@ -49,6 +52,7 @@
     <echo>Build realm with id "<xsl:value-of select="@id"/>"</echo>
     <ant inheritAll="false" antfile="{yanel:config/@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
+      <property name="maven.url" value="{$maven.url}"/>
     </ant>
   </target>
 </xsl:for-each>
