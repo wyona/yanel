@@ -1,5 +1,5 @@
 yarep_type<string>:collection
-yarep_isCheckedOut<boolean>:true
-yarep_checkoutDate<date>:2007-07-17T17:20:29+0200
-yarep_checkoutUserID<string>:lenya
-yarep_checkinDate<date>:2007-06-27T01:14:24+0200
+yarep_isCheckedOut<boolean>:false
+yarep_checkoutDate<date>:2007-08-22T00:53:54+0200
+yarep_checkoutUserID<string>:michi
+yarep_checkinDate<date>:2007-08-22T00:54:20+0200
