@@ -6,7 +6,7 @@
   <target name="install-default-tomcat" description="Install Default Tomcat" depends="init" if="yes.install.default.tomcat">
     <echo>Install Default Tomcat ...</echo>
 
-    <artifact:remoteRepository id="wyona.org.remote.repository" url="http://www.wyona.org/maven2/"/>
+    <artifact:remoteRepository id="wyona.org.remote.repository" url="${maven.url}"/>
 
     <artifact:dependencies pathId="maven2.tomcat.classpath" filesetId="maven2.tomcat.fileset">
       <remoteRepository refid="wyona.org.remote.repository"/>
