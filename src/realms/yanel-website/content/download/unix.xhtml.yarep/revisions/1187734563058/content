@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<!--
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Download (UNIX)</title>
+</head>
+<body>
+<h1>Download (UNIX)</h1>
+<h2>Releases</h2>
+<p>
+There are no releases available yet, but one can get the source from <a href="../../download/source-repository.html">Wyona's subversion repository</a> or snapshots which are listed below.
+</p>
+<p>
+In the near future one will be able to find updates through <a shape="rect" href="../../downloads/update.rdf">update.rdf</a>.
+</p>
+<h2>Binary Snapshots</h2>
+<!--
+<p>There are no snapshots available yet.</p>
+-->
+<p>
+<table cellspacing="0" cellpadding="0" border="1" bgcolor="#dddddd">
+  <tbody><tr>
+    <th>Package</th><th>Size</th><th>Date</th><th>Issues</th>
+  </tr>
+<tr><td valign="top"><a href="../../download/binary-snapshots/unix/wyona-yanel-SNAPSHOT-1.0-dev-r26839-bin.tar.gz">wyona-yanel-SNAPSHOT-1.0-dev-r26839-bin.tar.gz</a></td><td valign="top">34MB</td><td valign="top">August 21, 2007</td><td valign="top">No issues reported so far</td></tr><tr><td valign="top"><a shape="rect" href="../../download/binary-snapshots/unix/wyona-yanel-SNAPSHOT-1.0-dev-r24393-bin.tar.gz">wyona-yanel-SNAPSHOT-1.0-dev-r24393-bin.tar.gz</a></td><td valign="top">33MB</td><td valign="top">May 12, 2007</td><td valign="top">No issues reported so far</td></tr>
+</tbody></table>
+</p>
+<h2>Source Code Snapshots</h2>
+<p>
+<table cellspacing="0" cellpadding="0" border="1" bgcolor="#dddddd">
+  <tbody><tr>
+    <th>Package</th><th>Size</th><th>Date</th><th>Issues</th>
+  </tr>
+<tr><td valign="top"><a shape="rect" href="../../download/source-snapshots/wyona-yanel-SNAPSHOT-1.0-dev-r25505-src.zip">wyona-yanel-SNAPSHOT-1.0-dev-r25505-src.zip</a></td><td valign="top">6.2MB</td><td valign="top">June 26, 2007</td><td valign="top">No issues reported so far</td></tr>
+</tbody></table>
+</p>
+<h2>Source Code from SVN Repository</h2>
+<p><a href="../../download/source-repository.html">Wyona's subversion repository</a>.
+</p>
+</body>
+</html>
