@@ -3,7 +3,7 @@
 <project name="yanel-welcom-and-admin-realm-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
   <target name="dependencies" description="Dependencies">
-    <artifact:remoteRepository id="wyona.remote.repository" url="http://www.wyona.org/maven2/"/>
+    <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
 
     <!-- Libraries needed to compile -->
     <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
