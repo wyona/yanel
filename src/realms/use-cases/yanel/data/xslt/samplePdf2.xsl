@@ -6,7 +6,7 @@
   xmlns:fo="http://www.w3.org/1999/XSL/Format">
 
   <xsl:template match="/">
-   <fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+   <fo:root>
    
     <fo:layout-master-set>
      <fo:simple-page-master master-name="page"
@@ -35,7 +35,10 @@
 
      <fo:page-sequence-master master-name="all">
        <fo:repeatable-page-master-alternatives>
-	 <fo:conditional-page-master-reference master-reference="page" page-position="first"/>
+         <fo:conditional-page-master-reference master-reference="page" page-position="first"/>
+         <fo:conditional-page-master-reference master-reference="page" odd-or-even="odd"/>
+         <fo:conditional-page-master-reference master-reference="page" odd-or-even="even"/>
+         <fo:conditional-page-master-reference master-reference="page" blank-or-not-blank="blank"/>
        </fo:repeatable-page-master-alternatives>
      </fo:page-sequence-master>
     </fo:layout-master-set>
@@ -44,20 +47,20 @@
 
     <fo:page-sequence master-reference="all">
       <fo:static-content flow-name="xsl-region-before">
-	<fo:block text-align="left" font-size="10pt" font-family="serif" line-height="14pt">
+	    <fo:block text-align="left" font-size="10pt" font-family="serif" line-height="14pt">
         <!--<fo:external-graphic src="file:/home/michi/src/lenya-samples/slides/resources/images/live/wyona_klein.gif"/>
 	
           <fo:external-graphic src="url('http://cocoon.apache.org/lenya/images/apache-lenya-light.png')"/>-->
 	
         </fo:block>
 
-      </fo:static-content> -->
+      </fo:static-content>
 
       <fo:static-content flow-name="xsl-region-after">
-	<fo:block text-align="center" font-size="10pt" font-family="serif" line-height="14pt">
+	    <fo:block text-align="center" font-size="10pt" font-family="serif" line-height="14pt">
           <xsl:value-of select="/s:slideset/s:metadata/s:author/s:name"/> (<xsl:value-of select="/s:slideset/s:metadata/s:author/s:email"/>), <xsl:value-of select="/s:slideset/s:metadata/s:title"/>, <xsl:value-of select="/s:slideset/s:metadata/s:confgroup/s:conftitle"/>
         </fo:block>
-	<fo:block text-align="center" font-size="10pt" font-family="serif" line-height="14pt">
+	    <fo:block text-align="center" font-size="10pt" font-family="serif" line-height="14pt">
           Seite <fo:page-number/>
 
         </fo:block>
@@ -148,19 +151,18 @@ http://www.dulug.duke.edu/~mark/docs/dtds/xml/w3c/xsl-fo/elements/fo%3Ablock.htm
 
   <xsl:template match="ol">
     <fo:list-block>
-    <xsl:for-each select="li">
+      <xsl:for-each select="li">
         <fo:list-item space-before.optimum="40pt">
           <fo:list-item-label end-indent="label-end()">
             <fo:block font-size="18pt">&#x2022;</fo:block>
           </fo:list-item-label>
           <fo:list-item-body start-indent="body-start()">
-
             <fo:block font-size="18pt">
               <fo:inline text-decoration="none"><xsl:apply-templates/></fo:inline>
             </fo:block>
           </fo:list-item-body>
         </fo:list-item>
-    </xsl:for-each>
+      </xsl:for-each>
     </fo:list-block>
   </xsl:template>
 
