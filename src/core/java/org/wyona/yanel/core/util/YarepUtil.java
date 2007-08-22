@@ -17,7 +17,7 @@ public class YarepUtil {
     private static Category log = Category.getInstance(YarepUtil.class);
 
     /**
-     *
+     * Creates the node named by this abstract pathname, including any necessary but nonexistent parent nodes (similar to java.io.File.mkdirs()).
      */
     public static Node addNodes(Repository repo, String path, int nodeType) throws RepositoryException {
         if (repo.existsNode(path)) {
