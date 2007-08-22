@@ -11,7 +11,7 @@ Also see http://www.xml.com/pub/a/2001/01/17/xsl-fo/index.html
   <xsl:output method="xml"/>
 
   <xsl:template match="/">
-    <fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+    <fo:root>
 
       <fo:layout-master-set>
         <fo:simple-page-master master-name="simple"
@@ -19,7 +19,7 @@ Also see http://www.xml.com/pub/a/2001/01/17/xsl-fo/index.html
               page-width   ="21cm"
               margin-left  ="2.5cm"
               margin-right ="2.5cm">
-          <fo:region-body name="xsl-region-body" margin-top="3cm"/>
+          <fo:region-body margin-top="3cm"/>
         </fo:simple-page-master>
       </fo:layout-master-set>
 
