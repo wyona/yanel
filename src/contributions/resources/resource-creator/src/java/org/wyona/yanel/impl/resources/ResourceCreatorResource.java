@@ -294,7 +294,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             sb.append("</ul>");
         }
 
-        log.error("DEBUG: New Resource: " + PathUtil.backToRealm(getPath()) + ", " + pathOfNewResource);
+        if (log.isDebugEnabled()) log.debug("New Resource: " + PathUtil.backToRealm(getPath()) + ", " + pathOfNewResource);
         // NOTE: Back to realm has the form of ./ or ../ or ../../ etc., hence drop the leading slash!
         String href = PathUtil.backToRealm(getPath()) + pathOfNewResource.toString().substring(1);
         sb.append("<p>New resource can be accessed at: <a href=\"" + href + "\">" + href + "</a></p>");
@@ -444,13 +444,13 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         } else if(parent.toString().equals("/")){
             pathOfNewResource = new Path(parent + "/" + lookinPath + "/" + createName);
         } else {
-            log.error("DEBUG: Parent: " + parent + ", Lookin-path: " + lookinPath + ", Create Name: " + createName);
+            if (log.isDebugEnabled()) log.debug("Parent: " + parent + ", Lookin-path: " + lookinPath + ", Create Name: " + createName);
             pathOfNewResource = new Path("/" + lookinPath + "/" + createName);
         }
         
-        log.error("DEBUG: Path of new resource: " + pathOfNewResource);
+        if (log.isDebugEnabled()) log.debug("Path of new resource: " + pathOfNewResource);
         pathOfNewResource = new Path(removeTooManySlashes(pathOfNewResource.toString()));
-        log.error("DEBUG: Path of new resource without too many slashes: " + pathOfNewResource);
+        if (log.isDebugEnabled()) log.debug("Path of new resource without too many slashes: " + pathOfNewResource);
         
         String rtps = resourceType;
         String resNamespace = rtps.substring(0, rtps.indexOf("::"));
@@ -477,7 +477,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         rcContent.append("<yanel:rti name=\"" + newResource.getRTD().getResourceTypeLocalName() + "\" namespace=\"" + newResource.getRTD().getResourceTypeNamespace() + "\"/>\n\n");
         java.util.HashMap rtiProperties = ((CreatableV2) newResource).createRTIProperties(request);
         if (rtiProperties != null) {
-            log.error("DEBUG: " + rtiProperties + " " + PathUtil.getRTIPath(newResource.getPath()));
+            if (log.isDebugEnabled()) log.debug(rtiProperties + " " + PathUtil.getRTIPath(newResource.getPath()));
             java.util.Iterator iterator = rtiProperties.keySet().iterator();
             while (iterator.hasNext()) {
                 String property = (String) iterator.next();
@@ -497,7 +497,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 
         org.wyona.yarep.core.Repository rcRepo = newResource.getRealm().getRTIRepository();
         org.wyona.commons.io.Path newRCPath = new org.wyona.commons.io.Path(PathUtil.getRCPath(newResource.getPath()));
-        log.error("DEBUG: " + newRCPath);
+        if (log.isDebugEnabled()) log.debug(newRCPath);
         org.wyona.yanel.core.util.YarepUtil.addNodes(rcRepo, newRCPath.toString(), org.wyona.yarep.core.NodeType.RESOURCE);
 
         java.io.Writer writer = new java.io.OutputStreamWriter(rcRepo.getNode(newRCPath.toString()).getOutputStream());
@@ -709,7 +709,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         for (int i = 0; i < path.length(); i++) {
             char c = path.charAt(i);
             if (c == '/' && previousCharWasSlash) {
-                log.error("DEBUG: Do not append this slash: " + i);
+                if (log.isDebugEnabled()) log.debug("Do not append this slash: " + i);
             } else {
                 sb.append(c);
             }
