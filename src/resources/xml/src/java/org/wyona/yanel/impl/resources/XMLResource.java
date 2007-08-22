@@ -348,8 +348,8 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             // TODO: XHTML template should not be hardcoded!
             Repository repo = getRealm().getRepository();
 
-            org.wyona.yanel.core.util.YarepUtil.addNodes(repo, getPath().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
-            Writer writer = new java.io.OutputStreamWriter(repo.getNode(getPath()).getOutputStream());
+            Node newNode = org.wyona.yanel.core.util.YarepUtil.addNodes(repo, getPath().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
+            Writer writer = new java.io.OutputStreamWriter(newNode.getOutputStream());
             writer.write("<?xml version=\"1.0\"?>");
             writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
             writer.write("<head>");
