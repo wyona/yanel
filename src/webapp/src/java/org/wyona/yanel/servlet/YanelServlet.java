@@ -2119,13 +2119,18 @@ public class YanelServlet extends HttpServlet {
             String[] pathPart3 = pathPart2[1].split("/");
             String name = pathPart3[0];
             String namespace = pathPart2[0].replaceAll("http:/", "http://");
-            String htdocsPath = path.split("::" + name)[1].replaceAll("/", File.separator); 
+            String htdocsPath;
+            if (pathPart2[1].indexOf("/" + reservedPrefix + "/") >= 0) {
+                htdocsPath = "yanel-htdocs" + path.split("::" + name)[1].split("/" + reservedPrefix)[1].replaceAll("/", File.separator); 
+            } else {
+                htdocsPath = "htdocs" + path.split("::" + name)[1].replaceAll("/", File.separator); 
+            }
             try {
                 java.util.Map properties = new HashMap();
                 Realm realm = yanel.getMap().getRealm(request.getServletPath());
                 ResourceConfiguration rc = new ResourceConfiguration(name, namespace, properties);
                 Resource resourceOfPrefix = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
-                File resourceFile = org.wyona.commons.io.FileUtil.file(resourceOfPrefix.getRTD().getConfigFile().getParentFile().getAbsolutePath(), "htdocs" + htdocsPath);
+                File resourceFile = org.wyona.commons.io.FileUtil.file(resourceOfPrefix.getRTD().getConfigFile().getParentFile().getAbsolutePath(),  htdocsPath);
 
                 if (resourceFile.exists()) {
                     log.debug("Resource-Type specific data: " + resourceFile);
