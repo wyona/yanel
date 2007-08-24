@@ -11,3 +11,7 @@
   overflow:auto;
   position:relative;
 }
+
+.lookupicon {
+  border:0;
+}
