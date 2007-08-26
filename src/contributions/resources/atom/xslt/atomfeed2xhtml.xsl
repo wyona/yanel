@@ -40,7 +40,7 @@ Author: <xsl:value-of select="/atom:feed/atom:author"/>
 <br/>
 Update: <xsl:value-of select="/atom:feed/atom:updated"/>
 <br/>
-Link: <xsl:value-of select="/atom:feed/atom:link/@href"/>
+Link: <a href="{/atom:feed/atom:link/@href}"><xsl:value-of select="/atom:feed/atom:link/@href"/></a>
 <br/>
 ID: <xsl:value-of select="/atom:feed/atom:id"/>
 <br/>
@@ -60,6 +60,32 @@ Atom Service Document: <a href="introspection-{$name-without-suffix}.xml">intros
   <li>This Feed as <a href="?yanel.resource.viewid=source">application/xml</a></li>
   <li>This Feed as <a href="?yanel.resource.viewid=atom">application/atom+xml</a></li>
 </ul>
+
+<hr/>
+
+<h3>Tim Bray's "The Ape: Atom Protocol Exerciser"</h3>
+
+<form action="http://www.tbray.org/atompub/go" method="post">
+  <table>
+    <tr>
+      <td align="right">URI:</td>
+      <td align="left"><input name="uri" type="text" size="55" maxlength="255" value="{/atom:feed/atom:link/@href}introspection-{$name-without-suffix}.xml"/></td>
+    </tr>
+    <tr>
+      <td align="right">Username:</td>
+      <td align="left"><input name="username" type="text" size="55" maxlength="55" /></td>
+    </tr>
+    <tr>
+      <td align="right">Password:</td>
+      <td align="left"><input name="password" type="password" /></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td align="left"><input type="submit" value="Exercise!" /></td>
+    </tr>
+  </table>
+</form>
+
 </body>
 </html>
 </xsl:template>
