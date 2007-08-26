@@ -43,6 +43,8 @@ Update: <xsl:value-of select="/atom:feed/atom:updated"/>
 Link: <xsl:value-of select="/atom:feed/atom:link/@href"/>
 <br/>
 ID: <xsl:value-of select="/atom:feed/atom:id"/>
+<br/>
+Atom Service Document: <a href="introspection-{$name-without-suffix}.xml">introspection-<xsl:value-of select="$name-without-suffix"/>.xml</a>
 </p>
 
 <h2>Entries</h2>
