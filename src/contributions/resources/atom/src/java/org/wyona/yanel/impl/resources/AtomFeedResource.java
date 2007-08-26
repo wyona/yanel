@@ -235,7 +235,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
             defaultView.setMimeType(getMimeType(path));
 	        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
         }
 
         return defaultView;
