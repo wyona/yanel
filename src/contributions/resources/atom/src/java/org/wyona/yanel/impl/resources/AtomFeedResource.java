@@ -175,6 +175,8 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
 
 
             sb.append("<atom:updated>" + AtomDate.format(feedUpdated) + "</atom:updated>");
+            // http://bitworking.org/projects/atom/draft-ietf-atompub-protocol-16.html#rfc.section.10.2
+            sb.append("<app:edited xmlns:app=\"http://www.w3.org/2007/app\">" + AtomDate.format(feedUpdated) + "</app:edited>");
             sb.append("<atom:author><atom:name>" + getProperty(path, "author", "WARNING: No author specified!") + "</atom:name></atom:author>");
             sb.append("<atom:id>urn:uuid:TODO</atom:id>");
 
