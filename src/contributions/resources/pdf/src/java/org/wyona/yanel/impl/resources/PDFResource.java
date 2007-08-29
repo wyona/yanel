@@ -37,6 +37,7 @@ import org.apache.fop.apps.MimeConstants;
 //import org.apache.fop.messaging.MessageHandler;
 
 import java.io.File;
+import java.io.InputStream;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -77,7 +78,14 @@ public class PDFResource extends Resource implements ViewableV2 {
         defaultView.setResponse(false); // This resource writes directly into the response output stream
        
         try {
-            Repository repo = getRealm().getRepository();            
+            String yanelPath = getResourceConfigProperty("yanel-path");
+            Repository repo = getRealm().getRepository();
+            InputStream docSource;
+            if (yanelPath != null) {
+                docSource = repo.getNode(yanelPath).getInputStream();
+            } else {
+                docSource = repo.getNode(getPath()).getInputStream();
+            }
             
             // Step 1: Construct a FopFactory
             // (reuse if you plan to render multiple documents!)
@@ -99,7 +107,7 @@ public class PDFResource extends Resource implements ViewableV2 {
             
             org.xml.sax.XMLReader xmlReader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
             xmlReader.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
-            Source src = new SAXSource(xmlReader, new org.xml.sax.InputSource(repo.getInputStream(new Path(getPath()))));
+            Source src = new SAXSource(xmlReader, new org.xml.sax.InputSource(docSource));
             
             Result res = new SAXResult(fop.getDefaultHandler());
             
