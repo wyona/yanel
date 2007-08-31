@@ -146,7 +146,7 @@ public class DirectoryResource extends Resource implements ViewableV2, Creatable
             
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
             
-            Transformer transformerIntern = tfactory.newTransformer(getXSLTStreamSource( contentRepo));
+            Transformer transformerIntern = tfactory.newTransformer(getXSLTStreamSource(contentRepo));
             StreamSource orig = new StreamSource(new java.io.StringBufferInputStream(sb.toString()));
             
             transformerIntern.setParameter("yanel.path.name", PathUtil.getName(getPath()));
@@ -201,11 +201,9 @@ public class DirectoryResource extends Resource implements ViewableV2, Creatable
      * 
      */
     private StreamSource getXSLTStreamSource(Repository repo) throws RepositoryException {
-
-            File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "dir2xhtml.xsl");
-            log.debug("XSLT file: " + xsltFile);
-            return new StreamSource(xsltFile);
-        
+        File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "dir2xhtml.xsl");
+        if (log.isDebugEnabled()) log.debug("XSLT file: " + xsltFile);
+        return new StreamSource(xsltFile);
     }
 
     /**
