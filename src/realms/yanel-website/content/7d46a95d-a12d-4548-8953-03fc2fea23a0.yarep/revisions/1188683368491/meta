@@ -1,0 +1,10 @@
+yarep_revisionComment<string>:updated
+yarep_type<string>:resource
+yarep_isCheckedOut<boolean>:false
+yarep_revisionCreator<string>:lenya
+workflow-date<date>:2007-09-01T23:49:28+0200
+yarep_checkoutDate<date>:2007-09-01T23:48:43+0200
+yarep_checkoutUserID<string>:lenya
+workflow-state<string>:draft
+yarep_checkinDate<date>:2007-09-01T23:36:58+0200
+yarep_revisionCreationDate<date>:2007-09-01T23:49:28+0200
