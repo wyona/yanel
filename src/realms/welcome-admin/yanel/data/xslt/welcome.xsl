@@ -4,7 +4,7 @@
   xmlns="http://www.w3.org/1999/xhtml"
   >
   
-  <xsl:output method="html"/>
+  <xsl:output method="xhtml" encoding="UTF-8" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"/>
   
 <!--
   <xsl:param name="servlet.context"/>
@@ -95,8 +95,8 @@
   
   <xsl:template match="resourcetype">
     <li>
-      <xsl:value-of select="./localname"/>
-      (<xsl:value-of select="./description"/>)
+      <img src="{icon}" alt="{./icon/@alt}"/> &#160; <xsl:value-of select="./localname"/>
+      (<xsl:value-of select="./description"/>)&#160;<a href="{./docu}">docu</a>
     </li>
   </xsl:template>
 

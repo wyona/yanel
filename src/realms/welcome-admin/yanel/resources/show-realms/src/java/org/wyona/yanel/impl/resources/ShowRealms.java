@@ -107,9 +107,11 @@ public class ShowRealms extends Resource implements ViewableV2 {
         for (int i = 0; i < rtds.length; i++) {
             sb.append("<resourcetype>");
             try {
-                Resource resource = rtr.newResource(rtds[i].getResourceTypeUniversalName());
+                String rtYanelHtdocPath = PathUtil.getGlobalHtdocsPath(this) + yanel.getReservedPrefix() + "/resource-types/" + rtds[i].getResourceTypeNamespace() + "::" + rtds[i].getResourceTypeLocalName() + "/" + yanel.getReservedPrefix() + "/";
                 sb.append("<localname>" + rtds[i].getResourceTypeLocalName() + "</localname>");
                 sb.append("<description>" + rtds[i].getResourceTypeDescription() + "</description>");
+                sb.append("<icon alt=\"" + rtds[i].getResourceTypeLocalName() + " resource-type\">" + rtYanelHtdocPath + "icons/32x32/rt-icon.png" + "</icon>");
+                sb.append("<docu>" + rtYanelHtdocPath + "doc/index.html" + "</docu>");
             } catch(Exception e) {
                 log.error(e);
             }
