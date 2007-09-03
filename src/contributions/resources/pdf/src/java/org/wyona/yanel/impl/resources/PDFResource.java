@@ -25,16 +25,11 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
 
-//import org.apache.avalon.framework.logger.Logger; 
-//import org.apache.avalon.framework.logger.ConsoleLogger;
-
 import org.apache.log4j.Category;
 
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.MimeConstants;
-//import org.apache.fop.configuration.Configuration;
-//import org.apache.fop.messaging.MessageHandler;
 
 import java.io.File;
 import java.io.InputStream;
@@ -53,7 +48,6 @@ import javax.xml.transform.stream.StreamSource;
 public class PDFResource extends Resource implements ViewableV2 {
     
     private static Category log = Category.getInstance(PDFResource.class);
-       
     
     /**
      *
@@ -93,7 +87,10 @@ public class PDFResource extends Resource implements ViewableV2 {
 
             // Step 2: Construct fop with desired output format
             Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, getResponse().getOutputStream());
-        
+
+            YanelURIResolver yanelURIResolver = new YanelURIResolver(this);
+            fopFactory.setURIResolver(yanelURIResolver); // yanelURIResolver is a javax.xml.transform.URIResolver
+            
             /* Only for debugging ...
             java.io.FileOutputStream fout = new java.io.FileOutputStream("/home/michi/Desktop/yanel.pdf");
             driver.setOutputStream(fout);
@@ -138,20 +135,20 @@ public class PDFResource extends Resource implements ViewableV2 {
         return getRealm().getRepository().getSize(new Path(getPath()));
     }
       
-  /**
-  *
-  */
- private StreamSource getXSLTStreamSource(String path, Repository repo) throws Exception {
-     String xsltPath = getXSLTPath(path);
-     if(xsltPath != null) {
-         return new StreamSource(repo.getInputStream(new Path(xsltPath)));
-     } else {
-         File xsltFile = org.wyona.commons.io.FileUtil.file(
-         rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "xml2fo.xsl");
-         log.debug("XSLT file: " + xsltFile);
-         return new StreamSource(xsltFile);
-     }
- }
+    /**
+     *
+     */
+    private StreamSource getXSLTStreamSource(String path, Repository repo) throws Exception {
+        String xsltPath = getXSLTPath(path);
+        if(xsltPath != null) {
+            return new StreamSource(repo.getInputStream(new Path(xsltPath)));
+        } else {
+            File xsltFile = org.wyona.commons.io.FileUtil.file(
+            rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "xml2fo.xsl");
+            log.debug("XSLT file: " + xsltFile);
+            return new StreamSource(xsltFile);
+        }
+    }
 
     /**
      * 
