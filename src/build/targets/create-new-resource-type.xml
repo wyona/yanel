@@ -38,6 +38,20 @@
       <replacetoken>bar.foo.yanel.impl.resources.FromScratchResource</replacetoken>
     </replace>
 
+    <!-- Patch doc/index.html -->
+    <replace file="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/yanel-htdocs/doc/index.html" value="${new.resource.name}">
+      <replacetoken>from-scratch</replacetoken>
+    </replace>
+    <replace file="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/yanel-htdocs/doc/index.html" value="${new.resource.namespace}">
+      <replacetoken>http://foo.bar/yanel/resource/1.0</replacetoken>
+    </replace>
+    <replace file="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/yanel-htdocs/doc/index.html" value="${new.resource.description}">
+      <replacetoken>From Scratch Resource Template</replacetoken>
+    </replace>
+    <replace file="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/yanel-htdocs/doc/index.html" value="${new.resource.java.class}">
+      <replacetoken>bar.foo.yanel.impl.resources.FromScratchResource</replacetoken>
+    </replace>
+
     <!-- Patch build.properties -->
     <replace file="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/build/build.properties" value="${new.resource.name}">
       <replacetoken>from-scratch</replacetoken>
