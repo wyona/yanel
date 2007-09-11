@@ -85,7 +85,17 @@ import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
 
 /**
- *
+ * The NavigationResource may be used to generate menu, breadcrumb, or 
+ * other navigation elements of a page.
+ * Typically it is xincluded into a normal page.
+ * 
+ * Parameters:
+ * path:        Current path which is part of the browser url. Links will 
+ *              be resolved relative to this path.
+ * active-path: Path of the active node (e.g. the node which will be 
+ *              highlighted in the menu)
+ *              If this parameter is omitted, the path parameter will be used.
+ * language:    language
  */
 public class NavigationResource extends Resource implements ViewableV2, ModifiableV2 {
 
@@ -125,11 +135,14 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
         String siteTreePath = null;
         String language = null;
         String currentPath = null;
+        String activePath = null;
         if (getParameters() != null) {
             currentPath = (String)getParameters().get("path");
+            activePath = (String)getParameters().get("active-path");
             language = (String)getParameters().get("language");
         }
         if (currentPath == null) currentPath = getPath();
+        if (activePath == null) activePath = currentPath;
 
         if (language == null) {
             language = getLanguage();
@@ -188,6 +201,7 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
                     if (client != null) xsltHandlers[i].getTransformer().setParameter("client", client);
                     xsltHandlers[i].getTransformer().setParameter("language", getLanguage());
                     xsltHandlers[i].getTransformer().setParameter("currentPath", currentPath);
+                    xsltHandlers[i].getTransformer().setParameter("activePath", activePath);
                 }
                 
                 // create i18n transformer:
