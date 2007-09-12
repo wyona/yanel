@@ -12,6 +12,7 @@
   <bean id="ACIdentitiesRepositoryFactory" class="org.wyona.yarep.core.RepositoryFactory">
     <!-- <constructor-arg type="java.lang.String" value="ac-identities-yarep.properties"/> -->
   </bean>
+  <bean id="ExtraRepositoryFactory" class="org.wyona.yarep.core.RepositoryFactory"/>
   <bean id="map" class="org.wyona.yanel.impl.map.MapImpl"/>
   <!--
   <bean id="policyManager" class="org.wyona.security.impl.PolicyManagerImpl"/>

@@ -19,6 +19,7 @@ package org.wyona.yanel.core.map;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.wyona.commons.io.FileUtil;
 import org.wyona.commons.io.Path;
@@ -109,6 +110,7 @@ public class Realm {
         RepositoryFactory rtiRepoFactory = yanel.getRepositoryFactory("RTIRepositoryFactory");
         RepositoryFactory policiesRepoFactory = yanel.getRepositoryFactory("ACPoliciesRepositoryFactory");
         RepositoryFactory identitiesRepoFactory = yanel.getRepositoryFactory("ACIdentitiesRepositoryFactory");
+        RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory("ExtraRepositoryFactory");
 
         String repoConfigSrc = config.getChild("data", false).getValue();
         File repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigSrc));
@@ -169,6 +171,17 @@ public class Realm {
             setRootDir(FileUtil.resolve(getConfigFile(), new File(rootDirConfig.getValue())));
         }
 
+        Configuration reposElement = config.getChild("yarep-repositories", false);
+        ArrayList repos = new ArrayList();
+        if (reposElement != null) {
+            Configuration[] repoElements = reposElement.getChildren("repository");
+            for (int i = 0; i < repoElements.length; i++) {
+                String id = repoElements[i].getAttribute("id");
+                String repoConfigPath = repoElements[i].getAttribute("config");
+                repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigPath));
+                Repository repo = extraRepoFactory.newRepository(id, repoConfig);
+            }
+        }
     }
 
     /**
@@ -364,5 +377,15 @@ public class Realm {
 
     public void setTranslationManager(TranslationManager translationManager) {
         this.translationManager = translationManager;
+    }
+    
+    public Repository getRepository(String id) throws Exception {
+        Yanel yanel = Yanel.getInstance();
+        RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory("ExtraRepositoryFactory");
+        if (extraRepoFactory.exists(id)) {
+            return extraRepoFactory.newRepository(id);
+        } else {
+            return null;
+        }
     }
 }
