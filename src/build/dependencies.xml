@@ -85,6 +85,7 @@
       <dependency groupId="commons-jelly" artifactId="commons-jelly" version="1.0"/>
       <dependency groupId="commons-jexl" artifactId="commons-jexl" version="1.0"/>
       <dependency groupId="commons-beanutils" artifactId="commons-beanutils" version="1.6"/>
+      <dependency groupId="commons-fileupload" artifactId="commons-fileupload" version="1.2"/>
       <dependency groupId="dom4j" artifactId="dom4j" version="1.5.2"/>
     </artifact:dependencies>
 

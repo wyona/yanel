@@ -65,7 +65,7 @@ import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yarep.util.RepoPath;
 import org.wyona.yarep.util.YarepUtil;
-import org.wyona.yanel.core.util.HttpServletRequestHelper;import org.wyona.yanel.core.util.PathUtil;
+import org.wyona.yanel.core.util.PathUtil;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -164,13 +164,13 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             }
             if(submit) {
                 sendMail(request, transformer);
-                transformer.setParameter("company", HttpServletRequestHelper.getParameter(request, "company"));
-                transformer.setParameter("firstName", HttpServletRequestHelper.getParameter(request, "firstName"));
-                transformer.setParameter("lastName", HttpServletRequestHelper.getParameter(request, "lastName"));
-                transformer.setParameter("email", HttpServletRequestHelper.getParameter(request, "email"));
-                transformer.setParameter("address", HttpServletRequestHelper.getParameter(request, "address"));
-                transformer.setParameter("zipCity", HttpServletRequestHelper.getParameter(request, "zipCity"));
-                transformer.setParameter("message", HttpServletRequestHelper.getParameter(request, "message"));
+                transformer.setParameter("company", request.getParameter("company"));
+                transformer.setParameter("firstName", request.getParameter("firstName"));
+                transformer.setParameter("lastName", request.getParameter("lastName"));
+                transformer.setParameter("email", request.getParameter("email"));
+                transformer.setParameter("address", request.getParameter("address"));
+                transformer.setParameter("zipCity", request.getParameter("zipCity"));
+                transformer.setParameter("message", request.getParameter("message"));
             }
             
             // create first i18n transformer:

@@ -806,7 +806,7 @@ public class YanelServlet extends HttpServlet {
         try {
             Realm realm = map.getRealm(request.getServletPath());
             String path = map.getPath(realm, request.getServletPath());
-            HttpRequest httpRequest = new HttpRequest(request);
+            HttpRequest httpRequest = (HttpRequest)request;
             HttpResponse httpResponse = new HttpResponse(response);
             Resource res = yanel.getResourceManager().getResource(getEnvironment(httpRequest, httpResponse), realm, path);
             

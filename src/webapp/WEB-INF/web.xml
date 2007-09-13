@@ -45,4 +45,14 @@
     <url-pattern>/servlet/Yanel</url-pattern>
     -->
   </servlet-mapping>
+  
+  <filter>
+    <filter-name>YanelFilter</filter-name>
+    <filter-class>org.wyona.yanel.servlet.communication.YanelFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>YanelFilter</filter-name>
+    <servlet-name>YanelServlet</servlet-name>
+  </filter-mapping>
+  
 </web-app>

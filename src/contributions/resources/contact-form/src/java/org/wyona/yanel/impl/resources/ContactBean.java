@@ -1,7 +1,6 @@
 package org.wyona.yanel.impl.resources;
 
 import javax.servlet.http.HttpServletRequest;
-import org.wyona.yanel.core.util.HttpServletRequestHelper;
 
 public class ContactBean {
     String company, lastName, firstName, address, city, email, message;
@@ -28,12 +27,12 @@ public class ContactBean {
         return lastName;
     }
     public ContactBean(HttpServletRequest request) {
-        company = HttpServletRequestHelper.getParameter(request, "company");
-        firstName = HttpServletRequestHelper.getParameter(request, "firstName");
-        lastName = HttpServletRequestHelper.getParameter(request, "lastName");
-        address  = HttpServletRequestHelper.getParameter(request, "address");
-        city  = HttpServletRequestHelper.getParameter(request, "zipCity");
-        email  = HttpServletRequestHelper.getParameter(request, "email");
-        message = HttpServletRequestHelper.getParameter(request, "message");
+        company = request.getParameter("company");
+        firstName = request.getParameter("firstName");
+        lastName = request.getParameter("lastName");
+        address  = request.getParameter("address");
+        city  = request.getParameter("zipCity");
+        email  = request.getParameter("email");
+        message = request.getParameter("message");
     }
 }

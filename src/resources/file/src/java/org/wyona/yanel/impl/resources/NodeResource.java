@@ -32,6 +32,7 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.workflow.WorkflowException;
 import org.wyona.yanel.core.workflow.WorkflowHelper;
+import org.wyona.yanel.servlet.communication.HttpRequest;
 
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
@@ -47,16 +48,21 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Date;
+import java.util.Enumeration;
 
 import org.apache.log4j.Category;
+
+import org.apache.commons.fileupload.util.Streams;
 
 /**
  * Generic Node Resource
  */
-public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, IntrospectableV1, WorkflowableV1 {
+public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, IntrospectableV1, WorkflowableV1, CreatableV2 {
 //public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2 {
 
     private static Category log = Category.getInstance(NodeResource.class);
+    
+    private String uploadMimeType;
 
     /**
      *
@@ -107,56 +113,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         String suffix = PathUtil.getSuffix(getPath());
         if (suffix != null) {
             log.debug("SUFFIX: " + suffix);
-            if (suffix.equals("html")) {
-                mimeType = "text/html";
-            } else if (suffix.equals("htm")) {
-                mimeType = "text/html";
-            } else if (suffix.equals("xhtml")) {
-                mimeType = "application/xhtml+xml";
-            } else if (suffix.equals("xml")) {
-                mimeType = "application/xml";
-            } else if (suffix.equals("css")) {
-                mimeType = "text/css";
-            } else if (suffix.equals("js")) {
-                mimeType = "application/x-javascript";
-            } else if (suffix.equals("png")) {
-                mimeType = "image/png";
-            } else if (suffix.equals("jpg")) {
-                mimeType = "image/jpeg";
-	    } else if (suffix.equals("gif")) {
-                mimeType = "image/gif";
-	    } else if (suffix.equals("pdf")) {
-                mimeType = "application/pdf";
-	    } else if (suffix.equals("doc")) {
-                mimeType = "application/msword";
-	    } else if (suffix.equals("odt")) {
-                mimeType = "application/vnd.oasis.opendocument.text";
-	    } else if (suffix.equals("sxc")) {
-                mimeType = "application/vnd.sun.xml.calc";
-	    } else if (suffix.equals("xpi")) {
-                mimeType = "application/x-xpinstall";
-	    } else if (suffix.equals("zip")) {
-                mimeType = "application/zip";
-	    } else if (suffix.equals("jar")) { // http://en.wikipedia.org/wiki/Jar_(file_format)
-                mimeType = "application/java-archive";
-	    } else if (suffix.equals("war")) {
-                mimeType = "application/java-archive";
-	    } else if (suffix.equals("flv")) {
-                mimeType = "video/x-flv";
-	    } else if (suffix.equals("swf")) {
-                mimeType = "application/x-shockwave-flash";
-	    } else if (suffix.equals("txt")) {
-                mimeType = "text/plain";
-	    } else if (suffix.equals("mov")) {
-                mimeType = "video/quicktime";
-	    } else if (suffix.equals("svg")) {
-                mimeType = "image/svg+xml";
-	    } else if (suffix.equals("ico")) {
-                mimeType = "image/x-icon";
-            } else {
-                log.warn("Could not determine mime-type from suffix (suffix: " + suffix + ")!");
-                mimeType = "application/octet-stream";
-            }
+            mimeType = getMimeTypeBySuffix(suffix);
         } else {
             log.warn("mime-type will be set to application/octet-stream, because no suffix for " + getPath());
             mimeType = "application/octet-stream";
@@ -348,15 +305,60 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public void create(HttpServletRequest request) {
-        log.warn("No implemented yet!");
+        try {
+            Repository repo = getRealm().getRepository();
+
+            if (request instanceof HttpRequest) {
+                HttpRequest yanelRequest = (HttpRequest)request;
+                if (yanelRequest.isMultipartRequest()) {
+                    Enumeration parameters = yanelRequest.getFileNames();
+                    if (parameters.hasMoreElements()) {
+                        String name = (String) parameters.nextElement();
+                        
+                        Node newNode = org.wyona.yanel.core.util.YarepUtil.addNodes(repo, getPath().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
+                        OutputStream output = newNode.getOutputStream();
+                        InputStream is = yanelRequest.getInputStream(name);
+                        Streams.copy(is, output, true);
+                        uploadMimeType = yanelRequest.getContentType(name);
+                        newNode.setMimeType(uploadMimeType);
+                    }
+                } else {
+                    log.error("this is NOT a multipart request");
+                }
+            } else {
+                log.error("this is NOT a HttpRequest");
+            }
+            
+            
+            // TODO: Introspection should not be hardcoded!
+/*            String name = new org.wyona.commons.io.Path(getPath()).getName();
+            String parent = new org.wyona.commons.io.Path(getPath()).getParent().toString();
+            String nameWithoutSuffix = name;
+            int lastIndex = name.lastIndexOf(".");
+            if (lastIndex > 0) nameWithoutSuffix = name.substring(0, lastIndex);
+            String introspectionPath = parent + "/introspection-" + nameWithoutSuffix + ".xml";
+
+            org.wyona.yanel.core.util.YarepUtil.addNodes(repo, introspectionPath, org.wyona.yarep.core.NodeType.RESOURCE);
+            writer = new java.io.OutputStreamWriter(repo.getNode(introspectionPath).getOutputStream());
+            writer.write(getIntrospection(name));
+            writer.close();*/
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
     }
 
     /**
      *
      */
     public java.util.HashMap createRTIProperties(HttpServletRequest request) {
-        log.warn("No implemented yet!");
-        return null;
+        java.util.HashMap map = new java.util.HashMap();
+        String mimeType = request.getParameter("rp.mime-type");
+        if (mimeType == null) {
+            mimeType = this.uploadMimeType;
+        }
+        map.put("mime-type", mimeType);
+        map.put("encoding", request.getParameter("rp.encoding"));
+        return map;
     }
 
     /**
@@ -393,6 +395,64 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         return buf.toString();
     }
 
+
+    /**
+     *
+     */
+    public String getMimeTypeBySuffix(String suffix) {
+        // TODO: use MimeTypeUtil 
+        if (suffix.equals("html")) {
+            return "text/html";
+        } else if (suffix.equals("htm")) {
+            return "text/html";
+        } else if (suffix.equals("xhtml")) {
+            return "application/xhtml+xml";
+        } else if (suffix.equals("xml")) {
+            return "application/xml";
+        } else if (suffix.equals("css")) {
+            return "text/css";
+        } else if (suffix.equals("js")) {
+            return "application/x-javascript";
+        } else if (suffix.equals("png")) {
+            return "image/png";
+        } else if (suffix.equals("jpg")) {
+            return "image/jpeg";
+        } else if (suffix.equals("gif")) {
+            return "image/gif";
+        } else if (suffix.equals("pdf")) {
+            return "application/pdf";
+        } else if (suffix.equals("doc")) {
+            return "application/msword";
+        } else if (suffix.equals("odt")) {
+            return "application/vnd.oasis.opendocument.text";
+        } else if (suffix.equals("sxc")) {
+            return "application/vnd.sun.xml.calc";
+        } else if (suffix.equals("xpi")) {
+            return "application/x-xpinstall";
+        } else if (suffix.equals("zip")) {
+            return "application/zip";
+        } else if (suffix.equals("jar")) { // http://en.wikipedia.org/wiki/Jar_(file_format)
+            return "application/java-archive";
+        } else if (suffix.equals("war")) {
+            return "application/java-archive";
+        } else if (suffix.equals("flv")) {
+            return "video/x-flv";
+        } else if (suffix.equals("swf")) {
+            return "application/x-shockwave-flash";
+        } else if (suffix.equals("txt")) {
+            return "text/plain";
+        } else if (suffix.equals("mov")) {
+            return "video/quicktime";
+        } else if (suffix.equals("svg")) {
+            return "image/svg+xml";
+        } else if (suffix.equals("ico")) {
+            return "image/x-icon";
+        } else {
+            log.warn("Could not determine mime-type from suffix (suffix: " + suffix + ")!");
+            return "application/octet-stream";
+        }
+    }
+    
     /**
      *
      */

@@ -329,7 +329,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     sb.append("<h4>Create new page (step 2)</h4>");
                     sb.append("<h2>Enter/Select template (resp. resource) specific parameters and \"Save As\"</h2>");
                     sb.append("<p>Template (resp. resource type): " + resName + " ("+resNamespace+")</p>");
-                    sb.append("<form>");
+                    sb.append("<form enctype=\"multipart/form-data\" method=\"post\">");
                     // TODO: Add this parameter to the continuation within the session!
                     sb.append("<input type=\"hidden\" name=\"resource-type\" value=\"" + rtps + "\"/>");
 
@@ -464,6 +464,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             } else {
                 throw new Exception("creation NOT successfull!");
             }
+        } else {
+            throw new Exception("creation NOT successful (newResource == null)!");
+            
         }
         return pathOfNewResource;
     }
