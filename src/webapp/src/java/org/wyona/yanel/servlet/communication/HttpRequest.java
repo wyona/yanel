@@ -163,6 +163,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
      */
     public String[] getParameterValues(String name) {
         if(!isMultipartRequest()) {
+            // TODO: fix encoding
             return super.getParameterValues(name);
         } else {
             ArrayList values = new ArrayList();
