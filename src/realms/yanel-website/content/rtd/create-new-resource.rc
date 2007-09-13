@@ -20,6 +20,11 @@
       <rc:resource-type name="yanel-user" namespace="http://www.wyona.org/yanel/resource/1.0">
         <rc:display-name>CMS User</rc:display-name>
       </rc:resource-type>
+      
+      <rc:resource-type name="file" namespace="http://www.wyona.org/yanel/resource/1.0">
+        <rc:display-name>File</rc:display-name>
+      </rc:resource-type>
+
     </rc:resource-types>
   </yanel:custom-config>
   <yanel:property name="xslt" value="/xslt/global.xsl"/>
