@@ -49,6 +49,12 @@ public class XMLSerializer extends AbstractSerializer {
         handlePendingElement();
         String eName = ("".equals(qName)) ? localName : qName;
         
+        if (log.isDebugEnabled()) {
+            log.debug("element localName : " + localName);
+            log.debug("element qName     : " + qName);
+            log.debug("element nsURI     : " + namespaceURI);
+        }
+        
         StringBuffer element = new StringBuffer();
         element.append("<" + eName);
         
@@ -59,6 +65,7 @@ public class XMLSerializer extends AbstractSerializer {
             String aValue = replaceEntities(attrs.getValue(i));
             element.append(" " + aName + "=\"" + aValue + "\"");
         }
+        
         // NOTE: the element will not be closed yet because we don't know if the
         // element has to be collapsed.
         
@@ -103,7 +110,7 @@ public class XMLSerializer extends AbstractSerializer {
     public void comment(char[] buf, int offset, int length) throws SAXException {
         handlePendingElement();
         String s = new String(buf, offset, length);
-        print("<!-- " + s + " -->");
+        print("<!--" + s + "-->");
     }
     
     protected void print(String s) throws SAXException {
