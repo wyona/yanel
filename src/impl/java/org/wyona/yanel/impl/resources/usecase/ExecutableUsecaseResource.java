@@ -65,7 +65,7 @@ public class ExecutableUsecaseResource extends UsecaseResource implements Execut
             cancel();
             return generateView(VIEW_CANCEL);
         } else {
-            return generateView(VIEW_DEFAULT); // TODO: should consider viewID?
+            return generateView(viewID); // this will show the default view if the param is not set
         }
     }
 
