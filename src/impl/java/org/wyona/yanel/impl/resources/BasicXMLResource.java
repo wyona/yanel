@@ -36,7 +36,7 @@ import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.serialization.SerializerFactory;
-import org.wyona.yanel.core.source.ResourceResolver;
+import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
@@ -134,7 +134,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
            
             // create xinclude transformer:
             XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
-            ResourceResolver resolver = new ResourceResolver(this);
+            SourceResolver resolver = new SourceResolver(this);
             xIncludeTransformer.setResolver(resolver);
            
             // create serializer:

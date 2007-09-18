@@ -11,20 +11,24 @@ import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
-import org.xml.sax.InputSource;
+import javax.xml.transform.URIResolver;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
 
 /**
  * Source resolver for yanel resources.
- * It returns an InputSource made from the view of the resource with
+ * It returns an Source made from the view of the resource with
  * the given uri. It will look for the resource in the realm of the resource
  * which is passed to the constructor of this ResourceResolver.
  * 
  * It uses the following URI syntax:
  * yanelresource:/path/to/resource
  * 
+ * TODO: support access to other realms, e.g. yanelresource:realmid:path/to/resource
  * TODO: support relative uris?
  */
-public class ResourceResolver implements SourceResolver {
+public class ResourceResolver implements URIResolver {
 
     private static Category log = Category.getInstance(ResourceResolver.class);
     
@@ -37,12 +41,8 @@ public class ResourceResolver implements SourceResolver {
     }
     
     /**
-     * @see org.wyona.yanel.core.source.SourceResolver#resolve(java.lang.String)
      */
-    public InputSource resolve(String uri) throws SourceException {
-        if (log.isDebugEnabled()) {
-            log.debug("resolving: " + uri);
-        }
+    public Source resolve(String uri, String base) throws SourceException {
         String prefix = SCHEME + ":";
         if (!uri.startsWith(prefix)) {
             log.error("unknown scheme: " + uri);
@@ -64,10 +64,10 @@ public class ResourceResolver implements SourceResolver {
                     log.debug("including document: " + viewV1path);
                 }
                 View view = ((ViewableV1) targetResource).getView(new Path(viewV1path), null);
-                return new InputSource(view.getInputStream());
+                return new StreamSource(view.getInputStream());
             } else if (ResourceAttributeHelper.hasAttributeImplemented(targetResource, "Viewable", "2")) {
                 View view = ((ViewableV2) targetResource).getView(null);
-                return new InputSource(view.getInputStream());
+                return new StreamSource(view.getInputStream());
             } else {
                 log.warn("Resource is not viewable: " + uri);
                 return null;

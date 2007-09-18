@@ -1,5 +1,8 @@
 package org.wyona.yanel.core.transformation;
 
+import javax.xml.transform.URIResolver;
+import javax.xml.transform.sax.SAXSource;
+
 import org.apache.log4j.Category;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.wyona.yanel.core.source.SourceResolver;
@@ -21,7 +24,7 @@ public class XIncludeTransformer extends AbstractTransformer {
 
     public static final String NS_URI = "http://www.w3.org/2001/XInclude";
     
-    private SourceResolver resolver;
+    private URIResolver resolver;
     private boolean ignoreDocumentEvent;
     private boolean insideIncludeElement;
     
@@ -30,7 +33,7 @@ public class XIncludeTransformer extends AbstractTransformer {
         this.insideIncludeElement = false;
     }
 
-    public void setResolver(SourceResolver resolver) {
+    public void setResolver(URIResolver resolver) {
         this.resolver = resolver;
     }
 
@@ -58,7 +61,7 @@ public class XIncludeTransformer extends AbstractTransformer {
             
             this.ignoreDocumentEvent = true;
             try {
-                xmlReader.parse(resolver.resolve(href));
+                xmlReader.parse(SAXSource.sourceToInputSource(resolver.resolve(href, null)));
             } catch (Exception e) {
                 log.error("XInclude error for href: " + href + ":  " + e, e);
                 throw new SAXException(e);

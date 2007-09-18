@@ -1,16 +1,18 @@
 package org.wyona.yanel.core.source;
 
+import javax.xml.transform.TransformerException;
+
 /**
  * 
  */
-public class SourceException extends Exception {
+public class SourceException extends TransformerException {
 
     /**
      *
      */
-    public SourceException() {
-        super();
-    }
+    //public SourceException() {
+        //super();
+    //}
 
     /**
      *
