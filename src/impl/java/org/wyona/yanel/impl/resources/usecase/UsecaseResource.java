@@ -140,6 +140,9 @@ public class UsecaseResource extends Resource implements ViewableV2 {
             
             JellyContext jellyContext = new JellyContext();
             jellyContext.setVariable("resource", this);
+            jellyContext.setVariable("yanel.back2context", PathUtil.backToContext(realm, getPath()));
+            jellyContext.setVariable("yanel.back2realm", PathUtil.backToRealm(getPath()));
+            jellyContext.setVariable("yanel.reservedPrefix", "yanel"); // TODO don't hardcode
             //jellyContext.setVariable("request", request);
 
             // at first we write the jelly output to a stream,
