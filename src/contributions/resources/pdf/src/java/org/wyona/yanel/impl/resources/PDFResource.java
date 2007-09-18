@@ -21,6 +21,7 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.source.YanelRepositoryResolver;
 
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
@@ -88,8 +89,8 @@ public class PDFResource extends Resource implements ViewableV2 {
             // Step 2: Construct fop with desired output format
             Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, getResponse().getOutputStream());
 
-            YanelURIResolver yanelURIResolver = new YanelURIResolver(this);
-            fopFactory.setURIResolver(yanelURIResolver); // yanelURIResolver is a javax.xml.transform.URIResolver
+            YanelRepositoryResolver yanelRepoResolver = new YanelRepositoryResolver(this);
+            fopFactory.setURIResolver(yanelRepoResolver);
             
             /* Only for debugging ...
             java.io.FileOutputStream fout = new java.io.FileOutputStream("/home/michi/Desktop/yanel.pdf");
