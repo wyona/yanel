@@ -13,6 +13,7 @@ Contact Form for sending email
   <property name="xslt"/>
   <property name="mime-type"/>
   <property name="to"/>
+  <property name="subject"/>
   <property name="smtpHost"/>
   <property name="smtpPort"/>
 </rtd>
