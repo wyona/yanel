@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="zip" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="zip-path" value="/hello/pdf-sample.pdf"/>
+</yanel:resource-config>
