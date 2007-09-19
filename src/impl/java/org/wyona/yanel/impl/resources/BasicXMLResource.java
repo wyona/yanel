@@ -139,9 +139,10 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
            
             // create serializer:
             Serializer serializer = null;
-            // TODO: Should it also check for text/html?!
-            if (getMimeType(viewId).equals("application/xhtml+xml")) {
-                serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
+            if (getMimeType(viewId).equals("text/html")) {
+                serializer = SerializerFactory.getSerializer(SerializerFactory.HTML_TRANSITIONAL);
+            } else if (getMimeType(viewId).equals("application/xhtml+xml")) {
+                    serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
             } else {
                 serializer = SerializerFactory.getSerializer(SerializerFactory.XML);
             }
