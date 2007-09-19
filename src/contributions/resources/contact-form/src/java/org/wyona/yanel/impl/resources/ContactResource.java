@@ -177,8 +177,8 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             I18nTransformer2 i18nTransformer1 = new I18nTransformer2(messageBundle, language, getRealm().getDefaultLanguage());
             i18nTransformer1.setEntityResolver(catalogResolver);
             
-            // create second xslt transformer:
-            TransformerHandler xsltHandler2 = tf.newTransformerHandler(getXSLTStreamSource(path, repository));
+            // create xslt transformer for global layout
+            TransformerHandler xsltHandler2 = tf.newTransformerHandler(getGlobalXSLTStreamSource(path));
             transformer = xsltHandler2.getTransformer();
             transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
             transformer.setParameter("yanel.path", getPath());
@@ -284,7 +284,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
      * @param request
      * @param transformer
      */
-    private void sendMail(HttpServletRequest request, Transformer transformer) {
+    private void sendMail(HttpServletRequest request, Transformer transformer) throws Exception {
         String email = request.getParameter("email");
         if(email == null || ("").equals(email)) {
             transformer.setParameter("error", "emailNotSet");
@@ -292,16 +292,16 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             transformer.setParameter("error", "emailNotValid");
         } else {
             contact = new ContactBean(request);
-            smtpHost = getRTIProperty(SMTP_HOST);
+            smtpHost = getResourceConfigProperty(SMTP_HOST);
             try {
-                smtpPort = Integer.parseInt(getRTIProperty(SMTP_PORT));
+                smtpPort = Integer.parseInt(getResourceConfigProperty(SMTP_PORT));
             } catch(NumberFormatException nfe) {
                 log.error(nfe);
                 transformer.setParameter("error", "smtpPortNotCorrect");
                 smtpPort = 0;
             }
-            subject = getRTIProperty(SUBJECT);
-            to = getRTIProperty(TO);
+            subject = getResourceConfigProperty(SUBJECT);
+            to = getResourceConfigProperty(TO);
             from = email;
             content = "Company: " + contact.getCompany() + "\n" + "Firstname: "
                     + contact.getFirstName() + "\n" + "Lastname: "
@@ -361,76 +361,22 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
      * @return
      * @throws NoSuchNodeException
      */
-    private StreamSource getXSLTStreamSource(Path path, Repository repo)
-            throws NoSuchNodeException, RepositoryException {
-        Path xsltPath = getXSLTPath(path);
+    private StreamSource getGlobalXSLTStreamSource(Path path) throws NoSuchNodeException, RepositoryException, Exception {
+        String xsltPath = getResourceConfigProperty("xslt");
         if (xsltPath != null) {
-            return new StreamSource(repo
-                    .getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(
-                            path).toString())));
+            return new StreamSource(getRealm().getRepository().getNode(xsltPath).getInputStream());
         } else {
-            File xsltFile = org.wyona.commons.io.FileUtil.file(rtd
-                    .getConfigFile().getParentFile().getAbsolutePath(), "xslt"
-                    + File.separator + "dir2xhtml.xsl");
+            File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "global.xsl");
             log.error("DEBUG: XSLT file: " + xsltFile);
             return new StreamSource(xsltFile);
         }
     }
     
     /**
-     * 
-     * @param path
-     * @return
-     */
-    private Path getXSLTPath(Path path) {
-        String xsltPath = null;
-        try {
-            java.io.BufferedReader br = new java.io.BufferedReader(rp
-                    .getRepo().getReader(
-                            new org.wyona.yarep.core.Path(new Path(rp
-                                    .getPath().toString()).getRTIPath()
-                                    .toString())));
-
-            while ((xsltPath = br.readLine()) != null) {
-                if (xsltPath.indexOf("xslt:") == 0) {
-                    xsltPath = xsltPath.substring(6);
-                    log.debug("XSLT Path: " + xsltPath);
-                    return new Path(xsltPath);
-                }
-            }
-            log.error("No XSLT Path within: " + rp.getPath());
-        } catch (Exception e) {
-            log.warn(e);
-        }
-        return null;
-    }
-    
-    /**
-     * this method reads out the specified key from rti file 
-     * if key cannot be found return null
-     * @param key
-     * @return value
-     */
-    private String getRTIProperty(String key) {
-        try {
-            java.io.BufferedReader bufferedReader = new java.io.BufferedReader(rp.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rp.getPath().toString()).getRTIPath().toString())));
-            String line = null;
-            while((line = bufferedReader.readLine()) != null) {
-                if(line.indexOf(key) == 0) {
-                    return line.substring(key.length() + 1);
-                }
-            }
-        } catch (Exception e) {
-            log.error(e);
-        }
-        return null;
-    }
-    
-    /**
      * Get mime type
      */
-    private String getMimeType() {
-        String mimeType = getRTI().getProperty("mime-type");
+    private String getMimeType() throws Exception {
+        String mimeType = getResourceConfigProperty("mime-type");
         if (mimeType != null) return mimeType;
 
         return "application/xhtml+xml";
