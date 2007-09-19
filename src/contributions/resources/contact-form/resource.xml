@@ -9,12 +9,11 @@
 Contact Form for sending email
 </description>
 
-<!--
 <rtd>
   <property name="xslt"/>
   <property name="mime-type"/>
-  <property name="feed-title"/>
-  <property name="entries-path"/>
+  <property name="to"/>
+  <property name="smtpHost"/>
+  <property name="smtpPort"/>
 </rtd>
--->
 </resource>
