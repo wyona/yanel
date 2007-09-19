@@ -23,123 +23,141 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Category;
+
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.api.attributes.ViewableV1;
+import org.wyona.yanel.core.ResourceConfiguration;
+import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.source.SourceResolver;
+import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
+import org.wyona.commons.io.PathUtil;
 
 /**
  *
  */
-public class ZipResource extends Resource implements ViewableV1 {
+public class ZipResource extends Resource implements ViewableV2 {
 
     private static Category log = Category.getInstance(ZipResource.class);
 
-    /**
-     *
-     */
     public ZipResource() {
     }
 
-    /**
-     *
-     */
     public ViewDescriptor[] getViewDescriptors() {
         return null;
     }
 
-    /**
-     *
-     */
-    public View getView(Path path, String viewId) {
+    public View getView(String viewId) {
         View defaultView = new View();
-
         try {
-            String zipDir = getProperty(path, "zip-dir");
-            log.debug("Zip Directory: " + zipDir);
-            org.wyona.yarep.core.Path zipDirPath = new org.wyona.yarep.core.Path(zipDir); 
-            
-            RepoPath zipRp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(
-                    new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-            
-            Repository zipRepo = zipRp.getRepo();         
-            
-            if (zipRepo.isCollection(zipDirPath)) {
-                log.debug("Collection: " + zipDirPath);                
-                                                
+            Repository contentRepo = getRealm().getRepository();
+            String zipPath;
+            if (getResourceConfigProperty("zip-dir") != null) {
+                // zip-dir is only for historical reasons
+                zipPath = getResourceConfigProperty("zip-dir");
+            } else {
+                zipPath = getResourceConfigProperty("zip-path");
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("Zip Path: " + zipPath);
+            }
+            if (zipPath.startsWith("yanelresource:") || contentRepo.getNode(zipPath).isResource()) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Is Resource: " + zipPath);
+                }
                 ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-                ZipOutputStream zipOut = new ZipOutputStream(byteOut);                        
-                
-                org.wyona.yarep.core.Path[] zipDirEntries = zipRepo.getChildren(zipDirPath);
-                
-                addZipEntries(zipOut, zipRepo, zipDirEntries, "", zipDirPath);
-                
+                ZipOutputStream zipOut = new ZipOutputStream(byteOut);
+                try {
+                    InputStream is = null;
+                    String entryPath;
+                    if (zipPath.startsWith("yanelresource:")) {
+                        SourceResolver resolver = new SourceResolver(this);
+                        Source source = resolver.resolve(zipPath, null);
+                        is = ((StreamSource) source).getInputStream();
+                        entryPath = PathUtil.getName(zipPath);
+                    } else {
+                        is = contentRepo.getNode(zipPath).getInputStream();
+                        entryPath = contentRepo.getNode(zipPath).getName();
+                    }
+                    if (log.isDebugEnabled()) {
+                        log.debug("Zip entry path: " + entryPath);
+                    }
+                    zipOut.putNextEntry(new ZipEntry(entryPath));
+                    int rb = 0;
+                    byte[] buf = new byte[8192];
+                    while ((rb = is.read(buf)) > 0) {
+                        zipOut.write(buf, 0, rb);
+                    }
+                    zipOut.closeEntry();
+                    is.close();
+                } catch (Exception e) {
+                    log.error(e);
+                }
                 zipOut.close();
-                
                 ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
-                defaultView.setInputStream(byteIn);                    
+                defaultView.setInputStream(byteIn);
                 defaultView.setMimeType("application/zip");
-            } else if (zipRepo.isResource(zipDirPath)){
-                log.debug("Resource: " + zipDir);
+            } else if (contentRepo.getNode(zipPath).isCollection()) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Is Collection: " + zipPath);
+                }
+                ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+                ZipOutputStream zipOut = new ZipOutputStream(byteOut);
+                Node[] zipDirEntries = contentRepo.getNode(zipPath).getNodes();
+                addZipEntries(zipOut, zipDirEntries, "");
+                zipOut.close();
+                ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+                defaultView.setInputStream(byteIn);
+                defaultView.setMimeType("application/zip");
             } else {
                 log.warn("Neither resource nor collection");
             }
-            
-        } catch(Exception e) {
+        } catch (Exception e) {
             log.error(e);
         }
-        
         return defaultView;
     }
 
     /**
-     * @param zipOut
-     * @param repo
-     * @param entries
+     * @param ZipOutputStream zipOut
+     * @param Node[] entries
+     * @param String base
      */
-    void addZipEntries(ZipOutputStream zipOut, Repository repo, org.wyona.yarep.core.Path[] entries, String base, org.wyona.yarep.core.Path zipDirPath) throws Exception {
-        
+    protected void addZipEntries(ZipOutputStream zipOut, Node[] entries, String base) throws Exception {
         String entryPath = null;
-        
-        for (int i=0; i<entries.length; i++) {            
-            
-            if (repo.isResource(entries[i])) {                
+        for (int i = 0; i < entries.length; i++) {
+            if (entries[i].isResource()) {
                 int rb = 0;
-                byte[] buf = new byte[8192];                    
+                byte[] buf = new byte[8192];
                 InputStream in = null;
-                
                 try {
                     entryPath = base + entries[i].getName();
-                    
-                    log.debug("Zip entry path: " + entryPath);                    
-                    
+                    if (log.isDebugEnabled()) {
+                        log.debug("Zip entry path: " + entryPath);
+                    }
                     zipOut.putNextEntry(new ZipEntry(entryPath));
-                    // FIXME how to get an inpustream from a collection entry?
-                    org.wyona.yarep.core.Path yarepPath = new org.wyona.yarep.core.Path(zipDirPath.toString() + "/" + entryPath);                    
-                    log.debug("Yarep path: " + yarepPath);
-                    in = repo.getInputStream(yarepPath);                    
+                    in = entries[i].getInputStream();
                     while ((rb = in.read(buf)) > 0) {
                         zipOut.write(buf, 0, rb);
-                    }                    
+                    }
                     zipOut.closeEntry();
-                    in.close();                    
+                    in.close();
                 } catch (Exception e) {
                     log.error(e);
-                }                
-            } else if (repo.isCollection(entries[i]) && 
-                    !entries[i].getName().startsWith(".")) { // ignore dot files
-                
+                }
+            } else if (entries[i].isCollection() && !entries[i].getName().startsWith(".")) { // ignore dot files
                 entryPath = base + entries[i].getName() + "/";
-                
-                log.debug("Zip dir path: " + entryPath);                
-                
+                if (log.isDebugEnabled()) {
+                    log.debug("Zip dir path: " + entryPath);
+                }
                 // directory entries end with a "/"
                 ZipEntry zipEntry = new ZipEntry(entryPath);
                 try {
@@ -148,47 +166,24 @@ public class ZipResource extends Resource implements ViewableV1 {
                 } catch (IOException e) {
                     log.error(e);
                 }
-                
                 // recurse
-                addZipEntries(zipOut, repo, repo.getChildren(entries[i]), entryPath, zipDirPath);
+                addZipEntries(zipOut, entries[i].getNodes(), entryPath);
             }
-        }    
-    }
-    
-    /**
-     *
-     */
-    public View getView(HttpServletRequest request, String viewId) {
-        return getView(new Path(request.getServletPath()), viewId);
-    }
-
-    /**
-     *
-     */
-    private String getProperty(Path path, String name) {
-        String property = null;
-        try {
-            // TODO: Get yanel RTI yarep properties file name from framework resp. use MapFactory ...!
-            RepoPath rpRTI = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), yanel.getRepositoryFactory("RTIRepositoryFactory"));
-            java.io.BufferedReader br = new java.io.BufferedReader(rpRTI.getRepo().getReader(new org.wyona.yarep.core.Path(new Path(rpRTI.getPath().toString()).getRTIPath().toString())));
-
-            while ((property = br.readLine()) != null) {
-                if (property.indexOf(name + ":") == 0) {
-                    property = property.substring(name.length() + 2);
-                    log.info("*" + property + "*");
-                    return property;
-                }
-            }
-        } catch(Exception e) {
-            log.warn(e);
         }
-
-        return property;
     }
-    
-    protected RepositoryFactory getRepositoryFactory() {
-        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
-    }
-    
 
+    public String getMimeType(String viewId) throws Exception {
+        return "application/zip";
+    }
+
+    public boolean exists() throws Exception {
+        log.warn("Not implemented yet!");
+        return true;
+    }
+
+    public long getSize() throws Exception {
+        // TODO: not implemented yet
+        log.warn("TODO: Method is not implemented yet");
+        return -1;
+    }
 }

@@ -6,6 +6,6 @@
   class="org.wyona.yanel.impl.resources.ZipResource"
   >
 <description>
-Zip Collection and generate a zip
+ Generate a zip from a Collection or Resource
 </description>
 </resource>
