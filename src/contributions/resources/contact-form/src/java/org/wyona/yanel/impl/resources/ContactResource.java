@@ -76,16 +76,16 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 public class ContactResource extends Resource implements ViewableV1, CreatableV2 {
 
-    private static final String SMTP_HOST = "smtpHost:";
-    private static final String SMTP_PORT = "smtpPort:";
-    private static final String TO = "to:";
-    private static final String SUBJECT = "subject:";
+    private static final String SMTP_HOST = "smtpHost";
+    private static final String SMTP_PORT = "smtpPort";
+    private static final String TO = "to";
+    private static final String SUBJECT = "subject";
     private static Category log = Category.getInstance(ContactResource.class);
     private String smtpHost = "";
     private int smtpPort = 25;
     private String to = "";
     private String from = "";
-    private String subject = "YANEL FEEDBACK";
+    private String subject = "Yanel Default Subject";
     private String content = "";
     private ContactBean contact = null;
     private String defaultLanguage = "en";
