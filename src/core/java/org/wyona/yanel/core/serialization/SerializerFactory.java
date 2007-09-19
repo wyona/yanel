@@ -37,6 +37,7 @@ public class SerializerFactory {
             serializer = new HTMLSerializer();
             Properties format = OutputPropertiesFactory.getDefaultMethodProperties("html");
             format.setProperty("indent", "yes");
+            format.setProperty("omit-xml-declaration", "yes");
             format.setProperty("doctype-public", "-//W3C//DTD HTML 4.01 Transitional//EN");
             format.setProperty("doctype-system", "http://www.w3.org/TR/html4/loose.dtd");
             serializer.setOutputFormat(format);
