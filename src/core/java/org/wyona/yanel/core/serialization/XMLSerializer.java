@@ -124,8 +124,8 @@ public class XMLSerializer extends AbstractSerializer {
     
     /**
      * Replaces some characters by their corresponding xml entities.
-     * @param str
-     * @return
+     * @param string
+     * @return escaped string
      */
     public String replaceEntities(String str) {
         // there may be some &amp; and some & mixed in the input, so first transform all
@@ -134,9 +134,6 @@ public class XMLSerializer extends AbstractSerializer {
         str = str.replaceAll("&amp;", "&");
         str = str.replaceAll("&", "&amp;");
         str = str.replaceAll("<", "&lt;");
-        str = str.replaceAll(">", "&gt;");
-        str = str.replaceAll("'", "&apos;");
-        str = str.replaceAll("\"", "&quot;");
         return str;
     }
     
