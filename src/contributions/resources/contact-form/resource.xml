@@ -20,5 +20,6 @@ Contact Form for sending email
   <!-- Optional properties -->
   <property name="mime-type"/>
   <property name="from"/>
+  <property name="xslt-body"/>
 </rtd>
 </resource>
