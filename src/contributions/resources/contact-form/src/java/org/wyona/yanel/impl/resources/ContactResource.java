@@ -84,7 +84,6 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
     private String smtpHost = "";
     private int smtpPort = 25;
     private String to = "";
-    private String from = "";
     private String subject = "Yanel Default Subject";
     private String content = "";
     private ContactBean contact = null;
@@ -163,7 +162,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
                     submit = true;
             }
             if(submit) {
-                sendMail(request, transformer);
+                sendMail(transformer);
                 transformer.setParameter("company", request.getParameter("company"));
                 transformer.setParameter("firstName", request.getParameter("firstName"));
                 transformer.setParameter("lastName", request.getParameter("lastName"));
@@ -284,8 +283,8 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
      * @param request
      * @param transformer
      */
-    private void sendMail(HttpServletRequest request, Transformer transformer) throws Exception {
-        String email = request.getParameter("email");
+    private void sendMail(Transformer transformer) throws Exception {
+        String email = getRequest().getParameter("email");
         if(email == null || ("").equals(email)) {
             transformer.setParameter("error", "emailNotSet");
         } else if(!validateEmail(email)) {
@@ -302,7 +301,12 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             }
             subject = getResourceConfigProperty(SUBJECT);
             to = getResourceConfigProperty(TO);
-            from = email;
+
+            String from = getResourceConfigProperty("from");
+            if (from == null) {
+                from = email;
+            }
+
             content = "Company: " + contact.getCompany() + "\n" + "Firstname: "
                     + contact.getFirstName() + "\n" + "Lastname: "
                     + contact.getLastName() + "\n" + "Address: "
