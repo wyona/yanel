@@ -10,11 +10,15 @@ Contact Form for sending email
 </description>
 
 <rtd>
+  <!-- Mandatory properties -->
   <property name="xslt"/>
-  <property name="mime-type"/>
   <property name="to"/>
   <property name="subject"/>
   <property name="smtpHost"/>
   <property name="smtpPort"/>
+
+  <!-- Optional properties -->
+  <property name="mime-type"/>
+  <property name="from"/>
 </rtd>
 </resource>
