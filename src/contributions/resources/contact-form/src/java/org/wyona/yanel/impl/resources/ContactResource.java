@@ -139,7 +139,6 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             log.debug("language param is empty or null : " + language);
             language = defaultLanguage;
         }
-        File xslFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "contact-form.xsl");
         File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "contact-form.xml");        
         try {
             
@@ -148,17 +147,16 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             CatalogResolver catalogResolver = new CatalogResolver();
             xmlReader.setEntityResolver(catalogResolver);
             
-            // create first xslt transformer:
+            // create Body xslt transformer:
             SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
 
-            //transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xslFile));
-            TransformerHandler xsltHandler1 = tf.newTransformerHandler(new StreamSource(xslFile));
+            TransformerHandler xsltHandler1 = tf.newTransformerHandler(getBodyXSLTStreamSource());
             Transformer transformer = xsltHandler1.getTransformer();
             
             boolean submit = false;
             Enumeration enumeration = request.getParameterNames();
             while(enumeration.hasMoreElements()){
-                if(enumeration.nextElement().toString().equals("submit")) 
+                if(enumeration.nextElement().toString().equals("email")) 
                     submit = true;
             }
             if(submit) {
@@ -356,14 +354,10 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
         return new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(
                 path.toString()), getRepositoryFactory());
     }
-
     
     /**
-     * 
+     * Get global XSLT
      * @param path
-     * @param repo
-     * @return
-     * @throws NoSuchNodeException
      */
     private StreamSource getGlobalXSLTStreamSource(Path path) throws NoSuchNodeException, RepositoryException, Exception {
         String xsltPath = getResourceConfigProperty("xslt");
@@ -373,6 +367,18 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "global.xsl");
             log.error("DEBUG: XSLT file: " + xsltFile);
             return new StreamSource(xsltFile);
+        }
+    }
+    
+    /**
+     * Get body XSLT
+     */
+    private StreamSource getBodyXSLTStreamSource() throws NoSuchNodeException, RepositoryException, Exception {
+        String xsltPath = getResourceConfigProperty("xslt-body");
+        if (xsltPath != null) {
+            return new StreamSource(getRealm().getRepository().getNode(xsltPath).getInputStream());
+        } else {
+            return new StreamSource(org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "contact-form.xsl"));
         }
     }
     
