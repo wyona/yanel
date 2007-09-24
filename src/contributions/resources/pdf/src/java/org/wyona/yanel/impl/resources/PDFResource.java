@@ -21,7 +21,7 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
-import org.wyona.yanel.core.source.YanelRepositoryResolver;
+import org.wyona.yanel.core.source.SourceResolver;
 
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
@@ -75,9 +75,15 @@ public class PDFResource extends Resource implements ViewableV2 {
         try {
             String yanelPath = getResourceConfigProperty("yanel-path");
             Repository repo = getRealm().getRepository();
-            InputStream docSource;
+            InputStream docSource = null;
             if (yanelPath != null) {
-                docSource = repo.getNode(yanelPath).getInputStream();
+                if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:")) {
+                    SourceResolver resolver = new SourceResolver(this);
+                    Source source = resolver.resolve(yanelPath, null);
+                    docSource = ((StreamSource) source).getInputStream();
+                } else {
+                    docSource = repo.getNode(yanelPath).getInputStream();
+                }
             } else {
                 docSource = repo.getNode(getPath()).getInputStream();
             }
@@ -89,8 +95,8 @@ public class PDFResource extends Resource implements ViewableV2 {
             // Step 2: Construct fop with desired output format
             Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, getResponse().getOutputStream());
 
-            YanelRepositoryResolver yanelRepoResolver = new YanelRepositoryResolver(this);
-            fopFactory.setURIResolver(yanelRepoResolver);
+            SourceResolver srcResolver = new SourceResolver(this);
+            fopFactory.setURIResolver(srcResolver);
             
             /* Only for debugging ...
             java.io.FileOutputStream fout = new java.io.FileOutputStream("/home/michi/Desktop/yanel.pdf");
