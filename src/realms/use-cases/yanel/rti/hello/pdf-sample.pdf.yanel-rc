@@ -4,8 +4,13 @@
   <yanel:rti name="pdf" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
   <yanel:property name="yanel-path" value="/samplePdf.xml"/>
+
 <!--
-  <yanel:property name="yanel-path" value="yanelrepo:/samplePdf.xml"/>
-  <yanel:property name="yanel-path" value="/samplePdf.xml"/>
+  <yanel:property name="yanel-path" value="yanelrepo:REPOID:/samplePdf.xml"/>
+-->
+
+<!-- WARNING: Implementation of REALMID not finished (2007.09.24)! -->
+<!--
+  <yanel:property name="yanel-path" value="yanelresource:REALMID:/samplePdf.xml"/>
 -->
 </yanel:resource-config>
