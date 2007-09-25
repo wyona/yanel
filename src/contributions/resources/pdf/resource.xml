@@ -12,5 +12,6 @@ PDF Resource
 
 <rtd>
  <property name="xslt"/>
+ <property name="yanel-path"/>
 </rtd>
 </resource>
