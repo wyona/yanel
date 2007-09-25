@@ -264,6 +264,8 @@ public abstract class Resource {
         language = getResourceConfigProperty("language");
         if (language != null) return language;
 
+        log.error("Shouldn't we also check the translation manager of a realm!");
+
         return getRequestedLanguage();
     }
 
