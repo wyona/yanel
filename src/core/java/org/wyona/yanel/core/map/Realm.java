@@ -372,7 +372,7 @@ public class Realm {
     }
 
     public TranslationManager getTranslationManager() {
-        log.error("DEBUG: Translation Manager: " + translationManager.getClass().getName());
+        //log.debug("Translation Manager: " + translationManager.getClass().getName());
         return translationManager;
     }
 
