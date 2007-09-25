@@ -264,7 +264,7 @@ public abstract class Resource {
         language = getResourceConfigProperty("language");
         if (language != null) return language;
 
-        log.error("Shouldn't we also check the translation manager of a realm!");
+        // TODO: Shouldn't we move the check of the realm translation manager into the generic resource? (also see XMLResource and translatable interface)
 
         return getRequestedLanguage();
     }
