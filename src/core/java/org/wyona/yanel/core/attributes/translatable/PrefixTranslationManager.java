@@ -40,9 +40,9 @@ public class PrefixTranslationManager extends AbstractPathTranslationManager {
      */
     protected String getLanguageFromPath(String path) {
         String[] tokens = path.split("/");
-        if (tokens.length > 0 && tokens[0].length() == 2) {
+        if (tokens.length > 1 && tokens[1].length() == 2) {
             // TODO: should check if it's a valid language?
-            return tokens[0];
+            return tokens[1];
         }
         return null;
     }
