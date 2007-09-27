@@ -633,7 +633,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         if (log.isDebugEnabled()) log.debug("Parent: " + parent);
 
         if (ajaxBrowser) {
-            sb.append("<a href='JavaScript:ajaxlookup(\"" + resNamespace + "::" + resName + "\", \"" + parent + "\")'><img src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/go-up.png\" alt=\"go up\" border=\"0\"/></a>");
+            sb.append("<a href=\"JavaScript:ajaxlookup('" + resNamespace + "::" + resName + "', '" + parent + "')\"><img src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/go-up.png\" alt=\"go up\" border=\"0\"/></a>");
         } else {
             sb.append("<a href=\"?lookin=" + parent + "&amp;resource-type=" + resNamespace + "::" + resName + "\"><img src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/go-up.png\" alt=\"go up\" border=\"0\"/></a>");
         }
@@ -659,7 +659,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     if (children[i].isCollection()) {
                         // TODO: Also append resource specific parameters (AJAX ...)
                         if (ajaxBrowser) {
-                            sb.append("<tr><td sorttable_customkey=\"Collection\"><a href='JavaScript:ajaxlookup(\"" + resNamespace + "::" + resName + "\", \"" + node.getPath() + children[i].getName() + "/\")'><img class=\"lookupicon\" src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/folder.png\" alt=\"Collection:\"/></a></td><td><a href='JavaScript:ajaxlookup(\"" + resNamespace + "::" + resName + "\", \"" + node.getPath() + children[i].getName() + "/\")'>" + children[i].getName() + "</a></td><td>" + resourceTypeName  + "</td></tr>");
+                            sb.append("<tr><td sorttable_customkey=\"Collection\"><a href=\"JavaScript:ajaxlookup('" + resNamespace + "::" + resName + "', '" + node.getPath() + children[i].getName() + "/')\"><img class=\"lookupicon\" src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/folder.png\" alt=\"Collection:\"/></a></td><td><a href=\"JavaScript:ajaxlookup('" + resNamespace + "::" + resName + "', '" + node.getPath() + children[i].getName() + "/')\">" + children[i].getName() + "</a></td><td>" + resourceTypeName  + "</td></tr>");
                         } else {
                             sb.append("<tr><td sorttable_customkey=\"Collection\"><a href=\"?lookin=" + node.getPath() + children[i].getName() + "/&amp;resource-type=" + resNamespace + "::" + resName + "\"><img class=\"lookupicon\" src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/folder.png\" alt=\"Collection:\"/></a></td><td><a href=\"?lookin=" + node.getPath() + children[i].getName() + "/&amp;resource-type=" + resNamespace + "::" + resName + "\">" + children[i].getName() + "</a></td><td>" + resourceTypeName  + "</td></tr>");
                         }
