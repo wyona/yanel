@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 
+<!-- IMPORTANT: Check if local.realm.xml exists and check if you might have to make modifications there instead! -->
+
 <realm-config xmlns="http://www.wyona.org/yanel/realm/1.0">
   <name>Yanel Website</name>
 
