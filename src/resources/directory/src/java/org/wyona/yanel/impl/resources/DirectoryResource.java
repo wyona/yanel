@@ -31,7 +31,9 @@ import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
+import org.wyona.yarep.core.Node;
 import org.wyona.yarep.util.RepoPath;
+import org.wyona.yanel.core.util.DateUtil;
 import org.wyona.yanel.core.util.PathUtil;
 
 import org.apache.log4j.Category;
@@ -50,33 +52,34 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
 /**
- * 
+ *
  */
 public class DirectoryResource extends Resource implements ViewableV2, CreatableV2 {
 
     private static Category log = Category.getInstance(DirectoryResource.class);
-    
+
     private Environment environment;
 
     /**
-     * 
+     *
      */
     public DirectoryResource() {
     }
 
     /**
-     * 
+     *
      */
     public ViewDescriptor[] getViewDescriptors() {
         return null;
     }
 
     /**
-     * 
+     *
      */
     public View getView(String viewId) {
         environment = getEnvironment();
@@ -87,38 +90,40 @@ public class DirectoryResource extends Resource implements ViewableV2, Creatable
         // href=\"yanel/resources/directory/xslt/dir2xhtml.xsl\"?>");
 
         Repository contentRepo = null;
-        org.wyona.yarep.core.Path p = new org.wyona.yarep.core.Path(getPath());
+        //org.wyona.yarep.core.Path p = new org.wyona.yarep.core.Path(getPath());
         try {
             contentRepo = getRealm().getRepository();
-
+            String path = getPath();
             // TODO: This doesn't seem to work ... (check on Yarep ...)
-            if (contentRepo.isResource(p)) {
-                log.warn("Path is a resource instead of a collection: " + p);
+            if (contentRepo.getNode(path).isResource()) {
+                log.warn("Path is a resource instead of a collection: " + path);
                 // p = p.getParent();
             }
 
             // TODO: Implement org.wyona.yarep.core.Path.getParent()
-            if (!contentRepo.isCollection(p)) {
-                log.warn("Path is not a collection: " + p);
-                p = new org.wyona.yarep.core.Path(new org.wyona.commons.io.Path(p.toString()).getParent().toString());
-                log.warn("Use parent of path: " + p);
+            if (!contentRepo.getNode(path).isCollection()) {
+                log.warn("Path is not a collection: " + path);
+                log.warn("Use parent of path: " + contentRepo.getNode(path).getParent().getPath());
             }
 
             // TODO: Add realm prefix, e.g. realm-prefix="ulysses-demo"
             // NOTE: The schema is according to
             // http://cocoon.apache.org/2.1/userdocs/directory-generator.html
-            sb.append("<dir:directory yanel:path=\"" + getPath() + "\" dir:name=\"" + p.getName() + "\" dir:path=\"" + p + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
+            sb.append("<dir:directory yanel:path=\"" + getPath() + "\" dir:name=\"" + contentRepo.getNode(path).getName() + "\" dir:path=\"" + path + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
             // TODO: Do not show the children with suffix .yanel-rti resp. make
             // this configurable!
             // NOTE: Do not hardcode the .yanel-rti, but rather use
             // Path.getRTIPath ...
-            org.wyona.yarep.core.Path[] children = contentRepo.getChildren(p);
+            Node[] children = contentRepo.getNode(getPath()).getNodes();
+            Calendar calendar = Calendar.getInstance();
             if (children != null) {
                 for (int i = 0; i < children.length; i++) {
-                    if (contentRepo.isResource(children[i])) {
-                        sb.append("<dir:file path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
-                    } else if (contentRepo.isCollection(children[i])) {
-                        sb.append("<dir:directory path=\"" + children[i] + "\" name=\"" + children[i].getName() + "\"/>");
+                    if (children[i].isResource()) {
+                        calendar.setTimeInMillis(children[i].getLastModified());
+                        String lastModified = DateUtil.format(calendar.getTime());
+                        sb.append("<dir:file path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].getLastModified() + "\" date=\"" + lastModified + "\" size=\"" + children[i].getSize() + "\"/>");
+                    } else if (children[i].isCollection()) {
+                        sb.append("<dir:directory path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
                     } else {
                         sb.append("<yanel:exception yanel:path=\"" + children[i] + "\"/>");
                     }
@@ -143,19 +148,20 @@ public class DirectoryResource extends Resource implements ViewableV2, Creatable
         try {
             TransformerFactory tfactory = TransformerFactory.newInstance();
             String[] xsltTransformers = getXSLTprop();
-            
+
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-            
+
             Transformer transformerIntern = tfactory.newTransformer(getXSLTStreamSource(contentRepo));
             StreamSource orig = new StreamSource(new java.io.StringBufferInputStream(sb.toString()));
-            
+
             transformerIntern.setParameter("yanel.path.name", PathUtil.getName(getPath()));
             transformerIntern.setParameter("yanel.path", getPath().toString());
             transformerIntern.setParameter("yanel.back2context", backToContext()+backToRoot());
             transformerIntern.setParameter("yarep.back2realm", backToRoot());
-            transformerIntern.setParameter("yarep.parent", getParent(p.toString()));
+            transformerIntern.setParameter("yarep.parent", getParent(getPath()));
+            transformerIntern.setParameter("yanel.htdocs", PathUtil.getGlobalHtdocsPath(this));
             transformerIntern.transform(orig, new StreamResult(baos));
-            
+
             if (xsltTransformers != null) {
                 //StreamSource orig = new StreamSource(new java.io.StringBufferInputStream(sb.toString()));
                 for (int i = 0; i < xsltTransformers.length; i++) {
@@ -166,7 +172,7 @@ public class DirectoryResource extends Resource implements ViewableV2, Creatable
                     transformer.setParameter("yanel.path", getPath().toString());
                     transformer.setParameter("yanel.back2context", backToContext()+backToRoot());
                     transformer.setParameter("yarep.back2realm", backToRoot());
-                    transformer.setParameter("yarep.parent", getParent(p.toString()));
+                    transformer.setParameter("yarep.parent", getParent(getPath()));
                     transformer.transform(orig, new StreamResult(baos));
                 }
             }
@@ -181,15 +187,15 @@ public class DirectoryResource extends Resource implements ViewableV2, Creatable
     }
 
     /**
-     * 
+     *
      */
     public boolean exists() throws Exception {
         log.warn("Not implemented yet!");
-        return true; 
+        return true;
     }
-    
+
     /**
-     * 
+     *
      */
     public long getSize() throws Exception {
         // TODO: not implemented yet
@@ -198,7 +204,7 @@ public class DirectoryResource extends Resource implements ViewableV2, Creatable
     }
 
     /**
-     * 
+     *
      */
     private StreamSource getXSLTStreamSource(Repository repo) throws RepositoryException {
         File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "dir2xhtml.xsl");
@@ -231,7 +237,7 @@ public class DirectoryResource extends Resource implements ViewableV2, Creatable
         // NOTE: Assuming fallback re dir2xhtml.xsl ...
         return "application/xhtml+xml";
     }
-    
+
     /**
      * @return a String with as many ../ as it needs to go back to from current realm to context
      */
@@ -243,14 +249,14 @@ public class DirectoryResource extends Resource implements ViewableV2, Creatable
         }
         return backToContext;
     }
-    
+
     /**
      * @return a String with as many ../ as it needs to go back to from current resource to the realm-root
      */
     private String backToRoot() {
         String backToRoot = "";
         int steps;
-        
+
         // TODO: Wouldn't it make more sense to use "tokens" and use a URL rewriter at the very end (also see the portlet specificatio http://jcp.org/aboutJava/communityprocess/review/jsr168/)
         String resourceContainerPath = environment.getResourceContainerPath();
         if (log.isDebugEnabled()) {
@@ -270,15 +276,15 @@ public class DirectoryResource extends Resource implements ViewableV2, Creatable
                 steps = getPath().split("/").length - 2;
             }
         }
-        
+
         for (int i = 0; i < steps; i++) {
             backToRoot = backToRoot + "../";
         }
         return backToRoot;
     }
-    
+
     /**
-     * @return a String ../ if path ends with a trailing slash. Otherwise a String ./ 
+     * @return a String ../ if path ends with a trailing slash. Otherwise a String ./
      */
     private String getParent(String path) {
         String parentPath = "./";
@@ -287,7 +293,7 @@ public class DirectoryResource extends Resource implements ViewableV2, Creatable
         }
         return parentPath;
     }
-    
+
     /**
     *
     */
