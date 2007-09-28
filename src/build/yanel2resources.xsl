@@ -28,6 +28,9 @@
   <target name="build-resources" description="Build resources" depends="init">
 <xsl:for-each select="/yanel:resource-types/yanel:resource-type">
   <xsl:choose>
+    <xsl:when test="not(@compile)">
+      <echo>INFO: Do not compile: <xsl:value-of select="@src"/></echo>
+    </xsl:when>
     <xsl:when test="@compile='false'">
       <echo>INFO: Do not compile: <xsl:value-of select="@src"/></echo>
     </xsl:when>
@@ -51,8 +54,14 @@
 </xsl:for-each>
   </target>
 
+  <xsl:comment>INFO: Deploy libs of resources</xsl:comment>
   <target name="deploy-resources" description="Deploy resources" depends="init">
 <xsl:for-each select="/yanel:resource-types/yanel:resource-type">
+  <xsl:choose>
+    <xsl:when test="@package">
+      <xsl:comment>No library to copy</xsl:comment>
+    </xsl:when>
+    <xsl:otherwise>
     <xsl:choose>
       <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
     <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
@@ -65,6 +74,8 @@
     </copy>
       </xsl:otherwise>
     </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:for-each>
   </target>
 
@@ -89,8 +100,14 @@
 </xsl:for-each>
   </target>
 
+  <xsl:comment>Copy dependencies of resources</xsl:comment>
   <target name="copy-resources-dependencies" description="Copy dependencies of resources" depends="init">
 <xsl:for-each select="/yanel:resource-types/yanel:resource-type">
+  <xsl:choose>
+    <xsl:when test="@package">
+      <xsl:comment>!!!</xsl:comment>
+    </xsl:when>
+    <xsl:otherwise>
     <xsl:choose>
       <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
     <ant inheritAll="false" antfile="{@src}/build.xml" target="copy-dependencies">
@@ -109,6 +126,8 @@
     </ant>
       </xsl:otherwise>
     </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:for-each>
   </target>
 </project>
