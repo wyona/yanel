@@ -91,11 +91,9 @@ public class ResourceTypeRegistry {
                     Configuration config;
                     config = builder.buildFromFile(configFile);
 
-                    resourceTypeConfigFile = new File(config.getChild("resource-types-config")
-                            .getAttribute("src"));
+                    resourceTypeConfigFile = new File(config.getChild("resource-types-config").getAttribute("src"));
                     if (!resourceTypeConfigFile.isAbsolute()) {
-                        resourceTypeConfigFile = FileUtil.file(configFile.getParentFile()
-                                .getAbsolutePath(), resourceTypeConfigFile.toString());
+                        resourceTypeConfigFile = FileUtil.file(configFile.getParentFile().getAbsolutePath(), resourceTypeConfigFile.toString());
                     }
                     log.debug("Realms Configuration: " + resourceTypeConfigFile);
                     readResourceTypes();
@@ -160,6 +158,7 @@ public class ResourceTypeRegistry {
             Configuration resourceTypes[] = config.getChildren("resource-type");
             
             for (int i = 0; i < resourceTypes.length; i++) {
+                try {
                 File resConfigFile = new File(resourceTypes[i].getAttribute("src"));
                 if (!resConfigFile.isAbsolute()) {
                     resConfigFile = FileUtil.file(resourceTypeConfigFile.getParentFile().getAbsolutePath(), resourceTypes[i].getAttribute("src"));
@@ -186,13 +185,16 @@ public class ResourceTypeRegistry {
                 } else {
                     log.error("No such file or directory: " + resConfigFile);
                 }
+                } catch (Exception e) {
+                    String packageName = resourceTypes[i].getAttribute("package");
+                    log.error("DEBUG: Package: " + packageName);
+                }
             }    
         } catch (Exception e) {
             String errorMsg = "Failure while reading configuration: " + e.getMessage(); 
             log.error(errorMsg, e);
             throw new ConfigurationException(errorMsg, e);
         }
-        
     }
    
     /**
