@@ -39,12 +39,33 @@ public class ResourceTypeDefinition {
     /**
      *
      */
-    public ResourceTypeDefinition(File file) {
+    public ResourceTypeDefinition(File file) throws Exception {
+        this(new java.io.FileInputStream(file));
         this.configFile = file;
+/*
         DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
         Configuration config;
         try {
             config = builder.buildFromFile(file);
+            String localName = config.getAttribute("name", null);
+            String namespace= config.getAttribute("namespace", null);
+            uname = "<{" + namespace + "}" + localName + "/>";
+            classname = config.getAttribute("class", null);
+            description = config.getChild("description").getValue();
+        } catch(Exception e) {
+            log.error(e);
+        }
+*/
+    }
+
+    /**
+     *
+     */
+    public ResourceTypeDefinition(java.io.InputStream in) {
+        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+        Configuration config;
+        try {
+            config = builder.build(in);
             String localName = config.getAttribute("name", null);
             String namespace= config.getAttribute("namespace", null);
             uname = "<{" + namespace + "}" + localName + "/>";
