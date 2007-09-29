@@ -187,14 +187,18 @@ public class ResourceTypeRegistry {
                     }
                 } catch (Exception e) {
                     String packageName = resourceTypes[i].getAttribute("package");
-                    log.error("DEBUG: Package: " + packageName);
+                    log.debug("Package: " + packageName);
                     URL resourceURL = ResourceTypeRegistry.class.getClassLoader().getResource(packageName.replace('.','/') + "/resource.xml");
-                    //URL resourceURL = ResourceTypeRegistry.class.getClassLoader().getResource("org/wyona/yanel/impl/resources/redirect/resource.xml");
-                    log.error("DEBUG: Resource config URL: " + resourceURL);
-                    ResourceTypeDefinition rtd = new ResourceTypeDefinition(resourceURL.openStream());
-                    log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
-                    log.debug("Classname: " + rtd.getResourceTypeClassname());
-                    hm.put(rtd.getResourceTypeUniversalName(), rtd);
+                    log.info("Resource config URL: " + resourceURL);
+                    try {
+                        ResourceTypeDefinition rtd = new ResourceTypeDefinition(resourceURL.openStream());
+                        log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
+                        log.debug("Classname: " + rtd.getResourceTypeClassname());
+                        hm.put(rtd.getResourceTypeUniversalName(), rtd);
+                    } catch (Exception exception) {
+                        log.error("Exception re registring resource with package: " + packageName);
+                        log.error(exception.getMessage(), exception);
+                    }
                 }
             }    
         } catch (Exception e) {
