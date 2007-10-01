@@ -188,6 +188,8 @@ public class ResourceTypeRegistry {
                 } catch (Exception e) {
                     String packageName = resourceTypes[i].getAttribute("package");
                     log.debug("Package: " + packageName);
+                    // TODO: Wildcard: resource*.xml !?
+                    // TODO: Config itself, e.g. org/wyona/yanel/impl/resources/redirect/my-resource.xml
                     URL resourceURL = ResourceTypeRegistry.class.getClassLoader().getResource(packageName.replace('.','/') + "/resource.xml");
                     log.info("Resource config URL: " + resourceURL);
                     try {
