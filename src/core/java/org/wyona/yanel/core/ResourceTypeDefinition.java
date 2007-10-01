@@ -36,32 +36,23 @@ public class ResourceTypeDefinition {
 
     private File configFile;
 
+    // TODO: In order to resolve other stuff, e.g. XSLTs, htdocs, icons, ...
+    //TODO: private URL configURL;
+
     /**
      *
      */
     public ResourceTypeDefinition(File file) throws Exception {
         this(new java.io.FileInputStream(file));
         this.configFile = file;
-/*
-        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
-        Configuration config;
-        try {
-            config = builder.buildFromFile(file);
-            String localName = config.getAttribute("name", null);
-            String namespace= config.getAttribute("namespace", null);
-            uname = "<{" + namespace + "}" + localName + "/>";
-            classname = config.getAttribute("class", null);
-            description = config.getChild("description").getValue();
-        } catch(Exception e) {
-            log.error(e);
-        }
-*/
+        // TODO: Set configURL
     }
 
     /**
      *
      */
     public ResourceTypeDefinition(java.io.InputStream in) {
+        // TODO: Set configURL
         DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
         Configuration config;
         try {
