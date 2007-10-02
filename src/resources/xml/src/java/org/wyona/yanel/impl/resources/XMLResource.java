@@ -157,6 +157,11 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * Get mime type
      */
     public String getMimeType(String viewId) throws Exception {
+        if (viewId != null && viewId.equals(SOURCE_VIEW_ID)) {
+            String mimeType = getResourceConfigProperty("source-view-mime-type");
+            if (mimeType != null) return mimeType;
+        }
+
         String mimeType = getResourceConfigProperty("mime-type");
         if (mimeType != null) return mimeType;
 
@@ -440,7 +445,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
 
         sb.append("\n  <resource name=\"" + name + "\">");
         sb.append("\n  <edit mime-type=\"application/xhtml+xml\">");
-        sb.append("\n    <checkout url=\"" + name + "?yanel.resource.viewid=source&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
+        sb.append("\n    <checkout url=\"" + name + "?yanel.resource.viewid=" + SOURCE_VIEW_ID + "&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
         sb.append("\n    <checkin  url=\"" + name + "?yanel.resource.usecase=checkin\" method=\"PUT\"/>");
         sb.append("\n    <release-lock url=\"" + name + "?yanel.resource.usecase=release-lock\" method=\"GET\"/>");
         sb.append("\n  </edit>");
@@ -463,9 +468,8 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         sb.append("</navigation>");
 
         sb.append("<resource name=\"" + name + "\">");
-        //sb.append("<edit mime-type=\"application/xml\">");
-        sb.append("<edit mime-type=\"" + this.getMimeType(null) + "\">");
-        sb.append("<checkout url=\"?yanel.resource.viewid=source&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
+        sb.append("<edit mime-type=\"" + this.getMimeType(SOURCE_VIEW_ID) + "\">");
+        sb.append("<checkout url=\"?yanel.resource.viewid=" + SOURCE_VIEW_ID + "&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
         sb.append("<checkin  url=\"?yanel.resource.usecase=checkin\"  method=\"PUT\"/>");
         sb.append("<release-lock url=\"?yanel.resource.usecase=release-lock\" method=\"GET\"/>");
         sb.append("</edit>");
