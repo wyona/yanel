@@ -37,4 +37,12 @@
     />
   </target>
 
+  <target name="copy-dependencies" depends="init">
+    <echo>Copy dependencies of realm Yanel Website</echo>
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
+      <fileset refid="maven2.realm.fileset"/>
+      <mapper type="flatten"/>
+    </copy>
+  </target>
+
 </project>
