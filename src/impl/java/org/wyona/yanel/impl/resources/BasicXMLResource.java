@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2007 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -52,6 +52,8 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     private static Category log = Category.getInstance(BasicXMLResource.class);
 
+    protected static String SOURCE_VIEW_ID = "source";
+
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getViewDescriptors()
      */
@@ -59,7 +61,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         ViewDescriptor[] vd = new ViewDescriptor[2];
         vd[0] = new ViewDescriptor("default");
         vd[0].setMimeType("application/xhtml+xml");
-        vd[1] = new ViewDescriptor("source");
+        vd[1] = new ViewDescriptor(SOURCE_VIEW_ID);
         vd[1].setMimeType("application/xml");
         return vd;
     }
@@ -76,10 +78,14 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getMimeType(java.lang.String)
      */
     public String getMimeType(String viewId) throws Exception {
-        String mimeType = getResourceConfigProperty("mime-type");
-        if (mimeType != null) return mimeType;
-        mimeType = "application/xhtml+xml";
-        return mimeType;
+        if (viewId != null && viewId.equals(SOURCE_VIEW_ID)) {
+            String mimeType = getResourceConfigProperty("source-view-mime-type");
+            if (mimeType != null) return mimeType;
+        } else {
+            String mimeType = getResourceConfigProperty("mime-type");
+            if (mimeType != null) return mimeType;
+        }
+        return "application/xml";
     }
     
     /**
@@ -105,9 +111,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         try {
             Repository repo = getRealm().getRepository();
 
-            if (viewId != null && viewId.equals("source")) {
+            if (viewId != null && viewId.equals(SOURCE_VIEW_ID)) {
                 view.setInputStream(xmlInputStream);
-                view.setMimeType("application/xml");
+                view.setMimeType(getMimeType(viewId));
                 return view;
             }
 
