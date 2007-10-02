@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2007 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -84,8 +84,6 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
     private String smtpHost = "";
     private int smtpPort = 25;
     private String to = "";
-    private String subject = "Yanel Default Subject";
-    private String content = "";
     private ContactBean contact = null;
     private String defaultLanguage = "en";
     private String messageBundle = "contact-form";
@@ -100,11 +98,6 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
      * 
      */
     public ContactResource() {
-	properties.put("smtpHost", smtpHost);
-	properties.put("to", to);
-	properties.put("smtpPort", String.valueOf(smtpPort));
-	properties.put("subject", subject);
-	
     }
 
     /**
@@ -161,13 +154,13 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             }
             if(submit) {
                 sendMail(transformer);
-                transformer.setParameter("company", request.getParameter("company"));
-                transformer.setParameter("firstName", request.getParameter("firstName"));
-                transformer.setParameter("lastName", request.getParameter("lastName"));
-                transformer.setParameter("email", request.getParameter("email"));
-                transformer.setParameter("address", request.getParameter("address"));
-                transformer.setParameter("zipCity", request.getParameter("zipCity"));
-                transformer.setParameter("message", request.getParameter("message"));
+                if (request.getParameter("company") != null) transformer.setParameter("company", request.getParameter("company"));
+                if (request.getParameter("firstName") != null) transformer.setParameter("firstName", request.getParameter("firstName"));
+                if (request.getParameter("lastName") != null) transformer.setParameter("lastName", request.getParameter("lastName"));
+                if (request.getParameter("email") != null) transformer.setParameter("email", request.getParameter("email"));
+                if (request.getParameter("address") != null) transformer.setParameter("address", request.getParameter("address"));
+                if (request.getParameter("zipCity") != null) transformer.setParameter("zipCity", request.getParameter("zipCity"));
+                if (request.getParameter("message") != null) transformer.setParameter("message", request.getParameter("message"));
             }
             
             // create first i18n transformer:
@@ -297,7 +290,8 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
                 transformer.setParameter("error", "smtpPortNotCorrect");
                 smtpPort = 0;
             }
-            subject = getResourceConfigProperty(SUBJECT);
+            String subject = getResourceConfigProperty(SUBJECT);
+            if (subject == null) subject = "Yanel Contact Resource: No subject specified";
             to = getResourceConfigProperty(TO);
 
             String from = getResourceConfigProperty("from");
@@ -305,12 +299,14 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
                 from = email;
             }
 
-            content = "Company: " + contact.getCompany() + "\n" + "Firstname: "
-                    + contact.getFirstName() + "\n" + "Lastname: "
-                    + contact.getLastName() + "\n" + "Address: "
-                    + contact.getAddress() + "\n" + "City: " + contact.getCity()
-                    + "\n" + "Email: " + contact.getEmail() + "\n" + "\n"
-                    + "Message:\n" + contact.message;
+            String content = "";
+            if (contact.getCompany() != null) content = content + "Company: " + contact.getCompany() + "\n";
+	    if (contact.getFirstName() != null) content = content + "Firstname: " + contact.getFirstName() + "\n";
+	    if (contact.getLastName() != null) content = content + "Lastname: " + contact.getLastName() + "\n";
+	    if (contact.getAddress() != null) content = content + "Address: " + contact.getAddress() + "\n";
+	    if (contact.getCity() != null) content = content + "City: " + contact.getCity() + "\n";
+	    if (contact.getEmail() != null) content = content + "E-Mail: " + contact.getEmail() + "\n" + "\n";
+            if (contact.message != null) content = content + "Message:\n" + contact.message;
             
             if(smtpHost != null && smtpPort != 0 && to != null) {
                 try {
