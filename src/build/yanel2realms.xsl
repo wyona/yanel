@@ -89,6 +89,27 @@
   </target>
 </xsl:for-each>
 
+<xsl:comment>Copy dependencies of realms</xsl:comment>
+  <target name="copy-dependencies" description="Copy dependencies of realms" depends="init">
+<xsl:for-each select="/yanel:realms/yanel:realm">
+    <condition property="build-dir-of-realm-with-id-{@id}-exists">
+      <available file="{yanel:config/@src}/build" type="dir"/>
+    </condition>
+    <antcall target="copy-dependencies-of-realm-with-id-{@id}"/>
+</xsl:for-each>
+  </target>
+
+<xsl:for-each select="/yanel:realms/yanel:realm">
+<target name="copy-dependencies-of-realm-with-id-{@id}" description="Copy dependencies of realm {@id}" depends="init" if="build-dir-of-realm-with-id-{@id}-exists">
+    <ant inheritAll="false" antfile="{yanel:config/@src}/build.xml" target="copy-dependencies">
+      <property name="build.dir" value="${{build.dir}}"/>
+      <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
+      <property name="yanel.source.version" value="{$yanel.source.version}"/>
+      <property name="maven.url" value="{$maven.url}"/>
+    </ant>
+</target>
+</xsl:for-each>
+
 </project>
 
 </xsl:template>
