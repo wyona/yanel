@@ -899,6 +899,7 @@
   <!-- Build Realms -->
   <target name="build-realms" description="Build realms" depends="generate-realms-build">
     <ant antfile="${yanel.home.dir}/build/build-realms.xml" target="build-realms"/>
+    <ant antfile="${yanel.home.dir}/build/build-realms.xml" target="copy-dependencies"/>
   </target>
 
   <target name="generate-realms-build" description="Generate realms build" depends="init">
