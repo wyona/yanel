@@ -11,7 +11,9 @@ Contact Form for sending email
 
 <rtd>
   <!-- Mandatory properties -->
+  <!-- TODO: Make "global" xslt optional -->
   <property name="xslt"/>
+  <!-- TODO: Allow more than one "to" -->
   <property name="to"/>
   <property name="subject"/>
   <!-- NOTE: Please note that one needs to reload/restart Yanel in order to activate changes of host and port! -->
