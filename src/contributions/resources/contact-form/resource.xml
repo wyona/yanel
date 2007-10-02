@@ -14,6 +14,7 @@ Contact Form for sending email
   <property name="xslt"/>
   <property name="to"/>
   <property name="subject"/>
+  <!-- NOTE: Please note that one needs to reload/restart Yanel in order to activate changes of host and port! -->
   <property name="smtpHost"/>
   <property name="smtpPort"/>
 
