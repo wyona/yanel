@@ -59,10 +59,16 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      */
     public ViewDescriptor[] getViewDescriptors() {
         ViewDescriptor[] vd = new ViewDescriptor[2];
-        vd[0] = new ViewDescriptor("default");
-        vd[0].setMimeType("application/xhtml+xml");
-        vd[1] = new ViewDescriptor(SOURCE_VIEW_ID);
-        vd[1].setMimeType("application/xml");
+        try {
+            vd[0] = new ViewDescriptor("default");
+            vd[0].setMimeType(getMimeType(null));
+
+            vd[1] = new ViewDescriptor(SOURCE_VIEW_ID);
+            vd[1].setMimeType(getMimeType(SOURCE_VIEW_ID));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
         return vd;
     }
 
