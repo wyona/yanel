@@ -26,6 +26,8 @@ import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
 
+import org.wyona.yanel.core.util.WildcardReplacerHelper;
+
 import org.apache.log4j.Category;
 
 import org.apache.fop.apps.FopFactory;
@@ -34,6 +36,8 @@ import org.apache.fop.apps.MimeConstants;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -128,9 +132,8 @@ public class PDFResource extends Resource implements ViewableV2 {
      *  @return String datapath
      */
     public String getDataPath() throws Exception {
-        String yanelPath = getResourceConfigProperty("yanel-path");
-        if (yanelPath != null) return yanelPath;
-        return getPath();
+        WildcardReplacerHelper dataPath = new WildcardReplacerHelper(getResourceConfigProperty("yanel-path"), getResourceConfigProperty("yanel-path-matcher"));
+        return dataPath.getReplacedString(getPath());
     }
 
     /**
