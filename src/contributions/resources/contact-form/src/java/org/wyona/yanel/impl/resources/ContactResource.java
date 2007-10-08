@@ -163,10 +163,6 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
                 if (request.getParameter("message") != null) transformer.setParameter("message", request.getParameter("message"));
             }
             
-            // create first i18n transformer:
-            I18nTransformer2 i18nTransformer1 = new I18nTransformer2(messageBundle, language, getRealm().getDefaultLanguage());
-            i18nTransformer1.setEntityResolver(catalogResolver);
-            
             // create xslt transformer for global layout
             TransformerHandler xsltHandler2 = tf.newTransformerHandler(getGlobalXSLTStreamSource(path));
             transformer = xsltHandler2.getTransformer();
@@ -180,9 +176,13 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             ResourceResolver resolver = new ResourceResolver(this);
             xIncludeTransformer.setResolver(resolver);
             
-            // create second i18n transformer:
-            I18nTransformer2 i18nTransformer2 = new I18nTransformer2("global", language, getRealm().getDefaultLanguage());
-            i18nTransformer2.setEntityResolver(catalogResolver);
+            // create i18n transformer:
+            String[] messageBundles = new String[2];
+            messageBundles[0] = messageBundle;
+            messageBundles[1] = "global";
+            
+            I18nTransformer2 i18nTransformer = new I18nTransformer2(messageBundles, language, getRealm().getDefaultLanguage());
+            i18nTransformer.setEntityResolver(catalogResolver);
             
             // create serializer:
             Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
@@ -190,11 +190,10 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
 
             // chain everything together (create a pipeline):
             xmlReader.setContentHandler(xsltHandler1);
-            xsltHandler1.setResult(new SAXResult(i18nTransformer1));
-            i18nTransformer1.setResult(new SAXResult(xsltHandler2));
+            xsltHandler1.setResult(new SAXResult(xsltHandler2));
             xsltHandler2.setResult(new SAXResult(xIncludeTransformer));
-            xIncludeTransformer.setResult(new SAXResult(i18nTransformer2));
-            i18nTransformer2.setResult(new SAXResult(serializer.asContentHandler()));
+            xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
+            i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
             serializer.setOutputStream(baos);
             
             // execute pipeline:
