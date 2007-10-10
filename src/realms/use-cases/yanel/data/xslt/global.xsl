@@ -32,7 +32,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <head>
 <xsl:comment>Name: <xsl:value-of select="$yanel.path.name"/> (without suffix: <xsl:value-of select="$name-without-suffix"/>), Path: <xsl:value-of select="$yanel.path"/>, Back 2 Realm: <xsl:value-of select="$yarep.back2realm"/>, Back 2 Context: <xsl:value-of select="$yanel.back2context"/></xsl:comment>
 
-  <title><xsl:value-of select="/xhtml:html/xhtml:head/xhtml:title"/> - Yanel</title>
+  <title><xsl:apply-templates select="/xhtml:html/xhtml:head/xhtml:title"/> - Yanel</title>
 
   <!-- This is needed such that Microsoft Internet Explorer displays characters such as &nbsp; correctly (also see xsl:output, whereas I (Michi) am not sure if the encoding is really needed there) -->
   <meta content="application/xhtml+xml; charset=UTF-8" http-equiv="Content-Type"/>
@@ -111,6 +111,12 @@ WARNING: This content has been generated dynamically. All changes will be lost.
     <br/> &#160;<a href="{$yarep.back2realm}../jmeter/jmeter-results/">JMeter&#160;Results</a>
     <br/> <b><a href="{$yarep.back2realm}index.html">Use&#160;Cases</a></b>
     <br/>
+</xsl:template>
+
+<xsl:template match="@*|node()">
+  <xsl:copy>
+    <xsl:apply-templates select="@*|node()"/>
+  </xsl:copy>
 </xsl:template>
 
 </xsl:stylesheet>

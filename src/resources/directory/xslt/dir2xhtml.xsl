@@ -5,6 +5,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
   xmlns:dir="http://apache.org/cocoon/directory/2.0"
   xmlns:yanel="http://www.wyona.org/yanel/resource/directory/1.0"
+  xmlns:i18n="http://www.wyona.org/yanel/i18n/1.0"
   >
 
   <xsl:output method="xhtml"/>
@@ -24,32 +25,32 @@
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>Collection: <xsl:value-of select="/dir:directory/@yanel:path"/>
+        <title><i18n:message key="collection"/>: <xsl:value-of select="/dir:directory/@yanel:path"/>
         </title>
         <script src="{$yanel.htdocs}yanel-js/sorttable.js" type="text/javascript"/>
       </head>
       <body>
         <div>
           <p>
-            <b>Yanel Path (with regard to realm):</b>&#160;<xsl:value-of select="/dir:directory/@yanel:path"/>
+            <b><i18n:message key="yanelPathTitle"/>:</b>&#160;<xsl:value-of select="/dir:directory/@yanel:path"/>
           </p>
           <p>
-            <b>Collection Path:</b>&#160;<xsl:value-of
+            <b><i18n:message key="collectionPathTitle"/>:</b>&#160;<xsl:value-of
             select="/dir:directory/@dir:path"/> (<a
-              href="?yanel.resource.viewid=source">XML view</a>)</p>
+              href="?yanel.resource.viewid=source">XML <i18n:message key="view"/></a>)</p>
           <p>
             <table class="sortable">
               <thead>
                 <tr>
-                  <th>Type</th>
-                  <th class="sorttable_alpha">Name</th>
-                  <th>Lastmodified</th>
-                  <th>Size</th>
+                  <th><i18n:message key="type"/></th>
+                  <th class="sorttable_alpha"><i18n:message key="name"/></th>
+                  <th><i18n:message key="lastmodified"/></th>
+                  <th><i18n:message key="size"/></th>
                 </tr>
               </thead>
               <tbody>
                 <tr class="parent">
-                  <td class="type" sorttable_customkey="1">Parent </td>
+                  <td class="type" sorttable_customkey="1"><i18n:message key="parent"/> </td>
                   <td class="name">
                     <a href="{$yarep.parent}" title="directory">..</a>
                   </td>
@@ -67,7 +68,7 @@
 
   <xsl:template match="dir:directory">
     <tr class="collection">
-      <td class="type" sorttable_customkey="Collection">Collection </td>
+      <td class="type" sorttable_customkey="Collection"><i18n:message key="collection"/> </td>
       <td class="name">
         <a href="{$yarep.back2realm}.{@path}/" title="directory">
           <xsl:value-of select="@name"/>
@@ -80,7 +81,7 @@
 
   <xsl:template match="dir:file">
     <tr class="file">
-      <td class="type" sorttable_customkey="Resource">Resource</td>
+      <td class="type" sorttable_customkey="Resource"><i18n:message key="resource"/></td>
       <td class="name">
         <a href="{$yarep.back2realm}.{@path}" title="file">
           <xsl:value-of select="@name"/>
