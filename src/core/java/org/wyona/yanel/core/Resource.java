@@ -22,11 +22,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.wyona.yanel.core.api.attributes.TranslatableV1;
-import org.wyona.yanel.core.map.Realm;
-import org.wyona.yanel.core.util.ResourceAttributeHelper;
-
 import org.apache.log4j.Category;
+import org.wyona.yanel.core.attributes.translatable.TranslationManager;
+import org.wyona.yanel.core.map.Realm;
 
 /**
  *
@@ -47,7 +45,7 @@ public abstract class Resource {
     private Environment environment;
     protected Map parameters;
 
-    static private String DEFAULT_LANGUAGE = "en";
+    public static final String DEFAULT_LANGUAGE = "en";
 
     /**
      *
@@ -256,9 +254,13 @@ public abstract class Resource {
      */
     public String getContentLanguage() throws Exception {
         String language = null;
-        if (ResourceAttributeHelper.hasAttributeImplemented(this, "Translatable", "1")) {
-            language = ((TranslatableV1)this).getLanguage(); 
+        TranslationManager translationManager = getRealm().getTranslationManager();
+        if (translationManager != null) {
+            language = translationManager.getLanguage(this);
         }
+        //if (ResourceAttributeHelper.hasAttributeImplemented(this, "Translatable", "1")) {
+        //    language = ((TranslatableV1)this).getLanguage(); 
+        //}
         if (language != null) return language;
 
         language = getResourceConfigProperty("language");
@@ -266,44 +268,25 @@ public abstract class Resource {
 
         // TODO: Shouldn't we move the check of the realm translation manager into the generic resource? (also see XMLResource and translatable interface)
 
-        return getRequestedLanguage();
+        language = getRealm().getDefaultLanguage();
+        if (language != null) return language;
+        
+        return DEFAULT_LANGUAGE;
+
+        //return getRequestedLanguage();
     }
 
     /**
      * Get language (localization) with the following priorization: <br><br>
      * 1) yanel.meta.language query string parameter<br> 
+     * 1.5) Realm-specific cookie
      * 2) Accept-Language header<br>
      * 3) Realm default language<br>
      * 4) Default "en"<br>
      */
     public String getRequestedLanguage() throws Exception {
-        // TODO: Make this reusable. Also see org/wyona/yanel/servlet/YanelServlet.java
-
-        // TODO: Use user profile setting resp. session (allow switching the locale)
-	    
-        // (1)
-        String language = getRequest().getParameter("yanel.meta.language");
-        if (language != null) return language;
+        return getRealm().getLanguageHandler().getLocalizationLanguage(this);
         
-        // (2)
-        language = getRequest().getHeader("Accept-Language");
-        if (language != null) {
-            if (language.indexOf(",") > 0) {
-                language = language.substring(0, language.indexOf(","));
-            }
-            int dashIndex = language.indexOf("-");
-            if (dashIndex > 0) {
-                language = language.substring(0, dashIndex);
-            }
-        }
-        if (language != null) return language;
-
-        // (3)
-        language = getRealm().getDefaultLanguage();
-        if (language != null) return language;
-        
-        // (4)
-        return DEFAULT_LANGUAGE;
     }
 
     /**

@@ -27,6 +27,7 @@ import org.wyona.security.core.IdentityManagerFactory;
 import org.wyona.security.core.PolicyManagerFactory;
 import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.PolicyManager;
+import org.wyona.yanel.core.LanguageHandler;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.attributes.translatable.DefaultTranslationManager;
 import org.wyona.yanel.core.attributes.translatable.TranslationManager;
@@ -56,6 +57,7 @@ public class Realm {
     private PolicyManager policyManager;
     private IdentityManager identityManager;
     private TranslationManager translationManager;
+    private LanguageHandler languageHandler;
     private File configFile;
     private File rootDir;
     private String[] languages;
@@ -165,6 +167,17 @@ public class Realm {
         }
         translationManager.init(this);
         setTranslationManager(translationManager);
+        
+        configElement = config.getChild("language-handler", false);
+        LanguageHandler languageHandler = null;
+        if (configElement != null) {
+            String className = configElement.getAttribute("class");
+            languageHandler = (LanguageHandler)Class.forName(className).newInstance();
+        } else {
+            languageHandler = (LanguageHandler)Class.forName("org.wyona.yanel.impl.DefaultLanguageHandler").newInstance();
+        }
+        setLanguageHandler(languageHandler);
+        
         
         Configuration rootDirConfig = config.getChild("root-dir", false);
         if (rootDirConfig != null) {
@@ -388,5 +401,13 @@ public class Realm {
         } else {
             return null;
         }
+    }
+
+    public LanguageHandler getLanguageHandler() {
+        return languageHandler;
+    }
+
+    public void setLanguageHandler(LanguageHandler languageHandler) {
+        this.languageHandler = languageHandler;
     }
 }
