@@ -91,14 +91,25 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
     //private String getSitetreeAsXML(String path) {
         String path = "/"; 
         StringBuffer sb = new StringBuffer("<sitetree>");
+        sb.append(getNodeAsXML(path));
+        sb.append("</sitetree>");
+        return sb.toString();
+    }
+
+    /**
+     *
+     */
+    private String getNodeAsXML(String path) {
+        log.error("DEBUG: Path: " + path);
         Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("repo-navigation");
         Node node = sitetree.getNode(getRealm(), path);
+        StringBuffer sb = new StringBuffer("");
         if (node.isCollection()) {
             sb.append("<collection path=\"" + path + "\">");
             Node[] children = node.getChildren();
             for (int i = 0; i < children.length; i++) {
                 if (children[i].isCollection()) {
-                    sb.append("<collection path=\"" + children[i].getPath() + "\"/>");
+                    sb.append(getNodeAsXML(children[i].getPath()));
                 } else if (children[i].isResource()) {
                     sb.append("<resource path=\"" + children[i].getPath() + "\"/>");
                 } else {
@@ -109,7 +120,6 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
         } else {
             sb.append("<resource path=\"" + path + "\"/>");
         }
-        sb.append("</sitetree>");
         return sb.toString();
     }
 }
