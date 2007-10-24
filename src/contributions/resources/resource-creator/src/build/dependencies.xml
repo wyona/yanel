@@ -3,6 +3,9 @@
 <project name="wiki-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
   <target name="dependencies" description="Dependencies">
+<!--
+    <artifact:remoteRepository id="wyona.remote.repository" url="http://maven2.wyona.org/"/>
+-->
     <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
 
     <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
