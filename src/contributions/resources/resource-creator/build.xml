@@ -39,7 +39,7 @@
     <delete dir="${resource.build.dir}"/>
   </target>
 
-  <target name="copy-dependencies" depends="init">
+  <target name="copy-dependencies" depends="init" description="Deploy dependencies">
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
       <fileset refid="maven2.resource.fileset"/>
       <mapper type="flatten"/>
