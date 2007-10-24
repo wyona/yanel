@@ -100,25 +100,25 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
      *
      */
     private String getNodeAsXML(String path) {
-        log.error("DEBUG: Path: " + path);
+        //log.error("DEBUG: Path: " + path);
         Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("repo-navigation");
         Node node = sitetree.getNode(getRealm(), path);
         StringBuffer sb = new StringBuffer("");
         if (node.isCollection()) {
-            sb.append("<collection path=\"" + path + "\">");
+            sb.append("<collection path=\"" + path + "\" name=\" " + node.getName() + "\">");
             Node[] children = node.getChildren();
             for (int i = 0; i < children.length; i++) {
                 if (children[i].isCollection()) {
                     sb.append(getNodeAsXML(children[i].getPath()));
                 } else if (children[i].isResource()) {
-                    sb.append("<resource path=\"" + children[i].getPath() + "\"/>");
+                    sb.append("<resource path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
                 } else {
-                    sb.append("<neither-resource-nor-collection path=\"" + children[i].getPath() + "\"/>");
+                    sb.append("<neither-resource-nor-collection path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
                 }
             }
             sb.append("</collection>");
         } else {
-            sb.append("<resource path=\"" + path + "\"/>");
+            sb.append("<resource path=\"" + path + "\" name=\"" + node.getName() + "\"/>");
         }
         return sb.toString();
     }
