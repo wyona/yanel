@@ -3,14 +3,14 @@
 <project name="wiki-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
   <target name="dependencies" description="Dependencies">
-<!--
+<!-- For standalone compilation!
     <artifact:remoteRepository id="wyona.remote.repository" url="http://maven2.wyona.org/"/>
 -->
     <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
 
     <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
-<!--
+<!-- For standalone compilation!
       <dependency groupId="wyona-org-yanel" artifactId="yanel-core" version="1.0-dev-rREVISION"/>
 -->
       <dependency groupId="wyona-org-yanel" artifactId="yanel-core" version="${yanel.source.version}"/>
