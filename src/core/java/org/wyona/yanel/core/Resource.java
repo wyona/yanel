@@ -208,6 +208,7 @@ public abstract class Resource {
 
     /**
      * Gets the parameter with the given name as a string.
+     * If the parameter is a string array, returns the first string.
      * @param name
      * @return parameter string or null if no parameter with this name exists.
      */
@@ -216,7 +217,11 @@ public abstract class Resource {
         if (param == null) {
             return null;
         } else {
-            return param.toString();
+            if (param instanceof String[]) {
+                return ((String [])param)[0];
+            } else {
+                return param.toString();
+            }
         }
     }
 
