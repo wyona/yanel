@@ -47,7 +47,9 @@ import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.serialization.SerializerFactory;
+import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
+import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yarep.core.Repository;
 import org.xml.sax.InputSource;
@@ -136,6 +138,7 @@ public class UsecaseResource extends Resource implements ViewableV2 {
     
     protected void renderJellyView(UsecaseView view, String viewTemplate) throws UsecaseException {
         try {
+            String viewId = view.getID();
             Repository repo = this.getRealm().getRepository();
             
             JellyContext jellyContext = new JellyContext();
@@ -172,32 +175,47 @@ public class UsecaseResource extends Resource implements ViewableV2 {
                 xsltHandlers[i].getTransformer().setParameter("yanel.path", getPath());
                 xsltHandlers[i].getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
                 xsltHandlers[i].getTransformer().setParameter("yanel.back2realm", PathUtil.backToRealm(getPath()));
+                xsltHandlers[i].getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(getPath())); // for backwards compatibility
                 xsltHandlers[i].getTransformer().setParameter("language", getRequestedLanguage());
                 xsltHandlers[i].getTransformer().setParameter("yanel.reservedPrefix", "yanel"); // TODO don't hardcode
             }
 
             // create i18n transformer:
-            //I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getRequestedLanguage(), getRealm().getDefaultLanguage());
-            //i18nTransformer.setEntityResolver(catalogResolver);
+            I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getRequestedLanguage(), getRealm().getDefaultLanguage());
+            i18nTransformer.setEntityResolver(catalogResolver);
 
-            Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
+            // create xinclude transformer:
+            XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
+            SourceResolver resolver = new SourceResolver(this);
+            xIncludeTransformer.setResolver(resolver);
+
+            // create serializer
+            Serializer serializer = null;
+            if (getMimeType(viewId).equals("text/html")) {
+                serializer = SerializerFactory.getSerializer(SerializerFactory.HTML_TRANSITIONAL);
+            } else if (getMimeType(viewId).equals("application/xhtml+xml")) {
+                    serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
+            } else {
+                serializer = SerializerFactory.getSerializer(SerializerFactory.XML);
+            }
+
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            serializer.setOutputStream(baos);
-            
-            //XMLOutput jellyOutput = new XMLOutput(xsltHandlers[0]);
+
+            // chain everything together (create a pipeline):
             xmlReader.setContentHandler(xsltHandlers[0]);
             for (int i = 0; i < xsltHandlers.length - 1; i++) {
                 xsltHandlers[i].setResult(new SAXResult(xsltHandlers[i+1]));
             }
-            xsltHandlers[xsltHandlers.length - 1].setResult(new SAXResult(serializer.asContentHandler()));
-            //XMLOutput jellyOutput = new XMLOutput(serializer.asContentHandler());
-            //FileOutputStream os = new FileOutputStream("/home/josias/tmp/test2.xml");
+            xsltHandlers[xsltHandlers.length - 1].setResult(new SAXResult(xIncludeTransformer));
+            xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
+            i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
+            serializer.setOutputStream(baos);
             
             // execute pipeline:
             xmlReader.parse(new InputSource(new ByteArrayInputStream(jellyResultStream.toByteArray())));
 
             view.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
-            view.setMimeType("application/xhtml+xml");
+            view.setMimeType(getMimeType(viewId));
         } catch (Exception e) {
             String errorMsg = "Error creating jelly view of usecase: " + getName() + ": " + e;
             log.error(errorMsg, e);
@@ -219,6 +237,8 @@ public class UsecaseResource extends Resource implements ViewableV2 {
     }
 
     public String getMimeType(String viewId) throws Exception {
+        String mimeType = getResourceConfigProperty("mime-type");
+        if (mimeType != null) return mimeType;
         return "application/xhtml+xml";
     }
 
