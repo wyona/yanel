@@ -141,11 +141,4 @@ public abstract class ThreadUsecaseResource extends ExecutableUsecaseResource {
         log.warn("TODO: Method is not implemented yet");
         return -1;
     }
-
-    /**
-     * @see org.wyona.yanel.impl.resources.usecase.UsecaseResource#getMimeType(java.lang.String)
-     */
-    public String getMimeType(String viewId) throws Exception {
-        return "application/xml";
-    }
 }
