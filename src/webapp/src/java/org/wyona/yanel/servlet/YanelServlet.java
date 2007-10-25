@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.HashMap;
 
@@ -123,6 +124,7 @@ public class YanelServlet extends HttpServlet {
     private String toolbarMasterSwitch = "off";
     private String reservedPrefix;
     private String servletContextRealPath;
+    private int cacheExpires = 0;
     
     public static final String DEFAULT_ENCODING = "UTF-8";
 
@@ -151,6 +153,10 @@ public class YanelServlet extends HttpServlet {
             sslPort = config.getInitParameter("ssl-port");
             toolbarMasterSwitch = config.getInitParameter("toolbar-master-switch");
             reservedPrefix = yanel.getReservedPrefix();
+            String expires = config.getInitParameter("static-content-cache-expires");
+            if (expires != null) {
+                this.cacheExpires = Integer.parseInt(expires);
+            }
         } catch (Exception e) {
             log.error(e);
             throw new ServletException(e.getMessage(), e);
@@ -2145,6 +2151,10 @@ public class YanelServlet extends HttpServlet {
                     while ((bytesRead = in.read(buffer)) != -1) {
                         out.write(buffer, 0, bytesRead);
                     }
+                    // allow client-side caching:
+                    if (cacheExpires != 0) {
+                        setExpiresHeader(response, cacheExpires);
+                    }
                     return;
                 } else {
                     log.error("No such file or directory: " + resourceFile);
@@ -2170,6 +2180,10 @@ public class YanelServlet extends HttpServlet {
                 while ((bytesRead = in.read(buffer)) != -1) {
                     out.write(buffer, 0, bytesRead);
                 }
+                // allow client-side caching:
+                if (cacheExpires != 0) {
+                    setExpiresHeader(response, cacheExpires);
+                }
                 return;
             } else {
                 log.error("No such file or directory: " + globalFile);
@@ -2177,6 +2191,13 @@ public class YanelServlet extends HttpServlet {
                 return;
             }
         }
+    }
+    
+    private void setExpiresHeader(HttpServletResponse response, int hours) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR_OF_DAY, hours);
+        String expires = DateUtil.formatRFC822GMT(calendar.getTime());
+        response.setHeader("Expires", expires);
     }
 
     /**
@@ -2194,7 +2215,7 @@ public class YanelServlet extends HttpServlet {
             } else {
                 // try to guess if we have to set the default encoding
                 String mimeType = view.getMimeType();
-                if (mimeType.startsWith("text") || 
+                if (mimeType != null && mimeType.startsWith("text") || 
                     mimeType.equals("application/xml") || 
                     mimeType.equals("application/xhtml+xml") || 
                     mimeType.equals("application/atom+xml") || 

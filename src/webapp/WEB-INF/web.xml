@@ -38,6 +38,12 @@
      <param-value>on</param-value>
      <!--<param-value>off</param-value>-->
     </init-param>
+
+    <!-- Allow client-side caching of static htdocs content. Specify value in hours. -->
+    <init-param>
+     <param-name>static-content-cache-expires</param-name>
+     <param-value>2</param-value>
+    </init-param>
   </servlet>
 
   <servlet-mapping>
