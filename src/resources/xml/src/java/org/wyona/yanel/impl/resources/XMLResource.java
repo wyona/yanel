@@ -52,8 +52,6 @@ import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.core.Revision;
 import org.wyona.yarep.util.RepoPath;
 
-import org.wyona.security.core.api.Identity;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
