@@ -2,25 +2,25 @@
 
 <policy xmlns="http://www.wyona.org/security/1.0">
 
-  <role id="view">
+  <usecase id="view">
     <world permission="false"/>
     <user id="lenya" permission="true"/>
-  </role>
+  </usecase>
 
-  <role id="open">
+  <usecase id="open">
     <user id="lenya" permission="true"/>
-  </role>
+  </usecase>
 
-  <role id="write">
+  <usecase id="write">
     <user id="lenya" permission="true"/>
-  </role>
+  </usecase>
 
-  <role id="create">
+  <usecase id="create">
     <user id="lenya" permission="true"/>
-  </role>
+  </usecase>
 
-  <role id="toolbar">
+  <usecase id="toolbar">
     <user id="lenya" permission="true"/>
-  </role>
+  </usecase>
 
 </policy>
