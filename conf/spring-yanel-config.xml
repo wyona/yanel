@@ -18,6 +18,9 @@
   <bean id="policyManager" class="org.wyona.security.impl.PolicyManagerImpl"/>
   <bean id="identityManager" class="org.wyona.security.impl.IdentityManagerImpl"/>
   -->
+<!--
+  <bean id="PolicyManagerFactory" class="org.wyona.security.impl.PolicyManagerFactoryImplVersion2"/>
+-->
   <bean id="PolicyManagerFactory" class="org.wyona.security.impl.PolicyManagerFactoryImpl"/>
   <bean id="IdentityManagerFactory" class="org.wyona.security.impl.IdentityManagerFactoryImpl"/>
 
