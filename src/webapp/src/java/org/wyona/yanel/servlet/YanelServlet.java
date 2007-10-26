@@ -71,6 +71,7 @@ import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.IdentityMap;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.Role;
+import org.wyona.security.core.api.Usecase;
 import org.wyona.security.core.api.User;
 
 import org.apache.log4j.Category;
@@ -1013,7 +1014,7 @@ public class YanelServlet extends HttpServlet {
      */
     private HttpServletResponse doAuthorize(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        Role role = null;
+        Usecase usecase = null;
 
         // TODO: Replace hardcoded roles by mapping between roles amd query strings ...
         String value = request.getParameter("yanel.resource.usecase");
@@ -1022,38 +1023,38 @@ public class YanelServlet extends HttpServlet {
         String method = request.getMethod();
         if (value != null && value.equals("save")) {
             log.debug("Save data ...");
-            role = new Role("write");
+            usecase = new Usecase("write");
         } else if (value != null && value.equals("checkin")) {
             log.debug("Checkin data ...");
-            role = new Role("write");
+            usecase = new Usecase("write");
         } else if (value != null && value.equals("introspection")) {
             if(log.isDebugEnabled()) log.debug("Dynamically generated introspection ...");
-            role = new Role("introspection");
+            usecase = new Usecase("introspection");
         } else if (value != null && value.equals("checkout")) {
             log.debug("Checkout data ...");
-            role = new Role("open");
+            usecase = new Usecase("open");
         } else if (contentType != null && contentType.indexOf("application/atom+xml") >= 0 && (method.equals(METHOD_PUT) || method.equals(METHOD_POST))) {
             // TODO: Is posting atom entries different from a general post (see below)?!
             log.error("DEBUG: Write/Checkin Atom entry ...");
-            role = new Role("write");
+            usecase = new Usecase("write");
         // TODO: METHOD_POST is not generally protected, but save, checkin, application/atom+xml are being protected. See doPost(.... 
         } else if (method.equals(METHOD_PUT)) {
             log.error("DEBUG: Upload data ...");
-            role = new Role("write");
+            usecase = new Usecase("write");
         } else if (method.equals(METHOD_DELETE)) {
             log.error("DEBUG: Delete resource ...");
-            role = new Role("delete");
+            usecase = new Usecase("delete");
         } else if (workflowTransitionValue != null) {
             // TODO: How shall we protect workflow transitions?!
             log.error("DEBUG: Workflow transition ...");
-            role = new Role("view");
+            usecase = new Usecase("view");
         } else {
-            role = new Role("view");
+            usecase = new Usecase("view");
         }
         value = request.getParameter("yanel.toolbar");
         if (value != null && value.equals("on")) {
             log.debug("Turn on toolbar ...");
-            role = new Role("toolbar");
+            usecase = new Usecase("toolbar");
         }
 
         boolean authorized = false;
@@ -1088,7 +1089,8 @@ public class YanelServlet extends HttpServlet {
                 try {
                     User user = realm.getIdentityManager().getUserManager().getUser(username);
                     if (user != null && user.authenticate(password)) {
-                        authorized = realm.getPolicyManager().authorize(path, new Identity(user), new Role("view"));
+                        //authorized = realm.getPolicyManager().authorize(path, new Identity(user), new Role("view"));
+                        authorized = realm.getPolicyManager().authorize(path, new Identity(user), new Usecase("view"));
                         if(authorized) {
                             return null;
                         } else {
@@ -1141,8 +1143,9 @@ public class YanelServlet extends HttpServlet {
             
             //authorized = pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, role);
         
-            if (log.isDebugEnabled()) log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity.getUsername() + ", role: " + role.getName());
-            authorized = realm.getPolicyManager().authorize(path, identity, role);
+            if (log.isDebugEnabled()) log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity.getUsername() + ", Usecase: " + usecase.getName());
+            //authorized = realm.getPolicyManager().authorize(path, identity, role);
+            authorized = realm.getPolicyManager().authorize(path, identity, usecase);
             if (log.isDebugEnabled()) log.debug("Check authorization result: " + authorized);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
