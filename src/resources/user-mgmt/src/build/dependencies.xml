@@ -12,6 +12,7 @@
       <dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3"/>
       <dependency groupId="xml-resolver" artifactId="xml-resolver" version="1.1"/>
       <dependency groupId="xalan" artifactId="xalan" version="2.7.0"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.0.1-dev-r28143"/>
     </artifact:dependencies>
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
@@ -21,7 +22,6 @@
       <dependency groupId="commons-jexl" artifactId="commons-jexl" version="1.0"/>
       <dependency groupId="commons-beanutils" artifactId="commons-beanutils" version="1.6"/>
       <dependency groupId="dom4j" artifactId="dom4j" version="1.5.2"/>
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.0.1-dev-r23969"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-impl" version="4.3"/>
     </artifact:dependencies>
