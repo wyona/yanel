@@ -102,33 +102,49 @@ public class Realm {
      *
      */
     protected void configure(Configuration config) throws Exception {
-
         Yanel yanel = Yanel.getInstance();
-        
-        PolicyManagerFactory pmFactory = (PolicyManagerFactory) yanel.getBeanFactory().getBean("PolicyManagerFactory");
+	File repoConfig = null;
+
+
+
+        // Set PolicyManager for this realm
+        Configuration repoConfigElement = config.getChild("ac-policies", false);
+        if (repoConfigElement != null) {
+            repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
+            RepositoryFactory policiesRepoFactory = yanel.getRepositoryFactory("ACPoliciesRepositoryFactory");
+            Repository policiesRepo = policiesRepoFactory.newRepository(getID(), repoConfig);
+
+            PolicyManagerFactory pmFactory = null;
+            try {
+                String customPolicyManagerFactoryImplClassName = repoConfigElement.getAttribute("class");
+                pmFactory = (PolicyManagerFactory) Class.forName(customPolicyManagerFactoryImplClassName).newInstance();
+            } catch (ConfigurationException e) {
+                pmFactory = (PolicyManagerFactory) yanel.getBeanFactory().getBean("PolicyManagerFactory");
+                log.warn("Default PolicyManager will be used for realm: " + getName());
+            }
+            PolicyManager policyManager = pmFactory.newPolicyManager(policiesRepo);
+            setPolicyManager(policyManager);
+        }
+
+
+
+
+
         IdentityManagerFactory imFactory = (IdentityManagerFactory) yanel.getBeanFactory().getBean("IdentityManagerFactory");
 
         RepositoryFactory repoFactory = yanel.getRepositoryFactory("DefaultRepositoryFactory");
         RepositoryFactory rtiRepoFactory = yanel.getRepositoryFactory("RTIRepositoryFactory");
-        RepositoryFactory policiesRepoFactory = yanel.getRepositoryFactory("ACPoliciesRepositoryFactory");
         RepositoryFactory identitiesRepoFactory = yanel.getRepositoryFactory("ACIdentitiesRepositoryFactory");
         RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory("ExtraRepositoryFactory");
 
         String repoConfigSrc = config.getChild("data", false).getValue();
-        File repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigSrc));
+        repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigSrc));
         setRepository(repoFactory.newRepository(getID(), repoConfig));
         
         repoConfigSrc = config.getChild("rti", false).getValue();
         repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigSrc));
         setRTIRepository(rtiRepoFactory.newRepository(getID(), repoConfig));
         
-        Configuration repoConfigElement = config.getChild("ac-policies", false);
-        if (repoConfigElement != null) {
-            repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
-            Repository policiesRepo = policiesRepoFactory.newRepository(getID(), repoConfig);
-            PolicyManager policyManager = pmFactory.newPolicyManager(policiesRepo);
-            setPolicyManager(policyManager);
-        }
         
         repoConfigElement = config.getChild("ac-identities", false);
         if (repoConfigElement != null) {
