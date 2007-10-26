@@ -127,14 +127,29 @@ public class Realm {
         }
 
 
+        // Set IdentityManager for this realm
+        repoConfigElement = config.getChild("ac-identities", false);
+        if (repoConfigElement != null) {
+            repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
+            RepositoryFactory identitiesRepoFactory = yanel.getRepositoryFactory("ACIdentitiesRepositoryFactory");
+            Repository identitiesRepo = identitiesRepoFactory.newRepository(getID(), repoConfig);
+            
+            IdentityManagerFactory imFactory = null;
+            try {
+            	String customIdentityManagerFactoryImplClassName = repoConfigElement.getAttribute("class");
+            	imFactory = (IdentityManagerFactory) Class.forName(customIdentityManagerFactoryImplClassName).newInstance();
+            } catch (ConfigurationException e) {
+            	imFactory = (IdentityManagerFactory) yanel.getBeanFactory().getBean("IdentityManagerFactory");
+            	log.warn("Default IdentityManager will be used for realm: " + getName());
+            }
+            IdentityManager identityManager = imFactory.newIdentityManager(identitiesRepo);
+            setIdentityManager(identityManager);
+        }
 
-
-
-        IdentityManagerFactory imFactory = (IdentityManagerFactory) yanel.getBeanFactory().getBean("IdentityManagerFactory");
+        
 
         RepositoryFactory repoFactory = yanel.getRepositoryFactory("DefaultRepositoryFactory");
         RepositoryFactory rtiRepoFactory = yanel.getRepositoryFactory("RTIRepositoryFactory");
-        RepositoryFactory identitiesRepoFactory = yanel.getRepositoryFactory("ACIdentitiesRepositoryFactory");
         RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory("ExtraRepositoryFactory");
 
         String repoConfigSrc = config.getChild("data", false).getValue();
@@ -146,13 +161,7 @@ public class Realm {
         setRTIRepository(rtiRepoFactory.newRepository(getID(), repoConfig));
         
         
-        repoConfigElement = config.getChild("ac-identities", false);
-        if (repoConfigElement != null) {
-            repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
-            Repository identitiesRepo = identitiesRepoFactory.newRepository(getID(), repoConfig);
-            IdentityManager identityManager = imFactory.newIdentityManager(identitiesRepo);
-            setIdentityManager(identityManager);
-        }
+        
         
         Configuration configElement = config.getChild("default-language", false);
         if (configElement != null) {                       
