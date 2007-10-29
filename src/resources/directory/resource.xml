@@ -6,7 +6,8 @@ Collection (resp. Directory, resp. Folder) resource
 </description>
 
 <rtd>
-  <property name="xslt"/>
+  <property name="default-xslt"/>
+  <property name="xslt"/> <!-- Can be used multiple times (see XML resource) -->
   <property name="mime-type"/>
 </rtd>
 </resource>
