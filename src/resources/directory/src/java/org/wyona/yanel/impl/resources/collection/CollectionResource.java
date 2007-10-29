@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.impl.resources;
+package org.wyona.yanel.impl.resources.collection;
 
 import org.wyona.yanel.core.Environment;
 import org.wyona.yanel.core.Path;
@@ -24,6 +24,7 @@ import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.impl.resources.BasicXMLResource;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -60,9 +61,9 @@ import java.util.LinkedHashSet;
 /**
  *
  */
-public class DirectoryResource extends BasicXMLResource implements ViewableV2, CreatableV2 {
+public class CollectionResource extends BasicXMLResource implements ViewableV2, CreatableV2 {
 
-    private static Category log = Category.getInstance(DirectoryResource.class);
+    private static Category log = Category.getInstance(CollectionResource.class);
 
     private Environment environment;
 
@@ -143,18 +144,18 @@ public class DirectoryResource extends BasicXMLResource implements ViewableV2, C
         View view = new View();
         if (viewId == null || !viewId.equals("source")) {
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-          TransformerFactory tfactory = TransformerFactory.newInstance();
-          Transformer transformerIntern = tfactory.newTransformer(getXSLTStreamSource());
-          StreamSource orig = new StreamSource(xmlInputStream);
+            TransformerFactory tfactory = TransformerFactory.newInstance();
+            Transformer transformerIntern = tfactory.newTransformer(getXSLTStreamSource());
+            StreamSource orig = new StreamSource(xmlInputStream);
 
-          transformerIntern.setParameter("yanel.path.name", PathUtil.getName(getPath()));
-          transformerIntern.setParameter("yanel.path", getPath().toString());
-          transformerIntern.setParameter("yanel.back2context", backToContext()+backToRoot());
-          transformerIntern.setParameter("yarep.back2realm", backToRoot());
-          transformerIntern.setParameter("yarep.parent", getParent(getPath()));
-          transformerIntern.setParameter("yanel.htdocs", PathUtil.getGlobalHtdocsPath(this));
-          transformerIntern.transform(orig, new StreamResult(baos));
-          return super.getXMLView(viewId, new java.io.ByteArrayInputStream(baos.toByteArray()));
+            transformerIntern.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+            transformerIntern.setParameter("yanel.path", getPath().toString());
+            transformerIntern.setParameter("yanel.back2context", backToContext()+backToRoot());
+            transformerIntern.setParameter("yarep.back2realm", backToRoot());
+            transformerIntern.setParameter("yarep.parent", getParent(getPath()));
+            transformerIntern.setParameter("yanel.htdocs", PathUtil.getGlobalHtdocsPath(this));
+            transformerIntern.transform(orig, new StreamResult(baos));
+            return super.getXMLView(viewId, new java.io.ByteArrayInputStream(baos.toByteArray()));
         }
         return super.getXMLView(viewId, xmlInputStream);
 
@@ -191,10 +192,15 @@ public class DirectoryResource extends BasicXMLResource implements ViewableV2, C
      *
      */
     private StreamSource getXSLTStreamSource() throws Exception {
-        Repository repo = getRealm().getRepository();
-        File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "dir2xhtml.xsl");
-        if (log.isDebugEnabled()) log.debug("XSLT file: " + xsltFile);
-        return new StreamSource(xsltFile);
+        File defaultXSLTFile = org.wyona.commons.io.FileUtil.file( rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "dir2xhtml.xsl");
+
+        String customDefaultXSLT = getResourceConfigProperty("default-xslt");
+        if (customDefaultXSLT != null) {
+            defaultXSLTFile = new File(customDefaultXSLT);
+        }
+
+        if (log.isDebugEnabled()) log.debug("XSLT file: " + defaultXSLTFile);
+        return new StreamSource(defaultXSLTFile);
     }
 
     /**
