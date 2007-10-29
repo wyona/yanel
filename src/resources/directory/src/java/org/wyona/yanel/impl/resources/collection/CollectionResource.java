@@ -192,13 +192,12 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
      *
      */
     private StreamSource getXSLTStreamSource() throws Exception {
-        File defaultXSLTFile = org.wyona.commons.io.FileUtil.file( rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "dir2xhtml.xsl");
-
         String customDefaultXSLT = getResourceConfigProperty("default-xslt");
         if (customDefaultXSLT != null) {
-            defaultXSLTFile = new File(customDefaultXSLT);
+            return new StreamSource(getRealm().getRepository().getNode(customDefaultXSLT).getInputStream());
         }
 
+        File defaultXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "dir2xhtml.xsl");
         if (log.isDebugEnabled()) log.debug("XSLT file: " + defaultXSLTFile);
         return new StreamSource(defaultXSLTFile);
     }
