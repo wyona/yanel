@@ -6,6 +6,7 @@
     <!-- INFO: http://maven.apache.org/ant-tasks.html -->
     <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
 
+    <!-- Compile Dependencies (contained resp. deployed by core already) -->
     <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
       <dependency groupId="wyona-org-yanel" artifactId="yanel-core"
@@ -13,24 +14,26 @@
       <dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3"/>
       <dependency groupId="xml-resolver" artifactId="xml-resolver" version="1.1"/>
       <dependency groupId="xalan" artifactId="xalan" version="2.7.0"/>
-    </artifact:dependencies>
-
-
-
-    <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
-      <remoteRepository refid="wyona.remote.repository"/>
-      <dependency groupId="avalon-framework" artifactId="avalon-framework-api"
-                  version="4.3"/>
-      <dependency groupId="avalon-framework" artifactId="avalon-framework-impl"
-                  version="4.3"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core"
                   version="0.0.1-dev-r28143"/>
+      <dependency groupId="avalon-framework" artifactId="avalon-framework-api"
+                  version="4.3"/>
     </artifact:dependencies>
-
     <property name="maven2.cp" refid="maven2.classpath"/>
-    <property name="maven2.resource.cp" refid="maven2.resource.classpath"/>
     <!--<echo>Maven2 classpath: ${maven2.cp}</echo>-->
+
+
+
+    <!-- Compile and Deploy Dependencies  (possibly not contained by core) -->
+    <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <!-- DefaultConfiguration class is contained by impl library! -->
+      <dependency groupId="avalon-framework" artifactId="avalon-framework-impl"
+                  version="4.3"/>
+    </artifact:dependencies>
+    <property name="maven2.resource.cp" refid="maven2.resource.classpath"/>
+    <!--<echo>Maven2 resource classpath: ${maven2.resource.cp}</echo>-->
+
   </target>
 
 </project>
-
