@@ -153,7 +153,7 @@ public class ResourceManager {
     /**
      * Passes request parameter to a resource.
      * String parameters will be decoded.
-     * TODO: handle multipart requests.
+     * File upload parameters of multipart requests won't be passed.
      * @param resource
      * @param request
      */

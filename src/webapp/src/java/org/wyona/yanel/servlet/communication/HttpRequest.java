@@ -152,7 +152,10 @@ public class HttpRequest extends HttpServletRequestWrapper {
             Iterator iter = this.items.iterator();
             while (iter.hasNext()) {
                 FileItem item = (FileItem)iter.next();
-                set.add(item.getFieldName());
+                if (item.isFormField()) {
+                    // don't add file upload fields
+                    set.add(item.getFieldName());
+                }
             }
             return new Vector(set).elements();
         }

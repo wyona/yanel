@@ -556,7 +556,7 @@ public class YanelServlet extends HttpServlet {
             } catch(org.wyona.yarep.core.NoSuchNodeException e) {
                 // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
                 String message = "No such node exception: " + e;
-                log.warn(e);
+                log.warn(e, e);
                 // Show the stack trace
                 //log.warn(e.getMessage(), e);
                 Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
@@ -888,16 +888,6 @@ public class YanelServlet extends HttpServlet {
         */
 
         InputStream in = request.getInputStream();
-        java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
-        byte[] buf = new byte[8192];
-        int bytesR;
-        while ((bytesR = in.read(buf)) != -1) {
-            baos.write(buf, 0, bytesR);
-        }
-
-        // Buffer within memory (TODO: Maybe replace with File-buffering ...)
-        // http://www-128.ibm.com/developerworks/java/library/j-io1/
-        byte[] memBuffer = baos.toByteArray();
 
             // TODO: Should be delegated to resource type, e.g. <{http://...}xml/>!
             // Check on well-formedness ...
@@ -912,6 +902,17 @@ public class YanelServlet extends HttpServlet {
                     // TODO: Get log messages into log4j ...
                     //parser.setErrorHandler(...);
 
+                    java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
+                    byte[] buf = new byte[8192];
+                    int bytesR;
+                    while ((bytesR = in.read(buf)) != -1) {
+                        baos.write(buf, 0, bytesR);
+                    }
+
+                    // Buffer within memory (TODO: Maybe replace with File-buffering ...)
+                    // http://www-128.ibm.com/developerworks/java/library/j-io1/
+                    byte[] memBuffer = baos.toByteArray();
+                    
                     // NOTE: DOCTYPE is being resolved/retrieved (e.g. xhtml schema from w3.org) also
                     //       if isValidating is set to false.
                     //       Hence, for performance and network reasons we use a local catalog ...
@@ -920,7 +921,8 @@ public class YanelServlet extends HttpServlet {
                     // TODO: What about a resolver factory?
                     parser.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
 
-                    parser.parse(new java.io.ByteArrayInputStream(memBuffer));
+                    parser.parse(new ByteArrayInputStream(memBuffer));
+                    in = new ByteArrayInputStream(memBuffer);
                     //org.w3c.dom.Document document = parser.parse(new ByteArrayInputStream(memBuffer));
                 } catch (org.xml.sax.SAXException e) {
                     log.warn("Data is not well-formed: "+e.getMessage());
@@ -957,22 +959,19 @@ public class YanelServlet extends HttpServlet {
                 log.info("No well-formedness check required for content type: " + contentType);
             }
 
-        java.io.ByteArrayInputStream memIn = new java.io.ByteArrayInputStream(memBuffer);
-
-
         // IMPORTANT TODO: Use ModifiableV2.write(InputStream in) such that resource can modify data during saving resp. check if getOutputStream is equals null and then use write ....
         OutputStream out = null;
         Resource res = getResource(request, response);
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "1")) {
             out = ((ModifiableV1) res).getOutputStream(new Path(request.getServletPath()));
-            write(memIn, out, request, response);
+            write(in, out, request, response);
         } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
             try {
                 out = ((ModifiableV2) res).getOutputStream();
                 if (out != null) {
-                    write(memIn, out, request, response);
+                    write(in, out, request, response);
                 } else {
-                    ((ModifiableV2) res).write(memIn);
+                    ((ModifiableV2) res).write(in);
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
