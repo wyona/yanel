@@ -24,5 +24,6 @@ Contact Form for sending email
   <property name="mime-type"/>
   <property name="from"/>
   <property name="xslt-body"/>
+  <property name="email-validation-regex"/>
 </rtd>
 </resource>

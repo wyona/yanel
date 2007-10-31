@@ -93,6 +93,8 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
     private RepoPath rp = null;
     private Path path = null;
     private String language = null;
+
+    private String defaultEmailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
     
     /**
      * 
@@ -278,6 +280,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
         if(email == null || ("").equals(email)) {
             transformer.setParameter("error", "emailNotSet");
         } else if(!validateEmail(email)) {
+            log.warn("Doesn't seem to be a valid email: " + email + " (according to the following regular expression: " + getEmailRegEx() + ")");
             transformer.setParameter("error", "emailNotValid");
         } else {
             contact = new ContactBean(request);
@@ -328,13 +331,12 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
     }
     
     /**
-     * this method checks if the specified email is valid against a regex
+     * this method checks if the specified email is valid against a regular expression
      * @param email
      * @return true if email is valid
      */
-    private boolean validateEmail(String email) {
-        String emailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
-        Pattern pattern = Pattern.compile(emailRegEx);
+    private boolean validateEmail(String email) throws Exception {
+        Pattern pattern = Pattern.compile(getEmailRegEx());
         Matcher matcher = pattern.matcher(email);
         return matcher.find();
     }
@@ -394,4 +396,12 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
    protected RepositoryFactory getRepositoryFactory() {
        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
    }
+
+    /**
+     *
+     */
+    private String getEmailRegEx() throws Exception {
+        if (getResourceConfigProperty("email-validation-regex") != null) return getResourceConfigProperty("email-validation-regex");
+        return defaultEmailRegEx;
+    }
 }
