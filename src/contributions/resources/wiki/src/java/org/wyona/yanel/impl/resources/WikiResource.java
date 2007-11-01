@@ -64,7 +64,6 @@ import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.util.RepoPath;
 
 import org.wyona.security.core.api.Identity;
-import org.wyona.security.core.api.IdentityMap;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -81,8 +80,6 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
     private HashMap properties = new HashMap();
     private final String DEFAULT_WIKI_PARSER_BEAN_ID = "jspWikiParser";
 
-    private static String IDENTITY_MAP_KEY = "identity-map";
-    
     /**
      * 
      */
@@ -173,10 +170,13 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
                 transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
                 transformer.setParameter("yanel.last.modified", new java.util.Date(getLastModified()));
 
-                IdentityMap identityMap = (IdentityMap) getRequest().getSession(true).getAttribute(IDENTITY_MAP_KEY);
-                if (identityMap != null) {
-                    Identity identity = (Identity) identityMap.get(getRealm().getID());
-                    if (identity != null) transformer.setParameter("yanel.username", identity.getUsername());
+                Identity identity = getEnvironment().getIdentity();
+                if (identity != null) {
+                    String userName = identity.getUsername();
+                    if (userName == null) {
+                        userName = "";
+                    }
+                    transformer.setParameter("yanel.username", userName);
                 }
                 transformer.setParameter("yanel.realm.name", getRealm().getName());
             }
