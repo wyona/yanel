@@ -38,6 +38,7 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.api.attributes.TranslatableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
+import org.wyona.yanel.core.attributes.translatable.TranslationManager;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.serialization.SerializerFactory;
@@ -176,11 +177,12 @@ public class TranslationResource extends Resource implements ViewableV2 {
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<translations xmlns=\"" + NS_URI + "\">");
         
+        String[] realmLanguages = resource.getRealm().getLanguages();
+        
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Translatable", "1")) {
             TranslatableV1 translatable = ((TranslatableV1) resource);
             
             List existingLanguages = Arrays.asList(translatable.getLanguages());
-            String[] realmLanguages = resource.getRealm().getLanguages(); 
             
             for (int i = 0; i < realmLanguages.length; i++) {
                 String current = "";
@@ -191,6 +193,29 @@ public class TranslationResource extends Resource implements ViewableV2 {
                     Resource translation = translatable.getTranslation(realmLanguages[i]);
                     sb.append("<translation language=\"" + realmLanguages[i] + "\" path=\"" + 
                             translation.getPath() + "\" " + current + " exists=\"true\"/>");
+                } else {
+                    sb.append("<translation language=\"" + realmLanguages[i] + "\" " + current + 
+                            " exists=\"false\"/>");
+                }
+            }
+        } else {
+            // try to generate language links even if the resource is not translatable
+            // this makes sense e.g. with the PrefixTranslationManager because in that
+            // case assumptions can be made about how the paths look like.
+            TranslationManager translationMgr = getRealm().getTranslationManager();
+            List existingLanguages = Arrays.asList(translationMgr.getLanguages(resource));
+            
+            for (int i = 0; i < realmLanguages.length; i++) {
+                String current = "";
+                if (currentLanguage.equals(realmLanguages[i])) {
+                    current = "current=\"true\" ";
+                }
+                if (existingLanguages.contains(realmLanguages[i])) {
+                    Resource translation = translationMgr.getTranslation(resource, realmLanguages[i]);
+                    if (translation != null) {
+                        sb.append("<translation language=\"" + realmLanguages[i] + "\" path=\"" + 
+                                translation.getPath() + "\" " + current + " exists=\"true\"/>");
+                    }
                 } else {
                     sb.append("<translation language=\"" + realmLanguages[i] + "\" " + current + 
                             " exists=\"false\"/>");
