@@ -119,7 +119,7 @@ public class Realm {
                 policyManager = pmFactory.newPolicyManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "policy-manager-config", "http://www.wyona.org/security/1.0"), null);
             } catch (ConfigurationException e) {
                 pmFactory = (PolicyManagerFactory) yanel.getBeanFactory().getBean("PolicyManagerFactory");
-                log.warn("Default PolicyManager will be used for realm: " + getName());
+                log.info("Default PolicyManager will be used for realm: " + getName());
                 repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
                 RepositoryFactory policiesRepoFactory = yanel.getRepositoryFactory("ACPoliciesRepositoryFactory");
                 Repository policiesRepo = policiesRepoFactory.newRepository(getID(), repoConfig);
@@ -141,7 +141,7 @@ public class Realm {
                 identityManager = imFactory.newIdentityManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "identity-manager-config", "http://www.wyona.org/security/1.0"), null);
             } catch (ConfigurationException e) {
             	imFactory = (IdentityManagerFactory) yanel.getBeanFactory().getBean("IdentityManagerFactory");
-            	log.warn("Default IdentityManager will be used for realm: " + getName());
+            	log.info("Default IdentityManager will be used for realm: " + getName());
             	repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
                 RepositoryFactory identitiesRepoFactory = yanel.getRepositoryFactory("ACIdentitiesRepositoryFactory");
                 Repository identitiesRepo = identitiesRepoFactory.newRepository(getID(), repoConfig);
