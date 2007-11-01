@@ -1088,7 +1088,6 @@ public class YanelServlet extends HttpServlet {
                 try {
                     User user = realm.getIdentityManager().getUserManager().getUser(username);
                     if (user != null && user.authenticate(password)) {
-                        //authorized = realm.getPolicyManager().authorize(path, new Identity(user), new Role("view"));
                         authorized = realm.getPolicyManager().authorize(path, new Identity(user), new Usecase("view"));
                         if(authorized) {
                             return null;
@@ -1140,10 +1139,7 @@ public class YanelServlet extends HttpServlet {
                 // TODO: should add world identity to the session?
             }
             
-            //authorized = pm.authorize(new org.wyona.commons.io.Path(request.getServletPath()), identity, role);
-        
             if (log.isDebugEnabled()) log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity.getUsername() + ", Usecase: " + usecase.getName());
-            //authorized = realm.getPolicyManager().authorize(path, identity, role);
             authorized = realm.getPolicyManager().authorize(path, identity, usecase);
             if (log.isDebugEnabled()) log.debug("Check authorization result: " + authorized);
         } catch (Exception e) {
