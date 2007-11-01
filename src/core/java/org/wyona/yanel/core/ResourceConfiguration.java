@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.avalon.framework.configuration.Configuration;
-import org.apache.avalon.framework.configuration.ConfigurationUtil;
+import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.avalon.framework.configuration.DefaultConfiguration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
@@ -30,6 +30,8 @@ import org.apache.log4j.Category;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import org.wyona.yanel.core.util.ConfigurationUtil;
 
 /**
  * Abstraction of a resource configuration.
@@ -175,64 +177,15 @@ public class ResourceConfiguration {
      */
     public org.w3c.dom.Document getCustomConfiguration() {
         Configuration customConfig = config.getChild("custom-config", false);
-        if (customConfig != null) {
-            org.w3c.dom.Document doc = null;
-            javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
-            try {
-                javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
-                org.w3c.dom.DOMImplementation impl = parser.getDOMImplementation();
-                org.w3c.dom.DocumentType doctype = null;
-                doc = impl.createDocument(customConfig.getNamespace(), customConfig.getName(), doctype);
-
-                Configuration[] children = customConfig.getChildren();
-                if (children.length > 0) {
-                    Element rootElement = doc.getDocumentElement();
-                    for (int i = 0; i < children.length; i++) {
-                        rootElement.appendChild(createElement(children[i], doc));
-                    }
-                }
-            } catch(Exception e) {
-                log.error(e.getMessage(), e);
-            }
-            return doc;
-
-// TODO: ConfigurationUtil doesn't seem to work properly
-/*
-            org.w3c.dom.Element element = ConfigurationUtil.toElement(customConfig);
-            log.error("DEBUG: element: " + element.getLocalName());
-            org.w3c.dom.Document doc = element.getOwnerDocument();
-            org.w3c.dom.Element rootElement = doc.getDocumentElement();
-            rootElement.appendChild(element);
-            return doc; 
-*/
-        } else {
-            log.info("No custom configuration: " + getUniversalName());
-        }
-        return null;
-    }
-
-    /**
-     *
-     */
-    private Element createElement(Configuration config, Document doc) throws Exception {
-        Element element = doc.createElementNS(config.getNamespace(), config.getName());
-        String[] attrs = config.getAttributeNames();
-        for (int i = 0; i < attrs.length; i++) {
-            element.setAttributeNS(config.getNamespace(), attrs[i], config.getAttribute(attrs[i]));
-        }
-        // TODO: Does not work for elements with mixed content (text and elements)
         try {
-            element.appendChild(doc.createTextNode(config.getValue()));
-        } catch(Exception e) {
-            log.debug("No value: " + element.getLocalName());
+            return ConfigurationUtil.getCustomConfiguration(customConfig, customConfig.getName(), 
+                customConfig.getNamespace());
+        } catch (ConfigurationException ce) {
+            log.warn(ce);
+            return null;
         }
-        Configuration[] children = config.getChildren();
-        if (children.length > 0) {
-            for (int i = 0; i < children.length; i++) {
-                element.appendChild(createElement(children[i], doc));
-            }
-        }
-        return element;
+ 
     }
+
+ 
 }
