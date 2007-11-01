@@ -81,7 +81,7 @@ public class Realm {
         proxySet = false;
         
         if (configFile != null) {
-            DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+            DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder(true);
             Configuration config;
             try {
                 config = builder.buildFromFile(configFile);
@@ -111,10 +111,6 @@ public class Realm {
         // Set PolicyManager for this realm
         Configuration repoConfigElement = config.getChild("ac-policies", false);
         if (repoConfigElement != null) {
-            repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
-            RepositoryFactory policiesRepoFactory = yanel.getRepositoryFactory("ACPoliciesRepositoryFactory");
-            Repository policiesRepo = policiesRepoFactory.newRepository(getID(), repoConfig);
-
             PolicyManagerFactory pmFactory = null;
             PolicyManager policyManager = null;
             try {
@@ -124,6 +120,9 @@ public class Realm {
             } catch (ConfigurationException e) {
                 pmFactory = (PolicyManagerFactory) yanel.getBeanFactory().getBean("PolicyManagerFactory");
                 log.warn("Default PolicyManager will be used for realm: " + getName());
+                repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
+                RepositoryFactory policiesRepoFactory = yanel.getRepositoryFactory("ACPoliciesRepositoryFactory");
+                Repository policiesRepo = policiesRepoFactory.newRepository(getID(), repoConfig);
                 policyManager = pmFactory.newPolicyManager(policiesRepo);
             }
             setPolicyManager(policyManager);
@@ -133,9 +132,6 @@ public class Realm {
         // Set IdentityManager for this realm
         repoConfigElement = config.getChild("ac-identities", false);
         if (repoConfigElement != null) {
-            repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
-            RepositoryFactory identitiesRepoFactory = yanel.getRepositoryFactory("ACIdentitiesRepositoryFactory");
-            Repository identitiesRepo = identitiesRepoFactory.newRepository(getID(), repoConfig);
             
             IdentityManagerFactory imFactory = null;
             IdentityManager identityManager = null;
@@ -146,6 +142,9 @@ public class Realm {
             } catch (ConfigurationException e) {
             	imFactory = (IdentityManagerFactory) yanel.getBeanFactory().getBean("IdentityManagerFactory");
             	log.warn("Default IdentityManager will be used for realm: " + getName());
+            	repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
+                RepositoryFactory identitiesRepoFactory = yanel.getRepositoryFactory("ACIdentitiesRepositoryFactory");
+                Repository identitiesRepo = identitiesRepoFactory.newRepository(getID(), repoConfig);
                 identityManager = imFactory.newIdentityManager(identitiesRepo);
             }
             setIdentityManager(identityManager);
