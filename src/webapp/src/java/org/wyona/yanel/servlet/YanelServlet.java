@@ -62,13 +62,13 @@ import org.wyona.yanel.core.workflow.WorkflowHelper;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 
+import org.wyona.yanel.servlet.IdentityMap;
 import org.wyona.yanel.servlet.communication.HttpRequest;
 import org.wyona.yanel.servlet.communication.HttpResponse;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.IdentityManager;
-import org.wyona.security.core.api.IdentityMap;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.Role;
 import org.wyona.security.core.api.Usecase;
