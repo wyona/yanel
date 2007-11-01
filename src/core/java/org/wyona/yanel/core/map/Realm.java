@@ -31,6 +31,7 @@ import org.wyona.yanel.core.LanguageHandler;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.attributes.translatable.DefaultTranslationManager;
 import org.wyona.yanel.core.attributes.translatable.TranslationManager;
+import org.wyona.yanel.core.util.ConfigurationUtil;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.xml.sax.SAXException;
@@ -54,8 +55,8 @@ public class Realm {
     private String defaultLanguage;
     private Repository repository;
     private Repository rtiRepository;
-    private PolicyManager policyManager;
-    private IdentityManager identityManager;
+    private PolicyManager privatePolicyManager;
+    private IdentityManager privateIdentityManager;
     private TranslationManager translationManager;
     private LanguageHandler languageHandler;
     private File configFile;
@@ -115,14 +116,16 @@ public class Realm {
             Repository policiesRepo = policiesRepoFactory.newRepository(getID(), repoConfig);
 
             PolicyManagerFactory pmFactory = null;
+            PolicyManager policyManager = null;
             try {
                 String customPolicyManagerFactoryImplClassName = repoConfigElement.getAttribute("class");
                 pmFactory = (PolicyManagerFactory) Class.forName(customPolicyManagerFactoryImplClassName).newInstance();
+                policyManager = pmFactory.newPolicyManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "policy-manager-config", "http://www.wyona.org/security/1.0"), null);
             } catch (ConfigurationException e) {
                 pmFactory = (PolicyManagerFactory) yanel.getBeanFactory().getBean("PolicyManagerFactory");
                 log.warn("Default PolicyManager will be used for realm: " + getName());
+                policyManager = pmFactory.newPolicyManager(policiesRepo);
             }
-            PolicyManager policyManager = pmFactory.newPolicyManager(policiesRepo);
             setPolicyManager(policyManager);
         }
 
@@ -135,14 +138,16 @@ public class Realm {
             Repository identitiesRepo = identitiesRepoFactory.newRepository(getID(), repoConfig);
             
             IdentityManagerFactory imFactory = null;
+            IdentityManager identityManager = null;
             try {
             	String customIdentityManagerFactoryImplClassName = repoConfigElement.getAttribute("class");
             	imFactory = (IdentityManagerFactory) Class.forName(customIdentityManagerFactoryImplClassName).newInstance();
+                identityManager = imFactory.newIdentityManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "identity-manager-config", "http://www.wyona.org/security/1.0"), null);
             } catch (ConfigurationException e) {
             	imFactory = (IdentityManagerFactory) yanel.getBeanFactory().getBean("IdentityManagerFactory");
             	log.warn("Default IdentityManager will be used for realm: " + getName());
+                identityManager = imFactory.newIdentityManager(identitiesRepo);
             }
-            IdentityManager identityManager = imFactory.newIdentityManager(identitiesRepo);
             setIdentityManager(identityManager);
         }
 
@@ -347,19 +352,19 @@ public class Realm {
     }
 
     public IdentityManager getIdentityManager() {
-        return identityManager;
+        return privateIdentityManager;
     }
 
     public void setIdentityManager(IdentityManager identityManager) {
-        this.identityManager = identityManager;
+        this.privateIdentityManager = identityManager;
     }
 
     public PolicyManager getPolicyManager() {
-        return policyManager;
+        return privatePolicyManager;
     }
 
     public void setPolicyManager(PolicyManager policyManager) {
-        this.policyManager = policyManager;
+        this.privatePolicyManager = policyManager;
     }
 
     public String getDefaultLanguage() {
