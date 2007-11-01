@@ -62,7 +62,7 @@ public class XMLSerializer extends AbstractSerializer {
             String aLocalName = attrs.getLocalName(i);
             String aQName = attrs.getQName(i);
             String aName = ("".equals(aQName)) ? aLocalName : aQName;
-            String aValue = replaceEntities(attrs.getValue(i));
+            String aValue = replaceAttrEntities(attrs.getValue(i));
             element.append(" " + aName + "=\"" + aValue + "\"");
         }
         
@@ -124,6 +124,7 @@ public class XMLSerializer extends AbstractSerializer {
     
     /**
      * Replaces some characters by their corresponding xml entities.
+     * This method escapes those characters which must not occur in an xml text node.
      * @param string
      * @return escaped string
      */
@@ -134,6 +135,23 @@ public class XMLSerializer extends AbstractSerializer {
         str = str.replaceAll("&amp;", "&");
         str = str.replaceAll("&", "&amp;");
         str = str.replaceAll("<", "&lt;");
+        return str;
+    }
+    
+    /**
+     * Replaces some characters by their corresponding xml entities.
+     * This method escapes those characters which must not occur in an xml attribute.
+     * @param string
+     * @return escaped string
+     */
+    public String replaceAttrEntities(String str) {
+        // there may be some &amp; and some & mixed in the input, so first transform all
+        // &amp; to & and then transform all & back to &amp;
+        // this way we don't get double escaped &amp;amp;
+        str = str.replaceAll("&amp;", "&");
+        str = str.replaceAll("&", "&amp;");
+        str = str.replaceAll("<", "&lt;");
+        str = str.replaceAll("\"", "&quot;");
         return str;
     }
     

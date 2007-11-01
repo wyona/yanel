@@ -37,7 +37,7 @@ public class HTMLSerializer extends XMLSerializer {
             String aName = ("".equals(aLocalName)) ? aQName : aLocalName;
             // don't copy namespace attributes
             if (!(aLocalName.startsWith("xmlns") || aQName.startsWith("xmlns"))) {
-                String aValue = replaceEntities(attrs.getValue(i));
+                String aValue = replaceAttrEntities(attrs.getValue(i));
                 element.append(" " + aName + "=\"" + aValue + "\"");
             }
         }
