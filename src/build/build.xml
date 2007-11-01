@@ -313,14 +313,16 @@
 
   <target name="compile-core" description="Compile Java classes of Yanel core" depends="init">
     <mkdir dir="${classes.dir}"/>
-    <javac srcdir="${yanel.home.dir}/src/core/java/org/wyona/yanel/core" destdir="${classes.dir}" debug="true">
+    <javac srcdir="${yanel.home.dir}/src/core/java/org/wyona/yanel/core"
+      destdir="${classes.dir}"
+      source="${source.java.version}"
+      target="${target.java.version}"
+      debug="true">
       <classpath refid="classpath"/>
     </javac>
     <mkdir dir="${yanel.home.dir}/build/lib"/>
     <jar destfile="${yanel.home.dir}/build/lib/yanel-core-${yanel.version}-r${yanel.revision}.jar"
       basedir="${classes.dir}"
-      source="${source.java.version}"
-      target="${target.java.version}"
       includes="org/wyona/yanel/core/**"/>
 
     <copy file="${yanel.home.dir}/src/build/pom-core.xml" todir="${yanel.home.dir}/build/lib"/>
