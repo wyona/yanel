@@ -15,12 +15,8 @@
  */
 package org.wyona.yanel.impl.workflow;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.log4j.Category;
 import org.wyona.security.core.api.Identity;
-import org.wyona.security.core.api.IdentityMap;
 import org.wyona.security.core.api.Role;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
@@ -32,8 +28,6 @@ public class RoleCondition implements Condition {
     
     private static Category log = Category.getInstance(RoleCondition.class);
     
-    public static String IDENTITY_MAP_KEY = "identity-map";
-
     protected Role role;
 
     public void setExpression(String expression) {
@@ -45,11 +39,8 @@ public class RoleCondition implements Condition {
         // TODO: the cast should not be necessary, the workflowable interface should 
         //       extend a resource interface
         Resource resource = ((Resource)workflowable);
-        HttpServletRequest request = resource.getRequest();
         try {
-            // TODO: it should be possible to get the identity from the framework,
-            //       without knowledge duplication
-            Identity identity = getIdentity(request, resource.getRealm().getID());
+            Identity identity = resource.getEnvironment().getIdentity();
             
             if (identity == null) {
                 identity = new Identity();
@@ -69,23 +60,6 @@ public class RoleCondition implements Condition {
             log.error(e, e);
             throw new WorkflowException(e.getMessage(), e);
         }
-    }
-
-    /**
-     * Gets the identity from the session associated with the given request.
-     * @param request
-     * @return identity or null if there is no identity in the session for the current
-     *                  realm or if there is no session at all
-     */
-    private Identity getIdentity(HttpServletRequest request, String realmID) throws Exception {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
-            if (identityMap != null) {
-                return (Identity)identityMap.get(realmID);
-            }
-        }
-        return null;
     }
 
 }
