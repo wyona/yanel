@@ -234,7 +234,9 @@ public class RealmManager {
                     String errorMsg = "Error setting up realm [" + realmId + "]: " + realmConfigFile 
                         + ": " + e;
                     log.error(errorMsg, e);
-                    throw new ConfigurationException(errorMsg, e);
+                    // NOTE: Do not throw an exception, because otherwise all other realms are not being loaded either
+                    // TODO/TBD: Maybe one should enhance Realm by a method such as setStatus() and getStatus() in order to check if a realm has been registered successfully or not!
+                    //throw new ConfigurationException(errorMsg, e);
                 }
             }
         } catch (Exception e) {
