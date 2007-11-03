@@ -23,10 +23,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Configuration utility allowing for custom configuration fragments
- * 
- * @author ok@ncode.ch
- * 
+ * Configuration utility to copy an avalon configuration into a DOM document
  */
 public class ConfigurationUtil {
 
@@ -46,29 +43,35 @@ public class ConfigurationUtil {
      *            The target namespace
      * @return
      */
-    public static Document getCustomConfiguration(Configuration repoConfigElement, String rootName,
-            String rootNamespace) {
-        if (repoConfigElement == null || repoConfigElement.getChildren() == null
-            || repoConfigElement.getChildren().length == 0) {
-            log.debug("Did not find any child elements in " + repoConfigElement);
-            return null;
-        }
-
-        log.debug("Creating custom config - rootName=" + rootName + ", rootNamespace="
-            + rootNamespace);
-
-        Document doc = null;
-        DocumentBuilderFactory dbf = javax.xml.parsers.DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
+    public static Document getCustomConfiguration(Configuration repoConfigElement, String rootName, String rootNamespace) {
         try {
+            if (repoConfigElement == null || repoConfigElement.getChildren() == null || repoConfigElement.getChildren().length == 0) {
+                if (repoConfigElement.getValue() == null) {
+                    log.warn("Did not find any child elements nor text within " + repoConfigElement);
+                    return null;
+                }
+            }
+
+            if (log.isDebugEnabled()) log.debug("Creating custom config - rootName=" + rootName + ", rootNamespace=" + rootNamespace);
+
+            Document doc = null;
+            DocumentBuilderFactory dbf = javax.xml.parsers.DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
             javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
             org.w3c.dom.DOMImplementation impl = parser.getDOMImplementation();
             org.w3c.dom.DocumentType doctype = null;
             doc = impl.createDocument(rootNamespace, rootName, doctype);
 
+            // Copy the very first text node in order to stay backwards compatible
+            Element rootElement = doc.getDocumentElement();
+            if (repoConfigElement.getValue() != null) {
+                if (log.isDebugEnabled()) log.debug("Very first text node: " + repoConfigElement.getValue());
+                rootElement.appendChild(doc.createTextNode(repoConfigElement.getValue()));
+            }
+
+            // Copy elements
             Configuration[] children = repoConfigElement.getChildren();
             if (children.length > 0) {
-                Element rootElement = doc.getDocumentElement();
                 log.debug("root element " + rootElement);
                 for (int i = 0; i < children.length; i++) {
                     rootElement.appendChild(ConfigurationUtil.createElement(children[i], doc));
