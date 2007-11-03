@@ -116,7 +116,7 @@ public class Realm {
             try {
                 String customPolicyManagerFactoryImplClassName = repoConfigElement.getAttribute("class");
                 pmFactory = (PolicyManagerFactory) Class.forName(customPolicyManagerFactoryImplClassName).newInstance();
-                policyManager = pmFactory.newPolicyManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "policy-manager-config", "http://www.wyona.org/security/1.0"), null);
+                policyManager = pmFactory.newPolicyManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "policy-manager-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
             } catch (ConfigurationException e) {
                 pmFactory = (PolicyManagerFactory) yanel.getBeanFactory().getBean("PolicyManagerFactory");
                 log.info("Default PolicyManager will be used for realm: " + getName());
@@ -438,5 +438,29 @@ public class Realm {
 
     public void setLanguageHandler(LanguageHandler languageHandler) {
         this.languageHandler = languageHandler;
+    }
+}
+
+/**
+ *
+ */
+class RealmConfigPathResolver implements javax.xml.transform.URIResolver {
+
+    private File realmConfigFile;
+
+    /**
+     *
+     */
+    public RealmConfigPathResolver(Realm realm) {
+        realmConfigFile = realm.getConfigFile();
+    }
+
+    /**
+     *
+     */
+    public javax.xml.transform.Source resolve(String href, String base) throws javax.xml.transform.TransformerException {
+        javax.xml.transform.Source source = new javax.xml.transform.stream.StreamSource();
+        source.setSystemId(FileUtil.resolve(realmConfigFile, new File(href)).toString());
+        return source;
     }
 }
