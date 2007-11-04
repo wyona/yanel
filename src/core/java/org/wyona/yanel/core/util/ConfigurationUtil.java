@@ -64,7 +64,7 @@ public class ConfigurationUtil {
 
             // Copy the very first text node in order to stay backwards compatible
             Element rootElement = doc.getDocumentElement();
-            if (repoConfigElement.getValue() != null) {
+            if (repoConfigElement.getValue(null) != null) {
                 if (log.isDebugEnabled()) log.debug("Very first text node: " + repoConfigElement.getValue());
                 rootElement.appendChild(doc.createTextNode(repoConfigElement.getValue()));
             }
