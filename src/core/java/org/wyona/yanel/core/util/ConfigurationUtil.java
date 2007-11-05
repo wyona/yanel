@@ -46,7 +46,7 @@ public class ConfigurationUtil {
     public static Document getCustomConfiguration(Configuration repoConfigElement, String rootName, String rootNamespace) {
         try {
             if (repoConfigElement == null || repoConfigElement.getChildren() == null || repoConfigElement.getChildren().length == 0) {
-                if (repoConfigElement.getValue() == null) {
+                if (repoConfigElement.getValue(null) == null) {
                     log.warn("Did not find any child elements nor text within " + repoConfigElement);
                     return null;
                 }
