@@ -124,9 +124,13 @@ table .sortable th  {
   font-size:medium;
 } 
 
-input  {
+input {
   display:block; 
   margin-bottom:3px; 
   border:solid 1px #4682B4;
   background-color:#f7f7f7;
+}
+
+p.yanel-usecase-error {
+  color: #F00;
 }
