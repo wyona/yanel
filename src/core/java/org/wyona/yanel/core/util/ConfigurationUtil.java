@@ -34,7 +34,7 @@ public class ConfigurationUtil {
 
     /**
      * Create a DOM Document from a custom config element modelled with avalon
-     * 
+     *
      * @param confElement
      *            The configuration element
      * @param rootName
@@ -96,12 +96,12 @@ public class ConfigurationUtil {
     /**
      * Parse a configuration node into a element and add it to the document. <br/>This method may
      * call itself recusively.
-     * 
+     *
      * @param conf
      *            The configuration element to parse
      * @param doc
      *            The DOM document to create elements for
-     * 
+     *
      * @return Returns the created element
      */
     private static Element createElement(Configuration config, Document doc) throws Exception {

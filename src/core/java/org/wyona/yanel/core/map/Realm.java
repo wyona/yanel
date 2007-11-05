@@ -79,7 +79,7 @@ public class Realm {
         this.configFile = configFile;
 
         proxySet = false;
-        
+
         if (configFile != null) {
             DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder(true);
             Configuration config;
@@ -92,7 +92,7 @@ public class Realm {
                 log.error(errorMsg, e);
                 throw new Exception(errorMsg, e);
             } catch (Exception e) {
-                String errorMsg = "Could not configure realm [" + id + "] with config file: " + 
+                String errorMsg = "Could not configure realm [" + id + "] with config file: " +
                         configFile + ": " + e.toString();
                 throw new Exception(errorMsg, e);
             }
@@ -132,7 +132,7 @@ public class Realm {
         // Set IdentityManager for this realm
         repoConfigElement = config.getChild("ac-identities", false);
         if (repoConfigElement != null) {
-            
+
             IdentityManagerFactory imFactory = null;
             IdentityManager identityManager = null;
             try {
@@ -150,7 +150,7 @@ public class Realm {
             setIdentityManager(identityManager);
         }
 
-        
+
 
         RepositoryFactory repoFactory = yanel.getRepositoryFactory("DefaultRepositoryFactory");
         RepositoryFactory rtiRepoFactory = yanel.getRepositoryFactory("RTIRepositoryFactory");
@@ -159,22 +159,22 @@ public class Realm {
         String repoConfigSrc = config.getChild("data", false).getValue();
         repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigSrc));
         setRepository(repoFactory.newRepository(getID(), repoConfig));
-        
+
         repoConfigSrc = config.getChild("rti", false).getValue();
         repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigSrc));
         setRTIRepository(rtiRepoFactory.newRepository(getID(), repoConfig));
-        
-        
-        
-        
+
+
+
+
         Configuration configElement = config.getChild("default-language", false);
-        if (configElement != null) {                       
+        if (configElement != null) {
             setDefaultLanguage(configElement.getValue());
         } else {
             //Maintain backwards compatibility with realms
             setDefaultLanguage("en");
         }
-        
+
         Configuration languagesElement = config.getChild("languages", false);
         ArrayList languages = new ArrayList();
         if (languagesElement != null) {
@@ -185,7 +185,7 @@ public class Realm {
             }
         }
         setLanguages((String[])languages.toArray(new String[languages.size()]));
-        
+
         configElement = config.getChild("translation-manager", false);
         TranslationManager translationManager = null;
         if (configElement != null) {
@@ -196,7 +196,7 @@ public class Realm {
         }
         translationManager.init(this);
         setTranslationManager(translationManager);
-        
+
         configElement = config.getChild("language-handler", false);
         LanguageHandler languageHandler = null;
         if (configElement != null) {
@@ -206,8 +206,8 @@ public class Realm {
             languageHandler = (LanguageHandler)Class.forName("org.wyona.yanel.impl.DefaultLanguageHandler").newInstance();
         }
         setLanguageHandler(languageHandler);
-        
-        
+
+
         Configuration rootDirConfig = config.getChild("root-dir", false);
         if (rootDirConfig != null) {
             setRootDir(FileUtil.resolve(getConfigFile(), new File(rootDirConfig.getValue())));
@@ -327,14 +327,14 @@ public class Realm {
         }
         return descr;
     }
-    
+
     /**
      * Get data repository of realm
      */
     public Repository getRepository() throws Exception {
         return repository;
     }
-    
+
     public void setRepository(Repository repository) throws Exception {
         this.repository = repository;
     }
@@ -345,7 +345,7 @@ public class Realm {
     public Repository getRTIRepository() throws Exception {
         return rtiRepository;
     }
-    
+
     public void setRTIRepository(Repository repository) throws Exception {
         this.rtiRepository = repository;
     }
@@ -380,7 +380,7 @@ public class Realm {
     public File getRootDir() {
         return this.rootDir;
     }
-    
+
     public void setRootDir(File rootDir) {
         this.rootDir = rootDir;
     }
@@ -421,7 +421,7 @@ public class Realm {
     public void setTranslationManager(TranslationManager translationManager) {
         this.translationManager = translationManager;
     }
-    
+
     public Repository getRepository(String id) throws Exception {
         Yanel yanel = Yanel.getInstance();
         RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory("ExtraRepositoryFactory");
