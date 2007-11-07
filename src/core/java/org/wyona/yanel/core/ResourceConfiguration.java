@@ -177,15 +177,13 @@ public class ResourceConfiguration {
      */
     public org.w3c.dom.Document getCustomConfiguration() {
         Configuration customConfig = config.getChild("custom-config", false);
+        if (customConfig == null) return null;
         try {
             return ConfigurationUtil.getCustomConfiguration(customConfig, customConfig.getName(), 
                 customConfig.getNamespace());
-        } catch (ConfigurationException ce) {
-            log.warn(ce);
+        } catch (ConfigurationException e) {
+            log.warn(e.getMessage(), e);
             return null;
         }
- 
     }
-
- 
 }
