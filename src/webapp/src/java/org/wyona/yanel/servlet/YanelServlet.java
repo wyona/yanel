@@ -178,6 +178,21 @@ public class YanelServlet extends HttpServlet {
         }
 
         // Authentication
+/*
+        TODO: Custom Web Authentication
+	WebAuthenticator wa = map.getRealm(request.getServletPath()).getWebAuthenticator()
+        if (wa != null)
+	    if (wa.doAuthenticate(request, response) != null) return;
+        } else {
+            if (doAuthenticate(request, response) != null) return;
+        }
+        TODO:
+	  - Refactor Realm init()
+	  - Create WebAuthenticator interface within servlet package
+          - <realm>
+	     <web-authenticator class=""><!-- custom config --></web-authenticator>
+            </realm>
+*/
         if(doAuthenticate(request, response) != null) return;
 
         // Check authorization
@@ -1427,7 +1442,7 @@ public class YanelServlet extends HttpServlet {
             if(loginUsername != null) {
                 HttpSession session = request.getSession(true);
                 try {
-                    User user = realm.getIdentityManager().getUserManager().getUser(loginUsername);
+                    User user = realm.getIdentityManager().getUserManager().getUser(loginUsername, true);
                     if (user != null && user.authenticate(request.getParameter("yanel.login.password"))) {
                         log.debug("Realm: " + realm);
                         IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
@@ -1484,7 +1499,7 @@ public class YanelServlet extends HttpServlet {
                 if (username != null) {
                     HttpSession session = request.getSession(true);
                     log.debug("Realm ID: " + realm.getID());
-                    User user = realm.getIdentityManager().getUserManager().getUser(username);
+                    User user = realm.getIdentityManager().getUserManager().getUser(username, true);
                     if (user != null && user.authenticate(password)) {
                         log.info("Authentication successful: " + username);
                         IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
