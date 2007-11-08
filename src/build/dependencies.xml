@@ -64,7 +64,7 @@
       <dependency groupId="xalan" artifactId="xalan"
                   version="2.7.0"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl"
-                  version="0.0.1-dev-r28517"/>
+                  version="0.0.1-dev-r28647"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="yarep" artifactId="yarep-impl"
                   version="0.0.1-dev-r28127"/>
