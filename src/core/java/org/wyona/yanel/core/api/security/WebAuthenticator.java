@@ -16,5 +16,10 @@ public interface WebAuthenticator {
     /**
      *
      */
+    public void init(org.w3c.dom.Document configuration, javax.xml.transform.URIResolver resolver) throws Exception;
+
+    /**
+     *
+     */
     public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response, Map map, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort) throws ServletException, IOException;
 }
