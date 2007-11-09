@@ -152,6 +152,23 @@ public class Realm {
             setIdentityManager(identityManager);
         }
 
+        // Set WebAuthenticator for this realm
+        Configuration waConfigElement = config.getChild("web-authenticator", false);
+        if (waConfigElement != null) {
+            WebAuthenticator wa = null;
+            try {
+            	String customWebAuthenticatorImplClassName = waConfigElement.getAttribute("class");
+            	wa = (WebAuthenticator) Class.forName(customWebAuthenticatorImplClassName).newInstance();
+                // TODO: Read configuration ...
+/*
+                identityManager = imFactory.newIdentityManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "identity-manager-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
+*/
+            } catch (ConfigurationException e) {
+                wa = null;
+            }
+            setWebAuthenticator(wa);
+        }
+
 
 
         RepositoryFactory repoFactory = yanel.getRepositoryFactory("DefaultRepositoryFactory");
@@ -356,14 +373,13 @@ public class Realm {
      *
      */
     public WebAuthenticator getWebAuthenticator() {
-/*
-TODO:
-- Refactor Realm init() in order to load WebAuthenticator impl
- <realm>
-   <web-authenticator class=""><!-- custom config --></web-authenticator>
- </realm>
-*/
         return privateWebAuthenticator;
+    }
+    /**
+     *
+     */
+    public void setWebAuthenticator(WebAuthenticator wa) {
+        privateWebAuthenticator = wa;
     }
 
     public IdentityManager getIdentityManager() {
