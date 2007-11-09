@@ -31,6 +31,7 @@ import org.wyona.yanel.core.LanguageHandler;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.attributes.translatable.DefaultTranslationManager;
 import org.wyona.yanel.core.attributes.translatable.TranslationManager;
+import org.wyona.yanel.core.api.security.WebAuthenticator;
 import org.wyona.yanel.core.util.ConfigurationUtil;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
@@ -57,6 +58,7 @@ public class Realm {
     private Repository rtiRepository;
     private PolicyManager privatePolicyManager;
     private IdentityManager privateIdentityManager;
+    private WebAuthenticator privateWebAuthenticator;
     private TranslationManager translationManager;
     private LanguageHandler languageHandler;
     private File configFile;
@@ -350,6 +352,20 @@ public class Realm {
         this.rtiRepository = repository;
     }
 
+    /**
+     *
+     */
+    public WebAuthenticator getWebAuthenticator() {
+/*
+TODO:
+- Refactor Realm init() in order to load WebAuthenticator impl
+ <realm>
+   <web-authenticator class=""><!-- custom config --></web-authenticator>
+ </realm>
+*/
+        return privateWebAuthenticator;
+    }
+
     public IdentityManager getIdentityManager() {
         return privateIdentityManager;
     }
@@ -378,6 +394,7 @@ public class Realm {
      * Please note that the root-dir element is optional
      */
     public File getRootDir() {
+        log.warn("Try to avoid using the getRootDir() method!");
         return this.rootDir;
     }
 
