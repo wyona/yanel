@@ -41,7 +41,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     /**
      *
      */
-    public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response, Map map, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort) throws ServletException, IOException, Exception {
+    public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response, Map map, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort) throws ServletException, IOException {
         try {
             Realm realm = map.getRealm(request.getServletPath());
             String path = map.getPath(realm, request.getServletPath());
