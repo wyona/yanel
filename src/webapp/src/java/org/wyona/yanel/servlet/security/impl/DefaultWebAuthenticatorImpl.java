@@ -4,7 +4,7 @@ import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.servlet.IdentityMap;
 import org.wyona.yanel.servlet.YanelServlet;
-import org.wyona.yanel.servlet.security.WebAuthenticator;
+import org.wyona.yanel.core.api.security.WebAuthenticator;
 
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.User;
