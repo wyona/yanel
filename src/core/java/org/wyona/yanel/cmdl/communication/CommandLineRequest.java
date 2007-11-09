@@ -30,16 +30,42 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Category;
 
 /**
  * Not implemented yet.
  */
 public class CommandLineRequest implements HttpServletRequest {
+
+    private static Category log = Category.getInstance(CommandLineRequest.class);
     
     protected String url;
+
+    /**
+     *
+     */
+    private class ParameterNames implements Enumeration {
+        private java.util.Vector names;
+        public ParameterNames() {
+        }
+
+        public Object nextElement() {
+            return null;
+        }
+
+        public boolean hasMoreElements() {
+            return false;
+        }
+    }
+
+    ParameterNames parameterNames;
     
     public CommandLineRequest(String url) {
         this.url = url;
+    }
+    
+    public CommandLineRequest(HttpServletRequest request) {
+        //parameterNames = (Enumeration) request.getParameterNames().clone();
     }
     
     public StringBuffer getRequestURL() {
@@ -95,9 +121,12 @@ public class CommandLineRequest implements HttpServletRequest {
         return null;
     }
 
+    /**
+     *
+     */
     public Enumeration getParameterNames() {
-        // TODO Auto-generated method stub
-        return null;
+        log.error("DEBUG: Use cloned parameter names!");
+        return parameterNames;
     }
 
     public String[] getParameterValues(String arg0) {
