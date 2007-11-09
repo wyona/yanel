@@ -1416,20 +1416,17 @@ public class YanelServlet extends HttpServlet {
      * @return null when authentication successful, otherwise return response
      */
     public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	org.wyona.yanel.servlet.security.WebAuthenticator wa = null; //map.getRealm(request.getServletPath()).getWebAuthenticator()
-        if (wa == null) {
-	    wa = new org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl();
+        try {
+	    org.wyona.yanel.core.api.security.WebAuthenticator wa = map.getRealm(request.getServletPath()).getWebAuthenticator();
+            if (wa == null) {
+	        wa = new org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl();
+            }
+            return wa.doAuthenticate(request, response, map, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return response;
         }
-        return wa.doAuthenticate(request, response, map, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort);
-
-/*
-        TODO:
-	  - Refactor Realm init()
-	  - Create WebAuthenticator interface within servlet package
-          - <realm>
-	     <web-authenticator class=""><!-- custom config --></web-authenticator>
-            </realm>
-*/
     }
 
     /**
