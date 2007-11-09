@@ -335,21 +335,6 @@
     <artifact:install file="${yanel.home.dir}/build/lib/yanel-core-${yanel.version}-r${yanel.revision}.jar">
       <pom refid="core.project"/>
     </artifact:install>
-
-
-    <!-- Command Line library -->
-    <jar destfile="${yanel.home.dir}/build/lib/yanel-cmdl-${yanel.version}-r${yanel.revision}.jar"
-      basedir="${classes.dir}"
-      includes="org/wyona/yanel/cmdl/**"/>
-    <copy file="${yanel.home.dir}/src/build/pom-cmdl.xml" tofile="${yanel.home.dir}/build/lib/pom-cmdl.xml"/>
-    <replace file="${yanel.home.dir}/build/lib/pom-cmdl.xml" value="${yanel.version}-r${yanel.revision}">
-      <replacetoken>@VERSION@</replacetoken>
-    </replace>
-
-    <artifact:pom id="cmdl.project" file="${yanel.home.dir}/build/lib/pom-cmdl.xml"/>
-    <artifact:install file="${yanel.home.dir}/build/lib/yanel-cmdl-${yanel.version}-r${yanel.revision}.jar">
-      <pom refid="cmdl.project"/>
-    </artifact:install>
   </target>
 
   <target name="compile-impl" description="Compile Java classes of Yanel implementation" depends="init">
@@ -385,6 +370,15 @@
     <jar destfile="${yanel.home.dir}/build/lib/yanel-cmdl-${yanel.version}-r${yanel.revision}.jar"
       basedir="${classes.dir}"
       includes="org/wyona/yanel/cmdl/**"/>
+    <copy file="${yanel.home.dir}/src/build/pom-cmdl.xml" tofile="${yanel.home.dir}/build/lib/pom-cmdl.xml"/>
+    <replace file="${yanel.home.dir}/build/lib/pom-cmdl.xml" value="${yanel.version}-r${yanel.revision}">
+      <replacetoken>@VERSION@</replacetoken>
+    </replace>
+
+    <artifact:pom id="cmdl.project" file="${yanel.home.dir}/build/lib/pom-cmdl.xml"/>
+    <artifact:install file="${yanel.home.dir}/build/lib/yanel-cmdl-${yanel.version}-r${yanel.revision}.jar">
+      <pom refid="cmdl.project"/>
+    </artifact:install>
   </target>
 
   <target name="compile-webapp" description="Compile Java classes of Yanel webapp" depends="init, compile-core, compile-cmdl">
