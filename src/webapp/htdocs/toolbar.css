@@ -72,6 +72,14 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
   background:#ccc;
 }
 
+#yaneltoolbar_menu a.yaneltoolbar_disabled_link,
+#yaneltoolbar_menu a.yaneltoolbar_disabled_link:hover,
+#yaneltoolbar_menu a.yaneltoolbar_disabled_link:active,
+#yaneltoolbar_menu a.yaneltoolbar_disabled_link:visited {
+  color:#999;
+  cursor:default;
+}
+
 #yaneltoolbar_menu ul{
   left:-1px;
   list-style:none;
