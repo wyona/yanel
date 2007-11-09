@@ -110,7 +110,7 @@ public class YanelServlet extends HttpServlet {
 
     public static String IDENTITY_MAP_KEY = "identity-map";
     private static String TOOLBAR_KEY = "toolbar";
-    private static String NAMESPACE = "http://www.wyona.org/yanel/1.0";
+    public static String NAMESPACE = "http://www.wyona.org/yanel/1.0";
 
     private static final String METHOD_PROPFIND = "PROPFIND";
     private static final String METHOD_OPTIONS = "OPTIONS";
@@ -1607,7 +1607,7 @@ public class YanelServlet extends HttpServlet {
      * @param s input string
      * @return string with escaped characters
      */
-    private String encodeXML(String s) {
+    public static String encodeXML(String s) {
         s = s.replaceAll("&", "&amp;");
         s = s.replaceAll("<", "&lt;");
         s = s.replaceAll(">", "&gt;");
@@ -1650,7 +1650,7 @@ public class YanelServlet extends HttpServlet {
      * Microsoft Internet Explorer does not understand application/xhtml+xml
      * See http://en.wikipedia.org/wiki/Criticisms_of_Internet_Explorer#XHTML
      */
-    public String patchMimeType(String mimeType, HttpServletRequest request) throws ServletException, IOException {
+    static public String patchMimeType(String mimeType, HttpServletRequest request) throws ServletException, IOException {
         String httpAcceptMediaTypes = request.getHeader("Accept");
         if (mimeType != null && mimeType.equals("application/xhtml+xml") && httpAcceptMediaTypes != null && httpAcceptMediaTypes.indexOf("application/xhtml+xml") < 0) {
             log.info("Patch contentType with text/html because client (" + request.getHeader("User-Agent") + ") does not seem to understand application/xhtml+xml");
@@ -1753,7 +1753,7 @@ public class YanelServlet extends HttpServlet {
     /**
      * Custom XHTML Form for authentication
      */
-    public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message) throws ServletException, IOException {
+    private void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message) throws ServletException, IOException {
         String pathRelativeToRealm = request.getServletPath().replaceFirst(realm.getMountPoint(),"/");
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(pathRelativeToRealm);
         
@@ -2072,7 +2072,7 @@ public class YanelServlet extends HttpServlet {
     /**
      * Create a DOM Document
      */
-    public Document getDocument(String namespace, String localname) throws Exception {
+    static public Document getDocument(String namespace, String localname) throws Exception {
         javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
