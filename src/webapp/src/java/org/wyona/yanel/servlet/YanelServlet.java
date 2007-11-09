@@ -178,21 +178,6 @@ public class YanelServlet extends HttpServlet {
         }
 
         // Authentication
-/*
-        TODO: Custom Web Authentication
-	WebAuthenticator wa = map.getRealm(request.getServletPath()).getWebAuthenticator()
-        if (wa != null)
-	    if (wa.doAuthenticate(request, response) != null) return;
-        } else {
-            if (doAuthenticate(request, response) != null) return;
-        }
-        TODO:
-	  - Refactor Realm init()
-	  - Create WebAuthenticator interface within servlet package
-          - <realm>
-	     <web-authenticator class=""><!-- custom config --></web-authenticator>
-            </realm>
-*/
         if(doAuthenticate(request, response) != null) return;
 
         // Check authorization
@@ -1431,175 +1416,20 @@ public class YanelServlet extends HttpServlet {
      * @return null when authentication successful, otherwise return response
      */
     public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        try {
-            Realm realm = map.getRealm(request.getServletPath());
-            String path = map.getPath(realm, request.getServletPath());
-            //Realm realm = map.getRealm(new Path(request.getServletPath()));
-
-            // HTML Form based authentication
-            String loginUsername = request.getParameter("yanel.login.username");
-            if(loginUsername != null) {
-                HttpSession session = request.getSession(true);
-                try {
-                    User user = realm.getIdentityManager().getUserManager().getUser(loginUsername, true);
-                    if (user != null && user.authenticate(request.getParameter("yanel.login.password"))) {
-                        log.debug("Realm: " + realm);
-                        IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
-                        if (identityMap == null) {
-                            identityMap = new IdentityMap();
-                            session.setAttribute(IDENTITY_MAP_KEY, identityMap);
-                        }
-                        identityMap.put(realm.getID(), new Identity(user));
-                        return null;
-                    } else {
-                        log.warn("Login failed: " + loginUsername);
-                        getXHTMLAuthenticationForm(request, response, realm, "Login failed!");
-                        return response;
-                    }
-                } catch (Exception e) {
-                    log.warn("Login failed: " + loginUsername + " " + e);
-                    getXHTMLAuthenticationForm(request, response, realm, "Login failed!");
-                    return response;
-                }
-            }
-
-            // Neutron-Auth based authentication
-            String yanelUsecase = request.getParameter("yanel.usecase");
-            if(yanelUsecase != null && yanelUsecase.equals("neutron-auth")) {
-                log.debug("Neutron Authentication ...");
-
-                String username = null;
-                String password = null;
-                String originalRequest = null;
-                DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
-                try {
-                    Configuration config = builder.build(request.getInputStream());
-
-                    Configuration originalRequestConfig = config.getChild("original-request");
-                    originalRequest = originalRequestConfig.getAttribute("url", null);
-                    
-                    Configuration[] paramConfig = config.getChildren("param");
-                    for (int i = 0; i < paramConfig.length; i++) {
-                        String paramName = paramConfig[i].getAttribute("name", null);
-                        if (paramName != null) {
-                            if (paramName.equals("username")) {
-                                username = paramConfig[i].getValue();
-                            } else if (paramName.equals("password")) {
-                                password = paramConfig[i].getValue();
-                            }
-                        }
-                    }
-                } catch(Exception e) {
-                    log.warn(e);
-                }
-
-                log.debug("Username: " + username);
-
-                if (username != null) {
-                    HttpSession session = request.getSession(true);
-                    log.debug("Realm ID: " + realm.getID());
-                    User user = realm.getIdentityManager().getUserManager().getUser(username, true);
-                    if (user != null && user.authenticate(password)) {
-                        log.info("Authentication successful: " + username);
-                        IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
-                        if (identityMap == null) {
-                            identityMap = new IdentityMap();
-                            session.setAttribute(IDENTITY_MAP_KEY, identityMap);
-                        }
-                        identityMap.put(realm.getID(), new Identity(user));
-
-                        // TODO: send some XML content, e.g. <authentication-successful/>
-                        response.setContentType("text/plain; charset=" + DEFAULT_ENCODING);
-                        response.setStatus(response.SC_OK);
-
-                        PrintWriter writer = response.getWriter();
-                        writer.print("Neutron Authentication Successful!");
-                        return response;
-                    } else {
-                        log.warn("Neutron Authentication failed: " + username);
-
-                        // TODO: Refactor this code with the one from doAuthenticate ...
-                        log.debug("Original Request: " + originalRequest);
-
-                        StringBuffer sb = new StringBuffer("");
-                        sb.append("<?xml version=\"1.0\"?>");
-                        sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authentication\">");
-                        sb.append("<message>Authentication failed!</message>");
-                        sb.append("<authentication>");
-                        // TODO: ...
-                        sb.append("<original-request url=\"" + encodeXML(originalRequest) + "\"/>");
-                        //sb.append("<original-request url=\"" + getRequestURLQS(request, null, true) + "\"/>");
-                        //TODO: Also support https ...
-                        // TODO: ...
-                        sb.append("<login url=\"" + encodeXML(originalRequest) + "&amp;yanel.usecase=neutron-auth" + "\" method=\"POST\">");
-                        //sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
-                        sb.append("<form>");
-                        sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
-                        sb.append("<param description=\"Username\" name=\"username\"/>");
-                        sb.append("<param description=\"Password\" name=\"password\"/>");
-                        sb.append("</form>");
-                        sb.append("</login>");
-                        // NOTE: Needs to be a full URL, because user might switch the server ...
-                        // TODO: ...
-                        sb.append("<logout url=\"" + encodeXML(originalRequest) + "&amp;yanel.usecase=logout" + "\" realm=\"" + realm.getName() + "\"/>");
-                        sb.append("</authentication>");
-                        sb.append("</exception>");
-
-                        log.debug("Neutron-Auth response: " + sb);
-
-                        response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
-                        response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
-                        response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
-
-                        PrintWriter w = response.getWriter();
-                        w.print(sb);
-                        return response;
-                    }
-                } else {
-                    // TODO: Refactor resp. reuse response from above ...
-                    log.warn("Neutron Authentication failed because username is NULL!");
-
-                    StringBuffer sb = new StringBuffer("");
-                    sb.append("<?xml version=\"1.0\"?>");
-                    sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authentication\">");
-                    sb.append("<message>Authentication failed because no username was sent!</message>");
-                    sb.append("<authentication>");
-                    // TODO: ...
-                    sb.append("<original-request url=\"" + encodeXML(originalRequest) + "\"/>");
-                    //sb.append("<original-request url=\"" + getRequestURLQS(request, null, true) + "\"/>");
-                    //TODO: Also support https ...
-                    // TODO: ...
-                    sb.append("<login url=\"" + encodeXML(originalRequest) + "&amp;yanel.usecase=neutron-auth" + "\" method=\"POST\">");
-                    //sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
-                    sb.append("<form>");
-                    sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
-                    sb.append("<param description=\"Username\" name=\"username\"/>");
-                    sb.append("<param description=\"Password\" name=\"password\"/>");
-                    sb.append("</form>");
-                    sb.append("</login>");
-                    // NOTE: Needs to be a full URL, because user might switch the server ...
-                    // TODO: ...
-                    sb.append("<logout url=\"" + encodeXML(originalRequest) + "&amp;yanel.usecase=logout" + "\" realm=\"" + realm.getName() + "\"/>");
-                    sb.append("</authentication>");
-                    sb.append("</exception>");
-
-                    response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
-                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
-                    response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
-
-                    PrintWriter writer = response.getWriter();
-                    writer.print(sb);
-                    return response;
-                }
-            } else {
-                log.debug("Neutron Authentication successful.");
-                return null;
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new ServletException(e.getMessage(), e);
+	org.wyona.yanel.servlet.security.WebAuthenticator wa = null; //map.getRealm(request.getServletPath()).getWebAuthenticator()
+        if (wa == null) {
+	    wa = new org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl();
         }
+        return wa.doAuthenticate(request, response, map, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort);
+
+/*
+        TODO:
+	  - Refactor Realm init()
+	  - Create WebAuthenticator interface within servlet package
+          - <realm>
+	     <web-authenticator class=""><!-- custom config --></web-authenticator>
+            </realm>
+*/
     }
 
     /**
