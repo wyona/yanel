@@ -46,14 +46,21 @@ public class CommandLineRequest implements HttpServletRequest {
      */
     private class ParameterNames implements Enumeration {
         private java.util.Vector names;
-        public ParameterNames() {
+        public ParameterNames(Enumeration enum) {
+            names = new java.util.Vector();
+            while (enum.hasMoreElements()) {
+                names.add(enum.nextElement());
+            }
         }
 
         public Object nextElement() {
-            return null;
+            String name = (String) names.elementAt(0);
+            names.removeElementAt(0);
+            return name;
         }
 
         public boolean hasMoreElements() {
+            if (names.size() > 0) return true;
             return false;
         }
     }
@@ -65,7 +72,7 @@ public class CommandLineRequest implements HttpServletRequest {
     }
     
     public CommandLineRequest(HttpServletRequest request) {
-        //parameterNames = (Enumeration) request.getParameterNames().clone();
+        parameterNames = new ParameterNames(request.getParameterNames());
     }
     
     public StringBuffer getRequestURL() {
