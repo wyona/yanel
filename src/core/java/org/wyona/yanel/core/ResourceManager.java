@@ -110,12 +110,12 @@ public class ResourceManager {
      * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
      */
     public Resource getResource(Environment environment, Realm realm, String path) throws Exception {
-        if (realm.getRTIRepository().exists(new Path(PathUtil.getRCPath(path)))) {
-            ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getInputStream(new Path(PathUtil.getRCPath(path))));
+        if (realm.getRTIRepository().existsNode(PathUtil.getRCPath(path))) {
+            ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getNode(PathUtil.getRCPath(path)));
             if (rc != null) return getResource(environment, realm, path, rc);
         }
 
-        if (realm.getRTIRepository().exists(new Path(PathUtil.getRTIPath(path)))) {
+        if (realm.getRTIRepository().existsNode(PathUtil.getRTIPath(path))) {
             // Fallback to deprecated RTI
             log.warn("DEPRECATED: RTI should be replaced by ResourceConfiguration: " + realm + ", " + path);
             ResourceTypeIdentifier rti = getResourceTypeIdentifier(realm, path);
@@ -124,8 +124,8 @@ public class ResourceManager {
         } 
 
         String rcPath = ResourceConfigurationMap.getRCPath(realm, path);
-        if (rcPath != null && realm.getRTIRepository().exists(new Path(rcPath))) {
-            ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getInputStream(new Path(ResourceConfigurationMap.getRCPath(realm, path))));
+        if (rcPath != null && realm.getRTIRepository().existsNode(rcPath)) {
+            ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getNode(ResourceConfigurationMap.getRCPath(realm, path)));
             if (rc != null) return getResource(environment, realm, path, rc);
         } 
         
