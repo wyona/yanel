@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>wyona-org-yanel</groupId>
+  <artifactId>yanel-cmdl</artifactId>
+  <version>@VERSION@</version>
+
+  <dependencies>
+<!--
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.8</version>
+    </dependency>
+-->
+  </dependencies>
+</project>
+
