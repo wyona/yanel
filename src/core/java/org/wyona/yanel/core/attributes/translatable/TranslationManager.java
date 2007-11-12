@@ -33,6 +33,11 @@ public interface TranslationManager {
     
     Resource getTranslation(Resource resource, String language) throws TranslationException;
 
+    /**
+     * @param resource Existing resource
+     * @param newResource New resource which shall be translation of existing resource
+     * @param language Language of new translation
+     */
     void addTranslation(Resource resource, Resource newResource, String language) throws TranslationException;
     
     void removeTranslation(Resource resource, String language) throws TranslationException;
