@@ -77,7 +77,7 @@ public class UsecaseResource extends Resource implements ViewableV2 {
         init();
         return processUsecase(viewID);
     }
-    
+
     protected void init() throws UsecaseException {
         // reads views from configuration:
         try {
@@ -101,21 +101,21 @@ public class UsecaseResource extends Resource implements ViewableV2 {
             throw new UsecaseException(errorMsg, e);
         }
     }
-    
+
     protected UsecaseView processUsecase(String viewID) throws UsecaseException {
         return generateView(viewID);
     }
-    
+
     protected UsecaseView generateView(String viewID) throws UsecaseException {
         if (viewID == null || viewID.length() == 0) {
             viewID = VIEW_DEFAULT;
         }
-        UsecaseView view = (UsecaseView)this.views.get(viewID); 
-       
+        UsecaseView view = (UsecaseView)this.views.get(viewID);
+
         if (view == null) {
             throw new UsecaseException("Usecase " + getName() + " has no view with id: " + viewID);
         }
-        
+
         if (view.getType().equals(UsecaseView.TYPE_JELLY)) {
             String viewTemplate = view.getTemplate();
             renderJellyView(view, viewTemplate);
@@ -131,21 +131,23 @@ public class UsecaseResource extends Resource implements ViewableV2 {
             throw new UsecaseException("Usecase " + getName() + " has invalid view type: " + view.getType());
         }
     }
-    
+
     protected String getName() {
         return "name";
     }
-    
+
     protected void renderJellyView(UsecaseView view, String viewTemplate) throws UsecaseException {
         try {
             String viewId = view.getID();
             Repository repo = this.getRealm().getRepository();
-            
+
             JellyContext jellyContext = new JellyContext();
             jellyContext.setVariable("resource", this);
             jellyContext.setVariable("yanel.back2context", PathUtil.backToContext(realm, getPath()));
             jellyContext.setVariable("yanel.back2realm", PathUtil.backToRealm(getPath()));
-            jellyContext.setVariable("yanel.reservedPrefix", "yanel"); // TODO don't hardcode
+            jellyContext.setVariable("yanel.globalHtdocsPath", PathUtil.getGlobalHtdocsPath(this));
+            jellyContext.setVariable("yanel.resourcesHtdocsPath", PathUtil.getResourcesHtdocsPath(this));
+            jellyContext.setVariable("yanel.reservedPrefix", this.getYanel().getReservedPrefix());
             //jellyContext.setVariable("request", request);
 
             // at first we write the jelly output to a stream,
@@ -153,7 +155,7 @@ public class UsecaseResource extends Resource implements ViewableV2 {
             // because otherwise there is an error: EmptyStackException
             ByteArrayOutputStream jellyResultStream = new ByteArrayOutputStream();
             XMLOutput jellyOutput = XMLOutput.createXMLOutput(jellyResultStream);
-            
+
             //String viewTemplate = view.getTemplate();
             jellyContext.runScript(new InputSource(repo.getNode(viewTemplate).getInputStream()), jellyOutput);
             jellyOutput.flush();
@@ -165,7 +167,7 @@ public class UsecaseResource extends Resource implements ViewableV2 {
 
             // create xslt transformer:
             SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
-            
+
             String[] xsltPath = getResourceConfigProperties("xslt");
 
             TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPath.length];
@@ -174,10 +176,12 @@ public class UsecaseResource extends Resource implements ViewableV2 {
                 xsltHandlers[i].getTransformer().setParameter("yanel.path.name", PathUtil.getName(getPath()));
                 xsltHandlers[i].getTransformer().setParameter("yanel.path", getPath());
                 xsltHandlers[i].getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
+                xsltHandlers[i].getTransformer().setParameter("yanel.globalHtdocsPath", PathUtil.getGlobalHtdocsPath(this));
+                xsltHandlers[i].getTransformer().setParameter("yanel.resourcesHtdocsPath", PathUtil.getResourcesHtdocsPath(this));
                 xsltHandlers[i].getTransformer().setParameter("yanel.back2realm", PathUtil.backToRealm(getPath()));
                 xsltHandlers[i].getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(getPath())); // for backwards compatibility
                 xsltHandlers[i].getTransformer().setParameter("language", getRequestedLanguage());
-                xsltHandlers[i].getTransformer().setParameter("yanel.reservedPrefix", "yanel"); // TODO don't hardcode
+                xsltHandlers[i].getTransformer().setParameter("yanel.reservedPrefix", this.getYanel().getReservedPrefix());
             }
 
             // create i18n transformer:
@@ -210,7 +214,7 @@ public class UsecaseResource extends Resource implements ViewableV2 {
             xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
             i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
             serializer.setOutputStream(baos);
-            
+
             // execute pipeline:
             xmlReader.parse(new InputSource(new ByteArrayInputStream(jellyResultStream.toByteArray())));
 
@@ -226,11 +230,11 @@ public class UsecaseResource extends Resource implements ViewableV2 {
     protected String getRedirectURL(UsecaseView view) {
         return view.getRedirectURL();
     }
-    
+
     protected void renderCustomView(UsecaseView view) throws UsecaseException {
         // implement in subclass
     }
-    
+
 
     public boolean exists() throws Exception {
         return true;
@@ -251,7 +255,7 @@ public class UsecaseResource extends Resource implements ViewableV2 {
         // TODO: call init() instead of return null
         if (this.views != null) {
             ViewDescriptor[] descriptors = new ViewDescriptor[this.views.size()];
-            
+
             Iterator iter = this.views.keySet().iterator();
             int i = 0;
             while (iter.hasNext()) {

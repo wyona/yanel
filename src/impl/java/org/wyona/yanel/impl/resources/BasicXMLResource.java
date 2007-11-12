@@ -79,7 +79,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         InputStream xmlInputStream = getContentXML(viewId);
         return getXMLView(viewId, xmlInputStream);
     }
-    
+
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getMimeType(java.lang.String)
      */
@@ -93,7 +93,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         }
         return "application/xml";
     }
-    
+
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#exists()
      */
@@ -107,12 +107,12 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     public long getSize() throws Exception {
         return -1;
     }
-    
-    
+
+
     public View getXMLView(String viewId, InputStream xmlInputStream) throws Exception {
         View view = new View();
         String mimeType = getMimeType(viewId);
-        view.setMimeType(mimeType);  
+        view.setMimeType(mimeType);
 
         try {
             Repository repo = getRealm().getRepository();
@@ -123,32 +123,32 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 return view;
             }
 
-           
+
             // create reader:
             XMLReader xmlReader = XMLReaderFactory.createXMLReader();
             CatalogResolver catalogResolver = new CatalogResolver();
             xmlReader.setEntityResolver(catalogResolver);
             xmlReader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
-            
+
             // create xslt transformer:
             SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
-             
+
             String[] xsltPath = getXSLTPath(getPath());
             TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPath.length];
             for (int i = 0; i < xsltPath.length; i++) {
                 xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath[i]).getInputStream()));
                 passTransformerParameters(xsltHandlers[i].getTransformer());
             }
-           
+
             // create i18n transformer:
             I18nTransformer2 i18nTransformer = new I18nTransformer2(getI18NCatalogueNames(), getRequestedLanguage(), getRealm().getDefaultLanguage());
             i18nTransformer.setEntityResolver(catalogResolver);
-           
+
             // create xinclude transformer:
             XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
             SourceResolver resolver = new SourceResolver(this);
             xIncludeTransformer.setResolver(resolver);
-           
+
             // create serializer:
             Serializer serializer = null;
             if (getMimeType(viewId).equals("text/html")) {
@@ -159,7 +159,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 serializer = SerializerFactory.getSerializer(SerializerFactory.XML);
             }
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-           
+
             // chain everything together (create a pipeline):
             if (xsltHandlers.length > 0) {
                 xmlReader.setContentHandler(xsltHandlers[0]);
@@ -173,10 +173,10 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
             i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
             serializer.setOutputStream(baos);
-           
+
             // execute pipeline:
             xmlReader.parse(new InputSource(xmlInputStream));
-           
+
             // write result into view:
             view.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
             return view;
@@ -186,7 +186,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         }
 
     }
-   
+
     /**
      * Gets the names of the i18n message catalogues used for the i18n transformation.
      * Looks for an rc config property named 'i18n-catalogue'. Defaults to 'global'.
@@ -200,7 +200,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         }
         return catalogueNames;
     }
-    
+
     /**
      * Pass parameters to xslt transformer.
      * @param transformer
@@ -210,6 +210,8 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
         transformer.setParameter("yanel.path", getPath());
         transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
+        transformer.setParameter("yanel.globalHtdocsPath", PathUtil.getGlobalHtdocsPath(this));
+        transformer.setParameter("yanel.resourcesHtdocsPath", PathUtil.getResourcesHtdocsPath(this));
         String backToRealm = PathUtil.backToRealm(getPath());
         transformer.setParameter("yanel.back2realm", backToRealm);
         transformer.setParameter("yarep.back2realm", backToRealm); // for backwards compatibility
@@ -227,9 +229,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         String username = getUsername();
         if (username != null) transformer.setParameter("username", username);
     }
-    
+
     /**
-     * Gets the XML content which will be fed into the processing pipeline. 
+     * Gets the XML content which will be fed into the processing pipeline.
      * @return xml stream
      * @throws Exception
      */
