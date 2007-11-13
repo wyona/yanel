@@ -160,7 +160,7 @@ public class Realm {
             	String customWebAuthenticatorImplClassName = waConfigElement.getAttribute("class");
             	wa = (WebAuthenticator) Class.forName(customWebAuthenticatorImplClassName).newInstance();
 
-                wa.init(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "web-authenticator-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
+                wa.init(ConfigurationUtil.getCustomConfiguration(waConfigElement, "web-authenticator-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
             } catch (ConfigurationException e) {
                 wa = null;
             }
