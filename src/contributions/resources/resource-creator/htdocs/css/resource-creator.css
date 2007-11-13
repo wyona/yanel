@@ -1,21 +1,17 @@
 div#lookup #resourceCreatorSaveAsTable {
   width:100%;
 }
-
 div#lookup #lookupfilesTable {
   width:100%;
 }
-
 div#lookup #lookupfiles {
   height:160px;
   overflow:auto;
   position:relative;
 }
-
 div#lookup .lookupicon {
   border:0;
 }
-
 div#lookup table {
   border-collapse:collapse;
   border-color:#999999;
