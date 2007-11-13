@@ -1,17 +1,33 @@
-#resourceCreatorSaveAsTable {
+div#lookup #resourceCreatorSaveAsTable {
   width:100%;
 }
 
-#lookupfilesTable {
+div#lookup #lookupfilesTable {
   width:100%;
 }
 
-#lookupfiles {
+div#lookup #lookupfiles {
   height:160px;
   overflow:auto;
   position:relative;
 }
 
-.lookupicon {
+div#lookup .lookupicon {
   border:0;
+}
+
+div#lookup table {
+  border-collapse:collapse;
+  border-color:#999999;
+}
+div#lookup td {
+  border:1px solid;
+  border-color:#999999;
+  padding:2px;
+}
+div#lookup th {
+  border:1px solid;
+  border-color:#999999;
+  background-color:#f7f7f7;
+  padding:2px;
 }
