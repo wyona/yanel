@@ -80,6 +80,7 @@ public class CommandLineRequest implements HttpServletRequest {
     }
     
     public String getParameter(String name) {
+        log.error("Not implemented yet!");
         return "not implemented yet";
     }
 
@@ -124,7 +125,7 @@ public class CommandLineRequest implements HttpServletRequest {
     }
 
     public Map getParameterMap() {
-        // TODO Auto-generated method stub
+        log.error("Not implemented yet!");
         return null;
     }
 
@@ -132,12 +133,11 @@ public class CommandLineRequest implements HttpServletRequest {
      *
      */
     public Enumeration getParameterNames() {
-        log.error("DEBUG: Use cloned parameter names!");
         return parameterNames;
     }
 
     public String[] getParameterValues(String arg0) {
-        // TODO Auto-generated method stub
+        log.error("Not implemented yet!");
         return null;
     }
 
