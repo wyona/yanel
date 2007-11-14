@@ -194,12 +194,13 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
                     xsltHandlers[i].getTransformer().setParameter("yanel.path", currentPath);
                     xsltHandlers[i].getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, currentPath));
                     xsltHandlers[i].getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(currentPath));
+                    xsltHandlers[i].getTransformer().setParameter("yanel.back2realm", PathUtil.backToRealm(currentPath));
                     String userAgent = getRequest().getHeader("User-Agent");
                     String os = getOS(userAgent);
                     if (os != null) xsltHandlers[i].getTransformer().setParameter("os", os);
                     String client = getClient(userAgent);
                     if (client != null) xsltHandlers[i].getTransformer().setParameter("client", client);
-                    xsltHandlers[i].getTransformer().setParameter("language", getLanguage());
+                    xsltHandlers[i].getTransformer().setParameter("language", language);
                     xsltHandlers[i].getTransformer().setParameter("currentPath", currentPath);
                     xsltHandlers[i].getTransformer().setParameter("activePath", activePath);
                 }
