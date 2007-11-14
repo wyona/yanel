@@ -49,6 +49,7 @@ import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
+import org.wyona.yanel.core.api.security.WebAuthenticator;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
@@ -61,11 +62,11 @@ import org.wyona.yanel.core.workflow.WorkflowException;
 import org.wyona.yanel.core.workflow.WorkflowHelper;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
 import org.wyona.yanel.servlet.IdentityMap;
 import org.wyona.yanel.servlet.communication.HttpRequest;
 import org.wyona.yanel.servlet.communication.HttpResponse;
-import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.IdentityManager;
@@ -131,6 +132,8 @@ public class YanelServlet extends HttpServlet {
 
     public static final String VIEW_ID_PARAM_NAME = "yanel.resource.viewid";
 
+    private WebAuthenticator defaultWA;
+
     /**
      *
      */
@@ -162,6 +165,7 @@ public class YanelServlet extends HttpServlet {
             log.error(e);
             throw new ServletException(e.getMessage(), e);
         }
+	defaultWA = new org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl();
     }
 
     /**
@@ -1413,13 +1417,18 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Authentication
-     * @return null when authentication successful, otherwise return response
+     * @return null when authentication successful or has already been authenticated, otherwise return response
      */
     public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-	    org.wyona.yanel.core.api.security.WebAuthenticator wa = map.getRealm(request.getServletPath()).getWebAuthenticator();
+            // TODO/TBD: In the case of HTTP-BASIC/DIGEST one needs to check authentication with every request
+	    // TODO: enhance API with flag, e.g. session-based="true/false"
+	    // WARNING: One needs to separate doAuthenticate from the login screen generation!
+            //if (getIdentity(request) != null) return null;
+
+	    WebAuthenticator wa = map.getRealm(request.getServletPath()).getWebAuthenticator();
             if (wa == null) {
-	        wa = new org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl();
+	        wa = defaultWA;
             }
             return wa.doAuthenticate(request, response, map, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort);
         } catch (Exception e) {
