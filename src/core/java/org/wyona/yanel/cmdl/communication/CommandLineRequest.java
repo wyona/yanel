@@ -46,11 +46,11 @@ public class CommandLineRequest implements HttpServletRequest {
      */
     private class ParameterNames implements Enumeration {
         private java.util.Vector names;
-        public ParameterNames(Enumeration enum) {
-            log.error("DEBUG: Copy parameters: " + enum.getClass().getName());
-            names = new java.util.Vector();
-            while (enum.hasMoreElements()) {
-                names.add(enum.nextElement());
+        public ParameterNames(Enumeration names) {
+            log.error("DEBUG: Copy parameters: " + names.getClass().getName());
+            this.names = new java.util.Vector();
+            while (names.hasMoreElements()) {
+                this.names.add(names.nextElement());
             }
         }
 
