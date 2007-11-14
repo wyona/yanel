@@ -164,14 +164,18 @@ public class ResourceManager {
             while (paramNames.hasMoreElements()) {
                 String name = (String)paramNames.nextElement();
                 String[] values = request.getParameterValues(name);
-                if (values.length == 1) {
-                    resource.setParameter(name, HttpServletRequestHelper.decode(values[0]));
-                } else {
-                    String[] stringValues = new String[values.length];
-                    for (int i = 0; i < values.length; i++) {
-                        stringValues[i] = HttpServletRequestHelper.decode(values[i]);
+                if (values != null) {
+                    if (values.length == 1) {
+                        resource.setParameter(name, HttpServletRequestHelper.decode(values[0]));
+                    } else {
+                        String[] stringValues = new String[values.length];
+                        for (int i = 0; i < values.length; i++) {
+                            stringValues[i] = HttpServletRequestHelper.decode(values[i]);
+                        }
+                        resource.setParameter(name, stringValues);
                     }
-                    resource.setParameter(name, stringValues);
+                } else {
+                    log.error("No values for request parameter: " + name);
                 }
             }
         }
