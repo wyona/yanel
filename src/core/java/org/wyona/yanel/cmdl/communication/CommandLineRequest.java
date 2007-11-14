@@ -47,12 +47,14 @@ public class CommandLineRequest implements HttpServletRequest {
     private class ParameterNames implements Enumeration {
         private java.util.Vector names;
         public ParameterNames(Enumeration enum) {
+            log.error("DEBUG: Copy parameters: " + enum.getClass().getName());
             names = new java.util.Vector();
             while (enum.hasMoreElements()) {
                 names.add(enum.nextElement());
             }
         }
 
+        // TODO: Isn't this implementation wrong, because it empties the vector and can only be used once!
         public Object nextElement() {
             String name = (String) names.elementAt(0);
             names.removeElementAt(0);
@@ -72,7 +74,18 @@ public class CommandLineRequest implements HttpServletRequest {
     }
     
     public CommandLineRequest(HttpServletRequest request) {
+        log.error("DEBUG: Copy request: " + request.getClass().getName());
         parameterNames = new ParameterNames(request.getParameterNames());
+
+// TODO ...
+/*
+        Enumeration pn = request.getParameterNames();
+        while(pn.hasMoreElements()) {
+            String name= pn.nextElement();
+            String[] values = request.getParameterValues(name);
+            map.add(name, values);
+        }
+*/
     }
     
     public StringBuffer getRequestURL() {
@@ -137,6 +150,8 @@ public class CommandLineRequest implements HttpServletRequest {
     }
 
     public String[] getParameterValues(String arg0) {
+        // TODO ...
+        //return map.get(arg0);
         log.error("Not implemented yet!");
         return null;
     }
