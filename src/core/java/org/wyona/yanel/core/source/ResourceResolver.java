@@ -67,7 +67,11 @@ public class ResourceResolver implements URIResolver {
                 return new StreamSource(view.getInputStream());
             } else if (ResourceAttributeHelper.hasAttributeImplemented(targetResource, "Viewable", "2")) {
                 View view = ((ViewableV2) targetResource).getView(null);
-                return new StreamSource(view.getInputStream());
+                if (view.isResponse()) {
+                    throw new Exception("Reading from the response has not been implemented yet!");
+                } else {
+                    return new StreamSource(view.getInputStream());
+                }
             } else {
                 log.warn("Resource is not viewable: " + uri);
                 return null;
