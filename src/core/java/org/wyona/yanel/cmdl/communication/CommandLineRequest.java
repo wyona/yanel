@@ -68,6 +68,7 @@ public class CommandLineRequest implements HttpServletRequest {
     }
 
     ParameterNames parameterNames;
+    java.util.HashMap map = new java.util.HashMap();
     
     public CommandLineRequest(String url) {
         this.url = url;
@@ -75,17 +76,13 @@ public class CommandLineRequest implements HttpServletRequest {
     
     public CommandLineRequest(HttpServletRequest request) {
         log.error("DEBUG: Copy request: " + request.getClass().getName());
-        parameterNames = new ParameterNames(request.getParameterNames());
-
-// TODO ...
-/*
         Enumeration pn = request.getParameterNames();
         while(pn.hasMoreElements()) {
-            String name= pn.nextElement();
+            String name = (String) pn.nextElement();
             String[] values = request.getParameterValues(name);
-            map.add(name, values);
+            map.put(name, values);
         }
-*/
+        parameterNames = new ParameterNames(request.getParameterNames());
     }
     
     public StringBuffer getRequestURL() {
@@ -93,8 +90,16 @@ public class CommandLineRequest implements HttpServletRequest {
     }
     
     public String getParameter(String name) {
-        log.error("Not implemented yet!");
-        return "not implemented yet";
+        Object param = map.get(name);
+        if (param == null) {
+            return null;
+        } else {
+            if (param instanceof String[]) {
+                return ((String [])param)[0];
+            } else {
+                return param.toString();
+            }
+        }
     }
 
     public Object getAttribute(String arg0) {
@@ -150,10 +155,8 @@ public class CommandLineRequest implements HttpServletRequest {
     }
 
     public String[] getParameterValues(String arg0) {
-        // TODO ...
-        //return map.get(arg0);
-        log.error("Not implemented yet!");
-        return null;
+        log.error("getParameterValues: " + (String[]) map.get(arg0));
+        return (String[]) map.get(arg0);
     }
 
     public String getProtocol() {
