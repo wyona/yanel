@@ -91,14 +91,28 @@
         </xsl:for-each>
         
         <tr>
-          <td colspan="2">&#160;
+          <td>&#160;</td>
+          <td>
+            <div id="spamblock_hide">
+            <input name="spamblock_hidden" type="hidden" value="TRyAg41n" />
+            <p>For spam detection purposes, please copy<br/> the number <strong>8989890</strong> to the field below:</p>
+            <input name="spamblock_input" id="spamblock_input" tabindex="3" value="" />
+            </div>
           </td>
+          <script type="text/javascript">
+            document.getElementById("spamblock_input").value = 8989890;
+            document.getElementById("spamblock_hide").style.display = "none";
+          </script>
+        </tr>
+        <tr>
+          <td>&#160;</td>
           <td>
             <input type="submit" name="submit" value="i18n:attr key=send"/>
           </td>
         </tr>
         <tr>
-          <td align="right" valign="top" class="contentfield" colspan="3"><br/><i18n:message key="requiredFields"/></td>
+          <td>&#160;</td>
+          <td valign="top" class="contentfield" colspan="3"><br/><i18n:message key="requiredFields"/></td>
         </tr>
       </table>
     </form>

@@ -153,16 +153,18 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             while(enumeration.hasMoreElements()){
                 if(enumeration.nextElement().toString().equals("email")) 
                     submit = true;
-            }
+            }   
             if(submit) {
-                sendMail(transformer);
-                if (request.getParameter("company") != null) transformer.setParameter("company", request.getParameter("company"));
-                if (request.getParameter("firstName") != null) transformer.setParameter("firstName", request.getParameter("firstName"));
-                if (request.getParameter("lastName") != null) transformer.setParameter("lastName", request.getParameter("lastName"));
-                if (request.getParameter("email") != null) transformer.setParameter("email", request.getParameter("email"));
-                if (request.getParameter("address") != null) transformer.setParameter("address", request.getParameter("address"));
-                if (request.getParameter("zipCity") != null) transformer.setParameter("zipCity", request.getParameter("zipCity"));
-                if (request.getParameter("message") != null) transformer.setParameter("message", request.getParameter("message"));
+                if (request.getParameter("spamblock_hidden").equals("TRyAg41n") && request.getParameter("spamblock_input").equals("8989890")) {    
+                    sendMail(transformer);
+                    if (request.getParameter("company") != null) transformer.setParameter("company", request.getParameter("company"));
+                    if (request.getParameter("firstName") != null) transformer.setParameter("firstName", request.getParameter("firstName"));
+                    if (request.getParameter("lastName") != null) transformer.setParameter("lastName", request.getParameter("lastName"));
+                    if (request.getParameter("email") != null) transformer.setParameter("email", request.getParameter("email"));
+                    if (request.getParameter("address") != null) transformer.setParameter("address", request.getParameter("address"));
+                    if (request.getParameter("zipCity") != null) transformer.setParameter("zipCity", request.getParameter("zipCity"));
+                    if (request.getParameter("message") != null) transformer.setParameter("message", request.getParameter("message"));
+                }
             }
             
             // create xslt transformer for global layout
