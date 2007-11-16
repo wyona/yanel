@@ -282,12 +282,7 @@ public abstract class Resource {
     }
 
     /**
-     * Get language (localization) with the following priorization: <br><br>
-     * 1) yanel.meta.language query string parameter<br> 
-     * 1.5) Realm-specific cookie
-     * 2) Accept-Language header<br>
-     * 3) Realm default language<br>
-     * 4) Default "en"<br>
+     * Get language (localization).
      */
     public String getRequestedLanguage() throws Exception {
         return getRealm().getLanguageHandler().getLocalizationLanguage(this);
