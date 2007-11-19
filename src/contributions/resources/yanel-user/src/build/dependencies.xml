@@ -15,7 +15,7 @@
       <dependency groupId="xml-resolver" artifactId="xml-resolver" version="1.1"/>
       <dependency groupId="xalan" artifactId="xalan" version="2.7.0"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core"
-                  version="0.0.1-dev-r28517"/>
+                  version="0.0.1-dev-r28979"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api"
                   version="4.3"/>
     </artifact:dependencies>

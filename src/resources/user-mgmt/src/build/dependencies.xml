@@ -12,7 +12,7 @@
       <dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3"/>
       <dependency groupId="xml-resolver" artifactId="xml-resolver" version="1.1"/>
       <dependency groupId="xalan" artifactId="xalan" version="2.7.0"/>
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.0.1-dev-r28517"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.0.1-dev-r28979"/>
     </artifact:dependencies>
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
