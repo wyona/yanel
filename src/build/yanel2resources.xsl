@@ -62,10 +62,28 @@
 
   <xsl:comment>INFO: Deploy libs of resources</xsl:comment>
   <target name="deploy-resources" description="Deploy resources" depends="init">
+    <mkdir dir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources"/>
 <xsl:for-each select="/yanel:resource-types/yanel:resource-type">
 
-    <xsl:if test="@copy">
+    <xsl:if test="@copy and @copy = 'true'">
       <xsl:comment>TODO: Copy sources ...</xsl:comment>
+    <xsl:choose>
+      <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
+    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources">
+      <fileset dir="{@src}" excludes="build/**, src/java/**, src/build/**, build.xml"/>
+    </copy>
+      </xsl:when>
+      <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
+    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources/pdf">
+      <fileset dir="{@src}" excludes="build/**, src/java/**, src/build/**, build.xml"/>
+    </copy>
+      </xsl:when>
+      <xsl:otherwise>
+    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources">
+      <fileset dir="${{build.dir}}/{@src}" excludes="build/**, src/java/**, src/build/**, build.xml"/>
+    </copy>
+      </xsl:otherwise>
+    </xsl:choose>
     </xsl:if>
 
     <xsl:choose>
