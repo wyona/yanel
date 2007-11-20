@@ -42,7 +42,9 @@
 -->
   <resource-type src="../src/contributions/resources/nutch/"         compile="true"/>
   <resource-type src="../src/contributions/resources/davcollection/" compile="true"/>
-  <resource-type src="../src/contributions/resources/pdf/"           compile="true"/>
+
+  <!-- TODO: Attribute "copy" not yet implemented. See src/build/yanel2resources.xsl -->
+  <resource-type src="../src/contributions/resources/pdf/" compile="true" copy="true"/>
 
   <resource-type src="../src/contributions/resources/yanel-user/"    compile="true"/> 
 
