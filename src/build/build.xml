@@ -787,10 +787,19 @@
 
     <!-- Jetty target -->
     <delete dir="${yanel.home.dir}/src/build/target"/>
+
+    <condition property="local.build.properties.exists">
+      <available file="${yanel.home.dir}/src/build/local.build.properties" type="file"/>
+    </condition>
+    <antcall target="ask-if-local-build-properties-shall-be-deleted"/>
 <!--
     <delete file="${yanel.home.dir}/src/build/local.build.properties"/>
     <delete dir="${yanel.home.dir}/${local.config.dir}"/>
 -->
+  </target>
+
+  <target name="ask-if-local-build-properties-shall-be-deleted" if="local.build.properties.exists">
+    <echo>Shall local.build.properties be deleted?</echo>
   </target>
 
   <target name="ask-to-clean-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Clean Tomcat cluster node 1">
