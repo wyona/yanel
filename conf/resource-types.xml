@@ -16,7 +16,7 @@
   <resource-type src="@YANEL_SRC_DIR@/src/resources/navigation/"                  compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/translation/"                 compile="true"/>
   <resource-type package="org.wyona.yanel.impl.resources.node" src="@YANEL_SRC_DIR@/src/resources/file/" compile="true"/>
-  <resource-type src="@YANEL_SRC_DIR@/src/resources/directory/"                   compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/directory/" compile="true" copy-dir-name="collection"/>
 <!--
   <resource-type src="../../contributions/resources/tape/" compile="true"/>
 -->
