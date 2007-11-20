@@ -480,6 +480,10 @@
       <replacetoken>../src</replacetoken>
     </replace>
     <!-- /DEPRECATED -->
+
+    <xslt in="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml-OUT" style="fix-resources-src.xsl" force="true">
+    </xslt>
+    <move file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml-OUT" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml"/>
     
     <copy file="${yanel.home.dir}/src/build/install.rdf" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}">
