@@ -51,6 +51,8 @@
 
   <!-- Resources which already exist as JAR somewhere and do not need to be compiled -->
   <!-- https://svn.wyona.com/repos/public/yanel/contributions/resources/redirect -->
-  <resource-type package="org.wyona.yanel.impl.resources.redirect"/>
+<!--
+  <resource-type package="org.wyona.yanel.impl.resources.redirect" src="../contributions/resources/redirect/" compile="true"/>
+-->
 
 </resource-types>
