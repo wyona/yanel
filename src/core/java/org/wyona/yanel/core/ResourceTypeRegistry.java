@@ -151,9 +151,10 @@ public class ResourceTypeRegistry {
      */
     public void readResourceTypes() throws ConfigurationException {
         try {
-            DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+            DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder(true);
             Configuration config;
             config = builder.buildFromFile(resourceTypeConfigFile);
+            if (log.isDebugEnabled()) log.debug("Resource types config file: " + resourceTypeConfigFile);
             
             Configuration resourceTypes[] = config.getChildren("resource-type");
             
