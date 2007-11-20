@@ -14,7 +14,7 @@
   <resource-type src="../src/contributions/resources/data-repo-sitetree/" compile="true"/>
   <resource-type src="../src/resources/navigation/"                  compile="true"/>
   <resource-type src="../src/resources/translation/"                 compile="true"/>
-  <resource-type src="../src/resources/file/"                        compile="true"/>
+  <resource-type package="org.wyona.yanel.impl.resources.node" src="../src/resources/file/" compile="true"/>
   <resource-type src="../src/resources/directory/"                   compile="true"/>
 <!--
   <resource-type src="../../contributions/resources/tape/" compile="true"/>
