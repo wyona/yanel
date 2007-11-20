@@ -792,14 +792,33 @@
       <available file="${yanel.home.dir}/src/build/local.build.properties" type="file"/>
     </condition>
     <antcall target="ask-if-local-build-properties-shall-be-deleted"/>
-<!--
-    <delete file="${yanel.home.dir}/src/build/local.build.properties"/>
-    <delete dir="${yanel.home.dir}/${local.config.dir}"/>
--->
+
+    <condition property="local.config.dir.exists">
+      <available file="${yanel.home.dir}/${local.config.dir}" type="dir"/>
+    </condition>
+    <antcall target="ask-if-local-config-dir-shall-be-deleted"/>
   </target>
 
   <target name="ask-if-local-build-properties-shall-be-deleted" if="local.build.properties.exists">
-    <echo>Shall local.build.properties be deleted?</echo>
+    <input message="Do you really want to delete local build.properties file '${yanel.home.dir}/src/build/local.build.properties'? (yes/NO):" addproperty="answer"/>
+    <condition property="yes-delete-local-build-properties">
+      <equals arg1="yes" arg2="${answer}"/>
+    </condition>
+    <antcall target="do-delete-local-build-properties"/>
+<!--
+    <delete file="${yanel.home.dir}/src/build/local.build.properties"/>
+-->
+  </target>
+
+  <target name="do-delete-local-build-properties" if="yes-delete-local-build-properties">
+    <delete file="${yanel.home.dir}/src/build/local.build.properties"/>
+  </target>
+
+  <target name="ask-if-local-config-dir-shall-be-deleted" if="local.config.dir.exists">
+    <echo>Shall local config dir ${yanel.home.dir}/${local.config.dir} be deleted?</echo>
+<!--
+    <delete dir="${yanel.home.dir}/${local.config.dir}"/>
+-->
   </target>
 
   <target name="ask-to-clean-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Clean Tomcat cluster node 1">
