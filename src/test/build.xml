@@ -81,6 +81,15 @@
     </condition>
     <antcall target="generate-resources-test-build-from-default"/>
     <antcall target="generate-resources-test-build-from-local"/>
+    <path id="yanel.home.dir.ref">
+      <pathelement location="${yanel.home.dir}"/>
+    </path>
+    <pathconvert targetos="unix" property="yanel.home.dir.forward.slashes" refid="yanel.home.dir.ref">
+    </pathconvert>
+    <replace file="${build.dir}/test-resources.xml" value="${yanel.home.dir.forward.slashes}">
+      <replacetoken>@YANEL_SRC_DIR@</replacetoken>
+    </replace>
+
     <antcall target="copy-properties"/>
     <ant antfile="${build.dir}/test-resources.xml" target="build-test-resources" inheritRefs="true"/>
   </target>
