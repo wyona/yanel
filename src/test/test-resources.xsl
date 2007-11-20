@@ -39,6 +39,9 @@
         <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
           <xsl:value-of select="@src"/>
         </xsl:when>
+        <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
+          <xsl:value-of select="@src"/>
+        </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="concat('${build.dir}/', @src)"/>
         </xsl:otherwise>
