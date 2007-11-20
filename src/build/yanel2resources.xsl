@@ -65,21 +65,21 @@
     <mkdir dir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources"/>
 <xsl:for-each select="/yanel:resource-types/yanel:resource-type">
 
-    <xsl:if test="@copy and @copy = 'true'">
+    <xsl:if test="@copy-dir-name">
       <xsl:comment>TODO: Copy sources ...</xsl:comment>
     <xsl:choose>
       <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
-    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources">
+    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources/{@copy-dir-name}">
       <fileset dir="{@src}" excludes="build/**, src/java/**, src/build/**, build.xml"/>
     </copy>
       </xsl:when>
       <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
-    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources/pdf">
+    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources/{@copy-dir-name}">
       <fileset dir="{@src}" excludes="build/**, src/java/**, src/build/**, build.xml"/>
     </copy>
       </xsl:when>
       <xsl:otherwise>
-    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources">
+    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources/{@copy-dir-name}">
       <fileset dir="${{build.dir}}/{@src}" excludes="build/**, src/java/**, src/build/**, build.xml"/>
     </copy>
       </xsl:otherwise>
