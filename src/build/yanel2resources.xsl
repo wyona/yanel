@@ -42,6 +42,12 @@
       <property name="maven.url" value="{$maven.url}"/>
     </ant>
         </xsl:when>
+        <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
+    <ant inheritAll="false" antfile="{@src}/build.xml" target="compile">
+      <property name="yanel.source.version" value="{$yanel.source.version}"/>
+      <property name="maven.url" value="{$maven.url}"/>
+    </ant>
+        </xsl:when>
         <xsl:otherwise>
     <ant inheritAll="false" antfile="${{build.dir}}/{@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
@@ -64,6 +70,11 @@
 
     <xsl:choose>
       <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
+    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
+      <fileset dir="{@src}/build/lib"/>
+    </copy>
+      </xsl:when>
+      <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
     <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
       <fileset dir="{@src}/build/lib"/>
     </copy>
@@ -112,6 +123,14 @@
 
     <xsl:choose>
       <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
+    <ant inheritAll="false" antfile="{@src}/build.xml" target="copy-dependencies">
+      <property name="build.dir" value="${{build.dir}}"/>
+      <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
+      <property name="yanel.source.version" value="{$yanel.source.version}"/>
+      <property name="maven.url" value="{$maven.url}"/>
+    </ant>
+      </xsl:when>
+      <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
     <ant inheritAll="false" antfile="{@src}/build.xml" target="copy-dependencies">
       <property name="build.dir" value="${{build.dir}}"/>
       <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
