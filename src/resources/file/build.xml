@@ -30,6 +30,7 @@
       debug="true"
       deprecation="off"
     />
+    <copy file="${resource.home.dir}/resource.xml" todir="${resource.classes.dir}/org/wyona/yanel/impl/resources/node"/>
     <mkdir dir="${resource.lib.dir}"/>
     <jar destfile="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}.jar"
       basedir="${resource.classes.dir}"

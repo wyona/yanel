@@ -3,7 +3,7 @@
 <resource xmlns="http://www.wyona.org/yanel/1.0"
   name="file"
   namespace="http://www.wyona.org/yanel/resource/1.0"
-  class="org.wyona.yanel.impl.resources.NodeResource"
+  class="org.wyona.yanel.impl.resources.node.NodeResource"
   >
 <description>
 Generic node resource
