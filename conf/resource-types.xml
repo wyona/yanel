@@ -1,52 +1,53 @@
 <?xml version="1.0"?>
 
 <!-- NOTE: compile is true by default -->
-<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2007081500">
+<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2007112000">
 
   <changes>
+    <change version="2007112000">@YANEL_SRC_DIR@ parameter introduced</change>
     <change version="2007081500">timeline resource type added</change>
     <change version="2007070100">user-mgmt resource type added</change>
     <change version="2007062900">data-repo-sitetree resource type added</change>
   </changes>
 
   <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
-  <resource-type src="../src/contributions/resources/timeline/" compile="true"/>
-  <resource-type src="../src/contributions/resources/data-repo-sitetree/" compile="true"/>
-  <resource-type src="../src/resources/navigation/"                  compile="true"/>
-  <resource-type src="../src/resources/translation/"                 compile="true"/>
-  <resource-type package="org.wyona.yanel.impl.resources.node" src="../src/resources/file/" compile="true"/>
-  <resource-type src="../src/resources/directory/"                   compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/timeline/" compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/data-repo-sitetree/" compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/navigation/"                  compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/translation/"                 compile="true"/>
+  <resource-type package="org.wyona.yanel.impl.resources.node" src="@YANEL_SRC_DIR@/src/resources/file/" compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/directory/"                   compile="true"/>
 <!--
   <resource-type src="../../contributions/resources/tape/" compile="true"/>
 -->
-  <resource-type src="../src/resources/add-realm/"                  compile="true"/>
-  <resource-type src="../src/resources/odt/"                         compile="true"/>
-  <resource-type src="../src/resources/xml/"                         compile="true"/>
-  <resource-type src="../src/resources/user-mgmt/"                   compile="true"/>
-  <resource-type src="../src/realms/welcome-admin/yanel/resources/show-realms/"                 compile="true"/>
-  <resource-type src="../src/realms/welcome-admin/yanel/resources/update-webapp/"                 compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/add-realm/"                  compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/odt/"                         compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/xml/"                         compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/user-mgmt/"                   compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/realms/welcome-admin/yanel/resources/show-realms/"                 compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/realms/welcome-admin/yanel/resources/update-webapp/"                 compile="true"/>
 <!--
-  <resource-type src="../src/resources/invoice/"                     compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/invoice/"                     compile="true"/>
 -->
-  <resource-type src="../src/resources/testing-control/"             compile="true"/>
-  <resource-type src="../src/resources/testing-times/"               compile="true"/>
-  <resource-type src="../src/contributions/resources/atom/"          compile="true"/>
-  <resource-type src="../src/contributions/resources/atom-entry/"    compile="true"/>
-  <resource-type src="../src/contributions/resources/contact-form/"  compile="true"/>
-  <resource-type src="../src/contributions/resources/wiki/"          compile="true"/>
-  <resource-type src="../src/contributions/resources/zip/"           compile="true"/>
-  <resource-type src="../src/contributions/resources/calendar/"      compile="true"/>
-  <resource-type src="../src/contributions/resources/resource-creator/"      compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/testing-control/"             compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/testing-times/"               compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/atom/"          compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/atom-entry/"    compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/contact-form/"  compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/wiki/"          compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/zip/"           compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/calendar/"      compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/resource-creator/"      compile="true"/>
 <!--
-  <resource-type src="../src/resources/websearch/"                   compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/websearch/"                   compile="true"/>
 -->
-  <resource-type src="../src/contributions/resources/nutch/"         compile="true"/>
-  <resource-type src="../src/contributions/resources/davcollection/" compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/nutch/"         compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/davcollection/" compile="true"/>
 
   <!-- TODO: Attribute "copy" not yet implemented. See src/build/yanel2resources.xsl -->
-  <resource-type src="../src/contributions/resources/pdf/" compile="true" copy="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/pdf/" compile="true" copy="true"/>
 
-  <resource-type src="../src/contributions/resources/yanel-user/"    compile="true"/> 
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/yanel-user/"    compile="true"/> 
 
   <!-- Resources which already exist as JAR somewhere and do not need to be compiled -->
   <!-- https://svn.wyona.com/repos/public/yanel/contributions/resources/redirect -->
