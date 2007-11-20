@@ -59,7 +59,7 @@
 <xsl:for-each select="/yanel:resource-types/yanel:resource-type">
 
     <xsl:if test="@copy">
-      <xsl:comment>Copy sources ...</xsl:comment>
+      <xsl:comment>TODO: Copy sources ...</xsl:comment>
     </xsl:if>
 
     <xsl:choose>
