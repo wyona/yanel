@@ -471,9 +471,15 @@
       <replacetoken>@REALMS_DIR@</replacetoken>
     </replace>
 
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" value="${yanel.home.dir.forward.slashes}">
+      <replacetoken>@YANEL_SRC_DIR@</replacetoken>
+    </replace>
+
+    <!-- DEPRECATED -->
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" value="${yanel.home.dir.forward.slashes}/src">
       <replacetoken>../src</replacetoken>
     </replace>
+    <!-- /DEPRECATED -->
     
     <copy file="${yanel.home.dir}/src/build/install.rdf" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}">
@@ -861,6 +867,10 @@
     </condition>
     <antcall target="generate-resources-build-from-default"/>
     <antcall target="generate-resources-build-from-local"/>
+
+    <replace file="../../build/build-resource-types.xml" value="${yanel.home.dir.forward.slashes}">
+      <replacetoken>@YANEL_SRC_DIR@</replacetoken>
+    </replace>
   </target>
 
   <target name="generate-resources-build-from-default" description="Generate resources build from default config" depends="init" unless="local.resource-types.config.exists">
