@@ -45,7 +45,7 @@
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/davcollection/" compile="true"/>
 
   <!-- TODO: Attribute "copy" not yet implemented. See src/build/yanel2resources.xsl -->
-  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/pdf/" compile="true" copy="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/pdf/" compile="true" copy-dir-name="pdf"/>
 
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/yanel-user/"    compile="true"/> 
 
