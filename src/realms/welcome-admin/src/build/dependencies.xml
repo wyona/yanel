@@ -14,7 +14,6 @@
 -->
       <dependency groupId="wyona-org-yanel" artifactId="yanel-core" version="${yanel.source.version}"/>
       <dependency groupId="wyona-org-yanel" artifactId="yanel-webapp" version="${yanel.source.version}"/>
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.0.1-dev-r28979"/>
       <dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3"/>
     </artifact:dependencies>
 
