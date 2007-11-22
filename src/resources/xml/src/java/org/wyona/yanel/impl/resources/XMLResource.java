@@ -141,7 +141,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             }
             return null;
         }
-        
+
         Node node;
         if (revisionName != null) {
             node = repo.getNode(getPath()).getRevision(revisionName);
@@ -253,13 +253,13 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     public RevisionInformation[] getRevisions() throws Exception {
         Revision[] revisions = getRealm().getRepository().getNode(getPath()).getRevisions();
         RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
-       
+
         for (int i = 0; i < revisions.length; i++) {
             revisionInfos[i] = new RevisionInformation(revisions[i]);
         }
-        return revisionInfos; 
+        return revisionInfos;
     }
-    
+
     public void checkin(String comment) throws Exception {
         Node node = getRealm().getRepository().getNode(getPath());
         Revision revision = node.checkin(comment);
@@ -270,7 +270,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         }
         /*
         if (node.isCheckedOut()) {
-            String checkoutUserID = node.getCheckoutUserID(); 
+            String checkoutUserID = node.getCheckoutUserID();
             if (checkoutUserID.equals(userID)) {
                 node.checkin();
             } else {
@@ -287,7 +287,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         node.checkout(userID);
         /*
         if (node.isCheckedOut()) {
-            String checkoutUserID = node.getCheckoutUserID(); 
+            String checkoutUserID = node.getCheckoutUserID();
             if (checkoutUserID.equals(userID)) {
                 log.warn("Resource " + getPath() + " is already checked out by this user: " + checkoutUserID);
             } else {
@@ -298,7 +298,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         }
         */
     }
-    
+
     public void cancelCheckout() throws Exception {
         Node node = getRealm().getRepository().getNode(getPath());
         node.cancelCheckout();
@@ -393,6 +393,10 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         return map;
     }
 
+    public String getCreateName(String suggestedName) {
+        return suggestedName;
+    }
+
     /**
      *
      */
@@ -423,7 +427,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     public void setProperty(String name, Object value) {
         log.warn("Not implemented yet!");
     }
-    
+
     /**
      * Create introspection for XHTML documents used by the creator (WARNING: Mime type is hardcoded!)
      * @param name
@@ -449,7 +453,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         sb.append("\n  </edit>");
         sb.append("\n  </resource>");
         sb.append("\n</introspection>");
-        
+
         return sb.toString();
     }
 
@@ -473,7 +477,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         sb.append("</edit>");
 
         sb.append(getWorkflowIntrospection());
-        
+
         sb.append("</resource>");
         sb.append("</introspection>");
         return sb.toString();
@@ -490,7 +494,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     public String[] getLanguages() throws TranslationException {
         return getTranslationManager().getLanguages(this);
     }
-    
+
     public Resource getTranslation(String language) throws TranslationException {
         return getTranslationManager().getTranslation(this, language);
     }
@@ -510,11 +514,11 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     /************************************************
      * Workflow                                     *
      ************************************************/
-    
+
     public void doTransition(String transitionID, String revision) throws WorkflowException {
         WorkflowHelper.doTransition(this, transitionID, revision);
     }
-    
+
     public View getLiveView(String viewid) throws Exception {
         return WorkflowHelper.getLiveView(this, viewid);
     }
@@ -530,7 +534,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     public void setWorkflowVariable(String name, String value) throws WorkflowException {
         WorkflowHelper.setWorkflowVariable(this, name, value);
     }
-    
+
     public void removeWorkflowVariable(String name) throws WorkflowException {
         WorkflowHelper.removeWorkflowVariable(this, name);
     }
@@ -546,7 +550,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     public Date getWorkflowDate(String revision) throws WorkflowException {
         return WorkflowHelper.getWorkflowDate(this, revision);
     }
-    
+
     public String getWorkflowIntrospection() throws WorkflowException {
         return WorkflowHelper.getWorkflowIntrospection(this);
     }

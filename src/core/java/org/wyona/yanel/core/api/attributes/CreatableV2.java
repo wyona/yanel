@@ -36,14 +36,19 @@ public interface CreatableV2 extends CreatableV1 {
      *
      */
     public String getPropertyType(String propertyName);
-    
+
     /**
      * Creates the resource
      */
     public void create(HttpServletRequest request);
-    
+
     /**
      * Creates RTI properties
      */
     public HashMap createRTIProperties(HttpServletRequest request);
+
+    /**
+     * getCreateName
+     */
+    public String getCreateName(String suggestedName);
 }

@@ -70,7 +70,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
- * 
+ *
  */
 public class WikiResource extends Resource implements ViewableV1, CreatableV2, IntrospectableV1, ModifiableV2 {
 
@@ -81,7 +81,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
     private final String DEFAULT_WIKI_PARSER_BEAN_ID = "jspWikiParser";
 
     /**
-     * 
+     *
      */
     public WikiResource() {
         dbf = DocumentBuilderFactory.newInstance();
@@ -90,7 +90,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
     }
 
     /**
-     * 
+     *
      */
     public ViewDescriptor[] getViewDescriptors() {
         ViewDescriptor[] vd = new ViewDescriptor[3];
@@ -102,7 +102,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
         vd[2].setMimeType("text/plain");
         return vd;
     }
-    
+
     /**
      * Get view of resource
      */
@@ -117,12 +117,12 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
             }
 
             View defaultView = new View();
-            
+
             String wikiParserBeanId = getWikiSyntax(path);
             InputStream inputStream = dataRepo.getInputStream(new org.wyona.yarep.core.Path(getDataPathImplementation().getDataPath(getPath())));
             IWikiParser wikiParser = (IWikiParser) yanel.getBeanFactory().getBean(wikiParserBeanId);
             wikiParser.parse(inputStream);
-            
+
             Transformer transformer = null;
             if(viewId != null && viewId.equals("source")) {
                 transformer = TransformerFactory.newInstance().newTransformer();
@@ -137,22 +137,22 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
                 transformer.setParameter("yanel.last.modified", new java.util.Date(getLastModified()));
                 defaultView.setMimeType("application/xhtml+xml");
             }
-            
+
             LinkChecker linkChecker = new LinkChecker(getRealm().getRepository(), getPath(), getDataPathImplementation());
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             saxParser.parse(wikiParser.getInputStream(), linkChecker);
-            
+
             java.io.ByteArrayOutputStream byteArrayOutputStream = new java.io.ByteArrayOutputStream();
-            
+
             transformer.transform(new StreamSource(linkChecker.getInputStream()), new StreamResult(byteArrayOutputStream));
 
             inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-            
+
             if(viewId != null && viewId.equals("source")) {
                 defaultView.setInputStream(inputStream);
                 return defaultView;
             }
-            
+
             // create reader:
             XMLReader xmlReader = XMLReaderFactory.createXMLReader();
             CatalogResolver catalogResolver = new CatalogResolver();
@@ -185,11 +185,11 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
             XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
             ResourceResolver resolver = new ResourceResolver(this);
             xIncludeTransformer.setResolver(resolver);
-            
+
             // create i18n transformer:
             I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getRealm().getDefaultLanguage(), getRealm().getDefaultLanguage());
             i18nTransformer.setEntityResolver(catalogResolver);
-            
+
             // create serializer:
             Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -204,7 +204,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
             xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
             i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
             serializer.setOutputStream(baos);
-            
+
             // execute pipeline:
             xmlReader.parse(new InputSource(inputStream));
 
@@ -217,7 +217,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
     }
 
     /**
-     * 
+     *
      */
     public View getView(HttpServletRequest request, String viewId) {
         String _language = getRealm().getDefaultLanguage();
@@ -233,7 +233,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
     }
 
     /**
-     * 
+     *
      */
     public View getView(HttpServletRequest request, OutputStream outputStream, String viewId) {
         return null;
@@ -256,12 +256,12 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
         log.info("No XSLT Path for: " + getPath());
         return null;
     }
-    
+
     /**
-     * this method will get the wikiparser type for this resource 
-     * first it will look up the rti resp. rtd than 
+     * this method will get the wikiparser type for this resource
+     * first it will look up the rti resp. rtd than
      * it will look in the config file for this resource if none of the could be found
-     * it will use the default hard coded in this class  
+     * it will use the default hard coded in this class
      */
     private String getWikiSyntax(Path path) {
         String wikiParserBeanId = null;
@@ -295,23 +295,23 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
         } catch (Exception e) {
             log.error("Exception" + e);//was warn
         } finally {
-            wikiParserBeanId = DEFAULT_WIKI_PARSER_BEAN_ID;    
+            wikiParserBeanId = DEFAULT_WIKI_PARSER_BEAN_ID;
         }
         log.warn("Using fallback default wiki parser: " + DEFAULT_WIKI_PARSER_BEAN_ID);
         return DEFAULT_WIKI_PARSER_BEAN_ID;
     }
-    
+
 
     /**
-     * @return the empty wiki resource as String 
+     * @return the empty wiki resource as String
      */
     private String getEmptyWiki(String title) {
         StringBuffer emptyWikiXml = new StringBuffer();
         emptyWikiXml.append("!"+title);
-        
+
         return emptyWikiXml.toString();
     }
-    
+
     /**
      *
      */
@@ -328,10 +328,10 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
         emptyWikiPageContent.append("\n  </edit>");
         emptyWikiPageContent.append("\n  </resource>");
         emptyWikiPageContent.append("\n</introspection>");
-        
+
         return emptyWikiPageContent.toString();
-    }    
-    
+    }
+
     public String[] getPropertyNames() {
         String[] propertyNames = (String[])properties.keySet().toArray(new String[properties.keySet().size()]);
         return propertyNames;
@@ -345,12 +345,12 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
         Object property = properties.get(name);
         return property;
     }
-    
+
     public String getPropertyType(String propertyName){
         //TODO not implemented yet
         return null;
     }
-  
+
     /**
      *
      */
@@ -358,7 +358,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
         String title = getRequest().getParameter("rp.title");
         writeContentAndIntrospection(getEmptyWiki(title), title);
     }
- 
+
     /**
      * Write new content into data repository
      */
@@ -407,6 +407,10 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
         // TODO: Make mime-type configurable (depending on global XSLT) ...
         map.put("mime-type", "application/xhtml+xml");
         return map;
+    }
+
+    public String getCreateName(String suggestedName) {
+        return suggestedName;
     }
 
     /**

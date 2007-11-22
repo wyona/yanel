@@ -90,7 +90,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         if(request.getHeader("User-Agent").indexOf("rv:1.7") < 0) {
             ajaxBrowser = true;
         }
-        
+
         View view = new View();
         String mimeType = getMimeType(viewId);
         view.setMimeType(mimeType);
@@ -106,15 +106,15 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 
             String[] xsltPath = getXSLTPath(getPath());
             if (xsltPath != null) {
-                
+
                 // create reader:
                 XMLReader xmlReader = XMLReaderFactory.createXMLReader();
                 CatalogResolver catalogResolver = new CatalogResolver();
                 xmlReader.setEntityResolver(catalogResolver);
-                
+
                 // create xslt transformer:
                 SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
-                
+
                 TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPath.length];
                 for (int i = 0; i < xsltPath.length; i++) {
                     xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath[i]).getInputStream()));
@@ -122,23 +122,23 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     xsltHandlers[i].getTransformer().setParameter("yanel.path", getPath());
                     xsltHandlers[i].getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
                     xsltHandlers[i].getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
-                   
+
                     xsltHandlers[i].getTransformer().setParameter("language", getRequestedLanguage());
                 }
-                
+
                 // create i18n transformer:
                 I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getRequestedLanguage(), getRealm().getDefaultLanguage());
                 i18nTransformer.setEntityResolver(catalogResolver);
-                
+
                 // create xinclude transformer:
                 XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
                 ResourceResolver resolver = new ResourceResolver(this);
                 xIncludeTransformer.setResolver(resolver);
-                
+
                 // create serializer:
                 Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                
+
                 // chain everything together (create a pipeline):
                 xmlReader.setContentHandler(xsltHandlers[0]);
                 for (int i=0; i<xsltHandlers.length-1; i++) {
@@ -148,10 +148,10 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
                 i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
                 serializer.setOutputStream(baos);
-                
+
                 // execute pipeline:
                 xmlReader.parse(new InputSource(new java.io.StringBufferInputStream(getScreen())));
-                
+
                 // write result into view:
                 view.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
                 return view;
@@ -163,7 +163,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         } catch(Exception e) {
             log.error(e + " (" + getPath() + ", " + getRealm() + ")", e);
         }
-        
+
         view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
         return view;
     }
@@ -227,7 +227,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      *
      */
     private void getSelectResourceTypeScreen(StringBuffer sb) {
-        sb.append("<h4>Create new page (step 1)</h4>");
+        sb.append("<h4>Create new page (step 0)</h4>");
         sb.append("<h2>Select template (resp. resource type)</h2>");
         sb.append("<form>");
 
@@ -253,7 +253,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         } else {
         sb.append("<p>No resource types!</p>");
         }
-        sb.append("<br/><input type=\"submit\" value=\"Next\"/>");
+        sb.append("<br/><input type=\"button\" name=\"Cancel\" value=\"Cancel\" onclick=\"location.href='" + getReferer() + "'\"/>");
+        sb.append("<input type=\"hidden\" name=\"referer\" value=\"" + getReferer() + "\"/>");
+        sb.append("<input type=\"submit\" value=\"Next\"/>");
         sb.append("</form>");
     }
 
@@ -268,7 +270,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      * Save screen
      */
     private void getSaveScreen(StringBuffer sb) {
-        sb.append("<h4>Create new page (step 3)</h4>");
+        sb.append("<h4>Create new page (step 2)</h4>");
 
         Path pathOfNewResource = null;
         try {
@@ -276,6 +278,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         } catch(Exception e) {
             log.error(e.getMessage(), e);
             sb.append("<p>Exception: "+e.getMessage()+"</p>");
+            sb.append("<a href=\"javascript:history.back()\">back</a>");
             return;
         }
 
@@ -317,8 +320,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 log.error(e.getMessage(), e);
             }
         }
-        
-        
+
+
         try {
             String universalName = "<{"+ resNamespace +"}"+ resName +"/>";
             log.debug("Universal Name: " + universalName);
@@ -326,10 +329,10 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             if (resource != null) {
                 if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Creatable", "2")) {
 
-                    sb.append("<h4>Create new page (step 2)</h4>");
+                    sb.append("<h4>Create new page (step 1)</h4>");
                     sb.append("<h2>Enter/Select template (resp. resource) specific parameters and \"Save As\"</h2>");
-                    sb.append("<p>Template (resp. resource type): " + resName + " ("+resNamespace+")</p>");
                     sb.append("<form enctype=\"multipart/form-data\" method=\"post\">");
+                    sb.append("<p>Template (resp. resource type): " + resName + " ("+resNamespace+")</p>");
                     // TODO: Add this parameter to the continuation within the session!
                     sb.append("<input type=\"hidden\" name=\"resource-type\" value=\"" + rtps + "\"/>");
 
@@ -348,7 +351,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                             String propertyType = ((CreatableV2) resource).getPropertyType(propertyNames[i]);
                             if (propertyType != null && propertyType.equals(CreatableV2.TYPE_UPLOAD)) {
                                 sb.append("<input type=\"file\" name=\"rp." + propertyNames[i] + "\"/><br/>");
-                    } else if (propertyType != null && propertyType.equals(CreatableV2.TYPE_SELECT)) {
+                            } else if (propertyType != null && propertyType.equals(CreatableV2.TYPE_SELECT)) {
                                 Object defaultValues = ((CreatableV2) resource).getProperty(propertyNames[i]);
                                 if (defaultValues instanceof java.util.HashMap) {
                                     sb.append("<select name=\"rp." + propertyNames[i] + "\">");
@@ -372,38 +375,48 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                         sb.append("</table>");
                     }
                     if (defaultProperties != null) {
+                        sb.append("<ul>");
                         for (int i = 0; i < defaultProperties.length; i++) {
-                            sb.append("<p>Default property: " + defaultProperties[i] + "</p>");
-                            sb.append("<input type=\"hidden\" name=\"rp." + defaultProperties[i].getName() + "\" value=\"" + defaultProperties[i].getValue() + "\"/><br/>");
+                            sb.append("<li>");
+                            sb.append("Default property: " + defaultProperties[i]);
+                            sb.append("<input type=\"hidden\" name=\"rp." + defaultProperties[i].getName() + "\" value=\"" + defaultProperties[i].getValue() + "\"/>");
+                            sb.append("</li>");
                         }
-                    }
-
-                    //sb.append("<br/><br/><input type=\"submit\" value=\"Save As\" name=\"save-as\"/>");
-
-                    // TODO: Display repository navigation of this path ...
-                    Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("repo-navigation");
-                    Node node = null;
-                    String lookinPath = getRequest().getParameter("lookin");
-                    if (lookinPath != null) {
-                        node = sitetree.getNode(getRealm(), lookinPath);
-                    } else {
-                        node = sitetree.getNode(getRealm(), getPath());
-                    }
-                    if (node.isCollection()) {
-                        if(log.isDebugEnabled()) log.debug("Is Collection: " + node.getName());
-                    } else if (node.isResource()) {
-                        if (log.isDebugEnabled()) log.debug("Is Resource: " + node.getName());
-                        node = node.getParent();
-                    } else {
-                        log.error("Neither collection nor resource: " + getPath());
+                        sb.append("</ul>");
                     }
 
                     sb.append("<br/><br/>");
-                    
+
+                    sb.append("<div class=\"creatorFileBrowser\">");
+                    sb.append("<table>");
+                    sb.append("<tr><td colspan=\"2\" class=\"fileBrowserHead\">Save as:</td></tr>");
+                    sb.append("<tr><td colspan=\"2\">");
                     sb.append("<div id=\"lookup\">");
                     sb.append(getLookUp());
                     sb.append("</div>");
-                    
+                    sb.append("</td></tr>");
+                    sb.append("<tr><td colspan=\"2\" class=\"fileBrowserNewName\">");
+
+                    String createName = getRequest().getParameter("create-name");
+                    if (createName != null) {
+                        sb.append("New name: <input type=\"text\" name=\"create-name\" value=\"" + createName + "\"/>");
+                    } else {
+                        sb.append("New name: <input type=\"text\" name=\"create-name\"/>");
+                    }
+                    sb.append("</td></tr>");
+
+                    sb.append("<tr>");
+                    sb.append("<td>");
+                    sb.append("<input type=\"button\" name=\"Cancel\" value=\"Cancel\" onclick=\"location.href='" + getReferer() + "'\"/>");
+                    sb.append("<input type=\"hidden\" name=\"referer\" value=\"" + getReferer() + "\"/>");
+                    sb.append("</td>");
+                    sb.append("<td  align=\"right\">");
+                    sb.append("<input type=\"submit\" value=\"Save new resource\" name=\"save\"/>");
+                    sb.append("</td>");
+                    sb.append("</tr>");
+                    sb.append("</table>");
+                    sb.append("</div>");
+
                     sb.append("</form>");
 
                     // TODO: Display realm navigation (sitetree, topic map, ...) resp. introduce another step
@@ -414,7 +427,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             log.error(e.getMessage(), e);
         }
     }
-    
+
     /**
      * Creates new resource
      * @return Path of new resource
@@ -433,32 +446,28 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     private Path create(String createName, String lookinPath, String resourceType) throws Exception {
         org.wyona.yanel.core.map.Realm realm = getRealm();
         Path pathOfResourceCreator = new Path(getPath());
-        
+
         org.wyona.commons.io.Path parent = new org.wyona.commons.io.Path(pathOfResourceCreator.toString()).getParent();
-        
-        Path pathOfNewResource = null;
-        
-        if(parent.equals("null")) {
-            // if pathOfResourceCreator is ROOT
-            pathOfNewResource = new Path("/" + lookinPath + "/" + createName);
-        } else if(parent.toString().equals("/")){
-            pathOfNewResource = new Path(parent + "/" + lookinPath + "/" + createName);
-        } else {
-            if (log.isDebugEnabled()) log.debug("Parent: " + parent + ", Lookin-path: " + lookinPath + ", Create Name: " + createName);
-            pathOfNewResource = new Path("/" + lookinPath + "/" + createName);
-        }
-        
+
+        Path pathOfNewResource = new Path(getParentOfNewResource(parent, lookinPath).toString() + createName);
+
         if (log.isDebugEnabled()) log.debug("Path of new resource: " + pathOfNewResource);
         pathOfNewResource = new Path(removeTooManySlashes(pathOfNewResource.toString()));
         if (log.isDebugEnabled()) log.debug("Path of new resource without too many slashes: " + pathOfNewResource);
-        
+
         String rtps = resourceType;
         String resNamespace = rtps.substring(0, rtps.indexOf("::"));
         String resName = rtps.substring(rtps.indexOf("::") + 2);
         Resource newResource = yanel.getResourceManager().getResource(getEnvironment(), realm, pathOfNewResource.toString(), new ResourceConfiguration(resName, resNamespace, null));
-        
+
         if (newResource != null) {
             if (ResourceAttributeHelper.hasAttributeImplemented(newResource, "Creatable", "2")) {
+                createName = ((CreatableV2) newResource).getCreateName(createName);
+                if (createName == null || createName.equals("")) {
+                    throw new Exception("Please enter a name!");
+                }
+                pathOfNewResource = new Path(removeTooManySlashes(getParentOfNewResource(parent, lookinPath).toString()) + createName);
+                newResource.setPath(pathOfNewResource.toString());
                 ((CreatableV2) newResource).create(request);
                 createResourceConfiguration(newResource);
             } else {
@@ -466,7 +475,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             }
         } else {
             throw new Exception("creation NOT successful (newResource == null)!");
-            
+
         }
         return pathOfNewResource;
     }
@@ -600,7 +609,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         }
         return resName;
     }
-    
+
     private StringBuffer getLookUp() {
         StringBuffer sb = new StringBuffer("");
         Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("repo-navigation");
@@ -622,10 +631,10 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         String rtps = getRequest().getParameter("resource-type");
         String resNamespace = rtps.substring(0, rtps.indexOf("::"));
         String resName = rtps.substring(rtps.indexOf("::") + 2);
-        
-        sb.append("<table id=\"resourceCreatorSaveAsTable\"><tr><td colspan=\"2\">Save as:</td></tr>");
+
+        sb.append("<table id=\"resourceCreatorSaveAsTable\">");
         sb.append("<tr><td>Look in: " + node.getPath() + "&#160;&#160;&#160;</td><td>New folder: <input type=\"text\" name=\"create-new-folder\"/>&#160;<input type=\"image\" src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/folder-new.png\" alt=\"make a new folder\"/> ");
-        
+
         String parent = "/";
         if (!node.getPath().equals("/")) {
             parent = new org.wyona.commons.io.Path(node.getPath()).getParent().toString();
@@ -669,30 +678,19 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 sb.append("<tr><td>?</td><td>"+children[i].getName()+"</td><td>-</td></tr>");
                     }
                 }
-        
+
         sb.append("</tbody>");
         sb.append("</table>");
+        sb.append("<input type=\"hidden\" name=\"lookin\" value=\"" + node.getPath() + "\"/>");
         sb.append("</div>");
         sb.append("</td></tr>");
 
-        sb.append("<tr><td colspan=\"2\">");
-       
-        String createName = getRequest().getParameter("create-name");
-        if (createName != null) {
-            sb.append("New name: <input type=\"text\" name=\"create-name\" value=\"" + createName + "\"/>");
-        } else {
-            sb.append("New name: <input type=\"text\" name=\"create-name\"/>");
-        }
-        sb.append("</td></tr>");
 
-        sb.append("<tr><td colspan=\"2\" align=\"right\">");
-        sb.append("<input type=\"hidden\" name=\"lookin\" value=\"" + node.getPath() + "\"/>");
-        sb.append("<input type=\"submit\" value=\"Save new resource\" name=\"save\"/></td></tr>");
         sb.append("</table>");
-        
+
         return sb;
     }
-    
+
     /**
      * Get XSLT path
      */
@@ -723,6 +721,45 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             }
         }
         return sb.toString();
+    }
+
+    private Path getParentOfNewResource(org.wyona.commons.io.Path parent, String lookinPath) {
+        Path parentOfNewResource = null;
+        if(parent.equals("null")) {
+            // if pathOfResourceCreator is ROOT
+            parentOfNewResource = new Path("/" + lookinPath + "/");
+        } else if(parent.toString().equals("/")){
+            parentOfNewResource = new Path(parent + "/" + lookinPath + "/");
+        } else {
+            parentOfNewResource = new Path("/" + lookinPath + "/");
+        }
+        return parentOfNewResource;
+    }
+
+    private String getReferer() {
+        if(request.getParameter("referer") != null) {
+            return request.getParameter("referer");
+        }
+        if(request.getHeader("referer") != null) {
+            return replaceEntities(request.getHeader("referer"));
+        }
+        return PathUtil.backToRealm(getPath());
+    }
+
+    /**
+     * Replaces some characters by their corresponding xml entities.
+     * This method escapes those characters which must not occur in an xml text node.
+     * @param string
+     * @return escaped string
+     */
+    public String replaceEntities(String str) {
+        // there may be some &amp; and some & mixed in the input, so first transform all
+        // &amp; to & and then transform all & back to &amp;
+        // this way we don't get double escaped &amp;amp;
+        str = str.replaceAll("&amp;", "&");
+        str = str.replaceAll("&", "&amp;");
+        str = str.replaceAll("<", "&lt;");
+        return str;
     }
 }
 

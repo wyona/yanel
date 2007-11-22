@@ -306,6 +306,10 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
        return map;
    }
 
+   public String getCreateName(String suggestedName) {
+       return suggestedName;
+   }
+
    /**
     *
     */

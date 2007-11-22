@@ -61,7 +61,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
 //public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2 {
 
     private static Category log = Category.getInstance(NodeResource.class);
-    
+
     private String uploadMimeType;
 
     /**
@@ -79,7 +79,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
 
     public View getView(String viewId, String revisionName) throws Exception {
         View view = new View();
-        
+
         view.setInputStream(getRealm().getRepository().getNode(getPath()).getRevision(revisionName).getInputStream());
         view.setMimeType(getMimeType(viewId));
         view.setEncoding(getResourceConfigProperty("encoding"));
@@ -92,7 +92,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      */
     public View getView(String viewId) throws Exception {
         View view = new View();
-        
+
         view.setInputStream(getRealm().getRepository().getNode(getPath()).getInputStream());
         view.setMimeType(getMimeType(viewId));
         view.setEncoding(getResourceConfigProperty("encoding"));
@@ -104,9 +104,9 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public String getMimeType(String viewId) throws Exception {
-        
+
         String mimeType = getResourceConfigProperty("mime-type");
-        
+
         if (mimeType != null) return mimeType;
 
         // TODO: Load config mime.types ...
@@ -183,7 +183,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         getRealm().getRepository().getNode(getPath()).delete();
         return true;
     }
-    
+
     /**
      * @see org.wyona.yanel.core.api.attributes.VersionableV2#getRevisions()
      */
@@ -191,7 +191,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         Revision[] revisions = getRealm().getRepository().getNode(getPath()).getRevisions();
 
         RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
-   
+
         for (int i = 0; i < revisions.length; i++) {
             revisionInfos[i] = new RevisionInformation(revisions[i]);
         }
@@ -200,13 +200,13 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         }
         return revisionInfos;
     }
-   
+
     public void checkin(String comment) throws Exception {
         Node node = getRealm().getRepository().getNode(getPath());
         node.checkin(comment);
         /*
         if (node.isCheckedOut()) {
-            String checkoutUserID = node.getCheckoutUserID(); 
+            String checkoutUserID = node.getCheckoutUserID();
             if (checkoutUserID.equals(userID)) {
                 node.checkin();
             } else {
@@ -223,7 +223,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         node.checkout(userID);
         /*
         if (node.isCheckedOut()) {
-            String checkoutUserID = node.getCheckoutUserID(); 
+            String checkoutUserID = node.getCheckoutUserID();
             if (checkoutUserID.equals(userID)) {
                 log.warn("Resource " + getPath() + " is already checked out by this user: " + checkoutUserID);
             } else {
@@ -234,7 +234,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         }
         */
     }
-    
+
     public void cancelCheckout() throws Exception {
         Node node = getRealm().getRepository().getNode(getPath());
         node.cancelCheckout();
@@ -265,7 +265,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     /**
-     * 
+     *
      */
     public long getSize() throws Exception {
         Node node = getRealm().getRepository().getNode(getPath());
@@ -314,7 +314,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
                     Enumeration parameters = yanelRequest.getFileNames();
                     if (parameters.hasMoreElements()) {
                         String name = (String) parameters.nextElement();
-                        
+
                         Node newNode = org.wyona.yanel.core.util.YarepUtil.addNodes(repo, getPath().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
                         OutputStream output = newNode.getOutputStream();
                         InputStream is = yanelRequest.getInputStream(name);
@@ -328,8 +328,8 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
             } else {
                 log.error("this is NOT a HttpRequest");
             }
-            
-            
+
+
             // TODO: Introspection should not be hardcoded!
 /*            String name = new org.wyona.commons.io.Path(getPath()).getName();
             String parent = new org.wyona.commons.io.Path(getPath()).getParent().toString();
@@ -361,6 +361,24 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         return map;
     }
 
+    public String getCreateName(String suggestedName) {
+        if (suggestedName != null && !suggestedName.equals("")) return suggestedName;
+        if (request instanceof HttpRequest) {
+            HttpRequest yanelRequest = (HttpRequest)request;
+            if (yanelRequest.isMultipartRequest()) {
+                Enumeration parameters = yanelRequest.getFileNames();
+                if (parameters.hasMoreElements()) {
+                    String name = yanelRequest.getFilesystemName((String) parameters.nextElement());
+                    return name;
+                }
+            } else {
+                log.error("this is NOT a multipart request");
+            }
+        } else {
+            log.error("this is NOT a HttpRequest");
+        }
+        return null;
+    }
     /**
      *
      */
@@ -400,7 +418,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public String getMimeTypeBySuffix(String suffix) {
-        // TODO: use MimeTypeUtil 
+        // TODO: use MimeTypeUtil
         if (suffix.equals("html")) {
             return "text/html";
         } else if (suffix.equals("htm")) {
@@ -452,7 +470,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
             return "application/octet-stream";
         }
     }
-    
+
     /**
      *
      */

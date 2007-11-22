@@ -72,7 +72,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 ;
 
 /**
- * 
+ *
  */
 public class ContactResource extends Resource implements ViewableV1, CreatableV2 {
 
@@ -87,7 +87,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
     private ContactBean contact = null;
     private String defaultLanguage = "en";
     private String messageBundle = "contact-form";
-    
+
     private HashMap properties = new HashMap();
     private Repository repository  = null;
     private RepoPath rp = null;
@@ -95,29 +95,29 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
     private String language = null;
 
     private String defaultEmailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
-    
+
     /**
-     * 
+     *
      */
     public ContactResource() {
     }
 
     /**
-     * 
+     *
      */
     public ViewDescriptor[] getViewDescriptors() {
         return null;
     }
-    
+
     /**
-     * 
+     *
      */
     public View getView(Path path, String viewId) {
         return null;
     }
 
     /**
-     * 
+     *
      */
     public View getView(HttpServletRequest request, String viewId)
             throws Exception {
@@ -134,24 +134,24 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             log.debug("language param is empty or null : " + language);
             language = defaultLanguage;
         }
-        File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "contact-form.xml");        
+        File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "contact-form.xml");
         try {
-            
+
             // create reader:
             XMLReader xmlReader = XMLReaderFactory.createXMLReader();
             CatalogResolver catalogResolver = new CatalogResolver();
             xmlReader.setEntityResolver(catalogResolver);
-            
+
             // create Body xslt transformer:
             SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
 
             TransformerHandler xsltHandler1 = tf.newTransformerHandler(getBodyXSLTStreamSource());
             Transformer transformer = xsltHandler1.getTransformer();
-            
+
             boolean submit = false;
             Enumeration enumeration = request.getParameterNames();
             while(enumeration.hasMoreElements()){
-                if(enumeration.nextElement().toString().equals("email")) 
+                if(enumeration.nextElement().toString().equals("email"))
                     submit = true;
             }   
             if(submit) {
@@ -166,7 +166,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
                     if (request.getParameter("message") != null) transformer.setParameter("message", request.getParameter("message"));
                 }
             }
-            
+
             // create xslt transformer for global layout
             TransformerHandler xsltHandler2 = tf.newTransformerHandler(getGlobalXSLTStreamSource(path));
             transformer = xsltHandler2.getTransformer();
@@ -179,15 +179,15 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
             ResourceResolver resolver = new ResourceResolver(this);
             xIncludeTransformer.setResolver(resolver);
-            
+
             // create i18n transformer:
             String[] messageBundles = new String[2];
             messageBundles[0] = messageBundle;
             messageBundles[1] = "global";
-            
+
             I18nTransformer2 i18nTransformer = new I18nTransformer2(messageBundles, language, getRealm().getDefaultLanguage());
             i18nTransformer.setEntityResolver(catalogResolver);
-            
+
             // create serializer:
             Serializer serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -199,7 +199,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
             i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
             serializer.setOutputStream(baos);
-            
+
             // execute pipeline:
             xmlReader.parse(new InputSource(new FileInputStream(xmlFile)));
 
@@ -208,7 +208,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             defaultView.setMimeType(getMimeType());
             defaultView.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
             return defaultView;
-            
+
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw e;
@@ -238,17 +238,20 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
        // TODO: Do not hardcode xslt ...
        map.put("#xslt", "/xslt/global.xsl");
        // TODO: Make mime-type configurable (depending on global XSLT) ...
-       map.put("mime-type", "application/xhtml+xml");       
+       map.put("mime-type", "application/xhtml+xml");
        map.put("smtpHost",request.getParameter("rp.smtpHost"));
        map.put("smtpPort",request.getParameter("rp.smtpPort"));
        map.put("to",request.getParameter("rp.to"));
        map.put("subject", request.getParameter("rp.subject"));
-       
+
        return map;
    }
 
+   public String getCreateName(String suggestedName) {
+       return suggestedName;
+   }
    /**
-     * 
+     *
      */
    public String[] getPropertyNames() {
        String[] propertyNames = (String[])properties.keySet().toArray(new String[properties.keySet().size()]);
@@ -256,14 +259,14 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
    }
 
    /**
-    * 
+    *
     */
    public void setProperty(String name, Object value){
        properties.put(name, value);
    }
 
    /**
-    * 
+    *
     */
    public Object getProperty(String name){
        Object property = properties.get(name);
@@ -271,9 +274,9 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
    }
 
 
-    
+
     /**
-     * 
+     *
      * @param request
      * @param transformer
      */
@@ -311,7 +314,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
 	    if (contact.getCity() != null) content = content + "City: " + contact.getCity() + "\n";
 	    if (contact.getEmail() != null) content = content + "E-Mail: " + contact.getEmail() + "\n" + "\n";
             if (contact.message != null) content = content + "Message:\n" + contact.message;
-            
+
             if(smtpHost != null && smtpPort != 0 && to != null) {
                 try {
                     SendMail.send(smtpHost, smtpPort, from, to, subject, content);
@@ -331,7 +334,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             }
         }
     }
-    
+
     /**
      * this method checks if the specified email is valid against a regular expression
      * @param email
@@ -342,9 +345,9 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
         Matcher matcher = pattern.matcher(email);
         return matcher.find();
     }
-    
+
     /**
-     * 
+     *
      * @param path
      * @return
      * @throws Exception
@@ -353,7 +356,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
         return new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(
                 path.toString()), getRepositoryFactory());
     }
-    
+
     /**
      * Get global XSLT
      * @param path
@@ -368,7 +371,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             return new StreamSource(xsltFile);
         }
     }
-    
+
     /**
      * Get body XSLT
      */
@@ -380,7 +383,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             return new StreamSource(org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "contact-form.xsl"));
         }
     }
-    
+
     /**
      * Get mime type
      */
@@ -390,9 +393,9 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
 
         return "application/xhtml+xml";
     }
-   
+
    /**
-    * 
+    *
     * @return
     */
    protected RepositoryFactory getRepositoryFactory() {

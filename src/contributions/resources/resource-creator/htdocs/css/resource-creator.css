@@ -1,3 +1,14 @@
+div.creatorFileBrowser table {
+border-collapse:collapse;
+  width:100%;
+  border:1px solid;
+  border-color:#999999;
+}
+div.creatorFileBrowser table td.fileBrowserNewName {
+  width:100%;
+  border-bottom:1px solid;
+  border-color:#999999;
+}
 div#lookup #resourceCreatorSaveAsTable {
   width:100%;
 }

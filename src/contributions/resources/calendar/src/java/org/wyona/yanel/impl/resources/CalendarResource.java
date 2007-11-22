@@ -120,7 +120,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
                 InputStream in = dataRepo.getInputStream(children[i]);
                 java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
                 //StringBuffer event = new StringBuffer();
-            
+
                 byte[] buffer = new byte[8192];
                 int bytesRead;
                 while ((bytesRead = in.read(buffer)) != -1) {
@@ -133,7 +133,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
                 if (endOfProcessingInstruction > 0) {
                     calendar.append(event.toString().substring(endOfProcessingInstruction + 2));
                 } else {
-                    log.error("No processing instruction: " + children[i]);            
+                    log.error("No processing instruction: " + children[i]);
                 }
             }
         }
@@ -294,6 +294,10 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         map.put("class","none");
         map.put("user-ids","none");
         return map;
+    }
+
+    public String getCreateName(String suggestedName) {
+        return suggestedName;
     }
 
     /**

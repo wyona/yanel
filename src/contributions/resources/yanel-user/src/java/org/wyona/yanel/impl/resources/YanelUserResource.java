@@ -63,7 +63,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
     protected static final String WORLD = "world";
 
     protected static final String USER = "user";
-    
+
     protected static final String GROUP = "group";
 
     protected static final String PERMISSION_ATTR = "permission";
@@ -89,7 +89,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
 
         properties.put("userId", "");
         properties.put("userName", "");
-        properties.put("email", "");        
+        properties.put("email", "");
         properties.put("password", "");
         properties.put("group", "");
 
@@ -111,10 +111,10 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
 
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(String)
-     * @return The requested view. Possible views are: 
-     * defaultView - Displays change password, edit profile and delete forms 
-     * submitProfile - Result of updating the user's profile 
-     * submitPassword - Result of changing the user's password 
+     * @return The requested view. Possible views are:
+     * defaultView - Displays change password, edit profile and delete forms
+     * submitProfile - Result of updating the user's profile
+     * submitPassword - Result of changing the user's password
      * submitDelete - Result of deleting the user
      */
     public View getView(String viewId) throws Exception {
@@ -148,7 +148,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
                 }
                 transformer.setParameter("userId", userId);
                 transformer.setParameter("deletion", "true");
-            } else if (action.startsWith("submitDeleteFromGroup")) {        	
+            } else if (action.startsWith("submitDeleteFromGroup")) {
                 deleteFromGroup(action, transformer);
             } else if (action.equals("submitAddToGroup")) {
                 addToGroup(request,transformer);
@@ -169,22 +169,22 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
                 for (int i = 0; i < userGroups.length; i++) {
                     userGroupsString.append(userGroups[i].getID()).append(";");
                 }
-                transformer.setParameter("userGroupsString", userGroupsString);            
+                transformer.setParameter("userGroupsString", userGroupsString);
 
                 Group[] allGroups = getRealm().getIdentityManager().getGroupManager().getGroups();
                 StringBuffer allGroupsString = new StringBuffer();
                 for (int i = 0; i < allGroups.length; i++) {
-                    boolean isMember = false;        	
+                    boolean isMember = false;
                     for(int j = 0; j < userGroups.length; j++) {
                         if(userGroups[j].getID().equals(allGroups[i].getID())) {
-                            isMember = true;      		
+                            isMember = true;
                         }
-                    } 
+                    }
                     if(!isMember) {
                         allGroupsString.append(allGroups[i].getID()).append(";");
                     }
                 }
-                transformer.setParameter("allGroupsString", allGroupsString);            
+                transformer.setParameter("allGroupsString", allGroupsString);
             }
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             transformer.transform(new javax.xml.transform.stream.StreamSource(xmlFile), new StreamResult(baos));
@@ -269,6 +269,10 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
         return map;
     }
 
+    public String getCreateName(String suggestedName) {
+        return suggestedName;
+    }
+
     /**
      * @see org.wyona.yanel.core.api.attributes.CreatableV1#getPropertyNames()
      */
@@ -297,7 +301,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
     /**
      * Create a configuration object with the policies to access the user data.
      * Only the user and lenya will be able to access the user data.
-     * 
+     *
      * @param userId
      *            The user who must be granted permission to modify data
      * @return Configuration object containing the corresponding policies
@@ -359,7 +363,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
 
     /**
      * Updates the user profile
-     * 
+     *
      * @param request
      *            The request containing the data to update
      * @param transformer
@@ -376,7 +380,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
                 User user = realm.getIdentityManager().getUserManager().getUser(userId);
                 user.setEmail(request.getParameter("email"));
                 user.setName(request.getParameter("userName"));
-                user.save();               
+                user.save();
                 transformer.setParameter("success", "Profile updated successfully");
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
@@ -388,7 +392,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
      * Updates the groups the user belongs to. Currently it only allows for
      * deletion of membership The action parameter is always
      * submitDeleteFromGroup_X where X is the target group
-     * 
+     *
      * @param request
      *            The request containing the group involved
      * @param transformer
@@ -400,18 +404,18 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
             Group[] userGroups = user.getGroups();
             GroupManager gm = getRealm().getIdentityManager().getGroupManager();
 
-            String targetGroup = action.substring(action.indexOf("_")+1);            
+            String targetGroup = action.substring(action.indexOf("_")+1);
             if (userGroups.length > 0) {
                 if(userGroups.length > 1) {
                     Group group = gm.getGroup(targetGroup);
-                    if (group.isMember(user)) {                   
+                    if (group.isMember(user)) {
                         group.removeMember(user);
-                        group.save();                    
+                        group.save();
                     }
                     transformer.setParameter("success", "User successfully deleted from group: " + targetGroup);
                 } else {
-                    transformer.setParameter("error", "User can not be removed from group: " + targetGroup + ". Users must belong to one group at least."); 
-                }        	
+                    transformer.setParameter("error", "User can not be removed from group: " + targetGroup + ". Users must belong to one group at least.");
+                }
             } else {
                 log.error("The user " + userId + "does not belong to any group!");
             }
@@ -428,7 +432,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
     private void addToGroup(HttpServletRequest request, Transformer transformer) {
         String groupId = request.getParameter("Group");
         try {
-            String userId = getUserId();	
+            String userId = getUserId();
             Group group = getRealm().getIdentityManager().getGroupManager().getGroup(groupId);
             User user = getRealm().getIdentityManager().getUserManager().getUser(userId);
             group.addMember(user);
@@ -441,7 +445,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
 
     /**
      * Change user password
-     * 
+     *
      * @param request
      * @param transformer
      */
@@ -466,7 +470,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
                 }
             } else {
                 transformer.setParameter("error", "Authentication failed!");
-            }            
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -474,7 +478,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
 
     /**
      * This method checks if the specified email is valid against a regex
-     * 
+     *
      * @param email
      * @return true if email is valid
      */
@@ -489,7 +493,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
     /**
      * Determine the requested view: defaultView, submitProfile,
      * submitPassword,submitGroup, submitDelete
-     * 
+     *
      * @param request
      * @return name of the desired view
      */
