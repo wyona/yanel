@@ -265,6 +265,7 @@
   </target>
     
   <target name="set-classpath" description="Set classpath" depends="init, dependencies">
+    <echo>INFO: Set classpath ...</echo>
     <path id="classpath.compile">
       <!--
       <fileset dir="${yanel.home.dir}/lib">
