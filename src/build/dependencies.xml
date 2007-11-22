@@ -64,7 +64,7 @@
       <dependency groupId="xalan" artifactId="xalan"
                   version="2.7.0"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl"
-                  version="0.0.1-dev-r29023"/>
+                  version="0.0.1-dev-r29122"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="yarep" artifactId="yarep-impl"
                   version="0.0.1-dev-r28127"/>
@@ -87,6 +87,7 @@
       <dependency groupId="commons-beanutils" artifactId="commons-beanutils" version="1.6"/>
       <dependency groupId="commons-fileupload" artifactId="commons-fileupload" version="1.2"/>
       <dependency groupId="dom4j" artifactId="dom4j" version="1.5.2"/>
+      
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
