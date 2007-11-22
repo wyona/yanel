@@ -163,7 +163,11 @@ public abstract class Resource {
      * @deprecated use getEnvironment().setRequest() instead 
      */
     public void setRequest(HttpServletRequest request) {
-        environment.setRequest(request);
+        if (environment != null) {
+            environment.setRequest(request);
+        } else {
+            log.error("Environment is null!");
+        }
     }
 
     /**
@@ -177,7 +181,11 @@ public abstract class Resource {
      * @deprecated use getEnvironment().setResponse() instead
      */
     public void setResponse(HttpServletResponse response) {
-        environment.setResponse(response);
+        if (environment != null) {
+            environment.setResponse(response);
+        } else {
+            log.error("Environment is null!");
+        }
     }
 
     /**
