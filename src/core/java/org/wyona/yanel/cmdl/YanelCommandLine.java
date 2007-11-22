@@ -40,10 +40,14 @@ import org.wyona.security.core.api.Role;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import org.apache.log4j.Category;
+
 /**
  *
  */
 public class YanelCommandLine {
+
+    private static Category log = Category.getInstance(YanelCommandLine.class);
 
     /**
      *
@@ -131,7 +135,8 @@ public class YanelCommandLine {
             res.setRequest(request);
             res.setResponse(response);
         } catch(Exception e) {
-            System.err.println("Exception 435435: " + e);
+            System.err.println("Exception (also see log4j): " + e);
+            log.error(e.getMessage(), e);
             return;
         }
 
