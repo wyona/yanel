@@ -226,7 +226,7 @@
     <echo>Customize the ${local.config.dir}/local.* files and run build.sh OR run build.sh first and then customize the config files within build/webapps/yanel/WEB-INF/classes</echo>
   </target>
     
-  <target name="init" description="Initialize all parameters and other settings" depends="dependencies">
+  <target name="init" description="Initialize all parameters and other settings">
     <echo>Building with ${ant.version} and Java version ${ant.java.version}</echo>
 
     <property name="yanel.home.dir" location="../../"/>
@@ -262,8 +262,10 @@
       <pathelement location="${default.tomcat.home.dir}"/>
     </path>
     <pathconvert targetos="unix" property="default.tomcat.home.dir.forward.slashes" refid="default.tomcat.home.dir.ref"/>
-
-    <path id="classpath">
+  </target>
+    
+  <target name="set-classpath" description="Set classpath" depends="init, dependencies">
+    <path id="classpath.compile">
       <!--
       <fileset dir="${yanel.home.dir}/lib">
         <include name="*.jar"/>
@@ -271,15 +273,6 @@
       -->
       <pathelement path="${maven2.cp}"/>
     </path>
-
-
-    <path id="classpath.yanel">
-      <fileset dir="${yanel.home.dir}/build/lib">
-        <include name="*.jar"/>
-      </fileset>
-      <pathelement path="${maven2.cp}"/>
-    </path>
-
 
     <path id="classpath.cmdl">
       <pathelement path="${maven2.cp}"/>
@@ -311,14 +304,14 @@
 -->
   </target>
 
-  <target name="compile-core" description="Compile Java classes of Yanel core" depends="init">
+  <target name="compile-core" description="Compile Java classes of Yanel core" depends="init, set-classpath">
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${yanel.home.dir}/src/core/java/org/wyona/yanel/core"
       destdir="${classes.dir}"
       source="${source.java.version}"
       target="${target.java.version}"
       debug="true">
-      <classpath refid="classpath"/>
+      <classpath refid="classpath.compile"/>
     </javac>
     <mkdir dir="${yanel.home.dir}/build/lib"/>
     <jar destfile="${yanel.home.dir}/build/lib/yanel-core-${yanel.version}-r${yanel.revision}.jar"
@@ -340,7 +333,7 @@
   <target name="compile-impl" description="Compile Java classes of Yanel implementation" depends="init">
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${yanel.home.dir}/src/impl/java/org/wyona/yanel/impl" destdir="${classes.dir}" debug="true">
-      <classpath refid="classpath"/>
+      <classpath refid="classpath.compile"/>
     </javac>
 
     <mkdir dir="${yanel.home.dir}/build/lib"/>
@@ -385,7 +378,7 @@
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${yanel.home.dir}/src/webapp/src/java/org/wyona/yanel/servlet" destdir="${classes.dir}"
       debug="true"
-      classpathref="classpath"
+      classpathref="classpath.compile"
     />
     <mkdir dir="${yanel.home.dir}/build/lib"/>
     <jar destfile="${yanel.home.dir}/build/lib/yanel-webapp-${yanel.version}-r${yanel.revision}.jar"
