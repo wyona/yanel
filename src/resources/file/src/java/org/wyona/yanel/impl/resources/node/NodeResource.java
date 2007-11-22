@@ -368,8 +368,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
             if (yanelRequest.isMultipartRequest()) {
                 Enumeration parameters = yanelRequest.getFileNames();
                 if (parameters.hasMoreElements()) {
-                    String name = yanelRequest.getFilesystemName((String) parameters.nextElement());
-                    return name;
+                    return fixAssetName(yanelRequest.getFilesystemName((String) parameters.nextElement()));
                 }
             } else {
                 log.error("this is NOT a multipart request");
@@ -539,5 +538,19 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      */
     public void doTransition(String transitionID, String revision) throws WorkflowException {
         WorkflowHelper.doTransition(this, transitionID, revision);
+    }
+
+    protected String fixAssetName(String name) {
+        // some browsers may send the whole path:
+        int i = name.lastIndexOf("\\");
+        if (i > -1) {
+            name = name.substring(i + 1);
+        }
+        i = name.lastIndexOf("/");
+        if (i > -1) {
+            name = name.substring(i + 1);
+        }
+        name = name.replaceAll(" |&|%|\\?", "_");
+        return name;
     }
 }
