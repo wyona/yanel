@@ -118,6 +118,9 @@
         <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
           <delete dir="{@src}/build"/>
         </xsl:when>
+        <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
+          <delete dir="{@src}/build"/>
+        </xsl:when>
         <xsl:otherwise>
           <delete dir="${{build.dir}}/{@src}/build"/>
         </xsl:otherwise>
