@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Category;
+import org.wyona.yanel.core.attributes.viewable.View;
 
 /**
  * The standard executable usecase works as follows:
@@ -37,6 +38,7 @@ public class ExecutableUsecaseResource extends UsecaseResource implements Execut
 
     private static Category log = Category.getInstance(ExecutableUsecaseResource.class);
     
+    protected static final String VIEW_DEFAULT = "default";
     protected static final String VIEW_DONE = "done";
     protected static final String VIEW_CANCEL = "cancel";
     
@@ -54,7 +56,7 @@ public class ExecutableUsecaseResource extends UsecaseResource implements Execut
         this.errorMessages = new LinkedList();
     }
 
-    protected UsecaseView processUsecase(String viewID) throws UsecaseException {
+    protected View processUsecase(String viewID) throws UsecaseException {
         if (getParameter(PARAM_SUBMIT) != null) {
             if (!checkPreconditions() || hasErrors()) {
                 return generateView(VIEW_DEFAULT);

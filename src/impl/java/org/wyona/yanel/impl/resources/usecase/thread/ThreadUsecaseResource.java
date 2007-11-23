@@ -7,9 +7,9 @@ package org.wyona.yanel.impl.resources.usecase.thread;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
+import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.impl.resources.usecase.ExecutableUsecaseResource;
 import org.wyona.yanel.impl.resources.usecase.UsecaseException;
-import org.wyona.yanel.impl.resources.usecase.UsecaseView;
 
 /**
  * A resource which executes a background thread and shows periodical status information.
@@ -26,8 +26,8 @@ public abstract class ThreadUsecaseResource extends ExecutableUsecaseResource {
     /**
      * @see org.wyona.yanel.impl.resources.usecase.UsecaseResource#processUsecase(java.lang.String)
      */
-    protected UsecaseView processUsecase(String viewID) throws UsecaseException {
-        UsecaseView view = null;
+    protected View processUsecase(String viewID) throws UsecaseException {
+        View view = null;
         try {
             HttpSession session = getEnvironment().getRequest().getSession();
            

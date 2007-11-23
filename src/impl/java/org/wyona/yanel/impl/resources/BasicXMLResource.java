@@ -19,6 +19,9 @@ package org.wyona.yanel.impl.resources;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Properties;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -27,9 +30,13 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.ConfigurationException;
+import org.apache.avalon.framework.configuration.ConfigurationUtil;
 import org.apache.log4j.Category;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
+import org.w3c.dom.Document;
 import org.wyona.security.core.api.Identity;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
@@ -40,6 +47,8 @@ import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
+import org.wyona.yanel.impl.resources.xml.ConfigurableViewDescriptor;
+import org.wyona.yanel.impl.resources.usecase.UsecaseException;
 import org.wyona.yarep.core.Repository;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -52,24 +61,68 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     private static Category log = Category.getInstance(BasicXMLResource.class);
 
+    protected static String DEFAULT_VIEW_ID = "default";
     protected static String SOURCE_VIEW_ID = "source";
+    
+    protected static String SERIALIZER_OMIT_XML_DECLARATION = "serializer-omit-xml-declaration";
+    protected static String SERIALIZER_DOCTYPE_PUBLIC = "serializer-doctype-public";
+    protected static String SERIALIZER_DOCTYPE_SYSTEM = "serializer-doctype-system";
 
+    protected HashMap viewDescriptors;
+    
+    public ViewDescriptor getViewDescriptor(String viewId) {
+        ViewDescriptor[] viewDescriptors = getViewDescriptors();
+        for (int i = 0; i < viewDescriptors.length; i++) {
+            if (viewDescriptors[i].getId().equals(viewId)) {
+                return viewDescriptors[i];
+            }
+        }
+        return null;
+    }
+    
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getViewDescriptors()
      */
     public ViewDescriptor[] getViewDescriptors() {
-        ViewDescriptor[] vd = new ViewDescriptor[2];
-        try {
-            vd[0] = new ViewDescriptor("default");
-            vd[0].setMimeType(getMimeType(null));
-
-            vd[1] = new ViewDescriptor(SOURCE_VIEW_ID);
-            vd[1].setMimeType(getMimeType(SOURCE_VIEW_ID));
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        if (this.viewDescriptors != null) {
+            return (ViewDescriptor[])this.viewDescriptors.values().toArray(new ViewDescriptor[this.viewDescriptors.size()]); 
         }
-
-        return vd;
+        try {
+            this.viewDescriptors = new HashMap();
+            // reads views from configuration:
+            Document customConfigDoc = getConfiguration().getCustomConfiguration();
+            if (customConfigDoc != null) {
+                Configuration config = ConfigurationUtil.toConfiguration(customConfigDoc.getDocumentElement());
+                Configuration viewsConfig = config.getChild("views");
+                Configuration[] viewConfigs = viewsConfig.getChildren("view");
+                for (int i = 0; i < viewConfigs.length; i++) {
+                    String id = viewConfigs[i].getAttribute("id");
+                    ConfigurableViewDescriptor viewDescriptor = new ConfigurableViewDescriptor(id);
+                    viewDescriptor.configure(viewConfigs[i]);
+                    this.viewDescriptors.put(id, viewDescriptor);
+                }
+            } else {
+                // no custom config
+                ConfigurableViewDescriptor[] vd = new ConfigurableViewDescriptor[2];
+                vd[0] = new ConfigurableViewDescriptor(DEFAULT_VIEW_ID);
+                String mimeType = getResourceConfigProperty("mime-type");
+                vd[0].setMimeType(mimeType);
+                this.viewDescriptors.put(DEFAULT_VIEW_ID, vd[0]);
+                
+                vd[1] = new ConfigurableViewDescriptor(SOURCE_VIEW_ID);
+                mimeType = getResourceConfigProperty("source-view-mime-type");
+                vd[1].setMimeType(mimeType);
+                this.viewDescriptors.put(SOURCE_VIEW_ID, vd[1]);
+                return vd;
+            }
+        } catch (Exception e) {
+            String errorMsg = "Error configuring resource: " + getPath() + ": " + e.toString();
+            log.error(errorMsg, e);
+            // TODO: throw exception
+            return null;
+        }
+        
+        return null;
     }
 
     /**
@@ -84,14 +137,18 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getMimeType(java.lang.String)
      */
     public String getMimeType(String viewId) throws Exception {
-        if (viewId != null && viewId.equals(SOURCE_VIEW_ID)) {
-            String mimeType = getResourceConfigProperty("source-view-mime-type");
-            if (mimeType != null) return mimeType;
-        } else {
-            String mimeType = getResourceConfigProperty("mime-type");
-            if (mimeType != null) return mimeType;
+        String mimeType = null;
+        ViewDescriptor viewDescriptor = getViewDescriptor(viewId);
+        if (viewDescriptor != null) {
+            mimeType = viewDescriptor.getMimeType();
         }
-        return "application/xml";
+        if (mimeType == null) {
+            mimeType = this.getResourceConfigProperty("mime-type");
+        }
+        if (mimeType != null) {
+            return mimeType;
+        }
+        return "application/xhtml+xml";
     }
 
     /**
@@ -111,6 +168,10 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     public View getXMLView(String viewId, InputStream xmlInputStream) throws Exception {
         View view = new View();
+        if (viewId == null) {
+            viewId = DEFAULT_VIEW_ID;
+        }
+        ConfigurableViewDescriptor viewDescriptor = (ConfigurableViewDescriptor)getViewDescriptor(viewId);
         String mimeType = getMimeType(viewId);
         view.setMimeType(mimeType);
 
@@ -119,10 +180,8 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
             if (viewId != null && viewId.equals(SOURCE_VIEW_ID)) {
                 view.setInputStream(xmlInputStream);
-                view.setMimeType(getMimeType(viewId));
                 return view;
             }
-
 
             // create reader:
             XMLReader xmlReader = XMLReaderFactory.createXMLReader();
@@ -133,10 +192,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             // create xslt transformer:
             SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
 
-            String[] xsltPath = getXSLTPath(getPath());
-            TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPath.length];
-            for (int i = 0; i < xsltPath.length; i++) {
-                xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath[i]).getInputStream()));
+            String[] xsltPaths = viewDescriptor.getXSLTPaths();
+            if (xsltPaths == null || xsltPaths.length == 0) {
+                xsltPaths = getXSLTPath(getPath());
+            }
+            TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPaths.length];
+            for (int i = 0; i < xsltPaths.length; i++) {
+                xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPaths[i]).getInputStream()));
                 passTransformerParameters(xsltHandlers[i].getTransformer());
             }
 
@@ -150,14 +212,8 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             xIncludeTransformer.setResolver(resolver);
 
             // create serializer:
-            Serializer serializer = null;
-            if (getMimeType(viewId).equals("text/html")) {
-                serializer = SerializerFactory.getSerializer(SerializerFactory.HTML_TRANSITIONAL);
-            } else if (getMimeType(viewId).equals("application/xhtml+xml")) {
-                    serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
-            } else {
-                serializer = SerializerFactory.getSerializer(SerializerFactory.XML);
-            }
+            Serializer serializer = createSerializer(viewDescriptor);
+            
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
             // chain everything together (create a pipeline):
@@ -187,6 +243,45 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     }
 
+    /**
+     * Creates an html or xml serializer for the given view id.
+     * @param viewId
+     * @return serializer
+     * @throws Exception
+     */
+    protected Serializer createSerializer(ConfigurableViewDescriptor viewDescriptor) throws Exception {
+        Serializer serializer = null;
+        String serializerKey = viewDescriptor.getSerializerKey();
+        if (serializerKey != null) {
+            serializer = SerializerFactory.getSerializer(serializerKey);
+            if (serializer == null) {
+                throw new Exception("could not create serializer for key: " + serializerKey);
+            }
+        } else {
+            String mimeType = getMimeType(viewDescriptor.getId());
+
+            if (mimeType.equals("text/html")) {
+                serializer = SerializerFactory.getSerializer(SerializerFactory.HTML_TRANSITIONAL);
+            } else if (mimeType.equals("application/xml")) {
+                serializer = SerializerFactory.getSerializer(SerializerFactory.XML);
+            } else {
+                serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
+            }
+        }
+        // allow to override xml declaration and doctype:
+        Properties properties = viewDescriptor.getSerializerProperties();
+        if (properties != null) {
+            Enumeration propNames = properties.propertyNames();
+            while (propNames.hasMoreElements()) {
+                String name = (String)propNames.nextElement();
+                String value = properties.getProperty(name);
+
+                serializer.getOutputFormat().setProperty(name, value);
+            }
+        }
+        return serializer;
+    }
+    
     /**
      * Gets the names of the i18n message catalogues used for the i18n transformation.
      * Looks for an rc config property named 'i18n-catalogue'. Defaults to 'global'.
@@ -228,6 +323,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         // username
         String username = getUsername();
         if (username != null) transformer.setParameter("username", username);
+        transformer.setParameter("yanel.reservedPrefix", "yanel"); // TODO don't hardcode
     }
 
     /**
