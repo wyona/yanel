@@ -33,6 +33,7 @@ import org.wyona.yanel.core.attributes.translatable.TranslationException;
 import org.wyona.yanel.core.attributes.translatable.TranslationManager;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
+import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.wyona.yanel.core.source.ResourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
@@ -155,12 +156,19 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * Get mime type
      */
     public String getMimeType(String viewId) throws Exception {
-        if (viewId != null && viewId.equals(SOURCE_VIEW_ID)) {
-            String mimeType = getResourceConfigProperty("source-view-mime-type");
+        ViewDescriptor viewDescriptor = getViewDescriptor(viewId);
+        String mimeType;
+        if (viewDescriptor != null) {
+            mimeType = viewDescriptor.getMimeType();
             if (mimeType != null) return mimeType;
         }
 
-        String mimeType = getResourceConfigProperty("mime-type");
+        if (viewId != null && viewId.equals(SOURCE_VIEW_ID)) {
+            mimeType = getResourceConfigProperty("source-view-mime-type");
+            if (mimeType != null) return mimeType;
+        }
+
+        mimeType = getResourceConfigProperty("mime-type");
         if (mimeType != null) return mimeType;
 
         String suffix = PathUtil.getSuffix(getPath());
