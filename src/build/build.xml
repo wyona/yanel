@@ -227,7 +227,7 @@
   </target>
     
   <target name="init" description="Initialize all parameters and other settings">
-    <echo>Building with ${ant.version} and Java version ${ant.java.version}</echo>
+    <echo>INFO: Building with ${ant.version} and Java version ${ant.java.version}</echo>
 
     <property name="yanel.home.dir" location="../../"/>
 <!--
@@ -736,6 +736,7 @@
   </target>
 
   <target name="clean" description="Clean build" depends="init, clean-resources, clean-realms">
+    <echo>INFO: Clean build</echo>
     <delete includeemptydirs="true">
       <fileset dir="${build.dir}" excludes="logs/**, javadoc/**"/>
     </delete>
@@ -890,6 +891,7 @@
   </target>
 
   <target name="generate-resources-build" description="Generate resources build" depends="init">
+    <echo>INFO: Generate build file to build resources</echo>
     <condition property="local.resource-types.config.exists">
       <available file="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" type="file"/>
     </condition>
