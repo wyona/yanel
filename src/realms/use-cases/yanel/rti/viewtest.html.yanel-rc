@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="xml" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:custom-config>
+    <views>
+      <view id="default">
+        <mime-type>text/html</mime-type>
+        <xslt>/xslt/global.xsl</xslt>
+        <serializer key="HTML_TRANSITIONAL">
+          <omit-xml-declaration>yes</omit-xml-declaration>
+          <doctype-public>-//W3C//DTD XHTML 1.0 Transitional//EN</doctype-public>
+          <doctype-system>http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd</doctype-system>
+        </serializer>
+      </view>
+      <view id="source">
+        <mime-type>application/xml</mime-type>
+      </view>
+      <view id="xhtml">
+        <mime-type>application/xhtml+xml</mime-type>
+        <xslt>/xslt/global.xsl</xslt>
+        <serializer key="XHTML_STRICT"/>
+      </view>
+      <view id="test">
+        <mime-type>text/html</mime-type>
+        <xslt>/xslt/viewtest.xsl</xslt>
+        <xslt>/xslt/global.xsl</xslt>
+      </view>
+    </views>
+  </yanel:custom-config>
+
+</yanel:resource-config>
