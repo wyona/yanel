@@ -16,11 +16,26 @@ public class SerializerFactory {
     public static final int XHTML_STRICT = 1;
     public static final int HTML_TRANSITIONAL = 2;
     public static final int XML = 3;
+    
+    public static final String XHTML_STRICT_KEY = "XHTML_STRICT";
+    public static final String HTML_TRANSITIONAL_KEY = "HTML_TRANSITIONAL";
+    public static final String XML_KEY = "XML";
 
     public static Serializer getSerializer(Properties format) {
         Serializer serializer = new HTMLSerializer();
         serializer.setOutputFormat(format);
         return serializer;
+    }
+    
+    public static Serializer getSerializer(String key) {
+        if (key.equals(XHTML_STRICT_KEY)) {
+            return getSerializer(XHTML_STRICT);
+        } else if (key.equals(HTML_TRANSITIONAL_KEY)) {
+            return getSerializer(HTML_TRANSITIONAL);
+        } if (key.equals(XML_KEY)) {
+            return getSerializer(XML);
+        }
+        return null;
     }
     
     public static Serializer getSerializer(int key) {
