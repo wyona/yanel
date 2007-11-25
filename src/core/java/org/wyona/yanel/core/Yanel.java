@@ -103,6 +103,16 @@ public class Yanel {
        revision = versionConfig.getAttribute("revision");
        reservedPrefix = config.getChild("reserved-prefix").getValue();
     }
+
+    /**
+     * Shutdown Yanel
+     */
+    public void destroy() {
+       Realm[] realms = realmConfig.getRealms();
+       for (int i = 0; i < realms.length; i++) {
+           log.error("DEBUG: Shutdown realm: " + realms[i].getName());
+       }
+    }
    
     public static Yanel getInstance() throws Exception {
         if (yanel == null) {
