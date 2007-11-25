@@ -2157,4 +2157,13 @@ public class YanelServlet extends HttpServlet {
                 return response;
             }
     }
+
+    /**
+     *
+     */
+    public void destroy() {
+        super.destroy();
+        yanel.destroy();
+        log.error("DEBUG: Yanel webapp has been shut down.");
+    }
 }
