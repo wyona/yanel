@@ -63,13 +63,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     protected static String DEFAULT_VIEW_ID = "default";
     protected static String SOURCE_VIEW_ID = "source";
-    
+
     protected static String SERIALIZER_OMIT_XML_DECLARATION = "serializer-omit-xml-declaration";
     protected static String SERIALIZER_DOCTYPE_PUBLIC = "serializer-doctype-public";
     protected static String SERIALIZER_DOCTYPE_SYSTEM = "serializer-doctype-system";
 
     protected HashMap viewDescriptors;
-    
+
     public ViewDescriptor getViewDescriptor(String viewId) {
         ViewDescriptor[] viewDescriptors = getViewDescriptors();
         for (int i = 0; i < viewDescriptors.length; i++) {
@@ -79,13 +79,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         }
         return null;
     }
-    
+
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getViewDescriptors()
      */
     public ViewDescriptor[] getViewDescriptors() {
         if (this.viewDescriptors != null) {
-            return (ViewDescriptor[])this.viewDescriptors.values().toArray(new ViewDescriptor[this.viewDescriptors.size()]); 
+            return (ViewDescriptor[])this.viewDescriptors.values().toArray(new ViewDescriptor[this.viewDescriptors.size()]);
         }
         try {
             this.viewDescriptors = new HashMap();
@@ -101,7 +101,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                     viewDescriptor.configure(viewConfigs[i]);
                     this.viewDescriptors.put(id, viewDescriptor);
                 }
-                return (ViewDescriptor[])this.viewDescriptors.values().toArray(new ViewDescriptor[this.viewDescriptors.size()]); 
+                return (ViewDescriptor[])this.viewDescriptors.values().toArray(new ViewDescriptor[this.viewDescriptors.size()]);
             } else {
                 // no custom config
                 ConfigurableViewDescriptor[] vd = new ConfigurableViewDescriptor[2];
@@ -109,7 +109,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 String mimeType = getResourceConfigProperty("mime-type");
                 vd[0].setMimeType(mimeType);
                 this.viewDescriptors.put(DEFAULT_VIEW_ID, vd[0]);
-                
+
                 vd[1] = new ConfigurableViewDescriptor(SOURCE_VIEW_ID);
                 mimeType = getResourceConfigProperty("source-view-mime-type");
                 vd[1].setMimeType(mimeType);
@@ -212,7 +212,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
             // create serializer:
             Serializer serializer = createSerializer(viewDescriptor);
-            
+
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
             // chain everything together (create a pipeline):
@@ -280,7 +280,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         }
         return serializer;
     }
-    
+
     /**
      * Gets the names of the i18n message catalogues used for the i18n transformation.
      * Looks for an rc config property named 'i18n-catalogue'. Defaults to 'global'.
