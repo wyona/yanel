@@ -101,6 +101,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                     viewDescriptor.configure(viewConfigs[i]);
                     this.viewDescriptors.put(id, viewDescriptor);
                 }
+                return (ViewDescriptor[])this.viewDescriptors.values().toArray(new ViewDescriptor[this.viewDescriptors.size()]); 
             } else {
                 // no custom config
                 ConfigurableViewDescriptor[] vd = new ConfigurableViewDescriptor[2];
@@ -121,8 +122,6 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             // TODO: throw exception
             return null;
         }
-        
-        return null;
     }
 
     /**
