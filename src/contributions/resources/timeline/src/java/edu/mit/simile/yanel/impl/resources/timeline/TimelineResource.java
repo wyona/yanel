@@ -6,6 +6,7 @@ package edu.mit.simile.yanel.impl.resources.timeline;
 
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
+import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.util.PathUtil;
@@ -15,7 +16,7 @@ import org.apache.log4j.Category;
 /**
  *
  */
-public class TimelineResource extends Resource implements ViewableV2 {
+public class TimelineResource extends Resource implements ViewableV2, IntrospectableV1 {
 
     private static Category log = Category.getInstance(TimelineResource.class);
 
@@ -92,6 +93,7 @@ public class TimelineResource extends Resource implements ViewableV2 {
 
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
         sb.append("<head>");
+        sb.append("<link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"?yanel.resource.usecase=introspection\"/>");
         //sb.append("<script src=\"http://simile.mit.edu/timeline/api/timeline-api.js\" type=\"text/javascript\"></script>");
         sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPath(this) + "timeline-api.js\" type=\"text/javascript\"></script>");
 
@@ -153,5 +155,30 @@ public class TimelineResource extends Resource implements ViewableV2 {
         sb.append("</body>");
         sb.append("</html>");
         return sb;
+    }
+    
+    /**
+     * Get introspection for Introspectable interface
+     * TODO: What about XML which is being generated dynamically, e.g. http://yanel.wyona.org/roadmap-timeline.html
+     */
+    public String getIntrospection() throws Exception {
+        String name = PathUtil.getName(getPath());
+        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        sb.append("<introspection xmlns=\"http://www.wyona.org/neutron/2.0\">");
+    
+        sb.append("<navigation>");
+        sb.append("  <sitetree href=\"./\" method=\"PROPFIND\"/>");
+        sb.append("</navigation>");
+    
+        sb.append("<resource name=\"" + name + "\">");
+        sb.append("<edit mime-type=\"application/xml\">");
+        sb.append("<checkout url=\"" + getResourceConfigProperty("href") + "?yanel.resource.usecase=checkout\" method=\"GET\"/>");
+        sb.append("<checkin  url=\"" + getResourceConfigProperty("href") + "?yanel.resource.usecase=checkin\"  method=\"PUT\"/>");
+        sb.append("<release-lock url=\"" + getResourceConfigProperty("href") + "?yanel.resource.usecase=release-lock\" method=\"GET\"/>");
+        sb.append("</edit>");
+        sb.append("</resource>");
+        sb.append("</introspection>");
+        
+        return sb.toString();
     }
 }
