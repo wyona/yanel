@@ -90,8 +90,8 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         try {
             this.viewDescriptors = new HashMap();
             // reads views from configuration:
-            Document customConfigDoc = getConfiguration().getCustomConfiguration();
-            if (customConfigDoc != null) {
+            if (getConfiguration() != null && getConfiguration().getCustomConfiguration() != null) {
+                Document customConfigDoc = getConfiguration().getCustomConfiguration();
                 Configuration config = ConfigurationUtil.toConfiguration(customConfigDoc.getDocumentElement());
                 Configuration viewsConfig = config.getChild("views");
                 Configuration[] viewConfigs = viewsConfig.getChildren("view");
