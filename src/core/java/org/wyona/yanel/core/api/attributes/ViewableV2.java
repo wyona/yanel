@@ -45,9 +45,4 @@ public interface ViewableV2 {
      * Size of view. Return -1 in case the size is unknown.
      */
     public long getSize() throws Exception;
-    
-    /**
-     * Mime type of resource, e.g. application/xhtml+xml, whereas it can depend on view id
-     */
-    public String getMimeType(String viewId) throws Exception;
 }
