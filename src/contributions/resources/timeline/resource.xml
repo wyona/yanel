@@ -13,5 +13,8 @@ Timeline http://simile.mit.edu/timeline/
   <property name="href"/>
   <property name="title"/>
   <property name="height"/> <!-- sample value 250px -->
+
+  <!-- optional -->
+  <property name="introspection-url"/> <!-- alternative introspection URL -->
 </rtd>
 </resource>
