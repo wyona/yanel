@@ -93,7 +93,11 @@ public class TimelineResource extends Resource implements ViewableV2, Introspect
 
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
         sb.append("<head>");
-        sb.append("<link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"?yanel.resource.usecase=introspection\"/>");
+        if (getResourceConfigProperty("introspection-url") != null) {
+            sb.append("<link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"" + getResourceConfigProperty("introspection-url") + "\"/>");
+        } else {
+            sb.append("<link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"?yanel.resource.usecase=introspection\"/>");
+        }
         //sb.append("<script src=\"http://simile.mit.edu/timeline/api/timeline-api.js\" type=\"text/javascript\"></script>");
         sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPath(this) + "timeline-api.js\" type=\"text/javascript\"></script>");
 
