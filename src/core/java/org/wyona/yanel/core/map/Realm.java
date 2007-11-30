@@ -471,27 +471,3 @@ public class Realm {
         this.languageHandler = languageHandler;
     }
 }
-
-/**
- *
- */
-class RealmConfigPathResolver implements javax.xml.transform.URIResolver {
-
-    private File realmConfigFile;
-
-    /**
-     *
-     */
-    public RealmConfigPathResolver(Realm realm) {
-        realmConfigFile = realm.getConfigFile();
-    }
-
-    /**
-     *
-     */
-    public javax.xml.transform.Source resolve(String href, String base) throws javax.xml.transform.TransformerException {
-        javax.xml.transform.Source source = new javax.xml.transform.stream.StreamSource();
-        source.setSystemId(FileUtil.resolve(realmConfigFile, new File(href)).toString());
-        return source;
-    }
-}
