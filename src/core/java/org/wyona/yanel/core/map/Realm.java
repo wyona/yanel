@@ -470,4 +470,12 @@ public class Realm {
     public void setLanguageHandler(LanguageHandler languageHandler) {
         this.languageHandler = languageHandler;
     }
+
+    /**
+     *
+     */
+    public void destroy() throws Exception {
+        log.warn("Shutdown realm: " + getName());
+        getRepository().close();
+    }
 }
