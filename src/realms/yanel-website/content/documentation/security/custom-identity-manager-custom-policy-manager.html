@@ -1,0 +1,100 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>CustomIdentityManager / CustomPolicyManager / CustomWebAuthenticator</title>
+</head>
+<body>
+<h1>CustomIdentityManager / CustomPolicyManager / CustomWebAuthenticator</h1>
+
+<p>The default IdentityManager and PolicyManager are part of the org.wyona.security.impl package.</p>
+
+<p>To create a custom IdentityManager you will need to override the IdentityManagerFactoryImpl/IdentityManagerImpl classes from the security package with your own custom versions.</p>
+
+<p>Once you have your custom IdentityManager classes they need to be added to the ac configuration files of your realm, as well as to realm.xml.  Examples for the IdentityManager are shown below.</p>
+
+<hr/>
+
+<h2>CustomIdentityManager</h2>
+<p><strong>Override these:</strong></p>
+<p>org.wyona.security.impl.IdentityManagerFactoryImpl<br/>
+org.wyona.security.impl.IdentityManagerImpl</p>
+<p><strong>with these:</strong></p>
+<p>com.company.security.impl.IdentityManagerFactoryImpl<br/>
+com.company.security.impl.IdentityManagerImpl</p>
+
+<h3>Configuration example (ac-identities-repository.xml)</h3>
+<textarea cols="60" name="text" rows="10">
+<repository>
+  <name>Yanel Access Control Identities</name>
+
+  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../ac-identities"/>
+
+  <storage class="org.wyona.yarep.core.impl.vfs.VFileSystemStorage">
+    <content src="../ac-identities"/>
+  </storage>
+</repository>
+</textarea>
+
+<h3>Configuration example (realm.xml)</h3>
+<textarea cols="60" name="text" rows="10">
+<ac-identities class="com.company.security.impl.IdentityManagerFactoryImpl">
+  <com:repository-config xmlns:com="http//www.company.com/wyona/1.0">config/ac-identities-repository.xml</com:repository-config>
+  <com:max-number-of-failed-login-attempts xmlns:com="http//www.company.com/wyona/1.0">3</com:max-number-of-failed-login-attempts>
+</ac-identities>
+</textarea>
+
+<br/><br/>
+<hr/>
+
+<h2>CustomPolicyManager</h2>
+<p>Creating a CustomPolicyManager is basically the same as creating a CustomIdentityManager.</p>
+<p><strong>Override these:</strong></p>
+<p>org.wyona.security.impl.PolicyManagerFactoryImpl<br/>
+org.wyona.security.impl.PolicyManagerImpl</p>
+<p><strong>with these:</strong></p>
+<p>com.company.security.impl.PolicyManagerFactoryImpl<br/>
+com.company.security.impl.PolicyManagerImpl</p>
+
+<h3>Configuration example (ac-policies-repository.xml)</h3>
+<textarea cols="60" name="text" rows="10">
+<repository>
+  <name>Company Access Control Policies Repository</name>
+
+  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../ac-policies"/>
+
+  <storage class="org.wyona.yarep.core.impl.vfs.VFileSystemStorage">
+    <content src="../ac-policies"/>
+  </storage>
+</repository>
+</textarea>
+
+<h3>Configuration example (realm.xml)</h3>
+<textarea cols="60" name="text" rows="10">
+<ac-policies class="com.company.security.impl.PolicyManagerFactoryImpl">
+  <com:repository-config xmlns:com="http//www.company.com/wyona/1.0">config/ac-policies-repository.xml</com:repository-config>
+  <com:policy-caching-enabled xmlns:com="http://www.company.com/wyona/1.0">false</com:policy-caching-enabled>
+</ac-policies>
+</textarea>
+
+<br/><br/>
+<hr/>
+
+<h2>CustomWebAuthenticator</h2>
+<p>The WebAuthenticator is specific to the webapp (or servlet)</p>
+<p>In the future there will need to be a logout overwriting functionality</p>
+<p><strong>Override this:</strong></p>
+<p>org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl</p>
+<p><strong>with this:</strong></p>
+<p>com.company.yanel.servlet.security.impl.CompanyWebAuthenticatorImpl</p>
+
+<h3>Configuration example (realm.xml)</h3>
+<textarea cols="60" name="text" rows="10">
+<web-authenticator
+    class="com.company.yanel.servlet.security.impl.CompanyWebAuthenticatorImpl">
+        <com:proxyRedirectURI xmlns:com="http://www.company.com/wyona/1.0">/strongAuth.html</com:proxyRedirectURI>
+        <com:welcomeRedirectURI xmlns:com="http://www.company.com/wyona/1.0">/welcome.html</com:welcomeRedirectURI>
+        <com:lockedRedirectURI xmlns:com="http://www.company.com/wyona/1.0">/userLocked.html</com:lockedRedirectURI>
+        <com:expiredRedirectURI xmlns:com="http://www.company.com/wyona/1.0">/login/expired</com:expiredRedirectURI>
+</web-authenticator>
+</textarea>
+</body>
+</html>
