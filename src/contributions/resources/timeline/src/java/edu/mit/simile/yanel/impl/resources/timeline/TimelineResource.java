@@ -163,7 +163,6 @@ public class TimelineResource extends Resource implements ViewableV2, Introspect
     
     /**
      * Get introspection for Introspectable interface
-     * TODO: What about XML which is being generated dynamically, e.g. http://yanel.wyona.org/roadmap-timeline.html
      */
     public String getIntrospection() throws Exception {
         String name = PathUtil.getName(getPath());
