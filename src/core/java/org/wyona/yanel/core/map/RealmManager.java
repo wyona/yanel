@@ -207,8 +207,9 @@ public class RealmManager {
                     realmConfigFile = new File(realmConfigFile, REALM_DEFAULT_CONFIG_NAME);
                 }
 
-                log.debug("Reading realm config file for [" + realmId + "]: " + realmConfigFile);
                 try {
+                    if (log.isDebugEnabled()) log.debug("Reading realm config file for [" + realmId + "]: " + realmConfigFile);
+                    log.warn("TODO: Check on class attribute of realm config element and load custom realm implementation!");
                     Realm realm = new Realm(name.getValue(), realmId, mountPoint, realmConfigFile);
                     
                     Configuration proxy = realmElements[i].getChild("reverse-proxy", false);
