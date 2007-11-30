@@ -222,6 +222,9 @@ public class RealmManager {
                         values[3] = realmConfigFile;
                         java.lang.reflect.Constructor ct = Class.forName(customRealmImplClassName).getConstructor(classArgs);
                         realm = (Realm) ct.newInstance(values);
+                    } catch(ClassNotFoundException e) {
+                        log.error("Class not found: " + e.getMessage() + ". Fallback to default realm implementation!");
+                        realm = new Realm(name.getValue(), realmId, mountPoint, realmConfigFile);
                     } catch(Exception e) {
                         log.info("Default realm implementation will be used.");
                         realm = new Realm(name.getValue(), realmId, mountPoint, realmConfigFile);
