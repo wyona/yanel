@@ -110,9 +110,8 @@ public class Yanel {
     public void destroy() {
        Realm[] realms = realmConfig.getRealms();
        for (int i = 0; i < realms.length; i++) {
-           log.warn("Shutdown realm: " + realms[i].getName());
            try {
-               realms[i].getRepository().close();
+               realms[i].destroy();
            } catch(Exception e) {
                log.error(e, e);
            }
