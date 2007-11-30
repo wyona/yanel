@@ -209,8 +209,23 @@ public class RealmManager {
 
                 try {
                     if (log.isDebugEnabled()) log.debug("Reading realm config file for [" + realmId + "]: " + realmConfigFile);
-                    log.warn("TODO: Check on class attribute of realm config element and load custom realm implementation!");
-                    Realm realm = new Realm(name.getValue(), realmId, mountPoint, realmConfigFile);
+
+                    Configuration realmConfig = builder.buildFromFile(realmConfigFile);
+                    Realm realm;
+                    try {
+                        String customRealmImplClassName = realmConfig.getAttribute("class");
+                        Class[] classArgs = new Class[]{String.class, String.class, String.class, File.class};
+                        Object[] values = new Object[4];
+                        values[0] = name.getValue();
+                        values[1] = realmId;
+                        values[2] = mountPoint;
+                        values[3] = realmConfigFile;
+                        java.lang.reflect.Constructor ct = Class.forName(customRealmImplClassName).getConstructor(classArgs);
+                        realm = (Realm) ct.newInstance(values);
+                    } catch(Exception e) {
+                        log.info("Default realm implementation will be used.");
+                        realm = new Realm(name.getValue(), realmId, mountPoint, realmConfigFile);
+                    }
                     
                     Configuration proxy = realmElements[i].getChild("reverse-proxy", false);
                     if (proxy != null) {
