@@ -11,6 +11,21 @@
 
 <h2>Windows</h2>
 <ul>
+<li>If you use a Subversion client (Subclipse, TortoiseSVN, etc.) and want to avoid having line endings with ^M you will need to update the Subversion config.
+    <ul>
+    <li>This is located at: C:\Documents and Settings\USERNAME\Application Data\Subversion\config</li>
+    <li>Take the settings from this page: http://www.apache.org/dev/svn-eol-style.txt <br/>
+     and add them to the bottom of the config file.</li>
+    </ul>
+</li>
+<li>Different Subversion clients may have different ways of creating paths within the patch files.
+  <ul>
+  <li>TortoiseSVN creates relative paths within the patch files, which makes them more portable.</li>
+  <li>Subclipse, on the other hand, creates absolute paths within the patch files (C:\Documents and Settings\...) which need to be edited by hand with a text 
+  editor before they can be used on someone else's system.  This is actually a problem of Eclipse's 'Create a Patch' routine as can be seen by googling 'subclipse patch absolute relative path',
+  but it affects Subclipse.</li>
+  </ul>
+</li>
 <li>See <a href="http://gnuwin32.sourceforge.net/packages/diffutils.htm">http://gnuwin32.sourceforge.net/packages/diffutils.htm</a></li>
 </ul>
 
