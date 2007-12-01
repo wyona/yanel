@@ -317,12 +317,18 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         if (client != null) transformer.setParameter("client", client);
         // localization
         transformer.setParameter("language", getRequestedLanguage());
+
         // language of this translation
         transformer.setParameter("content-language", getContentLanguage());
+
         // username
         String username = getUsername();
         if (username != null) transformer.setParameter("username", username);
+
         transformer.setParameter("yanel.reservedPrefix", "yanel"); // TODO don't hardcode
+
+        // Add toolbar status
+        //if (toolbarStatus != null) transformer.setParameter("toolbar-status", toolbarStatus);
     }
 
     /**
