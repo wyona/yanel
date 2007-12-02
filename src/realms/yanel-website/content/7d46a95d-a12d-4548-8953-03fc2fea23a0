@@ -18,11 +18,15 @@ Client: No client yet.
 </p>
 
 
-<h3>Misc</h3><ul><li><a href="http://trac.galago-project.org/wiki/ProjectSoylent">The Soylent Project</a></li><li><a href="http://www.parakey.com">Parakey</a> (also see <a href="http://www.spectrum.ieee.org/nov06/4696">http://www.spectrum.ieee.org/nov06/4696</a>, <a href="http://en.wikipedia.org/wiki/Parakey">http://en.wikipedia.org/wiki/Parakey</a>)</li><li><a href="http://www.combots.com">Combots</a></li><li>Example of a possible Provider Server: <a href="http://www.tabber.org">Tabber</a> (also see <a href="http://openfriendformat.com/">http://openfriendformat.com/</a>)<br/></li><li>About Open Social Networks: <a href="http://blogs.sun.com/bblfish/entry/social_networking_3_0">http://blogs.sun.com/bblfish/entry/social_networking_3_0</a></li><li>Find a Friend: <a href="http://foaf.wyona.org">http://foaf.wyona.org</a></li><li>OpenSocial API: <a href="http://code.google.com/apis/opensocial/">http://code.google.com/apis/opensocial/</a></li>
+<h3>Misc</h3>
+<ul>
+<li><a href="http://www.foaf-project.org/2004/us/about.html">About FOAF</a> and <a href="http://xmlns.com/foaf/spec/">FOAF Specification</a></li>
+<li><a href="http://trac.galago-project.org/wiki/ProjectSoylent">The Soylent Project</a></li><li><a href="http://www.parakey.com">Parakey</a> (also see <a href="http://www.spectrum.ieee.org/nov06/4696">http://www.spectrum.ieee.org/nov06/4696</a>, <a href="http://en.wikipedia.org/wiki/Parakey">http://en.wikipedia.org/wiki/Parakey</a>)</li><li><a href="http://www.combots.com">Combots</a></li><li>Example of a possible Provider Server: <a href="http://www.tabber.org">Tabber</a> (also see <a href="http://openfriendformat.com/">http://openfriendformat.com/</a>)<br/></li><li>About Open Social Networks: <a href="http://blogs.sun.com/bblfish/entry/social_networking_3_0">http://blogs.sun.com/bblfish/entry/social_networking_3_0</a></li><li>Find a Friend: <a href="http://foaf.wyona.org">http://foaf.wyona.org</a></li><li>OpenSocial API: <a href="http://code.google.com/apis/opensocial/">http://code.google.com/apis/opensocial/</a></li>
 
 <li><a href="http://webcamp.org/SocialNetworkPortability">http://webcamp.org/SocialNetworkPortability</a></li>
 <li><a href="http://bradfitz.com/social-graph-problem/">http://bradfitz.com/social-graph-problem/</a></li>
 <li><a href="http://www.idealog.us/2007/10/breaking-open-f.html">http://www.idealog.us/2007/10/breaking-open-f.html</a> resp. <a href="http://idealog.typepad.com/.shared/image.html?/photos/uncategorized/2007/10/30/architecture.jpg">open source social networking architecture</a></li>
+<li><a href="http://www.dragonflylodge.org/foaf/dns4people.html">DNS for people</a></li>
 </ul>
 </body>
 </html>
