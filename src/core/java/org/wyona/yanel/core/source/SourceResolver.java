@@ -60,6 +60,9 @@ public class SourceResolver implements URIResolver {
                 resolver = new YanelRepositoryResolver(this.resource);
                 this.resolvers.put(scheme, resolver);
                 //resolver = new RepositoryResolver(this.resource);
+            } else if (scheme.equals("http")) {
+                resolver = new HttpResolver(this.resource);
+                this.resolvers.put(scheme, resolver);
             }
         }
         return resolver;
