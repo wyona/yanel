@@ -23,8 +23,7 @@
 
     <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
-      <dependency groupId="javax.servlet" artifactId="servlet-api"
-                  version="2.3" scope="provided" />
+      <dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3" scope="provided"/>
       <dependency groupId="log4j" artifactId="log4j"
                   version="1.2.8"/>
       <!-- TODO: Add checksum file to server -->
