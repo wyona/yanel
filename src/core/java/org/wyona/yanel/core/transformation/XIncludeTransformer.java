@@ -57,6 +57,7 @@ public class XIncludeTransformer extends AbstractTransformer {
             XMLReader xmlReader = XMLReaderFactory.createXMLReader();
             CatalogResolver catalogResolver = new CatalogResolver();
             xmlReader.setEntityResolver(catalogResolver);
+            xmlReader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
             xmlReader.setContentHandler(this);
             
             this.ignoreDocumentEvent = true;
