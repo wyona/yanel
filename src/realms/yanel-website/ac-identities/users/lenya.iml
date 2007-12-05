@@ -2,7 +2,14 @@
 
 <identity id="lenya" xmlns="http://www.wyona.org/security/1.0">
   <name>Lenya</name>
+
+  <!-- TODO: description is not implemented by Security API. See org.wyona.security.core.api.User -->
   <description>Dummy User</description>
   <email>lenya@foo.bar</email>
   <password type="md5">8e07dafd13495561db9063ebe4db4b27</password>
+
+  <language>de</language>
+
+  <!-- TODO: expiration date is not implemented by Yarep Impl. See org.wyona.security.impl.yarep.YarepUser -->
+  <expire>1969.02.16</expire>
 </identity>
