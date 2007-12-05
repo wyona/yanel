@@ -220,7 +220,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
             while (iter.hasNext()) {
                 FileItem item = (FileItem)iter.next();
                 if (item.getFieldName().equals(name)) {
-                    return item.getName();
+                    return fixFileName(item.getName());
                 }
             }
             return null;
@@ -268,5 +268,19 @@ public class HttpRequest extends HttpServletRequestWrapper {
             return null;
         }
     }    
+    
+    protected String fixFileName(String name) {
+        // some browsers may send the whole path:
+        int i = name.lastIndexOf("\\");
+        if (i > -1) {
+            name = name.substring(i + 1);
+        }
+        i = name.lastIndexOf("/");
+        if (i > -1) {
+            name = name.substring(i + 1);
+        }
+        name = name.replaceAll(" |&|%|\\?", "_");
+        return name;
+    }
 }
 
