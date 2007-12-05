@@ -1924,7 +1924,7 @@ public class YanelServlet extends HttpServlet {
         Resource resource = getResource(request, response);
         String path = resource.getPath();
         String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
-        if (path.indexOf("users") > 0) {
+        if (path.startsWith("/" + reservedPrefix + "/users/")) {
             String userName = path.substring(reservedPrefix.length() + 8);
             userName = userName.split("[.]")[0];
 
