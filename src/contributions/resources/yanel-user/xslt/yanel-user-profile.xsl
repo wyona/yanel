@@ -13,6 +13,7 @@
   <xsl:param name="email" select="''"/>
   <xsl:param name="user-profile-language" select="'IS_NULL'"/>
   <xsl:param name="expiration-date" select="'IS_NULL'"/>
+  <xsl:param name="description" select="'TODO'"/>
   <xsl:param name="userGroupsString" select="''"/>
   <xsl:param name="allGroupsString" select="''"/>
   <xsl:param name="success" select="''"/>
@@ -101,6 +102,10 @@
           <tr>
             <td>Expiration Date:</td>
             <td><xsl:value-of select="$expiration-date"/></td>
+          </tr>
+          <tr>
+            <td>Description:</td>
+            <td><xsl:value-of select="$description"/></td>
           </tr>
           <tr>
             <td colspan="2">
