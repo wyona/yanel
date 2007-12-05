@@ -35,12 +35,15 @@ com.company.security.impl.IdentityManagerImpl</p>
 </textarea>
 
 <h3>Configuration example (realm.xml)</h3>
-<textarea cols="60" name="text" rows="10">
-<ac-identities class="com.company.security.impl.IdentityManagerFactoryImpl">
-  <com:repository-config xmlns:com="http//www.company.com/wyona/1.0">config/ac-identities-repository.xml</com:repository-config>
-  <com:max-number-of-failed-login-attempts xmlns:com="http//www.company.com/wyona/1.0">3</com:max-number-of-failed-login-attempts>
-</ac-identities>
-</textarea>
+<p>
+&lt;ac-identities class="com.company.security.impl.IdentityManagerFactoryImpl">
+<br/>
+  &lt;com:repository-config xmlns:com="http//www.company.com/wyona/1.0">config/ac-identities-repository.xml&lt;/com:repository-config>
+  <br/>
+  &lt;com:max-number-of-failed-login-attempts xmlns:com="http//www.company.com/wyona/1.0">3&lt;/com:max-number-of-failed-login-attempts>
+  <br/>
+&lt;/ac-identities>
+</p>
 
 <br/><br/>
 <hr/>
@@ -68,12 +71,15 @@ com.company.security.impl.PolicyManagerImpl</p>
 </textarea>
 
 <h3>Configuration example (realm.xml)</h3>
-<textarea cols="60" name="text" rows="10">
-<ac-policies class="com.company.security.impl.PolicyManagerFactoryImpl">
-  <com:repository-config xmlns:com="http//www.company.com/wyona/1.0">config/ac-policies-repository.xml</com:repository-config>
-  <com:policy-caching-enabled xmlns:com="http://www.company.com/wyona/1.0">false</com:policy-caching-enabled>
-</ac-policies>
-</textarea>
+<p>
+&lt;ac-policies class="com.company.security.impl.PolicyManagerFactoryImpl">
+<br/>
+  &lt;com:repository-config xmlns:com="http//www.company.com/wyona/1.0">config/ac-policies-repository.xml&lt;/com:repository-config>
+  <br/>
+  &lt;com:policy-caching-enabled xmlns:com="http://www.company.com/wyona/1.0">false&lt;/com:policy-caching-enabled>
+  <br/>
+&lt;/ac-policies>
+</p>
 
 <br/><br/>
 <hr/>
