@@ -181,7 +181,7 @@ public class YanelServlet extends HttpServlet {
             if(doLogout(request, response) != null) return;
         }
 
-        // Authentication
+        // Authentication (WARNING: HTTP BASIC/DIGEST ...!)
         if(doAuthenticate(request, response) != null) return;
 
         // Check authorization
