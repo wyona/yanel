@@ -87,14 +87,15 @@ com.company.security.impl.PolicyManagerImpl</p>
 <p>com.company.yanel.servlet.security.impl.CompanyWebAuthenticatorImpl</p>
 
 <h3>Configuration example (realm.xml)</h3>
-<textarea cols="60" name="text" rows="10">
-<web-authenticator
-    class="com.company.yanel.servlet.security.impl.CompanyWebAuthenticatorImpl">
-        <com:proxyRedirectURI xmlns:com="http://www.company.com/wyona/1.0">/strongAuth.html</com:proxyRedirectURI>
-        <com:welcomeRedirectURI xmlns:com="http://www.company.com/wyona/1.0">/welcome.html</com:welcomeRedirectURI>
-        <com:lockedRedirectURI xmlns:com="http://www.company.com/wyona/1.0">/userLocked.html</com:lockedRedirectURI>
-        <com:expiredRedirectURI xmlns:com="http://www.company.com/wyona/1.0">/login/expired</com:expiredRedirectURI>
-</web-authenticator>
-</textarea>
+<p>
+&lt;web-authenticator class="com.company.yanel.servlet.security.impl.CompanyWebAuthenticatorImpl">
+<br/>
+        &lt;com:proxyRedirectURI xmlns:com="http://www.company.com/wyona/1.0">/strongAuth.html&lt;/com:proxyRedirectURI>
+        &lt;com:welcomeRedirectURI xmlns:com="http://www.company.com/wyona/1.0">/welcome.html&lt;/com:welcomeRedirectURI>
+        &lt;com:lockedRedirectURI xmlns:com="http://www.company.com/wyona/1.0">/userLocked.html&lt;/com:lockedRedirectURI>
+        &lt;com:expiredRedirectURI xmlns:com="http://www.company.com/wyona/1.0">/login/expired&lt;/com:expiredRedirectURI>
+<br/>
+&lt;/web-authenticator>
+</p>
 </body>
 </html>
