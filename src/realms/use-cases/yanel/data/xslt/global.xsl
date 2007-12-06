@@ -32,7 +32,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <head>
 <xsl:comment>Name: <xsl:value-of select="$yanel.path.name"/> (without suffix: <xsl:value-of select="$name-without-suffix"/>), Path: <xsl:value-of select="$yanel.path"/>, Back 2 Realm: <xsl:value-of select="$yarep.back2realm"/>, Back 2 Context: <xsl:value-of select="$yanel.back2context"/></xsl:comment>
 
-  <title><xsl:apply-templates select="/xhtml:html/xhtml:head/xhtml:title/*"/> - Yanel</title>
+  <title><xsl:apply-templates select="/xhtml:html/xhtml:head/xhtml:title/node()"/> - Yanel</title>
 
   <!-- This is needed such that Microsoft Internet Explorer displays characters such as &nbsp; correctly (also see xsl:output, whereas I (Michi) am not sure if the encoding is really needed there) -->
   <meta content="application/xhtml+xml; charset=UTF-8" http-equiv="Content-Type"/>
