@@ -10,6 +10,8 @@
 
   <language>de</language>
 
-  <!-- TODO: expiration date is not implemented by Yarep Impl. See org.wyona.security.impl.yarep.YarepUser -->
+  <!-- TODO: Fix the date format -->
+<!--
   <expire>1969.02.16</expire>
+-->
 </identity>
