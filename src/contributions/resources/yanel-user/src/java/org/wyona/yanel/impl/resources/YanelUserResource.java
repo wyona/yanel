@@ -164,10 +164,11 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
                 transformer.setParameter("userId", userId);
                 transformer.setParameter("userName", user.getName());
                 transformer.setParameter("email", user.getEmail());
-                // TODO: Does not exist within security API
-                //transformer.setParameter("description", user.getDescription());
+                transformer.setParameter("description", user.getDescription());
                 transformer.setParameter("user-profile-language", user.getLanguage());
-                transformer.setParameter("expiration-date", user.getExpirationDate());
+                if (user.getExpirationDate() != null) {
+                    transformer.setParameter("expiration-date", user.getExpirationDate());
+                }
                 Group[] userGroups = user.getGroups();
                 StringBuffer userGroupsString = new StringBuffer();
                 for (int i = 0; i < userGroups.length; i++) {
