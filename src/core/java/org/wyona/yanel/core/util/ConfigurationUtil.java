@@ -35,13 +35,13 @@ public class ConfigurationUtil {
     /**
      * Create a DOM Document from a custom config element modelled with avalon
      *
-     * @param confElement
+     * @param repoConfigElement
      *            The configuration element
      * @param rootName
      *            The root element name
      * @param rootNamespace
      *            The target namespace
-     * @return
+     * @return Custom config as DOM
      */
     public static Document getCustomConfiguration(Configuration repoConfigElement, String rootName, String rootNamespace) {
         try {
