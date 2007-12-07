@@ -94,15 +94,15 @@
           <td>&#160;</td>
           <td>
             <div id="spamblock_hide">
-            <input name="spamblock_hidden" type="hidden" value="TRyAg41n" />
-            <p>For spam detection purposes, please copy<br/> the number <strong>8989890</strong> to the field below:</p>
-            <input name="spamblock_input" id="spamblock_input" tabindex="3" value="" />
+              <input name="spamblock_hidden" type="hidden" value="TRyAg41n" />
+              <p>For spam detection purposes, please copy<br/> the number <strong>8989890</strong> to the field below:</p>
+              <input name="spamblock_input" id="spamblock_input" tabindex="3" value="" />
             </div>
+            <script type="text/javascript">
+              document.getElementById("spamblock_input").value = 8989890;
+              document.getElementById("spamblock_hide").style.display = "none";
+            </script>
           </td>
-          <script type="text/javascript">
-            document.getElementById("spamblock_input").value = 8989890;
-            document.getElementById("spamblock_hide").style.display = "none";
-          </script>
         </tr>
         <tr>
           <td>&#160;</td>
