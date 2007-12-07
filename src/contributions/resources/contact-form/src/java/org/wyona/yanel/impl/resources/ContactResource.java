@@ -153,8 +153,11 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             while(enumeration.hasMoreElements()){
                 if(enumeration.nextElement().toString().equals("email"))
                     submit = true;
-            }   
+            }
             if(submit) {
+                if (request.getParameter("spamblock_hidden") == null || request.getParameter("spamblock_input") == null) {
+                    throw new Exception("there is no spamblock implemented in the form.");
+                }
                 if (request.getParameter("spamblock_hidden").equals("TRyAg41n") && request.getParameter("spamblock_input").equals("8989890")) {    
                     sendMail(transformer);
                     if (request.getParameter("company") != null) transformer.setParameter("company", request.getParameter("company"));
