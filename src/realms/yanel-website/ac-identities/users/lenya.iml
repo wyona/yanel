@@ -11,7 +11,5 @@
   <language>de</language>
 
   <!-- TODO: Fix the date format -->
-<!--
-  <expire>1969.02.16</expire>
--->
+  <expire>2008-02-16</expire>
 </identity>
