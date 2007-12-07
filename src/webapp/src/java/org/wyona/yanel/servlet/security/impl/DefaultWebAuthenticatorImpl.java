@@ -6,6 +6,8 @@ import org.wyona.yanel.servlet.IdentityMap;
 import org.wyona.yanel.servlet.YanelServlet;
 import org.wyona.yanel.core.api.security.WebAuthenticator;
 
+import org.wyona.security.core.api.AccessManagementException;
+import org.wyona.security.core.ExpiredIdentityException;
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.User;
 
@@ -74,8 +76,12 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                         getXHTMLAuthenticationForm(request, response, realm, "Login failed!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                         return response;
                     }
-                } catch (Exception e) {
-                    log.warn("Login failed: " + loginUsername + " " + e);
+                } catch (ExpiredIdentityException e) {
+                    log.warn("Login failed: [" + loginUsername + "] " + e);
+                    getXHTMLAuthenticationForm(request, response, realm, "The account has expired!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                    return response;
+                } catch (AccessManagementException e) {
+                    log.warn("Login failed: [" + loginUsername + "] " + e);
                     getXHTMLAuthenticationForm(request, response, realm, "Login failed!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                     return response;
                 }
