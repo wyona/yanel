@@ -10,7 +10,7 @@
       <groupId>wyona-org-security</groupId>
       <artifactId>wyona-org-security-core</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>0.0.1-dev-r29612</version>
+      <version>0.0.1-dev-r29650</version>
     </dependency>
     <dependency>
       <groupId>yarep</groupId>
