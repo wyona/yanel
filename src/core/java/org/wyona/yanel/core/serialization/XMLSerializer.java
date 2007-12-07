@@ -125,7 +125,7 @@ public class XMLSerializer extends AbstractSerializer {
     /**
      * Replaces some characters by their corresponding xml entities.
      * This method escapes those characters which must not occur in an xml text node.
-     * @param string
+     * @param str
      * @return escaped string
      */
     public String replaceEntities(String str) {
@@ -141,7 +141,7 @@ public class XMLSerializer extends AbstractSerializer {
     /**
      * Replaces some characters by their corresponding xml entities.
      * This method escapes those characters which must not occur in an xml attribute.
-     * @param string
+     * @param str
      * @return escaped string
      */
     public String replaceAttrEntities(String str) {
