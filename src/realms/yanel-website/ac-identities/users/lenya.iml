@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<identity id="lenya" xmlns="http://www.wyona.org/security/1.0">
+<user id="lenya" xmlns="http://www.wyona.org/security/1.0">
   <name>Lenya</name>
 
   <!-- TODO: description is not implemented by Security API. See org.wyona.security.core.api.User -->
@@ -12,4 +12,4 @@
 
   <!-- TODO: Fix the date format -->
   <expire>2008-02-16</expire>
-</identity>
+</user>
