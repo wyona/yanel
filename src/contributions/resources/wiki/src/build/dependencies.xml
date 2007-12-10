@@ -31,8 +31,7 @@
                   version="r19560"/>
       <dependency groupId="wyona-org-wiki-parser" artifactId="wyona-wiki-parser"
                   version="r20641"/>
-      <dependency groupId="apache-org-lucene" artifactId="lucene-highlighter"
-                  version="1.x"/>
+      <dependency groupId="apache-org-lucene" artifactId="lucene-highlighter" version="1.x"/>
       <dependency groupId="apache-org-commons" artifactId="jrcs-diff"
                   version="1.x"/>
       <dependency groupId="opensymphony" artifactId="oscache"
