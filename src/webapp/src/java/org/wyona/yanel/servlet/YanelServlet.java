@@ -1976,9 +1976,9 @@ public class YanelServlet extends HttpServlet {
             String namespace = pathPart2[0].replaceAll("http:/", "http://");
             String htdocsPath;
             if (pathPart2[1].indexOf("/" + reservedPrefix + "/") >= 0) {
-                htdocsPath = "yanel-htdocs" + path.split("::" + name)[1].split("/" + reservedPrefix)[1].replaceAll("/", File.separator); 
+                htdocsPath = "yanel-htdocs" + path.split("::" + name)[1].split("/" + reservedPrefix)[1].replace('/', File.separatorChar); 
             } else {
-                htdocsPath = "htdocs" + path.split("::" + name)[1].replaceAll("/", File.separator); 
+                htdocsPath = "htdocs" + path.split("::" + name)[1].replace('/', File.separatorChar); 
             }
             try {
                 java.util.Map properties = new HashMap();
