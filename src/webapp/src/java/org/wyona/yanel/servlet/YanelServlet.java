@@ -1171,8 +1171,7 @@ public class YanelServlet extends HttpServlet {
                                 url = new URL(url.getProtocol(), url.getHost(), url.getDefaultPort(), url.getFile());
                             }
                         }
-
-                        log.error("DEBUG: Redirect to SSL: " + url);
+                        log.info("Redirect to SSL: " + url);
                         response.setHeader("Location", url.toString());
                         // TODO: Yulup has a bug re TEMPORARY_REDIRECT
                         //response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT);
