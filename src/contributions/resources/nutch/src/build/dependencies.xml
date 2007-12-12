@@ -37,8 +37,7 @@
 
       <!-- Ontology plugin libs -->
       <!-- http://jena.sourceforge.net/ -->
-      <dependency groupId="jena" artifactId="jena"
-                  version="2.1"/>
+      <dependency groupId="jena" artifactId="jena" version="2.3"/>
       <!-- http://icu.sourceforge.net/ -->
       <dependency groupId="icu4j" artifactId="icu4j"
                   version="2.6.1"/>
