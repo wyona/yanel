@@ -228,7 +228,10 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     /**
      * Custom XHTML Form for authentication
      */
-    private void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException {
+    public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException {
+
+        if(log.isDebugEnabled()) log.debug("Default authentication form implementation!");
+
         String pathRelativeToRealm = request.getServletPath().replaceFirst(realm.getMountPoint(),"/");
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(pathRelativeToRealm);
         
