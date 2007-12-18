@@ -1227,7 +1227,17 @@ public class YanelServlet extends HttpServlet {
                 response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
                 response.sendError(response.SC_UNAUTHORIZED);
             } else {
-                getXHTMLAuthenticationForm(request, response, realm, null);
+                try {
+	        WebAuthenticator wa = map.getRealm(request.getServletPath()).getWebAuthenticator();
+                if (wa == null) {
+	            wa = defaultWA;
+                }
+                wa.getXHTMLAuthenticationForm(request, response, realm, null, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                } catch (Exception e) {
+                    log.error(e, e);
+                    throw new ServletException(e.getMessage());
+                }
+                //getXHTMLAuthenticationForm(request, response, realm, null);
             }
             return response;
         } else {
@@ -1588,6 +1598,7 @@ public class YanelServlet extends HttpServlet {
     /**
      * Custom XHTML Form for authentication
      */
+/*
     private void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message) throws ServletException, IOException {
         String pathRelativeToRealm = request.getServletPath().replaceFirst(realm.getMountPoint(),"/");
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(pathRelativeToRealm);
@@ -1648,6 +1659,7 @@ public class YanelServlet extends HttpServlet {
             throw new ServletException(e.getMessage());
         }        
     }
+*/
 
     /**
      * Write to output stream of modifiable resource
