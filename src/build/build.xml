@@ -273,10 +273,12 @@
       </fileset>
       -->
       <pathelement path="${maven2.cp}"/>
+      <pathelement path="${maven2.compile.cp}"/>
     </path>
 
     <path id="classpath.cmdl">
       <pathelement path="${maven2.cp}"/>
+      <pathelement path="${maven2.compile.cp}"/>
     </path>
   </target>
 

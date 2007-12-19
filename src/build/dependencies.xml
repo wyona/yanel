@@ -21,9 +21,14 @@
     -->
     <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
 
-    <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
+    <!-- dependencies which are only needed at compile time, but won't be copied to WEB-INF/lib -->
+    <artifact:dependencies pathId="maven2.compile.classpath" filesetId="maven2.compile.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
       <dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3" scope="provided"/>
+    </artifact:dependencies>
+    
+    <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
       <dependency groupId="log4j" artifactId="log4j"
                   version="1.2.8"/>
       <!-- TODO: Add checksum file to server -->
@@ -85,6 +90,7 @@
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
+    <property name="maven2.compile.cp" refid="maven2.compile.classpath"/>
     <!--<echo>Maven2 classpath: ${maven2.cp}</echo>-->
 
   </target>
