@@ -106,6 +106,9 @@ public class ResourceTypeDefinition {
      *
      */
     public File getConfigFile() {
+        if (configFile == null) {
+            log.warn("Config file is null, because resource type definition of '" + getResourceTypeUniversalName() + "' has been probably loaded as part of a jar file! TODO: Offer as alternative the jar URI.");
+        }
         return configFile;
     }
 
