@@ -26,11 +26,11 @@ PATH=$PWD/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 # ----- Start/Stop Yanel
 #mvn --version
 ant -version
-if [ "$1" == "start" ]; then
+if [ "$1" = "start" ]; then
   ant -f src/build/build.xml start-tomcat
-elif [ "$1" == "stop" ]; then
+elif [ "$1" = "stop" ]; then
   ant -f src/build/build.xml stop-tomcat
-elif [ "$1" == "start-jetty" ]; then
+elif [ "$1" = "start-jetty" ]; then
   MAVEN=`which mvn`
   if [ -z "$MAVEN" ]; then
     echo "ERROR: No \"mvn\" command available!"
