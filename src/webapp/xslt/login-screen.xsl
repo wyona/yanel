@@ -45,7 +45,7 @@
 	<p>
 	or login with <a href="http://www.openid.net">OpenID</a>:
 	<form method="POST">
-          <input type="text" name="openid"/>
+          <input type="text" name="yanel.login.openid"/>
           <input type="submit" value="Login"/>
 	</form>
 	(For example: username.wordpress.com)
