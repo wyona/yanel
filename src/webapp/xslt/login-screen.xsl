@@ -42,6 +42,14 @@
             <input type="submit" value="Login"/>
           </form>
         <xsl:apply-templates select="/yanel:yanel-auth-screen/yanel:ssl"/>
+	<p>
+	or login with <a href="http://www.openid.net">OpenID</a>:
+	<form method="POST">
+          <input type="text" name="openid"/>
+          <input type="submit" value="Login"/>
+	</form>
+	(For example: username.wordpress.com)
+	</p>
         <hr/>
         <p>
         <xsl:choose>
