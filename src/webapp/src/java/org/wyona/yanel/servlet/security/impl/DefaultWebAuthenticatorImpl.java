@@ -58,6 +58,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
             // HTML Form based authentication
             String loginUsername = request.getParameter("yanel.login.username");
+            String openID = request.getParameter("yanel.login.openid");
             if(loginUsername != null) {
                 HttpSession session = request.getSession(true);
                 try {
@@ -85,6 +86,11 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                     getXHTMLAuthenticationForm(request, response, realm, "Login failed!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                     return response;
                 }
+            } else if (openID != null) {
+                // TODO: Implement OpenID ... (see for instance http://code.google.com/p/joid/)
+                log.warn("OpenID implementation not finished yet: [" + openID + "]");
+                getXHTMLAuthenticationForm(request, response, realm, "Login failed because OpenID implementation is not finished yet!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                return response;
             }
 
             // Neutron-Auth based authentication
