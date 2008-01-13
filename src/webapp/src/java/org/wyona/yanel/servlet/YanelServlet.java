@@ -837,9 +837,6 @@ public class YanelServlet extends HttpServlet {
         Identity identity;
         try {
             identity = getIdentity(request);
-            if (identity == null) {
-                identity = new Identity(); // world
-            }
             Realm realm = map.getRealm(request.getServletPath());
             // TODO: implement detection of state of view
             String stateOfView = StateOfView.AUTHORING;
@@ -1021,29 +1018,16 @@ public class YanelServlet extends HttpServlet {
         Usecase usecase = getUsecase(request);
 
         // Get identity
-        Identity identity = null;
-        try {
-            identity = getIdentity(request);
-            if (identity == null) {
-                if (log.isDebugEnabled()) log.debug("Identity is WORLD");
-                identity = new Identity();
-                // TBD: Should add world identity to the session?
-            }
-        } catch (Exception e) {
-            log.error(e, e);
-            throw new ServletException(e.getMessage());
-        }
-
-        // Set some variables
-        boolean authorized = false;
+        Identity identity;
         Realm realm;
         String path;
         try {
+            identity = getIdentity(request);
             realm = map.getRealm(request.getServletPath());
             path = map.getPath(realm, request.getServletPath());
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new ServletException(e.getMessage(), e);
+            log.error(e, e);
+            throw new ServletException(e.getMessage());
         }
 
 
@@ -1109,9 +1093,10 @@ public class YanelServlet extends HttpServlet {
 
 
         // Check Authorization
+        boolean authorized = false;
         try {
             log.debug("Do session based custom authorization");
-            if (log.isDebugEnabled()) log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity.getUsername() + ", Usecase: " + usecase.getName());
+            if (log.isDebugEnabled()) log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity + ", Usecase: " + usecase.getName());
             authorized = realm.getPolicyManager().authorize(path, identity, usecase);
             if (log.isDebugEnabled()) log.debug("Check authorization result: " + authorized);
         } catch (Exception e) {
@@ -1814,7 +1799,8 @@ public class YanelServlet extends HttpServlet {
         if (session != null) {
             IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
             if (identityMap != null) {
-                return (Identity)identityMap.get(realm.getID());
+                Identity identity = (Identity)identityMap.get(realm.getID());
+                if (identity != null) return identity;
             }
         }
 
@@ -1825,6 +1811,7 @@ public class YanelServlet extends HttpServlet {
         if (authorizationHeader != null) {
             if (authorizationHeader.toUpperCase().startsWith("BASIC")) {
                 log.debug("Using BASIC authorization ...");
+                log.error("DEBUG: Using BASIC authorization ...");
                 // Get encoded user and password, comes after "BASIC "
                 String userpassEncoded = authorizationHeader.substring(6);
                 // Decode it, using any base 64 decoder
@@ -1848,7 +1835,6 @@ public class YanelServlet extends HttpServlet {
                         writer.print("BASIC Authentication Failed!");
                         return response;
 */
-                        return null;
                     }
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
@@ -1863,15 +1849,14 @@ public class YanelServlet extends HttpServlet {
                 PrintWriter writer = response.getWriter();
                 writer.print("DIGEST is not implemented!");
 */
-                return null;
             } else {
                 log.warn("No such authorization type implemented: " + authorizationHeader);
-                return null;
             }
         }
 	
-        if(log.isDebugEnabled()) log.debug("No identity yet (neither session nor header based!");
-        return null;
+        if(log.isDebugEnabled()) log.debug("No identity yet (Neither session nor header based! Identity is set to WORLD!)");
+        // TBD: Should add world identity to the session?
+        return new Identity();
     }
 
     /**
