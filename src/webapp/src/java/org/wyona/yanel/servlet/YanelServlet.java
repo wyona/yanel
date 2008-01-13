@@ -181,11 +181,12 @@ public class YanelServlet extends HttpServlet {
             if(doLogout(request, response) != null) return;
         }
 
-        // Authentication (WARNING: Because Yanel supports HTTP BASIC/DIGEST, authentication is done before authorization! TODO: Is this really necessary? Can't the doAuthorize check on HTTP BASIC/DIGEST ...?)
-        //if(doAuthenticate(request, response) != null) return;
-
-        // Check authorization and authenticate if authorization denied
-        if(doAccessControl(request, response) != null) return;
+        if(doAccessControl(request, response) != null) {
+            log.warn("Access denied: " + request.getServletPath());
+            return;
+        } else {
+            if (log.isDebugEnabled()) log.debug("Access granted: " + request.getServletPath());
+        }
 
         // Check for requests for global data
         Resource resource = getResource(request, response);
@@ -1031,10 +1032,12 @@ public class YanelServlet extends HttpServlet {
         }
 
 
+
+
+/*
         // HTTP BASIC Authorization (For clients such as for instance Sunbird, OpenOffice or cadaver)
         // IMPORT NOTE: BASIC Authentication needs to be checked on every request, because clients often do not support session handling
 
-/*
         String authorization = request.getHeader("Authorization");
         log.debug("Checking for Authorization Header: " + authorization);
         if (authorization != null) {
@@ -1090,6 +1093,8 @@ public class YanelServlet extends HttpServlet {
             }
         }
 */
+
+
 
 
         // Check Authorization
@@ -1154,60 +1159,6 @@ public class YanelServlet extends HttpServlet {
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY);
                 return response;
             }
-
-/*
-            // Check if this is a neutron request, a Sunbird/Calendar request or just a common GET request
-            // Also see e-mail about recognizing a WebDAV request: http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
-            StringBuffer sb = new StringBuffer("");
-            String neutronVersions = request.getHeader("Neutron");
-            String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
-            
-            if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
-                log.debug("Neutron Versions supported by client: " + neutronVersions);
-                log.debug("Authentication Scheme supported by client: " + clientSupportedAuthScheme);
-                sb.append("<?xml version=\"1.0\"?>");
-                sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
-                sb.append("<message>Authorization denied: " + getRequestURLQS(request, null, true) + "</message>");
-                sb.append("<authentication>");
-                sb.append("<original-request url=\"" + getRequestURLQS(request, null, true) + "\"/>");
-                //TODO: Also support https ...
-                sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
-                sb.append("<form>");
-                sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
-                sb.append("<param description=\"Username\" name=\"username\"/>");
-                sb.append("<param description=\"Password\" name=\"password\"/>");
-                sb.append("</form>");
-                sb.append("</login>");
-                // NOTE: Needs to be a full URL, because user might switch the server ...
-                sb.append("<logout url=\"" + getRequestURLQS(request, "yanel.usecase=logout", true) + "\" realm=\"" + realm.getName() + "\"/>");
-                sb.append("</authentication>");
-                sb.append("</exception>");
-
-                log.debug("Neutron-Auth response: " + sb);
-                response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
-                response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
-                response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
-                PrintWriter w = response.getWriter();
-                w.print(sb);
-            } else if (request.getRequestURI().endsWith(".ics")) {
-                log.warn("Somebody seems to ask for a Calendar (ICS) ...");
-                response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
-                response.sendError(response.SC_UNAUTHORIZED);
-            } else {
-                try {
-	        WebAuthenticator wa = map.getRealm(request.getServletPath()).getWebAuthenticator();
-                if (wa == null) {
-	            wa = defaultWA;
-                }
-                wa.getXHTMLAuthenticationForm(request, response, realm, null, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
-                } catch (Exception e) {
-                    log.error(e, e);
-                    throw new ServletException(e.getMessage());
-                }
-                //getXHTMLAuthenticationForm(request, response, realm, null);
-            }
-            return response;
-*/
         } else {
             log.info("Access granted: " + getRequestURLQS(request, null, false));
             return null;
