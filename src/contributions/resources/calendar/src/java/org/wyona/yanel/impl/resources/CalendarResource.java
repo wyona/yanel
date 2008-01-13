@@ -55,7 +55,12 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
      */
     public String getMimeType(String viewId) {
         if(viewId == null) {
-            String mimeType = getRTI().getProperty("mime-type");
+            String mimeType = null;
+            try {
+                mimeType = getResourceConfigProperty("mime-type");
+            } catch (Exception e) {
+                log.error(e, e);
+            }
             if (mimeType != null) {
                 return mimeType;
             } else {
@@ -85,9 +90,9 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
      * @param viewId xml, ics, xhtml
      */
     public View getView(String viewId) throws Exception {
-        String categories = getRTI().getProperty("categories");
-        String classes = getRTI().getProperty("classes");
-        String userIds = getRTI().getProperty("user-ids");
+        String categories = getResourceConfigProperty("categories");
+        String classes = getResourceConfigProperty("classes");
+        String userIds = getResourceConfigProperty("user-ids");
         log.error("DEBUG: " + categories + " " + classes + " " + userIds);
 
         org.wyona.yarep.core.Repository dataRepo = getRealm().getRepository();
@@ -105,7 +110,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         }
 
 
-        String eventsPath = getRTI().getProperty("events-path");
+        String eventsPath = getResourceConfigProperty("events-path");
         if (eventsPath == null) {
             eventsPath = getPath();
         }
@@ -223,7 +228,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
                 event = new CalendarEvent();
             } else if (line.startsWith("END:VEVENT")) {
                 log.error("DEBUG: Write event " + event.getUID() + ", " + event.toXML());
-                Writer out = getRealm().getRepository().getWriter(new org.wyona.yarep.core.Path(getRTI().getProperty("events-path") + "/" + event.getUID() + ".xml"));
+                Writer out = getRealm().getRepository().getWriter(new org.wyona.yarep.core.Path(getResourceConfigProperty("events-path") + "/" + event.getUID() + ".xml"));
                 out.write(event.toXML());
                 out.close();
                 event = null;
