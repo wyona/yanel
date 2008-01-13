@@ -182,9 +182,9 @@ public class YanelServlet extends HttpServlet {
         }
 
         // Authentication (WARNING: Because Yanel supports HTTP BASIC/DIGEST, authentication is done before authorization! TODO: Is this really necessary? Can't the doAuthorize check on HTTP BASIC/DIGEST ...?)
-        if(doAuthenticate(request, response) != null) return;
+        //if(doAuthenticate(request, response) != null) return;
 
-        // Check authorization
+        // Check authorization and authenticate if authorization denied
         if(doAccessControl(request, response) != null) return;
 
         // Check for requests for global data
@@ -1010,14 +1010,14 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Check authorization and if not authorized then authenticate
+     * Check authorization and if not authorized then authenticate. Return null if authorization granted, otherwise return 401 and appropriate response such that client can provide credentials for authentication
      */
     private HttpServletResponse doAccessControl(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         // Get usecase
         Usecase usecase = getUsecase(request);
 
-        // Get identity
+        // Get identity, realm, path
         Identity identity;
         Realm realm;
         String path;
@@ -1140,10 +1140,22 @@ public class YanelServlet extends HttpServlet {
                 }
             }
 
-            // TODO: Shouldn't this be here instead at the beginning of service() ...?
-            //if(doAuthenticate(request, response) != null) return response;
+            if(doAuthenticate(request, response) != null) {
+                log.warn("Authentication either failed or no credentials provided yet!");
+                return response;
+	    } else {
+                log.warn("Authentication was successful!");
+                URL url = new URL(getRequestURLQS(request, null, false).toString());
+                url = new URL("https", url.getHost(), new Integer(sslPort).intValue(), url.getFile());
+                log.warn("Redirect to original request: " + url);
+                response.setHeader("Location", url.toString());
+                // TODO: Yulup has a bug re TEMPORARY_REDIRECT
+                //response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT);
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY);
+                return response;
+            }
 
-
+/*
             // Check if this is a neutron request, a Sunbird/Calendar request or just a common GET request
             // Also see e-mail about recognizing a WebDAV request: http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
             StringBuffer sb = new StringBuffer("");
@@ -1195,6 +1207,7 @@ public class YanelServlet extends HttpServlet {
                 //getXHTMLAuthenticationForm(request, response, realm, null);
             }
             return response;
+*/
         } else {
             log.info("Access granted: " + getRequestURLQS(request, null, false));
             return null;
