@@ -162,7 +162,11 @@
             </feature><feature><td style="vertical-align: top;">Validation re RelaxNG and XML Schema</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></feature><feature><td style="vertical-align: top;">Page moved functionality</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></feature><feature><td style="vertical-align: top;"><a href="http://www.elml.ch">eLML</a> resource</td><td style="vertical-align: top;">not started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td></feature><feature><td valign="top"><a href="specification/foaf/index.html" shape="rect">FOAF Provider Server</a></td><td valign="top">in progress</td><td valign="top">TBD</td><td valign="top">Michael</td></feature>
 
 <feature>
-<td>SOAP Resource</td><td>in progress<br/></td><td>2007.12.07</td><td>Evaldas/Michael</td><td><strike><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5779">5779</a></strike></td>
+  <td>SOAP Resource</td>
+  <td>done</td>
+  <td>2007.12.07</td>
+  <td>Evaldas/Michael</td>
+  <td><strike><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5779">5779</a></strike></td>
 </feature>
 </release>
 </roadmap>
