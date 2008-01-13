@@ -55,6 +55,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             Realm realm = map.getRealm(request.getServletPath());
             String path = map.getPath(realm, request.getServletPath());
             //Realm realm = map.getRealm(new Path(request.getServletPath()));
+            if (log.isDebugEnabled()) log.debug("Generic WebAuthenticator called for realm path " + path);
 
             // HTML Form based authentication
             String loginUsername = request.getParameter("yanel.login.username");
@@ -91,9 +92,11 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 log.warn("OpenID implementation not finished yet: [" + openID + "]");
                 getXHTMLAuthenticationForm(request, response, realm, "Login failed because OpenID implementation is not finished yet!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                 return response;
+            } else {
+                if (log.isDebugEnabled()) log.debug("No form based authentication request.");
             }
 
-            // Neutron-Auth based authentication
+            // Check for Neutron-Auth based authentication
             String yanelUsecase = request.getParameter("yanel.usecase");
             if(yanelUsecase != null && yanelUsecase.equals("neutron-auth")) {
                 log.debug("Neutron Authentication ...");
@@ -142,6 +145,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                         response.setContentType("text/plain; charset=" + YanelServlet.DEFAULT_ENCODING);
                         response.setStatus(response.SC_OK);
 
+                        if (log.isDebugEnabled()) log.debug("Neutron Authentication successful.");
                         PrintWriter writer = response.getWriter();
                         writer.print("Neutron Authentication Successful!");
                         return response;
@@ -222,9 +226,11 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                     return response;
                 }
             } else {
-                log.debug("Neutron Authentication successful.");
-                return null;
+                if (log.isDebugEnabled()) log.debug("No Neutron based authentication request.");
             }
+
+            if (log.isDebugEnabled()) log.debug("TODO: Was this authentication request really necessary!");
+            return null;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);
