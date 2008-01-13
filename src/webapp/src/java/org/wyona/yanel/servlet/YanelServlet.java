@@ -185,7 +185,7 @@ public class YanelServlet extends HttpServlet {
         if(doAuthenticate(request, response) != null) return;
 
         // Check authorization
-        if(doAuthorize(request, response) != null) return;
+        if(doAccessControl(request, response) != null) return;
 
         // Check for requests for global data
         Resource resource = getResource(request, response);
@@ -1013,53 +1013,28 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Authorize request (and also authenticate for HTTP BASIC)
+     * Check authorization and if not authorized then authenticate
      */
-    private HttpServletResponse doAuthorize(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private HttpServletResponse doAccessControl(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        Usecase usecase = null;
+        // Get usecase
+        Usecase usecase = getUsecase(request);
 
-        // TODO: Replace hardcoded roles by mapping between roles amd query strings ...
-        String value = request.getParameter("yanel.resource.usecase");
-        String workflowTransitionValue = request.getParameter("yanel.resource.workflow.transition");
-        String contentType = request.getContentType();
-        String method = request.getMethod();
-        if (value != null && value.equals("save")) {
-            log.debug("Save data ...");
-            usecase = new Usecase("write");
-        } else if (value != null && value.equals("checkin")) {
-            log.debug("Checkin data ...");
-            usecase = new Usecase("write");
-        } else if (value != null && value.equals("introspection")) {
-            if(log.isDebugEnabled()) log.debug("Dynamically generated introspection ...");
-            usecase = new Usecase("introspection");
-        } else if (value != null && value.equals("checkout")) {
-            log.debug("Checkout data ...");
-            usecase = new Usecase("open");
-        } else if (contentType != null && contentType.indexOf("application/atom+xml") >= 0 && (method.equals(METHOD_PUT) || method.equals(METHOD_POST))) {
-            // TODO: Is posting atom entries different from a general post (see below)?!
-            log.error("DEBUG: Write/Checkin Atom entry ...");
-            usecase = new Usecase("write");
-        // TODO: METHOD_POST is not generally protected, but save, checkin, application/atom+xml are being protected. See doPost(.... 
-        } else if (method.equals(METHOD_PUT)) {
-            log.error("DEBUG: Upload data ...");
-            usecase = new Usecase("write");
-        } else if (method.equals(METHOD_DELETE)) {
-            log.error("DEBUG: Delete resource ...");
-            usecase = new Usecase("delete");
-        } else if (workflowTransitionValue != null) {
-            // TODO: How shall we protect workflow transitions?!
-            log.error("DEBUG: Workflow transition ...");
-            usecase = new Usecase("view");
-        } else {
-            usecase = new Usecase("view");
-        }
-        value = request.getParameter("yanel.toolbar");
-        if (value != null && value.equals("on")) {
-            log.debug("Turn on toolbar ...");
-            usecase = new Usecase("toolbar");
+        // Get identity
+        Identity identity = null;
+        try {
+            identity = getIdentity(request);
+            if (identity == null) {
+                if (log.isDebugEnabled()) log.debug("Identity is WORLD");
+                identity = new Identity();
+                // TBD: Should add world identity to the session?
+            }
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new ServletException(e.getMessage());
         }
 
+        // Set some variables
         boolean authorized = false;
         Realm realm;
         String path;
@@ -1074,6 +1049,8 @@ public class YanelServlet extends HttpServlet {
 
         // HTTP BASIC Authorization (For clients such as for instance Sunbird, OpenOffice or cadaver)
         // IMPORT NOTE: BASIC Authentication needs to be checked on every request, because clients often do not support session handling
+
+/*
         String authorization = request.getHeader("Authorization");
         log.debug("Checking for Authorization Header: " + authorization);
         if (authorization != null) {
@@ -1128,21 +1105,12 @@ public class YanelServlet extends HttpServlet {
                 authorized = false;
             }
         }
+*/
 
 
-        // Custom Authorization
+        // Check Authorization
         try {
             log.debug("Do session based custom authorization");
-            //String[] groupnames = {"null", "null"};
-            HttpSession session = request.getSession(true);
-            Identity identity = getIdentity(request);
-            
-            if (identity == null) {
-                log.debug("Identity is WORLD");
-                identity = new Identity();
-                // TODO: should add world identity to the session?
-            }
-            
             if (log.isDebugEnabled()) log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity.getUsername() + ", Usecase: " + usecase.getName());
             authorized = realm.getPolicyManager().authorize(path, identity, usecase);
             if (log.isDebugEnabled()) log.debug("Check authorization result: " + authorized);
@@ -1153,6 +1121,8 @@ public class YanelServlet extends HttpServlet {
 
 
         if(!authorized) {
+            // TODO: Implement HTTP BASIC/DIGEST response (see above)
+
             log.warn("Access denied: " + getRequestURLQS(request, null, false));
 
             if(!request.isSecure()) {
@@ -1847,6 +1817,60 @@ public class YanelServlet extends HttpServlet {
                 return (Identity)identityMap.get(realm.getID());
             }
         }
+
+        // HTTP BASIC Authentication (For clients such as for instance Sunbird, OpenOffice or cadaver)
+        // IMPORT NOTE: BASIC Authentication needs to be checked on every request, because clients often do not support session handling
+        String authorizationHeader = request.getHeader("Authorization");
+        if (log.isDebugEnabled()) log.debug("Checking for Authorization Header: " + authorizationHeader);
+        if (authorizationHeader != null) {
+            if (authorizationHeader.toUpperCase().startsWith("BASIC")) {
+                log.debug("Using BASIC authorization ...");
+                // Get encoded user and password, comes after "BASIC "
+                String userpassEncoded = authorizationHeader.substring(6);
+                // Decode it, using any base 64 decoder
+                sun.misc.BASE64Decoder dec = new sun.misc.BASE64Decoder();
+                String userpassDecoded = new String(dec.decodeBuffer(userpassEncoded));
+                log.debug("Username and Password Decoded: " + userpassDecoded);
+                String[] up = userpassDecoded.split(":");
+                String username = up[0];
+                String password = up[1];
+                log.debug("username: " + username + ", password: " + password);
+                try {
+                    User user = realm.getIdentityManager().getUserManager().getUser(username);
+                    if (user != null && user.authenticate(password)) {
+                        return new Identity(user);
+                    } else {
+                        log.warn("HTTP BASIC Authentication failed for " + username + "!");
+/*
+                        response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
+                        response.sendError(response.SC_UNAUTHORIZED);
+                        PrintWriter writer = response.getWriter();
+                        writer.print("BASIC Authentication Failed!");
+                        return response;
+*/
+                        return null;
+                    }
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    throw new ServletException(e.getMessage(), e);
+                }
+            } else if (authorizationHeader.toUpperCase().startsWith("DIGEST")) {
+                log.error("DIGEST is not implemented");
+/*
+                authorized = false;
+                response.sendError(response.SC_UNAUTHORIZED);
+                response.setHeader("WWW-Authenticate", "DIGEST realm=\"" + realm.getName() + "\"");
+                PrintWriter writer = response.getWriter();
+                writer.print("DIGEST is not implemented!");
+*/
+                return null;
+            } else {
+                log.warn("No such authorization type implemented: " + authorizationHeader);
+                return null;
+            }
+        }
+	
+        if(log.isDebugEnabled()) log.debug("No identity yet (neither session nor header based!");
         return null;
     }
 
@@ -2110,5 +2134,54 @@ public class YanelServlet extends HttpServlet {
         super.destroy();
         yanel.destroy();
         log.warn("Yanel webapp has been shut down.");
+    }
+
+    /**
+     *
+     */
+    private Usecase getUsecase(HttpServletRequest request) {
+        Usecase usecase = null;
+
+        // TODO: Replace hardcoded roles by mapping between roles amd query strings ...
+        String value = request.getParameter("yanel.resource.usecase");
+        String workflowTransitionValue = request.getParameter("yanel.resource.workflow.transition");
+        String contentType = request.getContentType();
+        String method = request.getMethod();
+        if (value != null && value.equals("save")) {
+            log.debug("Save data ...");
+            usecase = new Usecase("write");
+        } else if (value != null && value.equals("checkin")) {
+            log.debug("Checkin data ...");
+            usecase = new Usecase("write");
+        } else if (value != null && value.equals("introspection")) {
+            if(log.isDebugEnabled()) log.debug("Dynamically generated introspection ...");
+            usecase = new Usecase("introspection");
+        } else if (value != null && value.equals("checkout")) {
+            log.debug("Checkout data ...");
+            usecase = new Usecase("open");
+        } else if (contentType != null && contentType.indexOf("application/atom+xml") >= 0 && (method.equals(METHOD_PUT) || method.equals(METHOD_POST))) {
+            // TODO: Is posting atom entries different from a general post (see below)?!
+            log.error("DEBUG: Write/Checkin Atom entry ...");
+            usecase = new Usecase("write");
+        // TODO: METHOD_POST is not generally protected, but save, checkin, application/atom+xml are being protected. See doPost(.... 
+        } else if (method.equals(METHOD_PUT)) {
+            log.error("DEBUG: Upload data ...");
+            usecase = new Usecase("write");
+        } else if (method.equals(METHOD_DELETE)) {
+            log.error("DEBUG: Delete resource ...");
+            usecase = new Usecase("delete");
+        } else if (workflowTransitionValue != null) {
+            // TODO: How shall we protect workflow transitions?!
+            log.error("DEBUG: Workflow transition ...");
+            usecase = new Usecase("view");
+        } else {
+            usecase = new Usecase("view");
+        }
+        value = request.getParameter("yanel.toolbar");
+        if (value != null && value.equals("on")) {
+            log.debug("Turn on toolbar ...");
+            usecase = new Usecase("toolbar");
+        }
+        return usecase;
     }
 }
