@@ -57,6 +57,9 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             //Realm realm = map.getRealm(new Path(request.getServletPath()));
             if (log.isDebugEnabled()) log.debug("Generic WebAuthenticator called for realm path " + path);
 
+
+
+
             // HTML Form based authentication
             String loginUsername = request.getParameter("yanel.login.username");
             String openID = request.getParameter("yanel.login.openid");
@@ -229,8 +232,56 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 if (log.isDebugEnabled()) log.debug("No Neutron based authentication request.");
             }
 
+
+            log.warn("No credentials specified yet!");
+
+
+            // Check if this is a neutron request, a Sunbird/Calendar request or just a common GET request
+            // Also see e-mail about recognizing a WebDAV request: http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
+            StringBuffer sb = new StringBuffer("");
+            String neutronVersions = request.getHeader("Neutron");
+            String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
+            
+            if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
+                log.debug("Neutron Versions supported by client: " + neutronVersions);
+                log.debug("Authentication Scheme supported by client: " + clientSupportedAuthScheme);
+                sb.append("<?xml version=\"1.0\"?>");
+                sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
+                sb.append("<message>Authorization denied: " + getRequestURLQS(request, null, true, map) + "</message>");
+                sb.append("<authentication>");
+                sb.append("<original-request url=\"" + getRequestURLQS(request, null, true, map) + "\"/>");
+                //TODO: Also support https ...
+                sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true, map) + "\" method=\"POST\">");
+                sb.append("<form>");
+                sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
+                sb.append("<param description=\"Username\" name=\"username\"/>");
+                sb.append("<param description=\"Password\" name=\"password\"/>");
+                sb.append("</form>");
+                sb.append("</login>");
+                // NOTE: Needs to be a full URL, because user might switch the server ...
+                sb.append("<logout url=\"" + getRequestURLQS(request, "yanel.usecase=logout", true, map) + "\" realm=\"" + realm.getName() + "\"/>");
+                sb.append("</authentication>");
+                sb.append("</exception>");
+
+                log.debug("Neutron-Auth response: " + sb);
+                response.setContentType("application/xml; charset=" + YanelServlet.DEFAULT_ENCODING);
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
+                PrintWriter w = response.getWriter();
+                w.print(sb);
+            } else if (request.getRequestURI().endsWith(".ics")) {
+                log.warn("Somebody seems to ask for a Calendar (ICS) ...");
+                response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
+                response.sendError(response.SC_UNAUTHORIZED);
+            } else {
+                getXHTMLAuthenticationForm(request, response, realm, null, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+            }
+            return response;
+
+/*
             if (log.isDebugEnabled()) log.debug("TODO: Was this authentication request really necessary!");
             return null;
+*/
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);
