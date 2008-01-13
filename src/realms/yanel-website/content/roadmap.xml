@@ -137,7 +137,13 @@
 </feature>
 <feature><td style="vertical-align: top;"><a href="specification/ldap.html">LDAP Integration</a></td><td style="vertical-align: top;">done</td><td>2007.11.29</td><td>Simon/Michael</td></feature>
 
-<feature><td style="vertical-align: top;"><a href="specification/openid.html">OpenID Integration</a></td><td style="vertical-align: top;">not yet started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Andreas/Michael</td></feature>
+<feature>
+  <td style="vertical-align: top;"><a href="specification/openid.html">OpenID Integration</a></td>
+  <td style="vertical-align: top;">in progress</td>
+  <td style="vertical-align: top;">TBD</td>
+  <td style="vertical-align: top;">Evaldas/Michael</td>
+  <td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5184">5184</a></td>
+</feature>
 
 <feature><td style="vertical-align: top;"><a href="specification/webdav.html">WebDAV</a></td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></feature>
 
