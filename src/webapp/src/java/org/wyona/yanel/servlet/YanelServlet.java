@@ -181,7 +181,7 @@ public class YanelServlet extends HttpServlet {
             if(doLogout(request, response) != null) return;
         }
 
-        // Authentication (WARNING: HTTP BASIC/DIGEST ...!)
+        // Authentication (WARNING: Because Yanel supports HTTP BASIC/DIGEST, authentication is done before authorization! TODO: Is this really necessary? Can't the doAuthorize check on HTTP BASIC/DIGEST ...?)
         if(doAuthenticate(request, response) != null) return;
 
         // Check authorization
