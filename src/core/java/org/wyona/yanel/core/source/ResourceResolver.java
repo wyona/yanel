@@ -57,6 +57,7 @@ public class ResourceResolver implements URIResolver {
             ResourceManager manager = Yanel.getInstance().getResourceManager();
             Resource targetResource = manager.getResource(resource.getEnvironment(), 
                     resource.getRealm(), uri);
+            // TODO: don't overwrite existing parameters, but add the new ones
             targetResource.setParameters(parameters);
             if (ResourceAttributeHelper.hasAttributeImplemented(targetResource, "Viewable", "1")) {
                 String viewV1path = resource.getRealm().getMountPoint() + uri.substring(1);
@@ -92,6 +93,7 @@ public class ResourceResolver implements URIResolver {
             for (int i=0; i<paramPairs.length; i++) {
                 String[] tokens = paramPairs[i].split("=");
                 String name = tokens[0];
+                // TODO: accept empty value
                 String value = tokens[1];
                 if (log.isDebugEnabled()) {
                     log.debug("adding parameter: name: " + name + " value: " + value);
