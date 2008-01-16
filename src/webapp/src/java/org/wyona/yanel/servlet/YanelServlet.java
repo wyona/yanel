@@ -1151,7 +1151,9 @@ public class YanelServlet extends HttpServlet {
 	    } else {
                 log.warn("Authentication was successful!");
                 URL url = new URL(getRequestURLQS(request, null, false).toString());
-                url = new URL("https", url.getHost(), new Integer(sslPort).intValue(), url.getFile());
+                if (sslPort != null) {
+                    url = new URL("https", url.getHost(), new Integer(sslPort).intValue(), url.getFile());
+                }
                 log.warn("Redirect to original request: " + url);
                 response.setHeader("Location", url.toString());
                 // TODO: Yulup has a bug re TEMPORARY_REDIRECT
