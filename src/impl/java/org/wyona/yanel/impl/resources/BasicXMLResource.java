@@ -198,6 +198,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPaths.length];
             for (int i = 0; i < xsltPaths.length; i++) {
                 xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPaths[i]).getInputStream()));
+                xsltHandlers[i].getTransformer().setURIResolver(new SourceResolver(this));
                 passTransformerParameters(xsltHandlers[i].getTransformer());
             }
 
