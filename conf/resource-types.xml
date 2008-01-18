@@ -16,7 +16,7 @@
   <resource-type src="@YANEL_SRC_DIR@/src/resources/navigation/"                  compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/translation/"                 compile="true"/>
   <resource-type package="org.wyona.yanel.impl.resources.node" src="@YANEL_SRC_DIR@/src/resources/file/" compile="true"/>
-  <resource-type src="@YANEL_SRC_DIR@/src/resources/directory/" compile="true" copy-dir-name="collection"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/directory/" compile="true" copy-dir-name="yanel-collection"/>
 <!--
   <resource-type src="../../contributions/resources/tape/" compile="true"/>
 -->
@@ -39,15 +39,14 @@
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/calendar/"      compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/resource-creator/"      compile="true"/>
 <!--
-  <resource-type src="@YANEL_SRC_DIR@/src/resources/websearch/"                   compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/websearch/" compile="true"/>
 -->
-  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/nutch/"         compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/nutch/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/davcollection/" compile="true"/>
 
-  <!-- TODO: Attribute "copy" not yet implemented. See src/build/yanel2resources.xsl -->
-  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/pdf/" compile="true" copy-dir-name="pdf"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/pdf/" compile="true" copy-dir-name="yanel-pdf"/>
 
-  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/yanel-user/"    compile="true"/> 
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/yanel-user/" compile="true"/>
 
   <!-- Resources which already exist as JAR somewhere and do not need to be compiled -->
   <!-- https://svn.wyona.com/repos/public/yanel/contributions/resources/redirect -->
