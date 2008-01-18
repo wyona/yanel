@@ -3,6 +3,7 @@ package org.wyona.yanel.core.source;
 import java.util.HashMap;
 
 import org.apache.log4j.Category;
+import org.wyona.yanel.core.Constants;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceManager;
@@ -59,15 +60,19 @@ public class ResourceResolver implements URIResolver {
                     resource.getRealm(), uri);
             // TODO: don't overwrite existing parameters, but add the new ones
             targetResource.setParameters(parameters);
+            
+            // Check which if there is a view requested for the resource
+            String viewid = (String)parameters.get(Constants.Request.YANEL_RESOURCE_VIEWID);
+            
             if (ResourceAttributeHelper.hasAttributeImplemented(targetResource, "Viewable", "1")) {
                 String viewV1path = resource.getRealm().getMountPoint() + uri.substring(1);
                 if (log.isDebugEnabled()) {
                     log.debug("including document: " + viewV1path);
                 }
-                View view = ((ViewableV1) targetResource).getView(new Path(viewV1path), null);
+                View view = ((ViewableV1) targetResource).getView(new Path(viewV1path), viewid);
                 return new StreamSource(view.getInputStream());
             } else if (ResourceAttributeHelper.hasAttributeImplemented(targetResource, "Viewable", "2")) {
-                View view = ((ViewableV2) targetResource).getView(null);
+                View view = ((ViewableV2) targetResource).getView(viewid);
                 if (!view.isResponse()) {
                     throw new Exception("Reading from the response has not been implemented yet!");
                 } else {
