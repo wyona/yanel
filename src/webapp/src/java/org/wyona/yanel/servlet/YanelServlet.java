@@ -2133,6 +2133,20 @@ public class YanelServlet extends HttpServlet {
             log.debug("Turn on toolbar ...");
             usecase = new Usecase("toolbar");
         }
+        value = request.getParameter("yanel.policy");
+        if (value != null) {
+            if (value.equals("create")) {
+                usecase = new Usecase("policy.create");
+            } else if (value.equals("read")) {
+                usecase = new Usecase("policy.read");
+            } else if (value.equals("update")) {
+                usecase = new Usecase("policy.update");
+            } else if (value.equals("delete")) {
+                usecase = new Usecase("policy.delete");
+            } else {
+                log.warn("No such policy usecase: " + value);
+            }
+        }
         return usecase;
     }
 }
