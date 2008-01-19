@@ -244,7 +244,7 @@ public class YanelServlet extends HttpServlet {
 
         String policyRequestPara = request.getParameter("yanel.policy");
         if (policyRequestPara != null) {
-            doPolicyRequest(request, response);
+            doAccessPolicyRequest(request, response);
             return;
         }
         
@@ -2159,7 +2159,11 @@ public class YanelServlet extends HttpServlet {
     /**
      *
      */
-    private void doPolicyRequest(HttpServletRequest request, HttpServletResponse response)  throws ServletException, IOException {
+    private void doAccessPolicyRequest(HttpServletRequest request, HttpServletResponse response)  throws ServletException, IOException {
+        Resource resource = getResource(request, response);
+        log.error("DEBUG: AC repo: " +resource.getRealm().getPolicyManager().getPoliciesRepository());
+        log.error("DEBUG: Path: " +resource.getPath());
+
         response.setContentType("text/plain; charset=" + DEFAULT_ENCODING);
         response.setStatus(response.SC_OK);
         PrintWriter writer = response.getWriter();
