@@ -241,6 +241,12 @@ public class YanelServlet extends HttpServlet {
             log.error("DEBUG: WebDAV client (" + request.getHeader("User-Agent") + ") requests to \"edit\" a resource: " + resource.getRealm() + ", " + resource.getPath());
             //return;
         }
+
+        String policyRequestPara = request.getParameter("yanel.policy");
+        if (policyRequestPara != null) {
+            doPolicyRequest(request, response);
+            return;
+        }
         
         String value = request.getParameter("yanel.resource.usecase");
 
@@ -2148,5 +2154,16 @@ public class YanelServlet extends HttpServlet {
             }
         }
         return usecase;
+    }
+
+    /**
+     *
+     */
+    private void doPolicyRequest(HttpServletRequest request, HttpServletResponse response)  throws ServletException, IOException {
+        response.setContentType("text/plain; charset=" + DEFAULT_ENCODING);
+        response.setStatus(response.SC_OK);
+        PrintWriter writer = response.getWriter();
+        writer.print("Read policy not implemented yet!");
+        return;
     }
 }
