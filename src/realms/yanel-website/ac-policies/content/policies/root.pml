@@ -34,4 +34,8 @@
     <group id="reviewer" permission="true"/>
   </role>
 
+  <role id="policy.read">
+    <group id="admin" permission="true"/>
+  </role>
+
 </policy>
