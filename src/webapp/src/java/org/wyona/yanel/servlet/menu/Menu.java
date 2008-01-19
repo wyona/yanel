@@ -35,6 +35,12 @@ abstract public class Menu {
         // View page info moved to getFileMenu() of default implementation
         //sb.append("<li><a href=\"?yanel.resource.meta\">View page info</a></li>");
         sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/data-repository-sitetree.html\">Browse Data Repository Sitetree</a></li>");
+        sb.append("<li class=\"haschild\">Page");
+        sb.append("<ul>");
+        sb.append("<li><a href=\"?yanel.resource.meta\">Info</a></li>");
+        sb.append("<li><a href=\"?yanel.policy=read\">Access Policy</a></li>");
+        sb.append("</ul>");
+        sb.append("</li>");
         //sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/user-mgmt/list-users.html\">User Management</a></li>");
         sb.append("<li><a href=\"?yanel.toolbar=off\">Turn off toolbar</a></li>");
         Identity identity = getIdentity(request, map);
