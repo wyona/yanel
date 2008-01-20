@@ -124,6 +124,7 @@
     <!-- delete already created file -->
     <delete file="${build.dir}/${certificate.keystore}"/>
     <!-- create new keystore file -->
+    <!-- IMPORT NOTE: In order to find keytool set:  export PATH=/usr/local/jdk1.5.0_06/bin:$PATH (resp. depending on operating system use some other way to reset the PATH environment variable) -->
     <exec executable="keytool">
       <arg line="-genkey"/>
       <arg line="-alias"/>
