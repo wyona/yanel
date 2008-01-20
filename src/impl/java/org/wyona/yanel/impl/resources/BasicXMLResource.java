@@ -329,7 +329,8 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         transformer.setParameter("yanel.reservedPrefix", "yanel"); // TODO don't hardcode
 
         // Add toolbar status
-        //if (toolbarStatus != null) transformer.setParameter("toolbar-status", toolbarStatus);
+        String toolbarStatus = getToolbarStatus();
+        if (toolbarStatus != null) transformer.setParameter("yanel.toolbar-status", toolbarStatus);
     }
 
     /**
@@ -378,6 +379,14 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         Identity identity = getEnvironment().getIdentity();
         if (identity != null) return identity.getUsername();
         return null;
+    }
+
+    /**
+     * Get toolbar status from session
+     */
+    protected String getToolbarStatus() {
+        // TODO: Use YanelServlet.TOOLBAR_KEY instead "toolbar"!
+        return (String) getRequest().getSession(true).getAttribute("toolbar");
     }
 
     /**
