@@ -29,8 +29,7 @@
     
     <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
-      <dependency groupId="log4j" artifactId="log4j"
-                  version="1.2.8"/>
+      <dependency groupId="log4j" artifactId="log4j" version="1.2.8"/>
       <!-- TODO: Add checksum file to server -->
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
@@ -41,7 +40,7 @@
                   version="1.0-dev-r26137"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.2-dev-r30264"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.2-dev-r30527"/>
 
       <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
@@ -64,7 +63,7 @@
 <!-- The XSLT engine of Java on MacOS X seems to have trouble. With Xalan enabled it should work! Also Abdera seems to need Xalan ... -->
       <dependency groupId="xalan" artifactId="xalan"
                   version="2.7.0"/>
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="0.2-dev-r30264"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="0.2-dev-r30527"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="yarep" artifactId="yarep-impl" version="1.0-dev-r30474"/>
       <dependency groupId="spring" artifactId="spring"
@@ -86,6 +85,11 @@
       <dependency groupId="commons-beanutils" artifactId="commons-beanutils" version="1.6"/>
       <dependency groupId="commons-fileupload" artifactId="commons-fileupload" version="1.2"/>
       <dependency groupId="dom4j" artifactId="dom4j" version="1.5.2"/>
+
+
+      <!-- OpenID libs -->
+      <dependency groupId="joid" artifactId="joid" version="r84-patched"/>
+      <dependency groupId="apache-org-incubator" artifactId="tsik" version="r389866"/>
       
     </artifact:dependencies>
 
