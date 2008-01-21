@@ -33,6 +33,9 @@ import org.apache.log4j.Category;
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
+import org.verisign.joid.consumer.OpenIdFilter;
+import org.verisign.joid.util.UrlUtils;
+
 /**
  *
  */
@@ -91,8 +94,20 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                     return response;
                 }
             } else if (openID != null) {
-                // TODO: Implement OpenID ... (see for instance http://code.google.com/p/joid/)
                 log.warn("OpenID implementation not finished yet: [" + openID + "]");
+
+                // Append http scheme if missing
+                if (!openID.startsWith("http://")) {
+                     openID = "http://" + openID;
+                }
+
+                String returnToUrlString = UrlUtils.getFullUrl(request);
+                log.debug("After successful authentication return to: " + returnToUrlString);
+                String redirectUrlString = OpenIdFilter.joid().getAuthUrl(openID, returnToUrlString, returnToUrlString);
+                log.debug("OpenID Provider URL: " + redirectUrlString);
+                response.sendRedirect(redirectUrlString);
+                if (true) return response;
+
                 getXHTMLAuthenticationForm(request, response, realm, "Login failed because OpenID implementation is not finished yet!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                 return response;
             } else {
