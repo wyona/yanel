@@ -70,6 +70,7 @@ import org.wyona.yanel.servlet.communication.HttpResponse;
 
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.IdentityManager;
+import org.wyona.security.core.api.Policy;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.Role;
 import org.wyona.security.core.api.Usecase;
@@ -2161,8 +2162,12 @@ public class YanelServlet extends HttpServlet {
      */
     private void doAccessPolicyRequest(HttpServletRequest request, HttpServletResponse response)  throws ServletException, IOException {
         Resource resource = getResource(request, response);
-        log.error("DEBUG: AC repo: " +resource.getRealm().getPolicyManager().getPoliciesRepository());
-        log.error("DEBUG: Path: " +resource.getPath());
+        try {
+            Policy acPolicy = resource.getRealm().getPolicyManager().getPolicy(resource.getPath());
+        } catch(Exception e) {
+            log.error(e, e);
+            throw new ServletException(e.getMessage());
+        }
 
         response.setContentType("text/plain; charset=" + DEFAULT_ENCODING);
         response.setStatus(response.SC_OK);
