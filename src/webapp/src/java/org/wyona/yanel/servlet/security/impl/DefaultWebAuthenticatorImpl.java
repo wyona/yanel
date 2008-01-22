@@ -66,6 +66,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             // HTML Form based authentication
             String loginUsername = request.getParameter("yanel.login.username");
             String openID = request.getParameter("yanel.login.openid");
+            String openIDSignature = request.getParameter("openid.sig");
             if(loginUsername != null) {
                 HttpSession session = request.getSession(true);
                 try {
@@ -94,8 +95,6 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                     return response;
                 }
             } else if (openID != null) {
-                log.warn("OpenID implementation not finished yet: [" + openID + "]");
-
                 // Append http scheme if missing
                 if (!openID.startsWith("http://")) {
                      openID = "http://" + openID;
@@ -106,9 +105,11 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 String redirectUrlString = OpenIdFilter.joid().getAuthUrl(openID, returnToUrlString, returnToUrlString);
                 log.debug("OpenID Provider URL: " + redirectUrlString);
                 response.sendRedirect(redirectUrlString);
-                if (true) return response;
-
-                getXHTMLAuthenticationForm(request, response, realm, "Login failed because OpenID implementation is not finished yet!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                return response;
+            } else if (openIDSignature != null) {
+                log.warn("OpenID signature implementation not finished yet: [" + openIDSignature + "]");
+                // TODO: src/org/verisign/joid/consumer/JoidConsumer.java
+                getXHTMLAuthenticationForm(request, response, realm, "Login failed because OpenID signature implementation is not finished yet!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                 return response;
             } else {
                 if (log.isDebugEnabled()) log.debug("No form based authentication request.");
