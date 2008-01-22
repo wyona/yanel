@@ -1,0 +1,7 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml">
+<head>  <title>Overview of Yanel Access Control Component</title>
+<link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/>
+</head>
+
+<body>  <h1>Overview of Yanel Access Control Components</h1>Each Yanel realm can have its own IdentityManager and PolicyManager,  whereas the IdentityManager is responsible for authentication and the PolicyManager for Authorization. Additionally a Yanel realm can also have its own WebAuthenticator, which can make sense if custom HTTP headers are being used, such as for instance for Single-Sign-On solutions.<br/></body>
+</html>
