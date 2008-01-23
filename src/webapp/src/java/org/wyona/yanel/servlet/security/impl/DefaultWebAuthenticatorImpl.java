@@ -109,6 +109,9 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             } else if (openIDSignature != null) {
                 log.warn("OpenID signature implementation not finished yet: [" + openIDSignature + "]");
                 // TODO: src/org/verisign/joid/consumer/JoidConsumer.java
+                // see AuthenticationResult result = joid.authenticate(convertToStringValueMap(servletRequest.getParameterMap())); (src/org/verisign/joid/consumer/OpenIdFilter.java)
+                // https://127.0.0.1:8443/yanel/foaf/login.html?openid.sig=2%2FjpOdpJpEMfibrb9v9OHuzm0kg%3D&amp;openid.mode=id_res&amp;openid.return_to=https%3A%2F%2F127.0.0.1%3A8443%2Fyanel%2Ffoaf%2Flogin.html&amp;openid.identity=http%3A%2F%2Fopenid.claimid.com%2Fmichi&amp;openid.signed=identity%2Creturn_to%2Cmode&amp;openid.assoc_handle=%7BHMAC-SHA1%7D%7B47967654%7D%7BB8gYrw%3D%3D%7D
+
                 getXHTMLAuthenticationForm(request, response, realm, "Login failed because OpenID signature implementation is not finished yet!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                 return response;
             } else {
