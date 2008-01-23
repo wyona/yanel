@@ -396,6 +396,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         map.put("xslt", request.getParameter("rp.xslt"));
         map.put("mime-type", request.getParameter("rp.mime-type"));
         map.put("workflow-schema", request.getParameter("rp.workflow-schema"));
+        // TODO: get all parameters, e.g. source-view-mime-type (Security!)
         return map;
     }
 
