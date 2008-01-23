@@ -2158,12 +2158,18 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Handle access policy requests (CRUD)
      */
     private void doAccessPolicyRequest(HttpServletRequest request, HttpServletResponse response)  throws ServletException, IOException {
         Resource resource = getResource(request, response);
+        StringBuffer sb = new StringBuffer("Policy:\n");
         try {
             Policy acPolicy = resource.getRealm().getPolicyManager().getPolicy(resource.getPath());
+            if (acPolicy != null) {
+                sb.append(acPolicy.toString());
+            } else {
+                sb.append("Exception: Policy is null!");
+            }
         } catch(Exception e) {
             log.error(e, e);
             throw new ServletException(e.getMessage());
@@ -2172,7 +2178,7 @@ public class YanelServlet extends HttpServlet {
         response.setContentType("text/plain; charset=" + DEFAULT_ENCODING);
         response.setStatus(response.SC_OK);
         PrintWriter writer = response.getWriter();
-        writer.print("Read policy not implemented yet!");
+        writer.print(sb.toString());
         return;
     }
 }
