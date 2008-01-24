@@ -33,7 +33,7 @@ public interface CreatableV2 extends CreatableV1 {
     public static String TYPE_SELECT = "type_select";
 
     /**
-     *
+     * Get property type which is intended to be used for the different types of (XHTML) input fields, e.g. TYPE_UPLOAD, TYPE_STRING (also see CreatableV1.getPropertyNames()
      */
     public String getPropertyType(String propertyName);
 
@@ -43,12 +43,12 @@ public interface CreatableV2 extends CreatableV1 {
     public void create(HttpServletRequest request);
 
     /**
-     * Creates RTI properties
+     * Get resource configuration properties which shall be used for the new resource configuration of the new resource
      */
     public HashMap createRTIProperties(HttpServletRequest request);
 
     /**
-     * getCreateName
+     * Allows overwriting the name for the new resource which is suggested by Yanel or rather by the user input. This is useful if one wants to dynamically generate names which are for instance based on a timestamp.
      */
     public String getCreateName(String suggestedName);
 }
