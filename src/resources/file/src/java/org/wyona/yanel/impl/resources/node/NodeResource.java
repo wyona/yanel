@@ -361,6 +361,9 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         return map;
     }
 
+    /**
+     * Use suggested name if not null or empty, otherwise use name of uploaded file
+     */
     public String getCreateName(String suggestedName) {
         if (suggestedName != null && !suggestedName.equals("")) return suggestedName;
         if (request instanceof HttpRequest) {
