@@ -1841,7 +1841,11 @@ public class YanelServlet extends HttpServlet {
         javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
         org.w3c.dom.DOMImplementation impl = parser.getDOMImplementation();
         org.w3c.dom.DocumentType doctype = null;
-        return impl.createDocument(namespace, localname, doctype);
+        Document doc = impl.createDocument(namespace, localname, doctype);
+        if (namespace != null) {
+            doc.getDocumentElement().setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns", namespace);
+        }
+        return doc;
     }
 
     /**
