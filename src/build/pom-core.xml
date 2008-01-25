@@ -10,7 +10,7 @@
       <groupId>wyona-org-security</groupId>
       <artifactId>wyona-org-security-core</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>0.2-dev-r30527</version>
+      <version>0.2-dev-r30678</version>
     </dependency>
     <dependency>
       <groupId>yarep</groupId>
@@ -22,7 +22,7 @@
       <groupId>wyona-org-commons</groupId>
       <artifactId>wyona-org-commons</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>1.0-dev-r26137</version>
+      <version>1.0-dev-r30752</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
