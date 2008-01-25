@@ -21,6 +21,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.transform.Transformer;
@@ -31,12 +33,12 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.avalon.framework.configuration.Configuration;
-import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 import org.w3c.dom.Document;
+import org.wyona.commons.io.MimeTypeUtil;
 import org.wyona.security.core.api.Identity;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
@@ -48,25 +50,64 @@ import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.impl.resources.xml.ConfigurableViewDescriptor;
-import org.wyona.yanel.impl.resources.usecase.UsecaseException;
 import org.wyona.yarep.core.Repository;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
- *
+ * It is a base class for resources that generate XML. Subclasses must override getContentXML 
+ * in order to pass XML for a view.
+ * <p>
+ * The class has its configuration for views ('default' and 'source' are built in). It resides in *.yanel-rc file, e.g.
+ * <pre>
+ * &lt;yanel:custom-config>
+ * &lt;views>
+ *  &lt;!-- No parameter needed for getting this view -->
+ *  &lt;view id="default">
+ *      &lt;mime-type>text/html&lt;/mime-type>
+ *      &lt;xslt>/xslt/global.xsl&lt;/xslt>
+ *      &lt;serializer key="HTML_TRANSITIONAL">
+ *      &lt;/serializer>
+ *  &lt;/view>
+ *  
+ *  &lt;view id="beautiful">
+ *      &lt;mime-type>application/xhtml+xml&lt;/mime-type>
+ *      &lt;xslt>/xslt/global.xsl&lt;/xslt>
+ *      &lt;serializer key="XHTML_STRICT">
+ *      &lt;/serializer>
+ *  &lt;/view>
+ *  
+ *   &lt;view id="atom">
+ *      &lt;mime-type>application/atom+xml&lt;/mime-type>
+ *      &lt;serializer key="XML">
+ *      &lt;/serializer>
+ *   &lt;/view>
+ *   
+ *   &lt;view id="json">
+ *      &lt;mime-type>application/json&lt;/mime-type>
+ *      &lt;serializer key="TEXT">
+ *      &lt;/serializer>
+ *   &lt;/view>
+ *   
+ *   &lt;!-- Skips any provided XSLT-->
+ *   &lt;view id="source">
+ *      &lt;mime-type>application/xhtml+xml&lt;/mime-type>
+ *      &lt;serializer key="XML">
+ *      &lt;/serializer>
+ *   &lt;/view>
+ *&lt;/views>
+ *&lt;/yanel:custom-config>
+ * </pre>
+ * <p>
+ * A view is accessed through a request parameter <b>yanel.resource.viewid</b>
  */
 public class BasicXMLResource extends Resource implements ViewableV2 {
 
-    private static Category log = Category.getInstance(BasicXMLResource.class);
+    private static Logger log = Logger.getLogger(BasicXMLResource.class);
 
     protected static String DEFAULT_VIEW_ID = "default";
     protected static String SOURCE_VIEW_ID = "source";
-
-    protected static String SERIALIZER_OMIT_XML_DECLARATION = "serializer-omit-xml-declaration";
-    protected static String SERIALIZER_DOCTYPE_PUBLIC = "serializer-doctype-public";
-    protected static String SERIALIZER_DOCTYPE_SYSTEM = "serializer-doctype-system";
 
     protected HashMap viewDescriptors;
 
@@ -195,10 +236,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             if (xsltPaths == null || xsltPaths.length == 0) {
                 xsltPaths = getXSLTPath(getPath());
             }
+            
+            SourceResolver uriResolver = new SourceResolver(this);
+            
             TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPaths.length];
             for (int i = 0; i < xsltPaths.length; i++) {
                 xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPaths[i]).getInputStream()));
-                xsltHandlers[i].getTransformer().setURIResolver(new SourceResolver(this));
+                xsltHandlers[i].getTransformer().setURIResolver(uriResolver);
                 passTransformerParameters(xsltHandlers[i].getTransformer());
             }
 
@@ -208,8 +252,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
             // create xinclude transformer:
             XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
-            SourceResolver resolver = new SourceResolver(this);
-            xIncludeTransformer.setResolver(resolver);
+            xIncludeTransformer.setResolver(uriResolver);
 
             // create serializer:
             Serializer serializer = createSerializer(viewDescriptor);
@@ -260,11 +303,16 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         } else {
             String mimeType = getMimeType(viewDescriptor.getId());
 
-            if (mimeType.equals("text/html")) {
+            if (MimeTypeUtil.isHTML(mimeType) && !MimeTypeUtil.isXML(mimeType)) {
                 serializer = SerializerFactory.getSerializer(SerializerFactory.HTML_TRANSITIONAL);
-            } else if (mimeType.equals("application/xml")) {
+            } else if (MimeTypeUtil.isXML(mimeType)) {
                 serializer = SerializerFactory.getSerializer(SerializerFactory.XML);
-            } else {
+            } else if (MimeTypeUtil.isTextual(mimeType)) {
+                serializer = SerializerFactory.getSerializer(SerializerFactory.TEXT);
+            } else if (MimeTypeUtil.isHTML(mimeType) && MimeTypeUtil.isXML(mimeType)){
+                serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
+            } else{
+                // For backwards compatibility leave XHTML as default
                 serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
             }
         }
@@ -302,6 +350,34 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * @throws Exception
      */
     protected void passTransformerParameters(Transformer transformer) throws Exception {
+/*
+        // TODO: getParameters() are not the Http Request parameters! Let's find out firs out ...
+        // Attach all parameters that came with the request. Templates can make use of them.
+        // NOTE: all parameter values will be of type String. In XSLT: <param name="p" value="'actual_value'"/>
+        for (Iterator i = getParameters().entrySet().iterator(); i.hasNext();) {
+            Map.Entry entry = (Map.Entry) i.next();
+            if (entry.getValue() instanceof String) {
+                String value = (String) entry.getValue();
+                transformer.setParameter(String.valueOf(entry.getKey()), value);
+            } else if(entry.getValue() instanceof String[]){
+                // values separated by a space
+                String separator = " ";
+                
+                StringBuffer finalValue = new StringBuffer();
+                String [] values = (String[]) entry.getValue();
+                for (int j = 0; j < values.length; j++) {
+                    finalValue.append(values[j]);
+                    if(j + 1 != values.length){
+                        finalValue.append(separator);
+                    }
+                }
+            } else{
+                // Never happens
+            }
+        }
+*/
+        
+        // Set general parameters
         transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
         transformer.setParameter("yanel.path", getPath());
         transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
