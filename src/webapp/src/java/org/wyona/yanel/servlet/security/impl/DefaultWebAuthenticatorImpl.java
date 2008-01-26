@@ -142,7 +142,8 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                         identityMap.put(realm.getID(), new Identity(user));
                         // OpenID authentication successful, hence return null instead an "exceptional" response
                         // TODO: Do not return null (although successful), but rather strip-off all the openid query string stuff and then do a redirect
-                        return null;
+                        response.sendRedirect(request.getParameter("openid.return_to"));
+                        return response;
                     } else {
                         log.error("No openid.identity!");
                         getXHTMLAuthenticationForm(request, response, realm, "OpenID verification successful, but no openid.identity!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
