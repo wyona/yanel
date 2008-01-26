@@ -230,8 +230,8 @@ public class YanelServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
         Resource resource = getResource(request, response);
 
-        // Check for toolbar ...
-        checkToolbar(request);
+        // Enable or disable toolbar
+        switchToolbar(request);
 
         // Check for requests refered by WebDAV
         String yanelWebDAV = request.getParameter("yanel.webdav");
@@ -274,21 +274,21 @@ public class YanelServlet extends HttpServlet {
     }
     
     /**
-     * Checks if the yanel.toolbar request-param is set and stores
+     * Checks if the yanel.toolbar request parameter is set and stores
      * the value of the parameter in the session.
      * @param request
      */
-    private void checkToolbar(HttpServletRequest request) {
+    private void switchToolbar(HttpServletRequest request) {
         // Check for toolbar ...
         String yanelToolbar = request.getParameter("yanel.toolbar");
         if(yanelToolbar != null) {
             HttpSession session = request.getSession(false);
             if (yanelToolbar.equals("on")) {
                 log.info("Turn on toolbar!");
-                session.setAttribute(TOOLBAR_KEY, "on");
+                enableToolbar(request);
             } else if (yanelToolbar.equals("off")) {
                 log.info("Turn off toolbar!");
-                session.setAttribute(TOOLBAR_KEY, "off");
+                disableToolbar(request);
             } else {
                 log.warn("No such toolbar value: " + yanelToolbar);
             }
@@ -716,8 +716,8 @@ public class YanelServlet extends HttpServlet {
                 }
             }
 
-            // Check for toolbar ...
-            checkToolbar(request);
+            // Enable or disable toolbar
+            switchToolbar(request);
             
             getContent(request, response);
         }
@@ -849,8 +849,7 @@ public class YanelServlet extends HttpServlet {
             //log.debug("url: " + request.getServletPath());
             //log.debug("state of view: " + stateOfView);
             /*String area = null;
-            Object toolbarAttr = request.getSession().getAttribute(TOOLBAR_KEY); 
-            if (toolbarAttr != null && toolbarAttr.equals("on")) {
+            if (isToolbarEnabled(request)) {
                 area = "authoring";
             } else {
                 area = "live";
@@ -1648,7 +1647,7 @@ public class YanelServlet extends HttpServlet {
         //buf.append("Version: " + yanel.getVersion() + "-r" + yanel.getRevision() + "&#160;&#160;");
         buf.append("Realm: <b>" + resource.getRealm().getName() + "</b>&#160;&#160;");
         Identity identity = getIdentity(request);
-        if (identity != null) {
+        if (identity != null && !identity.isWorld()) {
             buf.append("User: <b>" + identity.getUsername() + "</b>");
         } else {
             buf.append("User: <b>Not signed in!</b>");
@@ -1767,7 +1766,9 @@ public class YanelServlet extends HttpServlet {
             IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
             if (identityMap != null) {
                 Identity identity = (Identity)identityMap.get(realm.getID());
-                if (identity != null) return identity;
+                if (identity != null) {
+                    return identity;
+                }
             }
         }
 
@@ -2002,8 +2003,8 @@ public class YanelServlet extends HttpServlet {
             }
             
             // Possibly embed toolbar:
-            String toolbar = (String) request.getSession(true).getAttribute(TOOLBAR_KEY);
-            if (toolbar != null && toolbar.equals("on")) {
+            // TODO: Check if user is authorized to actually see toolbar (Current flaw: Enabled Toolbar, Login, Toolbar is enabled, Logout, Toolbar is still visible!)
+            if (isToolbarEnabled(request)) {
                 String mimeType = view.getMimeType();
                 if (mimeType != null && mimeType.indexOf("html") > 0) {
                     // TODO: What about other query strings or frames or TinyMCE?
@@ -2178,5 +2179,28 @@ public class YanelServlet extends HttpServlet {
         PrintWriter writer = response.getWriter();
         writer.print(sb.toString());
         return;
+    }
+
+    /**
+     *
+     */
+    private void enableToolbar(HttpServletRequest request) {
+        request.getSession(true).setAttribute(TOOLBAR_KEY, "on");
+    }
+
+    /**
+     *
+     */
+    private void disableToolbar(HttpServletRequest request) {
+        request.getSession(true).setAttribute(TOOLBAR_KEY, "off");
+    }
+
+    /**
+     *
+     */
+    private boolean isToolbarEnabled(HttpServletRequest request) {
+        String toolbarStatus = (String) request.getSession(true).getAttribute(TOOLBAR_KEY);
+        if (toolbarStatus != null && toolbarStatus.equals("on")) return true;
+        return false;
     }
 }
