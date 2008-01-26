@@ -90,9 +90,13 @@
       <dependency groupId="joid" artifactId="joid" version="r84-patched"/>
       <dependency groupId="apache-org-incubator" artifactId="tsik" version="r389866"/>
 
-<!--
       <dependency groupId="sxip" artifactId="java-openid-sxip" version="r443-patched"/>
--->
+      <dependency groupId="sxip" artifactId="htmlparser" version="vUNKNOWN"/>
+      <dependency groupId="sxip" artifactId="openxri-client" version="vUNKNOWN"/>
+      <dependency groupId="sxip" artifactId="openxri-syntax" version="vUNKNOWN"/>
+      <dependency groupId="sxip" artifactId="jug" version="1.1"/>
+      <dependency groupId="sxip" artifactId="xmlsec" version="1.1"/>
+      <dependency groupId="com.ibm.icu" artifactId="icu4j" version="3.4.4"/>
 
     </artifact:dependencies>
 
