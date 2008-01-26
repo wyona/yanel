@@ -2167,7 +2167,7 @@ public class YanelServlet extends HttpServlet {
             if (acPolicy != null) {
                 sb.append(acPolicy.toString());
             } else {
-                sb.append("Exception: Policy is null!");
+                sb.append("No policy for path: " + resource.getPath());
             }
         } catch(Exception e) {
             log.error(e, e);
