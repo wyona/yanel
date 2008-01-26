@@ -126,6 +126,16 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 log.debug("Verify OpenID provider response ...");
                 if (verifyOpenIDProviderResponse(request)) {
                     getXHTMLAuthenticationForm(request, response, realm, "OpenID verification successful, but OpenID session implementation is not finished yet!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                    // TODO: Add verified OpenID user to the session
+/*
+                        log.info("Authentication successful: " + username);
+                        IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
+                        if (identityMap == null) {
+                            identityMap = new IdentityMap();
+                            session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
+                        }
+                        identityMap.put(realm.getID(), new Identity(user));
+*/
                 } else {
                     getXHTMLAuthenticationForm(request, response, realm, "Login failed: OpenID response from provider could not be verified!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                 }
