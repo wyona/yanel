@@ -36,6 +36,14 @@ import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 import org.verisign.joid.consumer.OpenIdFilter;
 import org.verisign.joid.util.UrlUtils;
 
+import org.openid4java.consumer.ConsumerManager;
+import org.openid4java.consumer.VerificationResult;
+import org.openid4java.discovery.Discovery;
+import org.openid4java.discovery.DiscoveryInformation;
+import org.openid4java.discovery.Identifier;
+import org.openid4java.message.AuthRequest;
+import org.openid4java.message.ParameterList;
+
 /**
  *
  */
@@ -43,11 +51,16 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
     private static Category log = Category.getInstance(DefaultWebAuthenticatorImpl.class);
 
+    private static String OPENID_DISCOVERED_KEY = "openid-discovered";
+
+    // NOTE: The OpenID consumer manager needs to be the same instance for redirect to provider and provider verification
+    private ConsumerManager manager;
+
     /**
      *
      */
     public void init(org.w3c.dom.Document configuration, javax.xml.transform.URIResolver resolver) throws Exception {
-        log.info("Do nothing ...");
+        manager = new ConsumerManager();
     }
 
     /**
@@ -99,20 +112,23 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 if (!openID.startsWith("http://")) {
                      openID = "http://" + openID;
                 }
-
-                String returnToUrlString = UrlUtils.getFullUrl(request);
-                log.debug("After successful authentication return to: " + returnToUrlString);
-                String redirectUrlString = OpenIdFilter.joid().getAuthUrl(openID, returnToUrlString, returnToUrlString);
-                log.debug("OpenID Provider URL: " + redirectUrlString);
-                response.sendRedirect(redirectUrlString);
+                String redirectUrlString = null;
+                try {
+                    redirectUrlString = getOpenIDRedirectURL(openID, request, map);
+                    response.sendRedirect(redirectUrlString);
+                } catch (Exception e) {
+                    log.error(e, e);
+                    getXHTMLAuthenticationForm(request, response, realm, "Login failed: " + e.getMessage() + "!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                }
+                log.debug("Redirect URL: " + redirectUrlString);
                 return response;
             } else if (openIDSignature != null) {
-                log.warn("OpenID signature implementation not finished yet: [" + openIDSignature + "]");
-                // TODO: src/org/verisign/joid/consumer/JoidConsumer.java
-                // see AuthenticationResult result = joid.authenticate(convertToStringValueMap(servletRequest.getParameterMap())); (src/org/verisign/joid/consumer/OpenIdFilter.java)
-                // https://127.0.0.1:8443/yanel/foaf/login.html?openid.sig=2%2FjpOdpJpEMfibrb9v9OHuzm0kg%3D&amp;openid.mode=id_res&amp;openid.return_to=https%3A%2F%2F127.0.0.1%3A8443%2Fyanel%2Ffoaf%2Flogin.html&amp;openid.identity=http%3A%2F%2Fopenid.claimid.com%2Fmichi&amp;openid.signed=identity%2Creturn_to%2Cmode&amp;openid.assoc_handle=%7BHMAC-SHA1%7D%7B47967654%7D%7BB8gYrw%3D%3D%7D
-
-                getXHTMLAuthenticationForm(request, response, realm, "Login failed because OpenID signature implementation is not finished yet!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                log.debug("Verify OpenID provider response ...");
+                if (verifyOpenIDProviderResponse(request)) {
+                    getXHTMLAuthenticationForm(request, response, realm, "OpenID verification successful, but OpenID session implementation is not finished yet!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                } else {
+                    getXHTMLAuthenticationForm(request, response, realm, "Login failed: OpenID response from provider could not be verified!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                }
                 return response;
             } else {
                 if (log.isDebugEnabled()) log.debug("No form based authentication request.");
@@ -430,4 +446,70 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             return null;
         }
     }
+
+// Using openid4java library
+    /**
+     * Get OpenID redirect URL (to the OpenID provider). Also see http://code.google.com/p/openid4java/wiki/Documentation and particularly http://code.google.com/p/openid4java/wiki/SampleConsumer
+     */
+    private String getOpenIDRedirectURL(String openID, HttpServletRequest request, Map map) throws Exception {
+        String returnToUrlString = getRequestURLQS(request, null, false, map);
+        Identifier identifier = Discovery.parseIdentifier(openID);
+        java.util.List discoveries = new Discovery().discover(identifier);
+        DiscoveryInformation discovered = null;
+        try {
+            discovered = manager.associate(discoveries);
+        } catch(Exception e) {
+            log.warn(e, e);
+        }
+        if (discovered == null) {
+            throw new Exception("OpenID DiscoverInfo is null");
+        }
+        request.getSession(true).setAttribute(OPENID_DISCOVERED_KEY, discovered);
+        AuthRequest authReq = manager.authenticate(discovered, returnToUrlString);
+        return authReq.getDestinationUrl(true);
+    }
+
+// Using JOID library
+/*
+    private String getOpenIDRedirectURL(String openID, HttpServletRequest request, Map map) throws Exception {
+        String returnToUrlString = UrlUtils.getFullUrl(request);
+        log.debug("After successful authentication return to: " + returnToUrlString);
+        String redirectUrlString = OpenIdFilter.joid().getAuthUrl(openID, returnToUrlString, returnToUrlString);
+        log.debug("OpenID Provider URL: " + redirectUrlString);
+        return redirectUrlString;
+    }
+*/
+
+    /**
+     * Verify OpenID provider response
+     */
+    private boolean verifyOpenIDProviderResponse (HttpServletRequest request) throws Exception {
+        ParameterList responseParas = new ParameterList(request.getParameterMap());
+        DiscoveryInformation discovered = (DiscoveryInformation) request.getSession().getAttribute(OPENID_DISCOVERED_KEY);
+        StringBuffer receivingURL = request.getRequestURL();
+        String queryString = request.getQueryString();
+        if (queryString != null && queryString.length() > 0) {
+            receivingURL.append("?").append(request.getQueryString());
+            VerificationResult verification = manager.verify(receivingURL.toString(), responseParas, discovered);
+            Identifier verified = verification.getVerifiedId();
+            if (verified != null) {
+/*
+                AuthSuccess authSuccess = (AuthSuccess) verification.getAuthResponse();
+                if (authSuccess.hasExtension(AxMessage.OPENID_NS_AX)) {
+                    FetchResponse fetchResp = (FetchResponse) authSuccess.getExtension(AxMessage.OPENID_NS_AX);
+		    List emails = fetchResp.getAttributeValues("email");
+		    String email = (String) emails.get(0);
+                }
+*/
+                return true;
+            }
+        }
+        return false;
+    }
+
+/*
+                // TODO: src/org/verisign/joid/consumer/JoidConsumer.java
+                // see AuthenticationResult result = joid.authenticate(convertToStringValueMap(servletRequest.getParameterMap())); (src/org/verisign/joid/consumer/OpenIdFilter.java)
+                // https://127.0.0.1:8443/yanel/foaf/login.html?openid.sig=2%2FjpOdpJpEMfibrb9v9OHuzm0kg%3D&amp;openid.mode=id_res&amp;openid.return_to=https%3A%2F%2F127.0.0.1%3A8443%2Fyanel%2Ffoaf%2Flogin.html&amp;openid.identity=http%3A%2F%2Fopenid.claimid.com%2Fmichi&amp;openid.signed=identity%2Creturn_to%2Cmode&amp;openid.assoc_handle=%7BHMAC-SHA1%7D%7B47967654%7D%7BB8gYrw%3D%3D%7D
+*/
 }
