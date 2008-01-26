@@ -22,6 +22,7 @@
     <group id="editor" permission="true"/>
     <group id="reviewer" permission="true"/>
     <group id="admin" permission="true"/>
+    <user id="http://michaelwechner.livejournal.com/" permission="true"/>
   </role>
 
   <role id="introspection">
