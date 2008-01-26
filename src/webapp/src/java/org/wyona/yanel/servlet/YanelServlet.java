@@ -133,8 +133,6 @@ public class YanelServlet extends HttpServlet {
 
     public static final String VIEW_ID_PARAM_NAME = "yanel.resource.viewid";
 
-    private WebAuthenticator defaultWA;
-
     /**
      *
      */
@@ -166,7 +164,6 @@ public class YanelServlet extends HttpServlet {
             log.error(e);
             throw new ServletException(e.getMessage(), e);
         }
-	defaultWA = new org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl();
     }
 
     /**
@@ -1364,9 +1361,6 @@ public class YanelServlet extends HttpServlet {
             //if (getIdentity(request) != null) return null;
 
 	    WebAuthenticator wa = map.getRealm(request.getServletPath()).getWebAuthenticator();
-            if (wa == null) {
-	        wa = defaultWA;
-            }
             return wa.doAuthenticate(request, response, map, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
