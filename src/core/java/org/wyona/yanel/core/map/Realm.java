@@ -154,18 +154,24 @@ public class Realm {
 
         // Set WebAuthenticator for this realm
         Configuration waConfigElement = config.getChild("web-authenticator", false);
+        WebAuthenticator wa = null;
         if (waConfigElement != null) {
-            WebAuthenticator wa = null;
             try {
             	String customWebAuthenticatorImplClassName = waConfigElement.getAttribute("class");
             	wa = (WebAuthenticator) Class.forName(customWebAuthenticatorImplClassName).newInstance();
-
                 wa.init(ConfigurationUtil.getCustomConfiguration(waConfigElement, "web-authenticator-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
+                log.info("Custom WebAuthenticator (" + customWebAuthenticatorImplClassName + ") will be used!");
             } catch (ConfigurationException e) {
-                wa = null;
+                log.error(e, e);
+                log.warn("Default WebAuthenticator will be used!");
+                wa = getDefaultWebAuthenticator();
+                wa.init(null, new RealmConfigPathResolver(this));
             }
-            setWebAuthenticator(wa);
+        } else {
+            wa = getDefaultWebAuthenticator();
+            wa.init(null, new RealmConfigPathResolver(this));
         }
+        setWebAuthenticator(wa);
 
 
 
@@ -477,5 +483,14 @@ public class Realm {
     public void destroy() throws Exception {
         log.warn("Shutdown realm: " + getName());
         getRepository().close();
+    }
+
+    /**
+     * Get Default WebAuthenticator
+     */
+    private WebAuthenticator getDefaultWebAuthenticator() throws Exception {
+        // TODO: Get this setting from spring config
+        String defaultWebAuthenticatorImplClassName = "org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl";
+        return (WebAuthenticator) Class.forName(defaultWebAuthenticatorImplClassName).newInstance();
     }
 }
