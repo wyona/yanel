@@ -10,6 +10,7 @@ import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.ExpiredIdentityException;
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.User;
+import org.wyona.security.core.api.UserManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -125,17 +126,26 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             } else if (openIDSignature != null) {
                 log.debug("Verify OpenID provider response ...");
                 if (verifyOpenIDProviderResponse(request)) {
-                    getXHTMLAuthenticationForm(request, response, realm, "OpenID verification successful, but OpenID session implementation is not finished yet!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
-                    // TODO: Add verified OpenID user to the session
-/*
-                        log.info("Authentication successful: " + username);
-                        IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
+                    UserManager uManager = realm.getIdentityManager().getUserManager();
+                    String openIdentity = request.getParameter("openid.identity");
+                    if (openIdentity != null) {
+                        if (!uManager.existsUser(openIdentity)) {
+                            uManager.createUser(openIdentity, null, null, null);
+                            log.warn("An OpenID user has been created: " + openIdentity);
+                        }
+                        User user = uManager.getUser(openIdentity);
+                        IdentityMap identityMap = (IdentityMap)request.getSession(true).getAttribute(YanelServlet.IDENTITY_MAP_KEY);
                         if (identityMap == null) {
                             identityMap = new IdentityMap();
-                            session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
+                            request.getSession().setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
                         }
                         identityMap.put(realm.getID(), new Identity(user));
-*/
+                        // OpenID authentication successful, hence return null instead an "exceptional" response
+                        return null;
+                    } else {
+                        log.error("No openid.identity!");
+                        getXHTMLAuthenticationForm(request, response, realm, "OpenID verification successful, but no openid.identity!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                    }
                 } else {
                     getXHTMLAuthenticationForm(request, response, realm, "Login failed: OpenID response from provider could not be verified!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                 }
