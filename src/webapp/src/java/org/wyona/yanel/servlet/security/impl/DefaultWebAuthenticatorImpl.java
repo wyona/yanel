@@ -56,12 +56,16 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
     // NOTE: The OpenID consumer manager needs to be the same instance for redirect to provider and provider verification
     private ConsumerManager manager;
+    private boolean allowOpenIdUserCreation;
 
     /**
      *
      */
     public void init(org.w3c.dom.Document configuration, javax.xml.transform.URIResolver resolver) throws Exception {
         manager = new ConsumerManager();
+
+        // TODO: Make this configurable in order to prevent OpenID user creation attack
+        allowOpenIdUserCreation = true;
     }
 
     /**
@@ -129,16 +133,18 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                     UserManager uManager = realm.getIdentityManager().getUserManager();
                     String openIdentity = request.getParameter("openid.identity");
                     if (openIdentity != null) {
-                        if (!uManager.existsUser(openIdentity)) {
+                        if (!uManager.existsUser(openIdentity) && allowOpenIdUserCreation) {
                             uManager.createUser(openIdentity, null, null, null);
                             log.warn("An OpenID user has been created: " + openIdentity);
                         }
                         User user = uManager.getUser(openIdentity);
+                        //User user = uManager.getUser(openIdentity, true);
                         IdentityMap identityMap = (IdentityMap)request.getSession(true).getAttribute(YanelServlet.IDENTITY_MAP_KEY);
                         if (identityMap == null) {
                             identityMap = new IdentityMap();
                             request.getSession().setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
                         }
+                        log.debug("User: " + user.getID());
                         identityMap.put(realm.getID(), new Identity(user));
                         // OpenID authentication successful, hence return null instead an "exceptional" response
                         // TODO: Do not return null (although successful), but rather strip-off all the openid query string stuff and then do a redirect
