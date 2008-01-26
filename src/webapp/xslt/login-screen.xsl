@@ -63,6 +63,7 @@
         </p>
         <xsl:apply-templates select="/yanel:yanel-auth-screen/yanel:request"/>
         <xsl:apply-templates select="/yanel:yanel-auth-screen/yanel:realm"/>
+        <xsl:apply-templates select="/yanel:yanel-auth-screen/yanel:user"/>
         </div>
         </td>
 </tr>
@@ -96,6 +97,15 @@
        <ul>
         <li>Name: <xsl:value-of select="@yanel:name"/></li>
         <li>Mount Point: <xsl:value-of select="@yanel:mount-point"/></li>
+       </ul>
+    </p>
+  </xsl:template>
+
+  <xsl:template match="yanel:user">
+    <p>
+    Currently signed in into this realm as:
+       <ul>
+        <li>User ID: <xsl:value-of select="@yanel:id"/></li>
        </ul>
     </p>
   </xsl:template>
