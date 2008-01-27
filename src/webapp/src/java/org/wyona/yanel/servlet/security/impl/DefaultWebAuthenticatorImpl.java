@@ -129,7 +129,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 return response;
             } else if (openIDSignature != null) {
                 log.debug("Verify OpenID provider response ...");
-                if (verifyOpenIDProviderResponse(request)) {
+                if (verifyOpenIDProviderResponse(request, map)) {
                     UserManager uManager = realm.getIdentityManager().getUserManager();
                     String openIdentity = request.getParameter("openid.identity");
                     if (openIdentity != null) {
@@ -517,16 +517,15 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     /**
      * Verify OpenID provider response
      */
-    private boolean verifyOpenIDProviderResponse (HttpServletRequest request) throws Exception {
+    private boolean verifyOpenIDProviderResponse (HttpServletRequest request, Map map) throws Exception {
         ParameterList responseParas = new ParameterList(request.getParameterMap());
         DiscoveryInformation discovered = (DiscoveryInformation) request.getSession().getAttribute(OPENID_DISCOVERED_KEY);
-        StringBuffer receivingURL = request.getRequestURL();
-        String queryString = request.getQueryString();
-        if (queryString != null && queryString.length() > 0) {
-            receivingURL.append("?").append(request.getQueryString());
-            VerificationResult verification = manager.verify(receivingURL.toString(), responseParas, discovered);
-            Identifier verified = verification.getVerifiedId();
-            if (verified != null) {
+
+        String receivingURL = getRequestURLQS(request, null, false, map);
+        log.debug("Receiving URL: " + receivingURL);
+        VerificationResult verification = manager.verify(receivingURL.toString(), responseParas, discovered);
+        Identifier verified = verification.getVerifiedId();
+        if (verified != null) {
 /*
                 AuthSuccess authSuccess = (AuthSuccess) verification.getAuthResponse();
                 if (authSuccess.hasExtension(AxMessage.OPENID_NS_AX)) {
@@ -536,7 +535,6 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 }
 */
                 return true;
-            }
         }
         return false;
     }
