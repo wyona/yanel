@@ -691,6 +691,7 @@
   </target>
 
   <target name="ask-to-copy-endorsed-xerces-to-node1" if="ask-to-copy-endorsed-xerces-to-node1">
+    <echo>IMPORTANT: Please note that your Tomcat might already contain an endorsed xerces library at '${tomcat1.home.dir}/common/endorsed/'. Please make sure to resolve any conflicts!</echo>
     <input message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
     <condition property="do-not-copy-endorsed-xerces-to-node1">
       <equals arg1="no" arg2="${answer}"/>
@@ -699,6 +700,7 @@
   </target>
 
   <target name="ask-to-copy-endorsed-xml-apis-to-node1" if="ask-to-copy-endorsed-xml-apis-to-node1">
+    <echo>IMPORTANT: Please note that your Tomcat might already contain an endorsed xml api library at '${tomcat1.home.dir}/common/endorsed/'. Please make sure to resolve any conflicts!</echo>
     <input message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
     <condition property="do-not-copy-endorsed-xml-apis-to-node1">
       <equals arg1="no" arg2="${answer}"/>
