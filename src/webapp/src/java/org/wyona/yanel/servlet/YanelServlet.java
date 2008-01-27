@@ -179,8 +179,9 @@ public class YanelServlet extends HttpServlet {
             if(doLogout(request, response) != null) return;
         }
 
+        // Check authorization and if authorization failed, then try to authenticate
         if(doAccessControl(request, response) != null) {
-            log.warn("Access denied: " + request.getServletPath());
+            // Either redirect (after successful authentication) or access denied (and response will send the login screen)
             return;
         } else {
             if (log.isDebugEnabled()) log.debug("Access granted: " + request.getServletPath());
