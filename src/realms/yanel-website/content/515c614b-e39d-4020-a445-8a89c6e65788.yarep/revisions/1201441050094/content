@@ -1,0 +1,7 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>From Template</title></head><body>  <h1>Enterprise Deployment</h1><br/><img alt="Enterprise Deployment" src="deployment_enterprise.png"/><br/><a href="deployment_enterprise.svg">SVG</a> created with <a href="http://www.inkscape.org">Inkscape</a>
+
+<p>
+In order to setup a load-balanced clustered environment, one might want to checkout the code at <a href="http://svn.wyona.com/repos/public/tomcat-cluster">http://svn.wyona.com/repos/public/tomcat-cluster</a> (U: anonymous, P: anonymous). This project includes a Java based load balancer which does support fallback (whereas the sessions are sticky as long as a single cluster node is up and running). This project also includes Apache httpd as an alternative load balancer solution.
+</p>
+</body>
+</html>
