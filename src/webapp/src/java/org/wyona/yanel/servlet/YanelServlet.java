@@ -1159,10 +1159,13 @@ public class YanelServlet extends HttpServlet {
                     url = new URL("https", url.getHost(), new Integer(sslPort).intValue(), url.getFile());
                 }
                 log.warn("Redirect to original request: " + url);
+
+                //response.sendRedirect(url.toString()); // 302
+                // TODO: Yulup has a bug re TEMPORARY_REDIRECT (or is the problem that the load balancer is rewritting 302 reponses?!)
                 response.setHeader("Location", url.toString());
-                // TODO: Yulup has a bug re TEMPORARY_REDIRECT
-                //response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT);
-                response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY);
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
+                //response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT); // 302
+
                 return response;
             }
         } else {
