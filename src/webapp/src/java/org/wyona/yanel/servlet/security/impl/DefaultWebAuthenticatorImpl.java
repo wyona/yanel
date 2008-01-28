@@ -65,7 +65,8 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
      *
      */
     public void init(org.w3c.dom.Document configuration, javax.xml.transform.URIResolver resolver) throws Exception {
-        manager = new ConsumerManager();
+        // TODO: commented because there is a problem with this line 
+        //manager = new ConsumerManager();
 
         // TODO: Make this configurable in order to prevent OpenID user creation attack
         allowOpenIdUserCreation = true;
