@@ -101,6 +101,10 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * </pre>
  * <p>
  * A view is accessed through a request parameter <b>yanel.resource.viewid</b>
+ * <p>
+ * If no serializer is specified for a view, the serializer will be chosen depending
+ * on the mime-type, whereas the default serializer is XHTML_STRICT.
+ * </p>
  */
 public class BasicXMLResource extends Resource implements ViewableV2 {
 
