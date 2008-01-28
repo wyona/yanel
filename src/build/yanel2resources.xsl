@@ -35,6 +35,7 @@
       <echo>INFO: Do not compile: <xsl:value-of select="@src"/></echo>
     </xsl:when>
     <xsl:otherwise>
+      <echo>INFO: Start compiling resource <xsl:value-of select="@src"/></echo>
       <xsl:choose>
         <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
     <ant inheritAll="false" antfile="{@src}/build.xml" target="compile">
@@ -55,6 +56,7 @@
     </ant>
         </xsl:otherwise>
       </xsl:choose>
+      <echo>INFO: End compiling resource <xsl:value-of select="@src"/></echo>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:for-each>
