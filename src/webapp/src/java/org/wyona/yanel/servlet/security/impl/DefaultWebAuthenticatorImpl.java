@@ -34,8 +34,11 @@ import org.apache.log4j.Category;
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
+// JOID is an alternative openid impl
+/*
 import org.verisign.joid.consumer.OpenIdFilter;
 import org.verisign.joid.util.UrlUtils;
+*/
 
 import org.openid4java.consumer.ConsumerManager;
 import org.openid4java.consumer.VerificationResult;
