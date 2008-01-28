@@ -236,7 +236,6 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             if (xsltPaths == null || xsltPaths.length == 0) {
                 xsltPaths = getXSLTPath(getPath());
             }
-            
             SourceResolver uriResolver = new SourceResolver(this);
             
             TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPaths.length];
@@ -305,12 +304,12 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
             if (MimeTypeUtil.isHTML(mimeType) && !MimeTypeUtil.isXML(mimeType)) {
                 serializer = SerializerFactory.getSerializer(SerializerFactory.HTML_TRANSITIONAL);
+            } else if (MimeTypeUtil.isHTML(mimeType) && MimeTypeUtil.isXML(mimeType)){
+                serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
             } else if (MimeTypeUtil.isXML(mimeType)) {
                 serializer = SerializerFactory.getSerializer(SerializerFactory.XML);
             } else if (MimeTypeUtil.isTextual(mimeType)) {
                 serializer = SerializerFactory.getSerializer(SerializerFactory.TEXT);
-            } else if (MimeTypeUtil.isHTML(mimeType) && MimeTypeUtil.isXML(mimeType)){
-                serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
             } else{
                 // For backwards compatibility leave XHTML as default
                 serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
