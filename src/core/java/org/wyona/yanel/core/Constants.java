@@ -14,11 +14,19 @@ public abstract class Constants {
          * The value for the default view
          * */
         public static final String DEFAULT_VIEW_ID = "default";
-        
         /**
          * The value for the source view
          * */
         public static final String SOURCE_VIEW_ID = "source";
+        
+        /**
+         * Controls the usecase to be used
+         * */
+        public static final String YANEL_RESOURCE_USECASE = "yanel.resource.usecase";
+        /**
+         * The 'delete' usecase value 
+         * */
+        public static final String DELETE_USECASE = "delete";
     }
     
     private Constants(){};
