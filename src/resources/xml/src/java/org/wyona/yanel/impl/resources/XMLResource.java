@@ -395,7 +395,10 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         java.util.HashMap map = new java.util.HashMap();
         map.put("xslt", request.getParameter("rp.xslt"));
         map.put("mime-type", request.getParameter("rp.mime-type"));
+        map.put("source-view-mime-type", request.getParameter("rp.source-view-mime-type"));
         map.put("workflow-schema", request.getParameter("rp.workflow-schema"));
+        map.put("yanel-path", request.getParameter("rp.yanel-path"));
+
         // TODO: get all parameters, e.g. source-view-mime-type (Security!)
         return map;
     }
