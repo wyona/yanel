@@ -64,7 +64,7 @@
                   version="2.7.0"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="0.2-dev-r30806"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="yarep" artifactId="yarep-impl" version="1.0-dev-r31022"/>
+      <dependency groupId="yarep" artifactId="yarep-impl" version="1.0-dev-r31042"/>
       <dependency groupId="spring" artifactId="spring"
                   version="2.0"/>
       <dependency groupId="svnkit" artifactId="svnkit"
