@@ -306,6 +306,20 @@
 <!--
     <echo>Classpath to run yanel: ${run.cp}</echo>
 -->
+
+    <path id="classpath.javadoc">
+      <!-- Properties files -->
+      <pathelement path="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
+
+      <!-- All from source generated libs -->
+      <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib">
+        <include name="*.jar"/>
+      </fileset>
+
+      <!-- All external dependencies -->
+      <pathelement path="${maven2.cp}"/>
+      <pathelement path="${maven2.compile.cp}"/>
+    </path>
   </target>
 
   <target name="compile-core" description="Compile Java classes of Yanel core" depends="init, set-classpath">
@@ -877,7 +891,7 @@
       packagenames="org.*"
       sourcepath="${yanel.home.dir}/src/core/java"
       destdir="${yanel.home.dir}/build/javadoc"
-      classpathref="classpath.run"
+      classpathref="classpath.javadoc"
     >
     </javadoc>
   </target>
