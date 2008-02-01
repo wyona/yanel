@@ -10,15 +10,23 @@
 <!--
         <rc:property name="xslt" value="/xslt/global.xsl"/>
 -->
-        <rc:property name="mime-type" value="application/xhtml+xml"/>
+
+        <!-- Older IE versions have problems with the mime type application/xhtml+xml -->
+        <rc:property name="mime-type" value="text/html"/>
+        <rc:property name="source-mime-type" value="application/xhtml+xml"/>
 <!--
         <rc:property name="workflow-schema" value="/workflow.xml"/>
 -->
       </rc:resource-type>
 
+      <rc:resource-type name="file" namespace="http://www.wyona.org/yanel/resource/1.0">
+        <rc:display-name>Asset (Upload File)</rc:display-name>
+      </rc:resource-type>
+<!--
       <rc:resource-type name="yanel-user" namespace="http://www.wyona.org/yanel/resource/1.0">
         <rc:display-name>CMS User</rc:display-name>
       </rc:resource-type>
+-->
     </rc:resource-types>
   </yanel:custom-config>
 </yanel:resource-config>
