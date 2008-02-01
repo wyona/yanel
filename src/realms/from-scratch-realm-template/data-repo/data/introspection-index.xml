@@ -1,12 +1,17 @@
 <?xml version="1.0"?>
 
-<introspection xmlns="http://www.wyona.org/neutron/1.0">
-<edit mime-type="application/xhtml+xml" name="Home">
-  <checkout url="index.html?yanel.resource.usecase=checkout" method="GET"/>
-  <checkin  url="index.html?yanel.resource.usecase=checkin"  method="PUT"/>
-</edit>
+<introspection xmlns="http://www.wyona.org/neutron/2.0">
+<resource name="Home">
+  <edit mime-type="application/xhtml+xml">
+    <checkout url="index.html?yanel.resource.usecase=checkout" method="GET"/>
+    <checkin  url="index.html?yanel.resource.usecase=checkin"  method="PUT"/>
+    <release-lock url="index.html?yanel.resource.usecase=release-lock" method="GET"/>
+  </edit>
+  <!-- No revisions! -->
+</resource>
 
 <navigation>
   <sitetree href="./" method="PROPFIND"/>
 </navigation>
+
 </introspection>
