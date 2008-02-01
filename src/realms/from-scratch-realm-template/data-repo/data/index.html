@@ -6,11 +6,13 @@
 
 <head>
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
-  <title>From Scratch</title>
-  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/>
+  <title>Homepage - From Scratch Realm</title>
 <!--
-  <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-index.xml"/>
+  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/>
 -->
+
+  <!-- Use this custom introspection document, because in the case of "/" instead of "index.html", one will edit the directory "/" instead of "index.html" and a RepositoryException will be thrown. TODO: Fix createRevision() of yarep VirtualFileSystemRepo implementation by using the alternative directory node name! -->
+  <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-index.xml"/>
 </head>
 
 <body>
