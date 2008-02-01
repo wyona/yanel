@@ -1,22 +1,9 @@
 <?xml version="1.0"?>
 
-<repository class="org.wyona.yarep.impl.repo.fs.FileSystemRepository">
+<repository class="org.wyona.yarep.impl.repo.vfs.VirtualFileSystemRepository">
   <name>Yanel From Scratch Data Repository</name>
-  <paths class="org.wyona.yarep.impl.DefaultMapImpl" src="../data-paths" fallback="true">
-    <ignore pattern=".*\.svn"/>
-    <ignore pattern=".*\.yarep"/>
-  </paths>
   <content src="../data"/>
+  <directory alternative="index.html" mime-type="application/xhtml+xml"/>
+  <meta src="../yarep-meta"/>
+  <search-index src="../search-index"/>
 </repository>
-
-<!--
-<repository>
-  <name>Yanel From Scratch Data Repository</name>
-
-  <paths class="org.wyona.yarep.impl.DefaultMapImpl" src="../data-paths" fallback="true"/>
-
-  <storage class="org.wyona.yarep.core.impl.fs.FileSystemStorage">
-    <content src="../data"/>
-  </storage>
-</repository>
--->
