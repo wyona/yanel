@@ -143,7 +143,7 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
   </xsl:template>
   
   <xsl:template match="yanel:config">
-    <li>Configuration: <xsl:value-of select="@yanel:rti-name"/> (<xsl:value-of select="@yanel:rti-namespace"/>)</li>
+    <li>Configuration: <b><xsl:value-of select="@yanel:rti-name"/></b> (<xsl:value-of select="@yanel:rti-namespace"/>)</li>
   </xsl:template>
   
   <xsl:template match="yanel:no-config">
