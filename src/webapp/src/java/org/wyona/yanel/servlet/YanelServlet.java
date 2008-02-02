@@ -243,7 +243,7 @@ public class YanelServlet extends HttpServlet {
 
         String policyRequestPara = request.getParameter("yanel.policy");
         if (policyRequestPara != null) {
-            doAccessPolicyRequest(request, response);
+            doAccessPolicyRequest(request, response, policyRequestPara);
             return;
         }
         
@@ -2163,15 +2163,19 @@ public class YanelServlet extends HttpServlet {
     /**
      * Handle access policy requests (CRUD)
      */
-    private void doAccessPolicyRequest(HttpServletRequest request, HttpServletResponse response)  throws ServletException, IOException {
+    private void doAccessPolicyRequest(HttpServletRequest request, HttpServletResponse response, String usecase)  throws ServletException, IOException {
         Resource resource = getResource(request, response);
-        StringBuffer sb = new StringBuffer("Policy:\n");
+        StringBuffer sb = new StringBuffer("Access policy management:\n");
         try {
-            Policy acPolicy = resource.getRealm().getPolicyManager().getPolicy(resource.getPath());
-            if (acPolicy != null) {
-                sb.append(acPolicy.toString());
+            if (usecase.equals("read")) {
+                Policy acPolicy = resource.getRealm().getPolicyManager().getPolicy(resource.getPath());
+                if (acPolicy != null) {
+                    sb.append(acPolicy.toString());
+                } else {
+                    sb.append("No policy for path: " + resource.getPath());
+                }
             } else {
-                sb.append("No policy for path: " + resource.getPath());
+                sb.append("Policy usecase not implemented yet: " + usecase);
             }
         } catch(Exception e) {
             log.error(e, e);
