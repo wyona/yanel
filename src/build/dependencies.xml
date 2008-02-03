@@ -39,7 +39,7 @@
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons" version="1.0-dev-r30752"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.2-dev-r30678"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.2-dev-r31161"/>
 
       <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
@@ -62,7 +62,8 @@
 <!-- The XSLT engine of Java on MacOS X seems to have trouble. With Xalan enabled it should work! Also Abdera seems to need Xalan ... -->
       <dependency groupId="xalan" artifactId="${xalan.artifactId}" version="${xalan.version}"/>
 
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="0.2-dev-r30806"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="0.2-dev-r31161"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="0.2-dev-r31161"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="yarep" artifactId="yarep-impl" version="1.0-dev-r31042"/>
       <dependency groupId="spring" artifactId="spring"
