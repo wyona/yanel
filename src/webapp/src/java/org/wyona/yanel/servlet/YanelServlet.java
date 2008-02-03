@@ -2165,24 +2165,19 @@ public class YanelServlet extends HttpServlet {
      */
     private void doAccessPolicyRequest(HttpServletRequest request, HttpServletResponse response, String usecase)  throws ServletException, IOException {
         Resource resource = getResource(request, response);
-        StringBuffer sb = new StringBuffer("Access policy management:\n");
+        StringBuffer sb = new StringBuffer("");
         try {
             if (usecase.equals("read")) {
-                Policy acPolicy = resource.getRealm().getPolicyManager().getPolicy(resource.getPath());
-                if (acPolicy != null) {
-                    sb.append(acPolicy.toString());
-                } else {
-                    sb.append("No policy for path: " + resource.getPath());
-                }
+                sb.append(org.wyona.security.util.PolicyViewer.getXHTMLView(resource.getRealm().getPolicyManager(), resource.getPath(), null));
             } else {
-                sb.append("Policy usecase not implemented yet: " + usecase);
+                sb.append("<html><body>Policy usecase not implemented yet: " + usecase + "</body></html>");
             }
         } catch(Exception e) {
             log.error(e, e);
             throw new ServletException(e.getMessage());
         }
 
-        response.setContentType("text/plain; charset=" + DEFAULT_ENCODING);
+        response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
         response.setStatus(response.SC_OK);
         PrintWriter writer = response.getWriter();
         writer.print(sb.toString());
