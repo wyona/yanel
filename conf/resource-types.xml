@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 
-<!-- NOTE: compile is true by default -->
+<!-- NOTE: The "compile" attribute is true by default -->
+<!-- NOTE: Do not use relative paths to reference resource types, because the paths are not being resolved re the location of (local.)resource-types.xml -->
+
 <resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2007112000">
 
   <changes>
@@ -17,9 +19,6 @@
   <resource-type src="@YANEL_SRC_DIR@/src/resources/translation/"                 compile="true"/>
   <resource-type package="org.wyona.yanel.impl.resources.node" src="@YANEL_SRC_DIR@/src/resources/file/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/directory/" compile="true" copy-dir-name="yanel-collection"/>
-<!--
-  <resource-type src="../../contributions/resources/tape/" compile="true"/>
--->
   <resource-type src="@YANEL_SRC_DIR@/src/resources/add-realm/"                  compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/odt/"                         compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/xml/"                         compile="true"/>
@@ -48,10 +47,14 @@
 
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/yanel-user/" compile="true"/>
 
+<!--
+  <resource-type src="/SOME_ABSOLUTE_PATH/contributions/resources/tape/" compile="true"/>
+-->
+
   <!-- Resources which already exist as JAR somewhere and do not need to be compiled -->
   <!-- https://svn.wyona.com/repos/public/yanel/contributions/resources/redirect -->
 <!--
-  <resource-type package="org.wyona.yanel.impl.resources.redirect" src="../contributions/resources/redirect/" compile="true"/>
+  <resource-type package="org.wyona.yanel.impl.resources.redirect" src="/SOME_ABSOLUTE_PATH/contributions/resources/redirect/" compile="true"/>
 -->
 
 </resource-types>
