@@ -1,20 +1,89 @@
-<html>
+<?xml version="1.0"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>tbd</title>
+    <title>Atom feed resource</title>
+    <style>
+h2 {
+  font-size: 130%;
+  color:     #ffffff;
+  background-color: #525D76;
+}
+pre {
+  background-color: efefef;
+}
+td {
+  background-color: eeeeee;
+  color:            000000;
+}
+
+/* first row */
+table tr:first-child td {
+  background-color: cccccc;
+  color:            000000;
+}
+
+/* or th as first row */
+table th {
+  background-color: cccccc;
+  color:            000000;
+}
+    </style>
   </head>
   <body>
-    <h1>tbd</h1>
+    <h1>Atom feed resource</h1>
+
+    <h2>Overview</h2>
     <dl>
       <dt>Name:</dt>
-      <dd>tbd</dd>
+      <dd>atom</dd>
       <dt>Namespace:</dt>
-      <dd>tbd</dd>
+      <dd>http://www.wyona.org/yanel/resource/1.0</dd>
       <dt>UniversalName</dt>
-      <dd>tbd</dd>
+      <dd>&lt;{http://www.wyona.org/yanel/resource/1.0}atom/&gt;</dd>
       <dt>Description:</dt>
-      <dd>tbd</dd>
+      <dd>Atom feed generator</dd>
       <dt>Java Class:</dt>
-      <dd>tbd</dd>
+      <dd>org.wyona.yanel.impl.resources.AtomFeedResource</dd>
     </dl>
+
+    <h2>Views</h2>
+    <table border="1">
+      <tr><th>View ID</th><th>Mime type</th></tr>
+      <tr><td>DEFAULT</td><td>application/xhtml+xml</td></tr>
+      <tr><td>source</td><td>application/xml</td></tr>
+      <tr><td>atom</td><td>application/atom+xml</td></tr>
+      <tr><td>rss2.0</td><td>text/xml</td></tr>
+    </table>
+
+    <h2>Examples</h2>
+    <p><b>Overwrite the default XSLT</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0"&gt;
+      &lt;yanel:rti name="atom" namespace="http://www.wyona.org/yanel/resource/1.0"/&gt;
+
+      &lt;yanel:property name="feed-title" value="My first atom feed"/&gt;
+      &lt;yanel:property name="author" value="Me and myself"/&gt;
+      &lt;yanel:property name="xslt" value="/xslt/atomfeed2customxhtml.xsl"/&gt;
+      &lt;yanel:property name="self-url" value="http://www.yulup.org/download/release-atom-entries/?yanel.resource.viewid=atom"/&gt;
+
+    &lt;/yanel:resource-config&gt;
+</pre>
+
+<!--
+    <p><b>Embed default XHTML view into some global layout</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0"&gt;
+      &lt;yanel:rti name="directory" namespace="http://www.wyona.org/yanel/resource/1.0"/&gt;
+
+      &lt;yanel:property name="xslt" value="/global.xsl"/&gt;
+      &lt;yanel:property name="mime-type" value="application/xhtml+xml"/&gt;
+
+    &lt;/yanel:resource-config&gt;
+</pre>
+-->
+
   </body>
 </html>
