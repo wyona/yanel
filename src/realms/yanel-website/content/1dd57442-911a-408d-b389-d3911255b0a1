@@ -1,9 +1,10 @@
 !Create a new resource type from scratch
 
 * ./build.sh new-resource-type
-* Add new resource type path to conf/yanel.xml resp. conf/local/local.yanel.xml
-* Rebuild Yanel
-* Restart Yanel
+** The resource type should be created within the directory src/contributions/resources/MY_FIRST_RESOURCE_TYPE
+* Add new resource type path to conf/resource-types.xml resp. conf/local/local.resource-types.xml
+* Rebuild Yanel (./build.sh)
+* Restart Yanel (./yanel.sh start)
 * Your new resource type should be listed now at http://127.0.0.1:8080/yanel/
 
 __Getting started with your new resource type:__
