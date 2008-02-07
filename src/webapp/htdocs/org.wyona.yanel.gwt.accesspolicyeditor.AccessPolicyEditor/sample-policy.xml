@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<policy xmlns="http://www.wyona.org/security/1.0">
+
+  <usecase id="view">
+    <world permission="true"/>
+  </usecase>
+
+  <usecase id="introspection">
+    <world permission="true"/>
+  </usecase>
+
+  <usecase id="open">
+    <group id="login" permission="true"/>
+    <user id="http://michaelwechner.livejournal.com/" permission="true"/>
+  </usecase>
+
+  <usecase id="write">
+    <group id="login" permission="true"/>
+    <user id="http://michaelwechner.livejournal.com/" permission="true"/>
+  </usecase>
+
+  <usecase id="toolbar">
+    <group id="login" permission="true"/>
+    <user id="http://michaelwechner.livejournal.com/" permission="true"/>
+  </usecase>
+
+  <usecase id="policy.read">
+    <group id="login" permission="true"/>
+    <user id="http://michaelwechner.livejournal.com/" permission="true"/>
+  </usecase>
+
+  <usecase id="policy.create">
+    <group id="login" permission="true"/>
+    <user id="http://michaelwechner.livejournal.com/" permission="true"/>
+  </usecase>
+
+</policy>

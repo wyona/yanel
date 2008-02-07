@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<access-control xmlns="http://www.wyona.org/security/1.0">
+  <users>
+    <user id="michi">Michael Wechner</user>
+    <user id="http://michaelwechner.livejournal.com/"/>
+  </users>
+
+  <groups>
+    <group id="login">All registered users</group>
+  </groups>
+
+  <usecases>
+    <usecase id="view">Read</group>
+    <usecase id="write">Write</group>
+  </usecases>
+</access-control>
