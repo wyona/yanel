@@ -2165,10 +2165,21 @@ public class YanelServlet extends HttpServlet {
      */
     private void doAccessPolicyRequest(HttpServletRequest request, HttpServletResponse response, String usecase)  throws ServletException, IOException {
         Resource resource = getResource(request, response);
+        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
         StringBuffer sb = new StringBuffer("");
         try {
             if (usecase.equals("read")) {
-                sb.append(org.wyona.security.util.PolicyViewer.getXHTMLView(resource.getRealm().getPolicyManager(), resource.getPath(), null));
+
+                String orderedByParam = request.getParameter("orderedBy");
+                int orderedBy = 0;
+                if (orderedByParam != null) orderedBy = new java.lang.Integer(orderedByParam).intValue();
+                boolean showParents = false;
+                String showParentsParam = request.getParameter("showParents");
+                if (showParentsParam != null) showParents = new java.lang.Boolean(showParentsParam).booleanValue();
+
+                sb.append(org.wyona.security.util.PolicyViewer.getXHTMLView(resource.getRealm().getPolicyManager(), resource.getPath(), null, orderedBy, showParents));
+	    } else if (usecase.equals("update")) {
+                sb.append("<html><body><h1>Update Access Policy</h1><p><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.yanel.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.yanel.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
             } else {
                 sb.append("<html><body>Policy usecase not implemented yet: " + usecase + "</body></html>");
             }
