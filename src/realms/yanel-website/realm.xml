@@ -5,7 +5,7 @@
 <realm-config xmlns="http://www.wyona.org/yanel/realm/1.0">
   <name>Yanel Website</name>
 
-  <rti>config/repository.xml</rti>
+  <rti>config/res-config-repository.xml</rti>
   <data>config/repository.xml</data>
   <ac-policies>config/ac-policies-repository.xml</ac-policies>
   <ac-identities>config/ac-identities-repository.xml</ac-identities>
