@@ -22,7 +22,7 @@ package org.wyona.yanel.core.api.attributes;
 public interface CreatableV1 {
 
     /**
-     * TODO: Wouldn't it be better to implement this with introspection?
+     * Get the names of all properties which shall be set during creation. TODO: Wouldn't it be better to implement this with introspection?
      */
     public String[] getPropertyNames();
 
