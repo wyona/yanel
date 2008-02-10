@@ -1,21 +1,10 @@
 <?xml version="1.0"?>
 
 <repository class="org.wyona.yarep.impl.repo.fs.FileSystemRepository">
-  <name>Yanel Website Repository</name>
+  <name>Yanel Website Data Repository</name>
   <paths class="org.wyona.yarep.impl.DefaultMapImpl" src="../paths">
     <ignore pattern=".*\.svn"/>
   </paths>
   <content src="../content"/>
+  <search-index src="../data-repo/search-index"/>
 </repository>
-
-<!--
-<repository>
-  <name>Yanel Website Repository</name>
-
-  <paths class="org.wyona.yarep.impl.DefaultMapImpl" src="../paths"  fallback="true"/>
-
-  <storage class="org.wyona.yarep.core.impl.fs.FileSystemStorage">
-    <content src="../content"/>
-  </storage>
-</repository>
--->
