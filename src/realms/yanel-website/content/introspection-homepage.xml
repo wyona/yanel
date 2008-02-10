@@ -14,4 +14,25 @@
   <checkin  url="homepage-es.xml?yanel.resource.usecase=checkin"  method="PUT"/>
 </edit>
 </resource>
+
+<resource name="English Sitetree">
+<edit mime-type="application/xml">
+  <checkout url="sitetree.xml?yanel.resource.usecase=checkout" method="GET"/>
+  <checkin  url="sitetree.xml?yanel.resource.usecase=checkin"  method="PUT"/>
+</edit>
+</resource>
+
+<resource name="German Sitetree">
+<edit mime-type="application/xml">
+  <checkout url="sitetree-de.xml?yanel.resource.usecase=checkout" method="GET"/>
+  <checkin  url="sitetree-de.xml?yanel.resource.usecase=checkin"  method="PUT"/>
+</edit>
+</resource>
+
+<resource name="Spanish Sitetree">
+<edit mime-type="application/xml">
+  <checkout url="sitetree-es.xml?yanel.resource.usecase=checkout" method="GET"/>
+  <checkin  url="sitetree-es.xml?yanel.resource.usecase=checkin"  method="PUT"/>
+</edit>
+</resource>
 </introspection>
