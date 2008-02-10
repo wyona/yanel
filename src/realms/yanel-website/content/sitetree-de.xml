@@ -37,24 +37,4 @@
   <node uuid="" href="en/contact.html"><name>Contact</name></node>
 </node>
 
-<!--
-<node href="en">
-  <name>English Subtree</name>
-  <node href="index.html">About</node>
-</node>
-<node href="download.html">
-  <name>Download</name>
-</node>
-<node href="license.html">
-  <name>Download</name>
-</node>
-<node href="de">
-  <name>Deutscher Subtree</name>
-  <node href="ueber.html">Ueber</node>
-</node>
-<node href="es">
-  <name>Spanish Subtree</name>
-  <node href="acerca.html">Acerca de Yanel</node>
-</node>
--->
 </sitetree>
