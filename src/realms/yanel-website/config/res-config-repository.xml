@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<repository class="org.wyona.yarep.impl.repo.vfs.VirtualFileSystemRepository">
+  <name>Yanel Website Resource Configurations Repository</name>
+  <content src="../res-configs-repo/data"/>
+  <meta src="../res-configs-repo/yarep-meta"/>
+  <search-index src="../res-configs-repo/search-index"/>
+</repository>
