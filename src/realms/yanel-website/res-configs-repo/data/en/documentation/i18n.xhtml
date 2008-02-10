@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Internationalization in YANEL</title>
+</head>
+<body>
+<h2>How i18n works within YANEL</h2>
+
+<p>
+At the moment the <tt><b>i18n</b></tt> does only work for the <tt><b>NutchResource</b></tt>.<br/>
+Like in <a href="http://cocoon.apache.org/"><tt>Cocoon</tt></a> keys for each message have to be defined.<br/>
+But unlike in <tt>Cocoon</tt> the key value pairs are not stored in a XML file, but in properties.<br/>
+</p>
+<p>
+These properties are stored in the <tt><b>conf</b></tt> directory of the resource, <tt>[src/contributions/resources/nutch/conf/&lt;FAMILY&gt;_&lt;LOCALE&gt;.properties]</tt>.<br/>
+Resource bundles belong to families whose members share a common base name, but whose names also have additional components that identify their locales. 
+For example, the base name of a family of resource bundles might be <tt><b>messages</b></tt>. The family should have a default resource bundle which simply has the same name as its family - <tt><b>messages</b></tt> - 
+and will be used as the bundle of last resort if a specific locale is not supported. The family can then provide as many locale-specific members as needed, for example a German one named <tt><b>messages_de</b></tt>.
+</p>
+<p>
+Each resource bundle in a family contains the same items, but the items have been translated for the locale represented by that resource bundle. For example, both <tt><b>messages</b></tt> and <tt><b>messages_de</b></tt> may have a 
+String that's used on a button for canceling operations. In <tt><b>messages</b></tt> the String may contain <tt><b>Cancel</b></tt> and in <tt><b>messages_de</b></tt> it may contain <tt><b>Abbrechen</b></tt>.
+</p>
+<p>
+After having replaced all Messages with a <br/><tt><b>&lt;i18n:message key="KEY_TO_BE_TRANSLATED"/&gt;</b></tt> a Transformer will parse the XML file look for these tags and replace the value of the key with the key from the properties file.<br/>Here's an example:
+</p>
+<p>
+Assuming you want the following text internationalized:<br/> <tt><b>"Hello World"</b></tt> you would have to replace the Hallo World with a tag <tt><b>&lt;i18n:message key="HelloWorld"&gt;</b></tt> where the key has to be unique within a bundle named messages.<br/>
+</p>
+<p>
+The transformer finds this tag looks in his properties for the selected locale, which is here by default (<b>en</b>)glish if no <tt>request.parameter</tt> name <tt>yanel.meta.language</tt> is given, and replaces the 
+<tt><b>&lt;i18n:message key="HelloWorld"&gt;</b></tt> with the value from <tt>messages_en.properties</tt>. So that the result would be <tt><b>"Hello World"</b></tt>.<br/>
+</p>
+<p>
+Attributes are handled a bit different. For attributes e.g. within a form imagine the submit button. You would have to have e.g. <tt>&lt;input type="submit" value="<b>i18n:attr key=cancel</b>"&gt;</tt>
+here the transformer will look for a key cancel within the properties and replace it with the selected language. 
+</p>
+
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+      <h1>Groups</h1>
+      <table border="1">
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Action</th>
+        </tr>
+        <j:forEach var="group" items="${resource.getGroups()}">
+          <tr>
+            <td>${group.getID()}</td>
+            <td>${group.getName()}</td>
+            <td><a href="delete-group.html?groupID=${group.getID()}">Delete</a></td>
+          </tr>
+        </j:forEach>
+      </table>
+      <a href="create-group.html">Create new group</a>
+    </body>
+  </html>
+</j:jelly>

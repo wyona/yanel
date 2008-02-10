@@ -1,0 +1,24 @@
+!Import Site Feature Specification
+
+[Task 4991|http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=4991]
+
+The input screen (default) shall contain the following text inputs:
+
+* Name of new realm, e.g. Apache Website
+* URL of existing site, e.g. http://www.apache.org
+* Depth of Crawling, e.g. 3
+* Maximum Number of Pages to be imported, e.g. 100
+
+When submitting the input values one shall receive a status screen as response.
+
+The status screen shall provide a link to the newly created realm and
+a status of the number of pages already dumped/imported resp. when the crawling
+is being finished a "import completed" message.
+
+TODO:
+* Create importsite resource and implement ViewableV2
+* Implement the input and status screen
+* Implement logic of the new realm creation (e.g. copy and patch the from scratch template)
+* Implement the crawling/dumping/importing of the pages from remote (e.g. use crawler from Apache Lenya 1.2.x)
+* - Add neutron introspection link to (X)HTML head
+* - Create introspection for each imported page

@@ -1,0 +1,14 @@
+!FOP PDF Resource Feature Specification
+
+[Task 5085|http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5085]
+
+The PDF resource provides the generation of a PDF document from an XML source. 
+
+Requirements:
+
+* An XML source to be converted
+* An XSLT to transform the XML source into an XSL-FO.
+
+The XSLT to be applied can be configured within the resource type definition (e.g. src/realms/yanel-website/content/rtd/pdf.rtd resp. pdf2.rtd).
+
+By default the PDF resource applies a simple XSLT stylesheet that can be found at src/contributions/resources/pdf/xslt/xml2fo.xsl.

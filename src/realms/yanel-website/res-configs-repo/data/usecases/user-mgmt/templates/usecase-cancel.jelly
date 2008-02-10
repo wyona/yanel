@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+      <h1>Usecase cancelled</h1>
+      <a href="list-users.html">Show list of users</a>
+      <br/>
+      <a href="list-groups.html">Show list of groups</a>
+    </body>
+  </html>
+</j:jelly>

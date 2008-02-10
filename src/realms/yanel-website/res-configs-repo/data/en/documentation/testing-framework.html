@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>Testing Framework</title>
+</head>
+
+
+<body>
+<h1>Testing Framework</h1>
+<h3>General information</h3>
+There are two kind of tests:
+<ul>
+<li>junit:    used to test specific functionality of certain java components/classes see <a href="http://junit.org/">http://junit.org/</a></li><li>htmlunit: used to test the web pages (simulating user interaction) see <a href="http://htmlunit.sourceforge.net/">http://htmlunit.sourceforge.net/</a></li></ul>
+<h3>How to run the tests</h3>
+<p>
+It's necessary to build yanel before running the tests.
+</p>
+<p>
+If you want to run the htmlunit tests, you have to start tomcat and configure
+the host and url in $YANEL_HOME/src/test/htmlunit/default-properties.xml.
+</p>
+<p>
+Then execute in $YANEL_HOME: ./build.sh test
+</p>
+<p>
+To run single tests standalone:
+cd $YANEL_HOME/src/test
+ant junit -Dtest.class.name=org.wyona.yanel.impl.map.MapImplTest
+ant htmlunit -Dtest.class.name=org.wyona.yanel.htmlunit.yanelwebsite.SimpleWebTest
+</p>
+<h3>How to write tests</h3>
+<p>
+Where to place core tests:
+<br/>$YANEL_HOME/src/test/junit/
+<br/>$YANEL_HOME/src/test/htmlunit/
+<br/><br/>Where to place resource tests:
+<br/>$YANEL_HOME/src/resources/MYRESOURCE/src/test/junit/
+<br/>$YANEL_HOME/src/resources/MYRESOURCE/src/test/htmlunit/
+</p>
+<p>
+Choose the name of the class according to the following convention:
+</p>
+<p>
+*Test.java e.g. MyResourceTest.java for junit tests<br/>
+</p>
+<p>
+*WebTest.java e.g. MyResourceWebTest.java for htmlunit tests<br/>
+</p>
+<p>
+The tests which adhere to these conventions will be executed automatically by
+the testing framework.
+</p>
+<p>
+Have a look at the existing tests to see how it works, e.g. in the xml resource.
+</p>
+<p>
+You can find more example htmlunit tests at: <a href="http://svn.wyona.com/repos/public/lenya/htmlunit/">http://svn.wyona.com/repos/public/lenya/htmlunit/</a> Username:anonymous Password: anonymous.<br/>
+</p>
+</body>
+</html>

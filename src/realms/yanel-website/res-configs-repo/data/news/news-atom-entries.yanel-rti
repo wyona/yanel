@@ -1,0 +1,8 @@
+<{http://www.wyona.org/yanel/resource/1.0}atom/>
+feed-title: News
+author: Yanel Editorial Team
+xslt: /xslt/news-atom-entries2xhtml.xsl
+self-url: http://yanel.wyona.org/news/news-atom-entries/?yanel.resource.viewid=atom
+#self-url: http://yanel.wyona.org/news/news-atom-entries/?yanel.resource.viewid=source
+entries-url: http://127.0.0.1:8080/yanel/yanel-website/news/news-atom-entries/
+#entries-url: http://yanel.wyona.org/news/news-atom-entries/

@@ -1,0 +1,10 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Created from template ...</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>
+<h1>Access Control Policies</h1><br/>One can block inherited policies for <b>all</b> usecases<br/> <p>
+</p><pre>&lt;?xml version=&quot;1.0&quot;?&gt;<br/><br/>&lt;policy xmlns=&quot;http://www.wyona.org/security/1.0&quot; use-inherited-policies=&quot;false&quot;&gt;<br/><br/>  &lt;usecase id=&quot;view&quot;&gt;<br/>    &lt;!--&lt;world permission=&quot;false&quot;/&gt;--&gt;<br/>    &lt;user id=&quot;lenya&quot; permission=&quot;true&quot;/&gt;<br/>  &lt;/usecase&gt;<br/><br/>  &lt;usecase id=&quot;open&quot;&gt;<br/>    &lt;user id=&quot;lenya&quot; permission=&quot;true&quot;/&gt;<br/>  &lt;/usecase&gt;<br/><br/>  &lt;usecase id=&quot;write&quot;&gt;<br/>    &lt;user id=&quot;lenya&quot; permission=&quot;true&quot;/&gt;<br/>  &lt;/usecase&gt;<br/><br/>&lt;/policy&gt;<br/></pre>
+<p>
+or also for a particular usecase<br/>
+</p>
+<p>
+</p><pre>&lt;?xml version=&quot;1.0&quot;?&gt;<br/><br/>&lt;policy xmlns=&quot;http://www.wyona.org/security/1.0&quot;&gt;<br/><br/>  &lt;usecase id=&quot;view&quot; use-inherited-policies=&quot;false&quot;<br/>    &lt;!--&lt;world permission=&quot;false&quot;/&gt;--&gt;<br/>    &lt;user id=&quot;lenya&quot; permission=&quot;true&quot;/&gt;<br/>  &lt;/usecase&gt;<br/><br/>&lt;/policy&gt;<br/></pre>
+</body>
+</html>

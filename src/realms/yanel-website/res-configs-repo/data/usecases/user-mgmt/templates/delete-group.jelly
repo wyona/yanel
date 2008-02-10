@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+      <h1>Delete Group: ${resource.getParameterAsString('groupID')}</h1>
+      <p>${resource.getErrorMessages()}</p>
+      <form action="" >
+        <input type="hidden" name="groupID" value="${resource.getParameterAsString('groupID')}"/>
+        <p style="width: 500px; text-align: left">Are you sure you want to permanently delete the group ${resource.getParameterAsString('groupID')} (${resource.getGroup().getName()})?</p>
+        <input type="submit" name="submit" value="Ok"/>
+        <input type="submit" name="cancel" value="Cancel"/>
+      </form>
+    </body>
+  </html>
+</j:jelly>

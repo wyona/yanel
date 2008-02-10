@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="wiki" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="wiki-syntax" value="jspWikiParser"/>
+<!--
+  <yanel:property name="wiki-syntax" value="javaccWikiParser"/>
+-->
+  <yanel:property name="xslt" value="/xslt/global.xsl"/>
+</yanel:resource-config>

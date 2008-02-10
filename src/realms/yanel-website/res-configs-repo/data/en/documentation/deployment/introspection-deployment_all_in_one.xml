@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<introspection xmlns="http://www.wyona.org/neutron/1.0">
+
+  <edit mime-type="application/xhtml+xml" name="deployment_all_in_one.html">
+    <checkout url="deployment_all_in_one.html?yanel.resource.viewid=source&amp;yanel.resource.usecase=checkout" method="GET"/>
+    <checkin  url="deployment_all_in_one.html?yanel.resource.usecase=checkin" method="PUT"/>
+  </edit>
+</introspection>

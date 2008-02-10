@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<introspection xmlns="http://www.wyona.org/neutron/2.0">
+<resource name="OpenID">
+  <edit mime-type="application/xhtml+xml">
+    <checkout url="openid.xhtml?yanel.resource.usecase=checkout" method="GET"/>
+    <checkin  url="openid.xhtml?yanel.resource.usecase=checkin"  method="PUT"/>
+  </edit>
+</resource>
+
+<navigation>
+<!--
+  <sitetree href="./" method="POST"/>
+-->
+  <sitetree href="../" method="POST"/>
+</navigation>
+</introspection>

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>LDAP</title>
+</head>
+<body>
+<h2>LDAP</h2>
+<h3>Install LDAP server</h3>
+<p>
+</p><ul>
+<li>sudo apt-cache search openlda</li>
+<li>sudo apt-get install slapd</li>
+</ul>
+
+<h3>Accessing LDAP server</h3>
+<p>
+</p><ul>
+  <li>Startup server: sudo /etc/init.d/slapd start</li>
+  <li>Default Port of LDAP server is 389 (netstat -nt -l)</li>
+  <li>Use some LDAP client to connect to the server, e.g. <a href="http://www.jxplorer.org">JXplorer</a></li>
+  <li>What is LDAP?
+    <ul>
+      <li><a href="http://www.jxplorer.org/faq_ldap.html">http://www.jxplorer.org/faq_ldap.html</a></li>
+      <li><a href="http://www.kingsmountain.com/ldapRoadmap.shtml">http://www.kingsmountain.com/ldapRoadmap.shtml</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h3>Other Java implementations</h3>
+<p>
+</p><ul>
+  <li>Lenya 1.2.x: src/java/org/apache/lenya/ac/ldap/LDAPUser.java resp. src/webapp/lenya/pubs/default/config/ac/passwd/ldap.properties.sample<br/></li>
+</ul>
+
+</body>
+</html>

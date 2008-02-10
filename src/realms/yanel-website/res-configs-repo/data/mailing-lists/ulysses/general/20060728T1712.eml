@@ -1,0 +1,62 @@
+Return-path: <phoenix-bounces@wyona.org>
+Envelope-to: michael.wechner@wyona.com
+Received: from localhost ([127.0.0.1] helo=mx1.wyona.com)
+	by mx1.wyona.com with esmtp (Exim 3.35 #1 (Debian))
+	id 1G6U0r-0003HW-00; Fri, 28 Jul 2006 17:12:29 +0200
+Received: from [195.226.6.66] (helo=[192.168.1.55])
+	by mx1.wyona.com with asmtp (Exim 3.35 #1 (Debian))
+	id 1G6U0m-0003EK-00
+	for <phoenix@wyona.org>; Fri, 28 Jul 2006 17:12:24 +0200
+Message-ID: <44CA2960.3020504@wyona.com>
+Date: Fri, 28 Jul 2006 17:12:32 +0200
+From: Michael Wechner <michael.wechner@wyona.com>
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.12) Gecko/20050920
+X-Accept-Language: en-us, de, fr-ch, en
+MIME-Version: 1.0
+To: phoenix@wyona.org
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Phoenix] Checkin and what then ...
+X-BeenThere: phoenix@wyona.org
+X-Mailman-Version: 2.1.4
+Precedence: list
+List-Id: phoenix.wyona.org
+List-Unsubscribe: <http://wyona.com/cgi-bin/mailman/listinfo/phoenix>,
+	<mailto:phoenix-request@wyona.org?subject=unsubscribe>
+List-Archive: <http://wyona.com/pipermail/phoenix>
+List-Post: <mailto:phoenix@wyona.org>
+List-Help: <mailto:phoenix-request@wyona.org?subject=help>
+List-Subscribe: <http://wyona.com/cgi-bin/mailman/listinfo/phoenix>,
+	<mailto:phoenix-request@wyona.org?subject=subscribe>
+Sender: phoenix-bounces@wyona.org
+Errors-To: phoenix-bounces@wyona.org
+
+Hi
+
+When a document has been checked-out (acquire lock and open) and after 
+editing checked-in (save and release lock)
+and the Phoenix/Ulysses remains active/open.
+
+The problem is that a user might edit again and wants to save again, but 
+the exception are being thrown, because the document
+has been checked-in.
+
+How should we handle this from a usability point of view?
+
+Thanks
+
+Michi
+
+-- 
+Michael Wechner
+Wyona      -   Open Source Content Management   -    Apache Lenya
+http://www.wyona.com                      http://lenya.apache.org
+michael.wechner@wyona.com                        michi@apache.org
++41 44 272 91 61
+
+
+_______________________________________________
+Phoenix mailing list
+Phoenix@wyona.org
+http://wyona.com/cgi-bin/mailman/listinfo/phoenix
+

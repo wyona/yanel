@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<introspection xmlns="http://www.wyona.org/neutron/1.0">
+
+  <edit mime-type="text/plain" name="Calendar Resource">
+    <checkout url="calendar-resource.html.txt?yanel.resource.usecase=checkout" method="GET"/>
+    <save  url="calendar-resource.html.txt?yanel.resource.usecase=save" method="PUT"/>
+    <checkin  url="calendar-resource.html.txt?yanel.resource.usecase=checkin" method="PUT"/>
+  </edit>
+</introspection>

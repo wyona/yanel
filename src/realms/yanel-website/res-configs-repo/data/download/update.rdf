@@ -1,0 +1,119 @@
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:um="http://www.wyona.org/update-manager/1.0#">
+
+  <rdf:Description rdf:about="urn:wyona:application:updates">
+    <um:versions>
+      <rdf:Seq>
+        <rdf:li rdf:resource="urn:wyona:application:update:1.0-dev-r22342"/>
+        <rdf:li rdf:resource="urn:wyona:application:update:1.0-dev-r22343"/>
+        <rdf:li rdf:resource="urn:wyona:application:update:1.0-dev-r52343"/>
+        <rdf:li rdf:resource="urn:wyona:application:update:1.0-dev-r12343"/>
+      </rdf:Seq>
+    </um:versions>
+  </rdf:Description>  
+  
+  <rdf:Description rdf:about="urn:wyona:application:update:1.0-dev-r22342">
+    <um:id>yanel-webapp@wyona.org</um:id>
+    <um:version>1.0-dev-r22342</um:version>
+    <um:changelog>this fixed and that improved</um:changelog>
+    <um:targetApplication>
+      <rdf:Seq>
+        <rdf:li rdf:resource="urn:wyona:targetapplication:tomcat:1.0-dev-r22342"/>
+        <rdf:li rdf:resource="urn:wyona:targetapplication:jetty:1.0-dev-r22342"/>
+      </rdf:Seq>
+    </um:targetApplication>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="urn:wyona:targetapplication:tomcat:1.0-dev-r22342">
+    <um:id>Apache Tomcat</um:id>
+    <um:minVersion>5.0.0</um:minVersion>
+    <um:maxVersion>5.5.*</um:maxVersion>
+    <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-tomcat-update-1.0-dev-r22342.war</um:updateLink>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="urn:wyona:targetapplication:jetty:1.0-dev-r22342">
+    <um:id>jetty</um:id>
+    <um:minVersion>5.0.0</um:minVersion>
+    <um:maxVersion>5.5.*</um:maxVersion>
+    <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-jetty-update-1.0-dev-r22342.war</um:updateLink>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="urn:wyona:application:update:1.0-dev-r22343">
+    <um:id>yanel-webapp@wyona.org</um:id>
+    <um:version>1.0-dev-r22343</um:version>
+    <um:changelog>that improved and this fixed</um:changelog>
+    <um:targetApplication>
+      <rdf:Seq>
+        <rdf:li rdf:resource="urn:wyona:targetapplication:tomcat:1.0-dev-r22343"/>
+        <rdf:li rdf:resource="urn:wyona:targetapplication:jetty:1.0-dev-r22343"/>
+      </rdf:Seq>
+    </um:targetApplication>
+  </rdf:Description>
+  
+  <rdf:Description rdf:about="urn:wyona:targetapplication:tomcat:1.0-dev-r22343">
+    <um:id>Apache Tomcat</um:id>
+    <um:minVersion>5.0.0</um:minVersion>
+    <um:maxVersion>5.5.*</um:maxVersion>
+    <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-tomcat-update-1.0-dev-r22343.war</um:updateLink>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="urn:wyona:targetapplication:jetty:1.0-dev-r22343">
+    <um:id>jetty</um:id>
+    <um:minVersion>5.0.0</um:minVersion>
+    <um:maxVersion>5.5.*</um:maxVersion>
+    <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-jetty-update-1.0-dev-r22343.war</um:updateLink>
+  </rdf:Description>  
+
+  <rdf:Description rdf:about="urn:wyona:application:update:1.0-dev-r52343">
+    <um:id>yanel-webapp@wyona.org</um:id>
+    <um:version>1.0-dev-r52343</um:version>
+    <um:changelog>that improved and this fixed</um:changelog>
+    <um:targetApplication>
+      <rdf:Seq>
+        <rdf:li rdf:resource="urn:wyona:targetapplication:tomcat:1.0-dev-r52343"/>
+        <rdf:li rdf:resource="urn:wyona:targetapplication:jetty:1.0-dev-r52343"/>
+      </rdf:Seq>
+    </um:targetApplication>
+  </rdf:Description>
+  
+  <rdf:Description rdf:about="urn:wyona:targetapplication:tomcat:1.0-dev-r52343">
+    <um:id>Apache Tomcat</um:id>
+    <um:minVersion>6.0.0</um:minVersion>
+    <um:maxVersion>6.5.*</um:maxVersion>
+    <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-tomcat-update-1.0-dev-r52343.war</um:updateLink>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="urn:wyona:targetapplication:jetty:1.0-dev-r52343">
+    <um:id>jetty</um:id>
+    <um:minVersion>5.0.0</um:minVersion>
+    <um:maxVersion>5.5.*</um:maxVersion>
+    <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-jetty-update-1.0-dev-r52343.war</um:updateLink>
+  </rdf:Description>
+      
+  <rdf:Description rdf:about="urn:wyona:application:update:1.0-dev-r12343">
+    <um:id>yanel-webapp@wyona.org</um:id>
+    <um:version>1.0-dev-r12343</um:version>
+    <um:changelog>that improved and this fixed</um:changelog>
+    <um:targetApplication>
+      <rdf:Seq>
+        <rdf:li rdf:resource="urn:wyona:targetapplication:tomcat:1.0-dev-r12343"/>
+        <rdf:li rdf:resource="urn:wyona:targetapplication:jetty:1.0-dev-r12343"/>
+      </rdf:Seq>
+    </um:targetApplication>
+  </rdf:Description>  
+    
+  <rdf:Description rdf:about="urn:wyona:targetapplication:tomcat:1.0-dev-r12343">
+    <um:id>Apache Tomcat</um:id>
+    <um:minVersion>4.0.0</um:minVersion>
+    <um:maxVersion>4.5.*</um:maxVersion>
+    <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-tomcat-update-1.0-dev-r12343.war</um:updateLink>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="urn:wyona:targetapplication:jetty:1.0-dev-r12343">
+    <um:id>jetty</um:id>
+    <um:minVersion>5.0.0</um:minVersion>
+    <um:maxVersion>5.5.*</um:maxVersion>
+    <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-jetty-update-1.0-dev-r12343.war</um:updateLink>
+  </rdf:Description>
+
+</rdf:RDF>
