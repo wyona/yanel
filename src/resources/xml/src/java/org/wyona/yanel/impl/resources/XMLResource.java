@@ -357,31 +357,25 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             // TODO: XHTML template should not be hardcoded!
             Repository repo = getRealm().getRepository();
 
+            String title = request.getParameter("rp.title");
+            if (title == null || title.length() == 0) {
+                log.warn("No title has been specified!");
+                title = "No title has been specified!";
+            }
+
             Node newNode = org.wyona.yanel.core.util.YarepUtil.addNodes(repo, getPath().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
             Writer writer = new java.io.OutputStreamWriter(newNode.getOutputStream());
             writer.write("<?xml version=\"1.0\"?>");
             writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
             writer.write("<head>");
-            writer.write("  <title>Created from template ...</title>");
+            writer.write("  <title>" + title + "</title>");
             writer.write("  <link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"?yanel.resource.usecase=introspection\"/>");
             writer.write("</head>");
             writer.write("<body>");
-            writer.write("  <p>Created from template ...</p>");
+            writer.write("  <h1>" + title + "</h1>");
+            writer.write("  <p>Edit this text with <a href=\"http://www.yulup.org\">Yulup</a>!</p>");
             writer.write("</body>");
             writer.write("</html>");
-            writer.close();
-
-            // TODO: Introspection should not be hardcoded!
-            String name = new org.wyona.commons.io.Path(getPath()).getName();
-            String parent = new org.wyona.commons.io.Path(getPath()).getParent().toString();
-            String nameWithoutSuffix = name;
-            int lastIndex = name.lastIndexOf(".");
-            if (lastIndex > 0) nameWithoutSuffix = name.substring(0, lastIndex);
-            String introspectionPath = parent + "/introspection-" + nameWithoutSuffix + ".xml";
-
-            org.wyona.yanel.core.util.YarepUtil.addNodes(repo, introspectionPath, org.wyona.yarep.core.NodeType.RESOURCE);
-            writer = new java.io.OutputStreamWriter(repo.getNode(introspectionPath).getOutputStream());
-            writer.write(getIntrospection(name));
             writer.close();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -427,8 +421,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      *
      */
     public String[] getPropertyNames() {
-        log.warn("Not implemented yet!");
-        return null;
+        String[] propertyNames = new String[1];
+        propertyNames[0] = "title";
+        return propertyNames;
     }
 
     /**
@@ -436,35 +431,6 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      */
     public void setProperty(String name, Object value) {
         log.warn("Not implemented yet!");
-    }
-
-    /**
-     * Create introspection for XHTML documents used by the creator (WARNING: Mime type is hardcoded!)
-     * @param name
-     * @return introspection as string
-     */
-    private String getIntrospection(String name) {
-        StringBuffer sb = new StringBuffer();
-        sb.append("<?xml version=\"1.0\"?>");
-        sb.append("\n");
-        sb.append("\n<introspection xmlns=\"http://www.wyona.org/neutron/2.0\">");
-        sb.append("\n");
-
-        sb.append("<navigation>");
-        sb.append("  <sitetree href=\"./\" method=\"PROPFIND\"/>");
-        sb.append("</navigation>");
-
-
-        sb.append("\n  <resource name=\"" + name + "\">");
-        sb.append("\n  <edit mime-type=\"application/xhtml+xml\">");
-        sb.append("\n    <checkout url=\"" + name + "?yanel.resource.viewid=" + SOURCE_VIEW_ID + "&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
-        sb.append("\n    <checkin  url=\"" + name + "?yanel.resource.usecase=checkin\" method=\"PUT\"/>");
-        sb.append("\n    <release-lock url=\"" + name + "?yanel.resource.usecase=release-lock\" method=\"GET\"/>");
-        sb.append("\n  </edit>");
-        sb.append("\n  </resource>");
-        sb.append("\n</introspection>");
-
-        return sb.toString();
     }
 
     /**
