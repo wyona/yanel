@@ -2214,7 +2214,14 @@ public class YanelServlet extends HttpServlet {
      */
     private boolean isToolbarEnabled(HttpServletRequest request) {
         String toolbarStatus = (String) request.getSession(true).getAttribute(TOOLBAR_KEY);
-        if (toolbarStatus != null && toolbarStatus.equals("on")) return true;
+        if (toolbarStatus != null && toolbarStatus.equals("on")) {
+            String yanelToolbar = request.getParameter("yanel.toolbar");
+            if(yanelToolbar != null && request.getParameter("yanel.toolbar").equals("suppress")) {
+                return false;
+            } else {
+                return true;
+            }
+        }
         return false;
     }
 }
