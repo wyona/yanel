@@ -31,6 +31,7 @@ public interface CreatableV2 extends CreatableV1 {
     public static String TYPE_UPLOAD = "type_upload";
     public static String TYPE_STRING = "type_string";
     public static String TYPE_SELECT = "type_select";
+    public static String TYPE_PASSWORD = "type_password";
 
     /**
      * Get property type which is intended to be used for the different types of (XHTML) input fields, e.g. TYPE_UPLOAD, TYPE_STRING (also see CreatableV1.getPropertyNames()
