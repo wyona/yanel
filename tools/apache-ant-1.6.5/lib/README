@@ -12,3 +12,6 @@ For more information or newer releases see
 <http://xml.apache.org/commons/>.  See the files LICENSE.dom and
 LICENSE.sax for the terms of distribution.
 
+This directory contains ant-contrib-1.0b3.jar which provides some 
+additional tasks to ant. see: http://ant-contrib.sourceforge.net/ resp. 
+http://ant-contrib.sourceforge.net/tasks/tasks/index.html
