@@ -68,24 +68,36 @@
 <feature><td style="vertical-align: top;">Asset Upload (Image, PDF, Movie, etc.)<br/></td><td style="vertical-align: top;">done<br/></td><td style="vertical-align: top;">2007.05.31</td><td style="vertical-align: top;">Andreas/Michael</td><td><strike><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5296">5296</a></strike></td></feature>
 <feature><td style="vertical-align: top;">Lookup (Yulup)</td><td style="vertical-align: top;">done<br/></td><td style="vertical-align: top;">2007.05.31</td><td>Andreas/Michael</td><td><strike><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5283">5283</a></strike><br/></td></feature>
 <feature><td style="vertical-align: top;">Create a realm from scratch</td><td style="vertical-align: top;">done<br/></td><td style="vertical-align: top;">2007.04.13</td><td style="vertical-align: top;">Jonathan/Josias</td><td>-</td></feature>
-<feature><td style="vertical-align: top;">Register third-party realm </td><td style="vertical-align: top;">mostly done<br/></td><td style="vertical-align: top;">2007.08.01</td><td style="vertical-align: top;">Josias</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5296">5297</a></td></feature>
-<feature><td style="vertical-align: top;">Binary installer/<a href="specification/update-dependency-manager.html">Update resp. Dependency manager</a></td><td style="vertical-align: top;">mostly done<br/></td><td style="vertical-align: top;">2007.07.29</td><td style="vertical-align: top;">Simon/Michael</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5206">5206</a><br/></td></feature>
+
+<feature><td style="vertical-align: top;">Register third-party realm </td><td style="vertical-align: top;">mostly done<br/></td><td style="vertical-align: top;">2008.05.01</td><td style="vertical-align: top;">Josias</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5296">5297</a></td></feature>
+
+<feature><td style="vertical-align: top;">Binary installer/<a href="specification/update-dependency-manager.html">Update resp. Dependency manager</a></td><td style="vertical-align: top;">mostly done<br/></td><td style="vertical-align: top;">2008.05.01</td><td style="vertical-align: top;">Simon/Michael</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5206">5206</a><br/></td></feature>
+
 <feature><td style="vertical-align: top;"><a href="specification/calendar-resource.html">Calendar (ICS) resource</a> </td><td style="vertical-align: top;">done<br/></td><td style="vertical-align: top;">2006.12.29</td><td>Michael</td><td>-</td></feature>
 <feature><td style="vertical-align: top;">Testing Environment: Functional, Performance, Scalability</td><td style="vertical-align: top;">done</td><td style="vertical-align: top;">2007.02.16</td><td>Simon</td><td>-</td></feature>
 <feature><td style="vertical-align: top;">RTI as XML </td><td style="vertical-align: top;">done<br/></td><td style="vertical-align: top;">2007.02.16</td><td>Michael/Josias</td><td>-</td></feature>
 <feature><td style="vertical-align: top;">Versioned configuration</td><td style="vertical-align: top;">done<br/></td><td style="vertical-align: top;">2007.03.14</td><td>Simon</td><td>-</td></feature>
 <feature><td style="vertical-align: top;">Contact form resource</td><td style="vertical-align: top;">done</td><td style="vertical-align: top;">2007.01.10</td><td>Paloma</td><td>-</td></feature>
 <feature><td style="vertical-align: top;">Locking of Write Access</td><td style="vertical-align: top;">done<br/></td><td style="vertical-align: top;">2007.02.28</td><td>Josias</td><td>-</td></feature>
-<feature><td style="vertical-align: top;"><a href="http://yanel.wyona.org/specification/access-control-user-interface.html">Access Control User Interface</a></td><td style="vertical-align: top;">mostly done<br/></td><td style="vertical-align: top;">2007.08.01</td><td style="vertical-align: top;">Josias/Michael</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5116">5116</a></td></feature>
-<feature><td valign="top">Toolbar</td><td valign="top">done<br/></td><td valign="top">2007.04.13</td><td valign="top">Josias/Michael</td><td>-</td></feature><feature><td valign="top">Misc resp. Release 1.0 Tracking Task<br/></td><td valign="top">in progress</td><td valign="top">2007.08.01</td><td valign="top">All</td><td valign="top"><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5163">5163</a></td></feature>
+
+<feature><td style="vertical-align: top;"><a href="http://yanel.wyona.org/specification/access-control-user-interface.html">Access Control User Interface</a></td><td style="vertical-align: top;">mostly done<br/></td><td style="vertical-align: top;">2008.02.29</td><td style="vertical-align: top;">Josias/Michael</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5116">5116</a></td></feature>
+
+<feature><td valign="top">Toolbar</td><td valign="top">done<br/></td><td valign="top">2007.04.13</td><td valign="top">Josias/Michael</td><td>-</td></feature>
+
+<feature><td valign="top">Misc resp. Release 1.0 Tracking Task<br/></td><td valign="top">in progress</td><td valign="top">2008.05.01</td><td valign="top">All</td><td valign="top"><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5163">5163</a></td></feature>
 </release>
 
 
 <release version="1.1" start="08 02 2007 00:00:00 GMT" end="09 01 2007 00:00:00 GMT">
-            <feature><td valign="top">Standard and Custom Meta Data</td><td valign="top">in progress</td><td valign="top">2007.06.30</td><td valign="top">Josias/Michael</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5298">5298</a></td></feature>
-<feature><td valign="top">Navigation Editor</td><td valign="top">in planning</td><td valign="top">2007.06.30</td><td valign="top">Simon, Jonathan</td><td>-</td></feature>
-<feature><td style="vertical-align: top;"><a href="specification/archive-url-resource.html">Archive URL resource</a></td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2007.06.30</td><td style="vertical-align: top;">Michael</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5425">5425</a></td></feature>
-<feature><td valign="top">User Interface for Versioning</td><td valign="top">in progress</td><td valign="top">2007.06.30</td><td valign="top">Josias</td><td>-</td></feature><feature>
+            <feature><td valign="top">Standard and Custom Meta Data</td><td valign="top">in progress</td><td valign="top">2008.06.01</td><td valign="top">Josias/Michael</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5298">5298</a></td></feature>
+
+<feature><td valign="top">Navigation Editor</td><td valign="top">in planning</td><td valign="top">2008.05.01</td><td valign="top">Simon, Jonathan</td><td>-</td></feature>
+
+<feature><td style="vertical-align: top;"><a href="specification/archive-url-resource.html">Archive URL resource</a></td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">2008.07.01</td><td style="vertical-align: top;">Michael/Tonio</td><td><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5425">5425</a></td></feature>
+
+
+<feature><td valign="top">User Interface for Versioning</td><td valign="top">in progress</td><td valign="top">2008.07.01</td><td valign="top">Josias</td><td>-</td></feature><feature>
+
 <td style="vertical-align: top;"><a href="specification/pdf-fop-resource.html">FOP/PDF resource</a></td><td style="vertical-align: top;">done</td><td style="vertical-align: top;">2007.07.26</td><td style="vertical-align: top;">Jonathan</td><td><strike><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5278">5278</a></strike></td>
 </feature>
 <feature><td style="vertical-align: top;">Diffs of Versions</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Josias</td><td>-</td></feature>
@@ -93,7 +105,7 @@
 <feature><td style="vertical-align: top;">Dynamic introspection</td><td style="vertical-align: top;">done<br/></td><td style="vertical-align: top;">2007.03.30</td><td style="vertical-align: top;">Josias</td><td>-</td></feature>
 <feature><td style="vertical-align: top;">Form Framework</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">TBD</td><td>-</td></feature>
 
-<feature><td style="vertical-align: top;"><a href="http://simile.mit.edu/timeline/">Simile Timeline</a></td><td style="vertical-align: top;">mostly done<br/></td><td style="vertical-align: top;">2007.08.09</td><td style="vertical-align: top;">Michael</td><td>-</td></feature>
+<feature><td style="vertical-align: top;"><a href="http://simile.mit.edu/timeline/">Simile Timeline</a></td><td style="vertical-align: top;">done<br/></td><td style="vertical-align: top;">2007.08.09</td><td style="vertical-align: top;">Michael</td><td>-</td></feature>
 
 
 <feature><td style="vertical-align: top;"><a href="specification/annotations.html">Annotations</a></td><td style="vertical-align: top;">done<br/></td><td style="vertical-align: top;">2007.02.28</td><td style="vertical-align: top;">Florian, Ilhan</td><td>-</td></feature>
@@ -106,7 +118,7 @@
 
 <release version="1.2" start="09 02 2007 00:00:00 GMT" end="10 01 2007 00:00:00 GMT">
 <feature>
-              <td>Generic Workflow</td>
+              <td>Integration of Third Party Workflow component</td>
               <td>not started</td>
               <td>TBD</td>
               <td>TBD</td>
@@ -155,10 +167,12 @@
 
 <feature><td style="vertical-align: top;"><a href="specification/webdav.html">WebDAV</a></td><td style="vertical-align: top;">in progress</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Michael</td></feature>
 
-<feature><td style="vertical-align: top;">References between translations</td><td style="vertical-align: top;">not yet started</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Paloma</td></feature>
+<feature><td style="vertical-align: top;">References between translations</td><td style="vertical-align: top;">done</td><td style="vertical-align: top;">2007.12.31</td><td style="vertical-align: top;">Josias/Paloma</td></feature>
 
 <feature><td style="vertical-align: top;">EBPP (Electronic Billing Presentation and Payment) Resource</td><td style="vertical-align: top;">in planning</td><td style="vertical-align: top;">TBD</td><td style="vertical-align: top;">Donat</td></feature>
 </release>
+
+
 
 
 <release version="1.3" start="10 02 2007 00:00:00 GMT" end="11 01 2007 00:00:00 GMT">
