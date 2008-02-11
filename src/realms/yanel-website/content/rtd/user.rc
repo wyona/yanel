@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-
-<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
-  <yanel:rti name="yanel-user" namespace="http://www.wyona.org/yanel/resource/1.0"/>
-
-  <yanel:property name="user" value="lenya"/>
-</yanel:resource-config>
