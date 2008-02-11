@@ -91,7 +91,8 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
         properties.put("userName", "");
         properties.put("email", "");
         properties.put("password", "");
-        properties.put("group", "");
+        properties.put("passwordConfirmed", "");
+        //properties.put("group", "");
 
     }
 
@@ -247,14 +248,16 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
 
                     um.createUser(userId, userName, email, password);
 
-                    String groupId = request.getParameter("rp.group");
-                    GroupManager gm = getRealm().getIdentityManager().getGroupManager();
-                    Group group =  gm.getGroup(groupId);
-                    group.addMember(um.getUser(userId));
-                    group.save();
-
                     // TODO: Handle more than one group
-                    saveUserPolicy(userId);
+                    String groupId = request.getParameter("rp.group");
+                    if (groupId != null) {
+                        GroupManager gm = getRealm().getIdentityManager().getGroupManager();
+                        Group group =  gm.getGroup(groupId);
+                        group.addMember(um.getUser(userId));
+                        group.save();
+                    }
+
+                    //saveUserPolicy(userId);
                 } else {
                     log.error("Unable to create user: the data introduced was not valid");
                 }
@@ -521,6 +524,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
     /**
      * Saves the user data access policies to the policies repository
      */
+/*
     private void saveUserPolicy(String userId) {
         Configuration policyConfig = createPolicyConfiguration(userId);
         DefaultConfigurationSerializer serializer = new DefaultConfigurationSerializer();
@@ -535,6 +539,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
             log.error(e.getMessage(), e);
         }
     }
+*/
 
     /**
      * Validate the supplied user data. userName is optional
@@ -546,15 +551,26 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
             isValid = false;
             log.error("No password supplied");
         }
+        if (request.getParameter("rp.passwordConfirmed").equals("")) {
+            isValid = false;
+            log.error("No password supplied");
+        }
+        if (!request.getParameter("rp.passwordConfirmed").equals(request.getParameter("rp.password"))) {
+            isValid = false;
+            log.error("Password and confirmed password do no match");
+        }
         if (request.getParameter("rp.userId").equals("")) {
             isValid = false;
             log.error("No userId supplied");
         }
+
+/*
         String group = request.getParameter("rp.group");
         if (group.equals("") || !realm.getIdentityManager().getGroupManager().existsGroup(group)) {
             isValid = false;
             log.error("Either no group was supplied or the group does not exist");
         }
+*/
         if (!validateEmail(request.getParameter("rp.email"))) {
             isValid = false;
             log.error("No email supplied or email not valid");
