@@ -26,6 +26,10 @@
     <user id="lenya" permission="true"/>
   </usecase>
 
+  <usecase id="policy.update">
+    <user id="lenya" permission="true"/>
+  </usecase>
+
   <usecase id="introspection">
     <world permission="true"/>
 <!--
