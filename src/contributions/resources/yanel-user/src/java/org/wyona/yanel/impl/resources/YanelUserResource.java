@@ -227,8 +227,11 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
      * @see org.wyona.yanel.core.api.attributes.CreatableV2#getPropertyType(String)
      */
     public String getPropertyType(String propertyName) {
-        log.warn("Not implemented yet!");
-        return null;
+        if (propertyName.equals("password") || propertyName.equals("passwordConfirmed")) {
+            return CreatableV2.TYPE_PASSWORD;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -549,19 +552,19 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
         boolean isValid = true;
         if (request.getParameter("rp.password").equals("")) {
             isValid = false;
-            log.error("No password supplied");
+            log.warn("No password supplied");
         }
         if (request.getParameter("rp.passwordConfirmed").equals("")) {
             isValid = false;
-            log.error("No password supplied");
+            log.warn("No password confirmation supplied");
         }
         if (!request.getParameter("rp.passwordConfirmed").equals(request.getParameter("rp.password"))) {
             isValid = false;
-            log.error("Password and confirmed password do no match");
+            log.warn("Password and confirmed password do no match");
         }
         if (request.getParameter("rp.userId").equals("")) {
             isValid = false;
-            log.error("No userId supplied");
+            log.warn("No userId supplied");
         }
 
 /*
@@ -573,7 +576,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
 */
         if (!validateEmail(request.getParameter("rp.email"))) {
             isValid = false;
-            log.error("No email supplied or email not valid");
+            log.warn("No email supplied or email not valid");
         }
         return isValid;
     }
