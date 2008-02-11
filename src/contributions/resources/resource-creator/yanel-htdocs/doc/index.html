@@ -48,6 +48,34 @@ table th {
     </dl>
 
     <h2>Examples</h2>
-    <p><b>...</b></p>
+    <p><b>Make all resources which have the CreatableV* interface implemented available for creation of corresponding instances</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+      &lt;yanel:rti name="resource-creator" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+    &lt;/yanel:resource-config>
+</pre>
+
+    <p><b>Make only specific resources (e.g. file and xml) available for creation of corresponding instances</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+      &lt;yanel:rti name="resource-creator" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+      &lt;yanel:custom-config>
+        &lt;rc:resource-types xmlns:rc="http://www.wyona.org/yanel/resource/resource-creator/1.0">
+          &lt;rc:resource-type name="file" namespace="http://www.wyona.org/yanel/resource/1.0">
+            &lt;rc:display-name>Asset (Upload File)&lt;/rc:display-name>
+          &lt;/rc:resource-type>
+
+          &lt;rc:resource-type name="xml" namespace="http://www.wyona.org/yanel/resource/1.0">
+            &lt;rc:display-name>Standard (HTML) Page&lt;/rc:display-name>
+            &lt;rc:property name="mime-type" value="text/html"/>
+            &lt;rc:property name="source-mime-type" value="application/xhtml+xml"/>
+          &lt;/rc:resource-type>
+        &lt;/rc:resource-types>
+      &lt;/yanel:custom-config>
+    &lt;/yanel:resource-config>
+</pre>
   </body>
 </html>
