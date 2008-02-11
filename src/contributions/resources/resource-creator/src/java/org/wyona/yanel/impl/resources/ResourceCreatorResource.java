@@ -362,12 +362,21 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                                 } else {
                                     sb.append("Exception: Parameter doesn't seem to be a of type SELECT: " + propertyNames[i]);
                                 }
-                            } else {
+			    } else if (propertyType != null && propertyType.equals(CreatableV2.TYPE_PASSWORD)) {
+                                //sb.append("<input type=\"file\" name=\"rp." + propertyNames[i] + "\"/><br/>");
                                 Object value = ((CreatableV2) resource).getProperty(propertyNames[i]);
                                 if (value == null) {
-                                    sb.append("<input name=\"rp." + propertyNames[i] + "\" value=\"\" size=\"60\"/><br/>");
+                                    sb.append("<input type=\"password\" name=\"rp." + propertyNames[i] + "\" value=\"\" size=\"60\"/><br/>");
                                 } else {
-                                    sb.append("<input name=\"rp." + propertyNames[i] + "\" value=\"" + value + "\" size=\"60\"/><br/>");
+                                    sb.append("<input type=\"password\" name=\"rp." + propertyNames[i] + "\" value=\"" + value + "\" size=\"60\"/><br/>");
+                                }
+                            } else {
+                                log.debug("Let's assume the property is of type text ...");
+                                Object value = ((CreatableV2) resource).getProperty(propertyNames[i]);
+                                if (value == null) {
+                                    sb.append("<input type=\"text\" name=\"rp." + propertyNames[i] + "\" value=\"\" size=\"60\"/><br/>");
+                                } else {
+                                    sb.append("<input type=\"text\" name=\"rp." + propertyNames[i] + "\" value=\"" + value + "\" size=\"60\"/><br/>");
                                 }
                             }
                             sb.append("</td></tr>");
