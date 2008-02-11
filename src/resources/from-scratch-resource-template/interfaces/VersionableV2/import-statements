@@ -1,0 +1,3 @@
+import org.wyona.yanel.core.api.attributes.VersionableV2;
+import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
+import org.wyona.yanel.core.attributes.viewable.View;

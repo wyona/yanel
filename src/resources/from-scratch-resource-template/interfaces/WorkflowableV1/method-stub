@@ -1,0 +1,49 @@
+    public void doTransition(String transitionID, String revision) throws WorkflowException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public View getLiveView(String viewid) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Date getWorkflowDate(String revision) throws WorkflowException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getWorkflowIntrospection() throws WorkflowException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getWorkflowState(String revision) throws WorkflowException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getWorkflowVariable(String name) throws WorkflowException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean isLive() throws WorkflowException {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public void removeWorkflowVariable(String name) throws WorkflowException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setWorkflowState(String state, String revision) throws WorkflowException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setWorkflowVariable(String name, String value) throws WorkflowException {
+        // TODO Auto-generated method stub
+        
+    }

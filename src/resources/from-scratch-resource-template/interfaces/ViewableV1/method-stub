@@ -1,0 +1,9 @@
+    public View getView(Path path, String viewId) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public ViewDescriptor[] getViewDescriptors() {
+        // TODO Auto-generated method stub
+        return null;
+    }
