@@ -282,8 +282,15 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
         return map;
     }
 
+    /**
+     * If the suggested name is an empty string, then return null such that the resource creator will not create a resource configuration
+     */
     public String getCreateName(String suggestedName) {
-        return suggestedName;
+        if (suggestedName != null && suggestedName.equals("")) {
+            return null;
+        } else {
+            return suggestedName;
+        }
     }
 
     /**
