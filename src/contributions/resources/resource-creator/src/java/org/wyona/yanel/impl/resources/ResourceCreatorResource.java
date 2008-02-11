@@ -276,7 +276,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         try {
             pathOfNewResource = create();
         } catch(Exception e) {
-            log.error(e.getMessage(), e);
+            log.warn(e.getMessage(), e);
             sb.append("<p>Exception: "+e.getMessage()+"</p>");
             sb.append("<a href=\"javascript:history.back()\">back</a>");
             return;
@@ -299,8 +299,12 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 
         if (log.isDebugEnabled()) log.debug("New Resource: " + PathUtil.backToRealm(getPath()) + ", " + pathOfNewResource);
         // NOTE: Back to realm has the form of ./ or ../ or ../../ etc., hence drop the leading slash!
-        String href = PathUtil.backToRealm(getPath()) + pathOfNewResource.toString().substring(1);
-        sb.append("<p>New resource can be accessed at: <a href=\"" + href + "\">" + href + "</a></p>");
+        if (pathOfNewResource != null) {
+            String href = PathUtil.backToRealm(getPath()) + pathOfNewResource.toString().substring(1);
+            sb.append("<p>New resource can be accessed at: <a href=\"" + href + "\">" + href + "</a></p>");
+        } else {
+            sb.append("<p>Please note that no path/URL has been associated with the newly created resource, because it might be some internally used resource.</p>");
+        }
     }
 
     /**
@@ -472,13 +476,20 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         if (newResource != null) {
             if (ResourceAttributeHelper.hasAttributeImplemented(newResource, "Creatable", "2")) {
                 createName = ((CreatableV2) newResource).getCreateName(createName);
-                if (createName == null || createName.equals("")) {
+                if (createName != null && createName.equals("")) {
                     throw new Exception("Please enter a name!");
                 }
-                pathOfNewResource = new Path(removeTooManySlashes(getParentOfNewResource(parent, lookinPath).toString()) + createName);
-                newResource.setPath(pathOfNewResource.toString());
+                if (createName == null) {
+                    pathOfNewResource = null;
+                    newResource.setPath(null);
+                } else {
+                    pathOfNewResource = new Path(removeTooManySlashes(getParentOfNewResource(parent, lookinPath).toString()) + createName);
+                    newResource.setPath(pathOfNewResource.toString());
+                }
                 ((CreatableV2) newResource).create(request);
-                createResourceConfiguration(newResource);
+                if (pathOfNewResource != null) {
+                    createResourceConfiguration(newResource);
+                }
             } else {
                 throw new Exception("creation NOT successfull!");
             }
