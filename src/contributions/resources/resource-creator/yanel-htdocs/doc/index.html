@@ -77,5 +77,24 @@ table th {
       &lt;/yanel:custom-config>
     &lt;/yanel:resource-config>
 </pre>
+
+    <p><b>Suppress resource config creation when a new resource instance is being created. This can make sense if a pattern has been defined within map.rc-map (e.g. &lt;matcher pattern="/**.html" rcpath="/generic-xhtml-page.yanel-rc"/>)</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+      &lt;yanel:rti name="resource-creator" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+      &lt;yanel:custom-config>
+        &lt;rc:resource-types xmlns:rc="http://www.wyona.org/yanel/resource/resource-creator/1.0">
+          &lt;rc:resource-type name="xml" namespace="http://www.wyona.org/yanel/resource/1.0">
+            &lt;rc:display-name>Standard (HTML) Page&lt;/rc:display-name>
+            &lt;rc:create-resource-config>false&lt;/rc:create-resource-config>
+            &lt;rc:property name="mime-type" value="text/html"/>
+            &lt;rc:property name="source-mime-type" value="application/xhtml+xml"/>
+          &lt;/rc:resource-type>
+        &lt;/rc:resource-types>
+      &lt;/yanel:custom-config>
+    &lt;/yanel:resource-config>
+</pre>
   </body>
 </html>
