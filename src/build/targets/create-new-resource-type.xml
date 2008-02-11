@@ -1,27 +1,39 @@
 <?xml version="1.0"?>
 
 <project name="create-new-resource-type" default="new-resource-type">
+  <taskdef resource="net/sf/antcontrib/antlib.xml"/>
   <description>Create new resource-type</description>
 
   <target name="new-resource-type" description="Create a new resource-type" depends="init">
     <echo>Create new resource-type from scratch ${yanel.home.dir}/src/resources/from-scratch-resource-template</echo>
-
 
     <input message="Please enter the resource-type name (e.g. calendar):" defaultvalue="null" addproperty="new.resource.name"/>
     <input message="Please enter the namespace of this new resource-type (e.g. http://foo.bar/yanel/resource/1.0):" defaultvalue="null" addproperty="new.resource.namespace"/>
     <input message="Please enter a short description of this resource-type:" defaultvalue="null" addproperty="new.resource.description"/>
     <input message="Please enter java package of this resource-type (e.g. org.wyona.yanel.impl.resources):" defaultvalue="null" addproperty="new.resource.java.class.package"/>
     <input message="Please enter java class name of this resource-type (e.g. CalendarResource):" defaultvalue="null" addproperty="new.resource.java.class.name"/>
-
+    <input message="Please enter from what template you want to build your java class: " defaultvalue="empty" validargs="empty,xml,usecase,examples" addproperty="new.resource.java.class.template"/>
+    
     <!-- TODO: Generate this path from package and class name! -->
-    <input message="Please enter java class filesystem path of this resource-type (e.g. org/wyona/yanel/impl/resources/CalendarResource.java):" defaultvalue="null" addproperty="new.resource.java.class.fs.path"/>
+    <!-- <input message="Please enter java class filesystem path of this resource-type (e.g. org/wyona/yanel/impl/resources/CalendarResource.java):" defaultvalue="null" addproperty="new.resource.java.class.fs.path"/> -->
+    <propertyregex property="new.resource.java.class.fs.path"
+              input="${new.resource.java.class.package}"
+              regexp="[.]"
+              replace="/"
+              global="true"
+              casesensitive="false" />
 
-    <property name="new.resource.java.class.location" location="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/java/${new.resource.java.class.fs.path}"/>
+    <property name="new.resource.java.class.fs.path.full" value="${new.resource.java.class.fs.path}/${new.resource.java.class.name}.java"/>
+    
+    <property name="new.resource.java.class.location" location="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/java/${new.resource.java.class.fs.path.full}"/>
     <property name="new.resource.java.class" value="${new.resource.java.class.package}.${new.resource.java.class.name}"/>
+    <echo>test: ${new.resource.java.class.location}</echo>
+    <echo>test: ${new.resource.java.class}</echo>
 
+    
 
     <copy todir="${yanel.home.dir}/src/contributions/resources/${new.resource.name}">
-      <fileset dir="${yanel.home.dir}/src/resources/from-scratch-resource-template" excludes="build/**,src/java/**"/>
+      <fileset dir="${yanel.home.dir}/src/resources/from-scratch-resource-template" excludes="build/**,src/java/**,interfaces/**,src/build/dependencies**"/>
     </copy>
 
     <!-- Patch resource.xml -->
@@ -58,12 +70,127 @@
     </replace>
 
     <echo>${new.resource.java.class}</echo>
-    <copy file="${yanel.home.dir}/src/resources/from-scratch-resource-template/src/java/bar/foo/yanel/impl/resources/FromScratchResource.java" tofile="${new.resource.java.class.location}"/>
-    <replace file="${new.resource.java.class.location}" value="${new.resource.java.class.name}">
-      <replacetoken>FromScratchResource</replacetoken>
-    </replace>
-    <replace file="${new.resource.java.class.location}" value="${new.resource.java.class.package}">
-      <replacetoken>bar.foo.yanel.impl.resources</replacetoken>
-    </replace>
+    
+    <if>
+      <equals arg1="${new.resource.java.class.template}" arg2="empty" />
+      <then>
+        <echo message="Based on template empty" />
+        <copy file="${yanel.home.dir}/src/resources/from-scratch-resource-template/src/java/bar/foo/yanel/impl/resources/FromScratchResource-empty.java" tofile="${new.resource.java.class.location}"/>
+        <copy file="${yanel.home.dir}/src/resources/from-scratch-resource-template/src/build/dependencies.xml" tofile="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/build/dependencies.xml"/>
+        <replace file="${new.resource.java.class.location}" value="${new.resource.java.class.name}">
+          <replacetoken>FromScratchResource</replacetoken>
+        </replace>
+        <replace file="${new.resource.java.class.location}" value="${new.resource.java.class.package}">
+          <replacetoken>bar.foo.yanel.impl.resources</replacetoken>
+        </replace>
+        <replace file="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/build/dependencies.xml" value="${new.resource.name}">
+          <replacetoken>FromScratchResource</replacetoken>
+        </replace>
+        
+        <input message="Do you want to imlement some yanel interface :(yes/NO)" defaultvalue="null" addproperty="new.resource.java.interface.do.implement"/>
+        <if>
+          <equals arg1="${new.resource.java.interface.do.implement}" arg2="yes" />
+          <then>
+            <for param="file">
+              <path>
+                <dirset dir="${yanel.home.dir}/src/resources/from-scratch-resource-template/interfaces/" includes="*/**"/>
+              </path>
+              <sequential>
+                <propertyregex override="yes"
+                  property="new.resource.java.interface.name"  input="@{file}"
+                  regexp=".*/([^\.]*)" replace="\1"/>
+                <input message="Do you want to imlement the interface :${new.resource.java.interface.name} (yes/NO)" defaultvalue="null" addproperty="@{file}"/>
+                <if>
+                  <equals arg1="${@{file}}" arg2="yes" />
+                  <then>
+                    <replace file="${new.resource.java.class.location}" value="implements">
+                      <replacetoken>@IMPLEMENTS_REPLACE_TOKEN@</replacetoken>
+                    </replace>
+                    <loadfile property="@{file}.import-statements" srcFile="@{file}/import-statements"/>
+                    <replace file="${new.resource.java.class.location}" value="${@{file}.import-statements}${line.separator}@IMPORT_REPLACE_TOKEN@">
+                      <replacetoken>@IMPORT_REPLACE_TOKEN@</replacetoken>
+                    </replace>
+                    <replace file="${new.resource.java.class.location}" value="${new.resource.java.interface.name}, @INTERFACE_REPLACE_TOKEN@ ">
+                      <replacetoken>@INTERFACE_REPLACE_TOKEN@</replacetoken>
+                    </replace>
+                    <loadfile property="@{file}.methodestub" srcFile="@{file}/method-stub"/>
+                    <replace file="${new.resource.java.class.location}" value="${@{file}.methodestub}${line.separator}${line.separator}@METHODESTUB_REPLACE_TOKEN@">
+                      <replacetoken>@METHODESTUB_REPLACE_TOKEN@</replacetoken>
+                    </replace>
+                  </then>
+                </if>
+              </sequential>
+            </for>
+          </then>
+        </if>
+        <replace file="${new.resource.java.class.location}">
+          <replacetoken>@IMPLEMENTS_REPLACE_TOKEN@</replacetoken>
+        </replace>
+        <replace file="${new.resource.java.class.location}">
+          <replacetoken>@IMPORT_REPLACE_TOKEN@</replacetoken>
+        </replace>
+        <replace file="${new.resource.java.class.location}">
+          <replacetoken>, @INTERFACE_REPLACE_TOKEN@</replacetoken>
+        </replace>
+        <replace file="${new.resource.java.class.location}">
+          <replacetoken>@INTERFACE_REPLACE_TOKEN@</replacetoken>
+        </replace>
+        <replace file="${new.resource.java.class.location}">
+          <replacetoken>@METHODESTUB_REPLACE_TOKEN@</replacetoken>
+        </replace>
+      </then>
+    </if>
+    <if>
+      <equals arg1="${new.resource.java.class.template}" arg2="examples" />
+      <then>
+        <!--TODO: add some more examples and another input asking for which example -->
+        <echo message="Based on template text (the only example so far)" />
+        <copy file="${yanel.home.dir}/src/resources/from-scratch-resource-template/src/java/bar/foo/yanel/impl/resources/FromScratchResource-text.java" tofile="${new.resource.java.class.location}"/>
+        <copy file="${yanel.home.dir}/src/resources/from-scratch-resource-template/src/build/dependencies.xml" tofile="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/build/dependencies.xml"/>
+        <replace file="${new.resource.java.class.location}" value="${new.resource.java.class.name}">
+          <replacetoken>FromScratchResource</replacetoken>
+        </replace>
+        <replace file="${new.resource.java.class.location}" value="${new.resource.java.class.package}">
+          <replacetoken>bar.foo.yanel.impl.resources</replacetoken>
+        </replace>
+        <replace file="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/build/dependencies.xml" value="${new.resource.name}">
+          <replacetoken>FromScratchResource</replacetoken>
+        </replace>
+      </then>
+    </if>
+    <if>
+      <equals arg1="${new.resource.java.class.template}" arg2="xml" />
+      <then>
+        <echo message="Based on template xml" />
+        <copy file="${yanel.home.dir}/src/resources/from-scratch-resource-template/src/java/bar/foo/yanel/impl/resources/FromScratchResource-xml.java" tofile="${new.resource.java.class.location}"/>
+        <copy file="${yanel.home.dir}/src/resources/from-scratch-resource-template/src/build/dependencies-with-yanel-impl.xml" tofile="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/build/dependencies.xml" overwrite="true"/>
+        <replace file="${new.resource.java.class.location}" value="${new.resource.java.class.name}">
+          <replacetoken>FromScratchResource</replacetoken>
+        </replace>
+        <replace file="${new.resource.java.class.location}" value="${new.resource.java.class.package}">
+          <replacetoken>bar.foo.yanel.impl.resources</replacetoken>
+        </replace>
+        <replace file="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/build/dependencies.xml" value="${new.resource.name}">
+          <replacetoken>FromScratchResource</replacetoken>
+        </replace>
+      </then>
+    </if>
+    <if>
+      <equals arg1="${new.resource.java.class.template}" arg2="usecase" />
+      <then>
+        <echo message="Based on template usecase" />
+        <copy file="${yanel.home.dir}/src/resources/from-scratch-resource-template/src/java/bar/foo/yanel/impl/resources/FromScratchResource-usecase.java" tofile="${new.resource.java.class.location}"/>
+        <copy file="${yanel.home.dir}/src/resources/from-scratch-resource-template/src/build/dependencies-with-yanel-impl.xml" tofile="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/build/dependencies.xml" overwrite="true"/>
+        <replace file="${new.resource.java.class.location}" value="${new.resource.java.class.name}">
+          <replacetoken>FromScratchResource</replacetoken>
+        </replace>
+        <replace file="${new.resource.java.class.location}" value="${new.resource.java.class.package}">
+          <replacetoken>bar.foo.yanel.impl.resources</replacetoken>
+        </replace>
+        <replace file="${yanel.home.dir}/src/contributions/resources/${new.resource.name}/src/build/dependencies.xml" value="${new.resource.name}">
+          <replacetoken>FromScratchResource</replacetoken>
+        </replace>        
+      </then>
+    </if>
   </target>
 </project>
