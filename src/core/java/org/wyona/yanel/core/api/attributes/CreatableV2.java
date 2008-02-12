@@ -49,7 +49,7 @@ public interface CreatableV2 extends CreatableV1 {
     public HashMap createRTIProperties(HttpServletRequest request);
 
     /**
-     * Allows overwriting the name for the new resource which is suggested by Yanel or rather by the user input. This is useful if one wants to dynamically generate names which are for instance based on a timestamp.
+     * Allows overwriting the name for the new resource which is suggested by Yanel or rather by the user input. This is useful if one wants to dynamically generate names which are for instance based on a timestamp. Return null if the resource shall not be associated with a resource configuration. This can useful for resources which are used "internally", e.g. the Yanel-User resource.
      */
     public String getCreateName(String suggestedName);
 }
