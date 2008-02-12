@@ -135,7 +135,7 @@ public class UsecaseResource extends BasicXMLResource {
             //jellyContext.setVariable("request", request);
 
             ByteArrayOutputStream jellyResultStream = new ByteArrayOutputStream();
-            XMLOutput jellyOutput = XMLOutput.createXMLOutput(jellyResultStream, true);
+            XMLOutput jellyOutput = XMLOutput.createXMLOutput(jellyResultStream);
             
             //String viewTemplate = view.getTemplate();
             jellyContext.runScript(new InputSource(repo.getNode(viewTemplate).getInputStream()), jellyOutput);
