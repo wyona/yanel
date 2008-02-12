@@ -135,6 +135,10 @@ public class UsecaseResource extends BasicXMLResource {
             //jellyContext.setVariable("request", request);
 
             ByteArrayOutputStream jellyResultStream = new ByteArrayOutputStream();
+            // TODO: should enable xml escaping, see bug:
+            // http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5964
+            // problem: it breaks backwards compatibility
+            //XMLOutput jellyOutput = XMLOutput.createXMLOutput(jellyResultStream, true);
             XMLOutput jellyOutput = XMLOutput.createXMLOutput(jellyResultStream);
             
             //String viewTemplate = view.getTemplate();
