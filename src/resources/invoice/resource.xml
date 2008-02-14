@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-
-<resource xmlns="http://www.wyona.org/yanel/1.0" name="invoice" namespace="http://www.wyona.com/yanel/resource/1.0" class="com.wyona.yanel.impl.resources.InvoiceResource">
-<description>
-Invoice
-</description>
-</resource>
