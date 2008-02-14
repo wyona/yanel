@@ -25,9 +25,6 @@
   <resource-type src="@YANEL_SRC_DIR@/src/resources/user-mgmt/"                   compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/realms/welcome-admin/yanel/resources/show-realms/"                 compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/realms/welcome-admin/yanel/resources/update-webapp/"                 compile="true"/>
-<!--
-  <resource-type src="@YANEL_SRC_DIR@/src/resources/invoice/"                     compile="true"/>
--->
   <resource-type src="@YANEL_SRC_DIR@/src/resources/testing-control/"             compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/testing-times/"               compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/atom/"          compile="true"/>
