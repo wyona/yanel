@@ -37,9 +37,6 @@
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/zip/"           compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/calendar/"      compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/resource-creator/"      compile="true"/>
-<!--
-  <resource-type src="@YANEL_SRC_DIR@/src/resources/websearch/" compile="true"/>
--->
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/nutch/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/davcollection/" compile="true"/>
 
