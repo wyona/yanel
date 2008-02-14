@@ -106,7 +106,6 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 
             String[] xsltPath = getXSLTPath(getPath());
             if (xsltPath != null) {
-
                 // create reader:
                 XMLReader xmlReader = XMLReaderFactory.createXMLReader();
                 CatalogResolver catalogResolver = new CatalogResolver();
@@ -716,7 +715,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      */
     private String[] getXSLTPath(String path) throws Exception {
         String[] xsltPath = getResourceConfigProperties("xslt");
-        if (xsltPath != null) return xsltPath;
+        if (xsltPath != null && xsltPath.length > 0) return xsltPath;
         log.info("No XSLT Path within: " + path);
         return null;
     }
