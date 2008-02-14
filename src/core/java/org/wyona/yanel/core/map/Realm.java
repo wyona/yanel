@@ -402,6 +402,9 @@ public class Realm {
         this.privatePolicyManager = policyManager;
     }
 
+    /**
+     * Get default language of this realm re content
+     */
     public String getDefaultLanguage() {
         return defaultLanguage;
     }
