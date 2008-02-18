@@ -6,7 +6,7 @@
   class="org.wyona.yanel.impl.resources.NutchResource"
   >
 <description>
-Getting Search results from a Nutch crawl (version 0.8.x)
+Getting Search results from a Nutch crawl (tested nutch version 0.8.x)
 </description>
 
 <rtd>
