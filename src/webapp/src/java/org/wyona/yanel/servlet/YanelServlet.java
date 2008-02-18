@@ -173,10 +173,13 @@ public class YanelServlet extends HttpServlet {
         String httpAcceptMediaTypes = request.getHeader("Accept");
         String httpAcceptLanguage = request.getHeader("Accept-Language");
 
-        // Logout from Yanel
         String yanelUsecase = request.getParameter("yanel.usecase");
         if(yanelUsecase != null && yanelUsecase.equals("logout")) {
+            // Logout from Yanel
             if(doLogout(request, response) != null) return;
+        } else if(yanelUsecase != null && yanelUsecase.equals("create")) {
+            // Create a new resource
+            if(doCreate(request, response) != null) return;
         }
 
         // Check authorization and if authorization failed, then try to authenticate
@@ -1385,11 +1388,12 @@ public class YanelServlet extends HttpServlet {
         s = s.replaceAll("\"", "&quot;");
         return s;
     }
+
     /**
-     *
+     * Do logout
+     * @return null for a regular logout and a Neutron response if auth scheme is Neutron
      */
     public HttpServletResponse doLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.info("Logout from Yanel ...");
         try {
             HttpSession session = request.getSession(true);
             // TODO: should we logout only from the current realm, or from all realms?
@@ -1397,8 +1401,10 @@ public class YanelServlet extends HttpServlet {
             Realm realm = map.getRealm(request.getServletPath());
             IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
             if (identityMap != null && identityMap.containsKey(realm.getID())) {
+                log.info("Logout from realm: " + realm.getID());
                 identityMap.remove(realm.getID());
             }
+
             String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
             if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
                 // TODO: send some XML content, e.g. <logout-successful/>
@@ -1408,11 +1414,21 @@ public class YanelServlet extends HttpServlet {
                 writer.print("Neutron Logout Successful!");
                 return response;
             }
+
+            if (log.isDebugEnabled()) log.debug("Regular Logout Successful!");
             return null;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * Do create a new resource
+     */
+    public HttpServletResponse doCreate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.error("Not implemented yet!");
+        return null;
     }
 
     /**
