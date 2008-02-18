@@ -70,47 +70,32 @@ table th {
 </pre>
 
 
-<!--
-    <p><b>Make only specific resources (e.g. file and xml) available for creation of corresponding instances</b></p>
+    <p><b>Search results with some XSLT applied using a grouped custom configuration (accessing multiple indexes)</b></p>
 
 <pre>
     &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
       &lt;yanel:rti name="resource-creator" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
       &lt;yanel:custom-config>
-        &lt;rc:resource-types xmlns:rc="http://www.wyona.org/yanel/resource/resource-creator/1.0">
-          &lt;rc:resource-type name="file" namespace="http://www.wyona.org/yanel/resource/1.0">
-            &lt;rc:display-name>Asset (Upload File)&lt;/rc:display-name>
-          &lt;/rc:resource-type>
+        &lt;nr:configs>
+          &lt;nr:config name="ml-usage" src="file:/home/USER/yanel-website/content/nutch-config/nutch-local-yanel-ml-usage.xml"/>
+          &lt;nr:config name="ml-development" src="file:/home/USER/yanel-website/content/nutch-config/nutch-local-yanel-ml-development.xml"/>
+        &lt;/nr:configs>
 
-          &lt;rc:resource-type name="xml" namespace="http://www.wyona.org/yanel/resource/1.0">
-            &lt;rc:display-name>Standard (HTML) Page&lt;/rc:display-name>
-            &lt;rc:property name="mime-type" value="text/html"/>
-            &lt;rc:property name="source-mime-type" value="application/xhtml+xml"/>
-          &lt;/rc:resource-type>
-        &lt;/rc:resource-types>
+        &lt;nr:groups>
+          &lt;nr:group name="usage" label="Usage" i18n-key="mlusage">
+            &lt;nr:nutch-config name="ml-usage"/>
+          &lt;/nr:group>
+          &lt;nr:group name="dev" label="Development" i18n-key="mldevelopment" selected="true">
+            &lt;nr:nutch-config name="ml-development"/>
+          &lt;/nr:group>
+          &lt;nr:group name="all" label="All Lists" i18n-key="all-lists">
+            &lt;nr:nutch-config name="ml-usage"/>
+            &lt;nr:nutch-config name="ml-development"/>
+          &lt;/nr:group>
+        &lt;/nr:groups>
       &lt;/yanel:custom-config>
     &lt;/yanel:resource-config>
 </pre>
-
-    <p><b>Suppress resource config creation when a new resource instance is being created. This can make sense if a pattern has been defined within map.rc-map (e.g. &lt;matcher pattern="/**.html" rcpath="/generic-xhtml-page.yanel-rc"/>)</b></p>
-
-<pre>
-    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
-      &lt;yanel:rti name="resource-creator" namespace="http://www.wyona.org/yanel/resource/1.0"/>
-
-      &lt;yanel:custom-config>
-        &lt;rc:resource-types xmlns:rc="http://www.wyona.org/yanel/resource/resource-creator/1.0">
-          &lt;rc:resource-type name="xml" namespace="http://www.wyona.org/yanel/resource/1.0">
-            &lt;rc:display-name>Standard (HTML) Page&lt;/rc:display-name>
-            &lt;rc:create-resource-config>false&lt;/rc:create-resource-config>
-            &lt;rc:property name="mime-type" value="text/html"/>
-            &lt;rc:property name="source-mime-type" value="application/xhtml+xml"/>
-          &lt;/rc:resource-type>
-        &lt;/rc:resource-types>
-      &lt;/yanel:custom-config>
-    &lt;/yanel:resource-config>
-</pre>
--->
   </body>
 </html>
