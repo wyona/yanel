@@ -2121,6 +2121,7 @@ public class YanelServlet extends HttpServlet {
 
         // TODO: Replace hardcoded roles by mapping between roles amd query strings ...
         String value = request.getParameter("yanel.resource.usecase");
+        String yanelUsecaseValue = request.getParameter("yanel.usecase");
         String workflowTransitionValue = request.getParameter("yanel.resource.workflow.transition");
         String contentType = request.getContentType();
         String method = request.getMethod();
@@ -2130,6 +2131,9 @@ public class YanelServlet extends HttpServlet {
         } else if (value != null && value.equals("checkin")) {
             log.debug("Checkin data ...");
             usecase = new Usecase("write");
+        } else if (yanelUsecaseValue != null && yanelUsecaseValue.equals("create")) {
+            log.debug("Create new resource ...");
+            usecase = new Usecase("resource.create");
         } else if (value != null && value.equals("introspection")) {
             if(log.isDebugEnabled()) log.debug("Dynamically generated introspection ...");
             usecase = new Usecase("introspection");
@@ -2145,7 +2149,10 @@ public class YanelServlet extends HttpServlet {
             log.error("DEBUG: Upload data ...");
             usecase = new Usecase("write");
         } else if (method.equals(METHOD_DELETE)) {
-            log.error("DEBUG: Delete resource ...");
+            log.error("DEBUG: Delete resource (HTTP method delete)");
+            usecase = new Usecase("delete");
+        } else if (value != null && value.equals("delete")) {
+            log.error("DEBUG: Delete resource (yanel resource usecase delete)");
             usecase = new Usecase("delete");
         } else if (workflowTransitionValue != null) {
             // TODO: How shall we protect workflow transitions?!
