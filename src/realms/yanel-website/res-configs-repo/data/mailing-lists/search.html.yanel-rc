@@ -10,8 +10,8 @@
 
   <yanel:custom-config xmlns:nr="http://www.wyona.org/yanel/resource/nutch-resource/1.0">
     <nr:configs>
-      <nr:config name="ml-usage" src="file:/home/michi/src/wyona/public/yanel/trunk/src/realms/yanel-website/content/nutch-config/nutch-local-yanel-ml-usage.xml"/>
-      <nr:config name="ml-development" src="file:/home/michi/src/wyona/public/yanel/trunk/src/realms/yanel-website/content/nutch-config/nutch-local-yanel-ml-development.xml"/>
+      <nr:config name="ml-usage" src="file:/home/ulysses/src/realms/yanel-website/content/nutch-config/nutch-local-yanel-ml-usage.xml"/>
+      <nr:config name="ml-development" src="file:/home/ulysses/src/realms/yanel-website/content/nutch-config/nutch-local-yanel-ml-development.xml"/>
     </nr:configs>
 
     <nr:groups>
