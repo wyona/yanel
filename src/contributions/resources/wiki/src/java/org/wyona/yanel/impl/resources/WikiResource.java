@@ -414,10 +414,10 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
     }
 
     /**
-     *
+     * Delete wiki resource
      */
     public boolean delete() {
-        log.warn("No implemented yet!");
+        log.warn("Not implemented yet!");
         return false;
     }
 
