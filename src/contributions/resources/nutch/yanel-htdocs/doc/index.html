@@ -1,20 +1,104 @@
-<html>
+<?xml version="1.0"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>tbd</title>
+    <title>Nutch resource</title>
+    <style>
+h2 {
+  font-size: 130%;
+  color:     #ffffff;
+  background-color: #525D76;
+}
+pre {
+  background-color: efefef;
+}
+td {
+  background-color: eeeeee;
+  color:            000000;
+}
+
+/* first row */
+table tr:first-child td {
+  background-color: cccccc;
+  color:            000000;
+}
+
+/* or th as first row */
+table th {
+  background-color: cccccc;
+  color:            000000;
+}
+    </style>
   </head>
   <body>
-    <h1>from-scratch</h1>
+    <h1>Nutch resource</h1>
+
+    <h2>Overview</h2>
     <dl>
       <dt>Name:</dt>
-      <dd>tbd</dd>
+      <dd>nutch</dd>
       <dt>Namespace:</dt>
-      <dd>tbd</dd>
-      <dt>UniversalName</dt>
-      <dd>tbd</dd>
+      <dd>http://www.wyona.org/yanel/resource/1.0</dd>
+      <dt>Universal Name:</dt>
+      <dd>&lt;{http://www.wyona.org/yanel/resource/1.0}nutch/&gt;</dd>
       <dt>Description:</dt>
-      <dd>tbd</dd>
+      <dd>Getting Search results from a Nutch crawl (tested nutch version 0.8.x)</dd>
       <dt>Java Class:</dt>
-      <dd>tbd</dd>
+      <dd>org.wyona.yanel.impl.resources.NutchResource</dd>
     </dl>
+
+    <h2>Examples</h2>
+    <p><b>Search results with some XSLT applied using the default configuration src/contributions/resources/nutch/conf/nutch-local.xml</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+      &lt;yanel:rti name="nutch" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+      &lt;yanel:property name="global-xslt" value="/xslt/global.xsl"/>
+    &lt;/yanel:resource-config>
+</pre>
+
+<!--
+    <p><b>Make only specific resources (e.g. file and xml) available for creation of corresponding instances</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+      &lt;yanel:rti name="resource-creator" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+      &lt;yanel:custom-config>
+        &lt;rc:resource-types xmlns:rc="http://www.wyona.org/yanel/resource/resource-creator/1.0">
+          &lt;rc:resource-type name="file" namespace="http://www.wyona.org/yanel/resource/1.0">
+            &lt;rc:display-name>Asset (Upload File)&lt;/rc:display-name>
+          &lt;/rc:resource-type>
+
+          &lt;rc:resource-type name="xml" namespace="http://www.wyona.org/yanel/resource/1.0">
+            &lt;rc:display-name>Standard (HTML) Page&lt;/rc:display-name>
+            &lt;rc:property name="mime-type" value="text/html"/>
+            &lt;rc:property name="source-mime-type" value="application/xhtml+xml"/>
+          &lt;/rc:resource-type>
+        &lt;/rc:resource-types>
+      &lt;/yanel:custom-config>
+    &lt;/yanel:resource-config>
+</pre>
+
+    <p><b>Suppress resource config creation when a new resource instance is being created. This can make sense if a pattern has been defined within map.rc-map (e.g. &lt;matcher pattern="/**.html" rcpath="/generic-xhtml-page.yanel-rc"/>)</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+      &lt;yanel:rti name="resource-creator" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+      &lt;yanel:custom-config>
+        &lt;rc:resource-types xmlns:rc="http://www.wyona.org/yanel/resource/resource-creator/1.0">
+          &lt;rc:resource-type name="xml" namespace="http://www.wyona.org/yanel/resource/1.0">
+            &lt;rc:display-name>Standard (HTML) Page&lt;/rc:display-name>
+            &lt;rc:create-resource-config>false&lt;/rc:create-resource-config>
+            &lt;rc:property name="mime-type" value="text/html"/>
+            &lt;rc:property name="source-mime-type" value="application/xhtml+xml"/>
+          &lt;/rc:resource-type>
+        &lt;/rc:resource-types>
+      &lt;/yanel:custom-config>
+    &lt;/yanel:resource-config>
+</pre>
+-->
   </body>
 </html>
