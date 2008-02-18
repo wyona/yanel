@@ -58,6 +58,18 @@ table th {
     &lt;/yanel:resource-config>
 </pre>
 
+    <p><b>Search results with some XSLT applied using a custom configuration</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+      &lt;yanel:rti name="nutch" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+      &lt;yanel:property name="global-xslt" value="/xslt/global.xsl"/>
+      &lt;yanel:property name="nutch-config" value="file:/home/USER/nutch-config.xml"/>
+    &lt;/yanel:resource-config>
+</pre>
+
+
 <!--
     <p><b>Make only specific resources (e.g. file and xml) available for creation of corresponding instances</b></p>
 
