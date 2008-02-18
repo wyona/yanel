@@ -6,15 +6,24 @@
     <world permission="true"/>
   </role>
 
+  <role id="resource.create">
+    <user id="lenya" permission="true"/>
+  </role>
+
+  <!-- Does this usecase actually exist within YanelServlet? -->
+  <role id="create">
+    <user id="lenya" permission="true"/>
+  </role>
+
+  <role id="delete">
+    <user id="lenya" permission="true"/>
+  </role>
+
   <role id="open">
     <user id="lenya" permission="true"/>
   </role>
 
   <role id="write">
-    <user id="lenya" permission="true"/>
-  </role>
-
-  <role id="create">
     <user id="lenya" permission="true"/>
   </role>
 
