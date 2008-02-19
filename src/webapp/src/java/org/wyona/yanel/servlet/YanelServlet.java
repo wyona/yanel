@@ -198,12 +198,10 @@ public class YanelServlet extends HttpServlet {
             return;
         }
         
-        // Delete node
         String value = request.getParameter("yanel.resource.usecase");
+        // Delete node
         if (value != null && value.equals("delete")) {
-            log.warn("DEBUG: delete " + path);
-            doDelete(request, response);
-            // TODO: Implement a response
+            handleDeleteUsecase(request, response);
             return;
         }
 
@@ -2246,5 +2244,30 @@ public class YanelServlet extends HttpServlet {
             }
         }
         return false;
+    }
+
+    /**
+     * Handle delete usecase
+     */
+    private void handleDeleteUsecase(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String confirmed = request.getParameter("confirmed");
+        if (confirmed != null) {
+            String path = getResource(request, response).getPath();
+            log.warn("Really delete " + path);
+            doDelete(request, response);
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+            String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(path);
+            StringBuffer sb = new StringBuffer("<html><body>Page has been deleted! <a href=\"\">Check</a> or return to <a href=\"" + backToRealm + "\">Homepage</a>.</body></html>");
+            PrintWriter w = response.getWriter();
+            w.print(sb);
+            return;
+        } else {
+            log.warn("Delete has not been confirmed by client yet!");
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+            StringBuffer sb = new StringBuffer("<html><body>Do you really want to delete this page? <a href=\"?yanel.resource.usecase=delete&confirmed\">YES</a>, <a href=\"\">no</a></body></html>");
+            PrintWriter w = response.getWriter();
+            w.print(sb);
+            return;
+        }
     }
 }
