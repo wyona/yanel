@@ -246,7 +246,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 
     /**
-     *
+     * Delete node
      */
     public boolean delete() throws Exception {
         getRealm().getRepository().getNode(getPath()).delete();
