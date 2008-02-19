@@ -14,7 +14,13 @@
     <user id="lenya" permission="true"/>
   </usecase>
 
-  <usecase id="create">
+<!--
+  <usecase id="resource.create">
+    <user id="lenya" permission="true"/>
+  </usecase>
+-->
+
+  <usecase id="delete">
     <user id="lenya" permission="true"/>
   </usecase>
 
