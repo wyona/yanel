@@ -86,6 +86,9 @@ public class DefaultMenu extends Menu {
                 sb.append("<li>Workflowable, but no Workflow associated with resource yet!</li>");
             }
         }
+        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
+            sb.append("<li><a href=\"?yanel.resource.usecase=delete\">Delete this page</a></li>");
+        }
         sb.append("</ul>");
         sb.append("</li></ul>");
 
