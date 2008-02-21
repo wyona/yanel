@@ -7,107 +7,56 @@
 </head>
 
 <body>
-<h1>CustomIdentityManager / CustomPolicyManager / CustomWebAuthenticator</h1>
-
+<h1>Custom IdentityManager, custom PolicyManager and custom WebAuthenticator</h1>
 <p>The default IdentityManager and PolicyManager implementations are part of the org.wyona.security.impl package, for example YarepIdentityManagerImpl and PolicyManagerImplVersion2.</p>
-
 <hr/>
-
 <h2>Custom IdentityManager</h2>
-
 <p>To create a custom IdentityManager you will need to develop your own implementations of the interfaces IdentityManagerFactory and IdentityManager which are part of the org.wyona.security.core package.</p>
-
 <p>Once you have your custom implementations they need to be added to the configuration of your realm (realm.xml). Examples are shown below.</p>
-
 <p><strong>Instead of these:</strong></p>
 <p>org.wyona.security.impl.IdentityManagerFactoryImpl<br/>
 org.wyona.security.impl.yarep.YarepIdentityManagerImpl</p>
 <p><strong>use these:</strong></p>
 <p>foo.bar.security.impl.IdentityManagerFactoryImpl<br/>
 foo.bar.security.impl.IdentityManagerImpl</p>
+<h3>Configuration example: realm.xml</h3>
+<p>
+</p><pre>&lt;ac-identities class=&quot;foo.bar.security.impl.IdentityManagerFactoryImpl&quot;&gt;<br/>  &lt;bar:repository-config xmlns:bar=&quot;http//www.bar.foo/security/1.0&quot;&gt;config/ac-identities-repository.xml&lt;/bar:repository-config&gt;<br/>  &lt;bar:max-number-of-failed-login-attempts xmlns:bar=&quot;http//www.bar.foo/security/1.0&quot;&gt;3&lt;/bar:max-number-of-failed-login-attempts&gt;<br/>&lt;/ac-identities&gt;<br/></pre>
+<h3>Configuration example: ac-identities-repository.xml</h3>
+<p>
+</p><pre>&lt;repository class=&quot;org.wyona.yarep.impl.repo.vfs.VirtualFileSystemRepository&quot;&gt;<br/>  &lt;name&gt;Yanel Access Control Identities&lt;/name&gt;<br/>  &lt;content src=&quot;../ac-identities&quot;/&gt;<br/>&lt;/repository&gt;<br/></pre>
+<br/><br/>
+<hr/>
+<h2>Custom PolicyManager</h2>
+<p>Creating a custom PolicyManager is very similar to creating a custom IdentityManager.</p>
+<p><strong>Instead of these:</strong></p>
+<p>org.wyona.security.impl.PolicyManagerFactoryImpl<br/>
+org.wyona.security.impl.PolicyManagerImplVersion2</p>
+<p><strong>use these:</strong></p>
+<p>foo.bar.security.impl.PolicyManagerFactoryImpl<br/>
+foo.bar.security.impl.PolicyManagerImplVersion2</p>
 
 <h3>Configuration example: realm.xml</h3>
 <p>
-<pre>
-&lt;ac-identities class=&quot;foo.bar.security.impl.IdentityManagerFactoryImpl&quot;&gt;
-  &lt;bar:repository-config xmlns:bar=&quot;http//www.bar.foo/security/1.0&quot;&gt;config/ac-identities-repository.xml&lt;/bar:repository-config&gt;
-  &lt;bar:max-number-of-failed-login-attempts xmlns:bar=&quot;http//www.bar.foo/security/1.0&quot;&gt;3&lt;/bar:max-number-of-failed-login-attempts&gt;
-&lt;/ac-identities&gt;
-</pre>
-</p>
-
-<h3>Configuration example: ac-identities-repository.xml</h3>
-<p>
-<pre>
-&lt;repository class=&quot;org.wyona.yarep.impl.repo.vfs.VirtualFileSystemRepository&quot;&gt;
-  &lt;name&gt;Yanel Access Control Identities&lt;/name&gt;
-  &lt;content src=&quot;../ac-identities&quot;/&gt;
-&lt;/repository&gt;
-</pre>
-</p>
-
-<br/><br/>
-<hr/>
-
-<h2>Custom PolicyManager</h2>
-<p>Creating a CustomPolicyManager is basically the same as creating a CustomIdentityManager.</p>
-<p><strong>Override these:</strong></p>
-<p>org.wyona.security.impl.PolicyManagerFactoryImpl<br/>
-org.wyona.security.impl.PolicyManagerImpl</p>
-<p><strong>with these:</strong></p>
-<p>com.company.security.impl.PolicyManagerFactoryImpl<br/>
-com.company.security.impl.PolicyManagerImpl</p>
+</p><pre>&lt;ac-policies class=&quot;foo.bar.security.impl.PolicyManagerFactoryImpl&quot;&gt;<br/>  &lt;bar:repository-config xmlns:bar=&quot;http//www.bar.foo/security/1.0&quot;&gt;config/ac-policies-repository.xml&lt;/bar:repository-config&gt;<br/>  &lt;bar:policy-caching-enabled xmlns:bar=&quot;http://www.bar.foo/security/1.0&quot;&gt;false&lt;/bar:policy-caching-enabled&gt;<br/>&lt;/ac-policies&gt;<br/></pre>
 
 <h3>Configuration example (ac-policies-repository.xml)</h3>
 <p>
-<pre>
-&lt;repository&gt;
-  &lt;name&gt;Company Access Control Policies Repository&lt;/name&gt;
+</p><pre>&lt;repository&gt;<br/>  &lt;name&gt;Company Access Control Policies Repository&lt;/name&gt;<br/>  &lt;paths class=&quot;org.wyona.yarep.impl.VFileSystemMapImpl&quot; src=&quot;../ac-policies&quot;/&gt;<br/>  &lt;storage class=&quot;org.wyona.yarep.core.impl.vfs.VFileSystemStorage&quot;&gt;<br/>    &lt;content src=&quot;../ac-policies&quot;/&gt;<br/>  &lt;/storage&gt;<br/>&lt;/repository&gt;<br/></pre>
 
-  &lt;paths class=&quot;org.wyona.yarep.impl.VFileSystemMapImpl&quot; src=&quot;../ac-policies&quot;/&gt;
-
-  &lt;storage class=&quot;org.wyona.yarep.core.impl.vfs.VFileSystemStorage&quot;&gt;
-    &lt;content src=&quot;../ac-policies&quot;/&gt;
-  &lt;/storage&gt;
-&lt;/repository&gt;
-</pre>
-</p>
-
-<h3>Configuration example (realm.xml)</h3>
-<p>
-&lt;ac-policies class=&quot;com.company.security.impl.PolicyManagerFactoryImpl&quot;&gt;
-<br/>
-  &lt;com:repository-config xmlns:com=&quot;http//www.company.com/wyona/1.0&quot;&gt;config/ac-policies-repository.xml&lt;/com:repository-config&gt;
-  <br/>
-  &lt;com:policy-caching-enabled xmlns:com=&quot;http://www.company.com/wyona/1.0&quot;&gt;false&lt;/com:policy-caching-enabled&gt;
-  <br/>
-&lt;/ac-policies&gt;
-</p>
 
 <br/><br/>
 <hr/>
-
 <h2>Custom WebAuthenticator</h2>
-<p>The WebAuthenticator is specific to the webapp (or servlet)</p>
-<p>In the future there will need to be a logout overwriting functionality</p>
-<p><strong>Override this:</strong></p>
-<p>org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl</p>
-<p><strong>with this:</strong></p>
-<p>com.company.yanel.servlet.security.impl.CompanyWebAuthenticatorImpl</p>
+<p>A custom WebAuthenticator can be necessary if custom HTTP headers shall be processed or some other custom webapp functionality needs to be implemented<br/></p>
 
-<h3>Configuration example (realm.xml)</h3>
+<p><strong>Instead of this:</strong></p>
+<p>org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl</p>
+<p><strong>use this:</strong></p>
+<p>foo.bar.yanel.servlet.security.impl.CompanyWebAuthenticatorImpl</p>
+<h3>Configuration example: realm.xml</h3>
 <p>
-&lt;web-authenticator class=&quot;com.company.yanel.servlet.security.impl.CompanyWebAuthenticatorImpl&quot;&gt;
-<br/>
-        &lt;com:proxyRedirectURI xmlns:com=&quot;http://www.company.com/wyona/1.0&quot;&gt;/strongAuth.html&lt;/com:proxyRedirectURI&gt;
-<br/>
-        &lt;com:welcomeRedirectURI xmlns:com=&quot;http://www.company.com/wyona/1.0&quot;&gt;/welcome.html&lt;/com:welcomeRedirectURI&gt;
-<br/>
-        &lt;com:lockedRedirectURI xmlns:com=&quot;http://www.company.com/wyona/1.0&quot;&gt;/userLocked.html&lt;/com:lockedRedirectURI&gt;
-<br/>
-        &lt;com:expiredRedirectURI xmlns:com=&quot;http://www.company.com/wyona/1.0&quot;&gt;/login/expired&lt;/com:expiredRedirectURI&gt;
-<br/>
-&lt;/web-authenticator&gt;
-</p>
+</p><pre>&lt;web-authenticator class=&quot;foo.bar.yanel.servlet.security.impl.CompanyWebAuthenticatorImpl&quot;&gt;<br/>  &lt;bar:proxyRedirectURI xmlns:bar=&quot;http://www.company.com/wyona/1.0&quot;&gt;http://proxy.bar.foo&lt;/bar:proxyRedirectURI&gt;<br/>  &lt;bar:welcomeRedirectURI xmlns:bar=&quot;http://www.company.com/wyona/1.0&quot;&gt;/welcome.html&lt;/bar:welcomeRedirectURI&gt;<br/>  &lt;bar:lockedRedirectURI xmlns:bar=&quot;http://www.company.com/wyona/1.0&quot;&gt;/userLocked.html&lt;/bar:lockedRedirectURI&gt;<br/>  &lt;bar:expiredRedirectURI xmlns:bar=&quot;http://www.company.com/wyona/1.0&quot;&gt;/login/expired.html&lt;/bar:expiredRedirectURI&gt;<br/>&lt;/web-authenticator&gt;<br/></pre>
+
 </body>
 </html>
