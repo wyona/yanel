@@ -16,6 +16,10 @@
     NOTE: You might have to configure a proxy. Please see below for more details
 
     1) Configure Yanel by running "configure"
+ 
+    After "configure" has finished, you may want to review the contents of 
+    ./src/build/local.build.properties to better understand the parameters
+    that "build" will use.
 
     2) Build Yanel by running "build"
 
