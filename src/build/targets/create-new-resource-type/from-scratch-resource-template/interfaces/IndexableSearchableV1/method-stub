@@ -1,0 +1,4 @@
+    public String getSearchFields() {
+        // TODO Auto-generated method stub
+        return null;
+    }

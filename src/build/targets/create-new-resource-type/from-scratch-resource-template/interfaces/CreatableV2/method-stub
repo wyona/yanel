@@ -1,0 +1,32 @@
+    public Object getProperty(String name) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    public void setProperty(String name, Object value) {
+        // TODO Auto-generated method stub
+    }
+    
+    public String[] getPropertyNames() {
+        // TODO Auto-generated method stub
+        return new String[0];
+    }
+
+    public String getPropertyType(String propertyName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    public void create(HttpServletRequest request) {
+        // TODO Auto-generated method stub
+    }
+
+    public HashMap createRTIProperties(HttpServletRequest request) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getCreateName(String suggestedName) {
+        // TODO Auto-generated method stub
+        return null;
+    }

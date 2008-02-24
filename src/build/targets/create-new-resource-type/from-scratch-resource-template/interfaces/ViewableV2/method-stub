@@ -1,0 +1,19 @@
+    public boolean exists() throws Exception {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public long getSize() throws Exception {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public View getView(String viewId) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public ViewDescriptor[] getViewDescriptors() {
+        // TODO Auto-generated method stub
+        return null;
+    }

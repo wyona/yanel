@@ -1,0 +1,44 @@
+    public void cancelCheckout() throws Exception {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void checkin(String comment) throws Exception {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void checkout(String userID) throws Exception {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public Date getCheckoutDate() throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getCheckoutUserID() throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public RevisionInformation[] getRevisions() throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public View getView(String viewId, String revisionName) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean isCheckedOut() throws Exception {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public void restore(String revisionName) throws Exception {
+        // TODO Auto-generated method stub
+        
+    }

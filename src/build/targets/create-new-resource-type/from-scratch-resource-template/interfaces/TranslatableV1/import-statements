@@ -1,0 +1,2 @@
+import org.wyona.yanel.core.api.attributes.TranslatableV1;
+import org.wyona.yanel.core.attributes.translatable.TranslationException;
