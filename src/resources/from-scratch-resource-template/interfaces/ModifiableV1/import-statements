@@ -1,7 +1,0 @@
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
-
-import org.wyona.yanel.core.Path;
-import org.wyona.yanel.core.Topic;
-import org.wyona.yanel.core.api.attributes.ModifiableV1;
