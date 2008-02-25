@@ -29,6 +29,10 @@
       classpathref="classpath"
       debug="true"
     />
+    <!-- TODO: Figure out the directory where the resource class is located in -->
+<!--
+    <copy file="${resource.home.dir}/resource.xml" todir="${resource.classes.dir}/TODO"/>
+-->
     <mkdir dir="${resource.lib.dir}"/>
     <jar destfile="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}.jar"
       basedir="${resource.classes.dir}"
