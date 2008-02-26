@@ -2211,7 +2211,7 @@ public class YanelServlet extends HttpServlet {
                     sb.append(getPolicyAsXML(resource.getRealm().getPolicyManager(), resource.getPath()));
                 } else {
                     response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
-                    sb.append("<html><body><h1>Update Access Policy</h1><p><script language=\"javascript\">var getURLs = {\"identities-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=identities\", \"policy-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=policy\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.yanel.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.yanel.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
+                    sb.append("<html><body><h1>Update Access Policy</h1><p><script language=\"javascript\">var getURLs = {\"identities-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=identities\", \"policy-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=policy\", \"cancel-url\": \"../.." + resource.getPath() + "\", \"save-url\": \"../.." + resource.getPath() + "?yanel.policy=update&post=policy\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.yanel.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.yanel.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
                 }
             } else {
                 response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
@@ -2308,7 +2308,7 @@ public class YanelServlet extends HttpServlet {
             }
             sb.append("</groups>");
 
-            // TODO: Implement rights
+            // TODO: Implement rights (part of policy manager)
             sb.append("<rights>");
             sb.append("<right id=\"view\">Read</right>");
             sb.append("<right id=\"write\">Write</right>");
