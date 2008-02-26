@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Vector;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -2206,9 +2207,8 @@ public class YanelServlet extends HttpServlet {
                     response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     sb.append(getIdentitiesAndRightsAsXML(resource.getRealm().getIdentityManager(), resource.getRealm().getPolicyManager()));
                 } else if (getXML != null && getXML.equals("policy")) {
-                    log.error("Get policy not implemented yet!");
                     response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
-                    sb.append("<hello/>");
+                    sb.append(getPolicyAsXML(resource.getRealm().getPolicyManager(), resource.getPath()));
                 } else {
                     response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
                     sb.append("<html><body><h1>Update Access Policy</h1><p><script language=\"javascript\">var getURLs = {\"identities-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=identities\", \"policy-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=policy\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.yanel.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.yanel.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
@@ -2287,12 +2287,114 @@ public class YanelServlet extends HttpServlet {
      *
      */
     private String getIdentitiesAndRightsAsXML(IdentityManager im, PolicyManager pm) {
+        org.wyona.security.core.api.UserManager um = im.getUserManager();
+        org.wyona.security.core.api.GroupManager gm = im.getGroupManager();
+
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<access-control xmlns=\"http://www.wyona.org/security/1.0\">");
-        sb.append("<users>");
-        sb.append("<user id=\"hugo\">HUGO</user>");
-        sb.append("</users>");
+
+        try {
+            User[] users = um.getUsers();
+            sb.append("<users>");
+            for (int i = 0; i < users.length; i++) {
+                sb.append("<user id=\"" + users[i].getID() + "\">" + users[i].getName() + "</user>");
+            }
+            sb.append("</users>");
+
+            org.wyona.security.core.api.Group[] groups = gm.getGroups();
+            sb.append("<groups>");
+            for (int i = 0; i < groups.length; i++) {
+                sb.append("<group id=\"" + groups[i].getID() + "\">" + groups[i].getName() + "</group>");
+            }
+            sb.append("</groups>");
+
+            // TODO: Implement rights
+            sb.append("<rights>");
+            sb.append("<right id=\"view\">Read</right>");
+            sb.append("<right id=\"write\">Write</right>");
+            sb.append("<right id=\"toolbar\">Toolbar</right>");
+            sb.append("</rights>");
+        } catch (Exception e) {
+            log.error(e, e);
+            sb.append("<exception>" + e.getMessage() + "</exception>");
+        }
         sb.append("</access-control>");
         return sb.toString();
+    }
+
+    /**
+     *
+     */
+    private String getPolicyAsXML(PolicyManager pm, String path) {
+
+        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\">");
+
+        try {
+            Policy policy = pm.getPolicy(path, true);
+            sb.append(getPolicyIdentities(policy));
+        } catch(Exception e) {
+            log.error(e, e);
+            sb.append("<exception>" + e.getMessage() + "</exception>");
+        }
+
+        sb.append("</policy>");
+        return sb.toString();
+    }
+
+    /**
+     * Get policy as XHTML list ordered by identities
+     */
+    static public StringBuffer getPolicyIdentities(Policy p) {
+        Vector world = new Vector();
+        java.util.HashMap users = new java.util.HashMap();
+        org.wyona.security.core.UsecasePolicy[] up = p.getUsecasePolicies();
+        if (up != null && up.length > 0) {
+            for (int i = 0; i < up.length; i++) {
+                Identity[] ids = up[i].getIdentities();
+                for (int j = 0; j < ids.length; j++) {
+                    if (ids[j].isWorld()) {
+                        world.add(up[i].getName());
+                    } else {
+                        Vector userRights;
+                        if ((userRights = (Vector) users.get(ids[j].getUsername())) != null) {
+                            log.debug("User has already been added: " + ids[j].getUsername());
+                        } else {
+                            userRights = new Vector();
+                            users.put(ids[j].getUsername(), userRights);
+                        }
+                        userRights.add(up[i].getName());
+                    }
+                }
+            }
+        } else {
+            log.warn("No policy usecases!");
+        }
+
+        StringBuffer sb = new StringBuffer();
+        //sb.append("<li>WORLD (" + getCommaSeparatedList(world) + ")</li>");
+
+        java.util.Iterator userIterator = users.keySet().iterator();
+        while (userIterator.hasNext()) {
+            String userName = (String) userIterator.next();
+            sb.append("<user id=\""+userName+"\">");
+            Vector rights = (Vector) users.get(userName);
+            for (int k = 0; k < rights.size(); k++) {
+            sb.append("<right id=\"" + (String) rights.elementAt(k) + "\"/>");
+            }
+            sb.append("</user>");
+        }
+
+/*
+        for (int i = 0; i < groups.length; i++) {
+            sb.append("<li>Group: ... (...)</li>");
+        }
+*/
+/*
+        for (int i = 0; i < hosts.length; i++) {
+            sb.append("<li>Host: 192.168.1.34 (view, open, write)</li>");
+        }
+*/
+        return sb;
     }
 }
