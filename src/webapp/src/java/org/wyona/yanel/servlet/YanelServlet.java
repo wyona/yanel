@@ -2198,19 +2198,23 @@ public class YanelServlet extends HttpServlet {
                 String showParentsParam = request.getParameter("showParents");
                 if (showParentsParam != null) showParents = new java.lang.Boolean(showParentsParam).booleanValue();
 
+                response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
                 sb.append(org.wyona.security.util.PolicyViewer.getXHTMLView(resource.getRealm().getPolicyManager(), resource.getPath(), null, orderedBy, showParents));
 	    } else if (usecase.equals("update")) {
                 String getXML = request.getParameter("get");
                 if (getXML != null && getXML.equals("identities")) {
-                    log.error("Get indentities not implemented yet!");
-                    sb.append("<hello/>");
+                    response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
+                    sb.append(getIdentitiesAndRightsAsXML(resource.getRealm().getIdentityManager(), resource.getRealm().getPolicyManager()));
                 } else if (getXML != null && getXML.equals("policy")) {
                     log.error("Get policy not implemented yet!");
+                    response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     sb.append("<hello/>");
                 } else {
+                    response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
                     sb.append("<html><body><h1>Update Access Policy</h1><p><script language=\"javascript\">var getURLs = {\"identities-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=identities\", \"policy-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=policy\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.yanel.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.yanel.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
                 }
             } else {
+                response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
                 sb.append("<html><body>Policy usecase not implemented yet: " + usecase + "</body></html>");
             }
         } catch(Exception e) {
@@ -2218,7 +2222,6 @@ public class YanelServlet extends HttpServlet {
             throw new ServletException(e.getMessage());
         }
 
-        response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
         response.setStatus(response.SC_OK);
         PrintWriter writer = response.getWriter();
         writer.print(sb.toString());
@@ -2278,5 +2281,18 @@ public class YanelServlet extends HttpServlet {
             w.print(sb);
             return;
         }
+    }
+
+    /**
+     *
+     */
+    private String getIdentitiesAndRightsAsXML(IdentityManager im, PolicyManager pm) {
+        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        sb.append("<access-control xmlns=\"http://www.wyona.org/security/1.0\">");
+        sb.append("<users>");
+        sb.append("<user id=\"hugo\">HUGO</user>");
+        sb.append("</users>");
+        sb.append("</access-control>");
+        return sb.toString();
     }
 }
