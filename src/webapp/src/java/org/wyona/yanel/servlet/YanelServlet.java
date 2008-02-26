@@ -2200,7 +2200,16 @@ public class YanelServlet extends HttpServlet {
 
                 sb.append(org.wyona.security.util.PolicyViewer.getXHTMLView(resource.getRealm().getPolicyManager(), resource.getPath(), null, orderedBy, showParents));
 	    } else if (usecase.equals("update")) {
-                sb.append("<html><body><h1>Update Access Policy</h1><p><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.yanel.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.yanel.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
+                String getXML = request.getParameter("get");
+                if (getXML != null && getXML.equals("identities")) {
+                    log.error("Get indentities not implemented yet!");
+                    sb.append("<hello/>");
+                } else if (getXML != null && getXML.equals("policy")) {
+                    log.error("Get policy not implemented yet!");
+                    sb.append("<hello/>");
+                } else {
+                    sb.append("<html><body><h1>Update Access Policy</h1><p><script language=\"javascript\">var getURLs = {\"identities-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=identities\", \"policy-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=policy\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.yanel.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.yanel.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
+                }
             } else {
                 sb.append("<html><body>Policy usecase not implemented yet: " + usecase + "</body></html>");
             }
