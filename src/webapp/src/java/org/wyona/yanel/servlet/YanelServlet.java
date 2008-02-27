@@ -2343,7 +2343,7 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Get policy as XHTML list ordered by identities
+     * Get users
      */
     static public StringBuffer getPolicyIdentities(Policy p) {
         Vector world = new Vector();
