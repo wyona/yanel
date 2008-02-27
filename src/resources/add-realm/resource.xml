@@ -10,7 +10,7 @@ Add Realm Resource
 </description>
 
 <rtd>
-  <property name="add-type" default-value="from-scratch"/>
+  <property name="add-type" default-value="from-scratch"/> <!-- Alternative values are: from-existing-website, demo -->
   <property name="xslt" default="xslt/add-realm-from-scratch.xsl"/>
   <property name="template-realm-id" default="from-scratch-realm-template"/>
 </rtd>
