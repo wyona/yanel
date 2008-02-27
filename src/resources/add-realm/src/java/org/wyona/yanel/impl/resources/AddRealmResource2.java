@@ -332,9 +332,13 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
     }
 
     /**
-     *
+     * Build DOM in order to enter data for creating a realm from scratch
      */
-    private Document getFromScratchInputDocument() {
+    private Document getFromScratchInputDocument() throws Exception {
+        if (getYanel().getRealmConfiguration().getRealm(getTemplateRealmId()) == null) {
+            throw new Exception("No such realm registered: " + getTemplateRealmId());
+        }
+
         Document doc = getDocument();
         Element rootElement = doc.getDocumentElement();
         Element fromScratchElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "from-scratch"));
@@ -692,12 +696,13 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
     }
 
     /**
-     *
+     * Get id of realm which shall be used as realm template
      */
     private String getTemplateRealmId() {
         String sampleRealmId = null;
         try {
-            sampleRealmId = getConfiguration().getProperty("template-realm-id");
+            //sampleRealmId = getConfiguration().getProperty("template-realm-id");
+            sampleRealmId = getResourceConfigProperty("template-realm-id");
         } catch (Exception e) {
             log.warn(e);
         }
