@@ -5,48 +5,47 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-  <title>How a new realm is being added</title>
+  <title>How to add a new realm - Yanel</title>
 </head>
 
-
-<body><h1>How a new realm is being added</h1>
-<p>
-This document explains how to add a new realm to Yanel. We will
-explain this using the Yulup Website as an example. From now on, we
+<body><h1>How to add a new realm<br/></h1><p>This document explains how to add a new realm to Yanel. We will
+explain this using the Yulup Website as an example.   From now on, we
 will refer to the directories that contain Yanel and the Yulup website
 as $YANEL_HOME and $YULUP_WEBSITE .
 </p>
 <ul>
-<li>Download the Yulup Website from Wyona's repository using subversion:<br/>
-                 svn co <a href="http://svn.wyona.com/repos/public/yulup/website">http://svn.wyona.com/repos/public/yulup/website<br/></a> (Username: anonymous, Password: anonymous)</li>
-<li>Copy the file $YANEL_HOME/conf/realms.xml to $YANEL_HOME/conf/local/local.realms.xml and add the following entry:<br/><br/>
+<li class="instruction">Download the Yulup Website from Wyona's repository using subversion:
+<div class="code">
+svn --username anonymous --password anonymous co http://svn.wyona.com/repos/public/yulup/website
+</div>
+</li>
 
+<li class="instruction">Copy the file $YANEL_HOME/conf/realms.xml to $YANEL_HOME/conf/local/local.realms.xml and add the following entry:
+<div class="code">
     &lt;realm id=&quot;yulup&quot; mount-point=&quot;/yulup/&quot;&gt;<br/>
        &lt;name&gt;Yulup Website&lt;/name&gt;<br/>
        &lt;config src=&quot;$YULUP_WEBSITE/yanel/config/yanel-realm-config.xml&quot;/&gt;<br/>
-    &lt;/realm&gt;<br/><br/>
+    &lt;/realm&gt;
+</div>
 
+    <b>NOTE for Windows users:</b> Also use forward slashes, e.g. 
+<div class="code">
+D:/realms/foo/yanel/config/yanel-realm-config.xml
+</div>
 
-&lt;realm id="welcome" mount-point="/" root="true"><br/>
-  &lt;name>Yanel Welcome and General Administration&lt;/name><br/>
-  &lt;config src="@REALMS_DIR@/welcome-admin/"/><br/>
-&lt;/realm>
-
-<br/><br/>
-
-    <b>NOTE for Windows users:</b> Also use forward slashes, e.g. D:/realms/foo/yanel/config/yanel-realm-config.xml
-</li><li>Re-build Yanel</li><li>Re-start Yanel</li></ul>
+</li>
+<li class="instruction">Re-build Yanel</li>
+<li class="instruction">Re-start Yanel</li>
+</ul>
 
 <p>
-Please note that the order of the realms doesn't matter. A request is being dispatched to the realm with the longest matching mount-point.
+Please note that the order of the realms doesn't matter. A request is dispatched to the realm with the longest matching mount-point.
 </p>
-
 <p>
 Also note that IIRC the root attribute (see the welcome realm configuration) is used for inheritance. For example, if a realm
 does not specify a proxy configuration, it will inherit this
 configuration from the root realm. 
 </p>
-
 
 <h2>Some publicly available Third-Party realms</h2>
 <ul><li>
