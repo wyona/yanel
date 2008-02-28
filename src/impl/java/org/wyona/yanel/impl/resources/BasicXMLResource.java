@@ -346,8 +346,10 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     protected String[] getI18NCatalogueNames() throws Exception {
         ArrayList catalogues = new ArrayList();
         String[] rcCatalogues = getResourceConfigProperties("i18n-catalogue");
-        for (int i = 0; i < rcCatalogues.length; i++) {
-            catalogues.add(rcCatalogues[i]);
+        if (rcCatalogues != null) {
+            for (int i = 0; i < rcCatalogues.length; i++) {
+                catalogues.add(rcCatalogues[i]);
+            }
         }
         String realmCatalogue = getRealm().getI18nCatalogue();
         if (realmCatalogue != null) {
