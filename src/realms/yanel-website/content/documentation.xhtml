@@ -31,7 +31,7 @@
     <li><a href="resources/deletable.html">Making a resource type Deleteable</a></li>
   </ul>
   </li>
-  <li><a href="access-data-in-resourcetype.html" shape="rect">Access global and resource type specific data from a resource type</a></li>
+  <li><a shape="rect" href="access-data-in-resourcetype.html">Access global and resource type specific data from a resource type</a></li>
 </ul>
 <li>Best Practice</li>
 <li>Tutorials
@@ -54,11 +54,11 @@
 </ul>
 </li>
 <li>Yanel Configuration</li><ul><li>conf/yanel.xml</li><li>conf/realms.xml</li><li>conf/resource-types.xml</li><li>conf/spring-yanel-config.xml</li><li>conf/log4j.properties</li><li>conf/CatalogManager.properties (Resolving DTDs, etc.)</li></ul>
-<li>Debugging Client-Server Communication
+<li>Debugging <br/></li><ul><li>See log files</li><ul><li>Source version: tail -f YANEL_SOURCE/build/logs/*<br/></li><li>Binary version: tail -f webapps/yanel/WEB-INF/classes/logs/*</li></ul></ul><ul><li>Client-Server Communication
   <ul>
    <li>java -classpath axis-1_4/lib/axis.jar org.apache.axis.utils.tcpmon</li><li>sudo ngrep -d eth0 &quot;&quot; &quot;port 8080&quot;</li>
   </ul>
-</li>
+</li></ul>
 <li>Versioned API</li><li><a href="yanel-toolbar.html">Yanel Toolbar Customization</a></li>
 <!-- TODO: Javadoc should be sub-realm of yanel website! -->
 <li><a href="../../javadoc/index.html">Javadoc</a> (To generate the Javadoc run <i>./build.sh javadoc</i> resp. <i>build javadoc</i>)</li>
@@ -66,7 +66,7 @@
 <ul>
     <li><a href="deployment/deployment_all_in_one.html">All In One</a></li><li><a href="deployment/deployment-static.html">Serving Content Statically</a></li><li><a href="deployment/deployment-enterprise.html">Enterprise</a> (including Load-Balancer and Tomcat Cluster)<br/></li>
     <li><a href="deployment-with-a-reverse-proxy.html">Deployment with a Reverse Proxy</a></li>
-    <li><a href="how-to-add-ssl-to-apache-httpd.html">Install Apache-Httpd with SSL support</a></li><li><a shape="rect" href="deployment/deployment_within-foaf-environment.html">Within FOAF environment</a></li>
+    <li><a href="how-to-add-ssl-to-apache-httpd.html">Install Apache-Httpd with SSL support</a></li><li><a href="deployment/deployment_within-foaf-environment.html" shape="rect">Within FOAF environment</a></li>
 </ul>
 </li>
     <li><a href="i18n.html">Yanel and i18n</a></li>
