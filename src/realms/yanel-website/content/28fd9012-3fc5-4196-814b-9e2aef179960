@@ -6,11 +6,11 @@
      <li>apt-get install gcc</li><li>apt-get install <a href="http://pomocnik.com/users/dan/2005/10/checking-for-c-compiler-default-output-file-name-configure-error-c-compiler-cannot-create-executables/">libc6-dev</a></li><li>apt-get install make</li>
     </ul>
   </li>
-  <li>Download Apache <a href="http://httpd.apache.org/download.cgi">httpd 2.2.x</a> (e.g. httpd-2.2.3)</li>
-  <li>Install as proxy: ./configure --prefix=/usr/local/httpd-2.2.3 --enable-proxy --enable-proxy-http</li>
+  <li>Download the latest Apache <a href="http://httpd.apache.org/download.cgi">httpd 2.2.x</a> (e.g. httpd-2.2.8)</li>
+  <li>Install as proxy: ./configure --prefix=/usr/local/httpd-2.2.8 --enable-proxy --enable-proxy-http</li>
   <li>make</li>
   <li>make install</li>
-  <li>Configure virtual hosts within /usr/local/httpd-2.2.3/conf/extra/httpd-vhosts.conf</li><ul><li>A sample can be found at <a href="https://svn.wyona.org/repos/public/yanel/trunk/src/httpd-2.2.3/conf/extra/httpd-vhosts.conf">yanel/trunk/src/httpd-2.2.3/conf/extra/httpd-vhosts.conf</a>
+  <li>Configure virtual hosts within /usr/local/httpd-2.2.8/conf/extra/httpd-vhosts.conf</li><ul><li>A sample can be found at <a href="https://svn.wyona.org/repos/public/yanel/trunk/src/httpd-2.2.3/conf/extra/httpd-vhosts.conf">yanel/trunk/src/httpd-2.2.3/conf/extra/httpd-vhosts.conf</a>
 </li></ul>
   <li>Add proxy settings to realm configuration (realms.xml), e.g.:</li><ul><li>  &lt;realm id=&quot;...<br/>&lt;reverse-proxy&gt;<br/>  &lt;host-name&gt;www.yulup.org&lt;/host-name&gt;<br/>  &lt;port&gt;80&lt;/port&gt;<br/>  &lt;ssl-port&gt;443&lt;/ssl-port&gt;<br/>  &lt;prefix&gt;/yanel/yulup-website&lt;/prefix&gt;<br/>  &lt;/reverse-proxy&gt;<br/>&lt;/realm&gt;</li></ul>
   <li>Activate vhosts config within /usr/local/httpd-2.2.3/conf/httpd.conf:</li><ul><li>Include conf/extra/httpd-vhosts.conf</li></ul>

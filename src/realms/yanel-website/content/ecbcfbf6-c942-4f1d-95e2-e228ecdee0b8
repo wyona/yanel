@@ -1,2 +1,32 @@
-<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Development of a custom realm</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Development of a custom realm</h1>  <ul><li>Get the Yanel source version, build and start it<br/></li><li>Create a realm from scratch: http://127.0.0.1:8080/yanel/add-realm-from-scratch.html<br/></li><li>Move this new realm (from src/realms/MY_NEW_REALM) into some code repository (e.g. SVN or CVS) and re-register this new realm with the new location within conf/local/local.realms.xml</li><li>Rebuild Yanel and test it</li><li>Build a new custom resource type: ./build.sh new-resource-type</li><li>Move this new resource type (from src/contributions/resource/MY_NEW_RESOURCE) into some code repository (e.g. SVN or CVS) and re-register this new resource type with the new location within conf/local/local.resource-types.xml</li><li>Rebuild Yanel and test it</li><ul><li>In order to test this new resource type within your new realm, please add a resource configuration to the &quot;res-configs&quot; repository of your new realm which corresponds to a URL of your choice</li></ul><li>Start customizing your new resource type: <a href="../../resources/viewable.html">Viewable</a>, ...<br/></li><li>to be continued ...</li></ul></body>
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Development of a custom realm</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Development of a custom realm</h1>  
+<ul>
+<li class="instruction">Get the Yanel source version, build and start it (<a href="../../../getting-started/unix.html">Unix</a>, <a href="../../../getting-started/windows.html">Windows</a>)
+</li>
+
+<li class="instruction">Create a realm from scratch: <a href="http://127.0.0.1:8080/yanel/add-realm-from-scratch.html">http://127.0.0.1:8080/yanel/add-realm-from-scratch.html</a>
+</li>
+
+<li class="instruction">Move this new realm (from src/realms/MY_NEW_REALM) into some code repository (e.g. SVN or CVS) and re-register this new realm with the new location within conf/local/local.realms.xml
+</li>
+
+<li class="instruction">Rebuild Yanel and test it</li>
+
+<li class="instruction">Build a new custom resource type
+<br /> <br />
+<div class="code">
+  ./build.sh new-resource-type
+</div>
+</li>
+
+<li class="instruction">Move this new resource type (from src/contributions/resource/MY_NEW_RESOURCE) into some code repository (e.g. SVN or CVS) and re-register this new resource type with the new location within conf/local/local.resource-types.xml</li>
+
+<li class="instruction">Rebuild Yanel and test it</li>
+
+<ul>
+<li class="instruction">In order to test this new resource type within your new realm, please add a resource configuration to the &quot;res-configs&quot; repository of your new realm which corresponds to a URL of your choice
+</li></ul>
+<li class="instruction">Start customizing your new resource type: <a href="../../resources/viewable.html">Viewable</a>, ...<br/></li><li>to be continued ...</li>
+</ul>
+
+</body>
 </html>

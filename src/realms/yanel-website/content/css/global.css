@@ -132,3 +132,14 @@ div.language_choice{
   width:auto;
   float:right;
 }
+
+div.code{
+  border: 1px dashed #AABBCC;
+  font:11px/14px 'courier new', courier, monospace; 
+  padding:8px; 
+  background:#F0F0F0;
+}
+
+li.instruction{
+  padding-bottom: 1em;
+}
