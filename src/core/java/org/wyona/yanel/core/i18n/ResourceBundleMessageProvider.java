@@ -25,8 +25,7 @@ import org.apache.log4j.Logger;
 
 /**
  * The <code>ResourceBundleMessageProvider</code> deals with messages defined in 
- * resource bundles. Messages defined in resource bundles can be grouped together
- * by adding the entry key at the end of the message key separated by a dot.
+ * resource bundles.
  */
 public class ResourceBundleMessageProvider implements MessageProvider {
     private static Logger log = Logger.getLogger(ResourceBundleMessageProvider.class.getName());

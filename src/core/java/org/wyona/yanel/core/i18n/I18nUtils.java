@@ -17,11 +17,9 @@
 package org.wyona.yanel.core.i18n;
 
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 /**
  * This class holds utility methods useful when working with i18n.
- * @author Mattias Jiderhamn
  */
 public class I18nUtils {
 

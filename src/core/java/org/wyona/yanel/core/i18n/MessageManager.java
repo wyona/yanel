@@ -23,25 +23,6 @@ import java.util.*;
 /**
  * The <code>MessageManager</code> provides methods for retrieving localized
  * messages and adding custom message providers. 
- * This class should not be called directly for other purposes than registering a custom
- * {@link MessageProvider} or retrieving information about available
- * message entries.
- * <p>
- * To access localized messages a subclass of the {@link LocalizedBundle} class
- * such as <code>LocalizedText </code> should be used:
- * 
- * <pre>
- * LocalizedText welcome = new LocalizedText(&quot;welcome&quot;); 
- * // Get the german translacion of the retrieved welcome text 
- * System.out.println(welcome.getText(Locale.GERMAN));       
- * </pre>
- * 
- * <p>
- * You can call {@link MessageManager#getText(String,String,Object[],Locale) getText} directly,
- * but if you do so, you have to ensure that the given entry key really
- * exists and to deal with the {@link MessageNotFoundException} exception that will
- * be thrown if you try to access a not existing entry.</p>
- * 
  */
 public class MessageManager {
 
@@ -56,11 +37,9 @@ public class MessageManager {
     /**
      * Add a custom <code>{@link MessageProvider}</code> to the
      * <code>MessageManager</code>. It will be incorporated in later calls of
-     * the {@link MessageManager#getText(String,String,Object[],Locale) getText}
-     * or {@link #getEntries(String,Locale) getEntries}methods.
+     * the {@link MessageManager#getText(String,Object[],Locale) getText}.
      *
-     * @param providerId Id of the provider used for uninstallation and
-     *          qualified naming.
+     * @param providerId Id of the provider used for uninstallation.
      * @param messageProvider
      *            The <code>MessageProvider</code> to be added.
      */
@@ -88,11 +67,10 @@ public class MessageManager {
 
     /**
      * Iterates over all registered message providers in order to find the given
-     * entry in the requested message bundle.
+     * message.
      * 
      * @param key
      *            The identifier that will be used to retrieve the message
-     *            bundle
      * @param arguments
      *            The dynamic parts of the message that will be evaluated using
      *            the standard java text formatting abilities.
@@ -113,11 +91,10 @@ public class MessageManager {
 
     /**
      * Iterates over all registered message providers in order to find the given
-     * entry in the requested message bundle.
+     * message.
      * 
      * @param key
      *            The identifier that will be used to retrieve the message
-     *            bundle
      * @param locale
      *            The locale in which the message will be printed
      * @return The localized message or null if no message is found 
@@ -129,21 +106,20 @@ public class MessageManager {
 
     /**
      * Iterates over all registered message providers in order to find the given
-     * entry in the requested message bundle.
+     * message.
      * 
      * @param key
      *            The identifier that will be used to retrieve the message
-     *            bundle
      * @param arguments
      *            The dynamic parts of the message that will be evaluated using
      *            the standard java text formatting abilities.
      * @param locale
      *            The locale in which the message will be printed
-     * @param defaultMessage
-     *            If no message bundle or message entry could be found for the
+     * @param defaultText
+     *            If no message could be found for the
      *            specified parameters, the default text will be returned.
      * @return The localized text or the default text if the message could not
-     *         be found
+     *            be found
      */
     public String getText(String key, Object[] arguments, Locale locale, String defaultText) {
         String text = getText(key, arguments, locale);
@@ -156,18 +132,17 @@ public class MessageManager {
 
     /**
      * Iterates over all registered message providers in order to find the given
-     * entry in the requested message bundle.
+     * message.
      * 
      * @param key
      *            The identifier that will be used to retrieve the message
-     *            bundle
      * @param locale
      *            The locale in which the message will be printed
-     * @param defaultMessage
-     *            If no message bundle or message entry could be found for the
+     * @param defaultText
+     *            If no message could be found for the
      *            specified parameters, the default text will be returned.
      * @return The localized text or the default text if the message could not
-     *         be found
+     *            be found
      */
     public String getText(String key, Locale locale, String defaultText) {
         Object[] arguments = new Object[0];
