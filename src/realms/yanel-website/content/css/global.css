@@ -138,8 +138,11 @@ div.code{
   font:11px/14px 'courier new', courier, monospace; 
   padding:8px; 
   background:#F0F0F0;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right:  20px; 
 }
 
 li.instruction{
-  padding-bottom: 1em;
+  padding-bottom: 5px;
 }
