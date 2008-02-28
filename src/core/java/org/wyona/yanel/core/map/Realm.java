@@ -64,6 +64,7 @@ public class Realm {
     private File configFile;
     private File rootDir;
     private String[] languages;
+    private String i18nCatalogue;
 
     private boolean proxySet = false;
     private String proxyHostName;
@@ -246,6 +247,11 @@ public class Realm {
                 repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigPath));
                 Repository repo = extraRepoFactory.newRepository(id, repoConfig);
             }
+        }
+        
+        configElement = config.getChild("i18n-catalogue", false);
+        if (configElement != null) {
+            this.i18nCatalogue = configElement.getValue();
         }
     }
 
@@ -496,4 +502,15 @@ public class Realm {
         String defaultWebAuthenticatorImplClassName = "org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl";
         return (WebAuthenticator) Class.forName(defaultWebAuthenticatorImplClassName).newInstance();
     }
+    
+    /**
+     * Gets the value of the i18n-catalogue config element.
+     * This value normally is a URI pointing to an i18n message catalogue. 
+     * @return i18n catalogue
+     */
+    public String getI18nCatalogue() {
+        return this.i18nCatalogue;
+    }
+
+
 }

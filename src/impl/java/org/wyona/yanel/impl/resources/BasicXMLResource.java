@@ -19,6 +19,7 @@ package org.wyona.yanel.impl.resources;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,6 +48,7 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
+import org.wyona.yanel.core.transformation.I18nTransformer3;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.impl.resources.xml.ConfigurableViewDescriptor;
@@ -250,7 +252,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             }
 
             // create i18n transformer:
-            I18nTransformer2 i18nTransformer = new I18nTransformer2(getI18NCatalogueNames(), getRequestedLanguage(), getRealm().getDefaultLanguage());
+            I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), getRequestedLanguage(), getRealm().getDefaultLanguage(), uriResolver);
             i18nTransformer.setEntityResolver(catalogResolver);
 
             // create xinclude transformer:
@@ -335,16 +337,24 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     /**
      * Gets the names of the i18n message catalogues used for the i18n transformation.
-     * Looks for an rc config property named 'i18n-catalogue'. Defaults to 'global'.
+     * Uses the following priorization:
+     * 1. rc config properties named 'i18n-catalogue'.
+     * 2. realm i18n-catalogue 
+     * 3. 'global'
      * @return i18n catalogue name
      */
     protected String[] getI18NCatalogueNames() throws Exception {
-        String[] catalogueNames = getResourceConfigProperties("i18n-catalogue");
-        if (catalogueNames == null || catalogueNames.length == 0) {
-            catalogueNames = new String[1];
-            catalogueNames[0] = "global";
+        ArrayList catalogues = new ArrayList();
+        String[] rcCatalogues = getResourceConfigProperties("i18n-catalogue");
+        for (int i = 0; i < rcCatalogues.length; i++) {
+            catalogues.add(rcCatalogues[i]);
         }
-        return catalogueNames;
+        String realmCatalogue = getRealm().getI18nCatalogue();
+        if (realmCatalogue != null) {
+            catalogues.add(realmCatalogue);
+        }
+        catalogues.add("global");
+        return (String [])catalogues.toArray(new String[catalogues.size()]);
     }
 
     /**
