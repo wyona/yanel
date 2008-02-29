@@ -18,4 +18,8 @@
     <group id="admin" permission="true"/>
   </role>
 
+  <role id="policy.update">
+    <group id="admin" permission="true"/>
+  </role>
+
 </policy>
