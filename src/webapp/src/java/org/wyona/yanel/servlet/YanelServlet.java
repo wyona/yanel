@@ -191,6 +191,13 @@ public class YanelServlet extends HttpServlet {
             if (log.isDebugEnabled()) log.debug("Access granted: " + request.getServletPath());
         }
 
+        // Check for requests re policies
+        String policyRequestPara = request.getParameter("yanel.policy");
+        if (policyRequestPara != null) {
+            doAccessPolicyRequest(request, response, policyRequestPara);
+            return;
+        }
+
         // Check for requests for global data
         Resource resource = getResource(request, response);
         String path = resource.getPath();
@@ -242,15 +249,8 @@ public class YanelServlet extends HttpServlet {
             log.error("DEBUG: WebDAV client (" + request.getHeader("User-Agent") + ") requests to \"edit\" a resource: " + resource.getRealm() + ", " + resource.getPath());
             //return;
         }
-
-        String policyRequestPara = request.getParameter("yanel.policy");
-        if (policyRequestPara != null) {
-            doAccessPolicyRequest(request, response, policyRequestPara);
-            return;
-        }
         
         String value = request.getParameter("yanel.resource.usecase");
-
         try {
             if (value != null && value.equals("release-lock")) {
                 log.debug("Release lock ...");
@@ -2310,6 +2310,13 @@ public class YanelServlet extends HttpServlet {
 
             // TODO: Implement rights (part of policy manager)
             sb.append("<rights>");
+            String[] rights = pm.getUsecases();
+            if (rights != null) {
+                for (int i = 0; i < rights.length; i++) {
+                    sb.append("<right id=\"" + rights[i] + "\">" + rights[i] + "</group>");
+                }
+            }
+            // TODO: obsolete
             sb.append("<right id=\"view\">Read</right>");
             sb.append("<right id=\"write\">Write</right>");
             sb.append("<right id=\"toolbar\">Toolbar</right>");
@@ -2328,13 +2335,15 @@ public class YanelServlet extends HttpServlet {
     private String getPolicyAsXML(PolicyManager pm, String path) {
 
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\">");
 
         try {
             Policy policy = pm.getPolicy(path, true);
+        sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\" use-inherited-policies=\"" + policy.useInheritedPolicies() + "\">");
             sb.append(getPolicyIdentities(policy));
+            sb.append(getPolicyGroups(policy));
         } catch(Exception e) {
             log.error(e, e);
+            sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\">");
             sb.append("<exception>" + e.getMessage() + "</exception>");
         }
 
@@ -2343,7 +2352,7 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Get users
+     * Get users (TODO: Move this code into the security package)
      */
     static public StringBuffer getPolicyIdentities(Policy p) {
         Vector world = new Vector();
@@ -2384,17 +2393,46 @@ public class YanelServlet extends HttpServlet {
             }
             sb.append("</user>");
         }
+        return sb;
+    }
 
-/*
-        for (int i = 0; i < groups.length; i++) {
-            sb.append("<li>Group: ... (...)</li>");
+    /**
+     * Get groups (TODO: Move this code into the security package)
+     */
+    static public StringBuffer getPolicyGroups(Policy p) {
+        Vector world = new Vector();
+        java.util.HashMap groups = new java.util.HashMap();
+        org.wyona.security.core.UsecasePolicy[] up = p.getUsecasePolicies();
+        if (up != null && up.length > 0) {
+            for (int i = 0; i < up.length; i++) {
+                org.wyona.security.core.GroupPolicy[] ids = up[i].getGroupPolicies();
+                for (int j = 0; j < ids.length; j++) {
+                    Vector groupRights;
+                    if ((groupRights = (Vector) groups.get(ids[j].getId())) != null) {
+                        log.debug("Group has already been added: " + ids[j].getId());
+                    } else {
+                        groupRights = new Vector();
+                        groups.put(ids[j].getId(), groupRights);
+                    }
+                    groupRights.add(up[i].getName());
+                }
+            }
+        } else {
+            log.warn("No policy usecases!");
         }
-*/
-/*
-        for (int i = 0; i < hosts.length; i++) {
-            sb.append("<li>Host: 192.168.1.34 (view, open, write)</li>");
+
+        StringBuffer sb = new StringBuffer();
+
+        java.util.Iterator userIterator = groups.keySet().iterator();
+        while (userIterator.hasNext()) {
+            String userName = (String) userIterator.next();
+            sb.append("<group id=\""+userName+"\">");
+            Vector rights = (Vector) groups.get(userName);
+            for (int k = 0; k < rights.size(); k++) {
+            sb.append("<right id=\"" + (String) rights.elementAt(k) + "\"/>");
+            }
+            sb.append("</group>");
         }
-*/
         return sb;
     }
 }
