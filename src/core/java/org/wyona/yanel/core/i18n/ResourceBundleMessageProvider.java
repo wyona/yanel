@@ -45,9 +45,15 @@ public class ResourceBundleMessageProvider implements MessageProvider {
         try {
             resourceBundle = ResourceBundle.getBundle(baseName, locale);
             text = resourceBundle.getObject(key).toString();
+            return text;
         } catch (MissingResourceException e) {
+            // ignore
+        }
+        try {
             resourceBundle = ResourceBundle.getBundle(baseName, defaultLocale);
             text = resourceBundle.getObject(key).toString();
+        } catch (MissingResourceException e) {
+            // ignore
         }
         return text;
     }
