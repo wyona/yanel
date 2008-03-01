@@ -48,17 +48,22 @@ table th {
     </dl>
 
     <h2>Examples</h2>
-<!--
-    <p><b>Redirect to some other url, which is also used as default/fallback redirect if custom configuration doesn't match (please see below)</b></p>
+    <p><b>Default view</b></p>
 
 <pre>
     &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
-      &lt;yanel:rti name="redirect" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+      &lt;yanel:xml name="redirect" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
-      &lt;yanel:property name="href" value="http://www.nyt.com"/>
+      &lt;yanel:property name="mime-type" value="text/html"/>
+      &lt;yanel:property name="source-view-mime-type" value="application/xhtml+xml"/>
+
+      &lt;yanel:property name="xslt" value="/xslt/body.xsl"/>
+      &lt;yanel:property name="xslt" value="/xslt/global.xsl"/>
+
+      &lt;yanel:property name="yanel-path" value="/hello/world.xhtml"/>
+      &lt;yanel:property name="workflow-schema" value="/workflows/workflow-with-review.xml"/>
     &lt;/yanel:resource-config>
 </pre>
--->
 
     <p><b>Custom views</b></p>
 
@@ -80,6 +85,10 @@ table th {
       &lt;/yanel:custom-config>
     &lt;/yanel:resource-config>
 </pre>
+
+<p>
+Available serializers are HTML_TRANSITIONAL, XHTML_STRICT, XML, TEXT (whereas default is XHTML_STRICT). See src/impl/java/org/wyona/yanel/impl/resources/BasicXMLResource.java for details.
+</p>
 
   </body>
 </html>
