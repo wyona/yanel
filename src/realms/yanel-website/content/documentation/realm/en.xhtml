@@ -8,36 +8,26 @@
   <title>How to add a new realm - Yanel</title>
 </head>
 
-<body><h1>How to add a new realm<br/></h1><p>This document explains how to add a new realm to Yanel. We will
+<body>
+<div class="instructions">
+<h1>How to add a new realm<br/></h1>
+<p>This document explains how to add a new realm to Yanel. We will
 explain this using the Yulup Website as an example.   From now on, we
 will refer to the directories that contain Yanel and the Yulup website
 as $YANEL_HOME and $YULUP_WEBSITE .
 </p>
 <ul>
-<li class="instruction">Download the Yulup Website from Wyona's repository using subversion:
-<div class="code">
-svn --username anonymous --password anonymous co http://svn.wyona.com/repos/public/yulup/website
-</div>
-</li>
-
-<li class="instruction">Copy the file $YANEL_HOME/conf/realms.xml to $YANEL_HOME/conf/local/local.realms.xml and add the following entry:
-<div class="code">
-    &lt;realm id=&quot;yulup&quot; mount-point=&quot;/yulup/&quot;&gt;<br/>
-       &lt;name&gt;Yulup Website&lt;/name&gt;<br/>
-       &lt;config src=&quot;$YULUP_WEBSITE/yanel/config/yanel-realm-config.xml&quot;/&gt;<br/>
-    &lt;/realm&gt;
-</div>
-
+  <li>Download the Yulup Website from Wyona's repository using subversion:
+    <pre>svn --username anonymous --password anonymous co http://svn.wyona.com/repos/public/yulup/website<br/></pre>
+  </li>
+  <li>Copy the file $YANEL_HOME/conf/realms.xml to $YANEL_HOME/conf/local/local.realms.xml and add the following entry:
+    <pre>&lt;realm id=&quot;yulup&quot; mount-point=&quot;/yulup/&quot;&gt;<br/>  &lt;name&gt;Yulup Website&lt;/name&gt;<br/>  &lt;config src=&quot;$YULUP_WEBSITE/yanel/config/yanel-realm-config.xml&quot;/&gt;<br/>&lt;/realm&gt;</pre>
     <b>NOTE for Windows users:</b> Also use forward slashes, e.g. 
-<div class="code">
-D:/realms/foo/yanel/config/yanel-realm-config.xml
-</div>
-
-</li>
-<li class="instruction">Rebuild Yanel</li>
-<li class="instruction">Restart Yanel</li>
+    <pre>D:/realms/foo/yanel/config/yanel-realm-config.xml<br/></pre>
+  </li>
+<li>Rebuild Yanel</li>
+<li>Restart Yanel</li>
 </ul>
-
 <p>
 Please note that the order of the realms doesn't matter. A request is dispatched to the realm with the longest matching mount-point.
 </p>
@@ -46,7 +36,7 @@ Also note that IIRC the root attribute (see the welcome realm configuration) is 
 does not specify a proxy configuration, it will inherit this
 configuration from the root realm. 
 </p>
-
+</div>
 <h2>Some publicly available Third-Party realms</h2>
 <ul><li>
             <a href="http://svn.wyona.com/repos/public/yulup/website/yanel/config/yanel-realm-config.xml">Yulup Website</a> (U: anonymous, P: anonymous)</li>

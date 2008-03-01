@@ -1,0 +1,12 @@
+yarep_revisionComment<string>:updated
+yarep_type<string>:resource
+yarep_isCheckedOut<boolean>:false
+yarep_revisionCreator<string>:alice
+workflow-date<date>:2008-03-01T11:11:35-0700
+yarep_checkoutDate<date>:2008-03-01T11:03:05-0700
+yarep_size<long>:5775
+yarep_checkoutUserID<string>:alice
+yarep_lastModifed<long>:1204395094000
+workflow-state<string>:draft
+yarep_checkinDate<date>:2008-03-01T10:59:45-0700
+yarep_revisionCreationDate<date>:2008-03-01T11:11:35-0700

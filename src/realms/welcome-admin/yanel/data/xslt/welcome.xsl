@@ -44,7 +44,8 @@
               </ul>
             </li>
             <li>More information can be found within the Yanel <a href="yanel-website/en/documentation/index.html">documentation</a>.</li>
-            <li>Turn on <a href="?yanel.toolbar=on">toolbar</a> or download <a href="http://www.yulup.org">Yulup</a>.</li>
+            <li>Turn on <a href="?yanel.toolbar=on">toolbar</a> </li>
+            <li>Download <a href="http://www.yulup.org">Yulup</a></li>
             <li><a href="update-webapp.html">Find Updates</a></li>
 
 <!--
