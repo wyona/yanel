@@ -1,20 +1,85 @@
-<html>
+<?xml version="1.0"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>tbd</title>
+    <title>XML resource</title>
+    <style>
+h2 {
+  font-size: 130%;
+  color:     #ffffff;
+  background-color: #525D76;
+}
+pre {
+  background-color: efefef;
+}
+td {
+  background-color: eeeeee;
+  color:            000000;
+}
+
+/* first row */
+table tr:first-child td {
+  background-color: cccccc;
+  color:            000000;
+}
+
+/* or th as first row */
+table th {
+  background-color: cccccc;
+  color:            000000;
+}
+    </style>
   </head>
   <body>
-    <h1>from-scratch</h1>
+    <h1>XML resource</h1>
+
+    <h2>Overview</h2>
     <dl>
       <dt>Name:</dt>
-      <dd>tbd</dd>
+      <dd>xml</dd>
       <dt>Namespace:</dt>
-      <dd>tbd</dd>
-      <dt>UniversalName</dt>
-      <dd>tbd</dd>
+      <dd>http://www.wyona.org/yanel/resource/1.0</dd>
+      <dt>Universal Name:</dt>
+      <dd>&lt;{http://www.wyona.org/yanel/resource/1.0}xml/&gt;</dd>
       <dt>Description:</dt>
-      <dd>tbd</dd>
+      <dd>XML whereas an XSLT or multiple XSLTs can be specified and applied</dd>
       <dt>Java Class:</dt>
-      <dd>tbd</dd>
+      <dd>org.wyona.yanel.impl.resources.XMLResource</dd>
     </dl>
+
+    <h2>Examples</h2>
+<!--
+    <p><b>Redirect to some other url, which is also used as default/fallback redirect if custom configuration doesn't match (please see below)</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+      &lt;yanel:rti name="redirect" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+      &lt;yanel:property name="href" value="http://www.nyt.com"/>
+    &lt;/yanel:resource-config>
+</pre>
+-->
+
+    <p><b>Custom views</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+      &lt;yanel:rti name="xml" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+      &lt;yanel:property name="href" value="http://fallback.default.com"/>
+
+      &lt;yanel:custom-config>
+        &lt;views xmlns="http://www.wyona.org/yanel/rti/1.0">
+          &lt;view id="default">
+            &lt;mime-type>application/xhtml+xml&lt;/mime-type>
+            &lt;xslt>/xslt/body.xsl&lt;/xslt>
+            &lt;xslt>/xslt/global.xsl&lt;/xslt>
+            &lt;serializer key="XHTML_STRICT"/>
+          &lt;/view>
+        &lt;/views>
+      &lt;/yanel:custom-config>
+    &lt;/yanel:resource-config>
+</pre>
+
   </body>
 </html>
