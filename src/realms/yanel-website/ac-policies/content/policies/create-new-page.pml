@@ -6,4 +6,12 @@
     <group id="editor" permission="true"/>
   </role>
 
+  <role id="policy.read">
+    <group id="editor" permission="true"/>
+  </role>
+
+  <role id="policy.update">
+    <group id="editor" permission="true"/>
+  </role>
+
 </policy>
