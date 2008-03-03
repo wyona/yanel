@@ -1,6 +1,7 @@
 package org.wyona.yanel.core.transformation;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -68,16 +69,40 @@ import org.xml.sax.helpers.AttributesImpl;
  *   &lt;/message&gt;
  * &lt;/messages&gt;
  * </pre>
+ * 
+ * <br/>
+ * Parameter substitution with i18n:translate:
+ * <pre>
+ * &lt;i18n:translate&gt;
+ *   &lt;i18n:text key="registeredUsers"/&gt;
+ *   &lt;i18n:param&gt;7&lt;/i18n:param&gt;
+ * &lt;/i18n:translate&gt;
+ * 
+ * &lt;message key="registeredUsers"&gt;
+ *   &lt;text language="de"&gt;Es sind {0} Benutzer registriert&lt;/text&gt;
+ *   &lt;text language="en"&gt;{0} users are registered&lt;/text&gt;
+ * &lt;/message&gt;
+ * </pre>
+ * This will result in:<br/>
+ * Es sind 7 Benutzer registriert<br/>
+ * 7 users are registered
  */
 public class I18nTransformer3 extends AbstractTransformer {
 
-    private static Category log = Category.getInstance(I18nTransformer2.class);
+    private static Category log = Category.getInstance(I18nTransformer3.class);
+    
+    private static final int STATE_OUTSIDE = 0;
+    private static final int STATE_INSIDE_TEXT = 1;
+    private static final int STATE_INSIDE_TRANSLATE = 2;
+    
     private MessageManager messageManager;
     private URIResolver resolver;
-    private boolean insideI18n;
+    private int state = 0;
     private String key;
     private StringBuffer textBuffer;
+    private String defaultText;
     private Locale locale;
+    private ArrayList parameters;
 
     public static final String NS_URI = "http://www.wyona.org/yanel/i18n/1.0";
     
@@ -126,102 +151,151 @@ public class I18nTransformer3 extends AbstractTransformer {
         return value;
     }
     
-    public void startElement(String namespaceURI, String localName, String qName, Attributes attrs) throws SAXException {
-        
-        if (this.insideI18n) {
-            throw new SAXException("no elements allowed inside of i18n element");
+    protected String getMessage(String key, List parameters) {
+        Object[] paramArray = parameters.toArray();
+        String value = this.messageManager.getText(key, paramArray, this.locale);
+        if (value == null) {
+            log.error("cannot find message for key: " + key);
+        }
+        return value;
+    }
+    
+    protected String getMessage(String key, String defaultText, List parameters) {
+        if (key == null) {
+            key = defaultText;
+        }
+        String message = getMessage(key, parameters);
+        if (message == null) {
+            message = defaultText;
+        }
+        if (message.length() == 0) {
+            message = key;
         }
         
-        if (isI18nElement(namespaceURI, localName, qName)) {
-            this.insideI18n = true;
-            this.textBuffer = new StringBuffer(); 
-            this.key = attrs.getValue("key");
+        if (log.isDebugEnabled()) {
+            log.debug("TAG [key] " + key + " [message]" + message);
+        }
+        return message;
+    }
+    
+    public void startElement(String namespaceURI, String localName, String qName, Attributes attrs) throws SAXException {
+        if (state == STATE_INSIDE_TEXT) {
             
-        } else {
-            // translate attributes:
+            throw new SAXException("no elements allowed inside of i18n text element");
             
-            int index = attrs.getIndex(NS_URI, "attr");
+        } else if (state == STATE_INSIDE_TRANSLATE) {
             
-            if (index != -1) {
-                List i18nAttrs = Arrays.asList(attrs.getValue(index).split(" "));
-                AttributesImpl newAttrs = new AttributesImpl();
+            if (isI18nTextElement(namespaceURI, localName, qName)) {
+                this.textBuffer = new StringBuffer(); 
+                this.key = attrs.getValue("key");
+            } else if (isI18nParamElement(namespaceURI, localName, qName)) {
+                this.textBuffer = new StringBuffer(); 
+            } else {
+                log.error("invalid element inside of i18n:translate: " + qName);
+            }
+            
+        } else if (state == STATE_OUTSIDE) {
+            
+            if (isI18nTextElement(namespaceURI, localName, qName)) {
+                state = STATE_INSIDE_TEXT;
+                this.textBuffer = new StringBuffer(); 
+                this.key = attrs.getValue("key");
+            } else if (isI18nTranslateElement(namespaceURI, localName, qName)) {
+                state = STATE_INSIDE_TRANSLATE;
+                this.parameters = new ArrayList();
+            } else {
+                // no i18n element -> translate attributes:
                 
-                for(int i = 0; i < attrs.getLength(); i++) {
-                    String attrUri = attrs.getURI(i);
-                    String attrLocalName = attrs.getLocalName(i);
-                    String attrQName = attrs.getQName(i);
-                    String attrValue = attrs.getValue(i);
-                    String attrType = attrs.getType(i);
+                int index = attrs.getIndex(NS_URI, "attr");
+                
+                if (index != -1) {
+                    List i18nAttrs = Arrays.asList(attrs.getValue(index).split(" "));
+                    AttributesImpl newAttrs = new AttributesImpl();
                     
-                    if (!attrLocalName.equals("attr") || !attrUri.equals(NS_URI)) {
-                        if (i18nAttrs.contains(attrQName)) {
-                            String i18nValue = getMessage(attrValue);
+                    for(int i = 0; i < attrs.getLength(); i++) {
+                        String attrUri = attrs.getURI(i);
+                        String attrLocalName = attrs.getLocalName(i);
+                        String attrQName = attrs.getQName(i);
+                        String attrValue = attrs.getValue(i);
+                        String attrType = attrs.getType(i);
+                        
+                        if (!attrLocalName.equals("attr") || !attrUri.equals(NS_URI)) {
+                            if (i18nAttrs.contains(attrQName)) {
+                                String i18nValue = getMessage(attrValue);
+                                if (i18nValue == null) {
+                                    i18nValue = attrValue;
+                                }
+                                newAttrs.addAttribute(attrUri, attrLocalName, attrQName, attrType, i18nValue);
+                            } else {
+                                newAttrs.addAttribute(attrUri, attrLocalName, attrQName, attrType, attrValue);
+                            }
+                        }
+                    }
+                    super.startElement(namespaceURI, localName, qName, newAttrs);
+                    
+                } else {
+                    
+                    // support old i18n attribute syntax for compatibility reasons: 
+                    AttributesImpl newAttrs = new AttributesImpl();
+                    for(int i = 0; i < attrs.getLength(); i++) {
+                        String attrUri = attrs.getURI(i);
+                        String attrLocalName = attrs.getLocalName(i);
+                        String attrQName = attrs.getQName(i);
+                        String attrValue = attrs.getValue(i);
+                        String attrType = attrs.getType(i);
+                        
+                        if (attrValue.indexOf("i18n:attr key=") != -1) {
+                            String key = attrValue.substring(14);
+
+                            String i18nValue = getMessage(key);
                             if (i18nValue == null) {
-                                i18nValue = attrValue;
+                                i18nValue = key;
                             }
                             newAttrs.addAttribute(attrUri, attrLocalName, attrQName, attrType, i18nValue);
                         } else {
                             newAttrs.addAttribute(attrUri, attrLocalName, attrQName, attrType, attrValue);
                         }
                     }
+                    super.startElement(namespaceURI, localName, qName, newAttrs);
                 }
-                super.startElement(namespaceURI, localName, qName, newAttrs);
-                
-            } else {
-                
-                // support old i18n attribute syntax for compatibility reasons: 
-                AttributesImpl newAttrs = new AttributesImpl();
-                for(int i = 0; i < attrs.getLength(); i++) {
-                    String attrUri = attrs.getURI(i);
-                    String attrLocalName = attrs.getLocalName(i);
-                    String attrQName = attrs.getQName(i);
-                    String attrValue = attrs.getValue(i);
-                    String attrType = attrs.getType(i);
-                    
-                    if (attrValue.indexOf("i18n:attr key=") != -1) {
-                        String key = attrValue.substring(14);
-
-                        String i18nValue = getMessage(key);
-                        if (i18nValue == null) {
-                            i18nValue = key;
-                        }
-                        newAttrs.addAttribute(attrUri, attrLocalName, attrQName, attrType, i18nValue);
-                    } else {
-                        newAttrs.addAttribute(attrUri, attrLocalName, attrQName, attrType, attrValue);
-                    }
-                }
-                super.startElement(namespaceURI, localName, qName, newAttrs);
             }
         }
     }
 
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-        if (isI18nElement(namespaceURI, localName, qName)) {
-            String defaultText = this.textBuffer.toString();
-            if (this.key == null) {
-                this.key = defaultText;
+        if (state == STATE_INSIDE_TEXT) {
+            if (isI18nTextElement(namespaceURI, localName, qName)) {
+                String defaultText = this.textBuffer.toString();
+                String message = getMessage(this.key, defaultText, new ArrayList());
+                state = STATE_OUTSIDE;
+                outputString(message);
             }
-            String i18nText = getMessage(key);
-            if (i18nText == null) {
-                i18nText = defaultText;
+        } else if (state == STATE_INSIDE_TRANSLATE) {
+            if (isI18nTextElement(namespaceURI, localName, qName)) {
+                this.defaultText = this.textBuffer.toString();
+    
+            } else if (isI18nParamElement(namespaceURI, localName, qName)) {
+                String param = this.textBuffer.toString();
+                this.parameters.add(param);
+                
+            } else if (isI18nTranslateElement(namespaceURI, localName, qName)) {
+                String message = getMessage(this.key, this.defaultText, this.parameters);
+                state = STATE_OUTSIDE;
+                outputString(message);
             }
-            if (i18nText.length() == 0) {
-                i18nText = key;
-            }
-            
-            if (log.isDebugEnabled()) {
-                log.debug("TAG [key] " + this.key + " [message]" + i18nText);
-            }
-            char[] i18nMessage = i18nText.toCharArray(); 
-            this.insideI18n = false;
-            characters(i18nMessage, 0, i18nMessage.length);
-        } else {
+        } else if (state == STATE_OUTSIDE) {
             super.endElement(namespaceURI, localName, qName);
         }
     }
     
+    protected void outputString(String s) throws SAXException {
+        char[] c = s.toCharArray(); 
+        characters(c, 0, c.length);
+    }
+    
+    
     /**
-     * Decides whether a the given element is a i18n element.
+     * Decides whether a the given element is a i18n text element.
      * Suppports the &lt;text&gt; element and for backwards compatibility also
      * the &lt;message&gt; element.
      * @param namespaceURI
@@ -229,7 +303,7 @@ public class I18nTransformer3 extends AbstractTransformer {
      * @param qName
      * @return true if the element is a i18n element
      */
-    protected boolean isI18nElement(String namespaceURI, String localName, String qName) {
+    protected boolean isI18nTextElement(String namespaceURI, String localName, String qName) {
         if (namespaceURI.equals(NS_URI) && (localName.equals("text") || localName.equals("message"))) {
             return true;
         } else {
@@ -237,8 +311,24 @@ public class I18nTransformer3 extends AbstractTransformer {
         }
     }
 
+    protected boolean isI18nTranslateElement(String namespaceURI, String localName, String qName) {
+        if (namespaceURI.equals(NS_URI) && localName.equals("translate")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected boolean isI18nParamElement(String namespaceURI, String localName, String qName) {
+        if (namespaceURI.equals(NS_URI) && localName.equals("param")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void characters(char[] buf, int offset, int len) throws SAXException {
-        if (this.insideI18n) {
+        if (this.state == STATE_INSIDE_TEXT || state == STATE_INSIDE_TRANSLATE) {
             this.textBuffer.append(buf, offset, len);
         } else {
             super.characters(buf, offset, len);
