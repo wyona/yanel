@@ -144,3 +144,8 @@ div.instructions pre{
 div.instructions li{
   padding:5px;
 }
+
+div.instructions p.tutorial_context{
+ font:11px/14px 'courier new', courier, monospace;
+}
+ 
