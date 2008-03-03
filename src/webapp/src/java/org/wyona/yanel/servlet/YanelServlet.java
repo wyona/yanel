@@ -2200,21 +2200,36 @@ public class YanelServlet extends HttpServlet {
                 if (showParentsParam != null) showParents = new java.lang.Boolean(showParentsParam).booleanValue();
 
                 response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
+                response.setStatus(response.SC_OK);
                 sb.append(org.wyona.security.util.PolicyViewer.getXHTMLView(resource.getRealm().getPolicyManager(), resource.getPath(), null, orderedBy, showParents));
 	    } else if (usecase.equals("update")) {
                 String getXML = request.getParameter("get");
+                String postXML = request.getParameter("post");
                 if (getXML != null && getXML.equals("identities")) {
                     response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
+                    response.setStatus(response.SC_OK);
                     sb.append(getIdentitiesAndRightsAsXML(resource.getRealm().getIdentityManager(), resource.getRealm().getPolicyManager()));
                 } else if (getXML != null && getXML.equals("policy")) {
                     response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
+                    response.setStatus(response.SC_OK);
                     sb.append(getPolicyAsXML(resource.getRealm().getPolicyManager(), resource.getPath()));
+                } else if (postXML != null && postXML.equals("policy")) {
+                    log.warn("Implementation not finished yet!");
+                    response.setStatus(response.SC_NOT_IMPLEMENTED);
+                    response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
+                    sb.append("<?xml version=\"1.0\"?><not-saved-yet/>");
                 } else {
                     response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
-                    sb.append("<html><body><h1>Update Access Policy</h1><p><script language=\"javascript\">var getURLs = {\"identities-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=identities\", \"policy-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=policy\", \"cancel-url\": \"" + org.wyona.commons.io.PathUtil.getName(resource.getPath()) + "\", \"save-url\": \"../.." + resource.getPath() + "?yanel.policy=update&post=policy\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
+                    response.setStatus(response.SC_OK);
+                    String identitiesURL = "../.." + resource.getPath() + "?yanel.policy=update&get=identities";
+                    //String saveURL = "../.." + resource.getPath() + "?yanel.policy=update&post=policy";
+                    String saveURL = "?yanel.policy=update&post=policy";
+
+                    sb.append("<html><body><h1>Update Access Policy</h1><p><script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=policy\", \"cancel-url\": \"" + org.wyona.commons.io.PathUtil.getName(resource.getPath()) + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
                 }
             } else {
                 response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
+                response.setStatus(response.SC_NOT_IMPLEMENTED);
                 sb.append("<html><body>Policy usecase not implemented yet: " + usecase + "</body></html>");
             }
         } catch(Exception e) {
@@ -2222,7 +2237,6 @@ public class YanelServlet extends HttpServlet {
             throw new ServletException(e.getMessage());
         }
 
-        response.setStatus(response.SC_OK);
         PrintWriter writer = response.getWriter();
         writer.print(sb.toString());
         return;
