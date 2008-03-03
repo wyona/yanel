@@ -2214,10 +2214,15 @@ public class YanelServlet extends HttpServlet {
                     response.setStatus(response.SC_OK);
                     sb.append(getPolicyAsXML(resource.getRealm().getPolicyManager(), resource.getPath()));
                 } else if (postXML != null && postXML.equals("policy")) {
-                    log.warn("Implementation not finished yet!");
-                    response.setStatus(response.SC_NOT_IMPLEMENTED);
                     response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
-                    sb.append("<?xml version=\"1.0\"?><not-saved-yet/>");
+                    try {
+                        writePolicy(request.getInputStream(), resource.getRealm().getPolicyManager(), resource.getPath());
+                        response.setStatus(response.SC_OK);
+                        sb.append("<?xml version=\"1.0\"?><saved/>");
+                    } catch(Exception e) {
+                        response.setStatus(response.SC_NOT_IMPLEMENTED);
+                        sb.append("<?xml version=\"1.0\"?><not-saved>" + e.getMessage() + "</not-saved>");
+                    }
                 } else {
                     response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
                     response.setStatus(response.SC_OK);
@@ -2448,5 +2453,13 @@ public class YanelServlet extends HttpServlet {
             sb.append("</group>");
         }
         return sb;
+    }
+
+    /**
+     * Write/Save policy
+     */
+    private void writePolicy(InputStream policyAsInputStream, PolicyManager pm, String path) throws Exception {
+        Policy policy = new org.wyona.security.impl.PolicyImplV2(policyAsInputStream);
+        pm.setPolicy(path, policy);
     }
 }
