@@ -85,25 +85,44 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
     }
 
     /**
-     *
+     * Get sitetree as XML
      */
     private String getSitetreeAsXML() {
-    //private String getSitetreeAsXML(String path) {
-        String path = "/"; 
         StringBuffer sb = new StringBuffer("<sitetree>");
-        sb.append(getNodeAsXML(path));
+        sb.append(getNodeAsXML("/"));
+        // TODO: Sitetree generated out of RDF resources and statements
+        /*
+        com.hp.hpl.jena.rdf.model.Resource rootResource = getRealm().getSitetreeRootResource();
+        sb.append(getNodeAsXML(rootResource));
+        */
         sb.append("</sitetree>");
+
         return sb.toString();
     }
 
     /**
-     *
+     * Get node as XML
      */
     private String getNodeAsXML(String path) {
+    //private String getNodeAsXML(com.hp.hpl.jena.rdf.model.Resource resource) {
         //log.error("DEBUG: Path: " + path);
         Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("repo-navigation");
         Node node = sitetree.getNode(getRealm(), path);
         StringBuffer sb = new StringBuffer("");
+
+        // TODO: Check for statements "parentOf" for this resource
+        /*
+        Statement[] st = resource.getStatements("parentOf");
+        if (st.length > 0) {
+            for (int i = 0; i < st.length; i++) {
+                Resource child = st.getObject();
+                URL url = getReal().getURLBuilder(child);
+            }
+        } else {
+            // Is not a collection, there are no children
+        }
+        */
+
         if (node.isCollection()) {
             sb.append("<collection path=\"" + path + "\" name=\" " + node.getName() + "\">");
             Node[] children = node.getChildren();
