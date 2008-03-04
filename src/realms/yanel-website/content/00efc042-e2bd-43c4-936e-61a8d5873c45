@@ -1,7 +1,7 @@
 <?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Write documentation</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  
 <div class="instructions">
 <h1>How-to write english documentation for Yanel using Yulup<br/></h1>  
-<p class="tutorial_context">(Last updated March 3, 2008.  Tutorial written using Yanel revision 32725 and Yulup 0.3.1-r27430)</p>
+<p class="tutorial_context">(Last updated March 4, 2008.  Tutorial written using Yanel revision 32725 and Yulup 0.3.1-r27430)</p>
 <p>The purpose of this tutorial is to demonstrate a way to to create, edit
 and contribute documentation.  Please keep in mind that Yanel and Yulup
 are both functional but not polished.</p><p>This tutorial assumes that you've:<br/></p><ul><li><a href="../../../../download/source-repository.html">installed the source distibution</a> of Yanel with support for SSL in /usr/local/wyona and are able to view content in Firefox.</li><li><a href="http://www.yulup.org/download/index.html">installed Yulup</a>.</li></ul>This tutorial was created using the methods described in this tutorial.    
@@ -30,9 +30,11 @@ are both functional but not polished.</p><p>This tutorial assumes that you've:<b
 This will allow you to find what you created within the file system - remember to grep for a string that is likely unique to what you've created.<br/><br/>    When writing this tutorial, egrep returned:    <pre>content/9e6fb7cd-8e79-431c-8d81-0cad8bb5eeed:Adding some content<br/>Adding some content<br/>content/9e6fb7cd-8e79-431c-8d81-0cad8bb5eeed.yarep/revisions/1204347225811/content:Adding some content<br/>Adding some content   <br/></pre>
 You will notice that Yulup makes use of Yarep as a data abstraction layer which introduces version control for the resource (content) you created.<br/><br/>   To add this content to the Yanel subversion repository at Wyona, you need to add the current version of the content:   
 <pre>svn add content/9e6fb7cd-8e79-431c-8d81-0cad8bb5eeed</pre>
-and the repository for the content:
-<pre>svn add content/9e6fb7cd-8e79-431c-8d81-0cad8bb5eeed.yarep</pre>As you don't really want to commit the results of this tutorial to the Yanel repository at Wyona, you should remove your local modifications  
-<pre>svn del --force content/9e6fb7cd-8e79-431c-8d81-0cad8bb5eeed<br/>svn del --force content/9e6fb7cd-8e79-431c-8d81-0cad8bb5eeed.yarep/</pre>
+the repository for the content:
+<pre>svn add content/9e6fb7cd-8e79-431c-8d81-0cad8bb5eeed.yarep</pre>and the representation within the file system:
+<pre>svn add paths/en/documentation/tutorials/add-some-content</pre>
+As you don't really want to commit the results of this tutorial to the Yanel repository at Wyona, you should remove your local modifications  
+<pre>svn del --force content/9e6fb7cd-8e79-431c-8d81-0cad8bb5eeed<br/>svn del --force content/9e6fb7cd-8e79-431c-8d81-0cad8bb5eeed.yarep/<br/>svn del --force paths/en/documentation/tutorials/add-some-content</pre>
 <p>
 If you are not a commiter but have created some documentation, please <a href="../../../../en/development/processes/how-to-create-a-patch.html">create a patch</a>.
 </p>
