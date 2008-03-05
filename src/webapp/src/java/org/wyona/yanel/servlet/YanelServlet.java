@@ -2233,7 +2233,13 @@ public class YanelServlet extends HttpServlet {
                     String cancelURL = org.wyona.commons.io.PathUtil.getName(resource.getPath());
                     if (resource.getPath().endsWith("/")) cancelURL = "./";
 
-                    sb.append("<html><body><h1>Update Access Policy</h1><p><script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=policy\", \"cancel-url\": \"" + cancelURL + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
+                    sb.append("<?xml version=\"1.0\"?>");
+                    sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+                    sb.append("<head>");
+                    sb.append("<title>Update Access Policy</title>");
+                    sb.append("<link rel=\"stylesheet\" href=\"" + backToRealm + reservedPrefix + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/style.css\" type=\"text/css\"/>");
+                    sb.append("</head>");
+                    sb.append("<body><h1>Update Access Policy</h1><p><script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=policy\", \"cancel-url\": \"" + cancelURL + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
                 }
             } else {
                 response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
