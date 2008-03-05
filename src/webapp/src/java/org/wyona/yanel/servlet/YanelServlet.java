@@ -2220,6 +2220,7 @@ public class YanelServlet extends HttpServlet {
                         response.setStatus(response.SC_OK);
                         sb.append("<?xml version=\"1.0\"?><saved/>");
                     } catch(Exception e) {
+                        log.error(e,e);
                         response.setStatus(response.SC_NOT_IMPLEMENTED);
                         sb.append("<?xml version=\"1.0\"?><not-saved>" + e.getMessage() + "</not-saved>");
                     }
@@ -2229,8 +2230,10 @@ public class YanelServlet extends HttpServlet {
                     String identitiesURL = "../.." + resource.getPath() + "?yanel.policy=update&get=identities";
                     //String saveURL = "../.." + resource.getPath() + "?yanel.policy=update&post=policy";
                     String saveURL = "?yanel.policy=update&post=policy";
+                    String cancelURL = org.wyona.commons.io.PathUtil.getName(resource.getPath());
+                    if (resource.getPath().endsWith("/")) cancelURL = "./";
 
-                    sb.append("<html><body><h1>Update Access Policy</h1><p><script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=policy\", \"cancel-url\": \"" + org.wyona.commons.io.PathUtil.getName(resource.getPath()) + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
+                    sb.append("<html><body><h1>Update Access Policy</h1><p><script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=policy\", \"cancel-url\": \"" + cancelURL + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
                 }
             } else {
                 response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
@@ -2356,10 +2359,15 @@ public class YanelServlet extends HttpServlet {
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
 
         try {
-            Policy policy = pm.getPolicy(path, true);
-        sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\" use-inherited-policies=\"" + policy.useInheritedPolicies() + "\">");
-            sb.append(getPolicyIdentities(policy));
-            sb.append(getPolicyGroups(policy));
+            Policy policy = pm.getPolicy(path, false);
+            if (policy == null) {
+                sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\" use-inherited-policies=\"false\">");
+                log.warn("No policy yet for path: " + path + " (Return empty policy)");
+            } else {
+                sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\" use-inherited-policies=\"" + policy.useInheritedPolicies() + "\">");
+                sb.append(getPolicyIdentities(policy));
+                sb.append(getPolicyGroups(policy));
+            }
         } catch(Exception e) {
             log.error(e, e);
             sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\">");
@@ -2459,7 +2467,7 @@ public class YanelServlet extends HttpServlet {
      * Write/Save policy
      */
     private void writePolicy(InputStream policyAsInputStream, PolicyManager pm, String path) throws Exception {
-        Policy policy = new org.wyona.security.impl.PolicyImplV2(policyAsInputStream);
+        Policy policy = new org.wyona.security.util.PolicyParser().parseXML(policyAsInputStream);
         pm.setPolicy(path, policy);
     }
 }
