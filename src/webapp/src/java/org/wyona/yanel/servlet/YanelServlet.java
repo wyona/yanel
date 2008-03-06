@@ -1599,7 +1599,7 @@ public class YanelServlet extends HttpServlet {
         } else {
             menu = new org.wyona.yanel.servlet.menu.impl.DefaultMenu();
         }
-        return menu.getYanelMenu(resource, request, map, reservedPrefix) + menu.getMenus(resource, request, map, reservedPrefix) + menu.getHelpMenu(resource, request, map, reservedPrefix);
+        return menu.getAllMenus(resource, request, map, reservedPrefix);
     }
 
     /**
