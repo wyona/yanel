@@ -14,14 +14,26 @@ import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  *
  */
 abstract public class Menu {
 
-    private static Category log = Category.getInstance(Menu.class);
+    private static Logger log = Logger.getLogger(Menu.class);
+
+    /**
+     * Get custom menus. Implement this method in order to introduce custom menus.
+     */
+    abstract public String getMenus(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception;
+
+    /**
+     * Aggregate all menus (used by YanelServlet). Overwrite this method if Yanel or Help menu not needed.
+     */
+    public String getAllMenus(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
+        return getYanelMenu(resource, request, map, reservedPrefix) + getMenus(resource, request, map, reservedPrefix) + getHelpMenu(resource, request, map, reservedPrefix);
+    }
 
     /**
      * Get yanel menu
@@ -71,11 +83,6 @@ abstract public class Menu {
         sb.append("</li></ul>");
         return sb.toString();
     }
-
-    /**
-     * Get custom menus
-     */
-    abstract public String getMenus(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception;
     
     /**
      * Gets the identity from the session associated with the given request.
