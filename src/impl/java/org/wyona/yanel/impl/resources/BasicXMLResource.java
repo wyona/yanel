@@ -235,14 +235,16 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             xmlReader.setEntityResolver(catalogResolver);
             xmlReader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
 
+            SourceResolver uriResolver = new SourceResolver(this);
+            
             // create xslt transformer:
             SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
+            tf.setURIResolver(uriResolver);
 
             String[] xsltPaths = viewDescriptor.getXSLTPaths();
             if (xsltPaths == null || xsltPaths.length == 0) {
                 xsltPaths = getXSLTPath(getPath());
             }
-            SourceResolver uriResolver = new SourceResolver(this);
             
             TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPaths.length];
             for (int i = 0; i < xsltPaths.length; i++) {
