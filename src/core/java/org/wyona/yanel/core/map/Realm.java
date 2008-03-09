@@ -76,7 +76,9 @@ public class Realm {
      *
      */
     public Realm(String name, String id, String mountPoint, File configFile) throws Exception {
+        // TODO: Get realm name from config if name is null (see method configure())!
         this.name = name;
+
         this.id = id;
         this.mountPoint = mountPoint;
         this.configFile = configFile;
@@ -109,6 +111,7 @@ public class Realm {
         Yanel yanel = Yanel.getInstance();
 	File repoConfig = null;
 
+        // TODO: get name from config (also see realm constructor)!
 
 
         // Set PolicyManager for this realm
