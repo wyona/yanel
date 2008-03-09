@@ -195,7 +195,9 @@ public class RealmManager {
                 String mountPoint = realmElements[i].getAttribute("mount-point", null);
                 String realmId = realmElements[i].getAttribute("id", null);
                 String rootFlag = realmElements[i].getAttribute("root", "false");
-                Configuration name = realmElements[i].getChild("name", false);
+                Configuration nameConfig = realmElements[i].getChild("name", false);
+                String name = null;
+                if (nameConfig != null) name = nameConfig.getValue();
                 Configuration configElement = realmElements[i].getChild("config", false);
                 if (configElement == null) {
                     throw new ConfigurationException("Missing <config src=\"...\"/> child element for realm " + realmId);
@@ -216,7 +218,7 @@ public class RealmManager {
                         String customRealmImplClassName = realmConfig.getAttribute("class");
                         Class[] classArgs = new Class[]{String.class, String.class, String.class, File.class};
                         Object[] values = new Object[4];
-                        values[0] = name.getValue();
+                        values[0] = name;
                         values[1] = realmId;
                         values[2] = mountPoint;
                         values[3] = realmConfigFile;
@@ -224,10 +226,10 @@ public class RealmManager {
                         realm = (Realm) ct.newInstance(values);
                     } catch(ClassNotFoundException e) {
                         log.error("Class not found: " + e.getMessage() + ". Fallback to default realm implementation!");
-                        realm = new Realm(name.getValue(), realmId, mountPoint, realmConfigFile);
+                        realm = new Realm(name, realmId, mountPoint, realmConfigFile);
                     } catch(Exception e) {
                         log.info("Default realm implementation will be used.");
-                        realm = new Realm(name.getValue(), realmId, mountPoint, realmConfigFile);
+                        realm = new Realm(name, realmId, mountPoint, realmConfigFile);
                     }
                     
                     Configuration proxy = realmElements[i].getChild("reverse-proxy", false);
