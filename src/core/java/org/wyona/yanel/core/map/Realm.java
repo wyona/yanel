@@ -32,6 +32,7 @@ import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.attributes.translatable.DefaultTranslationManager;
 import org.wyona.yanel.core.attributes.translatable.TranslationManager;
 import org.wyona.yanel.core.api.security.WebAuthenticator;
+import org.wyona.yanel.core.navigation.Sitetree;
 import org.wyona.yanel.core.util.ConfigurationUtil;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
@@ -61,6 +62,7 @@ public class Realm {
     private WebAuthenticator privateWebAuthenticator;
     private TranslationManager translationManager;
     private LanguageHandler languageHandler;
+    private Sitetree repoNavigation;
     private File configFile;
     private File rootDir;
     private String[] languages;
@@ -111,7 +113,11 @@ public class Realm {
         Yanel yanel = Yanel.getInstance();
 	File repoConfig = null;
 
-        // TODO: get name from config (also see realm constructor)!
+        // Set name if not already set by yanel realms registration config
+        Configuration nameConfigElement = config.getChild("name", false);
+        if (name == null && nameConfigElement != null) {
+            name = nameConfigElement.getValue();
+        }
 
 
         // Set PolicyManager for this realm
@@ -252,9 +258,28 @@ public class Realm {
             }
         }
         
+        // Set i18n catalogue
         configElement = config.getChild("i18n-catalogue", false);
         if (configElement != null) {
             this.i18nCatalogue = configElement.getValue();
+        }
+
+        // Set repo-navigation
+        configElement = config.getChild("repo-navigation", false);
+        if (configElement != null) {
+            try {
+                String customRepoNavigationImplClassName = configElement.getAttribute("class");
+                repoNavigation = (Sitetree) Class.forName(customRepoNavigationImplClassName).newInstance();
+                // TODO: Pass custom configuration!
+                log.info("Custom repo navigation implementation will be used for realm: " + getName());
+            } catch (ConfigurationException e) {
+                log.error(e, e);
+                repoNavigation = (Sitetree) yanel.getBeanFactory().getBean("repo-navigation");
+                log.warn("Default repo navigation implementation will be used for realm: " + getName());
+            }
+        } else {
+            log.info("Default repo navigation implementation will be used for realm: " + getName());
+            repoNavigation = (Sitetree) yanel.getBeanFactory().getBean("repo-navigation");
         }
     }
 
@@ -403,12 +428,22 @@ public class Realm {
         this.privateIdentityManager = identityManager;
     }
 
+    /**
+     * Get policy manager
+     */
     public PolicyManager getPolicyManager() {
         return privatePolicyManager;
     }
 
     public void setPolicyManager(PolicyManager policyManager) {
         this.privatePolicyManager = policyManager;
+    }
+
+    /**
+     * Get repository navigation
+     */
+    public Sitetree getRepoNavigation() {
+        return repoNavigation;
     }
 
     /**
