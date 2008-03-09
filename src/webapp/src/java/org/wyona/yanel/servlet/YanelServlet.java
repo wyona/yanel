@@ -2336,18 +2336,15 @@ public class YanelServlet extends HttpServlet {
             }
             sb.append("</groups>");
 
-            // TODO: Implement rights (part of policy manager)
             sb.append("<rights>");
             String[] rights = pm.getUsecases();
             if (rights != null) {
                 for (int i = 0; i < rights.length; i++) {
                     sb.append("<right id=\"" + rights[i] + "\">" + rights[i] + "</group>");
+                    // TODO: Implement label of right
+                    //sb.append("<right id=\"" + rights[i] + "\">" + pm.getUsecaseLabel(rights[i]) + "</group>");
                 }
             }
-            // TODO: obsolete
-            sb.append("<right id=\"view\">Read</right>");
-            sb.append("<right id=\"write\">Write</right>");
-            sb.append("<right id=\"toolbar\">Toolbar</right>");
             sb.append("</rights>");
         } catch (Exception e) {
             log.error(e, e);
