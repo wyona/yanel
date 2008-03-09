@@ -140,7 +140,7 @@ public class NodeResConfigAndDataRepoImpl implements Node {
     public Node[] getChildren() {
         java.util.Vector c = new java.util.Vector();
         try {
-            if (resRepo.isCollection(path)) {
+            if (resRepo.existsNode(path.toString()) && resRepo.getNode(path.toString()).isCollection()) {
                 log.debug("Is collection within resource config repo: " + path);
                 Path[] children = resRepo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
