@@ -38,6 +38,10 @@
   <menu class="org.wyona.yanel.servlet.menu.impl.DefaultMenu"/>
 -->
 
+<!--
+  <repo-navigation class="org.wyona.yanel.impl.navigation.SitetreeResConfigAndDataRepoImpl"/>
+-->
+
   <!-- Directory where all repositories are being contained. At the moment necessary for copying this realm. WARNING: This doesn't have to be the case, but rather check the various repository configs themselves! TODO: See http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5208 -->
   <root-dir>./.</root-dir>
 </realm-config>
