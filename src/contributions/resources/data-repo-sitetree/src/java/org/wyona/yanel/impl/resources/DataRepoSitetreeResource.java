@@ -106,7 +106,7 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
     private String getNodeAsXML(String path) {
     //private String getNodeAsXML(com.hp.hpl.jena.rdf.model.Resource resource) {
         //log.error("DEBUG: Path: " + path);
-        Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("repo-navigation");
+        Sitetree sitetree = getRealm().getRepoNavigation();
         Node node = sitetree.getNode(getRealm(), path);
         StringBuffer sb = new StringBuffer("");
 
