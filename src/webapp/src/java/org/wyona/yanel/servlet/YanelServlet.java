@@ -2341,9 +2341,9 @@ public class YanelServlet extends HttpServlet {
             String[] rights = pm.getUsecases();
             if (rights != null) {
                 for (int i = 0; i < rights.length; i++) {
-                    sb.append("<right id=\"" + rights[i] + "\">" + rights[i] + "</group>");
+                    sb.append("<right id=\"" + rights[i] + "\">" + rights[i] + "</right>");
                     // TODO: Implement label of right
-                    //sb.append("<right id=\"" + rights[i] + "\">" + pm.getUsecaseLabel(rights[i]) + "</group>");
+                    //sb.append("<right id=\"" + rights[i] + "\">" + pm.getUsecaseLabel(rights[i]) + "</right>");
                 }
             }
             sb.append("</rights>");
