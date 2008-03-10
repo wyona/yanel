@@ -10,12 +10,12 @@
 
 <!-- WARNING: Access Control does not work properly for nested realms (also the mount-point needs to match the id in order to make the access control work properly, e.g. id="zurich" and mount-point="/zurich/")! -->
 <realm id="javadoc" mount-point="/yanel-website/javadoc/">
-  <name>Yanel Javadoc</name>
+  <!--<name>Yanel Javadoc</name>-->
   <config src="@REALMS_DIR@/javadoc/"/>
 </realm>
 
 <realm id="yanel-website" mount-point="/yanel-website/">
-  <name>Yanel Website</name>
+  <!--<name>Yanel Website</name>-->
   <config src="@REALMS_DIR@/yanel-website/"/>
 
 <!--
@@ -65,27 +65,13 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
 </realm>
 -->
 
-<!--
-<realm id="wyona-pictures" mount-point="/wyona-pictures/">
-  <name>Wyona Pictures</name>
-  <config src="PATH/TO/WYONA-PICTURES/yanel-realm-config.xml"/>
-
-  <reverse-proxy>
-    <host-name>www.wyonapictures.com</host-name>
-    <port></port>
-    <ssl-port></ssl-port>
-    <prefix>/yanel/wyona-pictures</prefix>
-  </reverse-proxy>
-</realm>
--->
-
 <realm id="test-cases" mount-point="/test/use-cases/">
-  <name>Use-Cases</name>
+  <!--<name>Use-Cases</name>-->
   <config src="@REALMS_DIR@/use-cases/yanel/config/yanel-realm-config.xml"/>
 </realm>
 
 <realm id="test" mount-point="/test/">
-  <name>Tests</name>
+  <!--<name>Tests</name>-->
   <config src="@REALMS_DIR@/test/yanel/config/yanel-realm-config.xml"/>
 </realm>
 
@@ -93,13 +79,13 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
   NOTE: Don't remove the from-scratch-realm-template. It is needed by yanel to create new realms.
 -->
 <realm id="from-scratch-realm-template" mount-point="/from-scratch-realm/">
-  <name>From Scratch Realm Template</name>
+  <!--<name>From Scratch Realm Template</name>-->
   <config src="@REALMS_DIR@/from-scratch-realm-template/"/>
 </realm>
 
 <!-- ROOT realm -->
 <realm id="welcome" mount-point="/" root="true">
-  <name>Yanel Welcome and General Administration</name>
+  <!--<name>Yanel Welcome and General Administration</name>-->
   <config src="@REALMS_DIR@/welcome-admin/"/>
 </realm>
 
