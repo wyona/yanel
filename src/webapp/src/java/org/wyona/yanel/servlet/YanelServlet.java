@@ -799,8 +799,14 @@ public class YanelServlet extends HttpServlet {
             Resource res = getResource(request, response);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
                 if (((ModifiableV2) res).delete()) {
+                    // TODO: Also delete resource config! What about access policies?!
                     log.debug("Resource has been deleted: " + res);
-                    response.setStatus(response.SC_OK);
+
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(res.getPath());
+                    StringBuffer sb = new StringBuffer("<html><body>Page has been deleted! <a href=\"\">Check</a> or return to <a href=\"" + backToRealm + "\">Homepage</a>.</body></html>");
+                    PrintWriter w = response.getWriter();
+                    w.print(sb);
                     return;
                 } else {
                     log.warn("Resource could not be deleted: " + res);
@@ -2151,7 +2157,7 @@ public class YanelServlet extends HttpServlet {
             log.error("DEBUG: Delete resource (HTTP method delete)");
             usecase = new Usecase("delete");
         } else if (value != null && value.equals("delete")) {
-            log.error("DEBUG: Delete resource (yanel resource usecase delete)");
+            log.info("Delete resource (yanel resource usecase delete)");
             usecase = new Usecase("delete");
         } else if (workflowTransitionValue != null) {
             // TODO: How shall we protect workflow transitions?!
@@ -2295,11 +2301,6 @@ public class YanelServlet extends HttpServlet {
             String path = getResource(request, response).getPath();
             log.warn("Really delete " + path);
             doDelete(request, response);
-            response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
-            String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(path);
-            StringBuffer sb = new StringBuffer("<html><body>Page has been deleted! <a href=\"\">Check</a> or return to <a href=\"" + backToRealm + "\">Homepage</a>.</body></html>");
-            PrintWriter w = response.getWriter();
-            w.print(sb);
             return;
         } else {
             log.warn("Delete has not been confirmed by client yet!");
