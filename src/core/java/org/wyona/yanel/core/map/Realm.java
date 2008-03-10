@@ -270,7 +270,7 @@ public class Realm {
             try {
                 String customRepoNavigationImplClassName = configElement.getAttribute("class");
                 repoNavigation = (Sitetree) Class.forName(customRepoNavigationImplClassName).newInstance();
-                // TODO: Pass custom configuration!
+                repoNavigation.init(ConfigurationUtil.getCustomConfiguration(configElement, "repo-navigation-config", "http://www.wyona.org/yanel/realm/1.0"), new RealmConfigPathResolver(this));
                 log.info("Custom repo navigation implementation will be used for realm: " + getName());
             } catch (ConfigurationException e) {
                 log.error(e, e);
