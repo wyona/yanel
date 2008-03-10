@@ -28,7 +28,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 /**
- * Based on the resource configuration repository and data repository of each realm
+ * Based on DOM, whereas persistance is done through the src configuration, e.g.
+ * <repo-navigation class="org.wyona.yanel.impl.navigation.SitetreeDOMImpl">
+ *   <src>yanelrepo:/sitetree.xml</src>
+ * </repo-navigation>
  */
 public class SitetreeDOMImpl implements Sitetree {
 
