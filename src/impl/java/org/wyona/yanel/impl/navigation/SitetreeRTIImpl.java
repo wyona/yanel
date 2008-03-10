@@ -18,10 +18,13 @@ package org.wyona.yanel.impl.navigation;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.core.map.RealmConfigPathResolver;
 import org.wyona.yanel.core.navigation.Node;
 import org.wyona.yanel.core.navigation.Sitetree;
 
 import org.apache.log4j.Category;
+
+import org.w3c.dom.Document;
 
 /**
  * Based on the RTI of each realm
@@ -29,6 +32,13 @@ import org.apache.log4j.Category;
 public class SitetreeRTIImpl implements Sitetree {
 
     private static Category log = Category.getInstance(SitetreeRTIImpl.class);
+
+    /**
+     *
+     */
+    public void init(Document document, RealmConfigPathResolver resolver) {
+        // Not needed yet.
+    }
 
     /**
      *

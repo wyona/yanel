@@ -18,11 +18,19 @@ package org.wyona.yanel.core.navigation;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.core.map.RealmConfigPathResolver;
+
+import org.w3c.dom.Document;
 
 /**
  *
  */
 public interface Sitetree {
+
+    /**
+     *
+     */
+    public void init(Document document, RealmConfigPathResolver resolver);
 
     /**
      *
