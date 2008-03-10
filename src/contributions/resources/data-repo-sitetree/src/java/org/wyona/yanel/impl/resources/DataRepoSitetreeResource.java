@@ -123,6 +123,7 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
         }
         */
 
+        if (node != null) {
         if (node.isCollection()) {
             sb.append("<collection path=\"" + path + "\" name=\" " + node.getName() + "\">");
             Node[] children = node.getChildren();
@@ -138,6 +139,9 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
             sb.append("</collection>");
         } else {
             sb.append("<resource path=\"" + path + "\" name=\"" + node.getName() + "\"/>");
+        }
+        } else {
+            sb.append("<exception>node is null for path: " + path + "</exception>");
         }
         return sb.toString();
     }
