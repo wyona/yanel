@@ -1,19 +1,35 @@
-<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Realm Configuration</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Realm Configuration<br/></h1>  <ul><li><a href="#name">Name of realm</a><br/></li><li>Access policy manager</li><li>Access identity manager</li><li>Custom web authenticator (optional)<br/></li><li>Default Data/Content repository</li><li>Resource configurations repository</li><li>Default language of realm (optional)<br/></li><li>Languages supported by this realm (optional)<br/></li><li>Language handler (optional)<br/></li><li>Translation manager (optional)<br/></li><li>Additional Yarep based repositories (optional)<br/></li><li><a href="#i18n">I18n configuration of this realm</a> (optional)<br/></li><li>Custom menu implementation (optional)<br/></li><li>Custom repository navigation implemenation (optional)</li></ul><br/>
-<a name="name"/>
-<h2>Name of realm</h2>
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Realm Configuration</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Realm Configuration<br/></h1>  <ul><li><a href="#name">Name of realm</a><br/></li><li>Access policy manager</li><li>Access identity manager</li><li>Custom web authenticator (optional)<br/></li><li>Default Data/Content repository</li><li>Resource configurations repository</li><li>Default language of realm (optional)<br/></li><li>Languages supported by this realm (optional)<br/></li><li>Language handler (optional)<br/></li><li>Translation manager (optional)<br/></li><li>Additional Yarep based repositories (optional)<br/></li><li><a href="#i18n">I18n configuration of this realm</a> (optional)<br/></li><li>Custom menu implementation (optional)<br/></li><li><a href="#repo-navigation">Custom repository navigation implemenation</a> (optional)</li></ul><br/>
+
+
+
+<a name="name">
+</a><h2>Name of realm</h2>
 <p>
 The name of the realm can be configured as follows
 </p>
 <p>
 </p><pre space="preserve">&lt;name&gt;The name of my realm&lt;/name&gt;</pre>
 
-<a name="i18n"/>
+
+
+<a name="i18n">
+</a>
 <h2>I18n configuration</h2>
 <p>
 The i18n catalogue can be configured as follows
 </p>
-<p>
-</p><pre space="preserve">&lt;i18n-catalogue&gt;yanelrepo:/my-i18n-catalogue.xml&lt;/i18n-catalogue&gt;</pre>
+<pre space="preserve">&lt;i18n-catalogue&gt;yanelrepo:/my-i18n-catalogue.xml&lt;/i18n-catalogue&gt;</pre>
 <p>More information on i18n can be found within the <a href="../i18n.html">i18n documentation</a>.</p>
+
+
+<a name="repo-navigation"></a>
+<h2>Custom repository navigation</h2>
+<p>
+The custom repository navigation can be configured as follows
+</p>
+<p><pre space="preserve">&lt;repo-navigation class=&quot;foo.bar.yanel.impl.navigation.CustomSitetreeImpl&quot;&gt;&quot;Custom Configuration&quot;&lt;/repo-navigation&gt;</pre></p>
+
+<p>whereas Yanel is offering various implementations within the package <i>org.wyona.yanel.impl.navigation</i>.</p>
+
 </body>
 </html>
