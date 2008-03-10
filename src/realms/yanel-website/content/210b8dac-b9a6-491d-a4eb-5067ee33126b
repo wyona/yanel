@@ -1,2 +1,14 @@
-<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Realm Configuration</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Realm Configuration<br/></h1>  <ul><li>Name of realm<br/></li><li>Access policy manager</li><li>Access identity manager</li><li>Custom web authenticator (optional)<br/></li><li>Default Data/Content repository</li><li>Resource configurations repository</li><li>Default language of realm (optional)<br/></li><li>Languages supported by this realm (optional)<br/></li><li>Language handler (optional)<br/></li><li>Translation manager (optional)<br/></li><li>Additional Yarep based repositories (optional)<br/></li><li>I18n configuration of this realm (optional)<br/></li><li>Custom menu implementation (optional)<br/></li><li>Custom repository navigation implemenation (optional)</li></ul></body>
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Realm Configuration</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Realm Configuration<br/></h1>  <ul><li>Name of realm<br/></li><li>Access policy manager</li><li>Access identity manager</li><li>Custom web authenticator (optional)<br/></li><li>Default Data/Content repository</li><li>Resource configurations repository</li><li>Default language of realm (optional)<br/></li><li>Languages supported by this realm (optional)<br/></li><li>Language handler (optional)<br/></li><li>Translation manager (optional)<br/></li><li>Additional Yarep based repositories (optional)<br/></li><li><a href="#i18n">I18n configuration of this realm</a> (optional)<br/></li><li>Custom menu implementation (optional)<br/></li><li>Custom repository navigation implemenation (optional)</li></ul><br/>
+
+
+<a name="i18n"></a>
+<h2>I18n configuration</h2>
+<p>
+The i18n catalogue can be configured as follows
+</p>
+<p>
+</p><pre space="preserve">&lt;i18n-catalogue&gt;yanelrepo:/my-i18n-catalogue.xml&lt;/i18n-catalogue&gt;</pre>
+
+<p>More information on i18n can be found within the <a href="../i18n.html">i18n documentation</a>.</p>
+</body>
 </html>
