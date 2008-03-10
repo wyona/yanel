@@ -25,6 +25,7 @@ import org.wyona.yanel.core.navigation.Sitetree;
 import org.apache.log4j.Logger;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 /**
  * Based on the resource configuration repository and data repository of each realm
@@ -33,6 +34,7 @@ public class SitetreeDOMImpl implements Sitetree {
 
     private static Logger log = Logger.getLogger(SitetreeDOMImpl.class);
 
+    // IMPORTANT: Consider memory and redundancy issues!
     private Document sitetreeDoc;
     private String src;
 
@@ -40,7 +42,13 @@ public class SitetreeDOMImpl implements Sitetree {
      * @see
      */
     public void init(Document configDoc, RealmConfigPathResolver resolver) {
-        log.warn("TODO: Reading of configDoc not implemented yet!");
+        NodeList nl = configDoc.getDocumentElement().getElementsByTagName("src");
+        if (nl.getLength() == 1) {
+            src = nl.item(0).getFirstChild().getNodeValue();
+            if(log.isDebugEnabled()) log.debug("src: " + src + ", " + nl.item(0).getNodeName());
+        } else {
+            log.error("Number of elements with tag name \"src\" is not equal one!");
+        }
     }
 
     /**
