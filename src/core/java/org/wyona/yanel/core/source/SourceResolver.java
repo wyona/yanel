@@ -63,6 +63,12 @@ public class SourceResolver implements URIResolver {
             } else if (scheme.equals("http")) {
                 resolver = new HttpResolver(this.resource);
                 this.resolvers.put(scheme, resolver);
+            } else if (scheme.equals("rthtdocs")) {
+                resolver = new RTHtdocsResolver(this.resource);
+                this.resolvers.put(scheme, resolver);
+            } else if (scheme.equals("rtyanelhtdocs")) {
+                resolver = new RTYanelHtdocsResolver(this.resource);
+                this.resolvers.put(scheme, resolver);
             }
         }
         return resolver;
