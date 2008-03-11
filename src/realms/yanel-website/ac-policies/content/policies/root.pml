@@ -18,6 +18,10 @@
     <group id="editor" permission="true"/>
   </role>
 
+  <role id="delete">
+    <group id="editor" permission="true"/>
+  </role>
+
   <role id="toolbar">
     <group id="editor" permission="true"/>
     <group id="reviewer" permission="true"/>
