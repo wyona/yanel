@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -57,6 +58,7 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.navigation.Node;
 import org.wyona.yanel.core.navigation.Sitetree;
 import org.wyona.yanel.core.serialization.SerializerFactory;
+import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.util.DateUtil;
 import org.wyona.yanel.core.workflow.WorkflowException;
@@ -1925,28 +1927,30 @@ public class YanelServlet extends HttpServlet {
             String[] pathPart3 = pathPart2[1].split("/");
             String name = pathPart3[0];
             String namespace = pathPart2[0].replaceAll("http:/", "http://");
-            String htdocsPath;
-            if (pathPart2[1].indexOf("/" + reservedPrefix + "/") >= 0) {
-                htdocsPath = "yanel-htdocs" + path.split("::" + name)[1].split("/" + reservedPrefix)[1].replace('/', File.separatorChar); 
-            } else {
-                htdocsPath = "htdocs" + path.split("::" + name)[1].replace('/', File.separatorChar); 
-            }
             try {
                 java.util.Map properties = new HashMap();
                 Realm realm = yanel.getMap().getRealm(request.getServletPath());
                 ResourceConfiguration rc = new ResourceConfiguration(name, namespace, properties);
                 Resource resourceOfPrefix = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
-                File resourceFile = org.wyona.commons.io.FileUtil.file(resourceOfPrefix.getRTD().getConfigFile().getParentFile().getAbsolutePath(),  htdocsPath);
-
-                if (resourceFile.exists()) {
-                    log.debug("Resource-Type specific data: " + resourceFile);
+                String htdocsPath;
+                if (pathPart2[1].indexOf("/" + reservedPrefix + "/") >= 0) {
+                    htdocsPath =  "rtyanelhtdocs:" + path.split("::" + name)[1].split("/" + reservedPrefix)[1].replace('/', File.separatorChar);
+                } else {
+                    htdocsPath = "rthtdocs:" + path.split("::" + name)[1].replace('/', File.separatorChar); 
+                }
+                SourceResolver resolver = new SourceResolver(resourceOfPrefix);
+                Source source = resolver.resolve(htdocsPath, null);
+                InputStream htodoc = ((StreamSource) source).getInputStream();
+                
+                if (htodoc != null) {
+                        log.debug("Resource-Type specific data: " + htdocsPath);
                     // TODO: Set HTTP header (mime-type, size, etc.)
-                    String mimeType = guessMimeType(FilenameUtils.getExtension(resourceFile.getName()));
+                                String mimeType = guessMimeType(FilenameUtils.getExtension(FilenameUtils.getName(htdocsPath)));
                     response.setHeader("Content-Type", mimeType);
 
                     byte buffer[] = new byte[8192];
                     int bytesRead;
-                    InputStream in = new java.io.FileInputStream(resourceFile);
+                    InputStream in = htodoc;
                     OutputStream out = response.getOutputStream();
                     while ((bytesRead = in.read(buffer)) != -1) {
                         out.write(buffer, 0, bytesRead);
@@ -1957,7 +1961,7 @@ public class YanelServlet extends HttpServlet {
                     }
                     return;
                 } else {
-                    log.error("No such file or directory: " + resourceFile);
+                    log.error("No such file or directory: " + htdocsPath);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
                     return;
                 }
