@@ -10,7 +10,7 @@
     <input message="Please enter the resource-type name (e.g. calendar):" defaultvalue="null" addproperty="new.resource.name"/>
     <input message="Please enter the namespace of this new resource-type (e.g. http://foo.bar/yanel/resource/1.0):" defaultvalue="null" addproperty="new.resource.namespace"/>
     <input message="Please enter a short description of this resource-type:" defaultvalue="null" addproperty="new.resource.description"/>
-    <input message="Please enter java package of this resource-type (e.g. org.wyona.yanel.impl.resources):" defaultvalue="null" addproperty="new.resource.java.class.package"/>
+    <input message="Please enter java package of this resource-type (e.g. org.wyona.yanel.impl.resources.foobar, IMPORTANT: Please make sure that the package name is unique!):" defaultvalue="null" addproperty="new.resource.java.class.package"/>
     <input message="Please enter java class name of this resource-type (e.g. CalendarResource):" defaultvalue="null" addproperty="new.resource.java.class.name"/>
     <input message="Please enter from what template you want to build your java class: " defaultvalue="empty" validargs="empty,xml,usecase,examples" addproperty="new.resource.java.class.template"/>
     
