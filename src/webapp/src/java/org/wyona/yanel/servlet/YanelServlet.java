@@ -2391,19 +2391,23 @@ public class YanelServlet extends HttpServlet {
         org.wyona.security.core.UsecasePolicy[] up = p.getUsecasePolicies();
         if (up != null && up.length > 0) {
             for (int i = 0; i < up.length; i++) {
-                Identity[] ids = up[i].getIdentities();
-                for (int j = 0; j < ids.length; j++) {
-                    if (ids[j].isWorld()) {
+                org.wyona.security.core.IdentityPolicy[] idps = up[i].getIdentityPolicies();
+                for (int j = 0; j < idps.length; j++) {
+                    //log.debug("Usecase Identity Policy: " + up[i].getName() + ", " + idps[j].getIdentity().getUsername() + ", " + idps[j].getPermission());
+
+                    if (idps[j].getIdentity().isWorld()) {
                         world.add(up[i].getName());
                     } else {
                         Vector userRights;
-                        if ((userRights = (Vector) users.get(ids[j].getUsername())) != null) {
-                            log.debug("User has already been added: " + ids[j].getUsername());
+                        if ((userRights = (Vector) users.get(idps[j].getIdentity().getUsername())) != null) {
+                            log.debug("User has already been added: " + idps[j].getIdentity().getUsername());
                         } else {
                             userRights = new Vector();
-                            users.put(ids[j].getUsername(), userRights);
+                            users.put(idps[j].getIdentity().getUsername(), userRights);
                         }
-                        userRights.add(up[i].getName());
+                        if (idps[j].getPermission()) {
+                            userRights.add(up[i].getName());
+                        }
                     }
                 }
             }
@@ -2420,7 +2424,8 @@ public class YanelServlet extends HttpServlet {
             sb.append("<user id=\""+userName+"\">");
             Vector rights = (Vector) users.get(userName);
             for (int k = 0; k < rights.size(); k++) {
-            sb.append("<right id=\"" + (String) rights.elementAt(k) + "\"/>");
+                // TODO: Do not hardcode permission
+                sb.append("<right id=\"" + (String) rights.elementAt(k) + "\" permission=\"true\"/>");
             }
             sb.append("</user>");
         }
@@ -2445,7 +2450,9 @@ public class YanelServlet extends HttpServlet {
                         groupRights = new Vector();
                         groups.put(ids[j].getId(), groupRights);
                     }
-                    groupRights.add(up[i].getName());
+                    if (ids[j].getPermission()) {
+                        groupRights.add(up[i].getName());
+                    }
                 }
             }
         } else {
@@ -2460,7 +2467,8 @@ public class YanelServlet extends HttpServlet {
             sb.append("<group id=\""+userName+"\">");
             Vector rights = (Vector) groups.get(userName);
             for (int k = 0; k < rights.size(); k++) {
-            sb.append("<right id=\"" + (String) rights.elementAt(k) + "\"/>");
+                //TODO: Do not hardcode permission!
+                sb.append("<right id=\"" + (String) rights.elementAt(k) + "\" permission=\"true\"/>");
             }
             sb.append("</group>");
         }
