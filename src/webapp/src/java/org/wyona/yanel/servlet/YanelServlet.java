@@ -2086,7 +2086,7 @@ public class YanelServlet extends HttpServlet {
                 // TODO: Compare If-Modified-Since with lastModified and return 304 without content resp. check on ETag
                 String ifModifiedSince = request.getHeader("If-Modified-Since");
                 if (ifModifiedSince != null) {
-                    log.warn("TODO: Implement 304 ...");
+                    if (log.isDebugEnabled()) log.debug("TODO: Implement 304 ...");
                 }
                 if(lastModified >= 0) response.setDateHeader("Last-Modified", lastModified);
 
