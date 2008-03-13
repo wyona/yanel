@@ -149,8 +149,10 @@ public class Realm {
             IdentityManager identityManager = null;
             try {
             	String customIdentityManagerFactoryImplClassName = repoConfigElement.getAttribute("class");
+                log.debug("Set custom identity manager " + customIdentityManagerFactoryImplClassName + " for realm: " + getName());
             	imFactory = (IdentityManagerFactory) Class.forName(customIdentityManagerFactoryImplClassName).newInstance();
                 identityManager = imFactory.newIdentityManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "identity-manager-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
+                log.debug("Custom identity manager " + identityManager.getClass().getName() + " has been set for realm: " + getName());
             } catch (ConfigurationException e) {
             	imFactory = (IdentityManagerFactory) yanel.getBeanFactory().getBean("IdentityManagerFactory");
             	log.info("Default IdentityManager will be used for realm: " + getName());
