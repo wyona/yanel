@@ -10,28 +10,38 @@
 
 
 <body>
+<div class="instructions">
 <h1>Testing Framework</h1>
 <h3>General information</h3>
-There are two kind of tests:
+There are two kinds of tests:
 <ul>
-<li>junit:    used to test specific functionality of certain java components/classes see <a href="http://junit.org/">http://junit.org/</a></li><li>htmlunit: used to test the web pages (simulating user interaction) see <a href="http://htmlunit.sourceforge.net/">http://htmlunit.sourceforge.net/</a></li></ul>
+<li>junit:    used to test specific functionality of certain java components/classes see <a href="http://junit.org/">http://junit.org/</a></li>
+<li>htmlunit: used to test the web pages (simulating user interaction) see <a href="http://htmlunit.sourceforge.net/">http://htmlunit.sourceforge.net/</a></li>
+</ul>
+
 <h3>How to run the tests</h3>
 <p>
 It's necessary to build yanel before running the tests.
 </p>
+
 <p>
 If you want to run the htmlunit tests, you have to start tomcat and configure
 the host and url in $YANEL_HOME/src/test/htmlunit/default-properties.xml.
 </p>
+
 <p>
 Then execute in $YANEL_HOME: ./build.sh test
 </p>
+
 <p>
 To run single tests standalone:
+<pre>
 cd $YANEL_HOME/src/test
 ant junit -Dtest.class.name=org.wyona.yanel.impl.map.MapImplTest
 ant htmlunit -Dtest.class.name=org.wyona.yanel.htmlunit.yanelwebsite.SimpleWebTest
+</pre>
 </p>
+
 <h3>How to write tests</h3>
 <p>
 Where to place core tests:
@@ -60,5 +70,6 @@ Have a look at the existing tests to see how it works, e.g. in the xml resource.
 <p>
 You can find more example htmlunit tests at: <a href="http://svn.wyona.com/repos/public/lenya/htmlunit/">http://svn.wyona.com/repos/public/lenya/htmlunit/</a> Username:anonymous Password: anonymous.<br/>
 </p>
+</div>
 </body>
 </html>

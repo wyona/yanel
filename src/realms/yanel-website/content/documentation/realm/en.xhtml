@@ -20,7 +20,7 @@ as $YANEL_HOME and $YULUP_WEBSITE .
   <li>Download the Yulup Website from Wyona's repository using subversion:
     <pre>svn --username anonymous --password anonymous co http://svn.wyona.com/repos/public/yulup/website<br/></pre>
   </li>
-  <li>Copy the file $YANEL_HOME/conf/realms.xml to $YANEL_HOME/conf/local/local.realms.xml and add the following entry:
+  <li>Check to see if you have the file $YANEL_HOME/conf/local/local.realms.xml.  If you do not, copy the file $YANEL_HOME/conf/realms.xml to $YANEL_HOME/conf/local/local.realms.xml  <br/></li><li>Add the following entry to $YANEL_HOME/conf/local/local.realms.xml
     <pre>&lt;realm id=&quot;yulup&quot; mount-point=&quot;/yulup/&quot;&gt;<br/>  &lt;name&gt;Yulup Website&lt;/name&gt;<br/>  &lt;config src=&quot;$YULUP_WEBSITE/yanel/config/yanel-realm-config.xml&quot;/&gt;<br/>&lt;/realm&gt;</pre>
     <b>NOTE for Windows users:</b> Also use forward slashes, e.g. 
     <pre>D:/realms/foo/yanel/config/yanel-realm-config.xml<br/></pre>

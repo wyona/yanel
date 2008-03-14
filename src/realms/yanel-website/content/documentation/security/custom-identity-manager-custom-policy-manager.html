@@ -2,11 +2,12 @@
 
 <head>
 
-  <title>CustomI dentityManager, custom PolicyManager and custom WebAuthenticator</title>
+  <title>Custom IdentityManager, custom PolicyManager and custom WebAuthenticator</title>
 
 </head>
 
 <body>
+<div class="instructions">
 <h1>Custom IdentityManager, custom PolicyManager and custom WebAuthenticator</h1>
 <p>The default IdentityManager and PolicyManager implementations are part of the org.wyona.security.impl package, for example YarepIdentityManagerImpl and PolicyManagerImplVersion2.</p>
 <hr/>
@@ -57,6 +58,6 @@ foo.bar.security.impl.PolicyManagerImplVersion2</p>
 <h3>Configuration example: realm.xml</h3>
 <p>
 </p><pre>&lt;web-authenticator class=&quot;foo.bar.yanel.servlet.security.impl.CompanyWebAuthenticatorImpl&quot;&gt;<br/>  &lt;bar:proxyRedirectURI xmlns:bar=&quot;http://www.company.com/wyona/1.0&quot;&gt;http://proxy.bar.foo&lt;/bar:proxyRedirectURI&gt;<br/>  &lt;bar:welcomeRedirectURI xmlns:bar=&quot;http://www.company.com/wyona/1.0&quot;&gt;/welcome.html&lt;/bar:welcomeRedirectURI&gt;<br/>  &lt;bar:lockedRedirectURI xmlns:bar=&quot;http://www.company.com/wyona/1.0&quot;&gt;/userLocked.html&lt;/bar:lockedRedirectURI&gt;<br/>  &lt;bar:expiredRedirectURI xmlns:bar=&quot;http://www.company.com/wyona/1.0&quot;&gt;/login/expired.html&lt;/bar:expiredRedirectURI&gt;<br/>&lt;/web-authenticator&gt;<br/></pre>
-
+</div>
 </body>
 </html>

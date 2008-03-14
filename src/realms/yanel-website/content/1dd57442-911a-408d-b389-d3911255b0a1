@@ -1,3 +1,4 @@
+
 !Create a new resource type from scratch
 
 * ./build.sh new-resource-type
