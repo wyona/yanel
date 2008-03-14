@@ -57,14 +57,9 @@
 </ul>
 </li>
 <li>Yanel Configuration</li><ul><li>conf/yanel.xml</li><li>conf/realms.xml</li><li>conf/resource-types.xml</li><li>conf/spring-yanel-config.xml</li><li>conf/log4j.properties</li><li>conf/CatalogManager.properties (Resolving DTDs, etc.)</li></ul>
-<li>Debugging <br/></li><ul><li>See log files</li><ul><li>Source version: tail -f YANEL_SOURCE/build/logs/*<br/></li><li>Binary version: tail -f webapps/yanel/WEB-INF/classes/logs/*</li></ul></ul><ul><li>Client-Server Communication
-  <ul>
-   <li>java -classpath axis-1_4/lib/axis.jar org.apache.axis.utils.tcpmon</li><li>sudo ngrep -d eth0 &quot;&quot; &quot;port 8080&quot;</li>
-  </ul>
-</li></ul>
-<li>Versioned API</li><li><a href="yanel-toolbar.html">Yanel Toolbar Customization</a></li>
+<li><a href="debugging.html">Debugging</a><br/></li><li><a href="yanel-toolbar.html">Yanel Toolbar Customization</a></li>
 <!-- TODO: Javadoc should be sub-realm of yanel website! -->
-<li><a href="../../javadoc/index.html">Javadoc</a> (To generate the Javadoc run <i>./build.sh javadoc</i> resp. <i>build javadoc</i>)</li>
+<li><a href="../../javadoc/index.html">Javadoc</a> (To generate the Javadoc run <i>./build.sh javadoc</i> resp. <i>build javadoc</i>)</li><ul><li>Versioned API</li></ul>
 <li>Deployment
 <ul>
     <li><a href="deployment/deployment_all_in_one.html">All In One</a></li><li><a href="deployment/deployment-static.html">Serving Content Statically</a></li><li><a href="deployment/deployment-enterprise.html">Enterprise</a> (including Load-Balancer and Tomcat Cluster)<br/></li>
@@ -74,7 +69,7 @@
 </li>
     <li><a href="i18n.html">Yanel and i18n</a></li>
     <li><a href="jmeter.html">JMeter</a></li>
-    <li><a href="testing-framework.html">Yanel Testing Framework</a></li>
+    <li><a href="testing-framework.html">Yanel Testing Framework</a></li><li>Misc</li><ul><li><a shape="rect" href="misc/scalability.html">Scalability</a></li><li><a shape="rect" href="misc/performance.html">Performance</a></li></ul>
 </ul>
 </body>
 </html>
