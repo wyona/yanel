@@ -1525,6 +1525,7 @@ public class YanelServlet extends HttpServlet {
      * Get language with the following priorization: 1) yanel.meta.language query string parameter, 2) Accept-Language header, 3) Default en
      */
     private String getLanguage(HttpServletRequest request) throws Exception {
+        // TODO: Shouldn't this be replaced by Resource.getRequestedLanguage() or Resource.getContentLanguage() ?!
         String language = request.getParameter("yanel.meta.language");
         if (language == null) {
             language = request.getHeader("Accept-Language");
@@ -2218,7 +2219,7 @@ public class YanelServlet extends HttpServlet {
                 if (getXML != null && getXML.equals("identities")) {
                     response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     response.setStatus(response.SC_OK);
-                    sb.append(getIdentitiesAndRightsAsXML(resource.getRealm().getIdentityManager(), resource.getRealm().getPolicyManager()));
+                    sb.append(getIdentitiesAndRightsAsXML(resource.getRealm().getIdentityManager(), resource.getRealm().getPolicyManager(), getLanguage(request)));
                 } else if (getXML != null && getXML.equals("policy")) {
                     response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     response.setStatus(response.SC_OK);
@@ -2319,7 +2320,7 @@ public class YanelServlet extends HttpServlet {
     /**
      *
      */
-    private String getIdentitiesAndRightsAsXML(IdentityManager im, PolicyManager pm) {
+    private String getIdentitiesAndRightsAsXML(IdentityManager im, PolicyManager pm, String language) {
         org.wyona.security.core.api.UserManager um = im.getUserManager();
         org.wyona.security.core.api.GroupManager gm = im.getGroupManager();
 
@@ -2345,8 +2346,7 @@ public class YanelServlet extends HttpServlet {
             String[] rights = pm.getUsecases();
             if (rights != null) {
                 for (int i = 0; i < rights.length; i++) {
-                    // TODO: add requested language
-                    sb.append("<right id=\"" + rights[i] + "\">" + pm.getUsecaseLabel(rights[i], "en") + "</right>");
+                    sb.append("<right id=\"" + rights[i] + "\">" + pm.getUsecaseLabel(rights[i], language) + "</right>");
                 }
             }
             sb.append("</rights>");
