@@ -16,8 +16,6 @@
 
 package org.wyona.yanel.core.navigation;
 
-import org.wyona.yanel.core.Path;
-
 /**
  * Also see org.w3c.dom.Node
  */
