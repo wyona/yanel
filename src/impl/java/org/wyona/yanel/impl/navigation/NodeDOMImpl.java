@@ -27,6 +27,12 @@ public class NodeDOMImpl implements Node {
 
     private static Logger log = Logger.getLogger(NodeDOMImpl.class);
 
+    org.w3c.dom.Element element;
+
+    public NodeDOMImpl(org.w3c.dom.Element element) {
+        this.element = element;
+    }
+
     /**
      * @return new child
      */
