@@ -124,24 +124,26 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
         */
 
         if (node != null) {
-        if (node.isCollection()) {
-            sb.append("<collection path=\"" + path + "\" name=\" " + node.getName() + "\">");
-            Node[] children = node.getChildren();
-            for (int i = 0; i < children.length; i++) {
-                if (children[i].isCollection()) {
-                    sb.append(getNodeAsXML(children[i].getPath()));
-                } else if (children[i].isResource()) {
-                    sb.append("<resource path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
-                } else {
-                    sb.append("<neither-resource-nor-collection path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
+            if (node.isCollection()) {
+                sb.append("<collection path=\"" + path + "\" name=\" " + node.getName() + "\">");
+                Node[] children = node.getChildren();
+                for (int i = 0; i < children.length; i++) {
+                    if (children[i].isCollection()) {
+                        sb.append(getNodeAsXML(children[i].getPath()));
+                    } else if (children[i].isResource()) {
+                        sb.append("<resource path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
+                    } else {
+                        sb.append("<neither-resource-nor-collection path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
+                    }
                 }
+                sb.append("</collection>");
+            } else {
+                sb.append("<resource path=\"" + path + "\" name=\"" + node.getName() + "\"/>");
             }
-            sb.append("</collection>");
         } else {
-            sb.append("<resource path=\"" + path + "\" name=\"" + node.getName() + "\"/>");
-        }
-        } else {
-            sb.append("<exception>node is null for path: " + path + "</exception>");
+            String errorMessage = "node is null for path: " + path;
+            sb.append("<exception>" + errorMessage + "</exception>");
+            log.error(errorMessage);
         }
         return sb.toString();
     }
