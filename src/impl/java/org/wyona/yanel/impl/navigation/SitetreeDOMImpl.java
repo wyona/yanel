@@ -49,6 +49,16 @@ public class SitetreeDOMImpl implements Sitetree {
         if (nl.getLength() == 1) {
             src = nl.item(0).getFirstChild().getNodeValue();
             if(log.isDebugEnabled()) log.debug("src: " + src + ", " + nl.item(0).getNodeName());
+            log.error("DEBUG: src: " + src + ", " + nl.item(0).getNodeName());
+            try {
+                javax.xml.transform.Source source = resolver.resolve(src, null);
+                javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
+                javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
+                sitetreeDoc = parser.parse(new java.io.FileInputStream(source.getSystemId()));
+                //sitetreeDoc = parser.parse(((javax.xml.transform.stream.StreamSource) source).getInputStream());
+            } catch (Exception e) {
+                log.error(e, e);
+            }
         } else {
             log.error("Number of elements with tag name \"src\" is not equal one!");
         }
@@ -58,14 +68,17 @@ public class SitetreeDOMImpl implements Sitetree {
      *
      */
     public Node getSitetreeNode() {
-        return null;
+        return new NodeDOMImpl(sitetreeDoc.getDocumentElement());
     }
 
     /**
      *
      */
     public Node getNode(Realm realm, String path) {
-        return null;
+        log.error("TODO: Implementation not finished yet!");
+        return new NodeDOMImpl(sitetreeDoc.getDocumentElement());
+
+
 /*
         org.wyona.yarep.core.Repository resConfigRepo = null;
         org.wyona.yarep.core.Repository dataRepo = null;
