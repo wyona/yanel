@@ -41,7 +41,7 @@ import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -49,6 +49,8 @@ import org.apache.log4j.Category;
 public class RealmConfigPathResolver implements javax.xml.transform.URIResolver {
 
     private File realmConfigFile;
+
+    private static Logger log = Logger.getLogger(RealmConfigPathResolver.class);
 
     /**
      *
