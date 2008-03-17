@@ -14,8 +14,8 @@
   <xsl:param name="user-profile-language" select="'IS_NULL'"/>
   <xsl:param name="expiration-date" select="'IS_NULL'"/>
   <xsl:param name="description" select="'TODO'"/>
-  <xsl:param name="userGroupsString" select="''"/>
-  <xsl:param name="allGroupsString" select="''"/>
+  <xsl:param name="userGroupsString" select="'IS_NULL'"/>
+  <xsl:param name="allGroupsString" select="'IS_NULL'"/>
   <xsl:param name="success" select="''"/>
   <xsl:param name="error" select="''"/>
   <xsl:param name="deletion" select="'false'"/>
@@ -115,6 +115,12 @@
         </table>
       </p>
     </form>
+
+    <h2>Groups</h2>
+    Groups which this user belongs to: <xsl:value-of select="$userGroupsString"/>
+    <br/>
+    All groups of this realm: <xsl:value-of select="$allGroupsString"/>
+
 
 <!-- TODO: Is this actually working? -->
 <!--
