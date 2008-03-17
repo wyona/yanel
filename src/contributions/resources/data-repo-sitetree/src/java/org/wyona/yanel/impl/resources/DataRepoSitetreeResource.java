@@ -89,7 +89,12 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
      */
     private String getSitetreeAsXML() {
         StringBuffer sb = new StringBuffer("<sitetree>");
-        sb.append(getNodeAsXML("/"));
+        if (getRequest().getParameter("path") != null) {
+            sb.append(getNodeAsXML(request.getParameter("path")));
+        } else {
+            sb.append(getNodeAsXML("/"));
+        }
+
         // TODO: Sitetree generated out of RDF resources and statements
         /*
         com.hp.hpl.jena.rdf.model.Resource rootResource = getRealm().getSitetreeRootResource();
