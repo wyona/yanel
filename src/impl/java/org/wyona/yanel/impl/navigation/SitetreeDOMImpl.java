@@ -76,26 +76,63 @@ public class SitetreeDOMImpl implements Sitetree {
      */
     public Node getNode(Realm realm, String path) {
         log.error("TODO: Implementation not finished yet!");
-        return new NodeDOMImpl(sitetreeDoc.getDocumentElement());
-
-
-/*
-        org.wyona.yarep.core.Repository resConfigRepo = null;
-        org.wyona.yarep.core.Repository dataRepo = null;
         try {
-            resConfigRepo = realm.getRTIRepository();
-            dataRepo = realm.getRepository();
+            if (path.equals("/")) {
+                return new NodeDOMImpl(sitetreeDoc.getDocumentElement());
+            } else if (path.startsWith("/") && path.length() > 1) {
+                return new NodeDOMImpl(getElement(sitetreeDoc.getDocumentElement(), path));
+            } else {
+                log.error("Path is not valid: " + path);
+                return null;
+            }
         } catch(Exception e) {
             log.error(e);
+            return null;
         }
-        return new NodeResConfigAndDataRepoImpl(resConfigRepo, dataRepo, path);
-*/
     }
 
     /**
      *
      */
     public Node createNode(String name) {
+        log.error("TODO: Implementation not finished yet!");
         return null;
+    }
+
+    /**
+     * @param parent Parent element
+     * @param path Subtree path
+     */
+    private org.w3c.dom.Element getElement(org.w3c.dom.Element parent, String path) throws Exception {
+       String[] names = path.split("/");
+       log.error("DEBUG: Path: " + path);
+       log.error("DEBUG: Length: " + names.length);
+
+       String childPath = null;
+       String subtreePath = null;
+       if (names.length > 1) {
+           childPath = names[1];
+           log.error("DEBUG: Child: " + childPath);
+           if (names.length > 2) {
+               subtreePath = "/" + names[2];
+               for (int i = 3; i < names.length; i++) {
+                   subtreePath = subtreePath + "/" + names[i];
+               }
+               log.error("DEBUG: Subtree path: " + subtreePath);
+           } else {
+               log.error("DEBUG: No subtree.");
+           }
+       } else {
+           log.error("DEBUG: The end: " + path);
+       }
+
+       if (childPath != null) {
+           if (subtreePath != null) {
+               return getElement(parent, subtreePath);
+           }
+           return sitetreeDoc.getDocumentElement();
+       } else {
+           return sitetreeDoc.getDocumentElement();
+       }
     }
 }
