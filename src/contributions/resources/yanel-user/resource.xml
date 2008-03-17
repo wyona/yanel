@@ -10,8 +10,6 @@ User management interface
 </description>
 
 <rtd>
-<!--
-  <property name="foo" default-value="bar"/>
--->
+  <property name="user"/>
 </rtd>
 </resource>
