@@ -100,13 +100,21 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getViewDescriptors()
      */
     public ViewDescriptor[] getViewDescriptors() {
-        return null;
+        ViewDescriptor[] vd = new ViewDescriptor[2];
+        vd[0] = new ViewDescriptor("default");
+        vd[0].setMimeType(getMimeType(null));
+        vd[1] = new ViewDescriptor("xml");
+        vd[1].setMimeType(getMimeType("xml"));
+        return vd;
     }
 
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getMimeType(java.lang.String)
      */
     public String getMimeType(String viewId) {
+        if (viewId != null) {
+            if (viewId.equals("xml")) return "application/xml";
+        }
         return MIME_TYPE;
     }
 
@@ -121,13 +129,11 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
     public View getView(String viewId) throws Exception {
 
         View defaultView = new View();
-        File xslFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile()
-                .getAbsolutePath(), "xslt" + File.separator + "yanel-user-profile.xsl");
-        File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile()
-                .getAbsolutePath(), "xml" + File.separator + "yanel-user-profile.xml");
+        File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "yanel-user-profile.xml");
 
         try {
 
+            File xslFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "yanel-user-profile.xsl");
             Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xslFile));
 
             String action = determineAction(request);
@@ -194,11 +200,14 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
                 }
                 transformer.setParameter("allGroupsString", allGroupsString);
             }
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            transformer.transform(new javax.xml.transform.stream.StreamSource(xmlFile), new StreamResult(baos));
-
-            defaultView.setMimeType(MIME_TYPE);
-            defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+            defaultView.setMimeType(getMimeType(viewId));
+            if (viewId != null && viewId.equals("xml")) {
+                defaultView.setInputStream(new java.io.FileInputStream(xmlFile));
+            } else {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                transformer.transform(new javax.xml.transform.stream.StreamSource(xmlFile), new StreamResult(baos));
+                defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+            }
         } catch (Exception e) {
             // TODO: Improve exception handling
             log.error(e.getMessage(), e);
