@@ -86,18 +86,23 @@ public class ResourceManager {
 
         if (rtd != null) {
             String universalName = rtd.getResourceTypeUniversalName();
-            Resource resource = (Resource) Class.forName(rtd.getResourceTypeClassname()).newInstance();
+            try {
+                Resource resource = (Resource) Class.forName(rtd.getResourceTypeClassname()).newInstance();
 
-            resource.setRTD(rtd);
-            resource.setYanel(Yanel.getInstance());
-            resource.setRealm(realm);
-            resource.setPath(path);
-            resource.setConfiguration(rc);
-            resource.setEnvironment(environment);
+                resource.setRTD(rtd);
+                resource.setYanel(Yanel.getInstance());
+                resource.setRealm(realm);
+                resource.setPath(path);
+                resource.setConfiguration(rc);
+                resource.setEnvironment(environment);
             
-            passParameters(resource, environment.getRequest());
+                passParameters(resource, environment.getRequest());
             
-            return resource;
+                return resource;
+            } catch (ClassNotFoundException e) {
+                log.error("Resource class not found for " + rtd.getResourceTypeUniversalName());
+                throw e;
+            }
         } else {
             log.error("Resource Type Definition cannot be determined for: " + realm + ", " + path + ", " + rc.getUniversalName());
             return null;
