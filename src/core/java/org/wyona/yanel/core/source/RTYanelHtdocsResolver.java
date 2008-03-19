@@ -33,6 +33,9 @@ public class RTYanelHtdocsResolver implements URIResolver {
         this.resource = resource;
     }
 
+    /**
+     *
+     */
     public Source resolve(String href, String base) throws SourceException {
         String prefix = SCHEME + ":";
         // only accept 'rtyanelhtdocs:' URIs
@@ -51,15 +54,20 @@ public class RTYanelHtdocsResolver implements URIResolver {
             if (log.isDebugEnabled()) {
                 log.debug("Package: " + packageName);
             }
-            InputStream in = resource.getClass().getClassLoader().getResource(packageName.replace('.','/') + "/yanel-htdocs" + path).openStream();
-            return new StreamSource(in);
+            java.net.URL url = resource.getClass().getClassLoader().getResource(packageName.replace('.','/') + "/yanel-htdocs" + path);
+            if (url == null) {
+                log.info("Path " + path + " does not seem to be contained within package " + packageName + " of resource " + resource.getResourceTypeUniversalName());
+            }
+            return new StreamSource(url.openStream());
         } catch (Exception e) {
+            File resourceConfigDir = resource.getRTD().getConfigFile().getParentFile();
+            log.info("Fallback to resource config location: " + resourceConfigDir);
             try {
-                File resourceFile = new File(resource.getRTD().getConfigFile().getParentFile().getAbsolutePath() + "/yanel-htdocs" + path.replace('/', File.separatorChar));
+                File resourceFile = new File(resourceConfigDir.getAbsolutePath() + "/yanel-htdocs" + path.replace('/', File.separatorChar));
                 InputStream in = new java.io.FileInputStream(resourceFile);
                 return new StreamSource(in);
             } catch (Exception ex) {
-                String errorMsg = "Could not resolve URI: " + path + ": " + e.toString();
+                String errorMsg = "Could not resolve URI: " + path + " (" + e.toString() + ", " + resourceConfigDir + ")";
                 log.error(errorMsg, e);
                 throw new SourceException(errorMsg, e);
             }
