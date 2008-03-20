@@ -6,7 +6,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -35,7 +35,7 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class I18nTransformer2 extends AbstractTransformer {
 
-    private static Category log = Category.getInstance(I18nTransformer2.class);
+    private static Logger log = Logger.getLogger(I18nTransformer2.class);
     private ResourceBundle[] messageBundles;
     private boolean insideI18n;
     private String key;
