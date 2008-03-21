@@ -27,7 +27,8 @@ public class AccessControlTransformer extends AbstractTransformer {
     private StringBuffer textBuffer;
 
     private String parentElementName;
-    private String href;
+    private Attributes parentAttrs;
+    private Attributes anchorAttrs;
 
     public static final String NS_XHTML_URI = "http://www.w3.org/1999/xhtml";
     
@@ -55,19 +56,21 @@ public class AccessControlTransformer extends AbstractTransformer {
 
         if (insideParentElement && isAnchorElement(namespaceURI, localName, qName)) {
             this.insideAnchor = true;
-            log.error("DEBUG: Inside a 'a' element which is inside parent element '" + parentElementName + "'!");
-            href = attrs.getValue("href");
+            //log.debug("Inside a 'a' element which is inside parent element '" + parentElementName + "'!");
+            anchorAttrs = new AttributesImpl(attrs);
+
+            String href = attrs.getValue("href");
             String path = href;
             if (path.startsWith("../")) {
                 path = path.substring(path.lastIndexOf("../") + 2);
             }
             if (path.startsWith("/")) {
-                log.error("DEBUG: Check authorization for: " + path + ", " + identity + ", " + usecase);
+                //log.debug("Check authorization for: " + path + ", " + identity + ", " + usecase);
                 try {
                     if (policyManager.authorize(path, identity, usecase)) {
-                        log.error("DEBUG: Access granted for " + identity + ", " + usecase + ", " + path);
+                        //log.debug("Access granted for " + identity + ", " + usecase + ", " + path);
                     } else {
-                        log.error("DEBUG: Access denied for " + identity + ", " + usecase + ", " + path);
+                        //log.debug("Access denied for " + identity + ", " + usecase + ", " + path);
                         accessGranted = false;
                     }
                 } catch (Exception e) {
@@ -81,10 +84,12 @@ public class AccessControlTransformer extends AbstractTransformer {
 
         if (isParentElement(namespaceURI, localName, qName)) {
             this.insideParentElement = true;
+            parentAttrs = new AttributesImpl(attrs);
+
             textBuffer = new StringBuffer();
-            log.error("DEBUG: Entering '" + parentElementName + "' element!");
+            //log.debug("Entering '" + parentElementName + "' element!");
         } else if (insideParentElement) {
-            log.error("DEBUG: Add to buffer start of: " + localName);
+            //log.debug("Add to buffer start of: " + localName);
         } else {
             super.startElement(namespaceURI, localName, qName, attrs);
         }
@@ -96,36 +101,27 @@ public class AccessControlTransformer extends AbstractTransformer {
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         if (isAnchorElement(namespaceURI, localName, qName)) {
             this.insideAnchor = false;
-            log.error("DEBUG: Leaving 'a' element!");
+            //log.debug("Leaving 'a' element!");
         }
 
         if (isParentElement(namespaceURI, localName, qName)) {
             this.insideParentElement = false;
             if (accessGranted) {
-                log.error("DEBUG: Do copy parent element: " + textBuffer);
+                //log.debug("Do copy parent element: " + textBuffer);
 
-                AttributesImpl newParentAttrs = new AttributesImpl();
-                // TODO: Do not hardcode attributes
-                newParentAttrs.addAttribute(NS_XHTML_URI, "class", "class", null, "active");
-                super.startElement(NS_XHTML_URI, parentElementName, parentElementName, newParentAttrs);
-
-                AttributesImpl newAnchorAttrs = new AttributesImpl();
-                // TODO: Do not hardcode attributes
-                newAnchorAttrs.addAttribute(NS_XHTML_URI, "onfocus", "onfocus", null, "this.blur()");
-                newAnchorAttrs.addAttribute(NS_XHTML_URI, "href", "href", null, href);
-                super.startElement(NS_XHTML_URI, "a", "a", newAnchorAttrs);
-
+                super.startElement(NS_XHTML_URI, parentElementName, parentElementName, parentAttrs);
+                super.startElement(NS_XHTML_URI, "a", "a", anchorAttrs);
                 char[] characters = textBuffer.toString().toCharArray();
                 super.characters(characters, 0, characters.length);
                 super.endElement(NS_XHTML_URI, "a", "a");
                 super.endElement(NS_XHTML_URI, parentElementName, parentElementName);
             } else {
-                log.error("DEBUG: Do NOT copy parent element: " + textBuffer);
+                //log.debug("Do NOT copy parent element: " + textBuffer);
             }
             accessGranted = true;
-            log.error("DEBUG: Leaving '" + parentElementName + "' element!");
+            //log.debug("Leaving '" + parentElementName + "' element!");
         } else if (insideParentElement) {
-            log.error("DEBUG: Add to buffer end of: " + localName);
+            //log.debug("Add to buffer end of: " + localName);
         } else {
             super.endElement(namespaceURI, localName, qName);
         }
