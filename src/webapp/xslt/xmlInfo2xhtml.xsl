@@ -230,7 +230,7 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
         <xsl:if test="@yanel:status"><li>Status: <xsl:value-of select="@yanel:status"/></li></xsl:if>
         <li>Error Message: 
           <ul>
-            <li><xsl:value-of select="."/></li>
+            <li><pre><xsl:value-of select="."/></pre></li>
           </ul>
         </li>
       </ul>

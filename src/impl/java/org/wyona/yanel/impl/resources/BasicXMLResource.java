@@ -19,6 +19,8 @@ package org.wyona.yanel.impl.resources;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -38,6 +40,7 @@ import org.apache.avalon.framework.configuration.ConfigurationUtil;
 import org.apache.log4j.Logger;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
+import org.apache.xml.utils.ListingErrorHandler;
 import org.w3c.dom.Document;
 import org.wyona.commons.io.MimeTypeUtil;
 import org.wyona.security.core.api.Identity;
@@ -221,6 +224,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         String mimeType = getMimeType(viewId);
         view.setMimeType(mimeType);
 
+        StringWriter errorWriter = new StringWriter();
         try {
             Repository repo = getRealm().getRepository();
 
@@ -236,10 +240,12 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             xmlReader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
 
             SourceResolver uriResolver = new SourceResolver(this);
-            
+            ListingErrorHandler errorListener = new ListingErrorHandler(new PrintWriter(errorWriter));
+
             // create xslt transformer:
             SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
             tf.setURIResolver(uriResolver);
+            tf.setErrorListener(errorListener);
 
             String[] xsltPaths = viewDescriptor.getXSLTPaths();
             if (xsltPaths == null || xsltPaths.length == 0) {
@@ -250,6 +256,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             for (int i = 0; i < xsltPaths.length; i++) {
                 xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPaths[i]).getInputStream()));
                 xsltHandlers[i].getTransformer().setURIResolver(uriResolver);
+                xsltHandlers[i].getTransformer().setErrorListener(errorListener);
                 passTransformerParameters(xsltHandlers[i].getTransformer());
             }
 
@@ -288,7 +295,15 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             return view;
         } catch(Exception e) {
             log.error(e + " (" + getPath() + ", " + getRealm() + ")", e);
-            throw new Exception(e);
+            String errorMsg;
+            String transformationError = errorWriter.toString();
+            if (transformationError != null) {
+                errorMsg = "Transformation error:\n" + transformationError; 
+                log.error(errorMsg);
+            } else {
+                errorMsg = e.getMessage();
+            }
+            throw new Exception(errorMsg);
         }
 
     }
