@@ -33,14 +33,14 @@ public class AccessControlTransformer extends AbstractTransformer {
     public static final String NS_XHTML_URI = "http://www.w3.org/1999/xhtml";
     
     /**
-     *
+     * @parentElementName Element name of parent, for example "li" or "p" which can contain anchors
      */
-    public AccessControlTransformer(PolicyManager pm, Identity identity, Usecase usecase, String messages, String language, String defaultLanguage) {
+    public AccessControlTransformer(String parentElementName, PolicyManager pm, Identity identity, Usecase usecase, String messages, String language, String defaultLanguage) {
         this.policyManager = pm;
         this.identity = identity;
         this.usecase = usecase;
 
-        parentElementName = "li";
+        this.parentElementName = parentElementName;
 
         insideParentElement = false;
         insideAnchor = false;
