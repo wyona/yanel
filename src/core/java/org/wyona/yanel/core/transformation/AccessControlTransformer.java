@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.PolicyManager;
@@ -20,8 +21,13 @@ public class AccessControlTransformer extends AbstractTransformer {
     private Identity identity;
     private Usecase usecase;
 
-    private boolean insideLi;
-    private boolean insideA;
+    private boolean insideParentElement;
+    private boolean insideAnchor;
+    private boolean accessGranted;
+    private StringBuffer textBuffer;
+
+    private String parentElementName;
+    private String href;
 
     public static final String NS_XHTML_URI = "http://www.w3.org/1999/xhtml";
     
@@ -32,48 +38,97 @@ public class AccessControlTransformer extends AbstractTransformer {
         this.policyManager = pm;
         this.identity = identity;
         this.usecase = usecase;
+
+        parentElementName = "li";
+
+        insideParentElement = false;
+        insideAnchor = false;
+
+        accessGranted = true;
     }
 
     /**
      *
      */
     public void startElement(String namespaceURI, String localName, String qName, Attributes attrs) throws SAXException {
-        log.error("DEBUG: name: " + localName + ", " + qName);
-        if (isLiElement(namespaceURI, localName, qName)) {
-            this.insideLi = true;
-            log.error("DEBUG: Inside a 'li' element!");
-        }
-        if (isAElement(namespaceURI, localName, qName)) {
-            this.insideA = true;
-            log.error("DEBUG: Inside a 'a' element!");
-            String href = attrs.getValue("href");
-            if (href.startsWith("../")) {
-                href = href.substring(href.lastIndexOf("../") + 2);
+        //log.debug("Element name: " + localName + ", " + qName);
+
+        if (insideParentElement && isAnchorElement(namespaceURI, localName, qName)) {
+            this.insideAnchor = true;
+            log.error("DEBUG: Inside a 'a' element which is inside parent element '" + parentElementName + "'!");
+            href = attrs.getValue("href");
+            String path = href;
+            if (path.startsWith("../")) {
+                path = path.substring(path.lastIndexOf("../") + 2);
             }
-            if (href.startsWith("/")) {
-                log.error("DEBUG: Check authorization for: " + href + ", " + identity + ", " + usecase);
+            if (path.startsWith("/")) {
+                log.error("DEBUG: Check authorization for: " + path + ", " + identity + ", " + usecase);
                 try {
-                    if (policyManager.authorize(href, identity, usecase)) {
-                        log.error("DEBUG: Access granted for " + identity + ", " + usecase + ", " + href);
+                    if (policyManager.authorize(path, identity, usecase)) {
+                        log.error("DEBUG: Access granted for " + identity + ", " + usecase + ", " + path);
                     } else {
-                        log.error("DEBUG: Access denied for " + identity + ", " + usecase + ", " + href);
+                        log.error("DEBUG: Access denied for " + identity + ", " + usecase + ", " + path);
+                        accessGranted = false;
                     }
                 } catch (Exception e) {
                     log.error(e, e);
                 }
             } else {
-                log.warn("href does not start with '/': " + href);
+                log.warn("Path does not start with '/': " + path);
             }
         }
 
-        super.startElement(namespaceURI, localName, qName, attrs);
+
+        if (isParentElement(namespaceURI, localName, qName)) {
+            this.insideParentElement = true;
+            textBuffer = new StringBuffer();
+            log.error("DEBUG: Entering '" + parentElementName + "' element!");
+        } else if (insideParentElement) {
+            log.error("DEBUG: Add to buffer start of: " + localName);
+        } else {
+            super.startElement(namespaceURI, localName, qName, attrs);
+        }
     }
 
     /**
      *
      */
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-        super.endElement(namespaceURI, localName, qName);
+        if (isAnchorElement(namespaceURI, localName, qName)) {
+            this.insideAnchor = false;
+            log.error("DEBUG: Leaving 'a' element!");
+        }
+
+        if (isParentElement(namespaceURI, localName, qName)) {
+            this.insideParentElement = false;
+            if (accessGranted) {
+                log.error("DEBUG: Do copy parent element: " + textBuffer);
+
+                AttributesImpl newParentAttrs = new AttributesImpl();
+                // TODO: Do not hardcode attributes
+                newParentAttrs.addAttribute(NS_XHTML_URI, "class", "class", null, "active");
+                super.startElement(NS_XHTML_URI, parentElementName, parentElementName, newParentAttrs);
+
+                AttributesImpl newAnchorAttrs = new AttributesImpl();
+                // TODO: Do not hardcode attributes
+                newAnchorAttrs.addAttribute(NS_XHTML_URI, "onfocus", "onfocus", null, "this.blur()");
+                newAnchorAttrs.addAttribute(NS_XHTML_URI, "href", "href", null, href);
+                super.startElement(NS_XHTML_URI, "a", "a", newAnchorAttrs);
+
+                char[] characters = textBuffer.toString().toCharArray();
+                super.characters(characters, 0, characters.length);
+                super.endElement(NS_XHTML_URI, "a", "a");
+                super.endElement(NS_XHTML_URI, parentElementName, parentElementName);
+            } else {
+                log.error("DEBUG: Do NOT copy parent element: " + textBuffer);
+            }
+            accessGranted = true;
+            log.error("DEBUG: Leaving '" + parentElementName + "' element!");
+        } else if (insideParentElement) {
+            log.error("DEBUG: Add to buffer end of: " + localName);
+        } else {
+            super.endElement(namespaceURI, localName, qName);
+        }
     }
     
     /**
@@ -83,8 +138,8 @@ public class AccessControlTransformer extends AbstractTransformer {
      * @param qName
      * @return true if the element is a "li" element
      */
-    protected boolean isLiElement(String namespaceURI, String localName, String qName) {
-        if (namespaceURI.equals(NS_XHTML_URI) && localName.equals("li")) {
+    protected boolean isParentElement(String namespaceURI, String localName, String qName) {
+        if (namespaceURI.equals(NS_XHTML_URI) && localName.equals(parentElementName)) {
             return true;
         } else {
             return false;
@@ -98,7 +153,7 @@ public class AccessControlTransformer extends AbstractTransformer {
      * @param qName
      * @return true if the element is a "a" element
      */
-    protected boolean isAElement(String namespaceURI, String localName, String qName) {
+    protected boolean isAnchorElement(String namespaceURI, String localName, String qName) {
         if (namespaceURI.equals(NS_XHTML_URI) && localName.equals("a")) {
             return true;
         } else {
@@ -110,6 +165,10 @@ public class AccessControlTransformer extends AbstractTransformer {
      *
      */
     public void characters(char[] buf, int offset, int len) throws SAXException {
-        super.characters(buf, offset, len);
+        if (insideParentElement) {
+            this.textBuffer.append(buf, offset, len);
+        } else {
+            super.characters(buf, offset, len);
+        }
     }
 }
