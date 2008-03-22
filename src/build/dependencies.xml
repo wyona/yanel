@@ -107,6 +107,7 @@
     <property name="maven2.cp" refid="maven2.classpath"/>
     <property name="maven2.compile.cp" refid="maven2.compile.classpath"/>
     <!--<echo>Maven2 classpath: ${maven2.cp}</echo>-->
+    <!--<echo>Maven2 compile classpath: ${maven2.compile.cp}</echo>-->
 
   </target>
 
