@@ -283,6 +283,21 @@
     </path>
   </target>
 
+  <target name="set-javadoc-classpath" description="Set javadoc classpath" depends="init, dependencies">
+    <path id="classpath.javadoc">
+      <pathelement path="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
+
+      <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib">
+        <include name="*.jar"/>
+      </fileset>
+
+      <pathelement path="${maven2.cp}"/>
+      <pathelement path="${maven2.compile.cp}"/>
+    </path>
+    <property name="javadoc.cp" refid="classpath.javadoc"/>
+    <echo>INFO: Classpath to generate Javadoc: ${javadoc.cp}</echo>
+  </target>
+
   <target name="init-runtime" description="Initialize all parameters and other settings for runtime" depends="init, dependencies">
 <!--
   <target name="init-runtime" description="Initialize all parameters and other settings for runtime" depends="webapp">
@@ -303,22 +318,8 @@
     </path>
     <property name="run.cp" refid="classpath.run.cmdl"/>
 <!--
-    <echo>Classpath to run yanel: ${run.cp}</echo>
+    <echo>Classpath to run yanel cmdl: ${run.cp}</echo>
 -->
-
-    <path id="classpath.javadoc">
-      <!-- Properties files -->
-      <pathelement path="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
-
-      <!-- All from source generated libs -->
-      <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib">
-        <include name="*.jar"/>
-      </fileset>
-
-      <!-- All external dependencies -->
-      <pathelement path="${maven2.cp}"/>
-      <pathelement path="${maven2.compile.cp}"/>
-    </path>
   </target>
 
   <target name="compile-core" description="Compile Java classes of Yanel core" depends="init, set-classpath">
