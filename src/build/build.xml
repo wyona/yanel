@@ -283,12 +283,12 @@
     </path>
   </target>
 
-  <target name="init-runtime" description="Initialize all parameters and other settings for runtime" depends="init">
+  <target name="init-runtime" description="Initialize all parameters and other settings for runtime" depends="init, dependencies">
 <!--
   <target name="init-runtime" description="Initialize all parameters and other settings for runtime" depends="webapp">
 -->
 
-    <path id="classpath.run">
+    <path id="classpath.run.cmdl">
       <!-- Properties files -->
       <pathelement path="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
 
@@ -298,11 +298,10 @@
       </fileset>
 
       <!-- All external dependencies -->
-      <!--
       <pathelement path="${maven2.cp}"/>
-      -->
+      <pathelement path="${maven2.compile.cp}"/>
     </path>
-    <property name="run.cp" refid="classpath.run"/>
+    <property name="run.cp" refid="classpath.run.cmdl"/>
 <!--
     <echo>Classpath to run yanel: ${run.cp}</echo>
 -->
@@ -948,7 +947,7 @@
     </exec>
     -->
     <java classname="org.wyona.yanel.cmdl.YanelCommandLine">
-      <classpath refid="classpath.run"/>
+      <classpath refid="classpath.run.cmdl"/>
       <arg value="${yanel.path}"/>
       <!-- On Linux, Java 1.4.2 needs this sysproperty whereas on Mac OS X it doesn't seem to be necessary -->
       <sysproperty key="org.xml.sax.driver" value="org.apache.xerces.parsers.SAXParser"/>
