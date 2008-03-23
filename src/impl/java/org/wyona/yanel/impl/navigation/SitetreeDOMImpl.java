@@ -125,7 +125,7 @@ public class SitetreeDOMImpl implements Sitetree {
                for (int i = 3; i < names.length; i++) {
                    subtreePath = subtreePath + "/" + names[i];
                }
-               //log.debug("Subtree path: " + subtreePath);
+               log.debug("Subtree path: " + subtreePath);
            } else {
                //log.debug("No subtree.");
            }
@@ -145,8 +145,8 @@ public class SitetreeDOMImpl implements Sitetree {
            }
            if (child != null) {
                if (subtreePath != null) {
-                   //log.debug("Subtree path: " + subtreePath);
-                   return getElement(parent, subtreePath);
+                   log.debug("Subtree path: " + subtreePath);
+                   return getElement(child, subtreePath);
                }
                return child;
            } else {
