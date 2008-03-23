@@ -83,16 +83,24 @@ public class NodeDOMImpl implements Node {
      *
      */
     public boolean isCollection() {
-        log.error("TODO: Implementation not finished yet!");
-        return false;
+        org.w3c.dom.NodeList nl = element.getElementsByTagName("node");
+        if (nl.getLength() > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
      *
      */
     public Node[] getChildren() {
-        log.error("TODO: Implementation not finished yet!");
-        return null;
+        org.w3c.dom.NodeList nl = element.getElementsByTagName("node");
+        NodeDOMImpl[] nodes = new NodeDOMImpl[nl.getLength()];
+        for (int i = 0; i < nodes.length; i++) {
+            nodes[i] = new NodeDOMImpl((org.w3c.dom.Element) nl.item(i));
+        }
+        return nodes;
     }
 
     /**
@@ -128,10 +136,22 @@ public class NodeDOMImpl implements Node {
     }
 
     /**
-     *
+     * @see
      */
     public String getName() {
-        log.error("TODO: Implementation not finished yet!");
-        return null;
+        if (element.getNodeName().equals("sitetree")) {
+            log.warn("Sitetree node has no name");
+        }
+        return element.getAttribute("name");
+    }
+
+    /**
+     * @see
+     */
+    public String getLabel() {
+        if (element.getNodeName().equals("sitetree")) {
+            log.warn("Sitetree node has no label");
+        }
+        return element.getElementsByTagName("label").item(0).getFirstChild().getNodeValue();
     }
 }

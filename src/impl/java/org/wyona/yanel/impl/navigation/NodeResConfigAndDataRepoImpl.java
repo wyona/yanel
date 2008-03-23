@@ -230,4 +230,11 @@ public class NodeResConfigAndDataRepoImpl implements Node {
     public String getName() {
         return path.getName();
     }
+
+    /**
+     * @see
+     */
+    public String getLabel() {
+        return getName();
+    }
 }
