@@ -84,4 +84,9 @@ public interface Node {
      *
      */
     public String getName();
+
+    /**
+     *
+     */
+    public String getLabel();
 }
