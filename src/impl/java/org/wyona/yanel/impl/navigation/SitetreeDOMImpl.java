@@ -25,6 +25,7 @@ import org.wyona.yanel.core.navigation.Sitetree;
 import org.apache.log4j.Logger;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
@@ -75,12 +76,18 @@ public class SitetreeDOMImpl implements Sitetree {
      *
      */
     public Node getNode(Realm realm, String path) {
-        log.error("TODO: Implementation not finished yet!");
+        //log.debug("Path: " + path);
         try {
             if (path.equals("/")) {
                 return new NodeDOMImpl(sitetreeDoc.getDocumentElement());
             } else if (path.startsWith("/") && path.length() > 1) {
-                return new NodeDOMImpl(getElement(sitetreeDoc.getDocumentElement(), path));
+                Element element = getElement(sitetreeDoc.getDocumentElement(), path);
+                if (element != null) {
+                    return new NodeDOMImpl(element);
+                } else {
+                    log.error("No node for path: " + path);
+                    return null;
+                }
             } else {
                 log.error("Path is not valid: " + path);
                 return null;
@@ -105,32 +112,47 @@ public class SitetreeDOMImpl implements Sitetree {
      */
     private org.w3c.dom.Element getElement(org.w3c.dom.Element parent, String path) throws Exception {
        String[] names = path.split("/");
-       log.error("DEBUG: Path: " + path);
-       log.error("DEBUG: Length: " + names.length);
+       //log.debug("Path: " + path);
+       //log.debug("Length: " + names.length);
 
-       String childPath = null;
+       String childName = null;
        String subtreePath = null;
        if (names.length > 1) {
-           childPath = names[1];
-           log.error("DEBUG: Child: " + childPath);
+           childName = names[1];
+           //log.debug("Child: " + childName);
            if (names.length > 2) {
                subtreePath = "/" + names[2];
                for (int i = 3; i < names.length; i++) {
                    subtreePath = subtreePath + "/" + names[i];
                }
-               log.error("DEBUG: Subtree path: " + subtreePath);
+               //log.debug("Subtree path: " + subtreePath);
            } else {
-               log.error("DEBUG: No subtree.");
+               //log.debug("No subtree.");
            }
        } else {
-           log.error("DEBUG: The end: " + path);
+           //log.debug("The end: " + path);
        }
 
-       if (childPath != null) {
-           if (subtreePath != null) {
-               return getElement(parent, subtreePath);
+       if (childName != null) {
+           //log.debug("Child: " + childName);
+           NodeList nl = parent.getChildNodes();
+           Element child = null;
+           for (int i = 0; i < nl.getLength(); i++) {
+               if (nl.item(i).getNodeType() == org.w3c.dom.Node.ELEMENT_NODE && nl.item(i).getNodeName().equals("node") && ((Element) nl.item(i)).getAttribute("name").equals(childName)) {
+                   child = (Element) nl.item(i);
+                   break;
+               }
            }
-           return sitetreeDoc.getDocumentElement();
+           if (child != null) {
+               if (subtreePath != null) {
+                   //log.debug("Subtree path: " + subtreePath);
+                   return getElement(parent, subtreePath);
+               }
+               return child;
+           } else {
+               log.error("No such node: " + path);
+               return null;
+           }
        } else {
            return sitetreeDoc.getDocumentElement();
        }
