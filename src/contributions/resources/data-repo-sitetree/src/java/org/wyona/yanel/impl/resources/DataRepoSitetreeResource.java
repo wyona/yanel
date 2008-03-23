@@ -130,15 +130,24 @@ public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
 
         if (node != null) {
             if (node.isCollection()) {
-                sb.append("<collection path=\"" + path + "\" name=\" " + node.getName() + "\">");
+                sb.append("<collection path=\"" + path + "\" name=\"" + node.getName() + "\">");
                 Node[] children = node.getChildren();
                 for (int i = 0; i < children.length; i++) {
+                    String childPath = path + "/" + children[i].getName();
+                    if (path.equals("/")) {
+                        childPath = path + children[i].getName();
+                    }
+                    //log.debug("Child path: " + childPath);
+
                     if (children[i].isCollection()) {
-                        sb.append(getNodeAsXML(children[i].getPath()));
+                        sb.append(getNodeAsXML(childPath));
+                        //sb.append(getNodeAsXML(children[i].getPath()));
                     } else if (children[i].isResource()) {
-                        sb.append("<resource path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
+                        sb.append("<resource path=\"" + childPath + "\" name=\"" + children[i].getName() + "\"/>");
+                        //sb.append("<resource path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
                     } else {
-                        sb.append("<neither-resource-nor-collection path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
+                        sb.append("<neither-resource-nor-collection path=\"" + childPath + "\" name=\"" + children[i].getName() + "\"/>");
+                        //sb.append("<neither-resource-nor-collection path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
                     }
                 }
                 sb.append("</collection>");
