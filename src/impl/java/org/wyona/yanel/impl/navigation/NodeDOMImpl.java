@@ -20,6 +20,10 @@ import org.wyona.yanel.core.navigation.Node;
 
 import org.apache.log4j.Logger;
 
+import org.w3c.dom.Element;
+
+import java.util.Vector;
+
 /**
  * Also see org.w3c.dom.Node
  */
@@ -75,8 +79,16 @@ public class NodeDOMImpl implements Node {
      *
      */
     public boolean isResource() {
-        log.error("TODO: Implementation not finished yet!");
-        return false;
+        org.w3c.dom.NodeList nl = element.getElementsByTagName("node");
+        if (nl == null) {
+            return true;
+        } else {
+            if (nl.getLength() > 0) {
+                return false;
+            } else {
+                return true;
+            }
+        }
     }
 
     /**
@@ -84,8 +96,12 @@ public class NodeDOMImpl implements Node {
      */
     public boolean isCollection() {
         org.w3c.dom.NodeList nl = element.getElementsByTagName("node");
-        if (nl.getLength() > 0) {
-            return true;
+        if (nl != null) {
+            if (nl.getLength() > 0) {
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
@@ -95,20 +111,32 @@ public class NodeDOMImpl implements Node {
      *
      */
     public Node[] getChildren() {
-        org.w3c.dom.NodeList nl = element.getElementsByTagName("node");
-        NodeDOMImpl[] nodes = new NodeDOMImpl[nl.getLength()];
-        for (int i = 0; i < nodes.length; i++) {
-            nodes[i] = new NodeDOMImpl((org.w3c.dom.Element) nl.item(i));
+        org.w3c.dom.NodeList nl = element.getChildNodes();
+        Vector nodes = new Vector();
+        //log.debug("Children of: " + getName());
+        for (int i = 0; i < nl.getLength(); i++) {
+            if (nl.item(i).getNodeType() == org.w3c.dom.Node.ELEMENT_NODE && nl.item(i).getNodeName().equals("node")) {
+                nodes.add(nl.item(i));
+            }
         }
-        return nodes;
+
+        NodeDOMImpl[] children = new NodeDOMImpl[nodes.size()];
+        for (int i = 0; i < children.length; i++) {
+            children[i] = new NodeDOMImpl((Element) nodes.elementAt(i));
+            //log.debug("Child: " + children[i].getName());
+        }
+        return children;
     }
 
     /**
      *
      */
     public Node getParent() {
-        log.error("TODO: Implementation not finished yet!");
-        return null;
+        if (!element.getNodeName().equals("sitetree")) {
+            return new NodeDOMImpl((org.w3c.dom.Element) element.getParentNode());
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -131,8 +159,15 @@ public class NodeDOMImpl implements Node {
      *
      */
     public String getPath() {
-        log.error("TODO: Implementation not finished yet!");
+        log.error("TODO: Not implemented yet! Name: " + getName());
         return null;
+/*
+        if (getParent() != null) {
+            return getParent().getPath() + "/" + getName();
+        } else {
+            return "/";
+        }
+*/
     }
 
     /**
@@ -141,6 +176,7 @@ public class NodeDOMImpl implements Node {
     public String getName() {
         if (element.getNodeName().equals("sitetree")) {
             log.warn("Sitetree node has no name");
+            return "/";
         }
         return element.getAttribute("name");
     }
