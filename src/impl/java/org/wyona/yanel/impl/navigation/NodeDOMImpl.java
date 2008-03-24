@@ -65,8 +65,8 @@ public class NodeDOMImpl implements Node {
      * @return new child
      */
     public Node appendChild(Node child) {
-        log.error("TODO: Implementation not finished yet!");
-        return null;
+        this.element.appendChild(((NodeDOMImpl) child).getElement());
+        return child;
     }
 
     /**
@@ -189,5 +189,12 @@ public class NodeDOMImpl implements Node {
             log.warn("Sitetree node has no label");
         }
         return element.getElementsByTagName("label").item(0).getFirstChild().getNodeValue();
+    }
+
+    /**
+     *
+     */
+    public Element getElement() {
+        return this.element;
     }
 }
