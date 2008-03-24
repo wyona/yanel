@@ -38,6 +38,8 @@ public class SitetreeDOMImpl implements Sitetree {
 
     private static Logger log = Logger.getLogger(SitetreeDOMImpl.class);
 
+    private static String SITETREE_NAMESPACE = "http://www.wyona.org/yanel/sitetree/1.0";
+
     // IMPORTANT: Consider memory and redundancy issues!
     private Document sitetreeDoc;
     private String src;
@@ -102,8 +104,9 @@ public class SitetreeDOMImpl implements Sitetree {
      *
      */
     public Node createNode(String name) {
-        log.error("TODO: Implementation not finished yet!");
-        return null;
+        Element newElement = sitetreeDoc.createElementNS(SITETREE_NAMESPACE, "node");
+        newElement.setAttributeNS(SITETREE_NAMESPACE, "name", name);
+        return new NodeDOMImpl(newElement);
     }
 
     /**
