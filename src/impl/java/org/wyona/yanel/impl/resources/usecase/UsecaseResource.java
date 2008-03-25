@@ -90,7 +90,8 @@ public class UsecaseResource extends BasicXMLResource {
             viewID = DEFAULT_VIEW_ID;
         }
         try {
-            ConfigurableViewDescriptor viewDescriptor = (ConfigurableViewDescriptor)getViewDescriptor(viewID); 
+            ConfigurableViewDescriptor viewDescriptor = (ConfigurableViewDescriptor)getViewDescriptor(viewID);
+            View view = null;
            
             if (viewDescriptor == null) {
                 throw new UsecaseException("Usecase " + getName() + " has no view with id: " + viewID);
@@ -98,17 +99,19 @@ public class UsecaseResource extends BasicXMLResource {
             
             if (viewDescriptor.getType().equals(ConfigurableViewDescriptor.TYPE_JELLY)) {
                 InputStream xmlInputStream = getJellyXML(viewDescriptor);
-                return getXMLView(viewID, xmlInputStream);
+                view = getXMLView(viewID, xmlInputStream);
             /*} else if (viewDescriptor.getType().equals(ViewDescriptor.TYPE_REDIRECT)) {
                 String redirectURL = getRedirectURL(viewDescriptor);
                 UsecaseView view = new UsecaseView(viewDescriptor.getId(), UsecaseView.TYPE_REDIRECT);
                 view.setRedirectURL(redirectURL);
                 return view;*/
             } else if (viewDescriptor.getType().equals(ConfigurableViewDescriptor.TYPE_CUSTOM)) {
-                return renderCustomView(viewDescriptor);
+                view = renderCustomView(viewDescriptor);
             } else {
                 throw new UsecaseException("Usecase " + getName() + " has invalid view type: " + viewDescriptor.getType());
             }
+            view.setHttpHeaders(viewDescriptor.getHttpHeaders());
+            return view;
         } catch (Exception e) {
             String errorMsg = "Error generating view of usecase: " + getName() + ": " + e;
             log.error(errorMsg, e);
@@ -144,7 +147,9 @@ public class UsecaseResource extends BasicXMLResource {
             //String viewTemplate = view.getTemplate();
             jellyContext.runScript(new InputSource(repo.getNode(viewTemplate).getInputStream()), jellyOutput);
             jellyOutput.flush();
-            return new ByteArrayInputStream(jellyResultStream.toByteArray());
+            byte[] result = jellyResultStream.toByteArray();
+            //System.out.println(new String(result, "utf-8"));
+            return new ByteArrayInputStream(result);
         } catch (Exception e) {
             String errorMsg = "Error creating jelly view of usecase: " + getName() + ": " + e;
             log.error(errorMsg, e);

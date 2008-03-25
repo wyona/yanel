@@ -15,6 +15,8 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Properties;
 import java.util.Vector;
 
 import javax.servlet.ServletConfig;
@@ -1972,6 +1974,18 @@ public class YanelServlet extends HttpServlet {
                     // probably binary mime-type, don't set encoding
                     response.setContentType(patchMimeType(mimeType, request));
                 }
+            }
+            
+            // http headers:
+            HashMap headers = view.getHttpHeaders();
+            Iterator iter = headers.keySet().iterator();
+            while (iter.hasNext()) {
+                String name = (String)iter.next();
+                String value = (String)headers.get(name);
+                if (log.isDebugEnabled()) {
+                    log.debug("set http header: " + name + ": " + value);
+                }
+                response.setHeader(name, value);
             }
             
             // Possibly embed toolbar:

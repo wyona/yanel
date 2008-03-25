@@ -17,6 +17,7 @@
 package org.wyona.yanel.core.attributes.viewable;
 
 import java.io.InputStream;
+import java.util.HashMap;
 
 /**
  *
@@ -27,7 +28,12 @@ public class View {
     private String encoding = null;
     private InputStream is;
     private boolean isResponse = true;
+    private HashMap httpHeaders = null;
 
+    public View() {
+        this.httpHeaders = new HashMap();
+    }
+    
     /**
      *
      */
@@ -86,5 +92,17 @@ public class View {
      */
     public void setResponse(boolean isResponse) {
         this.isResponse = isResponse;
+    }
+    
+    public HashMap getHttpHeaders() {
+        return this.httpHeaders;
+    }
+    
+    public void setHttpHeaders(HashMap headers) {
+        this.httpHeaders.putAll(headers);
+    }
+    
+    public void setHttpHeader(String name, String value) {
+        this.httpHeaders.put(name, value);
     }
 }

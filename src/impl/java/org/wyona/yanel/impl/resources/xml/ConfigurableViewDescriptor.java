@@ -15,6 +15,7 @@
  */
 package org.wyona.yanel.impl.resources.xml;
 
+import java.util.HashMap;
 import java.util.Properties;
 
 import org.apache.avalon.framework.configuration.Configuration;
@@ -34,6 +35,7 @@ public class ConfigurableViewDescriptor extends ViewDescriptor {
     protected String[] xsltPaths;
     protected String serializerKey;
     protected Properties serializerProperties;
+    protected HashMap httpHeaders;
 
     public ConfigurableViewDescriptor(String id) {
         super(id);
@@ -81,6 +83,17 @@ public class ConfigurableViewDescriptor extends ViewDescriptor {
         if (type.equals(TYPE_REDIRECT)) {
             redirectURL = config.getChild("url").getValue();
         }
+        
+        httpHeaders = new HashMap();
+        Configuration headerParentConfig = config.getChild("http-headers", false);
+        if (headerParentConfig != null) {
+            Configuration[] headerConfigs = headerParentConfig.getChildren("header");
+            for (int i = 0; i < headerConfigs.length; i++) {
+                String name = headerConfigs[i].getAttribute("name");
+                String value = headerConfigs[i].getAttribute("value");
+                httpHeaders.put(name, value);
+            }
+        }
     }
 
     public String getRedirectURL() {
@@ -105,6 +118,14 @@ public class ConfigurableViewDescriptor extends ViewDescriptor {
 
     public void setSerializerProperties(Properties serializerProperties) {
         this.serializerProperties = serializerProperties;
+    }
+
+    public HashMap getHttpHeaders() {
+        return this.httpHeaders;
+    }
+
+    public void setHttpHeaders(HashMap httpHeaders) {
+        this.httpHeaders = httpHeaders;
     }
 
     public String getTemplate() {
