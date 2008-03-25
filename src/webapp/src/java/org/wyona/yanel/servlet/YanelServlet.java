@@ -115,6 +115,7 @@ public class YanelServlet extends HttpServlet {
 
     public static String IDENTITY_MAP_KEY = "identity-map";
     private static String TOOLBAR_KEY = "toolbar";
+    private static String TOOLBAR_USECASE = "toolbar";
     public static String NAMESPACE = "http://www.wyona.org/yanel/1.0";
 
     private static final String METHOD_PROPFIND = "PROPFIND";
@@ -1336,6 +1337,13 @@ public class YanelServlet extends HttpServlet {
      */
     public HttpServletResponse doLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
+            if (isToolbarEnabled(request)) {
+                // TODO: Check if WORLD has access to the toolbar
+                //if (getRealm().getPolicyManager().authorize(path, new Identity(), new Usecase(TOOLBAR_USECASE))) {
+                    disableToolbar(request);
+                //}
+            }
+
             HttpSession session = request.getSession(true);
             // TODO: should we logout only from the current realm, or from all realms?
             // -> logout only from the current realm
@@ -2108,7 +2116,7 @@ public class YanelServlet extends HttpServlet {
         value = request.getParameter("yanel.toolbar");
         if (value != null && value.equals("on")) {
             log.debug("Turn on toolbar ...");
-            usecase = new Usecase("toolbar");
+            usecase = new Usecase(TOOLBAR_USECASE);
         }
         value = request.getParameter("yanel.policy");
         if (value != null) {
