@@ -21,9 +21,10 @@ public class AccessControlTransformer extends AbstractTransformer {
     private Identity identity;
     private Usecase usecase;
 
-    private boolean insideParentElement;
     private boolean insideAnchor;
     private boolean accessGranted;
+    private boolean bufferEnabled;
+    private int numberOfNestedElements;
     private StringBuffer textBuffer;
 
     private String parentElementName;
@@ -42,19 +43,22 @@ public class AccessControlTransformer extends AbstractTransformer {
 
         this.parentElementName = parentElementName;
 
-        insideParentElement = false;
         insideAnchor = false;
 
         accessGranted = true;
+        bufferEnabled = false;
+        numberOfNestedElements = 0;
     }
 
     /**
      *
      */
     public void startElement(String namespaceURI, String localName, String qName, Attributes attrs) throws SAXException {
-        //log.debug("Element name: " + localName + ", " + qName);
+        //log.error("DEBUG: Start element: " + localName + ", " + qName);
+        numberOfNestedElements = numberOfNestedElements + 1;
+        //log.error("DEBUG: Number of nested elements: " + numberOfNestedElements);
 
-        if (insideParentElement && isAnchorElement(namespaceURI, localName, qName)) {
+        if (bufferEnabled && isAnchorElement(namespaceURI, localName, qName)) {
             this.insideAnchor = true;
             //log.debug("Inside a 'a' element which is inside parent element '" + parentElementName + "'!");
             anchorAttrs = new AttributesImpl(attrs);
@@ -68,9 +72,13 @@ public class AccessControlTransformer extends AbstractTransformer {
                 //log.debug("Check authorization for: " + path + ", " + identity + ", " + usecase);
                 try {
                     if (policyManager.authorize(path, identity, usecase)) {
-                        //log.debug("Access granted for " + identity + ", " + usecase + ", " + path);
+                        //log.error("DEBUG: Access granted for " + identity + ", " + usecase + ", " + path);
+                        accessGranted = true;
+                        // Re-insert parent element and anchor
+                        super.startElement(NS_XHTML_URI, parentElementName, parentElementName, parentAttrs);
+                        super.startElement(NS_XHTML_URI, "a", "a", anchorAttrs);
                     } else {
-                        //log.debug("Access denied for " + identity + ", " + usecase + ", " + path);
+                        //log.error("DEBUG: Access denied for " + identity + ", " + usecase + ", " + path);
                         accessGranted = false;
                     }
                 } catch (Exception e) {
@@ -82,14 +90,18 @@ public class AccessControlTransformer extends AbstractTransformer {
         }
 
 
-        if (isParentElement(namespaceURI, localName, qName)) {
-            this.insideParentElement = true;
+        if (isParentElement(namespaceURI, localName, qName) && accessGranted) {
+            bufferEnabled = true;
             parentAttrs = new AttributesImpl(attrs);
 
             textBuffer = new StringBuffer();
-            //log.debug("Entering '" + parentElementName + "' element!");
-        } else if (insideParentElement) {
-            //log.debug("Add to buffer start of: " + localName);
+            //log.error("DEBUG: Entering '" + parentElementName + "' element!");
+        }
+
+
+        if (bufferEnabled || !accessGranted) {
+        //if (bufferEnabled || accessDenied) {
+            //log.error("DEBUG: Do nothing and just dump start of element: <" + localName + " ...>");
         } else {
             super.startElement(namespaceURI, localName, qName, attrs);
         }
@@ -99,32 +111,34 @@ public class AccessControlTransformer extends AbstractTransformer {
      *
      */
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
+        //log.error("DEBUG: End element: " + localName + ", " + qName);
+        numberOfNestedElements = numberOfNestedElements - 1;
+
         if (isAnchorElement(namespaceURI, localName, qName)) {
             this.insideAnchor = false;
             //log.debug("Leaving 'a' element!");
+            if (bufferEnabled && !accessGranted) {
+                numberOfNestedElements = 0;
+            }
+            bufferEnabled = false;
         }
 
-        if (isParentElement(namespaceURI, localName, qName)) {
-            this.insideParentElement = false;
-            if (accessGranted) {
-                //log.debug("Do copy parent element: " + textBuffer);
-
-                super.startElement(NS_XHTML_URI, parentElementName, parentElementName, parentAttrs);
-                super.startElement(NS_XHTML_URI, "a", "a", anchorAttrs);
-                char[] characters = textBuffer.toString().toCharArray();
-                super.characters(characters, 0, characters.length);
-                super.endElement(NS_XHTML_URI, "a", "a");
-                super.endElement(NS_XHTML_URI, parentElementName, parentElementName);
-            } else {
-                //log.debug("Do NOT copy parent element: " + textBuffer);
-            }
-            accessGranted = true;
-            //log.debug("Leaving '" + parentElementName + "' element!");
-        } else if (insideParentElement) {
-            //log.debug("Add to buffer end of: " + localName);
+        if (bufferEnabled || !accessGranted) {
+        //if (bufferEnabled || accessDenied) {
+            //log.error("DEBUG: Do nothing and just dump end of element: </" + localName + ">");
         } else {
             super.endElement(namespaceURI, localName, qName);
         }
+
+        //log.error("DEBUG: Number of nested elements: " + numberOfNestedElements);
+        if (isParentElement(namespaceURI, localName, qName) && numberOfNestedElements == -1 && !accessGranted) {
+            accessGranted = true;
+        }
+
+/*
+char[] characters = textBuffer.toString().toCharArray();
+super.characters(characters, 0, characters.length);
+*/
     }
     
     /**
@@ -161,8 +175,9 @@ public class AccessControlTransformer extends AbstractTransformer {
      *
      */
     public void characters(char[] buf, int offset, int len) throws SAXException {
-        if (insideParentElement) {
-            this.textBuffer.append(buf, offset, len);
+        if (!accessGranted) {
+        //if (accessDenied) {
+            //log.error("DEBUG: Do nothing and just dump characters!");
         } else {
             super.characters(buf, offset, len);
         }
