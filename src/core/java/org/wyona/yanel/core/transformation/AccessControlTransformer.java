@@ -11,7 +11,30 @@ import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.Usecase;
 
 /**
- * Transformer to remove <li><a href="../../en/private/index.html"></a></li> for href a user/identity has no right to access. 
+ * Transformer to remove <li><a href="../../en/private/index.html">...</a></li> for href a user/identity has no right to access. 
+ * Example:
+ * <ul xmlns="http://www.w3.org/1999/xhtml">
+ *   <li class="group">
+ *     <a onfocus="this.blur()" href="#">Group 1</a>
+ *     <ul style="display:none;">
+ *       <li><a href="../../en/section/group-1/test-101/index.html">Test 101</a>
+ *         <ul>
+ *           <li><a href="../../en/section/group-1/test-101/test-102/index.html">Test 102</a></li>
+ *         </ul>
+ *       </li>
+ *       <li class="separator"> </li>
+ *       <li class="new"><a href="../../en/section/group-1/test-104/index.html">Test 104</a></li>
+ *       <li class="new"><a href="../../en/section/group-1/test-103/index.html">Test 103</a></li>
+ *     </ul>
+ *   </li>
+ *   <li class="group">
+ *     <a onfocus="this.blur()" href="#">Group 2</a>
+ *     <ul style="display:none;">
+ *       <li><a href="../../en/section/group-2/rubric-101/index.html">Rubric 101</a></li>
+ *       <li><a href="../../en/section/group-2/rubric-102/index.html">Rubric 102</a></li>
+ *     </ul>
+ *   </li>
+ * </ul>
  */
 public class AccessControlTransformer extends AbstractTransformer {
 
@@ -58,8 +81,9 @@ public class AccessControlTransformer extends AbstractTransformer {
         numberOfNestedElements = numberOfNestedElements + 1;
         //log.error("DEBUG: Number of nested elements: " + numberOfNestedElements);
 
+
         if (bufferEnabled && isAnchorElement(namespaceURI, localName, qName)) {
-            this.insideAnchor = true;
+            insideAnchor = true;
             //log.debug("Inside a 'a' element which is inside parent element '" + parentElementName + "'!");
             anchorAttrs = new AttributesImpl(attrs);
 
@@ -68,24 +92,23 @@ public class AccessControlTransformer extends AbstractTransformer {
             if (path.startsWith("../")) {
                 path = path.substring(path.lastIndexOf("../") + 2);
             }
-            if (path.startsWith("/")) {
-                //log.debug("Check authorization for: " + path + ", " + identity + ", " + usecase);
-                try {
+
+            try {
+                if (path.startsWith("/")) {
+                    //log.debug("Check authorization for: " + path + ", " + identity + ", " + usecase);
                     if (policyManager.authorize(path, identity, usecase)) {
                         //log.error("DEBUG: Access granted for " + identity + ", " + usecase + ", " + path);
-                        accessGranted = true;
-                        // Re-insert parent element and anchor
-                        super.startElement(NS_XHTML_URI, parentElementName, parentElementName, parentAttrs);
-                        super.startElement(NS_XHTML_URI, "a", "a", anchorAttrs);
+                        reinsertBufferedParentElementAndAnchor();
                     } else {
                         //log.error("DEBUG: Access denied for " + identity + ", " + usecase + ", " + path);
                         accessGranted = false;
                     }
-                } catch (Exception e) {
-                    log.error(e, e);
+                } else {
+                    log.warn("Path does not start with '/' (probably a group): " + path);
+                    reinsertBufferedParentElementAndAnchor();
                 }
-            } else {
-                log.warn("Path does not start with '/': " + path);
+            } catch (Exception e) {
+                log.error(e, e);
             }
         }
 
@@ -114,8 +137,20 @@ public class AccessControlTransformer extends AbstractTransformer {
         //log.error("DEBUG: End element: " + localName + ", " + qName);
         numberOfNestedElements = numberOfNestedElements - 1;
 
+
+        if (isParentElement(namespaceURI, localName, qName) && bufferEnabled && !insideAnchor) {
+            log.warn("Probably a separator!");
+            bufferEnabled = false;
+            try {
+                reinsertBufferedParentElement();
+            } catch(Exception e) {
+                log.error(e, e);
+            }
+        }
+
+
         if (isAnchorElement(namespaceURI, localName, qName)) {
-            this.insideAnchor = false;
+            insideAnchor = false;
             //log.debug("Leaving 'a' element!");
             if (bufferEnabled && !accessGranted) {
                 numberOfNestedElements = 0;
@@ -142,13 +177,25 @@ super.characters(characters, 0, characters.length);
     }
     
     /**
+     *
+     */
+    public void characters(char[] buf, int offset, int len) throws SAXException {
+        if (!accessGranted) {
+        //if (accessDenied) {
+            //log.error("DEBUG: Do nothing and just dump characters!");
+        } else {
+            super.characters(buf, offset, len);
+        }
+    }
+    
+    /**
      * Decides whether an element is a "li" element.
      * @param namespaceURI
      * @param localName
      * @param qName
      * @return true if the element is a "li" element
      */
-    protected boolean isParentElement(String namespaceURI, String localName, String qName) {
+    private boolean isParentElement(String namespaceURI, String localName, String qName) {
         if (namespaceURI.equals(NS_XHTML_URI) && localName.equals(parentElementName)) {
             return true;
         } else {
@@ -163,23 +210,27 @@ super.characters(characters, 0, characters.length);
      * @param qName
      * @return true if the element is a "a" element
      */
-    protected boolean isAnchorElement(String namespaceURI, String localName, String qName) {
+    private boolean isAnchorElement(String namespaceURI, String localName, String qName) {
         if (namespaceURI.equals(NS_XHTML_URI) && localName.equals("a")) {
             return true;
         } else {
             return false;
         }
     }
-    
+
     /**
-     *
+     * Reinsert buffered parent element and anchor. Please note that the bufferedEnabled is set to false when the "a" element is being closed, which is necessary for some reason which I have forgotten!
      */
-    public void characters(char[] buf, int offset, int len) throws SAXException {
-        if (!accessGranted) {
-        //if (accessDenied) {
-            //log.error("DEBUG: Do nothing and just dump characters!");
-        } else {
-            super.characters(buf, offset, len);
-        }
+    private void reinsertBufferedParentElementAndAnchor() throws Exception {
+        accessGranted = true;
+        super.startElement(NS_XHTML_URI, parentElementName, parentElementName, parentAttrs);
+        super.startElement(NS_XHTML_URI, "a", "a", anchorAttrs);
+    }
+
+    /**
+     * Reinsert buffered parent element
+     */
+    private void reinsertBufferedParentElement() throws Exception {
+        super.startElement(NS_XHTML_URI, parentElementName, parentElementName, parentAttrs);
     }
 }
