@@ -104,7 +104,7 @@ public class AccessControlTransformer extends AbstractTransformer {
                         accessGranted = false;
                     }
                 } else {
-                    log.warn("Path does not start with '/' (probably a group): " + path);
+                    //log.warn("Path does not start with '/' (probably a group): " + path);
                     reinsertBufferedParentElementAndAnchor();
                 }
             } catch (Exception e) {
@@ -139,7 +139,7 @@ public class AccessControlTransformer extends AbstractTransformer {
 
 
         if (isParentElement(namespaceURI, localName, qName) && bufferEnabled && !insideAnchor) {
-            log.warn("Probably a separator!");
+            //log.warn("Probably a separator!");
             bufferEnabled = false;
             try {
                 reinsertBufferedParentElement();
