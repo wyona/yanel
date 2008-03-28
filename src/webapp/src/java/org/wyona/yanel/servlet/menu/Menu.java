@@ -50,7 +50,7 @@ abstract public class Menu {
         sb.append("<li class=\"haschild\">Page");
         sb.append("<ul>");
         sb.append("<li><a href=\"?yanel.resource.meta\">Info</a></li>");
-        sb.append("<li><a href=\"?yanel.policy=read&amp;orderedBy=1&amp;showParents=false\">View Access Policy</a></li>");
+        sb.append("<li><a href=\"?yanel.policy=read&amp;orderedBy=1&amp;showParents=false&amp;showTabs=true\">View Access Policy</a></li>");
         sb.append("<li><a href=\"?yanel.policy=update\">Edit Access Policy</a></li>");
         sb.append("</ul>");
         sb.append("</li>");
