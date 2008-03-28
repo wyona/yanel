@@ -2166,9 +2166,13 @@ public class YanelServlet extends HttpServlet {
                 String showParentsParam = request.getParameter("showParents");
                 if (showParentsParam != null) showParents = new java.lang.Boolean(showParentsParam).booleanValue();
 
+                boolean showTabs = true;
+                String showTabsParam = request.getParameter("showTabs");
+                if (showTabsParam != null) showTabs = new java.lang.Boolean(showTabsParam).booleanValue();
+
                 response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
                 response.setStatus(response.SC_OK);
-                sb.append(org.wyona.security.util.PolicyViewer.getXHTMLView(resource.getRealm().getPolicyManager(), resource.getPath(), null, orderedBy, showParents));
+                sb.append(org.wyona.security.util.PolicyViewer.getXHTMLView(resource.getRealm().getPolicyManager(), resource.getPath(), null, orderedBy, showParents, showTabs));
 	    } else if (usecase.equals("update")) {
                 String getXML = request.getParameter("get");
                 String postXML = request.getParameter("post");
