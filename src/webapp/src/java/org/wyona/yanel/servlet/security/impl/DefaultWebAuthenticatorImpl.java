@@ -73,7 +73,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.security.WebAuthenticator#doAuthenticate(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.wyona.yanel.core.map.Map, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
      */
     public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response, Map map, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort) throws ServletException, IOException {
         try {
