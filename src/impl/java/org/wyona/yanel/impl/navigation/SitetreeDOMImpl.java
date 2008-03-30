@@ -168,7 +168,13 @@ public class SitetreeDOMImpl implements Sitetree {
      *
      */
     public void save() {
-        log.warn("TODO: Save sitetree to persistent repository: " + systemId);
-        // TODO: sitetreeDoc ...
+        try {
+            org.apache.xml.serialize.XMLSerializer serializer = new org.apache.xml.serialize.XMLSerializer();
+            serializer.setOutputCharStream(new java.io.FileWriter(systemId));
+            serializer.serialize(sitetreeDoc);
+        log.warn("Sitetree has been written into persistent repository: " + systemId);
+        } catch(Exception e) {
+            log.error(e, e);
+        }
     }
 }
