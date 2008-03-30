@@ -32,9 +32,11 @@ public class NodeDOMImpl implements Node {
     private static Logger log = Logger.getLogger(NodeDOMImpl.class);
 
     org.w3c.dom.Element element;
+    SitetreeDOMImpl sitetree;
 
-    public NodeDOMImpl(org.w3c.dom.Element element) {
+    public NodeDOMImpl(org.w3c.dom.Element element, SitetreeDOMImpl sitetree) {
         this.element = element;
+        this.sitetree = sitetree;
     }
 
     /**
@@ -66,6 +68,7 @@ public class NodeDOMImpl implements Node {
      */
     public Node appendChild(Node child) {
         this.element.appendChild(((NodeDOMImpl) child).getElement());
+        sitetree.save();
         return child;
     }
 
@@ -122,7 +125,7 @@ public class NodeDOMImpl implements Node {
 
         NodeDOMImpl[] children = new NodeDOMImpl[nodes.size()];
         for (int i = 0; i < children.length; i++) {
-            children[i] = new NodeDOMImpl((Element) nodes.elementAt(i));
+            children[i] = new NodeDOMImpl((Element) nodes.elementAt(i), sitetree);
             //log.debug("Child: " + children[i].getName());
         }
         return children;
@@ -133,7 +136,7 @@ public class NodeDOMImpl implements Node {
      */
     public Node getParent() {
         if (!element.getNodeName().equals("sitetree")) {
-            return new NodeDOMImpl((org.w3c.dom.Element) element.getParentNode());
+            return new NodeDOMImpl((org.w3c.dom.Element) element.getParentNode(), sitetree);
         } else {
             return null;
         }

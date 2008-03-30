@@ -71,7 +71,7 @@ public class SitetreeDOMImpl implements Sitetree {
      *
      */
     public Node getSitetreeNode() {
-        return new NodeDOMImpl(sitetreeDoc.getDocumentElement());
+        return new NodeDOMImpl(sitetreeDoc.getDocumentElement(), this);
     }
 
     /**
@@ -81,11 +81,11 @@ public class SitetreeDOMImpl implements Sitetree {
         //log.debug("Path: " + path);
         try {
             if (path.equals("/")) {
-                return new NodeDOMImpl(sitetreeDoc.getDocumentElement());
+                return new NodeDOMImpl(sitetreeDoc.getDocumentElement(), this);
             } else if (path.startsWith("/") && path.length() > 1) {
                 Element element = getElement(sitetreeDoc.getDocumentElement(), path);
                 if (element != null) {
-                    return new NodeDOMImpl(element);
+                    return new NodeDOMImpl(element, this);
                 } else {
                     log.error("No node for path: " + path);
                     return null;
@@ -106,7 +106,7 @@ public class SitetreeDOMImpl implements Sitetree {
     public Node createNode(String name) {
         Element newElement = sitetreeDoc.createElementNS(SITETREE_NAMESPACE, "node");
         newElement.setAttributeNS(SITETREE_NAMESPACE, "name", name);
-        return new NodeDOMImpl(newElement);
+        return new NodeDOMImpl(newElement, this);
     }
 
     /**
@@ -159,5 +159,13 @@ public class SitetreeDOMImpl implements Sitetree {
        } else {
            return sitetreeDoc.getDocumentElement();
        }
+    }
+
+    /**
+     *
+     */
+    public void save() {
+        log.warn("TODO: Save sitetree to persistent repository!");
+        // TODO: sitetreeDoc ...
     }
 }
