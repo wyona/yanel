@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<resource-types xmlns="http://www.wyona.org/yanel/1.0">
+
+  <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
+
+  <resource-type src="yanel/resources/show-realms/" compile="true"/>
+  <resource-type src="yanel/resources/update-webapp/" compile="true"/>
+</resource-types>
