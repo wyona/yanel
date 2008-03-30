@@ -57,8 +57,8 @@ public class SitetreeDOMImpl implements Sitetree {
                 javax.xml.transform.Source source = resolver.resolve(src, null);
                 javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
                 javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
-                sitetreeDoc = parser.parse(new java.io.FileInputStream(source.getSystemId()));
-                //sitetreeDoc = parser.parse(((javax.xml.transform.stream.StreamSource) source).getInputStream());
+                //sitetreeDoc = parser.parse(new java.io.FileInputStream(source.getSystemId()));
+                sitetreeDoc = parser.parse(((javax.xml.transform.stream.StreamSource) source).getInputStream());
             } catch (Exception e) {
                 log.error(e, e);
             }
