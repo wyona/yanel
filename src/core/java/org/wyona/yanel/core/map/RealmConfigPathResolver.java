@@ -64,8 +64,10 @@ public class RealmConfigPathResolver implements javax.xml.transform.URIResolver 
      */
     public javax.xml.transform.Source resolve(String href, String base) throws javax.xml.transform.TransformerException {
         if (href.indexOf(":") > 0) {
-            log.error("No such scheme implemented: " + href.substring(0, href.indexOf(":")));
-            return null;
+            log.error("No such scheme implemented: " + href.substring(0, href.indexOf(":")) + " (InputStream will not be set!)");
+            javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource();
+            source.setSystemId(href);
+            return source;
         } else {
             File file = FileUtil.resolve(realmConfigFile, new File(href));
             javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource(file);
