@@ -44,6 +44,8 @@ public class SitetreeDOMImpl implements Sitetree {
     private Document sitetreeDoc;
     private String src;
 
+    private String systemId;
+
     /**
      * @see
      */
@@ -57,6 +59,7 @@ public class SitetreeDOMImpl implements Sitetree {
                 javax.xml.transform.Source source = resolver.resolve(src, null);
                 javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
                 javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
+                systemId = source.getSystemId();
                 //sitetreeDoc = parser.parse(new java.io.FileInputStream(source.getSystemId()));
                 sitetreeDoc = parser.parse(((javax.xml.transform.stream.StreamSource) source).getInputStream());
             } catch (Exception e) {
@@ -165,7 +168,7 @@ public class SitetreeDOMImpl implements Sitetree {
      *
      */
     public void save() {
-        log.warn("TODO: Save sitetree to persistent repository!");
+        log.warn("TODO: Save sitetree to persistent repository: " + systemId);
         // TODO: sitetreeDoc ...
     }
 }
