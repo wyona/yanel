@@ -104,11 +104,14 @@ public class SitetreeDOMImpl implements Sitetree {
     }
 
     /**
-     *
+     * @see
      */
-    public Node createNode(String name) {
+    public Node createNode(String name, String label) {
         Element newElement = sitetreeDoc.createElementNS(SITETREE_NAMESPACE, "node");
         newElement.setAttributeNS(SITETREE_NAMESPACE, "name", name);
+        Element labelElement = sitetreeDoc.createElementNS(SITETREE_NAMESPACE, "label");
+        labelElement.appendChild(sitetreeDoc.createTextNode(label));
+        newElement.appendChild(labelElement);
         return new NodeDOMImpl(newElement, this);
     }
 

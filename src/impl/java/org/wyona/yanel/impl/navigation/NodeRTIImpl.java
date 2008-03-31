@@ -209,4 +209,11 @@ public class NodeRTIImpl implements Node {
     public String getLabel() {
         return getName();
     }
+
+    /**
+     * @see
+     */
+    public void setLabel(String label) {
+        log.warn("TODO: Not implemented yet!");
+    }
 }
