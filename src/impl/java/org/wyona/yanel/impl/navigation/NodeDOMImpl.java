@@ -190,8 +190,21 @@ public class NodeDOMImpl implements Node {
     public String getLabel() {
         if (element.getNodeName().equals("sitetree")) {
             log.warn("Sitetree node has no label");
+            return null;
+        } else {
+            return element.getElementsByTagName("label").item(0).getFirstChild().getNodeValue();
         }
-        return element.getElementsByTagName("label").item(0).getFirstChild().getNodeValue();
+    }
+
+    /**
+     * @see
+     */
+    public void setLabel(String label) {
+        if (element.getNodeName().equals("sitetree")) {
+            log.warn("Sitetree node has no label");
+        } else {
+            element.getElementsByTagName("label").item(0).getFirstChild().setNodeValue(label);
+        }
     }
 
     /**

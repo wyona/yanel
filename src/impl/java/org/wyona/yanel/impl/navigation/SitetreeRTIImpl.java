@@ -61,9 +61,10 @@ public class SitetreeRTIImpl implements Sitetree {
     }
 
     /**
-     *
+     * @see
      */
-    public Node createNode(String name) {
+    public Node createNode(String name, String label) {
+        log.error("TODO: Not implemented yet!");
         return null;
     }
 }

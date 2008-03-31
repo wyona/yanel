@@ -43,7 +43,9 @@ public interface Sitetree {
     public Node getNode(Realm realm, String path);
 
     /**
-     *
+     * Create new node
+     * @param name Name of node, for example "hello-world"
+     * @param label Label of node, for example "Hello World!"
      */
-    public Node createNode(String name);
+    public Node createNode(String name, String label);
 }
