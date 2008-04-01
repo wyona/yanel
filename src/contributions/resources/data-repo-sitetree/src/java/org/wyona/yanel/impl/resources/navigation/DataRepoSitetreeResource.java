@@ -2,7 +2,7 @@
  * Copyright 2006 Wyona
  */
 
-package org.wyona.yanel.impl.resources;
+package org.wyona.yanel.impl.resources.navigation;
 
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV2;

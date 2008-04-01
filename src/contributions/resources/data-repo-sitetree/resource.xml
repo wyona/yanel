@@ -3,10 +3,10 @@
 <resource xmlns="http://www.wyona.org/yanel/1.0"
   name="data-repo-sitetree"
   namespace="http://www.wyona.org/yanel/resource/1.0"
-  class="org.wyona.yanel.impl.resources.DataRepoSitetreeResource"
+  class="org.wyona.yanel.impl.resources.navigation.DataRepoSitetreeResource"
   >
 <description>
-Allows browsing the sitetree of the data repository
+Allows browsing the sitetree of the realm (default is configured within conf/spring-yanel-config.xml (<bean id="repo-navigation"/>), whereas can also be realm specific. If realm specific, then see realm.xml (<repo-navigation/>))
 </description>
 
 <rtd>
