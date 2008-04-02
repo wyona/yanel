@@ -75,6 +75,10 @@ public class ConfigurableViewDescriptor extends ViewDescriptor {
             if (propertyConfig != null) {
                 serializerProperties.setProperty("doctype-sytem", propertyConfig.getValue());
             }
+            propertyConfig = serializerConfig.getChild("indent", false);
+            if (propertyConfig != null) {
+                serializerProperties.setProperty("indent", propertyConfig.getValue());
+            }
         }
         
         if (type.equals(TYPE_JELLY)) {
