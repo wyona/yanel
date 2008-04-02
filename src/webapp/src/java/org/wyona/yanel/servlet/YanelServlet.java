@@ -1051,12 +1051,11 @@ public class YanelServlet extends HttpServlet {
         // Check Authorization
         boolean authorized = false;
         try {
-            log.debug("Do session based custom authorization");
             if (log.isDebugEnabled()) log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity + ", Usecase: " + usecase.getName());
             authorized = realm.getPolicyManager().authorize(path, identity, usecase);
             if (log.isDebugEnabled()) log.debug("Check authorization result: " + authorized);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error(e, e);
             throw new ServletException(e.getMessage(), e);
         }
 
@@ -1750,8 +1749,7 @@ public class YanelServlet extends HttpServlet {
         if (log.isDebugEnabled()) log.debug("Checking for Authorization Header: " + authorizationHeader);
         if (authorizationHeader != null) {
             if (authorizationHeader.toUpperCase().startsWith("BASIC")) {
-                log.debug("Using BASIC authorization ...");
-                log.error("DEBUG: Using BASIC authorization ...");
+                log.warn("Using BASIC authorization ...");
                 // Get encoded user and password, comes after "BASIC "
                 String userpassEncoded = authorizationHeader.substring(6);
                 // Decode it, using any base 64 decoder
