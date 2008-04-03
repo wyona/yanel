@@ -2155,38 +2155,26 @@ public class YanelServlet extends HttpServlet {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
         StringBuffer sb = new StringBuffer("");
         try {
+            String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
             if (usecase.equals("read")) {
                 Realm realm = map.getRealm(request.getServletPath());
                 String path = map.getPath(realm, request.getServletPath());
 
                 // TODO: Introduce a repository for the Yanel webapp
-                // TODO: Make this overwritable by the realm
-                File pmrcGlobalFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "global-resource-configs/policy-manager_yanel-rc.xml");
+                File realmDir = new File(realm.getConfigFile().getParent());
+                File pmrcGlobalFile = org.wyona.commons.io.FileUtil.file(realmDir.getAbsolutePath(), "src" + File.separator + "webapp" + File.separator + "global-resource-configs/policy-manager_yanel-rc.xml");
+		if (!pmrcGlobalFile.isFile()) {
+                    // Fallback to global configuration
+                    pmrcGlobalFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "global-resource-configs/policy-manager_yanel-rc.xml");
+                }
+
                 Resource policyManagerResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, new ResourceConfiguration(new java.io.FileInputStream(pmrcGlobalFile)));
-                View view = ((ViewableV2) policyManagerResource).getView(null);
+                View view = ((ViewableV2) policyManagerResource).getView(viewId);
                 if (view != null) {
                     if (generateResponse(view, policyManagerResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
                 }
                 log.error("Something went wrong!");
                 return;
-
-
-/*
-                String orderedByParam = request.getParameter("orderedBy");
-                int orderedBy = 0;
-                if (orderedByParam != null) orderedBy = new java.lang.Integer(orderedByParam).intValue();
-                boolean showParents = false;
-                String showParentsParam = request.getParameter("showParents");
-                if (showParentsParam != null) showParents = new java.lang.Boolean(showParentsParam).booleanValue();
-
-                boolean showTabs = true;
-                String showTabsParam = request.getParameter("showTabs");
-                if (showTabsParam != null) showTabs = new java.lang.Boolean(showTabsParam).booleanValue();
-
-                response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
-                response.setStatus(response.SC_OK);
-                sb.append(org.wyona.security.util.PolicyViewer.getXHTMLView(resource.getRealm().getPolicyManager(), resource.getPath(), null, orderedBy, showParents, showTabs));
-*/
 	    } else if (usecase.equals("update")) {
                 String getXML = request.getParameter("get");
                 String postXML = request.getParameter("post");
@@ -2213,10 +2201,14 @@ public class YanelServlet extends HttpServlet {
                     response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
                     response.setStatus(response.SC_OK);
                     String identitiesURL = "../.." + resource.getPath() + "?yanel.policy=update&get=identities";
+                    String policyURL = "../.." + resource.getPath() + "?yanel.policy=update&get=policy";
                     //String saveURL = "../.." + resource.getPath() + "?yanel.policy=update&post=policy";
-                    String saveURL = "?yanel.policy=update&post=policy";
+                    String saveURL = "?yanel.policy=update&post=policy"; // This doesn't seem to work with all browsers!
                     String cancelURL = org.wyona.commons.io.PathUtil.getName(resource.getPath());
                     if (resource.getPath().endsWith("/")) cancelURL = "./";
+                    if (request.getParameter("cancel-url") != null) {
+                        cancelURL = request.getParameter("cancel-url");
+                    }
 
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
@@ -2224,7 +2216,7 @@ public class YanelServlet extends HttpServlet {
                     sb.append("<title>Update Access Policy</title>");
                     sb.append("<link rel=\"stylesheet\" href=\"" + backToRealm + reservedPrefix + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/style.css\" type=\"text/css\"/>");
                     sb.append("</head>");
-                    sb.append("<body><h1>Update Access Policy</h1><p><script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"../.." + resource.getPath() + "?yanel.policy=update&get=policy\", \"cancel-url\": \"" + cancelURL + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
+                    sb.append("<body><h1>Update Access Policy</h1><p><script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"" + policyURL + "\", \"cancel-url\": \"" + cancelURL + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
                 }
             } else {
                 response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
