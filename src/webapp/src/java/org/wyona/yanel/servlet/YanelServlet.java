@@ -2156,7 +2156,22 @@ public class YanelServlet extends HttpServlet {
         StringBuffer sb = new StringBuffer("");
         try {
             if (usecase.equals("read")) {
+                Realm realm = map.getRealm(request.getServletPath());
+                String path = map.getPath(realm, request.getServletPath());
 
+                // TODO: Introduce a repository for the Yanel webapp
+                // TODO: Make this overwritable by the realm
+                File pmrcGlobalFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "global-resource-configs/policy-manager_yanel-rc.xml");
+                Resource policyManagerResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, new ResourceConfiguration(new java.io.FileInputStream(pmrcGlobalFile)));
+                View view = ((ViewableV2) policyManagerResource).getView(null);
+                if (view != null) {
+                    if (generateResponse(view, policyManagerResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
+                }
+                log.error("Something went wrong!");
+                return;
+
+
+/*
                 String orderedByParam = request.getParameter("orderedBy");
                 int orderedBy = 0;
                 if (orderedByParam != null) orderedBy = new java.lang.Integer(orderedByParam).intValue();
@@ -2171,6 +2186,7 @@ public class YanelServlet extends HttpServlet {
                 response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
                 response.setStatus(response.SC_OK);
                 sb.append(org.wyona.security.util.PolicyViewer.getXHTMLView(resource.getRealm().getPolicyManager(), resource.getPath(), null, orderedBy, showParents, showTabs));
+*/
 	    } else if (usecase.equals("update")) {
                 String getXML = request.getParameter("get");
                 String postXML = request.getParameter("post");
