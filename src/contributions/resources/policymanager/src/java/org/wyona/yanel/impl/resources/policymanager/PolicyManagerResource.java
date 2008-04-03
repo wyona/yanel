@@ -275,7 +275,7 @@ public class PolicyManagerResource extends BasicXMLResource {
    * Write/Save policy
    */
   private void writePolicy(InputStream policyAsInputStream, PolicyManager pm, String path) throws Exception {
-      Policy policy = new PolicyParser().parseXML(policyAsInputStream);
+      Policy policy = new org.wyona.security.util.PolicyParser().parseXML(policyAsInputStream);
       pm.setPolicy(path, policy);
   }
   
