@@ -38,7 +38,9 @@ public class PolicyManagerResource extends BasicXMLResource {
         // For example ?policy-path=/foo/bar.html
         String policyPath = request.getParameter(PARAMETER_EDIT_PATH);
         if (policyPath == null) {
-            log.error("No policy path specified! Please specify a policy path, e.g. ?policy-path=/foo/bar.html");
+            log.warn("No policy path specified, e.g. ?policy-path=/foo/bar.html");
+            log.warn("Request path used as default: " + getPath());
+            policyPath = getPath();
         }
         // For example ?yanel.policy=read
         String policyUsecase = "read";
@@ -99,7 +101,7 @@ public class PolicyManagerResource extends BasicXMLResource {
                     sb.append("<body><h1>Update Access Policy</h1><p><script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"../.." + getPath() + "?policy-path=" + policyPath + "&amp;yanel.policy=update&amp;get=policy\", \"cancel-url\": \"" + cancelURL + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" + backToRealm + getYanel().getReservedPrefix() + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
                 }
             } else {
-                sb.append("<html><body>Policy usecase not implemented yet: " + policyUsecase + "</body></html>");
+                sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Policy usecase not implemented yet: " + policyUsecase + "</body></html>");
             }
         } catch(Exception e) {
             log.error(e, e);
