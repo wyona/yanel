@@ -43,7 +43,7 @@ public class PolicyViewer {
 	    if(showParents) {
                 // Show also all parent policies
                 if (showTabs) {
-                    sb.append("<p><a href=\"?policy-path=" + path + "&amp;yanel.policy=read&amp;orderedBy=" + orderedBy + "&amp;showParents=false\">Tab: Node Policy</a> | Tab: Parent Policies</p>");
+                    sb.append("<p><a href=\"?yanel.policy=read&amp;orderedBy=" + orderedBy + "&amp;showParents=false\">Tab: Node Policy</a> | Tab: Parent Policies</p>");
                 }
 
                 sb.append("<p>Access Policies for Path (and its parents) <i>" + path);
@@ -51,27 +51,31 @@ public class PolicyViewer {
                 sb.append("</i>:</p>");
                 sb.append("<p>(Policy Repository: "+pm.getPoliciesRepository().getName()+", "+pm.getPoliciesRepository().getConfigFile()+")</p>");
 
-                sb.append(getOrderByLink(orderedBy, showParents, path));
+                sb.append(getOrderByLink(orderedBy, showParents));
                 sb.append("<p><table border=\"1\">");
                 sb.append("<tr><td>Path</td>" + getSplittedPath(pm, path, contentItemId) + "</tr>");
-                sb.append("<tr valign=\"top\"><td>Policy</td>" + getPolicies(pm, path, contentItemId, false, orderedBy) + "</tr>");
-                sb.append("<tr valign=\"top\"><td>Aggregated Policy</td>" + getPolicies(pm, path, contentItemId, true, orderedBy) + "</tr>");
+
+                boolean aggregate = false;
+                sb.append("<tr valign=\"top\"><td>Policy</td>" + getPolicies(pm, path, contentItemId, aggregate, orderedBy) + "</tr>");
+
+                aggregate = true;
+                sb.append("<tr valign=\"top\"><td>Aggregated Policy</td>" + getPolicies(pm, path, contentItemId, aggregate, orderedBy) + "</tr>");
                 sb.append("</table></p>");
             } else {
                 // Show policy of this node only
                 if (showTabs) {
-                    sb.append("<p>Tab: Node Policy | <a href=\"?policy-path=" + path + "&amp;yanel.policy=read&amp;orderedBy=" + orderedBy + "&amp;showParents=true\">Tab: Parent Policies</a></p>");
+                    sb.append("<p>Tab: Node Policy | <a href=\"?yanel.policy=read&amp;orderedBy=" + orderedBy + "&amp;showParents=true\">Tab: Parent Policies</a></p>");
                 }
 
                 sb.append("<div id=\"path-sentence\"><p>Aggregated Access Policy for Path <i>" + path);
                 if (contentItemId != null) sb.append("#" + contentItemId);
                 sb.append("</i>:</p></div>");
 
-                sb.append(getOrderByLink(orderedBy, showParents, path));
+                sb.append(getOrderByLink(orderedBy, showParents));
                 boolean aggregate = true;
                 Policy p = pm.getPolicy(path, aggregate);
                 sb.append("<p><table border=\"1\"><tr>");
-		sb.append(getPolicy(p, aggregate, orderedBy, null, path));
+		sb.append(getPolicy(p, aggregate, orderedBy, null));
                 if (contentItemId != null) {
                     sb.append("<td>contentItemId (" + contentItemId + ") not implemented yet into API!</td>");
                 }
@@ -128,7 +132,9 @@ public class PolicyViewer {
         for (int i = 0; i < names.length - 1; i++) {
             currentPath.append(names[i] + "/");
             Policy p = pm.getPolicy(currentPath.toString(), aggregate);
-
+            if (p == null) {
+                log.debug("No policy yet: " + currentPath.toString());
+            }
 
             String back = "";
             if (path.endsWith("/")) {
@@ -147,12 +153,12 @@ public class PolicyViewer {
             //log.debug("Back path: " + i + ", " + names[i] + ", " + back);
 
 
-            sb.append(getPolicy(p, aggregate, orderedBy, back, path));
+            sb.append(getPolicy(p, aggregate, orderedBy, back));
         }
 
         // Show policy of the actual node
         Policy p = pm.getPolicy(path, aggregate);
-        sb.append(getPolicy(p, aggregate, orderedBy, null, path));
+        sb.append(getPolicy(p, aggregate, orderedBy, null));
 
         // Show policy according to content id
         if (contentItemId != null) {
@@ -293,11 +299,11 @@ public class PolicyViewer {
     /**
      *
      */
-    private static String getOrderByLink(int orderedBy, boolean showParents, String path) {
+    private static String getOrderByLink(int orderedBy, boolean showParents) {
         if (orderedBy == ORDERED_BY_USECASES) {
-            return "<div id=\"order-by-sentence\"><p>Order by <a href=\"?policy-path=" + path + "&amp;yanel.policy=read&amp;orderedBy=" + ORDERED_BY_IDENTITIES + "&amp;showParents=" + showParents + "\">Identities</a></p></div>";
+            return "<div id=\"order-by-sentence\"><p>Order by <a href=\"?yanel.policy=read&amp;orderedBy=" + ORDERED_BY_IDENTITIES + "&amp;showParents=" + showParents + "\">Identities</a></p></div>";
         } else if (orderedBy == ORDERED_BY_IDENTITIES) {
-            return "<div id=\"order-by-sentence\"><p>Order by <a href=\"?policy-path=" + path + "&amp;yanel.policy=read&amp;orderedBy=" + ORDERED_BY_USECASES + "&amp;showParents=" + showParents + "\">Usecases</a></p></div>";
+            return "<div id=\"order-by-sentence\"><p>Order by <a href=\"?yanel.policy=read&amp;orderedBy=" + ORDERED_BY_USECASES + "&amp;showParents=" + showParents + "\">Usecases</a></p></div>";
         } else {
             log.error("No such order by value implemented: " + orderedBy);
             return "";
@@ -309,7 +315,7 @@ public class PolicyViewer {
      * @param aggregate If aggregate true, then the policy will be aggregated/merged with existing parent policies, otherwise only the node specific policy will be returned
      * @param back ../../../
      */
-    static public StringBuffer getPolicy(Policy policy, boolean aggregate, int orderedBy, String back, String path) throws AuthorizationException {
+    static private StringBuffer getPolicy(Policy policy, boolean aggregate, int orderedBy, String back) throws AuthorizationException {
         StringBuffer sb = new StringBuffer("<td>");
         if (policy != null) {
             String showUseInheritedPolicies = "";
@@ -317,9 +323,9 @@ public class PolicyViewer {
             if (!aggregate) {
                 showUseInheritedPolicies = "<p>Use inherited policies: " + policy.useInheritedPolicies() + "</p>";
                 if (back != null) {
-                    editPolicy = "<p><a href=\"" + back + "?policy-path=" + path + "&amp;yanel.policy=update\">Edit policy.</a></p>";
+                    editPolicy = "<p><a href=\"" + back + "?yanel.policy=update\">Edit policy.</a></p>";
                 } else {
-                    editPolicy = "<p><a href=\"?policy-path=" + path + "&amp;yanel.policy=update\">Edit policy.</a></p>";
+                    editPolicy = "<p><a href=\"?yanel.policy=update\">Edit policy.</a></p>";
                 }
             }
 
@@ -333,9 +339,9 @@ public class PolicyViewer {
         } else {
             sb.append("<p>No policy yet!</p>");
             if (back != null) {
-	        sb.append("<p><a href=\"" + back + "?policy-path=" + path + "&amp;yanel.policy=update\">Create new policy.</a></p>");
+	        sb.append("<p><a href=\"" + back + "?yanel.policy=update\">Create new policy.</a></p>");
             } else {
-	        sb.append("<p><a href=\"?policy-path=" + path + "&amp;yanel.policy=update\">Create new policy.</a></p>");
+	        sb.append("<p><a href=\"?yanel.policy=update\">Create new policy.</a></p>");
             }
         }
         sb.append("</td>");
