@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="policymanager" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="mime-type" value="application/xhtml+xml"/>
+<!--
+  <yanel:property name="mime-type" value="text/html"/>
+-->
+<!--
+  <yanel:property name="xslt" value="/app/xslt/policy2xhtml.xsl"/>
+  <yanel:property name="xslt" value="/app/xslt/global.xsl"/>
+-->
+</yanel:resource-config>
