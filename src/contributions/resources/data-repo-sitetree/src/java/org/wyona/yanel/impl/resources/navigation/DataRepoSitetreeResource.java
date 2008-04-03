@@ -11,14 +11,14 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.navigation.Node;
 import org.wyona.yanel.core.navigation.Sitetree;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  *
  */
 public class DataRepoSitetreeResource extends Resource implements ViewableV2 {
 
-    private static Category log = Category.getInstance(DataRepoSitetreeResource.class);
+    private static Logger log = Logger.getLogger(DataRepoSitetreeResource.class);
 
     /**
      *
