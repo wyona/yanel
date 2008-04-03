@@ -10,7 +10,6 @@ import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.User;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
-import org.wyona.yanel.impl.resources.policymanager.PolicyViewer;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -24,7 +23,7 @@ import org.apache.log4j.Logger;
  */
 public class PolicyManagerResource extends BasicXMLResource {
     
-    private static Logger log = Logger.getLogger(PolicyManager.class);
+    private static Logger log = Logger.getLogger(PolicyManagerResource.class);
     
     private static String PARAMETER_EDIT_PATH = "policy-path";
     private static String PARAMETER_USECASE = "yanel.policy";
@@ -44,7 +43,7 @@ public class PolicyManagerResource extends BasicXMLResource {
         }
         // For example ?yanel.policy=read
         String policyUsecase = "read";
-	if (request.getParameter(PARAMETER_USECASE) != null) {
+	    if (request.getParameter(PARAMETER_USECASE) != null) {
             policyUsecase = request.getParameter(PARAMETER_USECASE);
         }
         
