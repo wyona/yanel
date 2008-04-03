@@ -12,14 +12,11 @@
       <dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-impl" version="4.3"/>      
-      <!-- TODO: Coordinate with core! -->
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="0.2-dev-r34299"/>
     </artifact:dependencies>
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
-      <!-- TODO: Coordinate with core! -->
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="0.2-dev-r34299"/>
+      <!-- No resource specific libs yet. -->
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
