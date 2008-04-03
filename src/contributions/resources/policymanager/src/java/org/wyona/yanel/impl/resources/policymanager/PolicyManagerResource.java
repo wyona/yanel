@@ -43,7 +43,7 @@ public class PolicyManagerResource extends BasicXMLResource {
         }
         // For example ?yanel.policy=read
         String policyUsecase = "read";
-	    if (request.getParameter(PARAMETER_USECASE) != null) {
+        if (request.getParameter(PARAMETER_USECASE) != null) {
             policyUsecase = request.getParameter(PARAMETER_USECASE);
         }
         
