@@ -210,6 +210,7 @@ public class PolicyViewer {
         java.util.HashMap groups = new java.util.HashMap();
 
         UsecasePolicy[] up = p.getUsecasePolicies();
+        boolean noUsecasePolicies = false;
         if (up != null && up.length > 0) {
             for (int i = 0; i < up.length; i++) {
                 IdentityPolicy[] idps = up[i].getIdentityPolicies();
@@ -245,11 +246,16 @@ public class PolicyViewer {
                 }
             }
         } else {
-            log.warn("No policy usecases!");
+            log.debug("No policy usecases!");
+            noUsecasePolicies = true;
         }
 
         StringBuffer sb = new StringBuffer();
         sb.append("<ul>");
+        if (noUsecasePolicies) {
+            sb.append("<p>Neither users nor groups.</p>");
+        }
+
         if (worldRights.size() > 0) {
             sb.append("<li>WORLD (" + getCommaSeparatedList(worldRights) + ")</li>");
         }
