@@ -37,8 +37,7 @@ public class PolicyManagerResource extends BasicXMLResource {
         // For example ?policy-path=/foo/bar.html
         String policyPath = request.getParameter(PARAMETER_EDIT_PATH);
         if (policyPath == null) {
-            log.warn("No policy path specified, e.g. ?policy-path=/foo/bar.html");
-            log.warn("Request path used as default: " + getPath());
+            log.info("No policy path specified (e.g. ?policy-path=/foo/bar.html). Request path used as default: " + getPath());
             policyPath = getPath();
         }
         // For example ?yanel.policy=read
