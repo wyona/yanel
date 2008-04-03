@@ -33,7 +33,7 @@ public class PolicyViewer {
      */
     static public String getXHTMLView (PolicyManager pm, String path, String contentItemId, int orderedBy, boolean showParents, boolean showTabs) {
         try {
-            StringBuffer sb = new StringBuffer("<html>");
+            StringBuffer sb = new StringBuffer("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
             sb.append("<head>");
             sb.append("<title>Access Policy: " + path + "</title>");
             // TODO: Calculate back path ...
@@ -81,7 +81,7 @@ public class PolicyViewer {
             return sb.toString();
         } catch(Exception e) {
             log.error(e, e);
-            return "<html><body>Exception: " + e.getMessage() + "</body></html>";
+            return "<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Exception: " + e.getMessage() + "</body></html>";
         }
     }
 
