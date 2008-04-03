@@ -4,6 +4,7 @@ import org.wyona.security.core.AuthorizationException;
 import org.wyona.security.core.GroupPolicy;
 import org.wyona.security.core.IdentityPolicy;
 import org.wyona.security.core.UsecasePolicy;
+import org.wyona.security.core.api.GroupManager;
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.Policy;
 import org.wyona.security.core.api.PolicyManager;
@@ -31,7 +32,7 @@ public class PolicyViewer {
      * @param showParents Show the policies of the parent nodes, which allows to figure out how the policy has been aggregated
      * @param showTabs Show the tabs which allow to switch between parent policies and node policy
      */
-    static public String getXHTMLView (PolicyManager pm, String path, String contentItemId, int orderedBy, boolean showParents, boolean showTabs) {
+    static public String getXHTMLView (PolicyManager pm, GroupManager gm, String path, String contentItemId, int orderedBy, boolean showParents, boolean showTabs) {
         try {
             StringBuffer sb = new StringBuffer("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
             sb.append("<head>");
@@ -43,28 +44,29 @@ public class PolicyViewer {
 	    if(showParents) {
                 // Show also all parent policies
                 if (showTabs) {
-                    sb.append("<p><a href=\"?yanel.policy=read&amp;orderedBy=" + orderedBy + "&amp;showParents=false\">Tab: Node Policy</a> | Tab: Parent Policies</p>");
+                    sb.append("<p><a href=\"?yanel.policy=read&amp;orderedBy=" + orderedBy + "&amp;showParents=false\">Node Policy</a> | Parent Policies</p>");
                 }
 
                 sb.append("<p>Access Policies for Path (and its parents) <i>" + path);
                 if (contentItemId != null) sb.append("#" + contentItemId);
                 sb.append("</i>:</p>");
-                sb.append("<p>(Policy Repository: "+pm.getPoliciesRepository().getName()+", "+pm.getPoliciesRepository().getConfigFile()+")</p>");
+
+                //sb.append("<p>(Policy Repository: "+pm.getPoliciesRepository().getName()+", "+pm.getPoliciesRepository().getConfigFile()+")</p>");
 
                 sb.append(getOrderByLink(orderedBy, showParents, showTabs));
                 sb.append("<p><table border=\"1\">");
                 sb.append("<tr><td>Path</td>" + getSplittedPath(pm, path, contentItemId) + "</tr>");
 
                 boolean aggregate = false;
-                sb.append("<tr valign=\"top\"><td>Policy</td>" + getPolicies(pm, path, contentItemId, aggregate, orderedBy) + "</tr>");
+                sb.append("<tr valign=\"top\"><td>Policy</td>" + getPolicies(pm, gm, path, contentItemId, aggregate, orderedBy) + "</tr>");
 
                 aggregate = true;
-                sb.append("<tr valign=\"top\"><td>Aggregated Policy</td>" + getPolicies(pm, path, contentItemId, aggregate, orderedBy) + "</tr>");
+                sb.append("<tr valign=\"top\"><td>Aggregated Policy</td>" + getPolicies(pm, gm, path, contentItemId, aggregate, orderedBy) + "</tr>");
                 sb.append("</table></p>");
             } else {
                 // Show policy of this node only
                 if (showTabs) {
-                    sb.append("<p>Tab: Node Policy | <a href=\"?yanel.policy=read&amp;orderedBy=" + orderedBy + "&amp;showParents=true\">Tab: Parent Policies</a></p>");
+                    sb.append("<p>Node Policy | <a href=\"?yanel.policy=read&amp;orderedBy=" + orderedBy + "&amp;showParents=true\">Parent Policies</a></p>");
                 }
 
                 sb.append("<div id=\"path-sentence\"><p>Aggregated Access Policy for Path <i>" + path);
@@ -75,7 +77,7 @@ public class PolicyViewer {
                 boolean aggregate = true;
                 Policy p = pm.getPolicy(path, aggregate);
                 sb.append("<p><table border=\"1\"><tr>");
-		sb.append(getPolicy(p, aggregate, orderedBy, null));
+		sb.append(getPolicy(p, aggregate, orderedBy, null, gm));
                 if (contentItemId != null) {
                     sb.append("<td>contentItemId (" + contentItemId + ") not implemented yet into API!</td>");
                 }
@@ -92,7 +94,7 @@ public class PolicyViewer {
     /**
      * Get splitted path
      */
-    static public StringBuffer getSplittedPath (PolicyManager pm, String path, String contentItemId) {
+    static private StringBuffer getSplittedPath (PolicyManager pm, String path, String contentItemId) {
         String[] names = path.split("/");
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < names.length -1; i++) {
@@ -123,7 +125,7 @@ public class PolicyViewer {
      * @param aggregate If aggregate true, then the policy will be aggregated/merged with existing parent policies, otherwise only the node specific policy will be returned
      * @param orderedBy Ordered by identities or usecases
      */
-    static public StringBuffer getPolicies(PolicyManager pm, String path, String contentItemId, boolean aggregate, int orderedBy) throws AuthorizationException {
+    static private StringBuffer getPolicies(PolicyManager pm, GroupManager groupManager, String path, String contentItemId, boolean aggregate, int orderedBy) throws AuthorizationException {
 
         String[] names = path.split("/");
         StringBuffer sb = new StringBuffer();
@@ -153,12 +155,12 @@ public class PolicyViewer {
             //log.debug("Back path: " + i + ", " + names[i] + ", " + back);
 
 
-            sb.append(getPolicy(p, aggregate, orderedBy, back));
+            sb.append(getPolicy(p, aggregate, orderedBy, back, groupManager));
         }
 
         // Show policy of the actual node
         Policy p = pm.getPolicy(path, aggregate);
-        sb.append(getPolicy(p, aggregate, orderedBy, null));
+        sb.append(getPolicy(p, aggregate, orderedBy, null, groupManager));
 
         // Show policy according to content id
         if (contentItemId != null) {
@@ -171,7 +173,7 @@ public class PolicyViewer {
     /**
      * Get policy as XHTML list ordered by usecases
      */
-    static public StringBuffer getPolicyAsXHTMLListOrderedByUsecases(Policy p) {
+    static private StringBuffer getPolicyAsXHTMLListOrderedByUsecases(Policy p) {
         StringBuffer sb = new StringBuffer();
         UsecasePolicy[] up = p.getUsecasePolicies();
         if (up != null && up.length > 0) {
@@ -203,8 +205,9 @@ public class PolicyViewer {
 
     /**
      * Get policy as XHTML list ordered by identities
+     * @param dismantleGroups Show all members of a group instead the group itself
      */
-    static public StringBuffer getPolicyAsXHTMLListOrderedByIdentities(Policy p) {
+    static private StringBuffer getPolicyAsXHTMLListOrderedByIdentities(Policy p, boolean dismantleGroups, GroupManager gm) {
         Vector worldRights = new Vector();
         java.util.HashMap users = new java.util.HashMap();
         java.util.HashMap groups = new java.util.HashMap();
@@ -271,7 +274,28 @@ public class PolicyViewer {
         java.util.Iterator groupIterator = groups.keySet().iterator();
         while (groupIterator.hasNext()) {
             String groupName = (String) groupIterator.next();
-            sb.append("<li>Group: " + groupName + " (" + getCommaSeparatedList((Vector) groups.get(groupName)) + ")</li>");
+            String rights = getCommaSeparatedList((Vector) groups.get(groupName));
+            if (!dismantleGroups) {
+                sb.append("<li>Group: " + groupName + " (" + rights + ")</li>");
+            } else {
+                //sb.append("<li>Dismantle Group: " + groupName + " (" + rights + ")</li>");
+                try {
+                    org.wyona.security.core.api.Item[] groupMembers = gm.getGroup(groupName).getMembers();
+                    for (int i = 0; i < groupMembers.length; i++) {
+                        if (groupMembers[i] instanceof org.wyona.security.core.api.Group) {
+                            log.warn("TODO: Also dismantle sub-group '" + groupMembers[i].getID() + "' contained by group '" + groupName + "'.");
+                            sb.append("<li>Sub-Group: " + groupMembers[i].getID() + " (" + rights + ")</li>");
+                        } else if (groupMembers[i] instanceof org.wyona.security.core.api.User) {
+                            sb.append("<li>User: " + groupMembers[i].getID() + " (" + rights + ")</li>");
+                        } else {
+                            sb.append("<li>Item: " + groupMembers[i].getID() + " (" + rights + ")</li>");
+                        }
+                    }
+                } catch(Exception e) {
+                    log.error(e, e);
+                    sb.append("<li>Exception when trying to dismantle group '" + groupName + "': " + e.getMessage() + "</li>");
+                }
+            }
         }
 
 // TODO: Also add hosts
@@ -297,13 +321,13 @@ public class PolicyViewer {
             }
         } else {
             if(log.isDebugEnabled()) log.debug("No rights asigned!");
-            return null;
+            return "No rights!";
         }
         return sb.toString();
     }
 
     /**
-     * @param showTabs TODO
+     * @param showTabs
      *
      */
     private static String getOrderByLink(int orderedBy, boolean showParents, boolean showTabs) {
@@ -322,7 +346,7 @@ public class PolicyViewer {
      * @param aggregate If aggregate true, then the policy will be aggregated/merged with existing parent policies, otherwise only the node specific policy will be returned
      * @param back ../../../
      */
-    static private StringBuffer getPolicy(Policy policy, boolean aggregate, int orderedBy, String back) throws AuthorizationException {
+    static private StringBuffer getPolicy(Policy policy, boolean aggregate, int orderedBy, String back, GroupManager groupManager) throws AuthorizationException {
         StringBuffer sb = new StringBuffer("<td>");
         if (policy != null) {
             String showUseInheritedPolicies = "";
@@ -339,7 +363,7 @@ public class PolicyViewer {
             if (orderedBy == ORDERED_BY_USECASES) {
                 sb.append(editPolicy + showUseInheritedPolicies + getPolicyAsXHTMLListOrderedByUsecases(policy));
             } else if (orderedBy == ORDERED_BY_IDENTITIES) {
-                sb.append(editPolicy + showUseInheritedPolicies + getPolicyAsXHTMLListOrderedByIdentities(policy));
+                sb.append(editPolicy + showUseInheritedPolicies + getPolicyAsXHTMLListOrderedByIdentities(policy, aggregate, groupManager));
             } else {
                 sb.append("No such orderedBy implemented: " + orderedBy);
             }

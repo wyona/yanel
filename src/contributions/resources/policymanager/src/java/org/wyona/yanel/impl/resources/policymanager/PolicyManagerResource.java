@@ -46,8 +46,6 @@ public class PolicyManagerResource extends BasicXMLResource {
             policyUsecase = request.getParameter(PARAMETER_USECASE);
         }
         
-        Resource resToEditPolicy = getYanel().getResourceManager().getResource(getEnvironment(), getRealm(), policyPath);
-        
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(getPath());
         StringBuffer sb = new StringBuffer("");
         try {
@@ -67,17 +65,17 @@ public class PolicyManagerResource extends BasicXMLResource {
                 String showTabsParam = request.getParameter("showTabs");
                 if (showTabsParam != null) showTabs = new java.lang.Boolean(showTabsParam).booleanValue();
 
-                sb.append(PolicyViewer.getXHTMLView(resToEditPolicy.getRealm().getPolicyManager(), resToEditPolicy.getPath(), null, orderedBy, showParents, showTabs));
+                sb.append(PolicyViewer.getXHTMLView(getRealm().getPolicyManager(), getRealm().getIdentityManager().getGroupManager(), getPath(), null, orderedBy, showParents, showTabs));
         } else if (policyUsecase.equals("update")) {
                 String getXML = request.getParameter("get");
                 String postXML = request.getParameter("post");
                 if (getXML != null && getXML.equals("identities")) {
-                    sb.append(getIdentitiesAndRightsAsXML(resToEditPolicy.getRealm().getIdentityManager(), resToEditPolicy.getRealm().getPolicyManager(), getRequestedLanguage()));
+                    sb.append(getIdentitiesAndRightsAsXML(getRealm().getIdentityManager(), getRealm().getPolicyManager(), getRequestedLanguage()));
                 } else if (getXML != null && getXML.equals("policy")) {
-                    sb.append(getPolicyAsXML(resToEditPolicy.getRealm().getPolicyManager(), resToEditPolicy.getPath()));
+                    sb.append(getPolicyAsXML(getRealm().getPolicyManager(), getPath()));
                 } else if (postXML != null && postXML.equals("policy")) {
                     try {
-                        writePolicy(request.getInputStream(), resToEditPolicy.getRealm().getPolicyManager(), resToEditPolicy.getPath());
+                        writePolicy(request.getInputStream(), getRealm().getPolicyManager(), getPath());
                         sb.append("<?xml version=\"1.0\"?><saved/>");
                     } catch(Exception e) {
                         log.error(e,e);
@@ -85,10 +83,10 @@ public class PolicyManagerResource extends BasicXMLResource {
                     }
                 } else {
                     String identitiesURL = "../.." + getPath() + "?policy-path=" + policyPath + "&amp;yanel.policy=update&amp;get=identities";
-                    //String saveURL = "../.." + resToEditPolicy.getPath() + "?yanel.policy=update&post=policy";
+                    //String saveURL = "../.." + getPath() + "?yanel.policy=update&post=policy";
                     String saveURL = "?policy-path=" + policyPath + "&amp;yanel.policy=update&amp;post=policy";
-                    String cancelURL = org.wyona.commons.io.PathUtil.getName(resToEditPolicy.getPath());
-                    if (resToEditPolicy.getPath().endsWith("/")) cancelURL = "./";
+                    String cancelURL = org.wyona.commons.io.PathUtil.getName(getPath());
+                    if (getPath().endsWith("/")) cancelURL = "./";
 
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
