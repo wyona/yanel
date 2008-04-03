@@ -51,7 +51,7 @@ public class PolicyViewer {
                 sb.append("</i>:</p>");
                 sb.append("<p>(Policy Repository: "+pm.getPoliciesRepository().getName()+", "+pm.getPoliciesRepository().getConfigFile()+")</p>");
 
-                sb.append(getOrderByLink(orderedBy, showParents));
+                sb.append(getOrderByLink(orderedBy, showParents, showTabs));
                 sb.append("<p><table border=\"1\">");
                 sb.append("<tr><td>Path</td>" + getSplittedPath(pm, path, contentItemId) + "</tr>");
 
@@ -71,7 +71,7 @@ public class PolicyViewer {
                 if (contentItemId != null) sb.append("#" + contentItemId);
                 sb.append("</i>:</p></div>");
 
-                sb.append(getOrderByLink(orderedBy, showParents));
+                sb.append(getOrderByLink(orderedBy, showParents, showTabs));
                 boolean aggregate = true;
                 Policy p = pm.getPolicy(path, aggregate);
                 sb.append("<p><table border=\"1\"><tr>");
@@ -297,13 +297,14 @@ public class PolicyViewer {
     }
 
     /**
+     * @param showTabs TODO
      *
      */
-    private static String getOrderByLink(int orderedBy, boolean showParents) {
+    private static String getOrderByLink(int orderedBy, boolean showParents, boolean showTabs) {
         if (orderedBy == ORDERED_BY_USECASES) {
-            return "<div id=\"order-by-sentence\"><p>Order by <a href=\"?yanel.policy=read&amp;orderedBy=" + ORDERED_BY_IDENTITIES + "&amp;showParents=" + showParents + "\">Identities</a></p></div>";
+            return "<div id=\"order-by-sentence\"><p>Order by <a href=\"?yanel.policy=read&amp;orderedBy=" + ORDERED_BY_IDENTITIES + "&amp;showParents=" + showParents + "&amp;showTabs=" + showTabs + "\">Identities</a></p></div>";
         } else if (orderedBy == ORDERED_BY_IDENTITIES) {
-            return "<div id=\"order-by-sentence\"><p>Order by <a href=\"?yanel.policy=read&amp;orderedBy=" + ORDERED_BY_USECASES + "&amp;showParents=" + showParents + "\">Usecases</a></p></div>";
+            return "<div id=\"order-by-sentence\"><p>Order by <a href=\"?yanel.policy=read&amp;orderedBy=" + ORDERED_BY_USECASES + "&amp;showParents=" + showParents + "&amp;showTabs=" + showTabs + "\">Usecases</a></p></div>";
         } else {
             log.error("No such order by value implemented: " + orderedBy);
             return "";
