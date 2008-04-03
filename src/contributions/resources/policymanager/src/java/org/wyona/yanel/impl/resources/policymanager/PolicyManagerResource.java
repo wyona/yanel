@@ -29,10 +29,22 @@ public class PolicyManagerResource extends BasicXMLResource {
     private static String PARAMETER_EDIT_PATH = "policy-path";
     private static String PARAMETER_USECASE = "yanel.policy";
     
+    /**
+     *
+     */
     protected InputStream getContentXML(String viewId) throws Exception {
         
+
+        // For example ?policy-path=/foo/bar.html
         String policyPath = request.getParameter(PARAMETER_EDIT_PATH);
-        String policyUsecase = request.getParameter(PARAMETER_USECASE);
+        if (policyPath == null) {
+            log.error("No policy path specified! Please specify a policy path, e.g. ?policy-path=/foo/bar.html");
+        }
+        // For example ?yanel.policy=read
+        String policyUsecase = "read";
+	if (request.getParameter(PARAMETER_USECASE) != null) {
+            policyUsecase = request.getParameter(PARAMETER_USECASE);
+        }
         
         Resource resToEditPolicy = getYanel().getResourceManager().getResource(getEnvironment(), getRealm(), policyPath);
         
@@ -41,13 +53,16 @@ public class PolicyManagerResource extends BasicXMLResource {
         try {
             if (policyUsecase.equals("read")) {
 
+                // Either order by usecases or identities
                 String orderedByParam = request.getParameter("orderedBy");
                 int orderedBy = 0;
                 if (orderedByParam != null) orderedBy = new java.lang.Integer(orderedByParam).intValue();
+                // Either show parent policies or do not show them
                 boolean showParents = false;
                 String showParentsParam = request.getParameter("showParents");
                 if (showParentsParam != null) showParents = new java.lang.Boolean(showParentsParam).booleanValue();
 
+                // Either show tabs or do not show them
                 boolean showTabs = true;
                 String showTabsParam = request.getParameter("showTabs");
                 if (showTabsParam != null) showTabs = new java.lang.Boolean(showTabsParam).booleanValue();
