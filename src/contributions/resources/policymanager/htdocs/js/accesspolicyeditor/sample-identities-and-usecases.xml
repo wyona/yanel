@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<access-control xmlns="http://www.wyona.org/security/1.0">
+
+  <!-- TODO
+  <i18n language="de"/>
+  -->
+
+  <!-- TODO
+  <world/>
+  -->
+
+  <users>
+    <user id="michi">Michael Wechner</user>
+    <user id="http://michaelwechner.livejournal.com/"/>
+  </users>
+
+  <groups>
+    <group id="all">All registered users</group>
+    <group id="admin">Administrator Group</group>
+  </groups>
+
+  <rights>
+    <right id="view">Read</right>
+    <right id="write">Write</right>
+    <right id="toolbar">Toolbar</right>
+  </rights>
+</access-control>

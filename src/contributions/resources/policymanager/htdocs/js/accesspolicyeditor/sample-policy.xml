@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<policy xmlns="http://www.wyona.org/security/1.0" use-inherited-policies="false">
+
+  <world>
+    <right id="view">Read</right>
+    <right id="write">Write</right>
+    <right id="introspection" permission="false"/>
+  </world>
+
+  <user id="http://michaelwechner.livejournal.com/">
+    <right id="open"/>
+    <right id="write"/>
+    <right id="toolbar">Toolbar</right>
+    <right id="policy.read"/>
+    <right id="policy.write"/>
+  </user>
+
+  <group id="login">
+    <right id="open"/>
+    <right id="write"/>
+    <right id="toolbar"/>
+  </group>
+
+</policy>
