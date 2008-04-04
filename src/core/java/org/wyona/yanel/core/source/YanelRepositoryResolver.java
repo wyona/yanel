@@ -10,6 +10,7 @@ import org.apache.log4j.Category;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
 
 
@@ -82,8 +83,11 @@ public class YanelRepositoryResolver implements URIResolver {
             } else {
                 repo = realm.getRepository();
             }
-            InputStream in = repo.getNode(path).getInputStream();
-            return new StreamSource(in);
+            Node node = repo.getNode(path);
+            InputStream in = node.getInputStream();
+            YanelStreamSource source = new YanelStreamSource(in);
+            source.setLastModified(node.getLastModified());
+            return source;
         } catch (Exception e) {
             String errorMsg = "Could not resolve URI: " + href + ": " + e.toString();
             log.error(errorMsg, e);

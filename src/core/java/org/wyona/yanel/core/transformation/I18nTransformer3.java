@@ -14,6 +14,7 @@ import javax.xml.transform.sax.SAXSource;
 import org.apache.log4j.Category;
 import org.wyona.yanel.core.i18n.MessageManager;
 import org.wyona.yanel.core.i18n.MessageProvider;
+import org.wyona.yanel.core.i18n.MessageProviderFactory;
 import org.wyona.yanel.core.i18n.ResourceBundleMessageProvider;
 import org.wyona.yanel.core.i18n.XMLMessageProvider;
 import org.wyona.yanel.core.source.SourceException;
@@ -128,18 +129,10 @@ public class I18nTransformer3 extends AbstractTransformer {
     }
     
     protected MessageProvider getMessageProvider(String catalogue) {
-        if (catalogue.indexOf(":") == -1) {
-            return new ResourceBundleMessageProvider(catalogue);
-        } else {
-            try {
-                Source source = resolver.resolve(catalogue, null);
-                InputStream is = SAXSource.sourceToInputSource(source).getByteStream();
-                return new XMLMessageProvider(is);
-            } catch (SourceException e) {
-                throw new RuntimeException(e.getMessage(), e);
-            } catch (TransformerException e) {
-                throw new RuntimeException(e.getMessage(), e);
-            }
+        try {
+            return MessageProviderFactory.getMessageProvider(catalogue, resolver);
+        } catch (SourceException e) {
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
     
