@@ -1852,10 +1852,9 @@ public class YanelServlet extends HttpServlet {
             return;
         } else if (path.indexOf("data-repository-sitetree.html") >= 0) {
             try {
-                java.util.Map properties = new HashMap();
-                //properties.put("user", userName);
-                ResourceConfiguration rc = new ResourceConfiguration("data-repo-sitetree", "http://www.wyona.org/yanel/resource/1.0", properties);
                 Realm realm = yanel.getMap().getRealm(request.getServletPath());
+                File drsResConfigFile = getGlobalResourceConfiguration("data-repo-sitetree_yanel-rc.xml", realm);
+                ResourceConfiguration rc = new ResourceConfiguration(new java.io.FileInputStream(drsResConfigFile));
                 Resource sitetreeResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
                 View view = ((ViewableV2) sitetreeResource).getView(viewId);
                 if (view != null) {
@@ -2160,14 +2159,7 @@ public class YanelServlet extends HttpServlet {
                 Realm realm = map.getRealm(request.getServletPath());
                 String path = map.getPath(realm, request.getServletPath());
 
-                // TODO: Introduce a repository for the Yanel webapp
-                File realmDir = new File(realm.getConfigFile().getParent());
-                File pmrcGlobalFile = org.wyona.commons.io.FileUtil.file(realmDir.getAbsolutePath(), "src" + File.separator + "webapp" + File.separator + "global-resource-configs/policy-manager_yanel-rc.xml");
-		if (!pmrcGlobalFile.isFile()) {
-                    // Fallback to global configuration
-                    pmrcGlobalFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "global-resource-configs/policy-manager_yanel-rc.xml");
-                }
-
+                File pmrcGlobalFile = getGlobalResourceConfiguration("policy-manager_yanel-rc.xml", realm);
                 Resource policyManagerResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, new ResourceConfiguration(new java.io.FileInputStream(pmrcGlobalFile)));
                 View view = ((ViewableV2) policyManagerResource).getView(viewId);
                 if (view != null) {
@@ -2451,4 +2443,19 @@ public class YanelServlet extends HttpServlet {
         Policy policy = new org.wyona.security.util.PolicyParser().parseXML(policyAsInputStream);
         pm.setPolicy(path, policy);
     }
+
+    /**
+     *
+     */
+    private File getGlobalResourceConfiguration(String resConfigName, Realm realm) {
+        // TODO: Introduce a repository for the Yanel webapp
+        File realmDir = new File(realm.getConfigFile().getParent());
+        File globalResConfigFile = org.wyona.commons.io.FileUtil.file(realmDir.getAbsolutePath(), "src" + File.separator + "webapp" + File.separator + "global-resource-configs/" + resConfigName);
+        if (!globalResConfigFile.isFile()) {
+            // Fallback to global configuration
+            globalResConfigFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "global-resource-configs/" + resConfigName);
+        }
+        return globalResConfigFile;
+    }
+
 }
