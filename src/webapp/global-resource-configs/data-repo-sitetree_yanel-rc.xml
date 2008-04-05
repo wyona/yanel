@@ -7,9 +7,7 @@
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
       <view id="default">
 <!--
-        <xslt>/xslt/global.xsl</xslt>
--->
-<!--
+        <xslt>file:/home/michi/src/wyona/public/yanel/trunk/src/webapp/xslt/sitetree.xsl</xslt>
         <mime-type>application/xhtml+xml</mime-type>
 -->
         <mime-type>application/xml</mime-type>
