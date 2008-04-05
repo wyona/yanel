@@ -178,8 +178,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(java.lang.String)
      */
     public View getView(String viewId) throws Exception {
-        InputStream xmlInputStream = getContentXML(viewId);
-        return getXMLView(viewId, xmlInputStream);
+        return getXMLView(viewId, getContentXML(viewId));
     }
 
     /**
@@ -194,10 +193,12 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         if (mimeType == null) {
             mimeType = this.getResourceConfigProperty("mime-type");
         }
-        if (mimeType != null) {
-            return mimeType;
+        if (mimeType == null) {
+            mimeType = "application/xhtml+xml";
+            log.warn("No mime type configured, hence will return '" + mimeType + "' as mime type!");
         }
-        return "application/xhtml+xml";
+        //log.debug("Mime type: " + mimeType + ", " + viewId);
+        return mimeType;
     }
 
     /**
@@ -214,7 +215,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         return -1;
     }
 
-
+    /**
+     *
+     */
     public View getXMLView(String viewId, InputStream xmlInputStream) throws Exception {
         View view = new View();
         if (viewId == null) {
@@ -226,8 +229,6 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
         StringWriter errorWriter = new StringWriter();
         try {
-            Repository repo = getRealm().getRepository();
-
             if (viewId != null && viewId.equals(SOURCE_VIEW_ID)) {
                 view.setInputStream(xmlInputStream);
                 return view;
@@ -252,6 +253,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 xsltPaths = getXSLTPath(getPath());
             }
             
+            Repository repo = getRealm().getRepository();
             TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPaths.length];
             for (int i = 0; i < xsltPaths.length; i++) {
                 xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPaths[i]).getInputStream()));
