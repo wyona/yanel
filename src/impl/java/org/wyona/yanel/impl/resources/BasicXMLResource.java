@@ -256,7 +256,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             Repository repo = getRealm().getRepository();
             TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPaths.length];
             for (int i = 0; i < xsltPaths.length; i++) {
-                xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPaths[i]).getInputStream()));
+                // TODO: Use resolver
+                if (xsltPaths[i].startsWith("file:")) {
+                    log.warn("Scheme: file (" + xsltPaths[i] + ")");
+                    xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(new java.io.FileInputStream(xsltPaths[i].substring(5))));
+                } else {
+                    xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPaths[i]).getInputStream()));
+                }
                 xsltHandlers[i].getTransformer().setURIResolver(uriResolver);
                 xsltHandlers[i].getTransformer().setErrorListener(errorListener);
                 passTransformerParameters(xsltHandlers[i].getTransformer());
