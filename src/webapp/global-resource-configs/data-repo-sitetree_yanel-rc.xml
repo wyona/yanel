@@ -3,16 +3,6 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="data-repo-sitetree" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
-<!--
-  <yanel:property name="mime-type" value="application/xml"/>
--->
-<!--
-  <yanel:property name="mime-type" value="application/xhtml+xml"/>
--->
-<!--
-  <yanel:property name="mime-type" value="text/html"/>
--->
-
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
       <view id="default">
