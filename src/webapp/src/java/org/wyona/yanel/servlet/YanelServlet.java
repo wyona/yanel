@@ -584,7 +584,8 @@ public class YanelServlet extends HttpServlet {
                 return;
             } catch(Exception e) {
                 log.error(e.getMessage(), e);
-                String message = e.toString();
+                String message = e.toString() + "\n\n" + getStackTrace(e);
+                //String message = e.toString();
                 Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
                 exceptionElement.appendChild(doc.createTextNode(message));
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -2458,4 +2459,12 @@ public class YanelServlet extends HttpServlet {
         return globalResConfigFile;
     }
 
+    /**
+     *
+     */
+    private String getStackTrace(Exception e) {
+        java.io.StringWriter sw = new java.io.StringWriter();
+        e.printStackTrace(new java.io.PrintWriter(sw));
+        return sw.toString();
+    }
 }
