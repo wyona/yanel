@@ -18,17 +18,17 @@ package org.wyona.yanel.core;
 
 import java.io.File;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
 /**
- *
+ * Contains universal name and the class name of the implementation of a resource
  */
 public class ResourceTypeDefinition {
 
-    private Category log = Category.getInstance(ResourceTypeDefinition.class);
+    private Logger log = Logger.getLogger(ResourceTypeDefinition.class);
 
     private String uname;
     private String classname;
@@ -68,21 +68,21 @@ public class ResourceTypeDefinition {
     }
 
     /**
-     *
+     * Get universal name
      */
     public String getResourceTypeUniversalName() {
         return uname;
     }
 
     /**
-     *
+     * Get local name
      */
     public String getResourceTypeLocalName() {
         return uname.substring(uname.indexOf("}") + 1, uname.length() -2);
     }
 
     /**
-     *
+     * Get namespace
      */
     public String getResourceTypeNamespace() {
         return uname.substring(uname.indexOf("{") + 1, uname.indexOf("}"));
