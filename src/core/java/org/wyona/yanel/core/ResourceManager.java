@@ -51,11 +51,13 @@ public class ResourceManager {
     /**
      * Creates a new resource object in the given realm with the given path and the given type.
      *
+     * @param environment Environment which for example contains request and response
+     * @param realm Realm where resource is living
      * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
+     * @param rtd Resource type definition
+     * @param rti Resource type identifier (deprecated and contains redudant information to resource type definition. What about properties?)
      */
-    public Resource getResource(Environment environment, Realm realm, String path, 
-            ResourceTypeDefinition rtd, ResourceTypeIdentifier rti) 
-    throws Exception {
+    public Resource getResource(Environment environment, Realm realm, String path, ResourceTypeDefinition rtd, ResourceTypeIdentifier rti) throws Exception {
         String universalName = rtd.getResourceTypeUniversalName();
         if (rtd != null) {
             Resource resource = (Resource) Class.forName(rtd.getResourceTypeClassname()).newInstance();
