@@ -6,11 +6,15 @@
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
       <view id="default">
+        <xslt>rthtdocs:/sitetree.xsl</xslt>
 <!--
-        <xslt>file:/home/michi/src/wyona/public/yanel/trunk/src/webapp/xslt/sitetree.xsl</xslt>
-        <mime-type>application/xhtml+xml</mime-type>
+        <xslt>file:/home/michi/src/wyona/public/yanel/trunk/src/contributions/resources/data-repo-sitetree/htdocs/sitetree.xsl</xslt>
 -->
+        <mime-type>application/xhtml+xml</mime-type>
+
+<!--
         <mime-type>application/xml</mime-type>
+-->
       </view>
       <view id="xml">
         <mime-type>application/xml</mime-type>
