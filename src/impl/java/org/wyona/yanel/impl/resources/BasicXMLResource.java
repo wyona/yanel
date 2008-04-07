@@ -260,6 +260,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 if (xsltPaths[i].startsWith("file:")) {
                     log.warn("Scheme: file (" + xsltPaths[i] + ")");
                     xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(new java.io.FileInputStream(xsltPaths[i].substring(5))));
+                } else if(xsltPaths[i].startsWith("rthtdocs:")) {
+                    log.warn("Scheme: rthtdocs (" + xsltPaths[i] + ")");
+                    xsltHandlers[i] = tf.newTransformerHandler(new org.wyona.yanel.core.source.RTHtdocsResolver(this).resolve(xsltPaths[i], null));
                 } else {
                     xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPaths[i]).getInputStream()));
                 }
