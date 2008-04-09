@@ -413,15 +413,7 @@ public class YanelServlet extends HttpServlet {
                         try {
                             view = ((ViewableV1) res).getView(request, viewId);
                         } catch(org.wyona.yarep.core.NoSuchNodeException e) {
-                            // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
-                            String message = "No such node exception: " + e;
-                            log.warn(e);
-                            //log.error(e.getMessage(), e);
-                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
-                            exceptionElement.appendChild(doc.createTextNode(message));
-                            exceptionElement.setAttributeNS(NAMESPACE, "status", "404");
-                            response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
-                            setYanelOutput(request, response, doc);
+                            do404(request, response, doc, e.getMessage());
                             return;
                         } catch(Exception e) {
                             log.error(e.getMessage(), e);
@@ -438,7 +430,10 @@ public class YanelServlet extends HttpServlet {
                         if (log.isDebugEnabled()) log.debug("Resource is viewable V2");
 
                         if (!((ViewableV2) res).exists()) {
-                            log.warn("No such resource: " + res.getPath() + " (TODO: Send 404!)");
+                            //log.warn("No such ViewableV2 resource: " + res.getPath());
+                            //log.warn("TODO: It seems like many ViewableV2 resources are not implementing exists() properly!");
+                            //do404(request, response, doc, res.getPath());
+                            //return;
                         }
 
                         String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
@@ -469,27 +464,18 @@ public class YanelServlet extends HttpServlet {
                                 if (workflowable.isLive()) {
                                     view = workflowable.getLiveView(viewId);
                                 } else {
-                                    String message = "This document has not been published yet.";
+                                    String message = "This document has not been published yet: " + res.getPath();
                                     log.warn(message);
-                                    Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
-                                    exceptionElement.appendChild(doc.createTextNode(message));
-                                    exceptionElement.setAttributeNS(NAMESPACE, "status", "404");
-                                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
-                                    setYanelOutput(request, response, doc);
+                                    do404(request, response, doc, message);
                                     return;
                                 }
                             } else {
                                 view = ((ViewableV2) res).getView(viewId);
                             }
                         } catch(org.wyona.yarep.core.NoSuchNodeException e) {
-                            // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
-                            String message = "No such node exception: " + e;
-                            log.warn(e);
-                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
-                            exceptionElement.appendChild(doc.createTextNode(message));
-                            exceptionElement.setAttributeNS(NAMESPACE, "status", "404");
-                            response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
-                            setYanelOutput(request, response, doc);
+                            String message = "" + e;
+                            log.warn(message);
+                            do404(request, response, doc, message);
                             return;
                         }
                     } else {
@@ -576,16 +562,9 @@ public class YanelServlet extends HttpServlet {
                         Element resourceIsNullElement = (Element) rootElement.appendChild(doc.createElement("resource-is-null"));
                 }
             } catch(org.wyona.yarep.core.NoSuchNodeException e) {
-                // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
-                String message = "No such node exception: " + e;
+                String message = "" + e;
                 log.warn(e, e);
-                // Show the stack trace
-                //log.warn(e.getMessage(), e);
-                Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
-                exceptionElement.appendChild(doc.createTextNode(message));
-                exceptionElement.setAttributeNS(NAMESPACE, "status", "404");
-                response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
-                setYanelOutput(request, response, doc);
+                do404(request, response, doc, message);
                 return;
             } catch(Exception e) {
                 log.error(e.getMessage(), e);
@@ -2471,5 +2450,20 @@ public class YanelServlet extends HttpServlet {
         java.io.StringWriter sw = new java.io.StringWriter();
         e.printStackTrace(new java.io.PrintWriter(sw));
         return sw.toString();
+    }
+
+    /**
+     *
+     */
+    private void do404(HttpServletRequest request, HttpServletResponse response, Document doc, String exceptionMessage) throws ServletException {
+        // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
+        String message = "No such node exception: " + exceptionMessage;
+        log.warn(message);
+        Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
+        exceptionElement.appendChild(doc.createTextNode(message));
+        exceptionElement.setAttributeNS(NAMESPACE, "status", "404");
+        response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
+        setYanelOutput(request, response, doc);
+        return;
     }
 }
