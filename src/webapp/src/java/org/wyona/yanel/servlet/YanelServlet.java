@@ -436,6 +436,11 @@ public class YanelServlet extends HttpServlet {
                         }
                     } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
                         if (log.isDebugEnabled()) log.debug("Resource is viewable V2");
+
+                        if (!((ViewableV2) res).exists()) {
+                            log.warn("No such resource: " + res.getPath() + " (TODO: Send 404!)");
+                        }
+
                         String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
                         Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
                         viewElement.setAttributeNS(NAMESPACE, "version", "2");
