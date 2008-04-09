@@ -99,6 +99,9 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
         if (node != null) {
             if (node.isCollection()) {
                 sb.append("<collection path=\"" + path + "\" name=\"" + node.getName() + "\">");
+                // TODO: ...
+                sb.append("<label><![CDATA[" + node.getName() + "]]></label>");
+                //sb.append("<label><![CDATA[" + node.getLabel() + "]]></label>");
                 Node[] children = node.getChildren();
                 for (int i = 0; i < children.length; i++) {
                     String childPath = path + "/" + children[i].getName();
@@ -111,8 +114,12 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
                         sb.append(getNodeAsXML(childPath));
                         //sb.append(getNodeAsXML(children[i].getPath()));
                     } else if (children[i].isResource()) {
-                        sb.append("<resource path=\"" + childPath + "\" name=\"" + children[i].getName() + "\"/>");
-                        //sb.append("<resource path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
+                        sb.append("<resource path=\"" + childPath + "\" name=\"" + children[i].getName() + "\">");
+                        //sb.append("<resource path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\">");
+                        // TODO ...
+                        sb.append("<label><![CDATA[" + children[i].getName() + "]]></label>");
+                        //sb.append("<label><![CDATA[" + children[i].getLabel() + "]]></label>");
+                        sb.append("</resource>");
                     } else {
                         sb.append("<neither-resource-nor-collection path=\"" + childPath + "\" name=\"" + children[i].getName() + "\"/>");
                         //sb.append("<neither-resource-nor-collection path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
@@ -120,7 +127,11 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
                 }
                 sb.append("</collection>");
             } else {
-                sb.append("<resource path=\"" + path + "\" name=\"" + node.getName() + "\"/>");
+                sb.append("<resource path=\"" + path + "\" name=\"" + node.getName() + "\">");
+                // TODO ...
+                sb.append("<label><![CDATA[" + node.getName() + "]]></label>");
+                //sb.append("<label><![CDATA[" + node.getLabel() + "]]></label>");
+                sb.append("</resource>");
             }
         } else {
             String errorMessage = "node is null for path: " + path;
