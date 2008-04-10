@@ -101,6 +101,8 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                             session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
                         }
                         identityMap.put(realm.getID(), new Identity(user));
+                        log.warn("Authentication was successful for user: " + user.getID());
+                        log.warn("TODO: Add user to session listener!");
                         return null;
                     } else {
                         log.warn("Login failed: " + loginUsername);
