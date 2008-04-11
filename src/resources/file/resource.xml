@@ -12,5 +12,8 @@ Generic node resource
 <rtd>
   <property name="mime-type"/>
   <property name="encoding"/>
+
+  <!-- If no src property is specified, then the request path will be used -->
+  <property name="src"/>
 </rtd>
 </resource>
