@@ -80,7 +80,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     public View getView(String viewId, String revisionName) throws Exception {
         View view = new View();
 
-        view.setInputStream(getRealm().getRepository().getNode(getPath()).getRevision(revisionName).getInputStream());
+        view.setInputStream(getNode().getRevision(revisionName).getInputStream());
         view.setMimeType(getMimeType(viewId));
         view.setEncoding(getResourceConfigProperty("encoding"));
 
@@ -93,7 +93,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     public View getView(String viewId) throws Exception {
         View view = new View();
 
-        view.setInputStream(getRealm().getRepository().getNode(getPath()).getInputStream());
+        view.setInputStream(getNode().getInputStream());
         view.setMimeType(getMimeType(viewId));
         view.setEncoding(getResourceConfigProperty("encoding"));
 
@@ -132,7 +132,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public InputStream getInputStream() throws Exception {
-        return getRealm().getRepository().getNode(getPath()).getInputStream();
+        return getNode().getInputStream();
     }
 
     /**
@@ -147,11 +147,13 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public OutputStream getOutputStream() throws Exception {
+        log.error("TODO: Use existsNode() method!");
         if (!getRealm().getRepository().existsNode(getPath())) {
             // TODO: create node recursively ...
+            log.error("TODO: Use getNode() method!");
             getRealm().getRepository().getNode(new org.wyona.commons.io.Path(getPath()).getParent().toString()).addNode(new org.wyona.commons.io.Path(getPath()).getName().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
         }
-        return getRealm().getRepository().getNode(getPath()).getOutputStream();
+        return getNode().getOutputStream();
     }
 
     /**
@@ -165,7 +167,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public long getLastModified() throws Exception {
-       Node node = getRealm().getRepository().getNode(getPath());
+       Node node = getNode();
        long lastModified;
        if (node.isResource()) {
            lastModified = node.getLastModified();
@@ -180,7 +182,8 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      * Delete data of node resource
      */
     public boolean delete() throws Exception {
-        getRealm().getRepository().getNode(getPath()).delete();
+        log.warn("TODO: Check if this node is referenced by other nodes!");
+        getNode().delete();
         return true;
     }
 
@@ -188,7 +191,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      * @see org.wyona.yanel.core.api.attributes.VersionableV2#getRevisions()
      */
     public RevisionInformation[] getRevisions() throws Exception {
-        Revision[] revisions = getRealm().getRepository().getNode(getPath()).getRevisions();
+        Revision[] revisions = getNode().getRevisions();
 
         RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
 
@@ -202,7 +205,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     public void checkin(String comment) throws Exception {
-        Node node = getRealm().getRepository().getNode(getPath());
+        Node node = getNode();
         node.checkin(comment);
         /*
         if (node.isCheckedOut()) {
@@ -219,7 +222,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     public void checkout(String userID) throws Exception {
-        Node node = getRealm().getRepository().getNode(getPath());
+        Node node = getNode();
         node.checkout(userID);
         /*
         if (node.isCheckedOut()) {
@@ -236,27 +239,27 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     public void cancelCheckout() throws Exception {
-        Node node = getRealm().getRepository().getNode(getPath());
+        Node node = getNode();
         node.cancelCheckout();
     }
 
     public void restore(String revisionName) throws Exception {
-        getRealm().getRepository().getNode(getPath()).restore(revisionName);
+        getNode().restore(revisionName);
     }
 
     public Date getCheckoutDate() throws Exception {
-        Node node = getRealm().getRepository().getNode(getPath());
+        Node node = getNode();
         // return node.getCheckoutDate();
         return null;
     }
 
     public String getCheckoutUserID() throws Exception {
-        Node node = getRealm().getRepository().getNode(getPath());
+        Node node = getNode();
         return node.getCheckoutUserID();
     }
 
     public boolean isCheckedOut() throws Exception {
-        Node node = getRealm().getRepository().getNode(getPath());
+        Node node = getNode();
         return node.isCheckedOut();
     }
 
@@ -268,7 +271,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public long getSize() throws Exception {
-        Node node = getRealm().getRepository().getNode(getPath());
+        Node node = getNode();
         long size;
         if (node.isResource()) {
             size = node.getSize();
@@ -331,7 +334,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
 
 
             // TODO: Introspection should not be hardcoded!
-/*            String name = new org.wyona.commons.io.Path(getPath()).getName();
+/*          String name = new org.wyona.commons.io.Path(getPath()).getName();
             String parent = new org.wyona.commons.io.Path(getPath()).getParent().toString();
             String nameWithoutSuffix = name;
             int lastIndex = name.lastIndexOf(".");
@@ -555,5 +558,25 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         }
         name = name.replaceAll(" |&|%|\\?", "_");
         return name;
+    }
+
+    /**
+     *
+     */
+    private Node getNode() throws org.wyona.yanel.core.ResourceNotFoundException {
+        try {
+            String path = getPath();
+            if (getResourceConfigProperty("src") != null) {
+                path = getResourceConfigProperty("src");
+            }
+            try {
+                return getRealm().getRepository().getNode(path);
+            } catch (org.wyona.yarep.core.NoSuchNodeException e) {
+                throw new org.wyona.yanel.core.ResourceNotFoundException(path);
+                //throw new org.wyona.yanel.core.ResourceNotFoundException(path, getRealm(), getRealm().getRepository());
+            }
+        } catch (Exception e) {
+            throw new org.wyona.yanel.core.ResourceNotFoundException(e);
+        }
     }
 }
