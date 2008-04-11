@@ -477,12 +477,17 @@ public class YanelServlet extends HttpServlet {
                             log.warn(message);
                             do404(request, response, doc, message);
                             return;
+                        } catch(org.wyona.yanel.core.ResourceNotFoundException e) {
+                            String message = "" + e;
+                            log.warn(message);
+                            do404(request, response, doc, message);
+                            return;
                         }
                     } else {
-                         Element noViewElement = (Element) resourceElement.appendChild(doc.createElement("not-viewable"));
-                         String message = res.getClass().getName() + " is not viewable! (" + res.getPath() + ", " + res.getRealm() + ")";
-                         noViewElement.appendChild(doc.createTextNode(res.getClass().getName() + " is not viewable!"));
-                         log.error(message);
+                        Element noViewElement = (Element) resourceElement.appendChild(doc.createElement("not-viewable"));
+                        String message = res.getClass().getName() + " is not viewable! (" + res.getPath() + ", " + res.getRealm() + ")";
+                        noViewElement.appendChild(doc.createTextNode(res.getClass().getName() + " is not viewable!"));
+                        log.error(message);
                          Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
                          exceptionElement.appendChild(doc.createTextNode(message));
                          exceptionElement.setAttributeNS(NAMESPACE, "status", "501");
@@ -562,6 +567,11 @@ public class YanelServlet extends HttpServlet {
                         Element resourceIsNullElement = (Element) rootElement.appendChild(doc.createElement("resource-is-null"));
                 }
             } catch(org.wyona.yarep.core.NoSuchNodeException e) {
+                String message = "" + e;
+                log.warn(e, e);
+                do404(request, response, doc, message);
+                return;
+            } catch(org.wyona.yanel.core.ResourceNotFoundException e) {
                 String message = "" + e;
                 log.warn(e, e);
                 do404(request, response, doc, message);
