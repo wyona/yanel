@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<project name="404-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <target name="dependencies" description="Dependencies">
+    <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
+
+    <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-core" version="${yanel.source.version}"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-impl" version="${yanel.source.version}"/>
+    </artifact:dependencies>
+
+    <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <!-- No resource specific libs yet -->
+    </artifact:dependencies>
+
+    <property name="maven2.cp" refid="maven2.classpath"/>
+    <!--<echo>Maven2 classpath: ${maven2.cp}</echo>-->
+  </target>
+
+</project>
