@@ -6,6 +6,7 @@
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
       <view id="default">
+        <!-- NOTE: XSLT is copied into lib during build process, see 'jar -tf TOMCAT/webapps/yanel/WEB-INF/lib/yanel-resource-404-0.0.1-dev-rXXX.jar' -->
         <xslt>rthtdocs:/404.xsl</xslt>
         <mime-type>application/xhtml+xml</mime-type>
 <!--
