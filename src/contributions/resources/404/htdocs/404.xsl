@@ -8,7 +8,7 @@
   xmlns:i18n="http://www.wyona.org/yanel/i18n/1.0"
 >
 
-  <!-- TODO: Isn't there a more standardized i18n namespace? -->
+<!-- NOTE: This XSLT is copied during the build process into the jar file! -->
 
   <xsl:output method="xhtml" encoding="UTF-8"/>
 
