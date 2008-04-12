@@ -13,25 +13,28 @@ import org.apache.log4j.Logger;
 
 
 /**
- * A simple Resource which extends BasicXMLResource
+ * Page not found resource
  */
 public class PageNotFoundResource extends BasicXMLResource {
     
     private static Logger log = Logger.getLogger(PageNotFoundResource.class);
     
-    /*
-     * This method overrides the method to create the InputStream called by BasicXMLResource
-     * Since you extend the BasicXMLResource this has to contain well-formed xml.
-     * Should return a InputStream which contains XML. 
-     * Use String, StingBuffer, dom, jdom, org.apache.commons.io.IOUtils and so on to generate the XML.
+    /**
+     * Generate XML
      */
     protected InputStream getContentXML(String viewId) {
         if (log.isDebugEnabled()) {
             log.debug("requested viewId: " + viewId);
         }
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        sb.append("<page-not-found>");
-        sb.append("</page-not-found>");
+        sb.append("<yanel xmlns=\"http://www.wyona.org/yanel/1.0\" servlet-context-real-path=\"TBD\">");
+        sb.append("<request>TBD</request>");
+        sb.append("<session>TBD</session>");
+        sb.append("<resource>TBD</resource>");
+        sb.append("<exception status=\"404\">");
+        sb.append("Resource not found exception: " + getPath());
+        sb.append("</exception>");
+        sb.append("</yanel>");
         return new ByteArrayInputStream(sb.toString().getBytes());
     }
 }
