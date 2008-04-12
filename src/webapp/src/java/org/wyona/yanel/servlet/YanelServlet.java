@@ -1847,6 +1847,7 @@ public class YanelServlet extends HttpServlet {
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
             return;
         } else if (path.indexOf("user-mgmt/list-users.html") >= 0) {
+            log.warn("TODO: Implementation not finished yet!");
         } else if (path.indexOf("about.html") >= 0) {
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             StringBuffer sb = new StringBuffer("<html>");
@@ -2478,13 +2479,38 @@ public class YanelServlet extends HttpServlet {
      */
     private void do404(HttpServletRequest request, HttpServletResponse response, Document doc, String exceptionMessage) throws ServletException {
         // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
-        String message = "No such node exception: " + exceptionMessage;
+        String message = "No such node/resource exception: " + exceptionMessage;
         log.warn(message);
+
+/*
         Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
         exceptionElement.appendChild(doc.createTextNode(message));
         exceptionElement.setAttributeNS(NAMESPACE, "status", "404");
         response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
         setYanelOutput(request, response, doc);
         return;
+*/
+
+        // TODO: Finish the XML (as it used to be before) and setStatus to 404!
+        try {
+            Realm realm = yanel.getMap().getRealm(request.getServletPath());
+            File pnfResConfigFile = getGlobalResourceConfiguration("404_yanel-rc.xml", realm);
+            ResourceConfiguration rc = new ResourceConfiguration(new java.io.FileInputStream(pnfResConfigFile));
+            String path = getResource(request, response).getPath();
+            Resource pageNotFoundResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
+            String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
+            if (request.getParameter("yanel.format") != null) { // backwards compatible
+                viewId = request.getParameter("yanel.format");
+            }
+            View view = ((ViewableV2) pageNotFoundResource).getView(viewId);
+            if (view != null) {
+                if (generateResponse(view, pageNotFoundResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
+            }
+            log.error("404 seems to be broken!");
+            return;
+        } catch (Exception e) {
+            log.error(e, e);
+            return;
+        }
     }
 }
