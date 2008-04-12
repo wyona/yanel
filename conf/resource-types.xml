@@ -3,9 +3,10 @@
 <!-- NOTE: The "compile" attribute is true by default -->
 <!-- NOTE: Do not use relative paths to reference resource types, because the paths are not being resolved re the location of (local.)resource-types.xml -->
 
-<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2008040400">
+<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2008041200">
 
   <changes>
+    <change version="2008041200">404 resource type added</change>
     <change version="2008040400">policy manager resource type added</change>
     <change version="2007112000">@YANEL_SRC_DIR@ parameter introduced</change>
     <change version="2007081500">timeline resource type added</change>
@@ -14,6 +15,7 @@
   </changes>
 
   <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/404/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/policymanager/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/timeline/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/data-repo-sitetree/" compile="true"/>
