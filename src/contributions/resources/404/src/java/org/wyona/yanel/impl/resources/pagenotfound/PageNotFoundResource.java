@@ -27,14 +27,19 @@ public class PageNotFoundResource extends BasicXMLResource {
             log.debug("requested viewId: " + viewId);
         }
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        sb.append("<yanel xmlns=\"http://www.wyona.org/yanel/1.0\" servlet-context-real-path=\"TBD\">");
-        sb.append("<request>TBD</request>");
-        sb.append("<session>TBD</session>");
-        sb.append("<resource>TBD</resource>");
-        sb.append("<exception status=\"404\">");
+        sb.append("<y:yanel xmlns:y=\"http://www.wyona.org/yanel/1.0\" servlet-context-real-path=\"TBD\">");
+        sb.append("<y:request y:servlet-path=\"" + getPath() + "\" y:uri=\"" + getPath() + "\">TBD</y:request>");
+        sb.append("<y:session y:id=\"TBD\">TBD</y:session>");
+        sb.append("<y:resource>");
+        sb.append("<y:config y:rti-name=\"TBD\" y:rti-namespace=\"TBD\"/>");
+        sb.append("<y:realm/>");
+        sb.append("<y:view/>");
+        sb.append("<y:size/>");
+        sb.append("</y:resource>");
+        sb.append("<y:exception y:status=\"404\">");
         sb.append("Resource not found exception: " + getPath());
-        sb.append("</exception>");
-        sb.append("</yanel>");
+        sb.append("</y:exception>");
+        sb.append("</y:yanel>");
         return new ByteArrayInputStream(sb.toString().getBytes());
     }
 }
