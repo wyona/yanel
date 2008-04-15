@@ -10,7 +10,7 @@ import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryException;
 
 /**
- *
+ * @deprecated Use org.wyona.yarep.util.YarepUtil
  */
 public class YarepUtil {
 
