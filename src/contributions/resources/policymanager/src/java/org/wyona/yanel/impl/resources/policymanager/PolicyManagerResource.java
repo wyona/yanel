@@ -37,7 +37,7 @@ public class PolicyManagerResource extends BasicXMLResource {
      */
     public View getView(String viewId) throws Exception {
         String policyRequestPara = getEnvironment().getRequest().getParameter("yanel.policy");
-	if (policyRequestPara.equals("update")) {
+        if (policyRequestPara.equals("update")) {
             String getXML = getEnvironment().getRequest().getParameter("get");
             String postXML = getEnvironment().getRequest().getParameter("post");
             if (getXML != null) {
@@ -47,8 +47,10 @@ public class PolicyManagerResource extends BasicXMLResource {
             } else {
                 viewId = "editor";
             }
+        } else {
+            viewId = "default"; // default is default anyway!
         }
-        // otherwise 'default" viewId is used
+        
         return getXMLView(viewId, getContentXML(viewId));
     }
     
@@ -56,8 +58,6 @@ public class PolicyManagerResource extends BasicXMLResource {
      *
      */
     protected InputStream getContentXML(String viewId) throws Exception {
-        
-
         // For example ?policy-path=/foo/bar.html
         String policyPath = request.getParameter(PARAMETER_EDIT_PATH);
         if (policyPath == null) {
@@ -102,7 +102,7 @@ public class PolicyManagerResource extends BasicXMLResource {
                 } else if (postXML != null && postXML.equals("policy")) {
                     //response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     try {
-                        writePolicy(getRequest().getInputStream(), getRealm().getPolicyManager(), getPath());
+                        writePolicy(getEnvironment().getRequest().getInputStream(), getRealm().getPolicyManager(), getPath());
                         sb.append("<?xml version=\"1.0\"?><saved/>");
                     } catch(Exception e) {
                         log.error(e,e);
@@ -112,22 +112,17 @@ public class PolicyManagerResource extends BasicXMLResource {
                     }
                 } else {
                     //response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
-                    String identitiesURL = "../.." + getPath() + "?yanel.policy=update&amp;get=identities";
-                    String policyURL = "../.." + getPath() + "?yanel.policy=update&amp;get=policy";
-                    //String saveURL = "../.." + getPath() + "?yanel.policy=update&amp;post=policy";
-                    String saveURL = "?yanel.policy=update&amp;post=policy"; // This doesn't seem to work with all browsers!
-                    String cancelURL = org.wyona.commons.io.PathUtil.getName(getPath());
-                    if (getPath().endsWith("/")) cancelURL = "./";
-                    if (request.getParameter("cancel-url") != null) {
-                        cancelURL = request.getParameter("cancel-url");
-                    }
+                    String identitiesURL = backToRealm + getPath().substring(1) + "?yanel.policy=update&amp;get=identities";
+                    String policyURL = backToRealm + getPath().substring(1) + "?yanel.policy=update&amp;get=policy";
+                    String saveURL = backToRealm + getPath().substring(1) + "?yanel.policy=update&amp;post=policy"; // This doesn't seem to work with all browsers!
+                    String cancelURL = backToRealm + getPath().substring(1);
 
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
                     sb.append("<head>");
                     sb.append("<title>Update Access Policy</title>");
 
-		    sb.append("<link rel=\"stylesheet\" href=\"" + PathUtil.getResourcesHtdocsPath(this) + "js/accesspolicyeditor/style.css\" type=\"text/css\"/>");
+	            sb.append("<link rel=\"stylesheet\" href=\"" + PathUtil.getResourcesHtdocsPath(this) + "js/accesspolicyeditor/style.css\" type=\"text/css\"/>");
 
                     sb.append("<script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"" + policyURL + "\", \"cancel-url\": \"" + cancelURL + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" +  PathUtil.getResourcesHtdocsPath(this) + "js/accesspolicyeditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script>");
 
