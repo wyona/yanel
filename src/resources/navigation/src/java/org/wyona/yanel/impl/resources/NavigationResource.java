@@ -332,6 +332,9 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
      *
      */
     public long getLastModified() throws Exception {
+        log.warn("TODO: Read custom config, for example <nr:source lang=\"de\" src=\"/sitetree-de.xml\"/> and use this node for checking on the last modified!");
+        return -1;
+/*
         Node node = getRealm().getRepository().getNode(getPath());
         long lastModified;
         if (node.isResource()) {
@@ -341,6 +344,7 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
         }
 
         return lastModified;
+*/
     }
 
     /**
