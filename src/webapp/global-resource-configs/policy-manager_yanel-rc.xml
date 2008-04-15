@@ -3,12 +3,26 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="policymanager" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
-  <yanel:property name="mime-type" value="application/xhtml+xml"/>
-<!--
-  <yanel:property name="mime-type" value="text/html"/>
--->
-<!--
-  <yanel:property name="xslt" value="/app/xslt/policy2xhtml.xsl"/>
-  <yanel:property name="xslt" value="/app/xslt/global.xsl"/>
--->
+  <yanel:custom-config>
+    <views>
+      <view id="default" type="XML"> <!-- default view shows the policies -->
+        <!-- <xslt>/xslt/global.xsl</xslt> -->
+        <mime-type>text/html</mime-type> <!-- IE browser has trouble with application/xhtml+xml -->
+      </view>
+      <view id="editor" type="XML">
+        <mime-type>text/html</mime-type> <!-- browsers have trouble with application/xhtml+xml re javascript of GWT -->
+        <!-- <xslt>/xslt/global.xsl</xslt> -->
+      </view>
+      <view id="get-xml" type="XML"> <!-- read identities and policy for editing -->
+        <mime-type>application/xml</mime-type>
+        <serializer key="XML">
+        </serializer>
+      </view>
+      <view id="post-xml" type="XML"> <!-- write policy -->
+        <mime-type>application/xml</mime-type>
+        <serializer key="XML">
+        </serializer>
+      </view>
+    </views>
+  </yanel:custom-config>
 </yanel:resource-config>
