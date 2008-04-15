@@ -1,0 +1,55 @@
+<access-control>
+−
+	<users>
+<user id="user_1">User 1</user>
+<user id="user_2">User 2</user>
+<user id="user_3">User 3</user>
+<user id="user_4">User 4</user>
+<user id="user_5">User 5</user>
+<user id="user_6">User 6</user>
+<user id="user_7">User 7</user>
+<user id="user_8">User 8</user>
+<user id="user_9">User 9</user>
+<user id="user_10">User 10</user>
+<user id="user_11">User 11</user>
+<user id="user_12">User 12</user>
+<user id="user_13">User 13</user>
+<user id="user_14">User 14</user>
+<user id="user_15">User 15</user>
+<user id="user_16">User 16</user>
+<user id="user_17">User 17</user>
+<user id="user_18">User 18</user>
+<user id="user_19">User 19</user>
+<user id="user_20">User 20</user>
+</users>
+−
+	<groups>
+<group id="group_1">Group 1</group>
+<group id="group_2">Group 2</group>
+<group id="group_3">Group 3</group>
+<group id="group_4">Group 4</group>
+<group id="group_5">Group 5</group>
+<group id="group_6">Group 6</group>
+<group id="group_7">Group 7</group>
+<group id="group_8">Group 8</group>
+<group id="group_9">Group 9</group>
+<group id="group_10">Group 10</group>
+<group id="group_11">Group 11</group>
+<group id="group_12">Group 12</group>
+<group id="group_13">Group 13</group>
+<group id="group_14">Group 14</group>
+<group id="group_15">Group 15</group>
+<group id="group_16">Group 16</group>
+<group id="group_17">Group 17</group>
+<group id="group_18">Group 18</group>
+<group id="group_19">Group 19</group>
+<group id="group_20">Group 20</group>
+
+</groups>
+−
+  <rights>
+    <right id="view">Read</right>
+    <right id="write">Write</right>
+    <right id="toolbar">Toolbar</right>
+  </rights>
+</access-control>
