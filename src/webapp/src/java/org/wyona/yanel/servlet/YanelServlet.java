@@ -2214,8 +2214,9 @@ public class YanelServlet extends HttpServlet {
                     sb.append("<head>");
                     sb.append("<title>Update Access Policy</title>");
                     sb.append("<link rel=\"stylesheet\" href=\"" + backToRealm + reservedPrefix + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/style.css\" type=\"text/css\"/>");
+                    sb.append("<script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"" + policyURL + "\", \"cancel-url\": \"" + cancelURL + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script>");
                     sb.append("</head>");
-                    sb.append("<body><h1>Update Access Policy</h1><p><script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"" + policyURL + "\", \"cancel-url\": \"" + cancelURL + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script></p></body></html>");
+                    sb.append("<body><h1>Update Access Policy</h1><p><div id=\"access-policy-editor-hook\"></div></p></body></html>");
                 }
             } else {
                 response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
