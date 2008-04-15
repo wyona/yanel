@@ -2154,83 +2154,28 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Handle access policy requests (CRUD)
+     * Handle access policy requests (CRUD, whereas delete is not implemented yet!)
      */
     private void doAccessPolicyRequest(HttpServletRequest request, HttpServletResponse response, String usecase)  throws ServletException, IOException {
-        Resource resource = getResource(request, response);
-        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        StringBuffer sb = new StringBuffer("");
         try {
             String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
-            if (usecase.equals("read")) {
-                Realm realm = map.getRealm(request.getServletPath());
-                String path = map.getPath(realm, request.getServletPath());
-
-                File pmrcGlobalFile = getGlobalResourceConfiguration("policy-manager_yanel-rc.xml", realm);
-                Resource policyManagerResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, new ResourceConfiguration(new java.io.FileInputStream(pmrcGlobalFile)));
-                View view = ((ViewableV2) policyManagerResource).getView(viewId);
-                if (view != null) {
-                    if (generateResponse(view, policyManagerResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
-                }
-                log.error("Something went wrong!");
-                return;
-	    } else if (usecase.equals("update")) {
-                String getXML = request.getParameter("get");
-                String postXML = request.getParameter("post");
-                if (getXML != null && getXML.equals("identities")) {
-                    response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
-                    response.setStatus(response.SC_OK);
-                    sb.append(getIdentitiesAndRightsAsXML(resource.getRealm().getIdentityManager(), resource.getRealm().getPolicyManager(), getLanguage(request)));
-                } else if (getXML != null && getXML.equals("policy")) {
-                    response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
-                    response.setStatus(response.SC_OK);
-                    sb.append(getPolicyAsXML(resource.getRealm().getPolicyManager(), resource.getPath()));
-                } else if (postXML != null && postXML.equals("policy")) {
-                    response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
-                    try {
-                        writePolicy(request.getInputStream(), resource.getRealm().getPolicyManager(), resource.getPath());
-                        response.setStatus(response.SC_OK);
-                        sb.append("<?xml version=\"1.0\"?><saved/>");
-                    } catch(Exception e) {
-                        log.error(e,e);
-                        response.setStatus(response.SC_NOT_IMPLEMENTED);
-                        sb.append("<?xml version=\"1.0\"?><not-saved>" + e.getMessage() + "</not-saved>");
-                    }
-                } else {
-                    response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
-                    response.setStatus(response.SC_OK);
-                    String identitiesURL = "../.." + resource.getPath() + "?yanel.policy=update&get=identities";
-                    String policyURL = "../.." + resource.getPath() + "?yanel.policy=update&get=policy";
-                    //String saveURL = "../.." + resource.getPath() + "?yanel.policy=update&post=policy";
-                    String saveURL = "?yanel.policy=update&post=policy"; // This doesn't seem to work with all browsers!
-                    String cancelURL = org.wyona.commons.io.PathUtil.getName(resource.getPath());
-                    if (resource.getPath().endsWith("/")) cancelURL = "./";
-                    if (request.getParameter("cancel-url") != null) {
-                        cancelURL = request.getParameter("cancel-url");
-                    }
-
-                    sb.append("<?xml version=\"1.0\"?>");
-                    sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-                    sb.append("<head>");
-                    sb.append("<title>Update Access Policy</title>");
-                    sb.append("<link rel=\"stylesheet\" href=\"" + backToRealm + reservedPrefix + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/style.css\" type=\"text/css\"/>");
-                    sb.append("<script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"" + policyURL + "\", \"cancel-url\": \"" + cancelURL + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" + backToRealm + reservedPrefix + "/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script>");
-                    sb.append("</head>");
-                    sb.append("<body><h1>Update Access Policy</h1><p><div id=\"access-policy-editor-hook\"></div></p></body></html>");
-                }
-            } else {
-                response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
-                response.setStatus(response.SC_NOT_IMPLEMENTED);
-                sb.append("<html><body>Policy usecase not implemented yet: " + usecase + "</body></html>");
+            
+            Realm realm = map.getRealm(request.getServletPath());
+            String path = map.getPath(realm, request.getServletPath());
+            
+            File pmrcGlobalFile = getGlobalResourceConfiguration("policy-manager_yanel-rc.xml", realm);
+            Resource policyManagerResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, new ResourceConfiguration(new java.io.FileInputStream(pmrcGlobalFile)));
+            View view = ((ViewableV2) policyManagerResource).getView(viewId);
+            if (view != null) {
+                if (generateResponse(view, policyManagerResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
             }
+            log.error("Something went terribly wrong!");
+            response.getWriter().print("Something went terribly wrong!");
+            return;
         } catch(Exception e) {
             log.error(e, e);
             throw new ServletException(e.getMessage());
         }
-
-        PrintWriter writer = response.getWriter();
-        writer.print(sb.toString());
-        return;
     }
 
     /**
@@ -2281,175 +2226,6 @@ public class YanelServlet extends HttpServlet {
             w.print(sb);
             return;
         }
-    }
-
-    /**
-     *
-     */
-    private String getIdentitiesAndRightsAsXML(IdentityManager im, PolicyManager pm, String language) {
-        org.wyona.security.core.api.UserManager um = im.getUserManager();
-        org.wyona.security.core.api.GroupManager gm = im.getGroupManager();
-
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        sb.append("<access-control xmlns=\"http://www.wyona.org/security/1.0\">");
-
-        try {
-            User[] users = um.getUsers();
-            sb.append("<users>");
-            for (int i = 0; i < users.length; i++) {
-                sb.append("<user id=\"" + users[i].getID() + "\">" + users[i].getName() + "</user>");
-            }
-            sb.append("</users>");
-
-            org.wyona.security.core.api.Group[] groups = gm.getGroups();
-            sb.append("<groups>");
-            for (int i = 0; i < groups.length; i++) {
-                sb.append("<group id=\"" + groups[i].getID() + "\">" + groups[i].getName() + "</group>");
-            }
-            sb.append("</groups>");
-
-            sb.append("<rights>");
-            String[] rights = pm.getUsecases();
-            if (rights != null) {
-                for (int i = 0; i < rights.length; i++) {
-                    sb.append("<right id=\"" + rights[i] + "\">" + pm.getUsecaseLabel(rights[i], language) + "</right>");
-                }
-            }
-            sb.append("</rights>");
-        } catch (Exception e) {
-            log.error(e, e);
-            sb.append("<exception>" + e.getMessage() + "</exception>");
-        }
-        sb.append("</access-control>");
-        return sb.toString();
-    }
-
-    /**
-     *
-     */
-    private String getPolicyAsXML(PolicyManager pm, String path) {
-
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-
-        try {
-            Policy policy = pm.getPolicy(path, false);
-            if (policy == null) {
-                sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\" use-inherited-policies=\"false\">");
-                log.warn("No policy yet for path: " + path + " (Return empty policy)");
-            } else {
-                sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\" use-inherited-policies=\"" + policy.useInheritedPolicies() + "\">");
-                sb.append(getPolicyIdentities(policy));
-                sb.append(getPolicyGroups(policy));
-            }
-        } catch(Exception e) {
-            log.error(e, e);
-            sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\">");
-            sb.append("<exception>" + e.getMessage() + "</exception>");
-        }
-
-        sb.append("</policy>");
-        return sb.toString();
-    }
-
-    /**
-     * Get users (TODO: Move this code into the security package)
-     */
-    static public StringBuffer getPolicyIdentities(Policy p) {
-        Vector world = new Vector();
-        java.util.HashMap users = new java.util.HashMap();
-        org.wyona.security.core.UsecasePolicy[] up = p.getUsecasePolicies();
-        if (up != null && up.length > 0) {
-            for (int i = 0; i < up.length; i++) {
-                org.wyona.security.core.IdentityPolicy[] idps = up[i].getIdentityPolicies();
-                for (int j = 0; j < idps.length; j++) {
-                    //log.debug("Usecase Identity Policy: " + up[i].getName() + ", " + idps[j].getIdentity().getUsername() + ", " + idps[j].getPermission());
-
-                    if (idps[j].getIdentity().isWorld()) {
-                        world.add(up[i].getName());
-                    } else {
-                        Vector userRights;
-                        if ((userRights = (Vector) users.get(idps[j].getIdentity().getUsername())) != null) {
-                            log.debug("User has already been added: " + idps[j].getIdentity().getUsername());
-                        } else {
-                            userRights = new Vector();
-                            users.put(idps[j].getIdentity().getUsername(), userRights);
-                        }
-                        if (idps[j].getPermission()) {
-                            userRights.add(up[i].getName());
-                        }
-                    }
-                }
-            }
-        } else {
-            log.warn("No policy usecases!");
-        }
-
-        StringBuffer sb = new StringBuffer();
-        //sb.append("<li>WORLD (" + getCommaSeparatedList(world) + ")</li>");
-
-        java.util.Iterator userIterator = users.keySet().iterator();
-        while (userIterator.hasNext()) {
-            String userName = (String) userIterator.next();
-            sb.append("<user id=\""+userName+"\">");
-            Vector rights = (Vector) users.get(userName);
-            for (int k = 0; k < rights.size(); k++) {
-                // TODO: Do not hardcode permission
-                sb.append("<right id=\"" + (String) rights.elementAt(k) + "\" permission=\"true\"/>");
-            }
-            sb.append("</user>");
-        }
-        return sb;
-    }
-
-    /**
-     * Get groups (TODO: Move this code into the security package)
-     */
-    static public StringBuffer getPolicyGroups(Policy p) {
-        Vector world = new Vector();
-        java.util.HashMap groups = new java.util.HashMap();
-        org.wyona.security.core.UsecasePolicy[] up = p.getUsecasePolicies();
-        if (up != null && up.length > 0) {
-            for (int i = 0; i < up.length; i++) {
-                org.wyona.security.core.GroupPolicy[] ids = up[i].getGroupPolicies();
-                for (int j = 0; j < ids.length; j++) {
-                    Vector groupRights;
-                    if ((groupRights = (Vector) groups.get(ids[j].getId())) != null) {
-                        log.debug("Group has already been added: " + ids[j].getId());
-                    } else {
-                        groupRights = new Vector();
-                        groups.put(ids[j].getId(), groupRights);
-                    }
-                    if (ids[j].getPermission()) {
-                        groupRights.add(up[i].getName());
-                    }
-                }
-            }
-        } else {
-            log.warn("No policy usecases!");
-        }
-
-        StringBuffer sb = new StringBuffer();
-
-        java.util.Iterator userIterator = groups.keySet().iterator();
-        while (userIterator.hasNext()) {
-            String userName = (String) userIterator.next();
-            sb.append("<group id=\""+userName+"\">");
-            Vector rights = (Vector) groups.get(userName);
-            for (int k = 0; k < rights.size(); k++) {
-                //TODO: Do not hardcode permission!
-                sb.append("<right id=\"" + (String) rights.elementAt(k) + "\" permission=\"true\"/>");
-            }
-            sb.append("</group>");
-        }
-        return sb;
-    }
-
-    /**
-     * Write/Save policy
-     */
-    private void writePolicy(InputStream policyAsInputStream, PolicyManager pm, String path) throws Exception {
-        Policy policy = new org.wyona.security.util.PolicyParser().parseXML(policyAsInputStream);
-        pm.setPolicy(path, policy);
     }
 
     /**
