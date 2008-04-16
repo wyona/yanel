@@ -1105,7 +1105,6 @@ public class YanelServlet extends HttpServlet {
                 } catch (Exception e) {
                     log.error(e, e);
                 }
-                log.warn("TODO: Add user to session listener!");
 
                 URL url = new URL(getRequestURLQS(request, null, false).toString());
                 if (sslPort != null) {
