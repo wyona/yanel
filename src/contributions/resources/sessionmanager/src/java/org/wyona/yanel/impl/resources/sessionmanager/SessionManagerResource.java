@@ -5,6 +5,7 @@
 package org.wyona.yanel.impl.resources.sessionmanager;
 
 import org.wyona.yanel.impl.resources.BasicXMLResource;
+import org.wyona.yanel.servlet.IdentityMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -30,7 +31,14 @@ public class SessionManagerResource extends BasicXMLResource {
         javax.servlet.http.HttpSession[] activeSessions = org.wyona.yanel.servlet.SessionCounter.getActiveSessions();
         sb.append("<number-of-sessions>" + activeSessions.length + "</number-of-sessions>");
         for (int i = 0; i < activeSessions.length; i++) {
-            sb.append("<session id=\"" + activeSessions[i].getId() + "\"></session>");
+            sb.append("<session id=\"" + activeSessions[i].getId() + "\">");
+            IdentityMap identityMap = (IdentityMap) activeSessions[i].getAttribute(org.wyona.yanel.servlet.YanelServlet.IDENTITY_MAP_KEY);
+            if (identityMap != null) {
+                sb.append("<identities>" + identityMap.toString() + "</identities>");
+            } else {
+                sb.append("<no-identity-yet/>");
+            }
+            sb.append("</session>");
         }
         sb.append("</session-manager>");
         return new ByteArrayInputStream(sb.toString().getBytes());
