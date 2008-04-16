@@ -62,5 +62,9 @@
     <filter-name>YanelFilter</filter-name>
     <servlet-name>YanelServlet</servlet-name>
   </filter-mapping>
+
+  <listener>
+    <listener-class>org.wyona.yanel.servlet.SessionCounter</listener-class>
+  </listener>
   
 </web-app>
