@@ -47,6 +47,7 @@
             <li>Turn on <a href="?yanel.toolbar=on">toolbar</a> </li>
             <li>Download <a href="http://www.yulup.org">Yulup</a></li>
             <li><a href="update-webapp.html">Find Updates</a></li>
+            <li><a href="session-manager.html">Session Manager</a></li>
 
 <!--
             <li>What is a resource resp. resource type?</li>
