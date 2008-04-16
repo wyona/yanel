@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Wyona
+ * Copyright 2008 Wyona
  */
 
 package bar.foo.yanel.impl.resources;
@@ -18,7 +18,7 @@ public class FromScratchResource extends BasicXMLResource {
     
     private static Logger log = Logger.getLogger(FromScratchResource.class);
     
-    /*
+    /**
      * This method overrides the method to create the InputStream called by BasicXMLResource
      * Since you extend the BasicXMLResource this has to contain well-formed xml.
      * Beside the simple StringBuffer there are several other ways how to construct the xml. see dom, jdom, org.apache.commons.io.IOUtils and so on
