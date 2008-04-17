@@ -4,7 +4,9 @@
 
 package org.wyona.yanel.impl.resources.policymanager;
 
+import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.api.IdentityManager;
+import org.wyona.security.core.api.Item;
 import org.wyona.security.core.api.Policy;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.User;
@@ -15,6 +17,8 @@ import org.wyona.yanel.impl.resources.BasicXMLResource;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -154,6 +158,7 @@ public class PolicyManagerResource extends BasicXMLResource {
 
         try {
             User[] users = um.getUsers();
+            Arrays.sort(users, new ItemIDComparator());
             sb.append("<users>");
             for (int i = 0; i < users.length; i++) {
                 sb.append("<user id=\"" + users[i].getID() + "\">" + users[i].getName() + "</user>");
@@ -161,6 +166,7 @@ public class PolicyManagerResource extends BasicXMLResource {
             sb.append("</users>");
 
             org.wyona.security.core.api.Group[] groups = gm.getGroups();
+            Arrays.sort(groups, new ItemIDComparator());
             sb.append("<groups>");
             for (int i = 0; i < groups.length; i++) {
                 sb.append("<group id=\"" + groups[i].getID() + "\">" + groups[i].getName() + "</group>");
@@ -181,6 +187,18 @@ public class PolicyManagerResource extends BasicXMLResource {
         }
         sb.append("</access-control>");
         return sb.toString();
+    }
+    
+    public class ItemIDComparator implements Comparator {
+        public int compare(Object o1, Object o2) {
+            try {
+                String id1 = ((Item)o1).getID();
+                String id2 = ((Item)o2).getID();
+                return id1.compareToIgnoreCase(id2);
+            } catch (AccessManagementException e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
+        }
     }
 
     /**
