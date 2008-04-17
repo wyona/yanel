@@ -139,7 +139,7 @@ public class PolicyManagerResource extends BasicXMLResource {
             log.error(e, e);
             throw new Exception(e.getMessage());
         }
-        return new ByteArrayInputStream(sb.toString().getBytes());
+        return new ByteArrayInputStream(sb.toString().getBytes("utf-8"));
     }
     
     /**
