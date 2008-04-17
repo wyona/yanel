@@ -33,7 +33,7 @@ public class FromScratchResource extends BasicXMLResource {
         sb.append("Hello World!");
         sb.append("</child>");
         sb.append("</root>");
-        return new ByteArrayInputStream(sb.toString().getBytes());
+        return new ByteArrayInputStream(sb.toString().getBytes("utf-8"));
     }
 
 }
