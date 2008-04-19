@@ -10,8 +10,7 @@ Image resource which allows scaling of images
 </description>
 
 <rtd>
-<!--
-  <property name="foo" default-value="bar"/>
--->
+  <property name="width"/>
+  <property name="height"/>
 </rtd>
 </resource>
