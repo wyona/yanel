@@ -12,5 +12,6 @@ Image resource which allows scaling of images
 <rtd>
   <property name="width"/>
   <property name="height"/>
+  <property name="cache-root-path" default-value="/cached-images"/>
 </rtd>
 </resource>
