@@ -236,7 +236,10 @@ public class RealmManager {
                     if (proxy != null) {
                         int proxyPort = new Integer(proxy.getChild("port").getValue("-1")).intValue();
                         int proxySSLPort = new Integer(proxy.getChild("ssl-port").getValue("-1")).intValue();
-                        realm.setProxy(proxy.getChild("host-name").getValue(), proxyPort, proxySSLPort, proxy.getChild("prefix").getValue());
+                        String prefixValue = proxy.getChild("prefix").getValue("");
+                        if (prefixValue.length() == 0) prefixValue = null;
+                        log.debug("Prefix value: " + prefixValue);
+                        realm.setProxy(proxy.getChild("host-name").getValue(), proxyPort, proxySSLPort, prefixValue);
                     }
                     
                     log.info("Realm: " + realm);
@@ -252,8 +255,7 @@ public class RealmManager {
                         }
                     }
                 } catch (Exception e) {
-                    String errorMsg = "Error setting up realm [" + realmId + "]: " + realmConfigFile 
-                        + ": " + e;
+                    String errorMsg = "Error setting up realm [" + realmId + "]: " + realmConfigFile + ": " + e;
                     log.error(errorMsg, e);
                     // NOTE: Do not throw an exception, because otherwise all other realms are not being loaded either
                     // TODO/TBD: Maybe one should enhance Realm by a method such as setStatus() and getStatus() in order to check if a realm has been registered successfully or not!
