@@ -21,16 +21,16 @@ public class SessionCounter implements HttpSessionListener {
      *
      */
     public void sessionCreated(HttpSessionEvent event) {
-        log.warn("New session created!");
         activeSessions.put(event.getSession().getId(), event.getSession());
+        log.warn("New session created! Current number of active sessions: " + activeSessions.size());
     }
 
     /**
      *
      */
     public void sessionDestroyed(HttpSessionEvent event) {
-        log.warn("Session destroyed!");
         activeSessions.remove(event.getSession().getId());
+        log.warn("Session destroyed! Current number of active sessions: " + activeSessions.size());
     }
 
     /**
