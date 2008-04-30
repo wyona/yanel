@@ -1953,13 +1953,17 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Generate response from a resource view
      */
     private HttpServletResponse generateResponse(View view, Resource res, HttpServletRequest request, HttpServletResponse response, Document doc, long size, long lastModified) throws ServletException, IOException {
             // Check if the view contains the response, otherwise assume that the resource wrote the response, and just return.
             // TODO: There seem like no header fields are being set (e.g. Content-Length, ...). Please see below ...
+
+
+            // Check if viewable resource has already created a response
             if (!view.isResponse()) return response;
             
+            // Set encoding
             if (view.getEncoding() != null) {
                 response.setContentType(patchMimeType(view.getMimeType(), request) + "; charset=" + view.getEncoding());
             } else if (res.getConfiguration() != null && res.getConfiguration().getEncoding() != null) {
@@ -1979,7 +1983,7 @@ public class YanelServlet extends HttpServlet {
                 }
             }
             
-            // http headers:
+            // Set HTTP headers:
             HashMap headers = view.getHttpHeaders();
             Iterator iter = headers.keySet().iterator();
             while (iter.hasNext()) {
@@ -2026,9 +2030,9 @@ public class YanelServlet extends HttpServlet {
             }
             
 
+            // Set actual content
             byte buffer[] = new byte[8192];
             int bytesRead;
-           
             InputStream is = view.getInputStream();
             if (is != null) {
                 bytesRead = is.read(buffer);
@@ -2267,7 +2271,8 @@ public class YanelServlet extends HttpServlet {
         return;
 */
 
-        // TODO: Finish the XML (as it used to be before) and setStatus to 404!
+        // TODO: Finish the XML (as it used to be before)!
+        response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
         try {
             Realm realm = yanel.getMap().getRealm(request.getServletPath());
             File pnfResConfigFile = getGlobalResourceConfiguration("404_yanel-rc.xml", realm);
