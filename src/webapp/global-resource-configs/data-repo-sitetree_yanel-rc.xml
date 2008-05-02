@@ -19,6 +19,10 @@
       <view id="xml">
         <mime-type>application/xml</mime-type>
       </view>
+      <view id="google-sitemap">
+        <xslt>rthtdocs:/google-sitemap.xsl</xslt>
+        <mime-type>application/xml</mime-type>
+      </view>
     </views>
   </yanel:custom-config>
 </yanel:resource-config>
