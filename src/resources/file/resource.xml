@@ -15,5 +15,8 @@ Generic node resource
 
   <!-- If no src property is specified, then the request path will be used -->
   <property name="src"/>
+  <!-- For example (IMPORTANT: Do not forget the leading slash!)
+    <yanel:property name="src" value="/index.html"/>
+  -->
 </rtd>
 </resource>
