@@ -95,7 +95,7 @@ public class AccessControlTransformer extends AbstractTransformer {
 
             try {
                 if (path.startsWith("/")) {
-                    //log.debug("Check authorization for: " + path + ", " + identity + ", " + usecase);
+                    //log.error("DEBUG: Check authorization for: " + path + ", " + identity + ", " + usecase);
                     if (policyManager.authorize(path, identity, usecase)) {
                         //log.error("DEBUG: Access granted for " + identity + ", " + usecase + ", " + path);
                         reinsertBufferedParentElementAndAnchor();
@@ -104,8 +104,23 @@ public class AccessControlTransformer extends AbstractTransformer {
                         accessGranted = false;
                     }
                 } else {
-                    //log.warn("Path does not start with '/' (probably a group): " + path);
-                    reinsertBufferedParentElementAndAnchor();
+                    log.warn("Path does not start with '/' (probably a GROUP!). Path = " + path);
+                    String classAttr = parentAttrs.getValue("class");
+                    if (classAttr != null && classAttr.equals("rubrikgruppe")) {
+                        String idAttr = parentAttrs.getValue("id");
+                        if (idAttr != null) {
+                            log.error("DEBUG: Check policy for path: " + "/de/" + idAttr);
+                            if (policyManager.authorize("/de/" + idAttr, identity, usecase)) {
+                                log.error("DEBUG: Access granted for 'GROUP' with " + identity + ", " + usecase + ", " + path);
+                                reinsertBufferedParentElementAndAnchor();
+                            } else {
+                                log.error("DEBUG: Access denied for 'GROUP' with " + identity + ", " + usecase + ", " + path);
+                                accessGranted = false;
+                            }
+                        }
+                    } else {
+                        reinsertBufferedParentElementAndAnchor();
+                    }
                 }
             } catch (Exception e) {
                 log.error(e, e);
