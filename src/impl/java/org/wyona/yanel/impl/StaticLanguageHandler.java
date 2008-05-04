@@ -20,7 +20,7 @@ import org.wyona.yanel.core.LanguageHandler;
 import org.wyona.yanel.core.Resource;
 
 /**
- *
+ * Always return content language
  */
 public class StaticLanguageHandler implements LanguageHandler {
 
