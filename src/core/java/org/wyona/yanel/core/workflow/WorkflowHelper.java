@@ -26,6 +26,7 @@ import org.wyona.yanel.core.api.attributes.WorkflowableV1;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.util.DateUtil;
+import org.wyona.yanel.core.util.ResourceAttributeHelper;
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Property;
 import org.wyona.yarep.core.Revision;
@@ -185,11 +186,14 @@ public class WorkflowHelper {
      */
     public static String getWorkflowIntrospection(Resource resource) throws WorkflowException {
         try {
-            StringBuffer sb = new StringBuffer();
+            if (!ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) throw new WorkflowException("Resource '" + resource.getClass().getName() + "'  has not VersionableV2 interface implemented!");
+
             RevisionInformation[] revisions = ((VersionableV2)resource).getRevisions();
             WorkflowableV1 workflowable = (WorkflowableV1)resource;
             String liveRevision = getLiveRevision(resource);
+
             if (revisions != null && revisions.length > 0) {
+                StringBuffer sb = new StringBuffer();
                 sb.append("<versions xmlns=\"http://www.wyona.org/neutron/2.0\">");
                 for (int i = revisions.length - 1; i >= 0; i--) {
                     
