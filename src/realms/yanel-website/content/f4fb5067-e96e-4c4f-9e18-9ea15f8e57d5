@@ -1,0 +1,2 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>No title has been specified!</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Workflow<br/></h1>  <p>The XMLResource src/resources/xml/src/java/org/wyona/yanel/impl/resources/XMLResource.java for example has the WorkflowableV1 interface implemented. Also check the YanelServlet for how the workflow interface is used.<br/></p></body>
+</html>
