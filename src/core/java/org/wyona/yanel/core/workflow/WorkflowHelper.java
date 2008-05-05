@@ -108,12 +108,15 @@ public class WorkflowHelper {
         return false;
     }*/
     
+    /**
+     * Get revision which is marked as live
+     */
     public static String getLiveRevision(Resource resource) throws WorkflowException {
         try {
             WorkflowableV1 workflowable = (WorkflowableV1)resource;
             if (getWorkflow(resource) == null) {
                 RevisionInformation[] revisions = ((VersionableV2)resource).getRevisions();
-                if (revisions.length == 0) {
+                if (revisions == null || revisions.length == 0) {
                     return null;
                 } else {
                     return revisions[revisions.length-1].getName();
