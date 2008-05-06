@@ -35,7 +35,7 @@
     <group id="admin" permission="true"/>
   </role>
 
-  <role id="review">
+  <role id="workflow.review">
     <group id="reviewer" permission="true"/>
   </role>
 
