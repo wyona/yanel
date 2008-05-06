@@ -59,6 +59,9 @@ public class RoleCondition implements Condition {
                 log.debug("   role     : " + this.role.getName());
                 log.debug("   result   : " + authorized);
             }
+
+            if (!authorized) log.warn("User '" + identity.getUsername() + "' is not allowed to execute usecase (workflow transition) '" + role.getName() + "'");
+
             return authorized;
         } catch (Exception e) {
             log.error(e, e);
