@@ -452,22 +452,31 @@ public class YanelServlet extends HttpServlet {
                             viewElement.appendChild(doc.createTextNode("No View Descriptors!"));
                         }
 
+
                         size = ((ViewableV2) res).getSize();
                         Element sizeElement = (Element) resourceElement.appendChild(doc.createElement("size"));
                         sizeElement.appendChild(doc.createTextNode(String.valueOf(size)));
+
+
+
                         try {
                             String revisionName = request.getParameter("yanel.resource.revision");
-                            if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2") && revisionName != null) {
+                            if (revisionName != null && ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
                                 view = ((VersionableV2) res).getView(viewId, revisionName);
                             } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1") && environment.getStateOfView().equals(StateOfView.LIVE)) {
                                 WorkflowableV1 workflowable = (WorkflowableV1)res;
                                 if (workflowable.isLive()) {
                                     view = workflowable.getLiveView(viewId);
                                 } else {
-                                    String message = "This document has not been published yet: " + res.getPath();
+                                    String message = "The resource '" + res.getPath() + "' is WorkflowableV1, but has not been published yet. Instead a live version, the most recent version will be displayed!";
                                     log.warn(message);
+                                    view = ((ViewableV2) res).getView(viewId);
+
+                                    // TODO: Maybe sending a 404 instead the most recent version should be configurable!
+                                    /*
                                     do404(request, response, doc, message);
                                     return;
+                                    */
                                 }
                             } else {
                                 view = ((ViewableV2) res).getView(viewId);
@@ -852,17 +861,13 @@ public class YanelServlet extends HttpServlet {
         try {
             identity = getIdentity(request);
             Realm realm = map.getRealm(request.getServletPath());
-            // TODO: implement detection of state of view
             String stateOfView = StateOfView.AUTHORING;
-            //String area = map.getStateOfView(request.getServletPath());
-            //log.debug("url: " + request.getServletPath());
-            //log.debug("state of view: " + stateOfView);
-            /*String area = null;
             if (isToolbarEnabled(request)) {
-                area = "authoring";
+                stateOfView = StateOfView.AUTHORING;
             } else {
-                area = "live";
-            }*/
+                stateOfView = StateOfView.LIVE;
+            }
+            //log.debug("State of view: " + stateOfView);
             Environment environment = new Environment(request, response, identity, stateOfView, null);
             return environment;
         } catch (Exception e) {
