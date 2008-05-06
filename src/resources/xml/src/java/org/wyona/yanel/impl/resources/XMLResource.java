@@ -258,8 +258,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      */
     public RevisionInformation[] getRevisions() throws Exception {
         Revision[] revisions = getRealm().getRepository().getNode(getPath()).getRevisions();
-        RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
 
+        // TODO: Use utility method/class
+        RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
         for (int i = 0; i < revisions.length; i++) {
             revisionInfos[i] = new RevisionInformation(revisions[i]);
         }
