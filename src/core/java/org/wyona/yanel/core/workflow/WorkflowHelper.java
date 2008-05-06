@@ -344,9 +344,23 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
         }
     }
 
+    /**
+     *
+     */
     public static void setWorkflowState(Resource resource, String state, String revision) throws WorkflowException {
         try {
-            Node node = resource.getRealm().getRepository().getNode(resource.getPath());
+            setWorkflowState(resource.getRealm().getRepository().getNode(resource.getPath()), state, revision);
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new WorkflowException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     *
+     */
+    public static void setWorkflowState(Node node, String state, String revision) throws WorkflowException {
+        try {
             Revision rev = node.getRevision(revision); 
             rev.setProperty(WORKFLOW_STATE_PROPERTY, state);
             rev.setProperty(WORKFLOW_DATE_PROPERTY, new Date());
