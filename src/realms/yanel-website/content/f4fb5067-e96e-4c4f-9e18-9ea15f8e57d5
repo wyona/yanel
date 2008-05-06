@@ -4,5 +4,13 @@
   <title>Workflow</title>
   <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/>
 </head>
-<body>  <h1>Workflow<br/></h1>  <p>The XMLResource src/resources/xml/src/java/org/wyona/yanel/impl/resources/XMLResource.java for example has the WorkflowableV1 interface implemented. Also check the YanelServlet for how the workflow interface is used.</p><p>WorkflowableV1 interfaces requires that a resource has also the VersionableV2 interface implemented.<br/></p></body>
+<body>  <h1>Workflow<br/></h1>  <p>The XMLResource src/resources/xml/src/java/org/wyona/yanel/impl/resources/XMLResource.java for example has the WorkflowableV1 interface implemented. Also check the YanelServlet for how the workflow interface is used.</p><p>WorkflowableV1 interfaces requires that a resource has also the VersionableV2 interface implemented.</p><p>A workflow schema can be associated with a resource by adding a reference within the corresponding resource configuration, for example:</p><p>
+<code>
+&lt;yanel:property name=&quot;workflow-schema&quot; value=&quot;/app/workflow/workflow-with-review.xml&quot;/&gt;
+</code>
+</p>
+<p>
+whereas if no source scheme is specified, then the workflow schema is located within the default data repository of the corresponding realm.
+</p>
+</body>
 </html>
