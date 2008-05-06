@@ -10,7 +10,5 @@
 </code>
 </p>
 <p>
-whereas if no source scheme is specified, then the workflow schema is located within the default data repository of the corresponding realm.
-</p>
-</body>
+whereas if no source scheme is specified, then the workflow schema is located within the default data repository of the corresponding realm.</p><p>In order to execute workflow transitions one might has to change the acess control policies according to the usecase/role conditions specified within the workflow schema.<br/></p><p></p></body>
 </html>
