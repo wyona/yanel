@@ -315,9 +315,23 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
         }
     }
 
+    /**
+     *
+     */
     public static String getWorkflowState(Resource resource, String revision) throws WorkflowException {
         try {
-            Node node = resource.getRealm().getRepository().getNode(resource.getPath());
+            return getWorkflowState(resource.getRealm().getRepository().getNode(resource.getPath()), revision);
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new WorkflowException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     *
+     */
+    public static String getWorkflowState(Node node, String revision) throws WorkflowException {
+        try {
             Property stateProp = node.getRevision(revision).getProperty(WORKFLOW_STATE_PROPERTY);
             if (stateProp != null) {
                 return stateProp.getString();
@@ -343,9 +357,23 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
         }
     }
 
+    /**
+     *
+     */
     public static Date getWorkflowDate(Resource resource, String revision) throws WorkflowException {
         try {
-            Node node = resource.getRealm().getRepository().getNode(resource.getPath());
+            return getWorkflowDate(resource.getRealm().getRepository().getNode(resource.getPath()), revision);
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new WorkflowException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     *
+     */
+    public static Date getWorkflowDate(Node node, String revision) throws WorkflowException {
+        try {
             Property dateProp = node.getRevision(revision).getProperty(WORKFLOW_DATE_PROPERTY);
             if (dateProp != null) {
                 return dateProp.getDate();
@@ -357,5 +385,4 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
             throw new WorkflowException(e.getMessage(), e);
         }
     }
-
 }
