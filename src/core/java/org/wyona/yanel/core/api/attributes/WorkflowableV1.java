@@ -77,7 +77,7 @@ public interface WorkflowableV1 {
     String getWorkflowState(String revision) throws WorkflowException;
     
     /**
-     * Sets the workflow state of the given revision.
+     * Sets the workflow state of the given revision, for example a "review" status
      * @param state
      * @param revision
      * @throws WorkflowException
@@ -103,7 +103,7 @@ public interface WorkflowableV1 {
     String getWorkflowVariable(String name) throws WorkflowException;
     
     /**
-     * Sets the workflow variable with the given name.
+     * Sets the workflow variable with the given name, for example a "live" flag
      * @param name
      * @param value
      * @throws WorkflowException
