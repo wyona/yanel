@@ -486,7 +486,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         } else if (userAgent.indexOf("MSIE") > 0) {
             return "msie";
         } else {
-            log.warn("Client could not be recognized: " + userAgent);
+            if (log.isDebugEnabled()) log.debug("Client could not be recognized: " + userAgent);
             return null;
         }
     }
