@@ -18,12 +18,16 @@ package org.wyona.yanel.impl.workflow;
 import org.apache.log4j.Category;
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.Role;
+import org.wyona.security.core.api.Usecase;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
 import org.wyona.yanel.core.workflow.Condition;
 import org.wyona.yanel.core.workflow.Workflow;
 import org.wyona.yanel.core.workflow.WorkflowException;
 
+/**
+ * @deprecated Use UsecaseCondition instead
+ */
 public class RoleCondition implements Condition {
     
     private static Category log = Category.getInstance(RoleCondition.class);
@@ -47,7 +51,7 @@ public class RoleCondition implements Condition {
             }
             
             boolean authorized;
-            authorized = resource.getRealm().getPolicyManager().authorize(resource.getPath(), identity, this.role);
+            authorized = resource.getRealm().getPolicyManager().authorize(resource.getPath(), identity, new Usecase(this.role.getName()));
             if (log.isDebugEnabled()) {
                 log.debug("RoleCondition.isComplied():");
                 log.debug("   resource : " + resource.getPath());
