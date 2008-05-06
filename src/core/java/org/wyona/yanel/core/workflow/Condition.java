@@ -17,11 +17,18 @@ package org.wyona.yanel.core.workflow;
 
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
 
+/**
+ * Workflow condition in order to implement if a transition shall be executed/displayed
+ */
 public interface Condition {
 
-    boolean isComplied(WorkflowableV1 workflowable, Workflow workflow,
-            String revision) throws WorkflowException;
+    /**
+     * Check if condition is fullfilled or not (TODO: It would be nice if one could specify a reason if it is not fullfilled!)
+     */
+    boolean isComplied(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException;
 
+    /**
+     *
+     */
     void setExpression(String expression) throws WorkflowException;
-
 }
