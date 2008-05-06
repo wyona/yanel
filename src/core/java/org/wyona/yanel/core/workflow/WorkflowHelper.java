@@ -297,7 +297,18 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
      */
     public static void setWorkflowVariable(Resource resource, String name, String value) throws WorkflowException {
         try {
-            Node node = resource.getRealm().getRepository().getNode(resource.getPath());
+            setWorkflowVariable(resource.getRealm().getRepository().getNode(resource.getPath()), name, value);
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new WorkflowException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     *
+     */
+    public static void setWorkflowVariable(Node node, String name, String value) throws WorkflowException {
+        try {
             node.setProperty(name, value);
         } catch (Exception e) {
             log.error(e, e);
@@ -307,7 +318,15 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     
     public static void removeWorkflowVariable(Resource resource, String name) throws WorkflowException {
         try {
-            Node node = resource.getRealm().getRepository().getNode(resource.getPath());
+            removeWorkflowVariable(resource.getRealm().getRepository().getNode(resource.getPath()), name);
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new WorkflowException(e.getMessage(), e);
+        }
+    }
+    
+    public static void removeWorkflowVariable(Node node, String name) throws WorkflowException {
+        try {
             node.removeProperty(name);
         } catch (Exception e) {
             log.error(e, e);
