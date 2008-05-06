@@ -20,7 +20,11 @@ import org.wyona.yanel.core.workflow.Condition;
 import org.wyona.yanel.core.workflow.Workflow;
 import org.wyona.yanel.core.workflow.WorkflowException;
 
+import org.apache.log4j.Logger;
+
 public class RevisionNotEqualsCondition implements Condition {
+
+    private static Logger log = Logger.getLogger(RevisionNotEqualsCondition.class);
 
     protected String variable;
 
@@ -28,11 +32,13 @@ public class RevisionNotEqualsCondition implements Condition {
         this.variable = expression;
     }
 
-    public boolean isComplied(WorkflowableV1 workflowable, Workflow workflow, String revision)
-            throws WorkflowException {
+    /**
+     *
+     */
+    public boolean isComplied(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException {
         String liveRevision = workflowable.getWorkflowVariable(variable);
-        boolean result = !revision.equals(liveRevision);
-        return result;
+        boolean complied = !revision.equals(liveRevision);
+        if (!complied) log.warn("The revision '" + revision + "' is the live revision.");
+        return complied;
     }
-
 }
