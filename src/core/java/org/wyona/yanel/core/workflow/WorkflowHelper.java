@@ -141,8 +141,7 @@ public class WorkflowHelper {
     public static boolean isLive(Resource resource) throws WorkflowException {
         try {
             WorkflowableV1 workflowable = (WorkflowableV1)resource;
-            if (getWorkflow(resource) == null ||
-                    workflowable.getWorkflowVariable(LIVE_REVISION_PROPERTY) != null) {
+            if (getWorkflow(resource) == null || workflowable.getWorkflowVariable(LIVE_REVISION_PROPERTY) != null) {
                 return true;
             } else {
                 return false;
