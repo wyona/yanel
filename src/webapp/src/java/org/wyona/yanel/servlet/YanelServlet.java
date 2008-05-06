@@ -468,7 +468,7 @@ public class YanelServlet extends HttpServlet {
                                 if (workflowable.isLive()) {
                                     view = workflowable.getLiveView(viewId);
                                 } else {
-                                    String message = "The resource '" + res.getPath() + "' is WorkflowableV1, but has not been published yet. Instead a live version, the most recent version will be displayed!";
+                                    String message = "The resource '" + res.getPath() + "' is WorkflowableV1, but has not been published yet. Instead the live version, the most recent version will be displayed!";
                                     log.warn(message);
                                     view = ((ViewableV2) res).getView(viewId);
 
