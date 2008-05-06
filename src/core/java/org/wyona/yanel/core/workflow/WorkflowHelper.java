@@ -232,7 +232,7 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
                             Condition[] conditions = transitions[j].getConditions();
                             for (int k = 0; k < conditions.length; k++) {
                                 if (!conditions[k].isComplied(workflowable, workflow, revisions[i].getName())) {
-                                    log.warn("Transition condition failed: " + transitions[j].getID() + " (Revision: " + revisions[i].getName() + ")");
+                                    log.warn("Condition (" + conditions[k].getClass().getName() + ") failed for workflow transition '" + transitions[j].getID() + "' (Revision: " + revisions[i].getName() + ")");
                                     continue transitions; // jump to next transition
                                 }
                             }
