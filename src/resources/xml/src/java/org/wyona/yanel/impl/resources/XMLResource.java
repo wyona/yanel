@@ -246,6 +246,18 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 
     /**
+     *
+     */
+    public Node getRepoNode() throws Exception {
+        // TODO: yanel-path is not a repo path actually, but rather another resource! See getContentXML()
+        String path = getResourceConfigProperty("yanel-path");
+        if (path == null) {
+            path = getPath();
+        }
+        return getRealm().getRepository().getNode(path);
+    }
+
+    /**
      * Delete node
      */
     public boolean delete() throws Exception {
@@ -257,7 +269,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * @see org.wyona.yanel.core.api.attributes.VersionableV2#getRevisions()
      */
     public RevisionInformation[] getRevisions() throws Exception {
-        Revision[] revisions = getRealm().getRepository().getNode(getPath()).getRevisions();
+        Revision[] revisions = getRepoNode().getRevisions();
 
         // TODO: Use utility method/class
         RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
@@ -505,31 +517,60 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 
     public String getWorkflowVariable(String name) throws WorkflowException {
-        return WorkflowHelper.getWorkflowVariable(this, name);
+        try {
+        return WorkflowHelper.getWorkflowVariable(getRepoNode(), name);
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new WorkflowException(e.getMessage(), e);
+        }
     }
 
     public void setWorkflowVariable(String name, String value) throws WorkflowException {
-        WorkflowHelper.setWorkflowVariable(this, name, value);
+        try {
+            WorkflowHelper.setWorkflowVariable(getRepoNode(), name, value);
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new WorkflowException(e.getMessage(), e);
+        }
     }
 
     public void removeWorkflowVariable(String name) throws WorkflowException {
-        WorkflowHelper.removeWorkflowVariable(this, name);
+        try {
+            WorkflowHelper.removeWorkflowVariable(getRepoNode(), name);
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new WorkflowException(e.getMessage(), e);
+        }
     }
 
     public String getWorkflowState(String revision) throws WorkflowException {
-        return WorkflowHelper.getWorkflowState(this, revision);
+        try {
+            return WorkflowHelper.getWorkflowState(getRepoNode(), revision);
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new WorkflowException(e.getMessage(), e);
+        }
     }
 
     public void setWorkflowState(String state, String revision) throws WorkflowException {
-        WorkflowHelper.setWorkflowState(this, state, revision);
+        try {
+            WorkflowHelper.setWorkflowState(getRepoNode(), state, revision);
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new WorkflowException(e.getMessage(), e);
+        }
     }
 
     public Date getWorkflowDate(String revision) throws WorkflowException {
-        return WorkflowHelper.getWorkflowDate(this, revision);
+        try {
+            return WorkflowHelper.getWorkflowDate(getRepoNode(), revision);
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new WorkflowException(e.getMessage(), e);
+        }
     }
 
     public String getWorkflowIntrospection() throws WorkflowException {
         return WorkflowHelper.getWorkflowIntrospection(this);
     }
-
 }
