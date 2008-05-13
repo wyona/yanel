@@ -17,13 +17,21 @@
   <xsl:template match="/">
     <html>
       <head>
+        <link rel="stylesheet" type="text/css" href="resource-types/http://www.wyona.org/yanel/resource/1.0::data-repo-sitetree/js/js/ext/resources/css/ext-all.css"/>
+        <script type="text/javascript" src="resource-types/http://www.wyona.org/yanel/resource/1.0::data-repo-sitetree/js/js/ext/adapter/yui/yui-utilities.js"></script>
+        <script type="text/javascript" src="resource-types/http://www.wyona.org/yanel/resource/1.0::data-repo-sitetree/js/js/ext/adapter/yui/ext-yui-adapter.js"></script>
+        <script type="text/javascript" src="resource-types/http://www.wyona.org/yanel/resource/1.0::data-repo-sitetree/js/js/ext/ext-all.js"></script>
         <title>Sitetree - Yanel</title>
         <link rel="stylesheet" href="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-css/global.css" type="text/css"/>
       </head>
       <body>
         <h1>Sitetree</h1>
         <a href="?yanel.resource.viewid=xml">XML</a>
-        <xsl:apply-templates select="/sitetree/collection"/>
+        <!-- <xsl:apply-templates select="/sitetree/collection"/> -->
+        
+        <script language="javascript" src="resource-types/http://www.wyona.org/yanel/resource/1.0::data-repo-sitetree/js/org.wyona.yanel.navigation.gwt.navigationtree.NavigationTree.nocache.js"></script>
+        <div id="navigation-tree-hook"/>
+        <iframe id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
       </body>
     </html>
   </xsl:template>
