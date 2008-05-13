@@ -66,7 +66,15 @@ public class YanelWebsiteMenu extends Menu {
 
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">Edit</div><ul>");
-        sb.append("<li class=\"haschild\">Open with&#160;&#160;&#160;<ul><li>Source editor</li><li>WYSIWYG editor</li></ul></li>");
+        sb.append("<li class=\"haschild\">Open with&#160;&#160;&#160;");
+        sb.append("<ul><li>Source editor</li>");
+        sb.append("<li>WYSIWYG editor</li>");
+        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
+            sb.append("<li><a href=\"" + backToRealm + "usecases/tinymce.html?edit-path=" + resource.getPath() + "\">Edit page with tinyMCE&#160;&#160;&#160;</a></li>");
+        } else {
+            sb.append("<li><a>Edit page with tinyMCE&#160;&#160;&#160;</a></li>");
+        }
+        sb.append("</ul></li>");
 
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
             RevisionInformation[] revisions = ((VersionableV2) resource).getRevisions();
