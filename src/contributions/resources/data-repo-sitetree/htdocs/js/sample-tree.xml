@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+<!-- <sitetree>
+  <collection path="/.svn" name=".svn">
+    <label>.svn</label>
+  </collection>
+  <collection path="/news" name="news">
+    <label>news</label>
+  </collection>
+  <collection path="/specification" name="specification">
+    <label>specification</label>
+  </collection>
+  <resource path="/roadmap-events.xml" name="roadmap-events.xml">
+    <label>roadmap-events.xml</label>
+  </resource>
+  <collection path="/es" name="es">
+    <label>es</label>
+  </collection>
+  <resource path="/testing.html" name="testing.html">
+    <label>testing.html</label>
+  </resource>
+  <resource path="/mailing-lists.html" name="mailing-lists.html">
+    <label>mailing-lists.html</label>
+  </resource>
+  <collection path="/en" name="en">
+    <label>en</label>
+  </collection>
+  <collection path="/de" name="de">
+    <label>de</label>
+  </collection>
+  <collection path="/mailing-lists" name="mailing-lists">
+    <label>mailing-lists</label>
+  </collection>
+  <collection path="/usecases" name="usecases">
+    <label>usecases</label>
+  </collection>
+  <resource path="/acknowledgements.html" name="acknowledgements.html">
+    <label>acknowledgements.html</label>
+  </resource>
+  <resource path="/doap.rdf" name="doap.rdf">
+    <label>doap.rdf</label>
+  </resource>
+  <collection path="/workflow" name="workflow">
+    <label>workflow</label>
+  </collection>
+  <collection path="/index.html" name="index.html">
+    <label>index.html</label>
+  </collection>
+  <resource path="/references.html" name="references.html">
+    <label>references.html</label>
+  </resource>
+  <collection path="/download" name="download">
+    <label>download</label>
+  </collection>
+  <collection path="/img" name="img">
+    <label>img</label>
+  </collection>
+  <resource path="/roadmap.html" name="roadmap.html">
+    <label>roadmap.html</label>
+  </resource>
+  <collection path="/people" name="people">
+    <label>people</label>
+  </collection>
+  <collection path="/fr" name="fr">
+    <label>fr</label>
+  </collection>
+  <resource path="/roadmap-timeline.html" name="roadmap-timeline.html">
+    <label>roadmap-timeline.html</label>
+  </resource>
+  <collection path="/css" name="css">
+    <label>css</label>
+  </collection>
+  <collection path="/navigation" name="navigation">
+    <label>navigation</label>
+  </collection>
+  <collection path="/atom" name="atom">
+    <label>atom</label>
+  </collection>
+  <collection path="/xslt" name="xslt">
+    <label>xslt</label>
+  </collection>
+  <resource path="/create-new-page.html" name="create-new-page.html">
+    <label>create-new-page.html</label>
+  </resource>
+  <resource path="/introspection-testing.xml" name="introspection-testing.xml">
+    <label>introspection-testing.xml</label>
+  </resource>
+  <resource path="/create-windows-installer.html" name="create-windows-installer.html">
+    <label>create-windows-installer.html</label>
+  </resource>
+  <resource path="/principles.xhtml" name="principles.xhtml">
+    <label>principles.xhtml</label>
+  </resource>
+  <resource path="/principles.html" name="principles.html">
+    <label>principles.html</label>
+  </resource>
+  <resource path="/mailing-lists.xhtml" name="mailing-lists.xhtml">
+    <label>mailing-lists.xhtml</label>
+  </resource>
+  <resource path="/favicon.ico" name="favicon.ico">
+    <label>favicon.ico</label>
+  </resource>
+  <resource path="/sitetree.xml" name="sitetree.xml">
+    <label>sitetree.xml</label>
+  </resource>
+  <resource path="/introspection-roadmap.xml" name="introspection-roadmap.xml">
+    <label>introspection-roadmap.xml</label>
+  </resource>
+  <resource path="/translations.xml" name="translations.xml">
+    <label>translations.xml</label>
+  </resource>
+  <resource path="/testing.xhtml" name="testing.xhtml">
+    <label>testing.xhtml</label>
+  </resource>
+  <resource path="/introspection-mailing-lists.xml" name="introspection-mailing-lists.xml">
+    <label>introspection-mailing-lists.xml</label>
+  </resource>
+  <resource path="/introspection-license.xml" name="introspection-license.xml">
+    <label>introspection-license.xml</label>
+  </resource>
+  <resource path="/introspection-acknowledgements.html.xml" name="introspection-acknowledgements.html.xml">
+    <label>introspection-acknowledgements.html.xml</label>
+  </resource>
+  <resource path="/introspection-references.html.xml" name="introspection-references.html.xml">
+    <label>introspection-references.html.xml</label>
+  </resource>
+  <collection path="/homepage.xml" name="homepage.xml">
+    <label>homepage.xml</label>
+  </collection>
+  <resource path="/references.html.txt" name="references.html.txt">
+    <label>references.html.txt</label>
+  </resource>
+  <resource path="/introspection-create-windows-installer.xml" name="introspection-create-windows-installer.xml">
+    <label>introspection-create-windows-installer.xml</label>
+  </resource>
+  <resource path="/roadmap.xml" name="roadmap.xml">
+    <label>roadmap.xml</label>
+  </resource>
+  <collection path="/index.xhtml" name="index.xhtml">
+    <label>index.xhtml</label>
+  </collection>
+  <resource path="/introspection-homepage.xml" name="introspection-homepage.xml">
+    <label>introspection-homepage.xml</label>
+  </resource>
+  <resource path="/sitetree-de.xml" name="sitetree-de.xml">
+    <label>sitetree-de.xml</label>
+  </resource>
+  <resource path="/license.html" name="license.html">
+    <label>license.html</label>
+  </resource>
+  <resource path="/license.xhtml" name="license.xhtml">
+    <label>license.xhtml</label>
+  </resource>
+  <resource path="/.yanel-rc" name=".yanel-rc">
+    <label>.yanel-rc</label>
+  </resource>
+  <resource path="/acknowledgements.html.txt" name="acknowledgements.html.txt">
+    <label>acknowledgements.html.txt</label>
+  </resource>
+  <resource path="/introspection-principles.xml" name="introspection-principles.xml">
+    <label>introspection-principles.xml</label>
+  </resource>
+  <resource path="/homepage-es.xml" name="homepage-es.xml">
+    <label>homepage-es.xml</label>
+  </resource>
+  <resource path="/robots.txt" name="robots.txt">
+    <label>robots.txt</label>
+  </resource>
+  <resource path="/sitetree-es.xml" name="sitetree-es.xml">
+    <label>sitetree-es.xml</label>
+  </resource>
+</sitetree> -->
+<countries>
+    <team id="team-a" title="Team A" icon="images/silk/flag_yellow.gif" checked="true">
+        <country title="Brazil" qtip="Rank 2" rank="2"  checked="false"/>
+        <country title="Canada" qtip="Rank 3" rank="3" checked="false"/>
+        <country title="China" qtip="Rank 4" rank="4" checked="false"/>
+    </team>
+    <team title="Team B" icon="images/silk/flag_blue.gif">
+        <country title="Germany" qtip="Captain" checked="true" rank="1"/>
+        <country title="France" qtip="Rank 2" rank="2" checked="false"/>
+        <country title="Canada" qtip="Rank 3" rank="3" checked="false"/>
+        <country title="India" qtip="Rank 4" rank="4" checked="false"/>
+        <country title="Seychelles" qtip="Rank 5" rank="5" checked="false"/>
+    </team>
+
+    <team title="Team C" icon="images/silk/flag_green.gif">
+    </team>
+  </countries>
