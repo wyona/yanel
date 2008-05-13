@@ -28,7 +28,7 @@
       <groupId>yarep</groupId>
       <artifactId>yarep-core</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>1.0-dev-r36489</version>
+      <version>1.0-dev-r36520</version>
     </dependency>
     <dependency>
       <groupId>wyona-org-commons</groupId>
