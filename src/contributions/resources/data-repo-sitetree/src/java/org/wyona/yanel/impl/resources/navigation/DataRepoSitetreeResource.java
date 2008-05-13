@@ -56,9 +56,15 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
      * Get sitetree as XML
      */
     private String getSitetreeAsXML() {
+        String name4pathParameter;
+        try {
+            name4pathParameter = getResourceConfigProperty("name4path-parameter");
+        } catch (Exception e) {
+            name4pathParameter = "path";
+        }
         StringBuffer sb = new StringBuffer("<sitetree>");
-        if (getRequest().getParameter("path") != null) {
-            sb.append(getNodeAsXML(request.getParameter("path")));
+        if (getEnvironment().getRequest().getParameter(name4pathParameter) != null) {
+            sb.append(getNodeAsXML(request.getParameter(name4pathParameter)));
         } else {
             sb.append(getNodeAsXML("/"));
         }
@@ -77,6 +83,14 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
      * Get node as XML
      */
     private String getNodeAsXML(String path) {
+        boolean showAllSubnodes = true;
+        try {
+            if (getResourceConfigProperty("show-all-subnodes") != null) {
+                showAllSubnodes = Boolean.valueOf(getResourceConfigProperty("show-all-subnodes")).booleanValue();
+            }
+        } catch (Exception e) {
+            log.info("could not get property show-all-subnodes. falling back to show-all-subnodes=true.");
+        }
     //private String getNodeAsXML(com.hp.hpl.jena.rdf.model.Resource resource) {
         //log.error("DEBUG: Path: " + path);
         Sitetree sitetree = getRealm().getRepoNavigation();
@@ -98,10 +112,12 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
 
         if (node != null) {
             if (node.isCollection()) {
-                sb.append("<collection path=\"" + path + "\" name=\"" + node.getName() + "\">");
-                // TODO: ...
-                sb.append("<label><![CDATA[" + node.getName() + "]]></label>");
-                //sb.append("<label><![CDATA[" + node.getLabel() + "]]></label>");
+                if (showAllSubnodes) {
+                    sb.append("<collection path=\"" + path + "\" name=\"" + node.getName() + "\">");
+                    // TODO: ...
+                    sb.append("<label><![CDATA[" + node.getName() + "]]></label>");
+                    //sb.append("<label><![CDATA[" + node.getLabel() + "]]></label>");
+                }
                 Node[] children = node.getChildren();
                 for (int i = 0; i < children.length; i++) {
                     String childPath = path + "/" + children[i].getName();
@@ -111,7 +127,15 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
                     //log.debug("Child path: " + childPath);
 
                     if (children[i].isCollection()) {
-                        sb.append(getNodeAsXML(childPath));
+                        if (!showAllSubnodes) {
+                            sb.append("<collection path=\"" + childPath + "\" name=\"" + children[i].getName() + "\">");
+                            // TODO: ...
+                            sb.append("<label><![CDATA[" +children[i].getName() + "]]></label>");
+                            //sb.append("<label><![CDATA[" + children[i].getLabel() + "]]></label>");
+                            sb.append("</collection>");
+                        } else {
+                            sb.append(getNodeAsXML(childPath));
+                        }
                         //sb.append(getNodeAsXML(children[i].getPath()));
                     } else if (children[i].isResource()) {
                         sb.append("<resource path=\"" + childPath + "\" name=\"" + children[i].getName() + "\">");
@@ -125,7 +149,9 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
                         //sb.append("<neither-resource-nor-collection path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
                     }
                 }
-                sb.append("</collection>");
+                if (showAllSubnodes) {
+                    sb.append("</collection>");
+                }
             } else {
                 sb.append("<resource path=\"" + path + "\" name=\"" + node.getName() + "\">");
                 // TODO ...
