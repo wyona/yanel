@@ -10,8 +10,7 @@ Allows browsing the sitetree of the realm (default is configured within conf/spr
 </description>
 
 <rtd>
-<!--
-  <property name="foo" default-value="bar"/>
--->
+  <property name="show-all-subnodes" default-value="true"/>
+  <property name="name4path-parameter" default-value="path"/>
 </rtd>
 </resource>
