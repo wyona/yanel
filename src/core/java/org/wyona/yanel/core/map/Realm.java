@@ -532,6 +532,8 @@ public class Realm {
     public void destroy() throws Exception {
         log.warn("Shutdown realm: " + getName());
         getRepository().close();
+        getRTIRepository().close();
+        // TODO: close ac-identities and ac-policies repository?
     }
 
     /**
