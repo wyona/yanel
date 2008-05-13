@@ -3,22 +3,29 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="data-repo-sitetree" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
+  <yanel:property name="show-all-subnodes" value="false"/>
+  <yanel:property name="name4path-parameter" value="node"/>
+  
+  
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
       <view id="default">
         <xslt>rthtdocs:/sitetree.xsl</xslt>
-<!--
-        <xslt>file:/home/michi/src/wyona/public/yanel/trunk/src/contributions/resources/data-repo-sitetree/htdocs/sitetree.xsl</xslt>
--->
-        <mime-type>application/xhtml+xml</mime-type>
-
-<!--
-        <mime-type>application/xml</mime-type>
--->
+        <mime-type>text/html</mime-type>
       </view>
+      
       <view id="xml">
         <mime-type>application/xml</mime-type>
       </view>
+
+      <!-- json view -->
+      <view id="json-node">
+        <xslt>rthtdocs:/json-node.xsl</xslt>
+        <mime-type>application/json</mime-type>
+        <serializer key="TEXT">
+        </serializer>
+      </view>
+      
       <view id="google-sitemap">
         <xslt>rthtdocs:/google-sitemap.xsl</xslt>
         <mime-type>application/xml</mime-type>
