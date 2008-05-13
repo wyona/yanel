@@ -55,12 +55,10 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
     /**
      * Get sitetree as XML
      */
-    private String getSitetreeAsXML() {
-        String name4pathParameter;
-        try {
+    private String getSitetreeAsXML() throws Exception {
+        String name4pathParameter = "path";
+        if (getResourceConfigProperty("name4path-parameter") != null) {
             name4pathParameter = getResourceConfigProperty("name4path-parameter");
-        } catch (Exception e) {
-            name4pathParameter = "path";
         }
         StringBuffer sb = new StringBuffer("<sitetree>");
         if (getEnvironment().getRequest().getParameter(name4pathParameter) != null) {
