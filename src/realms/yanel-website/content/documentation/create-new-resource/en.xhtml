@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>Create a new resource type from scratch</title>
+</head>
+
+
+<body>
+<h1>Create a new resource type from scratch</h1>
+<ul>
+	<li><h3>Run build Script</h3></li>
+	<ul>
+		<li>First we create an empty resource-type. For this type following build script in the console<br />
+			 <pre>    ./build.sh new-resource-type for Linux</pre>
+			 <pre>     build.bat new-resource-type for windows</pre>
+			 </li>
+			 <li>It will ask you for a name for your resource-type and type a name (e.g.: your-resource)</li>
+			<li>It asks you for a namespace for your resource. Insert a namespace:( e.g. http://yourname.org/yanel/resource/1.0)</li>
+			<li>Then give a short description for your resource-type</li>
+			<li>Now it asks you for a package name where java class of your resource type to be stored. Type a package e.g.
+				org.wyona.yanel.impl.resources.yourpackage</li>
+			<li>Enter a java class name of this resource-type (e.g.YourResource) </li>
+			<li>Now choose the template for your java class. Type any one of the following: (empty, xml, usecase, examples).</li>
+			<li>Then it will ask to implement some interfaces to your java class.Type yes to implement interfaces.</li>
+			<li>You will be asked for the different interfaces. Type yes for necessary interfaces. </li>
+			<li>Now the newly created resource is available in the following directory. $YANELHOME/src/contributions/resources </li>
+	</ul>
+			
+			<br/>
+			<h4>Your resource type directory contains the following:</h4>
+			<ul>
+				<li>./yanel-htdocs/doc/index.html</li>
+				<li>./yanel-htdocs/icons/scalable/rt-icon.svg</li>
+				<li>./yanel-htdocs/icons/32x32/rt-icon.png</li>
+				<li>./yanel-htdocs/icons/22x22/rt-icon.png</li>
+				<li>./yanel-htdocs/icons/16x16/rt-icon.png</li>
+				<li>./resource.xml</li>
+				<li>./build.xml</li>
+				<li>./src/build/dependencies.xml</li>
+				<li>./src/build/build.properties</li>
+				<li>./src/java/org/yourname/yanel/impl/resources/ YourResource.java</li>
+			</ul>
+	<li><h3>Register New Resource</h3></li>
+		<ul><li>Register your newly created resource to the local.resource-type.xml  ($YANELHOME/conf/local/local.resource-type.xml) by adding following line: </li></ul>
+		<pre>           &lt;resource-type src=&quot;@YANEL_SRC_DIR@/src/contributions/resources/your-resource/&quot; compile=&quot;true&quot;/&gt;</pre>
+		
+	<li><h3>Implement Functionality</h3></li>
+		<ul><li>Implement necessary functionality in the YourResource.java.</li></ul>
+
+	<li><h3>Rebuild Yanel</h3></li>
+		<ul><li>Rebuild the Yanel so that yanel can build our newly created resource-type also.</li>
+
+			<li>Please note that a resource type can also be built on its own
+				(e.g. ./build.sh -f src/resources/xml/build.xml), whereas one might has to
+				update the dependencies (e.g. src/resources/xml/src/build/dependencies.xml)</li></ul>
+
+	<li><h3>Restart Yanel</h3></li>
+		<ul><li>Type build script ./yanel.sh start for Linux or start-yanel.bat for Windows</li>
+			<li>Your new resource type should be listed now at http://127.0.0.1:8080/yanel/</li></ul>
+
+	<li><h3>Add Resource Type configuration</h3></li>
+		<ul><li>Yanel looks up
+			a configuration for a requested URL, to determine what resource-type to use.
+			This resource-type configuration files are located in the repository which is configured
+			as the rti (resource type identifier) repository in a realm.</li>
+
+			<li>(e.g $YANELHOME/src/realms/use-cases/yanel/rti/your-resource.html.yanel-rc)</li></ul>
+
+			<pre>
+				&lt;?xml version=&quot;1.0&quot;?&gt;&lt;yanel:resource-config xmlns:yanel=&quot;http://www.wyona.org/yanel/rti/1.0&quot;&gt;
+				&nbsp; &lt;yanel:rti name=&quot;hello-world&quot;namespace=&quot;http://yourname.org/yanel/resource/1.0&quot;/&gt;&lt;/yanel:resource-config&gt;</pre>
+
+	<li><h3>Browse Resource</h3></li>
+		<ul><li>You can view the newly created resource by browsing
+			http://localhost:8080/yanel/test/use-cases/your-resource.html. </li></ul>
+		</ul>
+
+</body>
+</html>
