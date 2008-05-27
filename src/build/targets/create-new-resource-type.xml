@@ -111,9 +111,8 @@
                 <dirset dir="${yanel.home.dir}/src/build/targets/create-new-resource-type/from-scratch-resource-template/interfaces/" includes="*/**"/>
               </path>
               <sequential>
-                <propertyregex override="yes"
-                  property="new.resource.java.interface.name"  input="@{file}"
-                  regexp=".*/([^\.]*)" replace="\1"/>
+                <var name="new.resource.java.interface.name" unset="true"/>  
+                <basename property="new.resource.java.interface.name" file="@{file}" />
                 <input message="Do you want to imlement the interface :${new.resource.java.interface.name} (yes/NO)" defaultvalue="null" addproperty="@{file}"/>
                 <if>
                   <equals arg1="${@{file}}" arg2="yes" />
