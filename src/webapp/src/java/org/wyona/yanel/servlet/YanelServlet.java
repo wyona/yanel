@@ -1832,7 +1832,7 @@ public class YanelServlet extends HttpServlet {
         String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
         if (path.startsWith("/" + reservedPrefix + "/users/")) {
             String userName = path.substring(reservedPrefix.length() + 8);
-            userName = userName.split("[.]")[0];
+            userName = userName.substring(0, userName.lastIndexOf(".html"));
 
             try {
                 java.util.Map properties = new HashMap();
