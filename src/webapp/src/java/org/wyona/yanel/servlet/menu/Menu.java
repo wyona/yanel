@@ -59,6 +59,7 @@ abstract public class Menu {
         Identity identity = getIdentity(request, map);
         if (identity != null) {
             sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/users/" + identity.getUsername() + ".html\">My profile</a></li>");
+            // TODO: Also consider additional query strings!
             sb.append("<li><a href=\"?yanel.usecase=logout\"><img class=\"yaneltoolbar_menuicon\" src=\"" + backToRealm + reservedPrefix + "/yanel-img/icons/system-log-out.png\" border=\"0\"/>Logout</a></li>");
         }
         sb.append("</ul>");
