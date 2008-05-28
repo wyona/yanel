@@ -1377,7 +1377,17 @@ public class YanelServlet extends HttpServlet {
             }
 
             if (log.isDebugEnabled()) log.debug("Regular Logout Successful!");
-            return null;
+            //return null;
+            URL url = new URL(getRequestURLQS(request, null, false).toString());
+            String urlWithoutLogoutQS = url.toString().substring(0, url.toString().lastIndexOf("?"));
+            log.warn("Redirect to original request: " + urlWithoutLogoutQS);
+
+                //response.sendRedirect(url.toString()); // 302
+            response.setHeader("Location", urlWithoutLogoutQS.toString());
+            //response.setHeader("Location", url.toString());
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
+                //response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT); // 302
+            return response;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);
