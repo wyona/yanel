@@ -106,7 +106,7 @@ public class AccessControlTransformer extends AbstractTransformer {
                 } else {
                     log.warn("Path does not start with '/' (probably a GROUP!). Path = " + path);
                     String classAttr = parentAttrs.getValue("class");
-                    if (classAttr != null && classAttr.equals("rubrikgruppe")) {
+                    if (classAttr != null && classAttr.indexOf("rubrikgruppe") != -1) {
                         String idAttr = parentAttrs.getValue("id");
                         if (idAttr != null) {
                             log.error("DEBUG: Check policy for path: " + "/de/" + idAttr);
