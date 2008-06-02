@@ -264,7 +264,14 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                     log.warn("Scheme: rthtdocs (" + xsltPaths[i] + ")");
                     xsltHandlers[i] = tf.newTransformerHandler(new org.wyona.yanel.core.source.RTHtdocsResolver(this).resolve(xsltPaths[i], null));
                 } else {
-                    xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPaths[i]).getInputStream()));
+                    if (xsltPaths[i].indexOf(":/") > 0) {
+                        log.error("No such protocol implemented: " + xsltPaths[i].substring(0, xsltPaths[i].indexOf(":/")));
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Default Content repository will be used!");
+                        }
+                    }
+                    xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPaths[i]).getInputStream(), "yanelrepo:" + xsltPaths[i]));
                 }
                 xsltHandlers[i].getTransformer().setURIResolver(uriResolver);
                 xsltHandlers[i].getTransformer().setErrorListener(errorListener);
