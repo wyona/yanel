@@ -8,6 +8,7 @@ import javax.xml.transform.URIResolver;
 
 import org.apache.log4j.Category;
 import org.wyona.yanel.core.Resource;
+import org.wyona.commons.io.PathUtil;
 
 /**
  * Resolves a URI to a Source.
@@ -27,27 +28,55 @@ public class SourceResolver implements URIResolver {
         this.resolvers = new HashMap();
     }
     
+    /**
+     *
+     */
     public Source resolve(String uri, String base) throws SourceException {
         if (log.isDebugEnabled()) {
-            log.debug("resolving: " + uri);
+            log.debug("URI to be resolved: " + uri);
+            log.debug("Base: "+ base);
         }
-        int colonIndex = uri.indexOf(":");
-        if (colonIndex <= 0) {
-            throw new SourceException("invalid url syntax (missing scheme): " + uri);
+
+        int colonIndex = uri.indexOf(":/");
+        String uriScheme = "";
+        if (colonIndex <= 0) {//Check for scheme in URI, if true, then URI has no scheme
+            //log.error("DEBUG: URI has no scheme: " + uri);
+            if (base != null) {
+                int colBaseIndex = base.indexOf(":/");
+                if(colBaseIndex <=0 ){//Check for scheme in Base
+                    throw new SourceException("invalid url syntax (missing scheme): " + uri);//no scheme found in uri and base
+                }else{//base contains scheme. Use base scheme for uri scheme
+                    uriScheme = base.substring(0, colBaseIndex);
+                    uri = PathUtil.concat(base,uri);                
+                    //log.error("DEBUG: Use scheme of base: " + uriScheme + ", " + uri);
+                }
+            } else {
+                log.error("Neither scheme for URI nor base specified for URI: " + uri);
+                throw new SourceException("invalid url syntax (missing scheme): " + uri);//no scheme found in uri and base
+            }
+        } else {//uri contains scheme
+            uriScheme = uri.substring(0, colonIndex);
+            //log.error("DEBUG: URI has scheme: " + uriScheme + ", " + uri);
         }
-        String scheme = uri.substring(0, colonIndex);
-        URIResolver resolver = getResolver(scheme);
+
+        URIResolver resolver = getResolver(uriScheme);
         if (resolver != null) {
             try {
-                return resolver.resolve(uri, base);
+                // TODO: What shall be used as base?!
+                Source s = resolver.resolve(uri, base);
+                s.setSystemId(uri);
+                return s;
             } catch (TransformerException e) {
                 throw new SourceException(e.getMessage(), e);
             }
         } else {
-            throw new SourceException("unknown scheme: " + scheme);
+            throw new SourceException("No resolver could be loaded for scheme: " + uriScheme);
         }
     }
     
+    /**
+     *
+     */
     private URIResolver getResolver(String scheme) {
         URIResolver resolver = null;
         if (this.resolvers.containsKey(scheme)) {
