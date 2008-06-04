@@ -37,12 +37,15 @@ public class SourceResolver implements URIResolver {
             log.debug("Base: "+ base);
         }
 
-        int colonIndex = uri.indexOf(":/");
+        // NOTE: One cannot use ":/" in order to find the protocol/scheme, because one can also specifiy the realm id and repository id, for example: yanelrepo:REALM_ID:REPO_ID:/foo/bar.gif
+        int colonIndex = uri.indexOf(":");
+        //int colonIndex = uri.indexOf(":/");
         String uriScheme = "";
         if (colonIndex <= 0) {//Check for scheme in URI, if true, then URI has no scheme
             //log.error("DEBUG: URI has no scheme: " + uri);
             if (base != null) {
-                int colBaseIndex = base.indexOf(":/");
+                int colBaseIndex = base.indexOf(":");
+                //int colBaseIndex = base.indexOf(":/");
                 if(colBaseIndex <=0 ){//Check for scheme in Base
                     throw new SourceException("invalid url syntax (missing scheme): " + uri);//no scheme found in uri and base
                 }else{//base contains scheme. Use base scheme for uri scheme
