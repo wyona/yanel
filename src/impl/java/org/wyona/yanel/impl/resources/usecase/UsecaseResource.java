@@ -161,13 +161,15 @@ public class UsecaseResource extends BasicXMLResource {
         return viewDescriptor.getRedirectURL();
     }
     
+    /**
+     * Allows to implement subclasses a custom view, which is executed if TYPE_CUSTOM
+     */
     protected View renderCustomView(ConfigurableViewDescriptor viewDescriptor) throws UsecaseException {
-        // implement in subclass
+        log.error("Not implemented! Please make sure to implement this method on your subclass when using TYPE_CUSTOM!");
         return null;
     }
     
     public boolean exists() throws Exception {
         return true;
     }
-
 }
