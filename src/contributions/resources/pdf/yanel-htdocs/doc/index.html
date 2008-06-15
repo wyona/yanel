@@ -54,7 +54,20 @@ table th {
     &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0"&gt;
       &lt;yanel:rti name="pdf" namespace="http://www.wyona.org/yanel/resource/1.0"/&gt;
 
-      &lt;yanel:property name="yanel-path" value="yanelrepo:REPOID:/sample.xml"/&gt;
+      &lt;yanel:property name="yanel-path-matcher" value="/*.pdf"/&gt;
+      &lt;yanel:property name="yanel-path" value="yanelrepo:REPOID:/{1}.xml"/&gt;
+    &lt;/yanel:resource-config&gt;
+</pre>
+
+    <p>Custom XSLT</p>
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0"&gt;
+      &lt;yanel:rti name="pdf" namespace="http://www.wyona.org/yanel/resource/1.0"/&gt;
+
+      &lt;yanel:property name="yanel-path-matcher" value="/*.pdf"/&gt;
+      &lt;yanel:property name="yanel-path" value="yanelrepo:REPOID:/{1}.xml"/&gt;
+
+      &lt;yanel:property name="xslt" value="/my-xml2fo.xsl"/&gt;
     &lt;/yanel:resource-config&gt;
 </pre>
     
