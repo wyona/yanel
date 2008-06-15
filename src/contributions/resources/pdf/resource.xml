@@ -12,6 +12,9 @@ PDF Resource
 
 <rtd>
  <property name="xslt"/>
- <property name="yanel-path"/>
+
+ <!-- optional -->
+ <property name="yanel-path-matcher"/> <!-- for example: value="/*.pdf" -->
+ <property name="yanel-path"/>         <!-- for example: value="/{1}.xml" -->
 </rtd>
 </resource>
