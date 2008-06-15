@@ -159,7 +159,8 @@ public class PDFResource extends Resource implements ViewableV2 {
      *
      */
     public long getSize() throws Exception {
-        return getRealm().getRepository().getSize(new Path(getPath()));
+        log.warn("Not implemented yet!");
+        return -1;
     }
 
     /**
