@@ -71,7 +71,12 @@ public class PDFResource extends Resource implements ViewableV2 {
     /**
      *
      */
-    public View getView(String viewId) {
+    public View getView(String viewId) throws Exception {
+        if (!exists()) {
+            log.warn("No such XML '" + getDataPath() + "' in order to generate PDF!");
+            throw new org.wyona.yanel.core.ResourceNotFoundException("No such XML '" + getDataPath() + "' in order to generate PDF!");
+        }
+
         View defaultView = new View();
         defaultView.setMimeType(getMimeType(viewId));
         defaultView.setResponse(false); // This resource writes directly into the response output stream
@@ -140,8 +145,14 @@ public class PDFResource extends Resource implements ViewableV2 {
     *
     */
     public boolean exists() throws Exception {
-        log.warn("Not implemented yet!");
-        return true;
+        String yanelPath = getDataPath();
+        Repository repo = getRealm().getRepository();
+        if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:")) {
+            log.warn("Not implemented yet!");
+            return true;
+        } else {
+            return repo.existsNode(yanelPath);
+        }
     }
 
     /**
