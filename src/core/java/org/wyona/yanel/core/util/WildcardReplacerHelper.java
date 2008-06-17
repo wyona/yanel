@@ -45,6 +45,10 @@ public class WildcardReplacerHelper {
     public WildcardReplacerHelper () {
     }
 
+    /**
+     * @param stringWithReplaceTokens /{1}/{2}.xml
+     * @param pattern \/*\/*.pdf
+     */
     public WildcardReplacerHelper (String stringWithReplaceTokens, String pattern) {
         this.stringWithReplaceTokens = stringWithReplaceTokens;
         this.pattern = pattern;
@@ -61,7 +65,10 @@ public class WildcardReplacerHelper {
      * @see org.wyona.yanel.core.util.WildcardMatcherHelper
      */
     public String getReplacedString(String origString) throws Exception {
-        if (stringWithReplaceTokens == null) return origString;
+        if (stringWithReplaceTokens == null) {
+            log.warn("No replace tokens specified, hence the original path will be returned: " + origString);
+            return origString;
+        }
         if (pattern == null) return stringWithReplaceTokens;
 
         log.debug("yanel-path property: " + stringWithReplaceTokens);
@@ -69,6 +76,7 @@ public class WildcardReplacerHelper {
 
         Map map = WildcardMatcherHelper.match(pattern, origString);
         if (map == null) {
+            log.warn("Pattern '" + pattern + "' didn't match string '" + origString + "'!");
             return null;
         }
         String resultString = stringWithReplaceTokens;
