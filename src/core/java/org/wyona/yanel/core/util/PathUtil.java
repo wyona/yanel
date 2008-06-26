@@ -92,11 +92,20 @@ public class PathUtil extends org.wyona.commons.io.PathUtil {
     /**
      * @param resource Resource
      * @return A string with as many ../ as it needs to get from the resource path to the root of the realm and adds the reservedPrefix and resource-types/resource-type-namespace::resource-type-localname/ to it. 
+     * @deprecated 
      */
     public static String getResourcesHtdocsPath(Resource resource) {
         return getGlobalHtdocsPath(resource) + "resource-types/" + resource.getResourceTypeNamespace() + "::" + resource.getResourceTypeLocalName() + "/";
     }
 
+    /**
+     * @param resource Resource
+     * @return A string with as many ../ as it needs to get from the resource path to the root of the realm and adds the reservedPrefix and resource-types/resource-type-namespace%3a%3aresource-type-localname/ to it. wheras the resource-type-universalname is urlencoded.
+     */
+    public static String getResourcesHtdocsPathURLencoded(Resource resource) {
+        return getGlobalHtdocsPath(resource) + "resource-types/" + resource.getResourceTypeNamespace().replaceAll("/", "%2f") + "%3a%3a" + resource.getResourceTypeLocalName() + "/";
+    }
+    
     /**
      * @param resource Resource
      * @return A string with as many ../ as it needs to get from the resource path to the root of the realm and adds the reservedPrefix to it. 
