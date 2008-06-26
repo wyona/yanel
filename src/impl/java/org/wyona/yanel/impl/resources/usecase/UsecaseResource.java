@@ -133,7 +133,7 @@ public class UsecaseResource extends BasicXMLResource {
             jellyContext.setVariable("yanel.back2context", PathUtil.backToContext(realm, getPath()));
             jellyContext.setVariable("yanel.back2realm", PathUtil.backToRealm(getPath()));
             jellyContext.setVariable("yanel.globalHtdocsPath", PathUtil.getGlobalHtdocsPath(this));
-            jellyContext.setVariable("yanel.resourcesHtdocsPath", PathUtil.getResourcesHtdocsPath(this));
+            jellyContext.setVariable("yanel.resourcesHtdocsPath", PathUtil.getResourcesHtdocsPathURLencoded(this));
             jellyContext.setVariable("yanel.reservedPrefix", this.getYanel().getReservedPrefix());
             //jellyContext.setVariable("request", request);
 
