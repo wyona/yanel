@@ -432,7 +432,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         transformer.setParameter("yanel.path", getPath());
         transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
         transformer.setParameter("yanel.globalHtdocsPath", PathUtil.getGlobalHtdocsPath(this));
-        transformer.setParameter("yanel.resourcesHtdocsPath", PathUtil.getResourcesHtdocsPath(this));
+        transformer.setParameter("yanel.resourcesHtdocsPath", PathUtil.getResourcesHtdocsPathURLencoded(this));
         String backToRealm = PathUtil.backToRealm(getPath());
         transformer.setParameter("yanel.back2realm", backToRealm);
         transformer.setParameter("yarep.back2realm", backToRealm); // for backwards compatibility
