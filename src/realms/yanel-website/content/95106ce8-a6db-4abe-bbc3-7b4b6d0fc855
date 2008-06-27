@@ -1,9 +1,18 @@
-<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Created from template ...</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Access global and resource type specific data from a resource type</h1><p>If you need to access global or resource type specific data (e.g. images, javascript, css etc.) from within your resource-type, then you can place it either in webapps/yanel/htdocs (global) or in MY-RESOURCE_TYPE/htdocs (resource type specific).</p><p>To access the data there are two helper methods in <tt>org.wyona.yanel.core.util.PathUtil</tt>:</p><p><b>Resource type specific:</b><tt><br/></tt></p><p><tt>getResourcesHtdocsPath</tt><tt>(Resource resource) <br/></tt></p><p>for example:</p>
-<p><tt>sb.append(&quot;&lt;script src=\&quot;&quot; + PathUtil.getResourcesHtdocsPath(this) +
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Created from template ...</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Access global and resource type specific data from a resource type</h1><p>If you need to access global or resource type specific data (e.g. images, javascript, css etc.) from within your resource-type, then you can place it either in webapps/yanel/htdocs (global) or in MY-RESOURCE_TYPE/htdocs (resource type specific).</p><p>To access the data there are two helper methods in <tt>org.wyona.yanel.core.util.PathUtil</tt>:</p><p><b>Resource type specific:</b><tt><br/></tt></p><p><tt>getResourcesHtdocsPathURLencoded</tt><tt>(Resource resource) <br/></tt></p><p>for example:</p>
+<p><tt>sb.append(&quot;&lt;script src=\&quot;&quot; + PathUtil.getResourcesHtdocsPathURLencoded(this) +
 &quot;js/ajaxlookup.js\&quot; type=\&quot;text/javascript\&quot;&gt;&lt;/script&gt;&quot;);</tt></p>
 <p>will generate:</p><p><tt>&lt;script
-src=&quot;BACK2REALM/yanel/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/js/ajaxlookup.js&quot;
+src=&quot;BACK2REALM/yanel/resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3atinymce/js/ajaxlookup.js&quot;
 type=\&quot;text/javascript\&quot;&gt;&lt;/script&gt;</tt></p>
-<p>whereas BACK2REALM denotes the path back to the realm root and &quot;yanel&quot; is the reserved prefix (configured within web.xml)<br/><br/><b>Global:</b> <tt><br/></tt></p><p><tt>getGlobalHtdocsPath(Resource resource)</tt></p><p>for example:<br/></p><p><tt>sb.append(&quot;&lt;script src=\&quot;&quot; + PathUtil.getGlobalHtdocsPath(this) +
+<p>whereas BACK2REALM denotes the path back to the realm root and &quot;yanel&quot; is the reserved prefix (configured within web.xml) and
+for example the file js/ajaxlookup.js is located at MY-RESOURCE_TYPE/htdocs/js/ajaxlookup.js (and for example the file RESERVED_PREFIX/js/ajaxlookup.js would be located at MY-RESOURCE_TYPE/yanel-htdocs/js/ajaxlookup.js)
+
+
+<br/><br/>
+(Please note that the method getResourcesHtdocsPath(Resource) is deprecated!)
+
+<br/><br/>
+
+<b>Global:</b> <tt><br/></tt></p><p><tt>getGlobalHtdocsPath(Resource resource)</tt></p><p>for example:<br/></p><p><tt>sb.append(&quot;&lt;script src=\&quot;&quot; + PathUtil.getGlobalHtdocsPath(this) +
 &quot;yanel-js/prototype.js\&quot; type=\&quot;text/javascript\&quot;&gt;&lt;/script&gt;&quot;);</tt></p><p>will generate:<br/></p><p><tt>&lt;script src=&quot;BACK2REALM/yanel/yanel-js/prototype.js&quot; type=\&quot;text/javascript\&quot;&gt;&lt;/script&gt;</tt></p></body>
 </html>
