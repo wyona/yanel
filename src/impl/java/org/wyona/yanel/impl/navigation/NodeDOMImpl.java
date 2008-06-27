@@ -159,18 +159,18 @@ public class NodeDOMImpl implements Node {
     }
 
     /**
-     *
+     * Get path of this node
      */
     public String getPath() {
-        log.error("TODO: Not implemented yet! Name: " + getName());
-        return null;
-/*
         if (getParent() != null) {
-            return getParent().getPath() + "/" + getName();
-        } else {
+            String name = getName();
+            if (isCollection()) { // add trailing slash if node is a collection
+                name = name + "/";
+            }
+            return getParent().getPath() + name;
+        } else { // Root node reached
             return "/";
         }
-*/
     }
 
     /**
