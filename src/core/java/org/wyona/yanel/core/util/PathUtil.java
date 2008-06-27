@@ -100,10 +100,10 @@ public class PathUtil extends org.wyona.commons.io.PathUtil {
 
     /**
      * @param resource Resource
-     * @return A string with as many ../ as it needs to get from the resource path to the root of the realm and adds the reservedPrefix and resource-types/resource-type-namespace%3a%3aresource-type-localname/ to it. wheras the resource-type-universalname is urlencoded.
+     * @return A string with as many ../ as it needs to get from the resource path to the root of the realm and adds the reservedPrefix and resource-types/resource-type-namespace%3a%3aresource-type-localname/ to it, whereas the resource-type-universalname is url-encoded.
      */
     public static String getResourcesHtdocsPathURLencoded(Resource resource) {
-        return getGlobalHtdocsPath(resource) + "resource-types/" + resource.getResourceTypeNamespace().replaceAll("/", "%2f") + "%3a%3a" + resource.getResourceTypeLocalName() + "/";
+        return getGlobalHtdocsPath(resource) + "resource-types/" + resource.getResourceTypeNamespace().replaceAll("/", "%2f").replaceAll(":", "%3a") + "%3a%3a" + resource.getResourceTypeLocalName() + "/";
     }
     
     /**
