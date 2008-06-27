@@ -629,9 +629,13 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         return resName;
     }
 
+    /**
+     * Return sitetree
+     */
     private StringBuffer getLookUp() {
         StringBuffer sb = new StringBuffer("");
-        Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("repo-navigation");
+        //Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("repo-navigation");
+        Sitetree sitetree = getRealm().getRepoNavigation();
         Node node = null;
         String lookinPath = getRequest().getParameter("lookin");
         if (lookinPath != null) {
@@ -639,14 +643,21 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         } else {
             node = sitetree.getNode(getRealm(), getPath());
         }
-        if (node.isCollection()) {
-            if(log.isDebugEnabled()) log.debug("Is Collection: " + node.getName());
-        } else if (node.isResource()) {
-            if (log.isDebugEnabled()) log.debug("Is Resource: " + node.getName());
-            node = node.getParent();
+
+        if (node != null) {
+            if (node.isCollection()) {
+                if(log.isDebugEnabled()) log.debug("Is Collection: " + node.getName());
+            } else if (node.isResource()) {
+                if (log.isDebugEnabled()) log.debug("Is Resource: " + node.getName());
+                node = node.getParent();
+            } else {
+                log.error("Neither collection nor resource: " + getPath());
+            }
         } else {
-            log.error("Neither collection nor resource: " + getPath());
+            log.error("No such path '" + getPath() + "' within sitetree! Root node will be used.");
+            node = sitetree.getNode(getRealm(), "/");
         }
+
         String rtps = getRequest().getParameter("resource-type");
         String resNamespace = rtps.substring(0, rtps.indexOf("::"));
         String resName = rtps.substring(rtps.indexOf("::") + 2);
