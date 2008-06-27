@@ -668,14 +668,18 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         String parent = "/";
         if (!node.getPath().equals("/")) {
             parent = new org.wyona.commons.io.Path(node.getPath()).getParent().toString();
-        }
-        if (log.isDebugEnabled()) log.debug("Parent: " + parent);
 
-        if (ajaxBrowser) {
-            sb.append("<a href=\"JavaScript:ajaxlookup('" + resNamespace + "::" + resName + "', '" + parent + "')\"><img src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/go-up.png\" alt=\"go up\" border=\"0\"/></a>");
+            if (log.isDebugEnabled()) log.debug("Parent: " + parent);
+
+            if (ajaxBrowser) {
+                sb.append("<a href=\"JavaScript:ajaxlookup('" + resNamespace + "::" + resName + "', '" + parent + "')\"><img src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/go-up.png\" alt=\"go up\" border=\"0\"/></a>");
+            } else {
+                sb.append("<a href=\"?lookin=" + parent + "&amp;resource-type=" + resNamespace + "::" + resName + "\"><img src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/go-up.png\" alt=\"go up\" border=\"0\"/></a>");
+            }
         } else {
-            sb.append("<a href=\"?lookin=" + parent + "&amp;resource-type=" + resNamespace + "::" + resName + "\"><img src=\"" + PathUtil.getGlobalHtdocsPath(this) + "yanel-img/icons/go-up.png\" alt=\"go up\" border=\"0\"/></a>");
+            // Do not display "go-up" if current node is root node
         }
+
         sb.append("</td></tr>");
 
         sb.append("<tr><td colspan=\"2\">");
