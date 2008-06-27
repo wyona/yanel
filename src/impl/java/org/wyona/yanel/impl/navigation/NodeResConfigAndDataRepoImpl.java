@@ -69,6 +69,7 @@ public class NodeResConfigAndDataRepoImpl implements Node {
      * @return new child
      */
     public Node appendChild(Node child) {
+        log.warn("Not implemented yet!");
         return null;
     }
 
