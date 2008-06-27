@@ -504,7 +504,16 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      * Add to sitetree
      */
     private void addToSitetree(Resource newResource) throws Exception {
-        log.error("Not implemented yet!");
+        org.wyona.yanel.core.navigation.Sitetree sitetree = getRealm().getRepoNavigation();
+        String parentPath = PathUtil.getParent(newResource.getPath());
+        org.wyona.yanel.core.navigation.Node parentNode = sitetree.getNode(getRealm(), parentPath);
+        if (parentNode != null) {
+            String nodeName = PathUtil.getName(newResource.getPath());
+            String label = nodeName;
+            parentNode.appendChild(sitetree.createNode(nodeName, label));
+        } else {
+            log.error("No such node with path: " + parentPath);
+        }
     }
 
     /**
