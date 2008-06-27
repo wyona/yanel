@@ -1884,23 +1884,15 @@ public class YanelServlet extends HttpServlet {
             } catch (Exception e) {
                 throw new ServletException(e);
             }
-        } else if (path.indexOf("resource-types") >=0 ) {
-            String resourceTypeUniversalNameSplitter;
-            String resourceTypeUniversalNameSlash;
-            if (path.indexOf("::") >=0) {
-                resourceTypeUniversalNameSplitter = "::";
-                resourceTypeUniversalNameSlash = "/";
-                log.warn("The use of resource-types/resourec/type/namespace::resourcename is deprecated. use resource-types/resourec%2ftype%2fnamespace%3a%3aresourcename instead");
-            } else {
-                resourceTypeUniversalNameSplitter = "%3a%3a";
-                resourceTypeUniversalNameSlash = "%2f";
-            }
-            
+        } else if (path.indexOf("resource-types") >= 0) {
+            //log.debug("Resource path: " + resource.getPath());
             String[] pathPart1 = path.split("/resource-types/");
-            String[] pathPart2 = pathPart1[1].split(resourceTypeUniversalNameSplitter);
+            String[] pathPart2 = pathPart1[1].split("::");
             String[] pathPart3 = pathPart2[1].split("/");
             String name = pathPart3[0];
-            String namespace = pathPart2[0].replaceAll(resourceTypeUniversalNameSlash, "/").replaceAll("http:/", "http://");
+            // The request (see resource.getPath()) seems to replace 'http://' or 'http%3a%2f%2f' by 'http:/', so let's change this back
+            String namespace = pathPart2[0].replaceAll("http:/", "http://");
+
             try {
                 java.util.Map properties = new HashMap();
                 Realm realm = yanel.getMap().getRealm(request.getServletPath());
@@ -1908,18 +1900,18 @@ public class YanelServlet extends HttpServlet {
                 Resource resourceOfPrefix = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
                 String htdocsPath;
                 if (pathPart2[1].indexOf("/" + reservedPrefix + "/") >= 0) {
-                    htdocsPath =  "rtyanelhtdocs:" + path.split(resourceTypeUniversalNameSplitter + name)[1].split("/" + reservedPrefix)[1].replace('/', File.separatorChar);
+                    htdocsPath =  "rtyanelhtdocs:" + path.split("::" + name)[1].split("/" + reservedPrefix)[1].replace('/', File.separatorChar);
                 } else {
-                    htdocsPath = "rthtdocs:" + path.split(resourceTypeUniversalNameSplitter + name)[1].replace('/', File.separatorChar); 
+                    htdocsPath = "rthtdocs:" + path.split("::" + name)[1].replace('/', File.separatorChar); 
                 }
                 SourceResolver resolver = new SourceResolver(resourceOfPrefix);
                 Source source = resolver.resolve(htdocsPath, null);
                 InputStream htodoc = ((StreamSource) source).getInputStream();
                 
                 if (htodoc != null) {
-                        log.debug("Resource-Type specific data: " + htdocsPath);
+                    log.debug("Resource-Type specific data: " + htdocsPath);
                     // TODO: Set HTTP header (mime-type, size, etc.)
-                                String mimeType = guessMimeType(FilenameUtils.getExtension(FilenameUtils.getName(htdocsPath)));
+                    String mimeType = guessMimeType(FilenameUtils.getExtension(FilenameUtils.getName(htdocsPath)));
                     response.setHeader("Content-Type", mimeType);
 
                     byte buffer[] = new byte[8192];
