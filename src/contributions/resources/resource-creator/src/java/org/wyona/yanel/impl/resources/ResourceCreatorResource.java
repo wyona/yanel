@@ -488,6 +488,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 ((CreatableV2) newResource).create(request);
                 if (pathOfNewResource != null) {
                     createResourceConfiguration(newResource);
+                    addToSitetree(newResource);
                 }
             } else {
                 throw new Exception("creation NOT successfull!");
@@ -497,6 +498,13 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 
         }
         return pathOfNewResource;
+    }
+
+    /**
+     * Add to sitetree
+     */
+    private void addToSitetree(Resource newResource) throws Exception {
+        log.error("Not implemented yet!");
     }
 
     /**
@@ -517,7 +525,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     rcContent.append("<yanel:property name=\"" + property + "\" value=\"" + value + "\"/>\n");
                     if(log.isDebugEnabled()) log.debug("Set Property: " + property + ", " + value);
                 } else {
-                    log.warn("Property value is null: " + property);
+                    log.warn("Value of property '" + property + "' is null and won't be set within resource configuration: " + PathUtil.getRCPath(newResource.getPath()));
                 }
             }
         } else {
