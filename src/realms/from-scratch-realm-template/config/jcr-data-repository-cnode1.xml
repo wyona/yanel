@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<repository class="org.wyona.yarep.impl.repo.jcr.JCRRepository">
+  <name>Yanel From Scratch Realm JCR/Jackrabbit based data repository</name>
+
+  <jackrabbit-repository-config src="../jcr-data-repo-cnode1/repository.xml"/>
+</repository>
+
+  <!--
+  derby.stream.error.file System property to configure the derby.log file path
+  Please note that derby is implementation specific!
+  -->

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<realm-config xmlns="http://www.wyona.org/yanel/realm/1.0">
+  <name>Yanel From Scratch Realm</name>
+
+  <rti>config/rti-repository.xml</rti>
+  <data>config/jcr-data-repository-cnode1.xml</data>
+
+  <ac-policies class="org.wyona.security.impl.PolicyManagerFactoryImplVersion2">config/ac-policies-repository.xml</ac-policies>
+
+  <ac-identities>config/ac-identities-repository.xml</ac-identities>
+
+<!--
+  <web-authenticator class="org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl"/>
+-->
+
+<!--
+  <default-language>en</default-language>
+  <languages>
+    <language>en</language>
+    <language>de</language>
+  </languages>
+  <translation-manager class="org.wyona.yanel.core.attributes.translatable.PrefixTranslationManager"/>
+  <language-handler class="org.wyona.yanel.impl.StaticLanguageHandler"/>
+-->
+
+<!--
+  <yarep-repositories>
+    <repository id="my-extra-repository" config="config/my-extra-repository.xml"/>
+  </yarep-repositories>
+-->
+
+<!--
+  <i18n-catalogue>yanelrepo:/i18n-from-scratch-realm.xml</i18n-catalogue>
+-->
+
+<!--
+  <menu class="org.wyona.yanel.servlet.menu.impl.DefaultMenu"/>
+-->
+
+<!--
+  <repo-navigation class="org.wyona.yanel.impl.navigation.SitetreeResConfigAndDataRepoImpl"/>
+-->
+
+  <!-- Directory where all repositories are being contained. At the moment necessary for copying this realm. WARNING: This doesn't have to be the case, but rather check the various repository configs themselves! TODO: See http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5208 -->
+  <root-dir>./.</root-dir>
+</realm-config>
