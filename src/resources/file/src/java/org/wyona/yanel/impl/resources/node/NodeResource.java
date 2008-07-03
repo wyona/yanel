@@ -104,6 +104,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      *
      */
     public String getMimeType(String viewId) throws Exception {
+        // TODO: Also check mime type of data repository node
 
         String mimeType = getResourceConfigProperty("mime-type");
 
@@ -323,6 +324,13 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
                         InputStream is = yanelRequest.getInputStream(name);
                         Streams.copy(is, output, true);
                         uploadMimeType = yanelRequest.getContentType(name);
+
+                        String suffix = PathUtil.getSuffix(newNode.getPath());
+                        if (suffix != null) {
+                            if (!getMimeTypeBySuffix(suffix).equals(uploadMimeType)) {
+                                log.warn("Upload request content type '" + uploadMimeType + "' is NOT the same as the guessed mime type '" + getMimeTypeBySuffix(suffix) + "' based on the suffix (Path: " + newNode.getPath() + ")");
+                            }
+                        }
                         newNode.setMimeType(uploadMimeType);
                     }
                 } else {
@@ -357,6 +365,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         java.util.HashMap map = new java.util.HashMap();
         String mimeType = request.getParameter("rp.mime-type");
         if (mimeType == null) {
+            log.warn("No mime type has been set explicitely! Use content type of upload request: " + this.uploadMimeType);
             mimeType = this.uploadMimeType;
         }
         map.put("mime-type", mimeType);
