@@ -4,7 +4,7 @@
   <name>Yanel From Scratch Realm</name>
 
   <rti>config/rti-repository.xml</rti>
-  <data>config/data-repository.xml</data>
+  <data>config/vfs-data-repository.xml</data>
 
   <ac-policies class="org.wyona.security.impl.PolicyManagerFactoryImplVersion2">config/ac-policies-repository.xml</ac-policies>
 
