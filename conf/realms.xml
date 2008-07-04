@@ -84,6 +84,12 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
 <realm id="from-scratch-realm-template" mount-point="/from-scratch-realm/">
   <!--<name>From Scratch Realm Template</name>-->
   <config src="@REALMS_DIR@/from-scratch-realm-template/"/>
+<!--
+  <config src="@REALMS_DIR@/from-scratch-realm-template/realm-jcr-cnode1.xml"/>
+-->
+<!--
+  <config src="@REALMS_DIR@/from-scratch-realm-template/realm-jcr-cnode2.xml"/>
+-->
 </realm>
 
 <!-- ROOT realm -->
