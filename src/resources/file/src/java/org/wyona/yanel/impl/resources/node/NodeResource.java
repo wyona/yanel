@@ -194,15 +194,20 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     public RevisionInformation[] getRevisions() throws Exception {
         Revision[] revisions = getNode().getRevisions();
 
-        RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
+        if (revisions != null) {
+            RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
 
-        for (int i = 0; i < revisions.length; i++) {
-            revisionInfos[i] = new RevisionInformation(revisions[i]);
+            for (int i = 0; i < revisions.length; i++) {
+                revisionInfos[i] = new RevisionInformation(revisions[i]);
+            }
+            if (revisions.length > 0) {
+                log.warn("Node \"" + getPath() + "\" does not seem to have any revisions! The repository \"" + getRealm().getRepository() + "\"  might not support revisions!");
+            }
+            return revisionInfos;
+        } else {
+            log.warn("Node '" + getNode().getPath() + "' has no revisions!");
+            return null;
         }
-        if (revisions.length > 0) {
-            log.warn("Node \"" + getPath() + "\" does not seem to have any revisions! The repository \"" + getRealm().getRepository() + "\"  might not support revisions!");
-        }
-        return revisionInfos;
     }
 
     public void checkin(String comment) throws Exception {
