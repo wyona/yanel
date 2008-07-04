@@ -72,7 +72,7 @@
             class: FQN of class implementing the PersistenceManager interface
         -->
         <PersistenceManager class="org.apache.jackrabbit.core.persistence.bundle.PostgreSQLPersistenceManager">
-          <param name="url" value="jdbc:postgresql://127.0.0.1:5432/jackrabbit"/>
+          <param name="url" value="jdbc:postgresql://127.0.0.1:5432/jackrabbit_test"/>
           <param name="user" value="MY_DB_USERNAME"/>
           <param name="password" value=""/>
           <param name="schemaObjectPrefix" value="${wsp.name}_"/>
@@ -109,7 +109,7 @@
             implementations.
         -->
         <PersistenceManager class="org.apache.jackrabbit.core.persistence.bundle.PostgreSQLPersistenceManager">
-          <param name="url" value="jdbc:postgresql://127.0.0.1:5432/jackrabbit"/>
+          <param name="url" value="jdbc:postgresql://127.0.0.1:5432/jackrabbit_test"/>
           <param name="user" value="MY_DB_USERNAME"/>
           <param name="password" value=""/>
           <param name="schemaObjectPrefix" value="version_"/>
