@@ -102,6 +102,7 @@
       <dependency groupId="sxip" artifactId="xmlsec" version="1.1"/>
       <dependency groupId="com.ibm.icu" artifactId="icu4j" version="3.4.4"/>
 
+      <dependency groupId="postgresql" artifactId="postgresql" version="8.1-409.jdbc3"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
