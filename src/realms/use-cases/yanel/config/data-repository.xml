@@ -1,9 +1,15 @@
 <?xml version="1.0"?>
 
 <repository>
+<!--
+<repository class="org.wyona.yarep.impl.DefaultRepository">
+-->
   <name>Use-Cases Realm Data Repository</name>
 
   <paths src="../data-paths" fallback="true">
+<!--
+  <paths class="org.wyona.yarep.impl.DefaultMapImpl" src="../data-paths" fallback="true">
+-->
     <ignore pattern=".*\.svn"/>
   </paths>
 
