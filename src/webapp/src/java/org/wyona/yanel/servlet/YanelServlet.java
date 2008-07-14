@@ -717,6 +717,8 @@ public class YanelServlet extends HttpServlet {
                     while ((bytesRead = resourceIn.read(buffer)) != -1) {
                         responseOut.write(buffer, 0, bytesRead);
                     }
+                    resourceIn.close();
+                    //responseOut.close();
 
                     // TODO: Fix Location ...
                     response.setHeader("Location", "http://ulysses.wyona.org" + newEntryPath);
@@ -1743,6 +1745,7 @@ public class YanelServlet extends HttpServlet {
         }
         writer.flush();
         writer.close();
+        reader.close();
     }
     
     /**
@@ -2084,6 +2087,7 @@ public class YanelServlet extends HttpServlet {
                 while ((bytesRead = is.read(buffer)) != -1) {
                     os.write(buffer, 0, bytesRead);
                 }
+                is.close();
                 return response;
             } else {
                 String message = "InputStream of view is null!";
