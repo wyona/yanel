@@ -1909,9 +1909,9 @@ public class YanelServlet extends HttpServlet {
                 }
                 SourceResolver resolver = new SourceResolver(resourceOfPrefix);
                 Source source = resolver.resolve(htdocsPath, null);
-                InputStream htodoc = ((StreamSource) source).getInputStream();
+                InputStream htdocIn = ((StreamSource) source).getInputStream();
                 
-                if (htodoc != null) {
+                if (htdocIn != null) {
                     log.debug("Resource-Type specific data: " + htdocsPath);
                     // TODO: Set HTTP header (mime-type, size, etc.)
                     String mimeType = guessMimeType(FilenameUtils.getExtension(FilenameUtils.getName(htdocsPath)));
@@ -1919,11 +1919,11 @@ public class YanelServlet extends HttpServlet {
 
                     byte buffer[] = new byte[8192];
                     int bytesRead;
-                    InputStream in = htodoc;
                     OutputStream out = response.getOutputStream();
-                    while ((bytesRead = in.read(buffer)) != -1) {
+                    while ((bytesRead = htdocIn.read(buffer)) != -1) {
                         out.write(buffer, 0, bytesRead);
                     }
+                    htdocIn.close();
                     // allow client-side caching:
                     if (cacheExpires != 0) {
                         setExpiresHeader(response, cacheExpires);
@@ -1953,6 +1953,7 @@ public class YanelServlet extends HttpServlet {
                 while ((bytesRead = in.read(buffer)) != -1) {
                     out.write(buffer, 0, bytesRead);
                 }
+                in.close();
                 // allow client-side caching:
                 if (cacheExpires != 0) {
                     setExpiresHeader(response, cacheExpires);
