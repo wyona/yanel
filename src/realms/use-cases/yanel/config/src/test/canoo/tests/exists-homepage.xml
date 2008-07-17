@@ -6,7 +6,7 @@
   <import file="../definitions.xml"/>
 
   <target name="test" depends="wt.defineMacros">
-    <webtest name="Homepage">
+    <webtest name="Homepage Usecases Tests Realm">
       &config;
       <!--<login/>-->
       <invoke description="Get the page: " url="/${realm.prefix}"/>
