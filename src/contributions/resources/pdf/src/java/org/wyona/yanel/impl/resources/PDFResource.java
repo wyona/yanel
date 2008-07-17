@@ -142,8 +142,8 @@ public class PDFResource extends Resource implements ViewableV2 {
     }
 
     /**
-    *
-    */
+     * Check if data actually exists within repository
+     */
     public boolean exists() throws Exception {
         String yanelPath = getDataPath();
         Repository repo = getRealm().getRepository();
