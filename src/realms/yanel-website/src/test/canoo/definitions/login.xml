@@ -1,0 +1,16 @@
+<!-- 
+Like all files of this folder, this content will be executed in target wt.defineMacros
+and therefore made be available for the tests (here the macro <fillParticipantData .../>)
+-->
+<macrodef name="login" description="Login">
+  <sequential>
+    <invoke description="Get the page: Login to realm" url="${realm.prefix}"/>
+    <setInputField name="yanel.login.username" value="lenya"/>
+    <setInputField name="yanel.login.password" value="levi"/>
+    <clickButton name="submit"/>
+<!--
+    <clickButton name="Senden"/>
+-->
+    <verifyText description="Verify that text is contained in the page" text="Willkommen"/>
+  </sequential>
+</macrodef>

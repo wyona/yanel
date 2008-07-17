@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<project name="realm.homepage" default="test">
+
+  <import file="../definitions.xml"/>
+
+  <target name="test" depends="wt.defineMacros">
+    <webtest name="Homepage">
+      &config;
+      <!--<login/>-->
+      <invoke description="Get the page: " url="/${realm.prefix}"/>
+      <verifyText description="Verify that text is contained in the page" text="Everything"/>
+      <!--<logout/>-->
+    </webtest>
+  </target>
+
+</project>

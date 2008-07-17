@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<project name="RealmTest-allTests" default="test">
+  <target name="test" description="runs all the tests">
+    <!-- note: the order of the tests matters because some tests depend on others -->
+
+    <ant antfile="exists-homepage.xml"/>
+  </target>
+</project>

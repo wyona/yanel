@@ -1,0 +1,12 @@
+<config host="${webtest.config.host}"
+        port="${webtest.config.port}"
+        protocol="${webtest.config.protocol}"
+        basepath="${webtest.config.basepath}">
+  <header name="Accept-Language" value="en"/>
+
+<!--
+  <option name="JavaScriptEnabled" value="false"/>
+-->
+  <option name="JavaScriptEnabled" value="true"/>
+  <option name="ThrowExceptionOnScriptError" value="false"/>
+</config>
