@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<!--
+This is the canoo webtest build file.
+-->
+
+<project name="example" default="wt.full">
+
+  <property file="local.build.properties"/>
+  <property file="build.properties"/>
+
+  <!-- <import file="definitions.xml" description="Import custom definitions (if any)"/> -->
+  <import file="${webtest.home}/webtest.xml" description="Import all functionalities for a full build"/>
+
+  <property name="wt.testInWork" value="tests/allTests.xml"/>
+
+<!--
+  Activate this if you are behind a proxy and want to test a server outside your local network
+  See http://ant.apache.org/manual/OptionalTasks/setproxy.html
+  <setproxy proxyhost="myProxy" proxyport="1234"/>
+-->
+
+</project>
