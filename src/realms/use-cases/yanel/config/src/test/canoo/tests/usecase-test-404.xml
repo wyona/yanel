@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<!-- NOTE: testing a 404 seems to be a problem, because the HTTP status is 404 and hence Canoo will fail the test! -->
+<project name="404-test" default="test">
+
+  <import file="../definitions.xml"/>
+
+  <target name="test" depends="wt.defineMacros">
+    <webtest name="Usecase Test 404">
+      &config;
+      <invoke description="Get the page: " url="/${realm.prefix}404.html"/>
+      <verifyText description="Verify that text is contained in the page" text="No such page"/>
+    </webtest>
+  </target>
+
+</project>

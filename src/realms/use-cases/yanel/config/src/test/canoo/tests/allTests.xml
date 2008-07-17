@@ -5,5 +5,9 @@
     <!-- note: the order of the tests matters because some tests depend on others -->
 
     <ant antfile="exists-homepage.xml"/>
+<!-- see comment/note within this test
+    <ant antfile="usecase-test-404.xml"/>
+-->
+    <ant antfile="usecase-test-create-resource.xml"/>
   </target>
 </project>

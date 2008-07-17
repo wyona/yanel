@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<project name="create-resource-test" default="test">
+
+  <import file="../definitions.xml"/>
+
+  <target name="test" depends="wt.defineMacros">
+    <webtest name="Usecase Test 'Create resource'">
+      &config;
+      <invoke description="Get the page: " url="/${realm.prefix}resource-creator.html"/>
+      <verifyText description="Verify that text is contained in the page" text="Select template"/>
+    </webtest>
+
+    <webtest name="Usecase Test 'Create resource: Select template'">
+      &config;
+      <invoke description="Get the page: " url="/${realm.prefix}resource-creator.html"/>
+      <verifyText description="Verify that text is contained in the page" text="Enter/Select template"/>
+    </webtest>
+  </target>
+
+</project>
