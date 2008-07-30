@@ -30,7 +30,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- *
+ * Calendar resource based on the ICS format
  */
 public class CalendarResource extends Resource implements ViewableV2, ModifiableV2, CreatableV2 {
 
