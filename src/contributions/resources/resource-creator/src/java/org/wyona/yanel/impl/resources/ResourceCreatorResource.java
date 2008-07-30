@@ -456,6 +456,11 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      * @return Path of new resource
      */
     private Path create(String createName, String lookinPath, String resourceType) throws Exception {
+        if (resourceType == null) {
+            log.error("No resource-type parameter specified!");
+            return null;
+        }
+
         org.wyona.yanel.core.map.Realm realm = getRealm();
         Path pathOfResourceCreator = new Path(getPath());
 
