@@ -6,16 +6,28 @@
   <import file="../definitions.xml"/>
 
   <target name="test" depends="wt.defineMacros">
-    <webtest name="Usecase Test 'Create resource'">
+    <webtest name="Usecase Test 'Create resource: Select template'">
       &config;
       <invoke description="Get the page: " url="/${realm.prefix}resource-creator.html"/>
       <verifyText description="Verify that text is contained in the page" text="Select template"/>
     </webtest>
 
-    <webtest name="Usecase Test 'Create resource: Select template'">
+    <webtest name="Usecase Test 'Create resource: Enter parameters'">
       &config;
-      <invoke description="Get the page: " url="/${realm.prefix}resource-creator.html"/>
+      <invoke description="Get the page: " url="/${realm.prefix}resource-creator.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Awiki&amp;referer=http%3A%2F%2F127.0.0.1%3A8080%2Fyanel%2Ftest%2Fuse-cases%2F"/>
       <verifyText description="Verify that text is contained in the page" text="Enter/Select template"/>
+    </webtest>
+
+    <webtest name="Usecase Test 'Create resource: Resource created'">
+      &config;
+      <invoke description="Get the page: " url="/${realm.prefix}resource-creator.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Awiki&amp;referer=http%3A%2F%2F127.0.0.1%3A8080%2Fyanel%2Ftest%2Fuse-cases%2F"/>
+      <verifyText description="Verify that text is contained in the page" text="Resource has been created"/>
+    </webtest>
+
+    <webtest name="Usecase Test 'Create resource: New Resource'">
+      &config;
+      <invoke description="Get the page: " url="/${realm.prefix}test-resource-creator-wiki.html"/>
+      <verifyText description="Verify that text is contained in the page" text="Test 101"/>
     </webtest>
   </target>
 
