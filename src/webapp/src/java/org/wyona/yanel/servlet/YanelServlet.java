@@ -795,7 +795,7 @@ public class YanelServlet extends HttpServlet {
                 }
             } else {
                 Resource resource = getResource(request, response);
-                log.error("DEBUG: Client (" + request.getHeader("User-Agent") + ") requests to save a resource: " + resource.getRealm() + ", " + resource.getPath());
+                log.warn("Client (" + request.getHeader("User-Agent") + ") requests to save a resource: " + resource.getRealm() + ", " + resource.getPath());
                 save(request, response, false);
                 return;
             }
@@ -992,6 +992,7 @@ public class YanelServlet extends HttpServlet {
                 if (out != null) {
                     write(in, out, request, response);
                 } else {
+                    log.warn("getOutputStream() returned null, hence fallback to write()");
                     ((ModifiableV2) res).write(in);
                 }
             } catch (Exception e) {
