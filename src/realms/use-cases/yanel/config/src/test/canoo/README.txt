@@ -5,7 +5,7 @@ How to install and run the tests
 --------------------------------
 
 1. download and install canoo webtest package
-   http://webtest.canoo.com/webtest/build.zip
+   http://webtest.canoo.com/webtest/build.zip (2008.07.30)
 
 2. unzip build.zip e.g. to /home/USER/canoo
 
