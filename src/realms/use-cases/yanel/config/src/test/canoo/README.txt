@@ -14,7 +14,7 @@ How to install and run the tests
 
 4. start tomcat
 
-5. type ant to run the tests
+5. type ant to run the tests (You might have to reset your PATH environment variable, for example 'export PATH=/home/USER/yanel/trunk/tools/apache-ant-1.6.5/bin:$PATH')
 
 
 
