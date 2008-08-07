@@ -2,7 +2,7 @@
  * Copyright 2006 Wyona
  */
 
-package org.wyona.yanel.impl.resources;
+package org.wyona.yanel.impl.resources.calendar;
 
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
@@ -11,7 +11,7 @@ import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
-import org.wyona.yanel.impl.resources.CalendarEvent;
+import org.wyona.yanel.impl.resources.calendar.CalendarEvent;
 
 import org.apache.log4j.Category;
 

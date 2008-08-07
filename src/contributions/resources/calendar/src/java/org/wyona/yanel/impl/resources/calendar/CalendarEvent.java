@@ -1,4 +1,4 @@
-package org.wyona.yanel.impl.resources;
+package org.wyona.yanel.impl.resources.calendar;
 
 import org.apache.log4j.Category;
 
