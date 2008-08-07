@@ -144,8 +144,16 @@ public class CalendarEvent {
             setStart(icsLine.substring(icsLine.indexOf("TZID=") + 5));
         } else if (icsLine.startsWith("DTEND;")) {
             setEnd(icsLine.substring(icsLine.indexOf("TZID=") + 5));
+        } else if (icsLine.startsWith("DESCRIPTION:")) {
+            log.warn("DESCRIPTION tag not implemented yet: " + icsLine.split(":")[1]);
+        } else if (icsLine.startsWith("ATTENDEE:")) {
+            log.warn("ATTENDEE tag not implemented yet: " + icsLine.split(":")[1]);
+        } else if (icsLine.startsWith("PRIORITY:")) {
+            log.warn("PRIORITY tag not implemented yet: " + icsLine.split(":")[1]);
+        } else if (icsLine.startsWith("STATUS:")) {
+            log.warn("STATUS tag not implemented yet: " + icsLine.split(":")[1]);
         } else {
-            log.warn("Not implemented yet: " + icsLine);
+            log.warn("Not implemented yet (probably some text with line-breaks!): " + icsLine);
         }
     }
 }

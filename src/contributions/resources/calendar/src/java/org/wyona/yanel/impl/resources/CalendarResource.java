@@ -222,12 +222,12 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         //java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(in));
         String line;
         CalendarEvent event = null;
-        log.debug("Parse ICS and write events as XML into repository ...");
+        log.error("DEBUG: Parse ICS and write events as XML into repository ...");
         while ((line = br.readLine()) != null) {
             if (line.startsWith("BEGIN:VEVENT")) {
                 event = new CalendarEvent();
             } else if (line.startsWith("END:VEVENT")) {
-                log.error("DEBUG: Write event " + event.getUID() + ", " + event.toXML());
+                //log.error("DEBUG: Write event " + event.getUID() + ", " + event.toXML());
                 Writer out = getRealm().getRepository().getWriter(new org.wyona.yarep.core.Path(getResourceConfigProperty("events-path") + "/" + event.getUID() + ".xml"));
                 out.write(event.toXML());
                 out.close();
@@ -236,16 +236,18 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
                 if (event != null) {
                     event.setProperty(line);
                 } else {
-                    log.warn("Not implemented yet: " + line);
+                    //log.warn("Not implemented yet: " + line);
                 }
             }
         }
+        br.close();
     }
 
     /**
      * Save/Write the actual ICS
      */
     private InputStream writeICS(InputStream in) throws Exception {
+        log.error("DEBUG: Write ICS as a whole to the repository: " + getPath());
         org.wyona.yarep.core.Path path = new org.wyona.yarep.core.Path(getPath());
         OutputStream out = getRealm().getRepository().getOutputStream(path);
         byte[] buf = new byte[8192];
@@ -253,6 +255,8 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         while ((bytesR = in.read(buf)) != -1) {
             out.write(buf, 0, bytesR);
         }
+        out.close();
+        in.close();
         return getRealm().getRepository().getInputStream(path);
     }
 
