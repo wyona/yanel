@@ -252,6 +252,13 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         OutputStream out = getRealm().getRepository().getOutputStream(path);
         byte[] buf = new byte[8192];
         int bytesR;
+
+        bytesR = in.read(buf);
+        if(bytesR <= 0) {
+            // out.close();
+            throw new Exception("InputStream seems to be empty!");
+        }
+
         while ((bytesR = in.read(buf)) != -1) {
             out.write(buf, 0, bytesR);
         }
