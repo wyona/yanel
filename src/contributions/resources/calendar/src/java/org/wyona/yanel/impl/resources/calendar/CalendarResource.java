@@ -254,9 +254,11 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         int bytesR;
 
         bytesR = in.read(buf);
-        if(bytesR <= 0) {
+        if (bytesR <= 0) {
             // out.close();
             throw new Exception("InputStream seems to be empty!");
+        } else {
+            out.write(buf, 0, bytesR);
         }
 
         while ((bytesR = in.read(buf)) != -1) {
