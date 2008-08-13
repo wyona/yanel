@@ -40,11 +40,16 @@
         </title>
       </head>
       <body>
+Localization: <xsl:value-of select="$language"/>
+<br/>
+Content Language: <xsl:value-of select="$content-language"/>
         <div id="page">
 
 
           <div id="header">
+<!--
            <img src="{$yarep.back2realm}app/images/logo.gif"/>
+-->
 <!--
             <xi:include href="yanelresource:/navigation/breadcrumb-{$content-language}.xml?path={$yanel.path}"/>
 -->
@@ -67,9 +72,7 @@
               </xsl:choose>
 
               <!-- Use content language instead localization -->
-<!--
               <xi:include href="yanelresource:/navigation/translations.xml?path={$yanel.path}&amp;language={$content-language}"/>
--->
 
 <!--
               <a href="?yanel.toolbar=on">Toolbar</a>
