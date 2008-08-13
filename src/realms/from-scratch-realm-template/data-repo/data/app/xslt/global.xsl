@@ -38,7 +38,10 @@
       </head>
       <body>
         <div id="page">
+
+
           <div id="header">
+           <img src="{$yarep.back2realm}app/images/logo.gif"/>
 <!--
             <xi:include href="yanelresource:/navigation/breadcrumb-{$content-language}.xml?path={$yanel.path}"/>
 -->
@@ -71,7 +74,11 @@
               <!--<xsl:value-of select="$language"/>-->
             </div>
           </div>
+          <!-- END of header -->
+
+
           <xsl:call-template name="navi"/>
+
           <div id="home">
             <div id="body" style="width: 440px;">
               <xsl:apply-templates select="/xhtml:html/xhtml:body/*"/>

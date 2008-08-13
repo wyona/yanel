@@ -1,0 +1,129 @@
+html {
+    margin: 0px;
+    padding: 0px;
+}
+
+body {
+    font-family: Arial, Helvetica, SunSans-Regular, Sans-Serif;
+    margin: 0px;
+    padding: 0px;
+}
+
+/* page */
+
+#page {
+    padding: 0px;
+    margin: 0px;
+}
+
+#header {
+    display:none;
+}
+
+#left {
+ display:none;
+}
+
+#main {
+#main {
+    position:absolute;
+    left: 20px;  
+    margin:0px;
+    padding: 28px 0px 0px 0px;
+    height: 430px;
+    width:530px;
+    font-size: 13px;
+    color: #555555;
+}
+
+#home {
+    position:absolute;
+    left: 20px;  
+    margin:0px;
+    padding: 28px 0px 0px 0px;
+    height: 430px;
+    width:530px;
+    font-size: 13px;
+    color: #555555;
+}
+
+#body {
+    position: relative;
+    top:0px;
+    margin: 0px;
+    padding: 0px;
+    height:389px;
+    width:350px;
+}
+
+#right {
+ display:none;
+}
+
+#breadcrumb {
+ display:none;
+}
+
+#breadcrumb a {
+ display:none;
+}
+
+#menu {display:none;}
+#language {
+ display:none;
+}
+
+.title-nav {font-size: 16px; padding-bottom: 8px; margin-bottom: 7px; padding-top: 0px; margin-top: 0px;}
+.title-nav h1 {display: inline;
+               font-size: 24px; 
+               font-weight: normal;
+               } 
+h1 { font-size: 24px; 
+     font-weight: normal;
+     padding-top: 0px;
+     margin-top: 0px;
+     padding-bottom: 8px;
+     margin-bottom: 7px;
+}
+h2 { font-size: 12px; 
+     font-weight: bold;
+     padding-top: 0px;
+     margin-top: 0px;
+     padding-bottom: 0px; 
+     margin-bottom: 0px;
+}
+p { font-size: 12px;
+    margin-top: 0px;
+    padding-bottom: 8px;
+    margin-bottom: 7px;
+}
+
+ul{margin-top: 0px; margin-left: 5px; padding-top: 0px; padding-left:12px; list-style-type: disc;}
+ul.none {margin-top: 0px; margin-left: 0px; padding-top: 0px; padding-left:0px; list-style-type: none}
+
+dl{padding-top: 0px; margin-top: 0px;}
+
+.checkbox { background: transparent;
+            width: auto;
+}
+
+a:link {color: #FFCC33; text-decoration:none }
+a:active {color:#FFCC33; text-decoration:none }
+a:visited {color:#FFCC33; text-decoration:none }
+a:hover {color:#FFCC33; text-decoration: none;}
+
+.asset		{ display: inline;}
+
+table.border {
+    border-collapse: collapse;
+    border: 1px solid black; 
+    width: auto;
+    margin-left: 2px;
+}
+
+table.border td{
+    border: 1px solid black; 
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
