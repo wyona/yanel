@@ -1,7 +1,11 @@
 <?xml version="1.0"?>
 
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
-  <yanel:rti name="file" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+  <yanel:rti name="redirect" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
-  <yanel:property name="mime-type" value="application/xhtml+xml"/>
+  <yanel:property name="href" value="en/index.html"/>
+
+  <yanel:custom-config xmlns:rd="http://www.wyona.org/yanel/resource/redirect-resource/1.0">
+    <rd:language code="de" href="de/index.html"/>
+  </yanel:custom-config>
 </yanel:resource-config>
