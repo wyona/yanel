@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<sitetree xmlns="http://www.wyona.org/yanel/1.0">
+
+<node href="index.html">
+  <name>Home</name>
+</node>
+
+<node href="en/contact.html">
+  <name>About</name>
+  <node href="en/about/organization.html">
+    <name>Organization</name>
+    <node href="en/about/organization/sales.html"><name>Sales</name></node>
+    <node href="en/about/organization/development.html"><name>Development</name></node>
+    <node href="en/about/organization/support.html"><name>Support</name></node>
+  </node>
+  <node href="en/about/corporate-governance.html"><name>Corporate Governance</name></node>
+  <node href="en/about/management.html"><name>Management</name></node>
+  <node href="en/about/board.html"><name>Board of Directors</name></node>
+  <node href="en/about/history.html"><name>History</name></node>
+</node>
+
+</sitetree>
