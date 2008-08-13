@@ -40,13 +40,15 @@
         </title>
       </head>
       <body>
+<xsl:comment>
 Localization: <xsl:value-of select="$language"/>
-<br/>
 Content Language: <xsl:value-of select="$content-language"/>
+</xsl:comment>
         <div id="page">
 
 
           <div id="header">
+           <a href="{$yarep.back2realm}index.html">LOGO</a>
 <!--
            <img src="{$yarep.back2realm}app/images/logo.gif"/>
 -->
