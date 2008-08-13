@@ -20,4 +20,8 @@
   <node href="en/about/history.html"><name>History</name></node>
 </node>
 
+<node href="en/contact.html">
+  <name>Contact</name>
+</node>
+
 </sitetree>
