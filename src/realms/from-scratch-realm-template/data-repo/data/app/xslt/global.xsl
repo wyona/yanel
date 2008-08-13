@@ -79,7 +79,7 @@ Content Language: <xsl:value-of select="$content-language"/>
 <!--
               <a href="?yanel.toolbar=on">Toolbar</a>
 -->
-              <!--<xsl:value-of select="$language"/>-->
+              Localization: <xsl:value-of select="$language"/>
             </div>
           </div>
           <!-- END of header -->
@@ -99,10 +99,8 @@ Content Language: <xsl:value-of select="$content-language"/>
   
   <xsl:template name="navi">
     <div id="left">
-      <!-- Use content language instead localization (see email from Wayne) -->
-<!--
+      <!-- Use content language instead localization -->
       <xi:include href="yanelresource:/navigation/menu-{$content-language}.xml?path={$yanel.path}"/>
--->
     </div>
   </xsl:template>
 
