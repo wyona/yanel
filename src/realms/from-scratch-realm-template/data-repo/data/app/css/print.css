@@ -68,8 +68,11 @@ body {
  display:none;
 }
 
-#menu {display:none;}
-#language {
+#menu {
+  display:none;
+}
+
+#contact-translations {
  display:none;
 }
 

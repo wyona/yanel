@@ -60,7 +60,7 @@ Content Language: <xsl:value-of select="$content-language"/>
             </div>
             -->
 
-            <div id="language">
+            <div id="contact-translations">
               <xsl:choose>
                 <!-- Use content language instead localization -->
                 <xsl:when test="$content-language = 'de'">

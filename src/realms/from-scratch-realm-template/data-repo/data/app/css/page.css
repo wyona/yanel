@@ -103,16 +103,22 @@ div.section a:visited {color: #999999; text-decoration:none; }
     color: #333333;
 }
 
-#language {
+#contact-translations {
     position: relative; 
     top:91px;
     left:626px;
     font-size: 10px;
     width: 200px;
 }
-#language a {color: #333333; text-decoration:none; margin-right:10px; }
-#language a:hover {text-decoration: none; color: #ffffff }
-#language span {color: #ffffff; text-decoration:none; margin-right:10px; }
+
+#contact-translations a {color:#555555; text-decoration: underline; margin-right:10px; }
+
+#contact-translations a:hover {
+    text-decoration: none;
+    color: grey;
+}
+
+#contact-translations span {color: grey; text-decoration:none; margin-right:10px; }
 
 /* menu */
 
