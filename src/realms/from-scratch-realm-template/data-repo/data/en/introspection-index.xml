@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 
 <introspection xmlns="http://www.wyona.org/neutron/2.0">
-<resource name="Home">
+<resource name="Home (English Version)">
   <edit mime-type="application/xhtml+xml">
-    <checkout url="index.html?yanel.resource.usecase=checkout" method="GET"/>
+    <checkout url="index.html?yanel.resource.viewid=source&amp;yanel.resource.usecase=checkout" method="GET"/>
     <checkin  url="index.html?yanel.resource.usecase=checkin"  method="PUT"/>
     <release-lock url="index.html?yanel.resource.usecase=release-lock" method="GET"/>
   </edit>
-  <!-- No revisions! -->
+  <!-- No revisions! Use the dynamic introspection call in order to receive revisions: index.html?yanel.resource.usecase=introspection -->
 </resource>
 
 <navigation>
