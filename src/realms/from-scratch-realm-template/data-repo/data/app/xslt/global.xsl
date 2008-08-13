@@ -18,7 +18,7 @@
   <xsl:template match="/">
     <html>
       <head>
-        <META http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <link type="text/css" href="{$yarep.back2realm}app/css/page.css" media="screen" rel="stylesheet"/>
         <link type="text/css" href="{$yarep.back2realm}app/css/print.css" media="print" rel="stylesheet"/>
 
@@ -29,7 +29,10 @@
           </xsl:when>
           <xsl:otherwise>
             <!-- TODO: Maybe one should better not cut-off the suffix! -->
+            <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/>
+<!--
             <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-{$name-without-suffix}.xml"/>
+-->
           </xsl:otherwise>
         </xsl:choose>
         <title>
