@@ -2,11 +2,21 @@
 
 <sitetree xmlns="http://www.wyona.org/yanel/1.0">
 
-<node href="index.html">
+<node href="en/index.html">
   <name>Home</name>
 </node>
 
-<node href="en/contact.html">
+<node href="en/projects.html">
+  <name>Projects</name>
+  <node href="en/projects/yanel/index.html">
+    <name>Yanel</name>
+    <node href="en/projects/yanel/mailing-lists.html"><name>Mailing Lists</name></node>
+    <node href="en/projects/yanel/download.html"><name>Download</name></node>
+  </node>
+  <node href="en/projects/yulup.html"><name>Yulup</name></node>
+</node>
+
+<node href="en/about.html">
   <name>About</name>
   <node href="en/about/organization.html">
     <name>Organization</name>
