@@ -14,13 +14,13 @@
   <web-authenticator class="org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl"/>
 -->
 
-<!--
   <default-language>en</default-language>
   <languages>
     <language>en</language>
     <language>de</language>
   </languages>
   <translation-manager class="org.wyona.yanel.core.attributes.translatable.PrefixTranslationManager"/>
+<!--
   <language-handler class="org.wyona.yanel.impl.StaticLanguageHandler"/>
 -->
 
