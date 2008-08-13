@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Redirect resource</title>
+    <style>
+h2 {
+  font-size: 130%;
+  color:     #ffffff;
+  background-color: #525D76;
+}
+pre {
+  background-color: efefef;
+}
+td {
+  background-color: eeeeee;
+  color:            000000;
+}
+
+/* first row */
+table tr:first-child td {
+  background-color: cccccc;
+  color:            000000;
+}
+
+/* or th as first row */
+table th {
+  background-color: cccccc;
+  color:            000000;
+}
+    </style>
+  </head>
+  <body>
+    <h1>Redirect resource</h1>
+
+    <h2>Overview</h2>
+    <dl>
+      <dt>Name:</dt>
+      <dd>redirect</dd>
+      <dt>Namespace:</dt>
+      <dd>http://www.wyona.org/yanel/resource/1.0</dd>
+      <dt>Universal Name:</dt>
+      <dd>&lt;{http://www.wyona.org/yanel/resource/1.0}redirect/&gt;</dd>
+      <dt>Description:</dt>
+      <dd>Redirect resource, whereas redirects can also be configured user and localization language specific within custom config</dd>
+      <dt>Java Class:</dt>
+      <dd>org.wyona.yanel.impl.resources.redirect.RedirectResource</dd>
+    </dl>
+
+    <h2>Examples</h2>
+    <p><b>Redirect to some other url, which is also used as default/fallback redirect if custom configuration doesn't match (please see below)</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+      &lt;yanel:rti name="redirect" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+      &lt;yanel:property name="href" value="http://www.nyt.com"/>
+    &lt;/yanel:resource-config>
+</pre>
+
+    <p><b>Redirect to some user or localization language specific URL</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+      &lt;yanel:rti name="redirect" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+      &lt;yanel:property name="href" value="http://fallback.default.com"/>
+
+      &lt;yanel:custom-config xmlns:rd="http://www.wyona.org/yanel/resource/redirect-resource/1.0">
+        &lt;rd:user name="bob" href="bob/index.html"/>
+        &lt;rd:user name="alice" href="alice/index.html"/>
+        &lt;rd:language code="de" href="de/index.html"/>
+      &lt;/yanel:custom-config>
+    &lt;/yanel:resource-config>
+</pre>
+
+  </body>
+</html>
