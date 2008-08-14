@@ -9,7 +9,7 @@
     can extend this class if you want to develop a resource-type which will proceed xml.<br/>It
     already has implemented a bunch of nice thing which you could like. e.g. XSLT, <a shape="rect"
     href="i18n.html">i18n</a>, XInclude, ConfigurableViewDescriptor. <br/>At the moment folowing
-    resource-types extending BasicXMLResource: xml, user-mgmt (via <a href="ExecutableUsecaseResource.html">ExecutableUsecaseResource</a>).<br/>
+    resource-types extending BasicXMLResource: xml, user-mgmt (via <a href="executable-usecase-resource.html">ExecutableUsecaseResource</a>).<br/>
     <br/>
     <h2>Resource Configuration Properties:</h2>
     <tt>&lt;yanel:property name=&quot;i18n-catalogue&quot;
