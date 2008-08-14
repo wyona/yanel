@@ -33,6 +33,25 @@ body {
     color: #555555;
 }
 
+#left {
+    position:absolute;
+    left:0px;
+    width:200px;
+    height: 390px;
+    margin-top: 28px;
+    font-size: 13px;
+}
+
+#right {
+    position: absolute;
+    left:626px;
+    padding: 0px;
+    margin: 40px 0px 0px 0px;
+    width: 135px;
+    height: 420px;
+    background: #cdccd1;
+}
+
 #home {
     position:absolute;
     left: 200px;  
