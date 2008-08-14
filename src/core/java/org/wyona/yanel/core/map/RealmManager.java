@@ -359,7 +359,7 @@ public class RealmManager {
                 log.debug("Inherit root realm properties to realm: " + key);
             }
             if (realm.getIdentityManager() == null) {
-                log.warn("Realm \"" + realm.getName() + "\" will inherit IdentityManager of root realm!");
+                log.info("Realm \"" + realm.getName() + "\" will inherit IdentityManager of root realm!");
                 realm.setIdentityManager(rootRealm.getIdentityManager());
             }
             if (realm.getPolicyManager() == null) {
