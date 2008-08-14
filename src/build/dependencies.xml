@@ -33,13 +33,13 @@
       <!-- TODO: Add checksum file to server -->
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="yarep" artifactId="yarep-core" version="1.0-dev-r37622"/>
+      <dependency groupId="yarep" artifactId="yarep-core" version="1.0-dev-r38017"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons" version="1.0-dev-r30752"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.2-dev-r36376"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.2-dev-r38016"/>
 
       <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
@@ -62,10 +62,10 @@
 <!-- The XSLT engine of Java on MacOS X seems to have trouble. With Xalan enabled it should work! Also Abdera seems to need Xalan ... -->
       <dependency groupId="xalan" artifactId="${xalan.artifactId}" version="${xalan.version}"/>
 
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="0.2-dev-r36376"/>
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="0.2-dev-r36376"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="0.2-dev-r38016"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="0.2-dev-r38016"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="yarep" artifactId="yarep-impl" version="1.0-dev-r37622"/>
+      <dependency groupId="yarep" artifactId="yarep-impl" version="1.0-dev-r38017"/>
       <dependency groupId="spring" artifactId="spring"
                   version="2.0"/>
       <dependency groupId="svnkit" artifactId="svnkit"
