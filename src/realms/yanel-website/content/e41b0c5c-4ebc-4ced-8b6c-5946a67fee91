@@ -7,9 +7,9 @@
   <body>
     <h1>BasicXMLResource</h1>BasicXMLResource is a base class for resources that generate XML. you
     can extend this class if you want to develop a resource-type which will proceed xml.<br/>It
-    already has implemented a bunch of nice thing which you could like. e.g. XSLT, <a
-      href="i18n.html" shape="rect">i18n</a>, XInclude, ConfigurableViewDescriptor. <br/>At the
-    moment folowing resource-types extending BasicXMLResource: xml, user-mgmt (via ExecutableUsecaseResource).<br/>
+    already has implemented a bunch of nice thing which you could like. e.g. XSLT, <a shape="rect"
+    href="i18n.html">i18n</a>, XInclude, ConfigurableViewDescriptor. <br/>At the moment folowing
+    resource-types extending BasicXMLResource: xml, user-mgmt (via <a href="ExecutableUsecaseResource.html">ExecutableUsecaseResource</a>).<br/>
     <br/>
     <h2>Resource Configuration Properties:</h2>
     <tt>&lt;yanel:property name=&quot;i18n-catalogue&quot;
@@ -17,11 +17,15 @@
     <br/>
     <tt>&lt;yanel:property name=&quot;xslt&quot; value=&quot;VALUE&quot;/&gt;</tt>
     <br/>
+    <tt>&lt;yanel:property name=&quot;mime-type&quot; value=&quot;VALUE&quot;/&gt;</tt>
+    <br/>
+    <tt>&lt;yanel:property name=&quot;source-view-mime-type&quot; value=&quot;VALUE&quot;/&gt;</tt>
+    <br/>
     <br/>
     <h3/>
     <h4/>
     <h5/>
-    <h2> Custom Resource Configuration (ConfigurableViewDescriptor)</h2>
+    <h2>ConfigurableViewDescriptor (Custom Resource Configuration)</h2>
     <br/>
     <table>
       <tbody>
@@ -40,12 +44,15 @@
         </tr>
         <tr>
           <td valign="top">view</td>
-          <td valign="top">mime-type, xslt, serializer </td>
-          <td valign="top">id<b/>
+          <td valign="top">mime-type, xslt, serializer<br/>
           </td>
-          <td valign="top">A single view. Can be 'default' or 'source' for built in views. Or any
-            other id for a custom view. A view is accessed through a request parameter <b>yanel.resource.viewid</b>
+          <td valign="top">id, type<b/>
           </td>
+          <td valign="top">A single view. <br/>id can be 'default' or 'source' for built in views.
+            Or any other id for a custom view. A view is accessed via id through a request parameter
+              <b>yanel.resource.viewid <br/>
+            </b>type can bye xml, jelly, redirect (implementation not finished yet), custom. Default
+            is xml. </td>
         </tr>
         <tr>
           <td valign="top">mime-type</td>
@@ -57,15 +64,44 @@
           <td valign="top">xslt</td>
           <td valign="top">-</td>
           <td valign="top"/>
-          <td valign="top">Path to xslt. absolute data-repo path.</td>
+          <td valign="top">Path to xslt. absolute data-repo path, rthdocs path, file path. see: <a
+              href="#xsltprotocol">Protocol-Schemas used configure xslt via ConfigurableViewDescriptor</a>
+            <br/>
+          </td>
         </tr>
         <tr>
           <td valign="top">serializer</td>
-          <td valign="top">-</td>
-          <td valign="top"/>
+          <td valign="top">omit-xml-declaration, indent, doctype-public, doctype-system</td>
+          <td valign="top"> key</td>
           <td valign="top">If no serializer is specified for a view, the serializer will be chosen
             depending on the mime-type, whereas the default serializer is XHTML_STRICT<br/>Possible
-            Serializers:<br/><b>HTML_TRANSITIONAL, XHTML_STRICT, XML, TEXT</b></td>
+            Serializers (key):<br/>
+            <b>HTML_TRANSITIONAL, XHTML_STRICT, XML, TEXT</b>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">omit-xml-declaration</td>
+          <td valign="top">-</td>
+          <td valign="top"/>
+          <td valign="top">Can be 'yes' or 'no'</td>
+        </tr>
+        <tr>
+          <td valign="top">doctype-public</td>
+          <td valign="top">-</td>
+          <td valign="top"/>
+          <td valign="top">Public Doctype e.g -//W3C//DTD XHTML 1.0 Transitional//EN</td>
+        </tr>
+        <tr>
+          <td valign="top">doctype-system</td>
+          <td valign="top">-</td>
+          <td valign="top"/>
+          <td valign="top">System Doctype e.g. http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd</td>
+        </tr>
+        <tr>
+          <td valign="top">indent</td>
+          <td valign="top">-</td>
+          <td valign="top"/>
+          <td valign="top">Can be 'yes' or 'no'</td>
         </tr>
       </tbody>
     </table>
@@ -166,8 +202,8 @@
         </tr>
       </tbody>
     </table>
-    <h3>Built-in Protocol-Schemas:</h3>
-<!--     <table>
+    <h3>Built-in Protocol-Schemas used by Xinclude:</h3>
+    <table>
       <tbody>
         <tr>
           <th>Protocol</th>
@@ -225,9 +261,12 @@
           <td valign="top">resource-type/yanel-htdocs/foo/bar.xml</td>
         </tr>
       </tbody>
-    </table> -->
-    <p>At the moment only file, rthtdocs and data-repo are supported.</p>
-         <table>
+    </table>
+    <h3>Protocol-Schemas used configure xslt via ConfigurableViewDescriptor:
+      <!-- TODO: use also yanel uri resolver. then both tables will be the same -->
+    </h3>
+    <a name="xsltprotocol"/>
+    <table>
       <tbody>
         <tr>
           <th>Protocol</th>
@@ -236,7 +275,7 @@
           <th valign="top">Source</th>
         </tr>
         <tr>
-          <td valign="top"></td>
+          <td valign="top"/>
           <td valign="top">Accessing content in data-repo of curent realm.<br/>
           </td>
           <td valign="top">/index.html</td>
