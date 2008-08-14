@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+<xsl:stylesheet version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
   xmlns:xi="http://www.w3.org/2001/XInclude"
-  xmlns:dc="http://purl.org/dc/elements/1.1/" exclude-result-prefixes="xhtml dc">
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  exclude-result-prefixes="xhtml dc">
 
   <xsl:param name="yanel.path.name" select="'NAME_IS_NULL'"/>
   <xsl:param name="yanel.path" select="'PATH_IS_NULL'"/>
@@ -19,8 +21,10 @@
     <html>
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <link type="text/css" href="{$yarep.back2realm}app/css/page.css" media="screen" rel="stylesheet"/>
-        <link type="text/css" href="{$yarep.back2realm}app/css/print.css" media="print" rel="stylesheet"/>
+
+        <!-- See http://www.w3.org/TR/REC-CSS2/media.html -->
+        <link media="screen" type="text/css" href="{$yarep.back2realm}app/css/screen.css" rel="stylesheet"/>
+        <link media="print" type="text/css" href="{$yarep.back2realm}app/css/print.css" rel="stylesheet"/>
 
         <xsl:copy-of select="/xhtml:html/xhtml:head/*[name(.) != 'title']"/>
         <xsl:choose>
@@ -41,6 +45,7 @@
       </head>
       <body>
 <xsl:comment>
+DEBUG:
 Localization: <xsl:value-of select="$language"/>
 Content Language: <xsl:value-of select="$content-language"/>
 </xsl:comment>
