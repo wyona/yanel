@@ -1,0 +1,242 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>ExecutableUsecaseResource</title>
+    <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/>
+  </head>
+  <body>
+    <h1>ExecutableUsecaseResource</h1>ExecutableUsecaseResource is a base class for resources
+    providing a stateless usecase. you can extend this class if you want to develop a resource-type
+    which will display several views for a usecase.<br/>It already has implemented a bunch of nice
+    thing which you could like. e.g. Jelly (<a href="http://commons.apache.org/jelly/">Executable
+    XML</a>), a standard executable usecase (default, done, cancel), custom usecases, Info and Error Messages. <br/>At
+    the moment folowing resource-types extending ExecutableUsecaseResource: user-mgmt.
+      <h3>ExecutableUsecaseResource extends BasicXMLResource</h3>
+    <p> Since ExecutableUsecaseResource extends BasicXMLResource you can use all the things provided
+      by <a href="basic-xml-resource-type.html">BasicXMLResource</a>. </p>
+    <h2> Custom Resource Configuration (ConfigurableViewDescriptor)</h2>
+    <br/>
+        <table>
+      <tbody>
+        <tr>
+          <th>Element Name<br/>
+          </th>
+          <th>Child-Element</th>
+          <th valign="top">Attribut</th>
+          <th valign="top">Explanation</th>
+        </tr>
+        <tr>
+          <td valign="top">views</td>
+          <td valign="top">view</td>
+          <td valign="top"/>
+          <td valign="top">Container for all views</td>
+        </tr>
+        <tr>
+          <td valign="top">view</td>
+          <td valign="top">mime-type, xslt, template, url, http-headers, serializer<br/>
+          </td>
+          <td valign="top">id, type<b/>
+          </td>
+          <td valign="top">A single view. <br/>id can be 'default' or 'source' for built in views.
+            Or any other id for a custom view. A view is accessed via id through a request parameter
+              <b>yanel.resource.viewid <br/>
+            </b>type can bye xml, jelly, redirect (implementation not finished yet), custom. Default
+            is xml. </td>
+        </tr>
+        <tr>
+          <td valign="top">mime-type</td>
+          <td valign="top">-</td>
+          <td valign="top"/>
+          <td valign="top">E.g. text/html, application/xhtml+xml ...</td>
+        </tr>
+        <tr>
+          <td valign="top">xslt</td>
+          <td valign="top">-</td>
+          <td valign="top"/>
+          <td valign="top">Path to xslt. absolute data-repo path, rthdocs path, file path. see: <a
+              href="#xsltprotocol">Protocol-Schemas used configure xslt via ConfigurableViewDescriptor</a>
+            <br/>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">template</td>
+          <td valign="top">-</td>
+          <td valign="top"/>
+          <td valign="top">Only useful when using type=&quot;jelly&quot;</td>
+        </tr>
+        <tr>
+          <td valign="top">url</td>
+          <td valign="top">-</td>
+          <td valign="top"/>
+          <td valign="top">Only useful when using type=&quot;redirect&quot; (implementation
+            not finished yet)</td>
+        </tr>
+        <tr>
+          <td valign="top">http-headers</td>
+          <td valign="top">name, value</td>
+          <td valign="top"/>
+          <td valign="top">Define some http-headers for this view.</td>
+        </tr>
+        <tr>
+          <td valign="top">name</td>
+          <td valign="top">-</td>
+          <td valign="top"/>
+          <td valign="top">Name of the header-field</td>
+        </tr>
+        <tr>
+          <td valign="top">value</td>
+          <td valign="top">-</td>
+          <td valign="top"/>
+          <td valign="top">Value of the header-field</td>
+        </tr>
+        <tr>
+          <td valign="top">serializer</td>
+          <td valign="top">omit-xml-declaration, indent, doctype-public, doctype-system</td>
+          <td valign="top"> key</td>
+          <td valign="top">If no serializer is specified for a view, the serializer will be chosen
+            depending on the mime-type, whereas the default serializer is XHTML_STRICT<br/>Possible
+            Serializers (key):<br/>
+            <b>HTML_TRANSITIONAL, XHTML_STRICT, XML, TEXT</b>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">omit-xml-declaration</td>
+          <td valign="top">-</td>
+          <td valign="top"/>
+          <td valign="top">Can be 'yes' or 'no'</td>
+        </tr>
+        <tr>
+          <td valign="top">doctype-public</td>
+          <td valign="top">-</td>
+          <td valign="top"/>
+          <td valign="top">Public Doctype e.g -//W3C//DTD XHTML 1.0 Transitional//EN</td>
+        </tr>
+        <tr>
+          <td valign="top">doctype-system</td>
+          <td valign="top">-</td>
+          <td valign="top"/>
+          <td valign="top">System Doctype e.g. http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd</td>
+        </tr>
+        <tr>
+          <td valign="top">indent</td>
+          <td valign="top">-</td>
+          <td valign="top"/>
+          <td valign="top">Can be 'yes' or 'no'</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Example</h2>
+      &lt;views&gt;<br/>      &lt;view id=&quot;default&quot;
+      type=&quot;jelly&quot;&gt;<br/>       
+      &lt;template&gt;/jelly/default.jelly&lt;/template&gt;<br/>       
+      &lt;xslt&gt;/xslt/defaultr.xsl&lt;/xslt&gt;<br/>     
+      &lt;xslt&gt;/xslt/global.xsl&lt;/xslt&gt;<br/>     
+      &lt;/view&gt;<br/>      &lt;view id=&quot;done&quot;
+      type=&quot;jelly&quot;&gt;<br/>       
+      &lt;template&gt;/jelly/done.jelly&lt;/template&gt;<br/>       
+      &lt;xslt&gt;/xslt/done.xsl&lt;/xslt&gt;<br/>     
+      &lt;xslt&gt;/xslt/global.xsl&lt;/xslt&gt;<br/>     
+      &lt;/view&gt;<br/>      &lt;view id=&quot;cancel&quot;
+      type=&quot;jelly&quot;&gt;<br/>       
+      &lt;template&gt;/jelly/cancel.jelly&lt;/template&gt;<br/>       
+      &lt;xslt&gt;/xslt/cancel.xsl&lt;/xslt&gt;<br/>     
+      &lt;xslt&gt;/xslt/global.xsl&lt;/xslt&gt;<br/>     
+      &lt;/view&gt;<br/>      &lt;view id=&quot;tree&quot;
+      type=&quot;custom&quot;/&gt;<br/>    &lt;/views&gt;<br/>
+    <h2>Jelly</h2>
+    <p>
+      If you extend from ExecutableUsecaseResource or UsecaseResource you can use jelly-views. see <a href="http://commons.apache.org/jelly/">http://commons.apache.org/jelly/</a> for more details on jelly. 
+    </p>
+    <p>
+      <b>
+        IMPORTANT: don't program logic within your jelly-template. Just use getters and setters to send and recieve data from/to your resource java class. If you implement logic within your jelly-template you will violate the model-view-controler pattern.
+        <br/>
+        Jelly represents the view not the controler! 
+      </b>
+    </p>
+    <h3>Built-in Jelly variables</h3>
+        <table>
+      <tbody>
+        <tr>
+          <th valign="top">Variable-name</th>
+          <th valign="top">Explanation:</th>
+        </tr>
+        <tr>
+          <td>
+            resource
+          </td>
+          <td>
+            the current resource object
+          </td>
+        </tr>
+        <tr>
+          <td>
+            yanel.back2context
+          </td>
+          <td>
+            Path prefix for yanel root.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            yanel.back2realm
+          </td>
+          <td>
+            Path prefix for realm root.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            yanel.globalHtdocsPath
+          </td>
+          <td>
+            Path prefix for accessing content from globalHtocsPath.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            yanel.resourcesHtdocsPath
+          </td>
+          <td>
+            Path prefix for accessing content of this resources HtdocsPath.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            yanel.reservedPrefix
+          </td>
+          <td>
+            Reserved Prefix of yanel.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>The standard executable usecase</h2>
+    <p>The standard executable usecase works as follows:</p>
+    <ul>
+      <li>
+        display the "default" view. this view has a form with a submit button and a cancel button.
+      </li>
+      <li>
+        if the user clicks submit, the checkPreconditions() method is executed.
+        <ul>
+          <li>
+            if there are any errors, the "default" view is displayed again, showing the error messages.
+          </li>
+          <li>
+            if everything is ok, the execute() method is called
+            <ul>
+              <li>
+                 display the "done" view
+              </li>
+            </ul>
+          </li>
+        </ul>
+    
+      </li>
+      <li>
+        if the user cancels, call the cancel() method and then show the "cancel" view.
+      </li>
+    </ul>
+  </body>
+</html>
