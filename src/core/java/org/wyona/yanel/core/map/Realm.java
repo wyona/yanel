@@ -461,9 +461,10 @@ public class Realm {
 
     /**
      * Please note that the root-dir element is optional
+     * @deprecated
      */
     public File getRootDir() {
-        log.warn("Try to avoid using the getRootDir() method!");
+        log.warn("TODO: Try to avoid using the getRootDir() method because this method is deprecated!");
         return this.rootDir;
     }
 
