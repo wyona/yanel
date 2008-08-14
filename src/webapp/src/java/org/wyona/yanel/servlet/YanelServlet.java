@@ -1066,7 +1066,7 @@ public class YanelServlet extends HttpServlet {
         if(!authorized) {
             // TODO: Implement HTTP BASIC/DIGEST response (see above)
 
-            log.warn("Access denied: " + getRequestURLQS(request, null, false));
+            log.info("Access denied: " + getRequestURLQS(request, null, false));
 
             if(!request.isSecure()) {
                 if(sslPort != null) {
@@ -1099,7 +1099,7 @@ public class YanelServlet extends HttpServlet {
             }
 
             if(doAuthenticate(request, response) != null) {
-                log.warn("Return response of web authenticator.");
+                log.info("Return response of web authenticator.");
                 /*
 		  NOTE: Such a response can have different reasons:
                         - Either no credentials provided yet and web authenticator is generating a response to fetch credentials
