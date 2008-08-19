@@ -36,9 +36,9 @@
     <delete dir="${snapshot.dir}/META-INF"/>
     <chmod dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/bin" perm="755" includes="*"/>
     <!-- TODO: Differentiate between Java 1.4 and higher (jmx.jar)! -->
-    <copy file="${yanel.home.dir}/tools/apache-tomcat/java-1.4/apache-tomcat-5.5.20/bin/jmx.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/bin"/>
-    <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/common/endorsed"/>
-    <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/common/endorsed"/>
+    <copy file="${yanel.source.home}/tools/apache-tomcat/java-1.4/apache-tomcat-5.5.20/bin/jmx.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/bin"/>
+    <copy file="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/common/endorsed"/>
+    <copy file="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/common/endorsed"/>
     <!-- delete unused tomcat files -->
     <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/${target.servlet.context.prefix}"/>
     <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/jsp-examples"/>
@@ -49,11 +49,11 @@
     
     <mkdir dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/yanel-webapps"/>
     <!-- Add context file -->
-    <copy file="${yanel.home.dir}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}.xml"/>
+    <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}.xml"/>
     <replace file="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}.xml" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
       <replacetoken>@YANEL_VERSION@</replacetoken>
     </replace>
-    <copy file="${yanel.home.dir}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/${target.servlet.context.prefix}.xml"/>
+    <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/${target.servlet.context.prefix}.xml"/>
     <replace file="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/${target.servlet.context.prefix}.xml" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
       <replacetoken>@YANEL_VERSION@</replacetoken>
     </replace>
@@ -61,10 +61,10 @@
   
   <target name="copy-realms-resources">
     <copy todir="${snapshot.dir}/${target.servlet.context.prefix}">
-      <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
+      <fileset dir="${yanel.source.home}/build/webapps/${servlet.context.prefix}"/>
     </copy>
     <copy todir="${snapshot.dir}/${target.servlet.context.prefix}/realms">
-      <fileset dir="${yanel.home.dir}/src/realms"/>
+      <fileset dir="${yanel.source.home}/src/realms"/>
     </copy>
     <replace file="${snapshot.dir}/${target.servlet.context.prefix}/realms/javadoc/repository.xml" value="content">
       <replacetoken>../../../build/javadoc</replacetoken>
@@ -73,15 +73,15 @@
       <replacetoken>../../../../../local/test/data</replacetoken>
     </replace>
     <copy todir="${snapshot.dir}/${target.servlet.context.prefix}/realms/javadoc/content">
-      <fileset dir="${yanel.home.dir}/build/javadoc"/>
+      <fileset dir="${yanel.source.home}/build/javadoc"/>
     </copy>
 
-    <copy file="${yanel.home.dir}/conf/realms.xml" todir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
+    <copy file="${yanel.source.home}/conf/realms.xml" todir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
     <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/realms.xml" value="../../realms">
       <replacetoken>@REALMS_DIR@</replacetoken>
     </replace>
 
-    <copy file="${yanel.home.dir}/conf/resource-types.xml" tofile="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/resource-types.xml" overwrite="true"/>
+    <copy file="${yanel.source.home}/conf/resource-types.xml" tofile="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/resource-types.xml" overwrite="true"/>
 
     <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/resource-types.xml" value="../../resources">
       <replacetoken>../src/resources</replacetoken>
@@ -94,15 +94,15 @@
     </replace>
 
     <copy todir="${snapshot.dir}/${target.servlet.context.prefix}/resources">
-      <fileset dir="${yanel.home.dir}/src/resources"/>
+      <fileset dir="${yanel.source.home}/src/resources"/>
     </copy>
     <copy todir="${snapshot.dir}/${target.servlet.context.prefix}/resources">
-      <fileset dir="${yanel.home.dir}/src/contributions/resources"/>
+      <fileset dir="${yanel.source.home}/src/contributions/resources"/>
     </copy>
     <copy todir="${snapshot.dir}/${target.servlet.context.prefix}/resources">
-      <fileset dir="${yanel.home.dir}/src/realms/welcome-admin/yanel/resources"/>
+      <fileset dir="${yanel.source.home}/src/realms/welcome-admin/yanel/resources"/>
     </copy>
-    <xslt in="${yanel.home.dir}/conf/yanel.xml" out="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl" force="true">
+    <xslt in="${yanel.source.home}/conf/yanel.xml" out="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl" force="true">
       <!--<param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>-->
     </xslt>
     <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="../../resources">
@@ -115,13 +115,13 @@
       <replacetoken>../src/realms/welcome-admin/yanel/resources</replacetoken>
     </replace>
 
-    <copy file="${yanel.home.dir}/src/binary-dist/log4j.properties" todir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
+    <copy file="${yanel.source.home}/src/binary-dist/log4j.properties" todir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
     <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace>
     <mkdir dir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/logs"/>
 
-    <copy file="${yanel.home.dir}/src/build/install.rdf" todir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
+    <copy file="${yanel.source.home}/src/build/install.rdf" todir="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
     <replace file="${snapshot.dir}/${target.servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}">
       <replacetoken>@VERSION@</replacetoken>
     </replace>
@@ -144,17 +144,17 @@
     </copy>
     <!-- <move file="${snapshot.dir}/${servlet.context.prefix}.war" todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps"/> -->
 
-    <copy file="${yanel.home.dir}/LICENSE.txt" todir="${snapshot.dir.win}"/>
+    <copy file="${yanel.source.home}/LICENSE.txt" todir="${snapshot.dir.win}"/>
 
     <!-- Copy Windows specific files -->
-    <copy file="${yanel.home.dir}/src/binary-dist/README-WINDOWS.txt" tofile="${snapshot.dir.win}/README.txt"/>
-    <copy file="${yanel.home.dir}/src/binary-dist/start.bat" todir="${snapshot.dir.win}"/>
-    <copy file="${yanel.home.dir}/src/binary-dist/stop.bat" todir="${snapshot.dir.win}"/>
-    <copy file="${yanel.home.dir}/src/binary-dist/windows/start.ico" todir="${snapshot.dir.win}"/>
-    <copy file="${yanel.home.dir}/src/binary-dist/windows/stop.ico" todir="${snapshot.dir.win}"/>
-    <copy file="${yanel.home.dir}/src/binary-dist/windows/install.ico" todir="${snapshot.dir.win}"/>
-    <copy file="${yanel.home.dir}/src/binary-dist/windows/uninstall.ico" todir="${snapshot.dir.win}"/>
-    <copy file="${yanel.home.dir}/src/binary-dist/windows/install-yanel.nsi" todir="${snapshot.dir.win}"/>
+    <copy file="${yanel.source.home}/src/binary-dist/README-WINDOWS.txt" tofile="${snapshot.dir.win}/README.txt"/>
+    <copy file="${yanel.source.home}/src/binary-dist/start.bat" todir="${snapshot.dir.win}"/>
+    <copy file="${yanel.source.home}/src/binary-dist/stop.bat" todir="${snapshot.dir.win}"/>
+    <copy file="${yanel.source.home}/src/binary-dist/windows/start.ico" todir="${snapshot.dir.win}"/>
+    <copy file="${yanel.source.home}/src/binary-dist/windows/stop.ico" todir="${snapshot.dir.win}"/>
+    <copy file="${yanel.source.home}/src/binary-dist/windows/install.ico" todir="${snapshot.dir.win}"/>
+    <copy file="${yanel.source.home}/src/binary-dist/windows/uninstall.ico" todir="${snapshot.dir.win}"/>
+    <copy file="${yanel.source.home}/src/binary-dist/windows/install-yanel.nsi" todir="${snapshot.dir.win}"/>
     <replace file="${snapshot.dir.win}/install-yanel.nsi" value="${yanel.version}-r${yanel.revision}">
       <replacetoken>@YANEL_VERSION@</replacetoken>
     </replace>
@@ -172,9 +172,9 @@
     </copy>
     <delete dir="${snapshot.dir}/${target.servlet.context.prefix}"/>
     <!-- Copy UNIX and Windows specific files -->
-    <copy file="${yanel.home.dir}/src/binary-dist/README-UNIX.txt" tofile="${snapshot.dir}/README.txt" overwrite="true"/>
-    <copy file="${yanel.home.dir}/src/binary-dist/start.sh" todir="${snapshot.dir}"/>
-    <copy file="${yanel.home.dir}/src/binary-dist/stop.sh" todir="${snapshot.dir}"/>
+    <copy file="${yanel.source.home}/src/binary-dist/README-UNIX.txt" tofile="${snapshot.dir}/README.txt" overwrite="true"/>
+    <copy file="${yanel.source.home}/src/binary-dist/start.sh" todir="${snapshot.dir}"/>
+    <copy file="${yanel.source.home}/src/binary-dist/stop.sh" todir="${snapshot.dir}"/>
 
     <!-- Create TGZ file -->
     <tar destfile="${snapshot.dir}.tar">

@@ -18,7 +18,7 @@
     
   <property file="local.build.properties"/>
   <property file="build.properties"/>
-  
+  <property name="yanel.source.home" value="${basedir}/../../"/>
 <!--
   <echo>Yanel Revision: ${yanel.revision}</echo>
 -->
@@ -32,7 +32,7 @@
   </condition>
 
   <import file="dependencies.xml"/>
-  <import file="continuous-integration.xml"/>
+  <import file="targets/continuous-integration/continuous-integration.xml"/>
   <import file="targets/install-tomcat.xml"/>
   <import file="targets/add-third-party-realm.xml"/>
   <import file="targets/create-new-resource-type.xml"/>
@@ -40,207 +40,29 @@
   <import file="targets/build-update-war.xml"/>
   <import file="targets/execute-jmeter.xml"/>
   <import file="targets/check-conf-version.xml"/>
+  <import file="targets/clean.xml"/>
+  <import file="targets/webapp/webapp.xml"/>
+  <import file="targets/webapp/cluster.xml"/>
+  <import file="targets/javadoc.xml"/>
+  <import file="targets/resources.xml"/>
+  <import file="targets/realms.xml"/>
+  <import file="targets/cmdl.xml"/>
+  <import file="targets/test.xml"/>
+  <import file="targets/config.xml"/>
   
-  <target name="ask-to-reconfigure-tomcat-cluster-node1" description="reconfigure Tomcat cluster node 1" if="isTomcat1PortsSet">
-    <input message="Do you want to reconfigure tomcat cluster node 1 in order to support SSL? (YES/no):" defaultvalue="NO" addproperty="answerReconfigureTomcat1"/>
-    <condition property="doNotReconfigureTomcat1">
-      <equals arg1="no" arg2="${answerReconfigureTomcat1}"/>
-    </condition>
-    <antcall target="reconfigure-tomcat-cluster-node1"/>
-    <antcall target="comment-local-tomcat1-ports"/>
-  </target>
-  
-  <target name="comment-local-tomcat1-ports" if="doNotReconfigureTomcat1" description="Comment ports of Tomcat Cluster Node 1 within local.build.properties">
-    <replace file="${yanel.home.dir}/src/build/local.build.properties" value="#tomcat1.ssl.port=${tomcat1.ssl.port}">
-      <replacetoken>tomcat1.ssl.port=8443</replacetoken>
-<!--
-      <replacetoken>tomcat1.ssl.port=${tomcat1.ssl.port}</replacetoken>
--->
-    </replace>
-    <replace file="${yanel.home.dir}/src/build/local.build.properties" value="#tomcat1.http.port=${tomcat1.http.port}">
-      <replacetoken>tomcat1.http.port=8080</replacetoken>
-<!--
-      <replacetoken>tomcat1.http.port=${tomcat1.http.port}</replacetoken>
--->
-    </replace>
-  </target>
 
-  <target name="reconfigure-tomcat-cluster-node1" unless="doNotReconfigureTomcat1" description="reconfigures tomcat regarding ssl">
-    <!-- TODO: Ask the port numbers -->
-
-<!--
-    <replace file="${yanel.home.dir}/src/build/local.build.properties" value="tomcat1.http.port=8080">
-      <replacetoken>#tomcat1.http.port=9190</replacetoken>
-    </replace>
-    <replace file="${yanel.home.dir}/src/build/local.build.properties" value="tomcat1.ssl.port=8443">
-      <replacetoken>#tomcat1.ssl.port=9143</replacetoken>
-    </replace>
--->
-
-    <antcall target="createCK"/>
-    <copy file="${build.dir}/${certificate.keystore}" todir="${tomcat1.home.dir}"/>
-    <xslt in="${tomcat1.home.dir}/conf/server.xml"
-          out="${tomcat1.home.dir}/conf/server.xml.ssl"
-          style="connector.xsl">
-      <param name="ssl-port" expression="${tomcat1.ssl.port}"/>
-      <param name="keystoreFile" expression="${certificate.keystore}"/>
-      <param name="keystorePass" expression="${certificate.keypass}"/>
-      <param name="http-port" expression="${tomcat1.http.port}"/>
-    </xslt>
-    <tstamp>
-      <format property="timestamp" pattern="yyyyMMdd'T'HHmmss"/>
-    </tstamp>
-    <copy file="${tomcat1.home.dir}/conf/server.xml" tofile="${tomcat1.home.dir}/conf/server.xml.BAK_${timestamp}"/>
-    <move file="${tomcat1.home.dir}/conf/server.xml.ssl" tofile="${tomcat1.home.dir}/conf/server.xml"/>
-  </target>
-  
-  <target name="ask-to-reconfigure-tomcat-cluster-node2" description="reconfigure Tomcat cluster node 2" if="isTomcat2HomeSet">
-    <input message="Do you want to reconfigure tomcat cluster node 2 in order to support SSL? (yes/NO):" defaultvalue="NO" addproperty="answerReconfigureTomcat2"/>
-    <condition property="reconfigureTomcat2">
-      <equals arg1="yes" arg2="${answerReconfigureTomcat2}"/>
-    </condition>
-    <antcall target="reconfigure-tomcat-cluster-node2"/>
-  </target>
-  
-  <target name="reconfigure-tomcat-cluster-node2" if="reconfigureTomcat2" description="reconfigures tomcat regarding ssl">
-    <antcall target="createCK"/>
-    <copy file="${build.dir}/${certificate.keystore}" todir="${tomcat2.home.dir}"/>
-    <xslt in="${tomcat2.home.dir}/conf/server.xml"
-          out="${tomcat2.home.dir}/conf/server.xml.ssl"
-          style="connector.xsl">
-      <param name="ssl-port" expression="${tomcat2.ssl.port}"/>
-      <param name="keystoreFile" expression="${certificate.keystore}"/>
-      <param name="keystorePass" expression="${certificate.keypass}"/>
-      <param name="http-port" expression="${tomcat2.http.port}"/>
-    </xslt>
-    <tstamp>
-      <format property="timestamp" pattern="yyyyMMdd'T'HHmmss"/>
-    </tstamp>
-    <copy file="${tomcat2.home.dir}/conf/server.xml" tofile="${tomcat2.home.dir}/conf/server.xml.BAK_${timestamp}"/>
-    <move file="${tomcat2.home.dir}/conf/server.xml.ssl" tofile="${tomcat2.home.dir}/conf/server.xml"/>
-  </target>
-  
-  <target name="createCK" description="Add ssl configuration to your webserver"> 
-    <!-- delete already created file -->
-    <delete file="${build.dir}/${certificate.keystore}"/>
-    <!-- create new keystore file -->
-    <!-- IMPORT NOTE: In order to find keytool set:  export PATH=/usr/local/jdk1.5.0_06/bin:$PATH (resp. depending on operating system use some other way to reset the PATH environment variable) -->
-    <exec executable="keytool">
-      <arg line="-genkey"/>
-      <arg line="-alias"/>
-      <arg value="${servlet.container}"/>
-      <arg line="-keyalg"/>
-      <arg value="RSA"/>
-      <arg line="-storepass"/>
-      <arg value="${certificate.keypass}"/>
-      <arg line="-keypass"/>
-      <arg value="${certificate.keypass}"/>
-      <arg line="-keystore"/>
-      <arg value="${build.dir}/${certificate.keystore}"/>
-      <arg line="-dname"/>
-      <arg value="CN=${certificate.common.name}, OU=${certificate.organisation.unit}, O=${certificate.organisation}, L=${certificate.locality.name}, S=${certificate.state.name}, C=${certificate.country.code}"/>
-    </exec>
-  </target>
-  
-  <target name="config" description="Initialize all local properties files" depends="init">
-    <condition property="local.build.properties.does.not.exist.yet">
-      <not>
-        <available file="local.build.properties" type="file"/>
-      </not>
-    </condition>
-    <antcall target="create-local-build-properties"/>
-
-    <!-- Reload local.build.properties -->
-    <property file="local.build.properties"/>
-
-    <fail message="No such directory: ${tomcat1.home.dir}! You might have to delete src/build/local.build.properties and re-run configure.">
-    <condition>
-      <and>
-        <isset property="tomcat1.home.dir"/>
-        <not><available file="${tomcat1.home.dir}" type="dir"/></not>
-      </and>
-    </condition>
-    </fail>
-
-<!--
-    <echo>Tomcat Ports: ${tomcat1.ssl.port}, ${tomcat1.http.port}</echo>
--->
-  
-    <condition property="isTomcat1PortsSet">
-      <and>
-        <isset property="tomcat1.ssl.port"/>
-        <isset property="tomcat1.http.port"/>
-      </and>
-    </condition>
-    <antcall target="ask-to-reconfigure-tomcat-cluster-node1"/>
-    
-    <condition property="isTomcat2HomeSet">
-      <isset property="tomcat2.home.dir"/>
-    </condition>
-    <antcall target="ask-to-reconfigure-tomcat-cluster-node2"/>
-
-    <antcall target="first-time-user-configuration-message"/>
-    <input message="Do you want to continue the configuration nevertheless? (yes/NO)" addproperty="answer" defaultvalue="NO"/>
-
-    <condition property="yes.continue">
-      <equals arg1="yes" arg2="${answer}"/>
-    </condition>
-    <antcall target="configure-local"/>
-  </target>
-
-  <target name="first-time-user-configuration-message">
-    <echo>#################################################################################</echo>
-    <echo># As a first time user one does NOT have to configure anything any further, but #</echo>
-    <echo># rather exit here and just run build.sh on UNIX resp. build.bat on Windows!    #</echo>
-    <echo>#################################################################################</echo>
-  </target>
-
-  <target name="create-local-build-properties" if="local.build.properties.does.not.exist.yet" depends="init">
-    <echo>Build configuration ${yanel.home.dir}/local.build.properties does not exist yet!</echo>
-
-    <input message="Do you have an existing Tomcat instance which you want to use as servlet engine for Yanel?  If so, please enter the path of your Tomcat instance (e.g. /home/yanel/jakarta-tomcat-5.0.30). IMPORTANT NOTE (especially for Windows): Please use '/' instead of '\' in the Tomcat path.  Otherwise just hit return (recommended to first time users :-) and Tomcat ${tomcat.version} will be installed at ${default.tomcat.home.dir}.  (You will always be able to change this setting at some later time within src/build/local.build.properties): " defaultvalue="${default.tomcat.home.dir.forward.slashes}" addproperty="pathOfUserSpecificTomcat"/>
-
-    <echo>User specific Tomcat: ${pathOfUserSpecificTomcat}</echo>
-
-    <copy file="${yanel.home.dir}/src/build/build.properties" tofile="${yanel.home.dir}/src/build/local.build.properties" overwrite="false"/>
-    <replace file="${yanel.home.dir}/src/build/local.build.properties" value="tomcat1.home.dir=${pathOfUserSpecificTomcat}">
-      <replacetoken>#tomcat1.home.dir=../tomcat-cluster/build/jakarta-tomcat-5.0.30-cnode1</replacetoken>
-    </replace>
-
-    <condition property="yes.install.default.tomcat">
-      <equals arg1="${pathOfUserSpecificTomcat}" arg2="${default.tomcat.home.dir.forward.slashes}"/>
-    </condition>
-
-    <antcall target="install-default-tomcat"/>
-  </target>
-
-  <target name="configure-local" if="yes.continue">
-    <echo>Will now create local properties files if these do not exist.</echo>
-
-    <mkdir dir="${yanel.home.dir}/${local.config.dir}"/>
-
-    <copy file="${yanel.home.dir}/conf/yanel.xml" tofile="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/realms.xml" tofile="${yanel.home.dir}/${local.config.dir}/local.realms.xml" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/resource-types.xml" tofile="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/log4j.properties" tofile="${yanel.home.dir}/${local.config.dir}/local.log4j.properties" overwrite="false"/>
-
-    <echo>Customize the ${local.config.dir}/local.* files and run build.sh OR run build.sh first and then customize the config files within build/webapps/yanel/WEB-INF/classes</echo>
-  </target>
     
   <target name="init" description="Initialize all parameters and other settings">
     <echo>INFO: Building with ${ant.version} and Java version ${ant.java.version}</echo>
 
-    <property name="yanel.home.dir" location="../../"/>
-<!--
-    <echo>Yanel Home Dir: ${yanel.home.dir}</echo>
--->
-    <path id="yanel.home.dir.ref">
-      <pathelement location="${yanel.home.dir}"/>
+    <echo>Yanel Home Dir: ${yanel.source.home}</echo>
+    <path id="yanel.source.home.ref">
+      <pathelement location="${yanel.source.home}"/>
     </path>
-    <pathconvert targetos="unix" property="yanel.home.dir.forward.slashes" refid="yanel.home.dir.ref">
+    <pathconvert targetos="unix" property="yanel.source.home.forward.slashes" refid="yanel.source.home.ref">
     </pathconvert>
 
-    <property name="build.dir" location="${yanel.home.dir}/build"/>
+    <property name="build.dir" location="${yanel.source.home}/build"/>
     <mkdir dir="${build.dir}"/>
     <property name="classes.dir" location="${build.dir}/classes"/>
     <property name="log4j.path" location="${build.dir}/logs"/>
@@ -256,9 +78,9 @@
 -->
 
 <!--
-<property name="default.tomcat.home.dir" value="${yanel.home.dir}/local/apache-tomcat-${tomcat.version}"/>
+<property name="default.tomcat.home.dir" value="${yanel.source.home}/local/apache-tomcat-${tomcat.version}"/>
 -->
-    <property name="default.tomcat.home.dir" location="${yanel.home.dir}/local/apache-tomcat-${tomcat.version}"/>
+    <property name="default.tomcat.home.dir" location="${yanel.source.home}/local/apache-tomcat-${tomcat.version}"/>
     <path id="default.tomcat.home.dir.ref">
       <pathelement location="${default.tomcat.home.dir}"/>
     </path>
@@ -269,297 +91,97 @@
     <echo>INFO: Set classpath ...</echo>
     <path id="classpath.compile">
       <!--
-      <fileset dir="${yanel.home.dir}/lib">
+      <fileset dir="${yanel.source.home}/lib">
         <include name="*.jar"/>
       </fileset>
       -->
       <pathelement path="${maven2.cp}"/>
       <pathelement path="${maven2.compile.cp}"/>
     </path>
-
-    <path id="classpath.cmdl">
-      <pathelement path="${maven2.cp}"/>
-      <pathelement path="${maven2.compile.cp}"/>
-    </path>
   </target>
 
-  <target name="set-javadoc-classpath" description="Set javadoc classpath" depends="init, dependencies">
-    <path id="classpath.javadoc">
-      <pathelement path="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
-
-      <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib">
-        <include name="*.jar"/>
-      </fileset>
-
-      <pathelement path="${maven2.cp}"/>
-      <pathelement path="${maven2.compile.cp}"/>
-    </path>
-    <property name="javadoc.cp" refid="classpath.javadoc"/>
-    <echo>INFO: Classpath to generate Javadoc: ${javadoc.cp}</echo>
-  </target>
-
-  <target name="init-runtime" description="Initialize all parameters and other settings for runtime" depends="init, dependencies">
-<!--
-  <target name="init-runtime" description="Initialize all parameters and other settings for runtime" depends="webapp">
--->
-
-    <path id="classpath.run.cmdl">
-      <!-- Properties files -->
-      <pathelement path="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
-
-      <!-- All from source generated libs -->
-      <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib">
-        <include name="*.jar"/>
-      </fileset>
-
-      <!-- All external dependencies -->
-      <pathelement path="${maven2.cp}"/>
-      <pathelement path="${maven2.compile.cp}"/>
-    </path>
-    <property name="run.cp" refid="classpath.run.cmdl"/>
-<!--
-    <echo>Classpath to run yanel cmdl: ${run.cp}</echo>
--->
-  </target>
 
   <target name="compile-core" description="Compile Java classes of Yanel core" depends="init, set-classpath">
     <mkdir dir="${classes.dir}"/>
-    <javac srcdir="${yanel.home.dir}/src/core/java/org/wyona/yanel/core"
+    <javac srcdir="${yanel.source.home}/src/core/java/org/wyona/yanel/core"
       destdir="${classes.dir}"
       source="${source.java.version}"
       target="${target.java.version}"
       debug="true">
       <classpath refid="classpath.compile"/>
     </javac>
-    <mkdir dir="${yanel.home.dir}/build/lib"/>
-    <jar destfile="${yanel.home.dir}/build/lib/yanel-core-${yanel.version}-r${yanel.revision}.jar"
+    <mkdir dir="${yanel.source.home}/build/lib"/>
+    <jar destfile="${yanel.source.home}/build/lib/yanel-core-${yanel.version}-r${yanel.revision}.jar"
       basedir="${classes.dir}"
       includes="org/wyona/yanel/core/**"/>
 
-    <copy file="${yanel.home.dir}/src/build/pom-core.xml" todir="${yanel.home.dir}/build/lib"/>
-    <replace file="${yanel.home.dir}/build/lib/pom-core.xml" value="${yanel.version}-r${yanel.revision}">
+    <copy file="${yanel.source.home}/src/build/pom-core.xml" todir="${yanel.source.home}/build/lib"/>
+    <replace file="${yanel.source.home}/build/lib/pom-core.xml" value="${yanel.version}-r${yanel.revision}">
       <replacetoken>@VERSION@</replacetoken>
     </replace>
 
-    <artifact:pom id="core.project" file="${yanel.home.dir}/build/lib/pom-core.xml"/>
+    <artifact:pom id="core.project" file="${yanel.source.home}/build/lib/pom-core.xml"/>
 
-    <artifact:install file="${yanel.home.dir}/build/lib/yanel-core-${yanel.version}-r${yanel.revision}.jar">
+    <artifact:install file="${yanel.source.home}/build/lib/yanel-core-${yanel.version}-r${yanel.revision}.jar">
       <pom refid="core.project"/>
     </artifact:install>
   </target>
 
   <target name="compile-impl" description="Compile Java classes of Yanel implementation" depends="init">
     <mkdir dir="${classes.dir}"/>
-    <javac srcdir="${yanel.home.dir}/src/impl/java/org/wyona/yanel/impl" destdir="${classes.dir}" debug="true">
+    <javac srcdir="${yanel.source.home}/src/impl/java/org/wyona/yanel/impl" destdir="${classes.dir}" debug="true">
       <classpath refid="classpath.compile"/>
     </javac>
 
-    <mkdir dir="${yanel.home.dir}/build/lib"/>
-    <jar destfile="${yanel.home.dir}/build/lib/yanel-impl-${yanel.version}-r${yanel.revision}.jar"
+    <mkdir dir="${yanel.source.home}/build/lib"/>
+    <jar destfile="${yanel.source.home}/build/lib/yanel-impl-${yanel.version}-r${yanel.revision}.jar"
       basedir="${classes.dir}"
       includes="org/wyona/yanel/impl/**"/>
       
-    <copy file="${yanel.home.dir}/src/build/pom-impl.xml" todir="${yanel.home.dir}/build/lib"/>
-    <replace file="${yanel.home.dir}/build/lib/pom-impl.xml" value="${yanel.version}-r${yanel.revision}">
+    <copy file="${yanel.source.home}/src/build/pom-impl.xml" todir="${yanel.source.home}/build/lib"/>
+    <replace file="${yanel.source.home}/build/lib/pom-impl.xml" value="${yanel.version}-r${yanel.revision}">
       <replacetoken>@VERSION@</replacetoken>
     </replace>
 
-    <artifact:pom id="impl.project" file="${yanel.home.dir}/build/lib/pom-impl.xml"/>
+    <artifact:pom id="impl.project" file="${yanel.source.home}/build/lib/pom-impl.xml"/>
 
-    <artifact:install file="${yanel.home.dir}/build/lib/yanel-impl-${yanel.version}-r${yanel.revision}.jar">
+    <artifact:install file="${yanel.source.home}/build/lib/yanel-impl-${yanel.version}-r${yanel.revision}.jar">
       <pom refid="impl.project"/>
     </artifact:install>      
   </target>
 
-  <target name="compile-cmdl" description="Compile Java classes of Yanel command line" depends="init, compile-core">
-    <mkdir dir="${classes.dir}"/>
-    <javac srcdir="${yanel.home.dir}/src/core/java/org/wyona/yanel/cmdl" destdir="${classes.dir}"
-      debug="true"
-      classpathref="classpath.cmdl"
-    />
-    <mkdir dir="${yanel.home.dir}/build/lib"/>
-    <jar destfile="${yanel.home.dir}/build/lib/yanel-cmdl-${yanel.version}-r${yanel.revision}.jar"
-      basedir="${classes.dir}"
-      includes="org/wyona/yanel/cmdl/**"/>
-    <copy file="${yanel.home.dir}/src/build/pom-cmdl.xml" tofile="${yanel.home.dir}/build/lib/pom-cmdl.xml"/>
-    <replace file="${yanel.home.dir}/build/lib/pom-cmdl.xml" value="${yanel.version}-r${yanel.revision}">
-      <replacetoken>@VERSION@</replacetoken>
-    </replace>
-
-    <artifact:pom id="cmdl.project" file="${yanel.home.dir}/build/lib/pom-cmdl.xml"/>
-    <artifact:install file="${yanel.home.dir}/build/lib/yanel-cmdl-${yanel.version}-r${yanel.revision}.jar">
-      <pom refid="cmdl.project"/>
-    </artifact:install>
-  </target>
-
-  <target name="compile-webapp" description="Compile Java classes of Yanel webapp" depends="init, compile-core, compile-cmdl">
-    <mkdir dir="${classes.dir}"/>
-    <javac srcdir="${yanel.home.dir}/src/webapp/src/java/org/wyona/yanel/servlet" destdir="${classes.dir}"
-      debug="true"
-      classpathref="classpath.compile"
-    />
-    <mkdir dir="${yanel.home.dir}/build/lib"/>
-    <jar destfile="${yanel.home.dir}/build/lib/yanel-webapp-${yanel.version}-r${yanel.revision}.jar"
-      basedir="${classes.dir}"
-      includes="org/wyona/yanel/servlet/**"/>
-      
-    <copy file="${yanel.home.dir}/src/build/pom-webapp.xml" todir="${yanel.home.dir}/build/lib"/>
-    <replace file="${yanel.home.dir}/build/lib/pom-webapp.xml" value="${yanel.version}-r${yanel.revision}">
-      <replacetoken>@VERSION@</replacetoken>
-    </replace>
-
-    <artifact:pom id="webapp.project" file="${yanel.home.dir}/build/lib/pom-webapp.xml"/>
-
-    <artifact:install file="${yanel.home.dir}/build/lib/yanel-webapp-${yanel.version}-r${yanel.revision}.jar">
-      <pom refid="webapp.project"/>
-    </artifact:install>            
-  </target>
-
-  <!-- TODO: Invoice depends on impl ...! -->
-  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-impl, compile-webapp, build-resources, build-realms">
-<!--
-  <target name="webapp" description="Build webapp" depends="init, compile-webapp">
--->
-    <mkdir dir="${build.dir}/webapps/${servlet.context.prefix}"/>
-    <copy todir="${build.dir}/webapps/${servlet.context.prefix}">
-      <fileset dir="${yanel.home.dir}/src/webapp">
-        <exclude name="src/**"/>
-      </fileset>
+  <target name="source-snapshot" description="Create a source code snapshot" depends="init, clean-all">
+    <delete dir="${build.dir}/source-snapshots"/>
+    <property name="snapshot.dir" value="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src"/>
+    <mkdir dir="${snapshot.dir}/src"/>
+    <copy file="${yanel.source.home}/README.txt" todir="${snapshot.dir}"/>
+    <copy file="${yanel.source.home}/configure.sh" todir="${snapshot.dir}"/>
+    <chmod file="${snapshot.dir}/configure.sh" perm="755"/>
+    <copy file="${yanel.source.home}/configure.bat" todir="${snapshot.dir}"/>
+    <copy file="${yanel.source.home}/build.sh" todir="${snapshot.dir}"/>
+    <chmod file="${snapshot.dir}/build.sh" perm="755"/>
+    <copy file="${yanel.source.home}/build.bat" todir="${snapshot.dir}"/>
+    <copy file="${yanel.source.home}/yanel.sh" todir="${snapshot.dir}"/>
+    <chmod file="${snapshot.dir}/yanel.sh" perm="755"/>
+    <copy file="${yanel.source.home}/yanel.bat" todir="${snapshot.dir}"/>
+    <copy todir="${snapshot.dir}/src">
+      <fileset dir="${yanel.source.home}/src" excludes="build/local.build.properties, contributions/resources/nutch/conf/nutch-local.xml"/>
     </copy>
-
-    <!-- TODO: Copy only core, impl, webapp, but NOT cmdl, etc. -->
-    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
-      <fileset dir="${yanel.home.dir}/build/lib"/>
+    <copy todir="${snapshot.dir}/tools">
+      <fileset dir="${yanel.source.home}/tools"/>
     </copy>
-
-    <antcall target="deploy-resources"/>
-
-<!--
-    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes">
-      <fileset dir="${yanel.home.dir}/lib">
-        <include name="*.properties"/>
-        <exclude name="local.*.properties"/>
-      </fileset>
+    <chmod dir="${snapshot.dir}/tools/apache-ant-1.6.5/bin" perm="755" includes="*"/>
+    <copy todir="${snapshot.dir}/conf">
+      <fileset dir="${yanel.source.home}/conf" excludes="local/**"/>
     </copy>
--->
-    <copy file="${yanel.home.dir}/conf/CatalogManager.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/catalog.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/entities" overwrite="false">
-      <fileset dir="${yanel.home.dir}/conf/entities"/>
-    </copy>
-
-    <copy file="${yanel.home.dir}/conf/spring-yanel-config.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/realms.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <copy file="${yanel.home.dir}/conf/log4j.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
-    <!-- Create yanel.xml -->
-    <condition property="local.yanel.config.exists">
-      <available file="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" type="file"/>
-    </condition>
-    <antcall target="generate-yanel-properties"/>
-
-    <condition property="local.resource-types.config.exists">
-      <available file="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" type="file"/>
-    </condition>
-    <antcall target="generate-resource-types-registry"/>
-
-    <antcall target="check-config-version"/>
-
-    <!-- Overwrite default by local properties -->
-    <!-- TODO: Make the patching selectable within the build.properties of the build ... -->
-    <copy file="${yanel.home.dir}/${local.config.dir}/local.log4j.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" overwrite="true" failonerror="false"/>
-    <copy file="${yanel.home.dir}/${local.config.dir}/local.realms.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" overwrite="true" failonerror="false"/>
-    <antcall target="patch-with-local-yanel-config"/>
-    <antcall target="patch-with-local-resource-types-registry"/>
-
-
-    <!-- Patch properties ... -->
-
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.xml" value="${yanel.home.dir.forward.slashes}">
-      <replacetoken>..</replacetoken>
-    </replace>
-
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" value="${yanel.home.dir.forward.slashes}/src/realms">
-      <replacetoken>@REALMS_DIR@</replacetoken>
-    </replace>
-
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" value="${yanel.home.dir.forward.slashes}">
-      <replacetoken>@YANEL_SRC_DIR@</replacetoken>
-    </replace>
-
-    <!-- DEPRECATED -->
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" value="${yanel.home.dir.forward.slashes}/src">
-      <replacetoken>../src</replacetoken>
-    </replace>
-    <!-- /DEPRECATED -->
-
-    <xslt in="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml-OUT" style="fix-resources-src.xsl" force="true">
-    </xslt>
-    <move file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml-OUT" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml"/>
-    
-    <copy file="${yanel.home.dir}/src/build/install.rdf" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}">
-      <replacetoken>@VERSION@</replacetoken>
-    </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.revision}">
-      <replacetoken>@REVISION@</replacetoken>
-    </replace>
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="source">
-      <replacetoken>@INSTALLTYPE@</replacetoken>
-    </replace>
-
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.file.forward.slashes}">
-      <replacetoken>@LOG4J_FILE@</replacetoken>
-    </replace>
-    <touch file="${log4j.file}"/>
-
-    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
-      <fileset refid="maven2.fileset"/>
-      <mapper type="flatten"/>
-    </copy>
-
-    <!-- TODO: So far only the javadoc of the core is being built -->
-    <condition property="javadoc-does-not-exist-yet">
-      <not>
-        <available file="${build.dir}/javadoc" type="dir"/>
-      </not>
-    </condition>
-    <antcall target="generate-javadoc"/>
-
-    <ant antfile="${yanel.home.dir}/build/build-resource-types.xml" target="copy-resources-dependencies"/>
-
-    <antcall target="deploy-libs-of-realms"/>
-  </target>
-
-  <target name="war" description="Build war file" depends="init, webapp">
-    <jar jarfile="${yanel.home.dir}/build/webapps/${servlet.context.prefix}.war" basedir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
-  </target>
-
-  <target name="deploy" description="Deploy war file" depends="init, webapp">
-    <condition property="property-tomcat-cluster-node1-is-set">
-      <isset property="tomcat1.home.dir"/>
-    </condition>
-    <condition property="property-tomcat1-ssl-port-is-set">
-      <isset property="tomcat1.ssl.port"/>
-    </condition>
-    <antcall target="deploy-to-tomcat-cluster-node1"/>
-
-    <condition property="property-tomcat-cluster-node2-is-set">
-      <isset property="tomcat2.home.dir"/>
-    </condition>
-    <condition property="property-tomcat2-ssl-port-is-set">
-      <isset property="tomcat2.ssl.port"/>
-    </condition>
-    <antcall target="deploy-to-tomcat-cluster-node2"/>
-
-    <antcall target="final-message"/>
-  </target>
-
-  <target name="final-message">    
-    <antcall target="final-message-windows"/>
-    <antcall target="final-message-unix"/>
+    <zip destfile="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src.zip">
+      <zipfileset dir="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src" filemode="755"/>
+    </zip>
   </target>
   
-  <target name="final-message-windows" if="isWindows">
+  <target name="final-message">
+    <echo/>
+    <echo/>
     <echo message="*****************************************************************"/>
     <echo message="*"/>
     <echo message="* You have successfully built Yanel ${yanel.version} (Revision ${yanel.revision})"/>
@@ -567,7 +189,18 @@
     <echo message="*"/>
     <echo message="* Start using Yanel by typing"/>
     <echo message="*"/>
-    <echo message="*      Tomcat:      yanel start"/>
+    <if>
+     <equals arg1="${isWindows}" arg2="true" />
+     <then>
+       <echo message="*      Tomcat:      yanel start"/>
+     </then>
+    </if>
+    <if>
+     <equals arg1="${isUnix}" arg2="true" />
+     <then>
+       <echo  message="*      Tomcat:    ./yanel.sh start"/>
+     </then>
+    </if>
     <echo message="*"/>
     <echo message="*                   and browse to "/>
     <echo message="*"/>
@@ -584,529 +217,6 @@
     <echo message="* Thanks for using Yanel"/>
     <echo message="*"/>
     <echo message="*****************************************************************"/>
-  </target>
-  
-  <target name="final-message-unix" if="isUnix">
-    <echo message="*****************************************************************"/>
-    <echo message="*"/>
-    <echo message="* You have successfully built Yanel ${yanel.version} (Revision ${yanel.revision})"/>
-    <echo message="*"/>
-    <echo message="*"/>
-    <echo message="* Start using Yanel by typing"/>
-    <echo message="*"/>
-    <echo message="*      Tomcat:    ./yanel.sh start"/>
-    <echo message="*"/>
-    <echo message="*                 and browse to "/>
-    <echo message="*"/>
-    <!-- TODO: Differentiate between ROOT context and regular context prefix! -->
-    <echo message="*                 http://127.0.0.1:8080/${servlet.context.prefix}/"/>
-    <echo message="*"/>
-<!-- TODO: Make Jetty available! -->
-<!--
-    <echo message="*       Jetty:    ./yanel.sh start-jetty"/>
-    <echo message="*"/>
-    <echo message="*                 and browse to "/>
-    <echo message="*"/> 
-    <echo message="*                 http://127.0.0.1:8888"/>
--->
-    <echo message="*"/>
-    <echo message="* Thanks for using Yanel"/>
-    <echo message="*"/>
-    <echo message="*****************************************************************"/>
-  </target>
-  
-  
-
-  <target name="deploy-to-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Deploy webapp to Tomcat cluster node 1">
-    <echo>Copy webapp (${tomcat1.webapps.dir}):</echo>
-
-    <fail message="No such directory: ${tomcat1.webapps.dir}">
-      <condition><not><available file="${tomcat1.webapps.dir}"/></not></condition>
-    </fail>
-
-    <copy todir="${tomcat1.webapps.dir}/${servlet.context.prefix}">
-      <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
-    </copy>
-
-    <replace file="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="log4j-cnode1.log">
-      <replacetoken>log4j-cmdl.log</replacetoken>
-    </replace>
-    <touch file="${log4j.path}/log4j-cnode1.log"/>
-
-    <antcall target="patch-tomcat-cluster-node-1-ssl-port"/>
-    
-    <condition property="endorsed-xerces-at-node1-does-not-exist-yet">
-      <not>
-        <available file="${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar"/>
-      </not>
-    </condition>
-    <antcall target="ask-to-copy-endorsed-xerces-to-node1"/>
-    
-    <condition property="ask-to-copy-endorsed-xml-apis-to-node1">
-      <not>
-        <available file="${tomcat1.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar"/>
-      </not>
-    </condition>
-    <antcall target="ask-to-copy-endorsed-xml-apis-to-node1"/>
-    
-    <condition property="endorsed-xalan-at-node1-does-not-exist-yet">
-      <not>
-        <available file="${tomcat1.home.dir}/common/endorsed/${xalan.artifactId}-${xalan.version}.jar"/>
-      </not>
-    </condition>
-    <antcall target="ask-to-copy-endorsed-xalan-to-node1"/>
-    
-  </target>
-  
-  <target name="patch-tomcat-cluster-node-1-ssl-port" if="property-tomcat1-ssl-port-is-set">
-    <echo>ssl port for tomcat is set</echo>
-    <xslt in="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"
-          out="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp"
-          style="add-ssl-port.xsl">
-      <param name="ssl-port" expression="${tomcat1.ssl.port}"/>
-    </xslt>
-    <move file="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp" tofile="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"/>
-  </target>
-  
-  <target name="patch-tomcat-cluster-node-2-ssl-port" if="property-tomcat2-ssl-port-is-set">
-    <xslt in="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"
-          out="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp"
-          style="add-ssl-port.xsl">
-      <param name="ssl-port" expression="${tomcat2.ssl.port}"/>
-    </xslt>
-    <move file="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp" tofile="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"/>
-  </target>
-  
-  
-  <target name="deploy-to-tomcat-cluster-node2" if="property-tomcat-cluster-node2-is-set" description="Deploy webapp to Tomcat cluster node 2">
-    <echo>Copy webapp (${tomcat2.webapps.dir}):</echo>
-
-    <fail message="No such directory: ${tomcat2.webapps.dir}">
-      <condition><not><available file="${tomcat2.webapps.dir}"/></not></condition>
-    </fail>
-
-    <copy todir="${tomcat2.webapps.dir}/${servlet.context.prefix}">
-      <fileset dir="${yanel.home.dir}/build/webapps/${servlet.context.prefix}"/>
-    </copy>
-
-    <replace file="${tomcat2.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="log4j-cnode2.log">
-      <replacetoken>log4j-cmdl.log</replacetoken>
-    </replace>
-    <touch file="${log4j.path}/log4j-cnode2.log"/>
-
-    <antcall target="patch-tomcat-cluster-node-2-ssl-port"/>
-
-    <condition property="endorsed-xerces-at-node2-does-not-exist-yet">
-      <not>
-        <available file="${tomcat2.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar"/>
-      </not>
-    </condition>
-    <antcall target="ask-to-copy-endorsed-xerces-node2"/>
-    
-    <condition property="ask-to-copy-endorsed-xml-apis-node2">
-      <not>
-        <available file="${tomcat2.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar"/>
-      </not>
-    </condition>
-    <antcall target="ask-to-copy-endorsed-xml-apis-node2"/>
-
-    <condition property="endorsed-xalan-at-node2-does-not-exist-yet">
-      <not>
-        <available file="${tomcat2.home.dir}/common/endorsed/${xalan.artifactId}-${xalan.version}.jar"/>
-      </not>
-    </condition>
-    <antcall target="ask-to-copy-endorsed-xalan-to-node2"/>
-  </target>
-
-  <target name="ask-to-copy-endorsed-xerces-to-node1" if="endorsed-xerces-at-node1-does-not-exist-yet">
-    <echo>IMPORTANT: Please note that your Tomcat might already contain an endorsed xerces library at '${tomcat1.home.dir}/common/endorsed/'. Please make sure to resolve any conflicts!</echo>
-    <input message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
-    <condition property="do-not-copy-endorsed-xerces-to-node1">
-      <equals arg1="no" arg2="${answer}"/>
-    </condition>
-    <antcall target="do-copy-endorsed-xerces-to-node1"/>
-  </target>
-
-  <target name="ask-to-copy-endorsed-xml-apis-to-node1" if="ask-to-copy-endorsed-xml-apis-to-node1">
-    <echo>IMPORTANT: Please note that your Tomcat might already contain an endorsed xml api library at '${tomcat1.home.dir}/common/endorsed/'. Please make sure to resolve any conflicts!</echo>
-    <input message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
-    <condition property="do-not-copy-endorsed-xml-apis-to-node1">
-      <equals arg1="no" arg2="${answer}"/>
-    </condition>
-    <antcall target="do-copy-endorsed-xml-apis-to-node1"/>
-  </target>
-
-  <target name="ask-to-copy-endorsed-xalan-to-node1" if="endorsed-xalan-at-node1-does-not-exist-yet">
-    <echo>IMPORTANT: Please note that your Tomcat might already contain an endorsed xalan library at '${tomcat1.home.dir}/common/endorsed/'. Please make sure to resolve any conflicts!</echo>
-    <input message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xalan.artifactId}-${xalan.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
-    <condition property="do-not-copy-endorsed-xalan-to-node1">
-      <equals arg1="no" arg2="${answer}"/>
-    </condition>
-    <antcall target="do-copy-endorsed-xalan-to-node1"/>
-  </target>
-
-  <target name="ask-to-copy-endorsed-xalan-to-node2" if="endorsed-xalan-at-node2-does-not-exist-yet">
-    <echo>IMPORTANT: Please note that your Tomcat might already contain an endorsed xalan library at '${tomcat2.home.dir}/common/endorsed/'. Please make sure to resolve any conflicts!</echo>
-    <input message="Endorsed lib is missing (${tomcat2.home.dir}/common/endorsed/${xalan.artifactId}-${xalan.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
-    <condition property="do-not-copy-endorsed-xalan-to-node2">
-      <equals arg1="no" arg2="${answer}"/>
-    </condition>
-    <antcall target="do-copy-endorsed-xalan-to-node2"/>
-  </target>
-  
-  <target name="do-copy-endorsed-xerces-to-node1" unless="do-not-copy-endorsed-xerces-to-node1">
-    <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar" todir="${tomcat1.home.dir}/common/endorsed" overwrite="false"/>
-  </target>
-  
-  <target name="do-copy-endorsed-xml-apis-to-node1" unless="do-not-copy-endorsed-xml-apis-to-node1">
-    <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${tomcat1.home.dir}/common/endorsed" overwrite="false"/>
-  </target>
-  
-  <target name="do-copy-endorsed-xalan-to-node1" unless="do-not-copy-endorsed-xalan-to-node1">
-    <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xalan.artifactId}-${xalan.version}.jar" todir="${tomcat1.home.dir}/common/endorsed" overwrite="false"/>
-  </target>
-  
-  <target name="do-copy-endorsed-xalan-to-node2" unless="do-not-copy-endorsed-xalan-to-node2">
-    <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xalan.artifactId}-${xalan.version}.jar" todir="${tomcat2.home.dir}/common/endorsed" overwrite="false"/>
-  </target>
-
-  <target name="ask-to-copy-endorsed-xerces-node2" if="endorsed-xerces-at-node2-does-not-exist-yet">
-    <echo>IMPORTANT: Please note that your Tomcat might already contain an endorsed xerces library at '${tomcat2.home.dir}/common/endorsed/'. Please make sure to resolve any conflicts!</echo>
-    <input message="Endorsed lib is missing (${tomcat2.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
-    <condition property="do-not-copy-endorsed-xerces-to-node2">
-      <equals arg1="no" arg2="${answer}"/>
-    </condition>
-
-    <antcall target="do-copy-endorsed-xerces-to-node2"/>
-  </target>
-  
-  <target name="do-copy-endorsed-xerces-to-node2" unless="do-not-copy-endorsed-xerces-to-node2">
-    <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar" todir="${tomcat2.home.dir}/common/endorsed" overwrite="false"/>
-    <echo>INFO: ${xerces.impl.artifactId}-${xerces.impl.version}.jar has been copied!</echo>
-  </target>
-
-  <target name="ask-to-copy-endorsed-xml-apis-node2" if="ask-to-copy-endorsed-xml-apis-node2">
-    <echo>IMPORTANT: Please note that your Tomcat might already contain an endorsed xml api library at '${tomcat2.home.dir}/common/endorsed/'. Please make sure to resolve any conflicts!</echo>
-    <input message="Endorsed lib is missing (${tomcat2.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
-    <condition property="do-not-copy-endorsed-xml-apis-to-node2">
-      <equals arg1="no" arg2="${answer}"/>
-    </condition>
-
-    <antcall target="do-copy-endorsed-xml-apis-to-node2"/>
-  </target>
-  
-  <target name="do-copy-endorsed-xml-apis-to-node2" unless="do-not-copy-endorsed-xml-apis-to-node2">
-    <copy file="${yanel.home.dir}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${tomcat2.home.dir}/common/endorsed" overwrite="false"/>
-    <echo>INFO: ${xml.apis.artifactId}-${xml.apis.version}.jar has been copied!</echo>
-  </target>
-
-  <target name="clean" description="Clean build" depends="init, clean-resources, clean-realms">
-    <echo>INFO: Clean build</echo>
-    <delete includeemptydirs="true">
-      <fileset dir="${build.dir}" excludes="logs/**, javadoc/**"/>
-    </delete>
-
-    <!-- Jetty target -->
-    <delete dir="${yanel.home.dir}/src/build/target"/>
-
-    <condition property="yes-delete-tomcat-cluster-node1">
-      <and>
-        <isset property="tomcat1.home.dir"/>
-        <available file="${tomcat1.webapps.dir}/${servlet.context.prefix}" type="dir"/>
-        <istrue value="${force-clean}"/>
-      </and>
-    </condition>
-    <antcall target="do-clean-tomcat-cluster-node1"/>
-
-    <condition property="property-tomcat-cluster-node1-is-set">
-      <and>
-        <isset property="tomcat1.home.dir"/>
-        <available file="${tomcat1.webapps.dir}/${servlet.context.prefix}" type="dir"/>
-      </and>
-    </condition>
-    <antcall target="ask-to-clean-tomcat-cluster-node1"/>
-
-
-    <condition property="yes-delete-tomcat-cluster-node2">
-      <and>
-        <isset property="tomcat1.home.dir"/>
-        <available file="${tomcat1.webapps.dir}/${servlet.context.prefix}" type="dir"/>
-        <istrue value="${force-clean}"/>
-      </and>
-    </condition>
-    <antcall target="do-clean-tomcat-cluster-node2"/>
-    
-    <condition property="property-tomcat-cluster-node2-is-set">
-      <and>
-        <isset property="tomcat2.home.dir"/>
-        <available file="${tomcat2.webapps.dir}/${servlet.context.prefix}" type="dir"/>
-      </and>
-    </condition>
-    <antcall target="ask-to-clean-tomcat-cluster-node2"/>
-  </target>
-
-  <target name="clean-all" description="Clean All (including local configuration!)" depends="init, clean">
-    <delete dir="${build.dir}"/>
-    <delete dir="${yanel.home.dir}/local"/>
-
-    <!-- Jetty target -->
-    <delete dir="${yanel.home.dir}/src/build/target"/>
-
-    <condition property="local.build.properties.exists">
-      <available file="${yanel.home.dir}/src/build/local.build.properties" type="file"/>
-    </condition>
-    <antcall target="ask-if-local-build-properties-shall-be-deleted"/>
-
-    <condition property="local.config.dir.exists">
-      <available file="${yanel.home.dir}/${local.config.dir}" type="dir"/>
-    </condition>
-    <antcall target="ask-if-local-config-dir-shall-be-deleted"/>
-  </target>
-
-  <target name="ask-if-local-build-properties-shall-be-deleted" if="local.build.properties.exists">
-    <input message="Do you really want to delete local build.properties file '${yanel.home.dir}/src/build/local.build.properties'? (yes/NO):" addproperty="answer"/>
-    <condition property="yes-delete-local-build-properties">
-      <equals arg1="yes" arg2="${answer}"/>
-    </condition>
-    <antcall target="do-delete-local-build-properties"/>
-  </target>
-
-  <target name="do-delete-local-build-properties" if="yes-delete-local-build-properties">
-    <delete file="${yanel.home.dir}/src/build/local.build.properties"/>
-  </target>
-
-  <target name="ask-if-local-config-dir-shall-be-deleted" if="local.config.dir.exists">
-    <input message="Do you really want to delete local config dir '${yanel.home.dir}/${local.config.dir}'? (yes/NO):" addproperty="answer"/>
-    <condition property="yes-delete-local-config-dir">
-      <equals arg1="yes" arg2="${answer}"/>
-    </condition>
-    <antcall target="do-delete-local-config-dir"/>
-  </target>
-
-  <target name="do-delete-local-config-dir" if="yes-delete-local-config-dir">
-    <delete dir="${yanel.home.dir}/${local.config.dir}"/>
-  </target>
-
-  <target name="ask-to-clean-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Clean Tomcat cluster node 1">
-    <input message="Do you really want to delete your deployed (maybe productive) Yanel version at '${tomcat1.webapps.dir}/${servlet.context.prefix}'? (yes/NO):" addproperty="answer"/>
-    <condition property="yes-delete-tomcat-cluster-node1">
-      <equals arg1="yes" arg2="${answer}"/>
-    </condition>
-    <antcall target="do-clean-tomcat-cluster-node1"/>
-  </target>
-
-  <target name="do-clean-tomcat-cluster-node1" if="yes-delete-tomcat-cluster-node1" description="Clean Tomcat cluster node 1">
-    <echo>Clean Tomcat cluster node 1:</echo>
-
-    <fail message="No such directory: ${tomcat1.webapps.dir}">
-      <condition><not><available file="${tomcat1.webapps.dir}"/></not></condition>
-    </fail>
-
-    <delete dir="${tomcat1.webapps.dir}/${servlet.context.prefix}"/>
-    <delete dir="${tomcat1.work.dir}/${servlet.context.prefix}"/>
-  </target>
-
-  <target name="ask-to-clean-tomcat-cluster-node2" if="property-tomcat-cluster-node2-is-set" description="Clean Tomcat cluster node 2">
-    <input message="Do you really want to delete your deployed (maybe productive) Yanel version at '${tomcat2.webapps.dir}/${servlet.context.prefix}'? (yes/NO):" addproperty="answer"/>
-    <condition property="yes-delete-tomcat-cluster-node2">
-      <equals arg1="yes" arg2="${answer}"/>
-    </condition>
-    <antcall target="do-clean-tomcat-cluster-node2"/>
-  </target>
-
-  <target name="do-clean-tomcat-cluster-node2" if="yes-delete-tomcat-cluster-node2" description="Clean Tomcat cluster node 2">
-    <echo>Clean Tomcat cluster node 2:</echo>
-
-    <fail message="No such directory: ${tomcat2.webapps.dir}">
-      <condition><not><available file="${tomcat2.webapps.dir}"/></not></condition>
-    </fail>
-
-    <delete dir="${tomcat2.webapps.dir}/${servlet.context.prefix}"/>
-    <delete dir="${tomcat2.work.dir}/${servlet.context.prefix}"/>
-  </target>
-
-  <target name="javadoc" description="Generate Javadoc" depends="init">
-    <mkdir dir="${build.dir}/javadoc"/>
-    <javadoc
-      packagenames="org.*"
-      sourcepath="${yanel.home.dir}/src/core/java"
-      destdir="${yanel.home.dir}/build/javadoc"
-      classpathref="classpath.javadoc"
-    >
-    </javadoc>
-  </target>
-
-  <target name="generate-javadoc" description="Generate Javadoc" if="javadoc-does-not-exist-yet">
-    <antcall target="javadoc"/>
-  </target>
-
-  <target name="run-yanel-cmdl" description="Run command line tool" depends="init-runtime">
-    <echo>Yanel Path: ${yanel.path}</echo>
-    <!--
-    <exec executable="java">
-      <arg line="-classpath ${run.cp} org.wyona.yanel.cmdl.YanelCommandLine"/>
-    </exec>
-    -->
-    <java classname="org.wyona.yanel.cmdl.YanelCommandLine">
-      <classpath refid="classpath.run.cmdl"/>
-      <arg value="${yanel.path}"/>
-      <!-- On Linux, Java 1.4.2 needs this sysproperty whereas on Mac OS X it doesn't seem to be necessary -->
-      <sysproperty key="org.xml.sax.driver" value="org.apache.xerces.parsers.SAXParser"/>
-    </java>
-  </target>
-
-  <target name="generate-resources-build" description="Generate resources build" depends="init">
-    <echo>INFO: Generate build file to build resources</echo>
-    <condition property="local.resource-types.config.exists">
-      <available file="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" type="file"/>
-    </condition>
-    <antcall target="generate-resources-build-from-default"/>
-    <antcall target="generate-resources-build-from-local"/>
-
-    <replace file="../../build/build-resource-types.xml" value="${yanel.home.dir.forward.slashes}">
-      <replacetoken>@YANEL_SRC_DIR@</replacetoken>
-    </replace>
-  </target>
-
-  <target name="generate-resources-build-from-default" description="Generate resources build from default config" depends="init" unless="local.resource-types.config.exists">
-    <xslt in="${yanel.home.dir}/conf/resource-types.xml" out="../../build/build-resource-types.xml" style="yanel2resources.xsl" force="false">
-      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
-      <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
-      <param name="maven.url" expression="${maven.url}"/>
-    </xslt>
-  </target>
-
-  <target name="generate-resources-build-from-local" description="Generate resources build from local config" depends="init" if="local.resource-types.config.exists">
-    <xslt in="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" out="../../build/build-resource-types.xml" style="yanel2resources.xsl" force="true">
-      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
-      <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
-      <param name="maven.url" expression="${maven.url}"/>
-    </xslt>
-  </target>
-
-  <target name="build-resources" description="Build resources" depends="generate-resources-build">
-    <ant antfile="${yanel.home.dir}/build/build-resource-types.xml" target="build-resources"/>
-  </target>
-
-  <target name="deploy-resources" description="Deploy resources" depends="generate-resources-build">
-  
-    <!-- TODO: Seems to copy global i18n files, but has nothing to do with resources. -->
-    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/">
-      <fileset dir="." casesensitive="yes">
-        <include name="global_*.properties"/>
-      </fileset>
-    </copy>
-    
-    <ant antfile="${yanel.home.dir}/build/build-resource-types.xml" target="deploy-resources"/>
-  </target>
-
-  <target name="deploy-libs-of-realms" description="Deploy libraries of realms" depends="generate-realms-build">
-    <ant antfile="${yanel.home.dir}/build/build-realms.xml" target="deploy-realms"/>
-  </target>
-
-  <target name="clean-resources" description="Clean resources" depends="generate-resources-build">
-    <ant antfile="${yanel.home.dir}/build/build-resource-types.xml" target="clean-resources"/>
-  </target>
-
-  <target name="clean-realms" description="Clean realms" depends="generate-realms-build">
-    <ant antfile="${yanel.home.dir}/build/build-realms.xml" target="clean-realms"/>
-  </target>
-
-
-
-  <!-- Build Realms -->
-  <target name="build-realms" description="Build realms" depends="generate-realms-build">
-    <ant antfile="${yanel.home.dir}/build/build-realms.xml" target="build-realms"/>
-    <ant antfile="${yanel.home.dir}/build/build-realms.xml" target="copy-dependencies"/>
-  </target>
-
-  <target name="generate-realms-build" description="Generate realms build" depends="init">
-    <condition property="local.realms.config.exists">
-      <available file="${yanel.home.dir}/${local.config.dir}/local.realms.xml" type="file"/>
-    </condition>
-    <antcall target="generate-realms-build-from-default"/>
-    <antcall target="generate-realms-build-from-local"/>
-  </target>
-
-  <target name="generate-realms-build-from-default" description="Generate realms build from default config" depends="init" unless="local.realms.config.exists">
-    <xslt in="${yanel.home.dir}/conf/realms.xml" out="../../build/build-realms.xml" style="yanel2realms.xsl" force="false">
-      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
-      <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
-      <param name="maven.url" expression="${maven.url}"/>
-    </xslt>
-    <replace file="../../build/build-realms.xml" value="${yanel.home.dir.forward.slashes}/src/realms">
-      <replacetoken>@REALMS_DIR@</replacetoken>
-    </replace>
-  </target>
-
-  <target name="generate-realms-build-from-local" description="Generate realms build from local config" depends="init" if="local.realms.config.exists">
-    <xslt in="${yanel.home.dir}/${local.config.dir}/local.realms.xml" out="../../build/build-realms.xml" style="yanel2realms.xsl" force="true">
-      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
-      <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
-      <param name="maven.url" expression="${maven.url}"/>
-    </xslt>
-    <replace file="../../build/build-realms.xml" value="${yanel.home.dir.forward.slashes}/src/realms">
-      <replacetoken>@REALMS_DIR@</replacetoken>
-    </replace>
-  </target>
-
-
-
-  <target name="generate-yanel-properties" unless="local.yanel.config.exists">
-    <xslt in="${yanel.home.dir}/conf/yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.xml" style="yanel2properties.xsl" force="false">
-      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
-      <param name="yanel.revision" expression="${yanel.revision}"/>
-      <param name="yanel.version" expression="${yanel.version}"/>
-    </xslt>
-  </target>
-
-  <target name="patch-with-local-yanel-config" if="local.yanel.config.exists">
-    <xslt in="${yanel.home.dir}/${local.config.dir}/local.yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.xml" style="yanel2properties.xsl" force="true">
-      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
-      <param name="yanel.revision" expression="${yanel.revision}"/>
-      <param name="yanel.version" expression="${yanel.version}"/>
-    </xslt>
-  </target>
-
-  <target name="generate-resource-types-registry" unless="local.resource-types.config.exists">
-    <copy file="${yanel.home.dir}/conf/resource-types.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" overwrite="false"/>
-  </target>
-
-  <target name="patch-with-local-resource-types-registry" if="local.resource-types.config.exists">
-    <copy file="${yanel.home.dir}/${local.config.dir}/local.resource-types.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" overwrite="true"/>
-  </target>
-  
-  <target name="test" description="Run tests">
-    <ant dir="../test" target="test" inheritall="false"/>
-  </target>
-  
-  <target name="source-snapshot" description="Create a source code snapshot" depends="init, clean-all">
-    <delete dir="${build.dir}/source-snapshots"/>
-    <property name="snapshot.dir" value="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src"/>
-    <mkdir dir="${snapshot.dir}/src"/>
-    <copy file="${yanel.home.dir}/README.txt" todir="${snapshot.dir}"/>
-    <copy file="${yanel.home.dir}/configure.sh" todir="${snapshot.dir}"/>
-    <chmod file="${snapshot.dir}/configure.sh" perm="755"/>
-    <copy file="${yanel.home.dir}/configure.bat" todir="${snapshot.dir}"/>
-    <copy file="${yanel.home.dir}/build.sh" todir="${snapshot.dir}"/>
-    <chmod file="${snapshot.dir}/build.sh" perm="755"/>
-    <copy file="${yanel.home.dir}/build.bat" todir="${snapshot.dir}"/>
-    <copy file="${yanel.home.dir}/yanel.sh" todir="${snapshot.dir}"/>
-    <chmod file="${snapshot.dir}/yanel.sh" perm="755"/>
-    <copy file="${yanel.home.dir}/yanel.bat" todir="${snapshot.dir}"/>
-    <copy todir="${snapshot.dir}/src">
-      <fileset dir="${yanel.home.dir}/src" excludes="build/local.build.properties, contributions/resources/nutch/conf/nutch-local.xml"/>
-    </copy>
-    <copy todir="${snapshot.dir}/tools">
-      <fileset dir="${yanel.home.dir}/tools"/>
-    </copy>
-    <chmod dir="${snapshot.dir}/tools/apache-ant-1.6.5/bin" perm="755" includes="*"/>
-    <copy todir="${snapshot.dir}/conf">
-      <fileset dir="${yanel.home.dir}/conf" excludes="local/**"/>
-    </copy>
-    <zip destfile="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src.zip">
-      <zipfileset dir="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src" filemode="755"/>
-    </zip>
   </target>
 
 </project>

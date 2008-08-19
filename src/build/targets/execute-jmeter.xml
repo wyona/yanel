@@ -2,17 +2,15 @@
 
 <project name="execute jmeter test plan" default="jmeter">
 
-<property name="yanel.home.dir" location="../../"/>
-
-    <target name="jmeter" description="executes jmeter tesplan">
+  <target name="jmeter" description="executes jmeter tesplan">
     <tstamp>
       <format property="test.exec.time" pattern="yyyy-MM-dd-HH-mm-ss"/>
     </tstamp>
     <taskdef name="jmeter" classname="org.programmerplanet.ant.taskdefs.jmeter.JMeterTask"/>
     <jmeter
     jmeterhome="${jmeter.home.dir}"
-    testplan="${yanel.home.dir}/local/test/data/jmeter/testplan/yanel_test_plan.jmx"
-    resultlog="${yanel.home.dir}/local/test/data/jmeter/jmeter-results/JMeterResults-${test.exec.time}.jtl"/>
+    testplan="${yanel.source.home}/local/test/data/jmeter/testplan/yanel_test_plan.jmx"
+    resultlog="${yanel.source.home}/local/test/data/jmeter/jmeter-results/JMeterResults-${test.exec.time}.jtl"/>
   </target>
   
 </project>

@@ -13,8 +13,8 @@
       <dependency groupId="apache-org" artifactId="apache-tomcat" version="${tomcat.version}" scope="provided"/>
     </artifact:dependencies>
 
-    <mkdir dir="${yanel.home.dir}/local"/>
-    <unzip dest="${yanel.home.dir}/local">
+    <mkdir dir="${yanel.source.home}/local"/>
+    <unzip dest="${yanel.source.home}/local">
       <fileset refid="maven2.tomcat.fileset"/>
     </unzip>
     <chmod perm="755">
@@ -22,23 +22,23 @@
         <include name="*.sh"/>
       </fileset>
     </chmod>
-    <delete dir="${yanel.home.dir}/local/META-INF"/>
+    <delete dir="${yanel.source.home}/local/META-INF"/>
 
     <condition property="isJava1.4">
       <equals arg1="${ant.java.version}" arg2="1.4"/>
     </condition>
     <antcall target="copy-java1.4-libs"/>
     
-    <replace file="${yanel.home.dir}/src/build/local.build.properties" value="tomcat1.http.port=8080">
+    <replace file="${yanel.source.home}/src/build/local.build.properties" value="tomcat1.http.port=8080">
       <replacetoken>#tomcat1.http.port=9190</replacetoken>
     </replace>
-    <replace file="${yanel.home.dir}/src/build/local.build.properties" value="tomcat1.ssl.port=8443">
+    <replace file="${yanel.source.home}/src/build/local.build.properties" value="tomcat1.ssl.port=8443">
       <replacetoken>#tomcat1.ssl.port=9143</replacetoken>
     </replace>
   </target>
   
   <target name="copy-java1.4-libs" if="isJava1.4" description="Copy jars specific to java 1.4" depends="init">
-    <copy file="${yanel.home.dir}/tools/apache-tomcat/java-1.4/apache-tomcat-${tomcat.version}/bin/jmx.jar" todir="${default.tomcat.home.dir}/bin"/>
+    <copy file="${yanel.source.home}/tools/apache-tomcat/java-1.4/apache-tomcat-${tomcat.version}/bin/jmx.jar" todir="${default.tomcat.home.dir}/bin"/>
   </target>
     
 </project>

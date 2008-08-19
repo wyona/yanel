@@ -4,16 +4,16 @@
   <description>Add third party realm</description>
 
   <target name="add-realm" description="Add third party realm" depends="init, build-add-realm-task">
-    <echo>Add third party realm ${realm-config} to local config ${yanel.home.dir}/${local.config.dir}</echo>
+    <echo>Add third party realm ${realm-config} to local config ${yanel.source.home}/${local.config.dir}</echo>
 
-    <taskdef name="addrealm" classpath="${yanel.home.dir}/build/classes" classname="org.wyona.yanel.ant.AddRealmTask"/>
+    <taskdef name="addrealm" classpath="${yanel.source.home}/build/classes" classname="org.wyona.yanel.ant.AddRealmTask"/>
 
     <addrealm/>
   </target>
 
   <target name="build-add-realm-task" depends="init, compile-core">
-    <javac srcdir="${yanel.home.dir}/src/build/java"
-           destdir="${yanel.home.dir}/build/classes"
+    <javac srcdir="${yanel.source.home}/src/build/java"
+           destdir="${yanel.source.home}/build/classes"
     />
   </target>
 </project>
