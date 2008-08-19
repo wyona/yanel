@@ -2053,22 +2053,12 @@ public class YanelServlet extends HttpServlet {
             }
             
 
-            // Set actual content
-            byte buffer[] = new byte[8192];
-            int bytesRead;
             InputStream is = view.getInputStream();
             if (is != null) {
+                // Write actual content into response
+                byte buffer[] = new byte[8192];
+                int bytesRead;
                 bytesRead = is.read(buffer);
-                // Check if InputStream is empty
-                if (bytesRead == -1) {
-                    String message = "InputStream of view does not seem to contain any data!";
-
-                    Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
-                    exceptionElement.appendChild(doc.createTextNode(message));
-                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    setYanelOutput(request, response, doc);
-                    return response;
-                }
 
                 // TODO: Compare If-Modified-Since with lastModified and return 304 without content resp. check on ETag
                 String ifModifiedSince = request.getHeader("If-Modified-Since");
@@ -2084,19 +2074,28 @@ public class YanelServlet extends HttpServlet {
                     if (log.isDebugEnabled()) log.debug("No size for " + request.getRequestURI() + ": " + size);
                 }
 
-                java.io.OutputStream os = response.getOutputStream();
-                os.write(buffer, 0, bytesRead);
-                while ((bytesRead = is.read(buffer)) != -1) {
+                // Check if InputStream is empty
+                if (bytesRead != -1) {
+                    java.io.OutputStream os = response.getOutputStream();
                     os.write(buffer, 0, bytesRead);
+                    while ((bytesRead = is.read(buffer)) != -1) {
+                        os.write(buffer, 0, bytesRead);
+                    }
+                    os.close();
+                } else {
+                    log.warn("Returned content size of request '" + request.getRequestURI() + "' is 0");
                 }
+
                 is.close();
                 return response;
             } else {
-                String message = "InputStream of view is null!";
+                String message = "Returned InputStream of request '" + request.getRequestURI() + "' is null!";
                 Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
                 exceptionElement.appendChild(doc.createTextNode(message));
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 setYanelOutput(request, response, doc);
+
+                is.close();
                 return response;
             }
     }
