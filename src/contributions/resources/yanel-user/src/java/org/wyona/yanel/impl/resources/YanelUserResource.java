@@ -171,7 +171,9 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
                 transformer.setParameter("userId", userId);
                 transformer.setParameter("userName", user.getName());
                 transformer.setParameter("email", user.getEmail());
-                transformer.setParameter("description", user.getDescription());
+                if (user.getDescription() != null) {
+                    transformer.setParameter("description", user.getDescription());
+                }
                 if (user.getLanguage() != null) {
                     transformer.setParameter("user-profile-language", user.getLanguage());
                 }
