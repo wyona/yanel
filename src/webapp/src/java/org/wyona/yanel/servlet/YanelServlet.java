@@ -1385,11 +1385,13 @@ public class YanelServlet extends HttpServlet {
             String urlWithoutLogoutQS = url.toString().substring(0, url.toString().lastIndexOf("?"));
             log.warn("Redirect to original request: " + urlWithoutLogoutQS);
 
-                //response.sendRedirect(url.toString()); // 302
+            //response.sendRedirect(url.toString()); // 302
+            // TODO: Just remove logout part from query string! (http://127.0.0.1:8080/yanel/test/use-cases/index.xhtml?yanel.resource.usecase=checkout&yanel.usecase=logout)
+            // TODO: Alternative solution: http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6465
             response.setHeader("Location", urlWithoutLogoutQS.toString());
             //response.setHeader("Location", url.toString());
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
-                //response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT); // 302
+            //response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT); // 302
             return response;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
