@@ -9,5 +9,6 @@
     <ant antfile="usecase-test-404.xml"/>
 -->
     <ant antfile="usecase-test-create-resource.xml"/>
+    <ant antfile="usecase-test-alice-user.xml"/>
   </target>
 </project>
