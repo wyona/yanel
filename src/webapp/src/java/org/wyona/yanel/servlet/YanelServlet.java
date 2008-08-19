@@ -104,21 +104,21 @@ public class YanelServlet extends HttpServlet {
 
     private ServletConfig config;
 
-    ResourceTypeRegistry rtr;
+    private ResourceTypeRegistry rtr;
 
     //PolicyManager pm;
     //IdentityManager im;
-    Map map;
-    Yanel yanel;
-    Sitetree sitetree;
+    private Map map;
+    private Yanel yanel;
+    private Sitetree sitetree;
 
-    File xsltInfoAndException;
-    String xsltLoginScreenDefault;
+    private File xsltInfoAndException;
+    private String xsltLoginScreenDefault;
 
-    public static String IDENTITY_MAP_KEY = "identity-map";
-    private static String TOOLBAR_KEY = "toolbar";
-    private static String TOOLBAR_USECASE = "toolbar";
-    public static String NAMESPACE = "http://www.wyona.org/yanel/1.0";
+    public static final String IDENTITY_MAP_KEY = "identity-map";
+    private static final String TOOLBAR_KEY = "toolbar";
+    private static final String TOOLBAR_USECASE = "toolbar"; //TODO is this the same as TOOLBAR_KEY?
+    public static final String NAMESPACE = "http://www.wyona.org/yanel/1.0";
 
     private static final String METHOD_PROPFIND = "PROPFIND";
     private static final String METHOD_OPTIONS = "OPTIONS";
