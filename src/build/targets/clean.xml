@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+
+<project name="clean" default="clean" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+    
+    <target name="clean" description="Clean build" depends="init, clean-resources, clean-realms">
+    <echo>INFO: Clean build</echo>
+    <delete includeemptydirs="true">
+      <fileset dir="${build.dir}" excludes="logs/**, javadoc/**"/>
+    </delete>
+
+    <!-- Jetty target -->
+    <delete dir="${yanel.source.home}/src/build/target"/>
+
+    <condition property="yes-delete-tomcat-cluster-node1">
+      <and>
+        <isset property="tomcat1.home.dir"/>
+        <available file="${tomcat1.webapps.dir}/${servlet.context.prefix}" type="dir"/>
+        <istrue value="${force-clean}"/>
+      </and>
+    </condition>
+    <antcall target="do-clean-tomcat-cluster-node1"/>
+
+    <condition property="property-tomcat-cluster-node1-is-set">
+      <and>
+        <isset property="tomcat1.home.dir"/>
+        <available file="${tomcat1.webapps.dir}/${servlet.context.prefix}" type="dir"/>
+      </and>
+    </condition>
+    <antcall target="ask-to-clean-tomcat-cluster-node1"/>
+
+
+    <condition property="yes-delete-tomcat-cluster-node2">
+      <and>
+        <isset property="tomcat1.home.dir"/>
+        <available file="${tomcat1.webapps.dir}/${servlet.context.prefix}" type="dir"/>
+        <istrue value="${force-clean}"/>
+      </and>
+    </condition>
+    <antcall target="do-clean-tomcat-cluster-node2"/>
+    
+    <condition property="property-tomcat-cluster-node2-is-set">
+      <and>
+        <isset property="tomcat2.home.dir"/>
+        <available file="${tomcat2.webapps.dir}/${servlet.context.prefix}" type="dir"/>
+      </and>
+    </condition>
+    <antcall target="ask-to-clean-tomcat-cluster-node2"/>
+  </target>
+
+  <target name="clean-all" description="Clean All (including local configuration!)" depends="init, clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${yanel.source.home}/local"/>
+
+    <!-- Jetty target -->
+    <delete dir="${yanel.source.home}/src/build/target"/>
+
+    <condition property="local.build.properties.exists">
+      <available file="${yanel.source.home}/src/build/local.build.properties" type="file"/>
+    </condition>
+    <antcall target="ask-if-local-build-properties-shall-be-deleted"/>
+
+    <condition property="local.config.dir.exists">
+      <available file="${yanel.source.home}/${local.config.dir}" type="dir"/>
+    </condition>
+    <antcall target="ask-if-local-config-dir-shall-be-deleted"/>
+  </target>
+  
+  <target name="clean-resources" description="Clean resources" depends="generate-resources-build">
+    <ant antfile="${yanel.source.home}/build/build-resource-types.xml" target="clean-resources"/>
+  </target>
+
+  <target name="clean-realms" description="Clean realms" depends="generate-realms-build">
+    <ant antfile="${yanel.source.home}/build/build-realms.xml" target="clean-realms"/>
+  </target>
+  
+    <target name="ask-if-local-build-properties-shall-be-deleted" if="local.build.properties.exists">
+    <input message="Do you really want to delete local build.properties file '${yanel.source.home}/src/build/local.build.properties'? (yes/NO):" addproperty="answer"/>
+    <condition property="yes-delete-local-build-properties">
+      <equals arg1="yes" arg2="${answer}"/>
+    </condition>
+    <antcall target="do-delete-local-build-properties"/>
+  </target>
+
+  <target name="do-delete-local-build-properties" if="yes-delete-local-build-properties">
+    <delete file="${yanel.source.home}/src/build/local.build.properties"/>
+  </target>
+
+  <target name="ask-if-local-config-dir-shall-be-deleted" if="local.config.dir.exists">
+    <input message="Do you really want to delete local config dir '${yanel.source.home}/${local.config.dir}'? (yes/NO):" addproperty="answer"/>
+    <condition property="yes-delete-local-config-dir">
+      <equals arg1="yes" arg2="${answer}"/>
+    </condition>
+    <antcall target="do-delete-local-config-dir"/>
+  </target>
+
+  <target name="do-delete-local-config-dir" if="yes-delete-local-config-dir">
+    <delete dir="${yanel.source.home}/${local.config.dir}"/>
+  </target>
+  
+</project>

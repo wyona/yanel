@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+
+<project name="config" default="config" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+    
+    <target name="config" description="Initialize all local properties files" depends="init">
+    <condition property="local.build.properties.does.not.exist.yet">
+      <not>
+        <available file="local.build.properties" type="file"/>
+      </not>
+    </condition>
+    <antcall target="create-local-build-properties"/>
+
+    <!-- Reload local.build.properties -->
+    <property file="local.build.properties"/>
+
+    <fail message="No such directory: ${tomcat1.home.dir}! You might have to delete src/build/local.build.properties and re-run configure.">
+    <condition>
+      <and>
+        <isset property="tomcat1.home.dir"/>
+        <not><available file="${tomcat1.home.dir}" type="dir"/></not>
+      </and>
+    </condition>
+    </fail>
+
+<!--
+    <echo>Tomcat Ports: ${tomcat1.ssl.port}, ${tomcat1.http.port}</echo>
+-->
+  
+    <condition property="isTomcat1PortsSet">
+      <and>
+        <isset property="tomcat1.ssl.port"/>
+        <isset property="tomcat1.http.port"/>
+      </and>
+    </condition>
+    <antcall target="ask-to-reconfigure-tomcat-cluster-node1"/>
+    
+    <condition property="isTomcat2HomeSet">
+      <isset property="tomcat2.home.dir"/>
+    </condition>
+    <antcall target="ask-to-reconfigure-tomcat-cluster-node2"/>
+
+    <antcall target="first-time-user-configuration-message"/>
+    <input message="Do you want to continue the configuration nevertheless? (yes/NO)" addproperty="answer" defaultvalue="NO"/>
+
+    <condition property="yes.continue">
+      <equals arg1="yes" arg2="${answer}"/>
+    </condition>
+    <antcall target="configure-local"/>
+  </target>
+  
+    <target name="first-time-user-configuration-message">
+    <echo>#################################################################################</echo>
+    <echo># As a first time user one does NOT have to configure anything any further, but #</echo>
+    <echo># rather exit here and just run build.sh on UNIX resp. build.bat on Windows!    #</echo>
+    <echo>#################################################################################</echo>
+  </target>
+
+  <target name="create-local-build-properties" if="local.build.properties.does.not.exist.yet" depends="init">
+    <echo>Build configuration ${yanel.source.home}/local.build.properties does not exist yet!</echo>
+
+    <input message="Do you have an existing Tomcat instance which you want to use as servlet engine for Yanel?  If so, please enter the path of your Tomcat instance (e.g. /home/yanel/jakarta-tomcat-5.0.30). IMPORTANT NOTE (especially for Windows): Please use '/' instead of '\' in the Tomcat path.  Otherwise just hit return (recommended to first time users :-) and Tomcat ${tomcat.version} will be installed at ${default.tomcat.home.dir}.  (You will always be able to change this setting at some later time within src/build/local.build.properties): " defaultvalue="${default.tomcat.home.dir.forward.slashes}" addproperty="pathOfUserSpecificTomcat"/>
+
+    <echo>User specific Tomcat: ${pathOfUserSpecificTomcat}</echo>
+
+    <copy file="${yanel.source.home}/src/build/build.properties" tofile="${yanel.source.home}/src/build/local.build.properties" overwrite="false"/>
+    <replace file="${yanel.source.home}/src/build/local.build.properties" value="tomcat1.home.dir=${pathOfUserSpecificTomcat}">
+      <replacetoken>#tomcat1.home.dir=../tomcat-cluster/build/jakarta-tomcat-5.0.30-cnode1</replacetoken>
+    </replace>
+
+    <condition property="yes.install.default.tomcat">
+      <equals arg1="${pathOfUserSpecificTomcat}" arg2="${default.tomcat.home.dir.forward.slashes}"/>
+    </condition>
+
+    <antcall target="install-default-tomcat"/>
+  </target>
+
+  <target name="configure-local" if="yes.continue">
+    <echo>Will now create local properties files if these do not exist.</echo>
+
+    <mkdir dir="${yanel.source.home}/${local.config.dir}"/>
+
+    <copy file="${yanel.source.home}/conf/yanel.xml" tofile="${yanel.source.home}/${local.config.dir}/local.yanel.xml" overwrite="false"/>
+    <copy file="${yanel.source.home}/conf/realms.xml" tofile="${yanel.source.home}/${local.config.dir}/local.realms.xml" overwrite="false"/>
+    <copy file="${yanel.source.home}/conf/resource-types.xml" tofile="${yanel.source.home}/${local.config.dir}/local.resource-types.xml" overwrite="false"/>
+    <copy file="${yanel.source.home}/conf/log4j.properties" tofile="${yanel.source.home}/${local.config.dir}/local.log4j.properties" overwrite="false"/>
+
+    <echo>Customize the ${local.config.dir}/local.* files and run build.sh OR run build.sh first and then customize the config files within build/webapps/yanel/WEB-INF/classes</echo>
+  </target>
+  
+</project>

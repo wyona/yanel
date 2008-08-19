@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<project name="resources" default="deploy-resources" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <target name="generate-resources-build" description="Generate resources build" depends="init">
+    <echo>INFO: Generate build file to build resources</echo>
+    <condition property="local.resource-types.config.exists">
+      <available file="${yanel.source.home}/${local.config.dir}/local.resource-types.xml" type="file"/>
+    </condition>
+    <antcall target="generate-resources-build-from-default"/>
+    <antcall target="generate-resources-build-from-local"/>
+
+    <replace file="../../build/build-resource-types.xml" value="${yanel.source.home.forward.slashes}">
+      <replacetoken>@YANEL_SRC_DIR@</replacetoken>
+    </replace>
+  </target>
+
+  <target name="generate-resources-build-from-default" description="Generate resources build from default config" depends="init" unless="local.resource-types.config.exists">
+    <xslt in="${yanel.source.home}/conf/resource-types.xml" out="../../build/build-resource-types.xml" style="yanel2resources.xsl" force="false">
+      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+      <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
+      <param name="maven.url" expression="${maven.url}"/>
+    </xslt>
+  </target>
+
+  <target name="generate-resources-build-from-local" description="Generate resources build from local config" depends="init" if="local.resource-types.config.exists">
+    <xslt in="${yanel.source.home}/${local.config.dir}/local.resource-types.xml" out="../../build/build-resource-types.xml" style="yanel2resources.xsl" force="true">
+      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+      <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
+      <param name="maven.url" expression="${maven.url}"/>
+    </xslt>
+  </target>
+
+  <target name="build-resources" description="Build resources" depends="generate-resources-build">
+    <ant antfile="${yanel.source.home}/build/build-resource-types.xml" target="build-resources"/>
+  </target>
+
+  <target name="deploy-resources" description="Deploy resources" depends="generate-resources-build">
+  
+    <!-- TODO: Seems to copy global i18n files, but has nothing to do with resources. -->
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/">
+      <fileset dir="." casesensitive="yes">
+        <include name="global_*.properties"/>
+      </fileset>
+    </copy>
+    
+    <ant antfile="${yanel.source.home}/build/build-resource-types.xml" target="deploy-resources"/>
+  </target>
+
+</project>  

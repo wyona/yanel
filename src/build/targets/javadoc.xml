@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+<project name="javadoc" default="javadoc" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+  
+<target name="javadoc" description="Generate Javadoc" depends="init,set-javadoc-classpath" if="javadoc-does-not-exist-yet">
+    <mkdir dir="${build.dir}/javadoc"/>
+    <javadoc
+      packagenames="org.*"
+      destdir="${yanel.source.home}/build/javadoc"
+      classpathref="classpath.javadoc"
+    >
+    <fileset dir="${yanel.source.home}/src/" defaultexcludes="yes">
+      <include name="impl/java/**"/>
+      <include name="core/java/**"/>
+      <include name="resources/*/src/java/**"/>
+      <include name="realms/*/src/java/**"/>
+      <exclude name="**/README.txt"/>
+    </fileset>
+    
+    </javadoc>
+    <echo/>
+    <echo/>
+    <echo>You should find the javadoc under: ${build.dir}/javadoc/index.html</echo>
+  </target>
+
+  <target name="generate-javadoc" description="Generate Javadoc" depends="init">
+      <condition property="javadoc-does-not-exist-yet">
+      <not>
+        <available file="${build.dir}/javadoc" type="dir"/>
+      </not>
+    </condition>
+    <antcall target="javadoc"/>
+    <antcall target="javadoc-exisits"/>
+  </target>
+
+  <target name="javadoc-exisits" unless="javadoc-does-not-exist-yet">
+    <echo/>
+    <echo/>
+    <echo>The Javadoc already exisits. You should find it under: ${build.dir}/javadoc/index.html</echo>
+  </target>
+  
+  <target name="set-javadoc-classpath" description="Set javadoc classpath" depends="init, dependencies">
+    <!-- TODO: This seems never to be used -->
+    <path id="classpath.javadoc">
+      <pathelement path="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
+
+      <fileset dir="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib">
+        <include name="*.jar"/>
+      </fileset>
+
+      <pathelement path="${maven2.cp}"/>
+      <pathelement path="${maven2.compile.cp}"/>
+    </path>
+    <property name="javadoc.cp" refid="classpath.javadoc"/>
+    <echo>INFO: Classpath to generate Javadoc: ${javadoc.cp}</echo>
+  </target>
+
+</project>  

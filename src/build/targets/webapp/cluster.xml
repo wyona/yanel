@@ -1,0 +1,306 @@
+<?xml version="1.0"?>
+
+<project name="cluster" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <target name="deploy-to-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Deploy webapp to Tomcat cluster node 1">
+    <echo>Copy webapp (${tomcat1.webapps.dir}):</echo>
+
+    <fail message="No such directory: ${tomcat1.webapps.dir}">
+      <condition><not><available file="${tomcat1.webapps.dir}"/></not></condition>
+    </fail>
+
+    <copy todir="${tomcat1.webapps.dir}/${servlet.context.prefix}">
+      <fileset dir="${yanel.source.home}/build/webapps/${servlet.context.prefix}"/>
+    </copy>
+
+    <replace file="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="log4j-cnode1.log">
+      <replacetoken>log4j-cmdl.log</replacetoken>
+    </replace>
+    <touch file="${log4j.path}/log4j-cnode1.log"/>
+
+    <antcall target="patch-tomcat-cluster-node-1-ssl-port"/>
+    
+    <condition property="endorsed-xerces-at-node1-does-not-exist-yet">
+      <not>
+        <available file="${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar"/>
+      </not>
+    </condition>
+    <antcall target="ask-to-copy-endorsed-xerces-to-node1"/>
+    
+    <condition property="ask-to-copy-endorsed-xml-apis-to-node1">
+      <not>
+        <available file="${tomcat1.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar"/>
+      </not>
+    </condition>
+    <antcall target="ask-to-copy-endorsed-xml-apis-to-node1"/>
+    
+    <condition property="endorsed-xalan-at-node1-does-not-exist-yet">
+      <not>
+        <available file="${tomcat1.home.dir}/common/endorsed/${xalan.artifactId}-${xalan.version}.jar"/>
+      </not>
+    </condition>
+    <antcall target="ask-to-copy-endorsed-xalan-to-node1"/>
+    
+  </target>
+  
+  <target name="patch-tomcat-cluster-node-1-ssl-port" if="property-tomcat1-ssl-port-is-set">
+    <echo>ssl port for tomcat is set</echo>
+    <xslt in="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"
+          out="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp"
+          style="add-ssl-port.xsl">
+      <param name="ssl-port" expression="${tomcat1.ssl.port}"/>
+    </xslt>
+    <move file="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp" tofile="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"/>
+  </target>
+  
+  <target name="patch-tomcat-cluster-node-2-ssl-port" if="property-tomcat2-ssl-port-is-set">
+    <xslt in="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"
+          out="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp"
+          style="add-ssl-port.xsl">
+      <param name="ssl-port" expression="${tomcat2.ssl.port}"/>
+    </xslt>
+    <move file="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp" tofile="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"/>
+  </target>
+  
+  
+  <target name="deploy-to-tomcat-cluster-node2" if="property-tomcat-cluster-node2-is-set" description="Deploy webapp to Tomcat cluster node 2">
+    <echo>Copy webapp (${tomcat2.webapps.dir}):</echo>
+
+    <fail message="No such directory: ${tomcat2.webapps.dir}">
+      <condition><not><available file="${tomcat2.webapps.dir}"/></not></condition>
+    </fail>
+
+    <copy todir="${tomcat2.webapps.dir}/${servlet.context.prefix}">
+      <fileset dir="${yanel.source.home}/build/webapps/${servlet.context.prefix}"/>
+    </copy>
+
+    <replace file="${tomcat2.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="log4j-cnode2.log">
+      <replacetoken>log4j-cmdl.log</replacetoken>
+    </replace>
+    <touch file="${log4j.path}/log4j-cnode2.log"/>
+
+    <antcall target="patch-tomcat-cluster-node-2-ssl-port"/>
+
+    <condition property="endorsed-xerces-at-node2-does-not-exist-yet">
+      <not>
+        <available file="${tomcat2.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar"/>
+      </not>
+    </condition>
+    <antcall target="ask-to-copy-endorsed-xerces-node2"/>
+    
+    <condition property="ask-to-copy-endorsed-xml-apis-node2">
+      <not>
+        <available file="${tomcat2.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar"/>
+      </not>
+    </condition>
+    <antcall target="ask-to-copy-endorsed-xml-apis-node2"/>
+
+    <condition property="endorsed-xalan-at-node2-does-not-exist-yet">
+      <not>
+        <available file="${tomcat2.home.dir}/common/endorsed/${xalan.artifactId}-${xalan.version}.jar"/>
+      </not>
+    </condition>
+    <antcall target="ask-to-copy-endorsed-xalan-to-node2"/>
+  </target>
+
+  <target name="ask-to-copy-endorsed-xerces-to-node1" if="endorsed-xerces-at-node1-does-not-exist-yet">
+    <echo>IMPORTANT: Please note that your Tomcat might already contain an endorsed xerces library at '${tomcat1.home.dir}/common/endorsed/'. Please make sure to resolve any conflicts!</echo>
+    <input message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
+    <condition property="do-not-copy-endorsed-xerces-to-node1">
+      <equals arg1="no" arg2="${answer}"/>
+    </condition>
+    <antcall target="do-copy-endorsed-xerces-to-node1"/>
+  </target>
+
+  <target name="ask-to-copy-endorsed-xml-apis-to-node1" if="ask-to-copy-endorsed-xml-apis-to-node1">
+    <echo>IMPORTANT: Please note that your Tomcat might already contain an endorsed xml api library at '${tomcat1.home.dir}/common/endorsed/'. Please make sure to resolve any conflicts!</echo>
+    <input message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
+    <condition property="do-not-copy-endorsed-xml-apis-to-node1">
+      <equals arg1="no" arg2="${answer}"/>
+    </condition>
+    <antcall target="do-copy-endorsed-xml-apis-to-node1"/>
+  </target>
+
+  <target name="ask-to-copy-endorsed-xalan-to-node1" if="endorsed-xalan-at-node1-does-not-exist-yet">
+    <echo>IMPORTANT: Please note that your Tomcat might already contain an endorsed xalan library at '${tomcat1.home.dir}/common/endorsed/'. Please make sure to resolve any conflicts!</echo>
+    <input message="Endorsed lib is missing (${tomcat1.home.dir}/common/endorsed/${xalan.artifactId}-${xalan.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
+    <condition property="do-not-copy-endorsed-xalan-to-node1">
+      <equals arg1="no" arg2="${answer}"/>
+    </condition>
+    <antcall target="do-copy-endorsed-xalan-to-node1"/>
+  </target>
+
+  <target name="ask-to-copy-endorsed-xalan-to-node2" if="endorsed-xalan-at-node2-does-not-exist-yet">
+    <echo>IMPORTANT: Please note that your Tomcat might already contain an endorsed xalan library at '${tomcat2.home.dir}/common/endorsed/'. Please make sure to resolve any conflicts!</echo>
+    <input message="Endorsed lib is missing (${tomcat2.home.dir}/common/endorsed/${xalan.artifactId}-${xalan.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
+    <condition property="do-not-copy-endorsed-xalan-to-node2">
+      <equals arg1="no" arg2="${answer}"/>
+    </condition>
+    <antcall target="do-copy-endorsed-xalan-to-node2"/>
+  </target>
+  
+  <target name="do-copy-endorsed-xerces-to-node1" unless="do-not-copy-endorsed-xerces-to-node1">
+    <copy file="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar" todir="${tomcat1.home.dir}/common/endorsed" overwrite="false"/>
+  </target>
+  
+  <target name="do-copy-endorsed-xml-apis-to-node1" unless="do-not-copy-endorsed-xml-apis-to-node1">
+    <copy file="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${tomcat1.home.dir}/common/endorsed" overwrite="false"/>
+  </target>
+  
+  <target name="do-copy-endorsed-xalan-to-node1" unless="do-not-copy-endorsed-xalan-to-node1">
+    <copy file="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xalan.artifactId}-${xalan.version}.jar" todir="${tomcat1.home.dir}/common/endorsed" overwrite="false"/>
+  </target>
+  
+  <target name="do-copy-endorsed-xalan-to-node2" unless="do-not-copy-endorsed-xalan-to-node2">
+    <copy file="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xalan.artifactId}-${xalan.version}.jar" todir="${tomcat2.home.dir}/common/endorsed" overwrite="false"/>
+  </target>
+
+  <target name="ask-to-copy-endorsed-xerces-node2" if="endorsed-xerces-at-node2-does-not-exist-yet">
+    <echo>IMPORTANT: Please note that your Tomcat might already contain an endorsed xerces library at '${tomcat2.home.dir}/common/endorsed/'. Please make sure to resolve any conflicts!</echo>
+    <input message="Endorsed lib is missing (${tomcat2.home.dir}/common/endorsed/${xerces.impl.artifactId}-${xerces.impl.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
+    <condition property="do-not-copy-endorsed-xerces-to-node2">
+      <equals arg1="no" arg2="${answer}"/>
+    </condition>
+
+    <antcall target="do-copy-endorsed-xerces-to-node2"/>
+  </target>
+  
+  <target name="do-copy-endorsed-xerces-to-node2" unless="do-not-copy-endorsed-xerces-to-node2">
+    <copy file="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar" todir="${tomcat2.home.dir}/common/endorsed" overwrite="false"/>
+    <echo>INFO: ${xerces.impl.artifactId}-${xerces.impl.version}.jar has been copied!</echo>
+  </target>
+
+  <target name="ask-to-copy-endorsed-xml-apis-node2" if="ask-to-copy-endorsed-xml-apis-node2">
+    <echo>IMPORTANT: Please note that your Tomcat might already contain an endorsed xml api library at '${tomcat2.home.dir}/common/endorsed/'. Please make sure to resolve any conflicts!</echo>
+    <input message="Endorsed lib is missing (${tomcat2.home.dir}/common/endorsed/${xml.apis.artifactId}-${xml.apis.version}.jar). Do you want it to be added? (YES/no):" addproperty="answer"/>
+    <condition property="do-not-copy-endorsed-xml-apis-to-node2">
+      <equals arg1="no" arg2="${answer}"/>
+    </condition>
+
+    <antcall target="do-copy-endorsed-xml-apis-to-node2"/>
+  </target>
+  
+  <target name="do-copy-endorsed-xml-apis-to-node2" unless="do-not-copy-endorsed-xml-apis-to-node2">
+    <copy file="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${tomcat2.home.dir}/common/endorsed" overwrite="false"/>
+    <echo>INFO: ${xml.apis.artifactId}-${xml.apis.version}.jar has been copied!</echo>
+  </target>
+  
+    <target name="ask-to-clean-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Clean Tomcat cluster node 1">
+    <input message="Do you really want to delete your deployed (maybe productive) Yanel version at '${tomcat1.webapps.dir}/${servlet.context.prefix}'? (yes/NO):" addproperty="answer"/>
+    <condition property="yes-delete-tomcat-cluster-node1">
+      <equals arg1="yes" arg2="${answer}"/>
+    </condition>
+    <antcall target="do-clean-tomcat-cluster-node1"/>
+  </target>
+
+  <target name="do-clean-tomcat-cluster-node1" if="yes-delete-tomcat-cluster-node1" description="Clean Tomcat cluster node 1">
+    <echo>Clean Tomcat cluster node 1:</echo>
+
+    <fail message="No such directory: ${tomcat1.webapps.dir}">
+      <condition><not><available file="${tomcat1.webapps.dir}"/></not></condition>
+    </fail>
+
+    <delete dir="${tomcat1.webapps.dir}/${servlet.context.prefix}"/>
+    <delete dir="${tomcat1.work.dir}/${servlet.context.prefix}"/>
+  </target>
+
+  <target name="ask-to-clean-tomcat-cluster-node2" if="property-tomcat-cluster-node2-is-set" description="Clean Tomcat cluster node 2">
+    <input message="Do you really want to delete your deployed (maybe productive) Yanel version at '${tomcat2.webapps.dir}/${servlet.context.prefix}'? (yes/NO):" addproperty="answer"/>
+    <condition property="yes-delete-tomcat-cluster-node2">
+      <equals arg1="yes" arg2="${answer}"/>
+    </condition>
+    <antcall target="do-clean-tomcat-cluster-node2"/>
+  </target>
+
+  <target name="do-clean-tomcat-cluster-node2" if="yes-delete-tomcat-cluster-node2" description="Clean Tomcat cluster node 2">
+    <echo>Clean Tomcat cluster node 2:</echo>
+
+    <fail message="No such directory: ${tomcat2.webapps.dir}">
+      <condition><not><available file="${tomcat2.webapps.dir}"/></not></condition>
+    </fail>
+
+    <delete dir="${tomcat2.webapps.dir}/${servlet.context.prefix}"/>
+    <delete dir="${tomcat2.work.dir}/${servlet.context.prefix}"/>
+  </target>
+  
+  
+  <target name="ask-to-reconfigure-tomcat-cluster-node1" description="reconfigure Tomcat cluster node 1" if="isTomcat1PortsSet">
+    <input message="Do you want to reconfigure tomcat cluster node 1 in order to support SSL? (YES/no):" defaultvalue="NO" addproperty="answerReconfigureTomcat1"/>
+    <condition property="doNotReconfigureTomcat1">
+      <equals arg1="no" arg2="${answerReconfigureTomcat1}"/>
+    </condition>
+    <antcall target="reconfigure-tomcat-cluster-node1"/>
+    <antcall target="comment-local-tomcat1-ports"/>
+  </target>
+  
+  <target name="comment-local-tomcat1-ports" if="doNotReconfigureTomcat1" description="Comment ports of Tomcat Cluster Node 1 within local.build.properties">
+    <replace file="${yanel.source.home}/src/build/local.build.properties" value="#tomcat1.ssl.port=${tomcat1.ssl.port}">
+      <replacetoken>tomcat1.ssl.port=8443</replacetoken>
+<!--TODO: why is this commented 
+      <replacetoken>tomcat1.ssl.port=${tomcat1.ssl.port}</replacetoken>
+-->
+    </replace>
+    <replace file="${yanel.source.home}/src/build/local.build.properties" value="#tomcat1.http.port=${tomcat1.http.port}">
+      <replacetoken>tomcat1.http.port=8080</replacetoken>
+<!--TODO: why is this commented 
+      <replacetoken>tomcat1.http.port=${tomcat1.http.port}</replacetoken>
+-->
+    </replace>
+  </target>
+
+  <target name="reconfigure-tomcat-cluster-node1" unless="doNotReconfigureTomcat1" description="reconfigures tomcat regarding ssl">
+    <!-- TODO: Ask the port numbers -->
+
+<!--
+    <replace file="${yanel.source.home}/src/build/local.build.properties" value="tomcat1.http.port=8080">
+      <replacetoken>#tomcat1.http.port=9190</replacetoken>
+    </replace>
+    <replace file="${yanel.source.home}/src/build/local.build.properties" value="tomcat1.ssl.port=8443">
+      <replacetoken>#tomcat1.ssl.port=9143</replacetoken>
+    </replace>
+-->
+
+    <antcall target="createCK"/>
+    <copy file="${build.dir}/${certificate.keystore}" todir="${tomcat1.home.dir}"/>
+    <xslt in="${tomcat1.home.dir}/conf/server.xml"
+          out="${tomcat1.home.dir}/conf/server.xml.ssl"
+          style="connector.xsl">
+      <param name="ssl-port" expression="${tomcat1.ssl.port}"/>
+      <param name="keystoreFile" expression="${certificate.keystore}"/>
+      <param name="keystorePass" expression="${certificate.keypass}"/>
+      <param name="http-port" expression="${tomcat1.http.port}"/>
+    </xslt>
+    <tstamp>
+      <format property="timestamp" pattern="yyyyMMdd'T'HHmmss"/>
+    </tstamp>
+    <copy file="${tomcat1.home.dir}/conf/server.xml" tofile="${tomcat1.home.dir}/conf/server.xml.BAK_${timestamp}"/>
+    <move file="${tomcat1.home.dir}/conf/server.xml.ssl" tofile="${tomcat1.home.dir}/conf/server.xml"/>
+  </target>
+  
+  <target name="ask-to-reconfigure-tomcat-cluster-node2" description="reconfigure Tomcat cluster node 2" if="isTomcat2HomeSet">
+    <input message="Do you want to reconfigure tomcat cluster node 2 in order to support SSL? (yes/NO):" defaultvalue="NO" addproperty="answerReconfigureTomcat2"/>
+    <condition property="reconfigureTomcat2">
+      <equals arg1="yes" arg2="${answerReconfigureTomcat2}"/>
+    </condition>
+    <antcall target="reconfigure-tomcat-cluster-node2"/>
+  </target>
+  
+  <target name="reconfigure-tomcat-cluster-node2" if="reconfigureTomcat2" description="reconfigures tomcat regarding ssl">
+    <antcall target="createCK"/>
+    <copy file="${build.dir}/${certificate.keystore}" todir="${tomcat2.home.dir}"/>
+    <xslt in="${tomcat2.home.dir}/conf/server.xml"
+          out="${tomcat2.home.dir}/conf/server.xml.ssl"
+          style="connector.xsl">
+      <param name="ssl-port" expression="${tomcat2.ssl.port}"/>
+      <param name="keystoreFile" expression="${certificate.keystore}"/>
+      <param name="keystorePass" expression="${certificate.keypass}"/>
+      <param name="http-port" expression="${tomcat2.http.port}"/>
+    </xslt>
+    <tstamp>
+      <format property="timestamp" pattern="yyyyMMdd'T'HHmmss"/>
+    </tstamp>
+    <copy file="${tomcat2.home.dir}/conf/server.xml" tofile="${tomcat2.home.dir}/conf/server.xml.BAK_${timestamp}"/>
+    <move file="${tomcat2.home.dir}/conf/server.xml.ssl" tofile="${tomcat2.home.dir}/conf/server.xml"/>
+  </target>
+
+</project>

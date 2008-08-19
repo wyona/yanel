@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<project name="realms" default="realms" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+  
+  <target name="deploy-libs-of-realms" description="Deploy libraries of realms" depends="generate-realms-build">
+    <ant antfile="${yanel.source.home}/build/build-realms.xml" target="deploy-realms"/>
+  </target>
+
+  <!-- Build Realms -->
+  <target name="build-realms" description="Build realms" depends="generate-realms-build">
+    <ant antfile="${yanel.source.home}/build/build-realms.xml" target="build-realms"/>
+    <ant antfile="${yanel.source.home}/build/build-realms.xml" target="copy-dependencies"/>
+  </target>
+
+  <target name="generate-realms-build" description="Generate realms build" depends="init">
+    <condition property="local.realms.config.exists">
+      <available file="${yanel.source.home}/${local.config.dir}/local.realms.xml" type="file"/>
+    </condition>
+    <antcall target="generate-realms-build-from-default"/>
+    <antcall target="generate-realms-build-from-local"/>
+  </target>
+
+  <target name="generate-realms-build-from-default" description="Generate realms build from default config" depends="init" unless="local.realms.config.exists">
+    <xslt in="${yanel.source.home}/conf/realms.xml" out="../../build/build-realms.xml" style="yanel2realms.xsl" force="false">
+      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+      <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
+      <param name="maven.url" expression="${maven.url}"/>
+    </xslt>
+    <replace file="../../build/build-realms.xml" value="${yanel.source.home.forward.slashes}/src/realms">
+      <replacetoken>@REALMS_DIR@</replacetoken>
+    </replace>
+  </target>
+
+  <target name="generate-realms-build-from-local" description="Generate realms build from local config" depends="init" if="local.realms.config.exists">
+    <xslt in="${yanel.source.home}/${local.config.dir}/local.realms.xml" out="../../build/build-realms.xml" style="yanel2realms.xsl" force="true">
+      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+      <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
+      <param name="maven.url" expression="${maven.url}"/>
+    </xslt>
+    <replace file="../../build/build-realms.xml" value="${yanel.source.home.forward.slashes}/src/realms">
+      <replacetoken>@REALMS_DIR@</replacetoken>
+    </replace>
+  </target>
+  
+</project>

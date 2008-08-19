@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<project name="test" default="test" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <target name="test" description="Run tests">
+    <ant dir="../test" target="test" inheritall="false"/>
+  </target>
+  
+</project>

@@ -1,0 +1,214 @@
+<?xml version="1.0"?>
+
+<project name="webapp" default="deploy" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+   
+  <target name="deploy" description="Deploy war file" depends="init, webapp">
+    <condition property="property-tomcat-cluster-node1-is-set">
+      <isset property="tomcat1.home.dir"/>
+    </condition>
+    <condition property="property-tomcat1-ssl-port-is-set">
+      <isset property="tomcat1.ssl.port"/>
+    </condition>
+    <antcall target="deploy-to-tomcat-cluster-node1"/>
+
+    <condition property="property-tomcat-cluster-node2-is-set">
+      <isset property="tomcat2.home.dir"/>
+    </condition>
+    <condition property="property-tomcat2-ssl-port-is-set">
+      <isset property="tomcat2.ssl.port"/>
+    </condition>
+    <antcall target="deploy-to-tomcat-cluster-node2"/>
+
+    <antcall target="final-message"/>
+  </target>
+  
+     <!-- TODO: Invoice depends on impl ...! -->
+  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-impl, compile-webapp, build-resources, build-realms">
+<!--
+  <target name="webapp" description="Build webapp" depends="init, compile-webapp">
+-->
+    <mkdir dir="${build.dir}/webapps/${servlet.context.prefix}"/>
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}">
+      <fileset dir="${yanel.source.home}/src/webapp">
+        <exclude name="src/**"/>
+      </fileset>
+    </copy>
+
+    <!-- TODO: Copy only core, impl, webapp, but NOT cmdl, etc. -->
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
+      <fileset dir="${yanel.source.home}/build/lib"/>
+    </copy>
+
+    <antcall target="deploy-resources"/>
+
+<!--
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes">
+      <fileset dir="${yanel.source.home}/lib">
+        <include name="*.properties"/>
+        <exclude name="local.*.properties"/>
+      </fileset>
+    </copy>
+-->
+    <copy file="${yanel.source.home}/conf/CatalogManager.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.source.home}/conf/catalog.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/entities" overwrite="false">
+      <fileset dir="${yanel.source.home}/conf/entities"/>
+    </copy>
+
+    <copy file="${yanel.source.home}/conf/spring-yanel-config.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.source.home}/conf/realms.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.source.home}/conf/log4j.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <!-- Create yanel.xml -->
+    <condition property="local.yanel.config.exists">
+      <available file="${yanel.source.home}/${local.config.dir}/local.yanel.xml" type="file"/>
+    </condition>
+    <antcall target="generate-yanel-properties"/>
+
+    <condition property="local.resource-types.config.exists">
+      <available file="${yanel.source.home}/${local.config.dir}/local.resource-types.xml" type="file"/>
+    </condition>
+    <antcall target="generate-resource-types-registry"/>
+
+    <antcall target="check-config-version"/>
+
+    <!-- Overwrite default by local properties -->
+    <!-- TODO: Make the patching selectable within the build.properties of the build ... -->
+    <copy file="${yanel.source.home}/${local.config.dir}/local.log4j.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" overwrite="true" failonerror="false"/>
+    <copy file="${yanel.source.home}/${local.config.dir}/local.realms.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" overwrite="true" failonerror="false"/>
+    <antcall target="patch-with-local-yanel-config"/>
+    <antcall target="patch-with-local-resource-types-registry"/>
+
+
+    <!-- Patch properties ... -->
+
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.xml" value="${yanel.source.home.forward.slashes}">
+      <replacetoken>..</replacetoken>
+    </replace>
+
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" value="${yanel.source.home.forward.slashes}/src/realms">
+      <replacetoken>@REALMS_DIR@</replacetoken>
+    </replace>
+
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" value="${yanel.source.home.forward.slashes}">
+      <replacetoken>@YANEL_SRC_DIR@</replacetoken>
+    </replace>
+
+    <!-- DEPRECATED -->
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" value="${yanel.source.home.forward.slashes}/src">
+      <replacetoken>../src</replacetoken>
+    </replace>
+    <!-- /DEPRECATED -->
+
+    <xslt in="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml-OUT" style="fix-resources-src.xsl" force="true">
+    </xslt>
+    <move file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml-OUT" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml"/>
+    
+    <copy file="${yanel.source.home}/src/build/install.rdf" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.version}">
+      <replacetoken>@VERSION@</replacetoken>
+    </replace>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="${yanel.revision}">
+      <replacetoken>@REVISION@</replacetoken>
+    </replace>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/install.rdf" value="source">
+      <replacetoken>@INSTALLTYPE@</replacetoken>
+    </replace>
+
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.file.forward.slashes}">
+      <replacetoken>@LOG4J_FILE@</replacetoken>
+    </replace>
+    <touch file="${log4j.file}"/>
+
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
+      <fileset refid="maven2.fileset"/>
+      <mapper type="flatten"/>
+    </copy>
+
+    <!-- TODO: So far only the javadoc of the core is being built -->
+    <condition property="javadoc-does-not-exist-yet">
+      <not>
+        <available file="${build.dir}/javadoc" type="dir"/>
+      </not>
+    </condition>
+    <antcall target="generate-javadoc"/>
+
+    <ant antfile="${yanel.source.home}/build/build-resource-types.xml" target="copy-resources-dependencies"/>
+
+    <antcall target="deploy-libs-of-realms"/>
+  </target>
+
+  <target name="war" description="Build war file" depends="init, webapp">
+    <jar jarfile="${yanel.source.home}/build/webapps/${servlet.context.prefix}.war" basedir="${yanel.source.home}/build/webapps/${servlet.context.prefix}"/>
+  </target>
+  
+  <target name="compile-webapp" description="Compile Java classes of Yanel webapp" depends="init, compile-core, compile-cmdl">
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="${yanel.source.home}/src/webapp/src/java/org/wyona/yanel/servlet" destdir="${classes.dir}"
+      debug="true"
+      classpathref="classpath.compile"
+    />
+    <mkdir dir="${yanel.source.home}/build/lib"/>
+    <jar destfile="${yanel.source.home}/build/lib/yanel-webapp-${yanel.version}-r${yanel.revision}.jar"
+      basedir="${classes.dir}"
+      includes="org/wyona/yanel/servlet/**"/>
+      
+    <copy file="${yanel.source.home}/src/build/pom-webapp.xml" todir="${yanel.source.home}/build/lib"/>
+    <replace file="${yanel.source.home}/build/lib/pom-webapp.xml" value="${yanel.version}-r${yanel.revision}">
+      <replacetoken>@VERSION@</replacetoken>
+    </replace>
+
+    <artifact:pom id="webapp.project" file="${yanel.source.home}/build/lib/pom-webapp.xml"/>
+
+    <artifact:install file="${yanel.source.home}/build/lib/yanel-webapp-${yanel.version}-r${yanel.revision}.jar">
+      <pom refid="webapp.project"/>
+    </artifact:install>            
+  </target>
+  
+  <target name="createCK" description="Add ssl configuration to your webserver"> 
+    <!-- delete already created file -->
+    <delete file="${build.dir}/${certificate.keystore}"/>
+    <!-- create new keystore file -->
+    <!-- IMPORT NOTE: In order to find keytool set:  export PATH=/usr/local/jdk1.5.0_06/bin:$PATH (resp. depending on operating system use some other way to reset the PATH environment variable) -->
+    <exec executable="keytool">
+      <arg line="-genkey"/>
+      <arg line="-alias"/>
+      <arg value="${servlet.container}"/>
+      <arg line="-keyalg"/>
+      <arg value="RSA"/>
+      <arg line="-storepass"/>
+      <arg value="${certificate.keypass}"/>
+      <arg line="-keypass"/>
+      <arg value="${certificate.keypass}"/>
+      <arg line="-keystore"/>
+      <arg value="${build.dir}/${certificate.keystore}"/>
+      <arg line="-dname"/>
+      <arg value="CN=${certificate.common.name}, OU=${certificate.organisation.unit}, O=${certificate.organisation}, L=${certificate.locality.name}, S=${certificate.state.name}, C=${certificate.country.code}"/>
+    </exec>
+  </target>
+
+  <target name="generate-resource-types-registry" unless="local.resource-types.config.exists">
+    <copy file="${yanel.source.home}/conf/resource-types.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" overwrite="false"/>
+  </target>
+
+  <target name="patch-with-local-resource-types-registry" if="local.resource-types.config.exists">
+    <copy file="${yanel.source.home}/${local.config.dir}/local.resource-types.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" overwrite="true"/>
+  </target>
+
+  <target name="generate-yanel-properties" unless="local.yanel.config.exists">
+    <xslt in="${yanel.source.home}/conf/yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.xml" style="yanel2properties.xsl" force="false">
+      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+      <param name="yanel.revision" expression="${yanel.revision}"/>
+      <param name="yanel.version" expression="${yanel.version}"/>
+    </xslt>
+  </target>
+
+  <target name="patch-with-local-yanel-config" if="local.yanel.config.exists">
+    <xslt in="${yanel.source.home}/${local.config.dir}/local.yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.xml" style="yanel2properties.xsl" force="true">
+      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
+      <param name="yanel.revision" expression="${yanel.revision}"/>
+      <param name="yanel.version" expression="${yanel.version}"/>
+    </xslt>
+  </target>
+  
+
+</project>
