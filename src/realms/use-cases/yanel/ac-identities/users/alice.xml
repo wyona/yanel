@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <user id="alice">
-<name>Michael Wechner</name>
-<email>michi@wyona.org</email>
+<name>Alice</name>
+<email>alice@foo.bar</email>
 <password>9c62a68af3b80523ef2ffc8cb3eb9fb8</password>
 <salt>9a74c27e6cc2303e</salt>
 </user>
