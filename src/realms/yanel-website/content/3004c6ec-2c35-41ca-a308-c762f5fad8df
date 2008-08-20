@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Resource Type Configuration Map</title>
+  </head>
+  <body>
+    <h2>Resource Type Configuration Map</h2>
+<p>to configure a bunch of url in the same way one can use the rc-map. map.rc-map file has to be in the repository which is configured as the rti (resource type identifier) repository in a realm.
+</p><p>in this file one can define a url-wildcard matcher to match a bunch of urls (e.g. **.html) which points for every match to one <a href="resource_type_configuration.html">resource-type-configuration</a>.
+</p>
+  </body>
+</html>
