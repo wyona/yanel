@@ -3,7 +3,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>Documentation</title>
+    <title>Create a simple XML hello-world resource-type based on BasicXMLResource</title>
   </head>
   <body>
 <h3>this is an example implentation of a resource-type based on the BasicXMLResource</h3>
