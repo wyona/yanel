@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Setup Yanel in Eclipse IDE</title>
+  </head>
+  <body>
+   <h1>Setup Yanel in Eclipse IDE</h1>
+    <dl>
+      <dt>Project setup</dt>
+      <dd>Create new Java Project in Eclipse workspace. Use the option "Create project from existing source".</dd>
+    </dl>
+    <dl>
+      <dt>BUILD</dt>
+      <dd>To build yanel, use ./build.sh in the console. Make sure Option "Build Automatically" is
+        turned off in Eclipse. alternative: one can also use the "run external tools" to build
+        inside eclipse. which is handy because you don't have to switch between shell and eclipse.
+        Go to the menu Run -&gt; External Tools -&gt; Open External Tools Dialog... click
+        "new Lanuch Configuration" to add a new launcher. In the main tab choose the build.xml of
+        your yanel. (e.g. ${workspace_loc:/yanel-projects/src/build/build.xml}). Choose the target
+        which you want to configure on the targets-tab. IMPORTANT: choose the target before you set
+        the ant-home (see: <a class="external"
+        href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=143008#c6">https://bugs.eclipse.org/bugs/show_bug.cgi?id=143008#c6</a>).
+        On the classpath tab add the ant shipped with yanel as ant-home.</dd>
+    </dl>
+    <dl>
+      <dt>CLASSPATH</dt>
+      <dd> Add libraries to classpath of the project. The libraries are located in
+        $ECLIPSE_WORKSPACE$/yanel-trunk/local/apache-tomcat-5.5.20/webapps/yanel/WEB-INF/lib. Add
+        all libraries except the ones starting with yanel-*.</dd>
+    </dl>
+    <dl>
+      <dt>CORRECT</dt>
+      <dd> Eclipse import source wizzard mixes up something with src/resources/testing-times/src.
+        Remove this folder from build path and add src/resources/testing-times/src/java. Perform
+        project cleanup.</dd>
+    </dl>
+    <dl>
+      <dt>DEBUG</dt>
+      <dd> Use the Eclipse Tomcat Lanucher (http://www.eclipsetotale.com/tomcatPlugin.html) which
+        registers Tomcat process to Eclipse debugger.
+        <br/>
+        To debug Resources of a project, set a breakpoint in a resource. Eclipse will not find the
+    source of the resource automatically. After it fails the first time you can use the button
+    displayed "attach source" and then attach the whole resource folder of a realm.<p>also set in
+      the log4j.properties the ConsoleAppender insted of the RollingFileAppender</p>
+    <pre>
+    log4j.appender.A1=org.apache.log4j.ConsoleAppender 
+    #log4j.appender.A1 = org.apache.log4j.RollingFileAppender 
+    #log4j.appender.A1.File = /home/simon/src/yanel-projects/build/logs/log4j-cnode1.log
+    </pre> this way you can see the output
+    of the logging in the eclipse console.
+      </dd>
+    </dl> 
+    
+    <dl>
+      <dt>Other projects depending on Yanel</dt>
+      <dd> To develop projects depending on yanel, like "Yanel contributions", add yanel-trunk as
+        project dependency to this project.</dd>
+    </dl>
+    <dl>
+      <dt>For Windows user:</dt>
+      <dd>
+        The files should have LF as end character. 
+        Menu: Window -> Preferences -> General -> Workspace -> New text file line delimiter. Set to "Unix".
+      </dd>
+    </dl>
+  </body>
+</html>
