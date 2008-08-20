@@ -3,11 +3,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>Documentation</title>
+    <title>Create a simple hello-world resource-type</title>
   </head>
   <body>
 
-<h3 id="section-Create+a+simple+hello-world+resource-type-CreateAnEmptyResourceType"> Create an empty resource-type</h3>
+<h3> Create an empty resource-type</h3>
 <ul><li>First we create an empty resource-type. For this we will use an ant task which is included in the build script. type in a console:
 </li></ul><pre>./build.sh new-resource-type</pre>
 <span class="sub">Hint: all sentences starting with [input] are what ant shows when waiting for an input</span>
