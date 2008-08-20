@@ -401,7 +401,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      */
     protected void passTransformerParameters(Transformer transformer) throws Exception {
 /*
-        // TODO: getParameters() are not the Http Request parameters! Let's find out firs out ...
+        // TODO: getParameters() are not the Http Request parameters! Let's find out first ...
         // Attach all parameters that came with the request. Templates can make use of them.
         // NOTE: all parameter values will be of type String. In XSLT: <param name="p" value="'actual_value'"/>
         for (Iterator i = getParameters().entrySet().iterator(); i.hasNext();) {
@@ -437,6 +437,10 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         transformer.setParameter("yanel.back2realm", backToRealm);
         transformer.setParameter("yarep.back2realm", backToRealm); // for backwards compatibility
         String userAgent = getEnvironment().getRequest().getHeader("User-Agent");
+        if (userAgent == null) {
+             log.warn("Header contains no User-Agent!");
+             userAgent = "null";
+        }
         transformer.setParameter("language", getRequestedLanguage());
         String os = getOS(userAgent);
         if (os != null) transformer.setParameter("os", os);
@@ -512,7 +516,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      */
     protected String getToolbarStatus() {
         // TODO: Use YanelServlet.TOOLBAR_KEY instead "toolbar"!
-        return (String) getRequest().getSession(true).getAttribute("toolbar");
+        javax.servlet.http.HttpSession session = getRequest().getSession(true);
+        if (session != null) {
+            return (String) session.getAttribute("toolbar");
+        } else {
+            log.warn("No session exists or could be created!");
+            return null;
+        }
     }
 
     /**
