@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<data>
+    <event 
+        start="02 16 2008 13:00:00 GMT"
+        title="Birthday"
+        link="http://foaf.wyona.org/profiles/michael-wechner.html"
+        >
+        Birthday of Michael.
+    </event>
+    <event 
+        start="02 16 2009 13:00:00 GMT"
+        title="Birthday"
+        link="http://foaf.wyona.org/profiles/michael-wechner.html"
+        >
+        Birthday of Michael.
+    </event>
+    <event 
+        start="12 24 2008 13:00:00 GMT"
+        end="01 2 2009 13:00:00 GMT"
+        title="Holidays"
+        >
+	Holidays.
+    </event>
+    <event 
+        start="02 16 2010 13:00:00 GMT"
+        title="Birthday"
+        link="http://foaf.wyona.org/profiles/michael-wechner.html"
+        >
+        Birthday of Michael.
+    </event>
+</data>
