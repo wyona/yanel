@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Resource Type Configuration</title>
+  </head>
+  <body>
+<h2>Resource Type Configuration</h2>
+<p>Yanel looks up a configuration for a requested url, to determine what resource-type to use. this resource-type configuration files are located in the repository which is configured as the rti (resource type identifier) repository in a realm. this repository either has the same structure as the data repository or is using a <a href="rc-map.html">rc-map</a>. you can use a confiuration file for a certain url and also use <a href="rc-map.html">rc-map</a> for a pattern of urls in the same time.
+</p>
+  </body>
+</html>
