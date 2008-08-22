@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Configuration of resource-types.xml</title>
+  </head>
+  <body>
+    <h1>Configuration of resource-types.xml</h1>
+    <h2>Examplse</h2>
+    <pre>
+&lt;?xml version="1.0"?>
+
+&lt;!-- NOTE: The "compile" attribute is true by default -->
+&lt;!-- NOTE: Do not use relative paths to reference resource types, because the paths are not being resolved re the location of (local.)resource-types.xml -->
+
+&lt;resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2008081300">
+
+  &lt;changes>
+    &lt;change version="2008081300">redirect resource type added&lt;/change>
+    &lt;change version="2008041600">session manager resource type added&lt;/change>
+    &lt;change version="2008041200">404 resource type added&lt;/change>
+    &lt;change version="2008040400">policy manager resource type added&lt;/change>
+    &lt;change version="2007112000">@YANEL_SRC_DIR@ parameter introduced&lt;/change>
+    &lt;change version="2007081500">timeline resource type added&lt;/change>
+    &lt;change version="2007070100">user-mgmt resource type added&lt;/change>
+    &lt;change version="2007062900">data-repo-sitetree resource type added&lt;/change>
+  &lt;/changes>
+
+  &lt;!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/sessionmanager/" compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/404/" compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/policymanager/" compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/timeline/" compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/data-repo-sitetree/" compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/navigation/"                  compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/translation/"                 compile="true"/>
+  &lt;resource-type package="org.wyona.yanel.impl.resources.node" src="@YANEL_SRC_DIR@/src/resources/file/" compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/directory/" compile="true" copy-dir-name="yanel-collection"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/add-realm/"                  compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/odt/"                         compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/xml/"                         compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/user-mgmt/"                   compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/realms/welcome-admin/yanel/resources/show-realms/"                 compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/realms/welcome-admin/yanel/resources/update-webapp/"                 compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/testing-control/"             compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/testing-times/"               compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/atom/"          compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/atom-entry/"    compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/contact-form/"  compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/wiki/"          compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/zip/"           compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/calendar/"      compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/resource-creator/"      compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/nutch/" compile="true"/>
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/davcollection/" compile="true"/>
+
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/pdf/" compile="true" copy-dir-name="yanel-pdf"/>
+
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/yanel-user/" compile="true"/>
+
+&lt;!--
+  &lt;resource-type src="/SOME_ABSOLUTE_PATH/contributions/resources/tape/" compile="true"/>
+-->
+
+  &lt;resource-type package="org.wyona.yanel.impl.resources.redirect" src="@YANEL_SRC_DIR@/src/contributions/resources/redirect/" compile="true"/>
+
+&lt;/resource-types>
+
+    </pre>
+  </body>
+</html>
