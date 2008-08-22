@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Configuration of yanel.xml</title>
+  </head>
+  <body>
+    <h1>Configuration of yanel.xml</h1>
+    <h2>Examples</h2>
+    <pre>
+&lt;?xml version="1.0"?>
+
+&lt;yanel xmlns="http://www.wyona.org/yanel/1.0" version="2007061900">
+  
+  &lt;!-- # Realms configuration -->
+  &lt;realms-config src="realms.xml"/>
+  
+  &lt;!-- # ResourceTypes configuration -->
+  &lt;resource-types-config src="resource-types.xml"/>
+  
+  &lt;!-- # Reserved-Prefix configuration -->
+  &lt;reserved-prefix>yanel&lt;/reserved-prefix>
+
+&lt;/yanel>    
+    </pre>
+  </body>
+</html>
