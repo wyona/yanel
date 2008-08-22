@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Configuration of CatalogManager.properties</title>
+  </head>
+  <body>
+    <h1>Configuration of CatalogManager.properties</h1>
+    <h2>Examples</h2>
+    <pre>
+catalogs=catalog.xml
+
+relative-catalogs=false
+
+# verbosity: If non-zero, the Catalog classes will print informative and debugging messages. 
+# The higher the number, the more messages.
+#verbosity=100
+verbosity=1
+    
+    </pre>
+  </body>
+</html>
