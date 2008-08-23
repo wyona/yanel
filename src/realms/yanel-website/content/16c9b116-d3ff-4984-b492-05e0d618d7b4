@@ -6,6 +6,7 @@
     <title>Create a simple usecase based on the ExecutableUsecaseResource</title>
   </head>
   <body>
+    <div class="instructions">
 <h3 id="section-Create+simple+usecase+resource-type+based+on+ExecutableUsecaseResource-ImplementingASimpleUsecaseBasedOnTheExecutableUsecaseResource"> Implementing a simple usecase based on the ExecutableUsecaseResource</h3>
 <ul><li>we just change the HelloWorldResource example we created in the tutorial <a href="create_a_simple_xml_hello-world_resource-type_based_on_basicxmlresource.html">Create a simple hello-world resource-type</a>
 </li></ul><div class="prettify">
@@ -28,5 +29,6 @@
 <pre class="prettyprint"><span class="tag">&lt;?</span><span class="embsrc"><span class="pln">xml version</span><span class="pun">=</span><span class="str">"1.0"</span></span><span class="tag">?&gt;</span><span class="pln"><br/></span><span class="tag">&lt;j:jelly </span><span class="atn">xmlns:j</span><span class="tag">=</span><span class="atv">"jelly:core"</span><span class="tag">&gt;</span><span class="pln"><br/>&#160; </span><span class="tag">&lt;html </span><span class="atn">xmlns</span><span class="tag">=</span><span class="atv">"http://www.w3.org/1999/xhtml"</span><span class="tag">&gt;</span><span class="pln"><br/>&#160; &#160; </span><span class="tag">&lt;body&gt;</span><span class="pln"><br/>&#160; &#160; &#160; </span><span class="tag">&lt;h1&gt;</span><span class="pln">Usecase finished</span><span class="tag">&lt;/h1&gt;</span><span class="pln"><br/>&#160; &#160; &#160; </span><span class="tag">&lt;p&gt;</span><span class="pln">${resource.getErrorMessages()}</span><span class="tag">&lt;/p&gt;</span><span class="pln"><br/>&#160; &#160; &#160; </span><span class="tag">&lt;p&gt;</span><span class="pln">${resource.getInfoMessages()}</span><span class="tag">&lt;/p&gt;</span><span class="pln"><br/>&#160; &#160; </span><span class="tag">&lt;/body&gt;</span><span class="pln"><br/>&#160; </span><span class="tag">&lt;/html&gt;</span><span class="pln"><br/></span><span class="tag">&lt;/j:jelly&gt;</span></pre>
 
 </div>
+    </div>
   </body>
 </html>
