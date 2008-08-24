@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Configuration of realm.xml</title>
+  </head>
+  <body>
+    <div class="instructions">
+      <h1>Configuration of realm.xml</h1>
+      <h2>Examples</h2>
+      <pre>
+&lt;?xml version="1.0"?>
+
+&lt;!-- IMPORTANT: Check if local.realm.xml exists and check if you might have to make modifications there instead! -->
+
+&lt;realm-config xmlns="http://www.wyona.org/yanel/realm/1.0">
+  &lt;name>Yanel Website&lt;/name>
+
+  &lt;rti>config/res-config-repository.xml&lt;/rti>
+  &lt;data>config/repository.xml&lt;/data>
+  &lt;ac-policies>config/ac-policies-repository.xml&lt;/ac-policies>
+  &lt;ac-identities>config/ac-identities-repository.xml&lt;/ac-identities>
+
+  &lt;default-language>en&lt;/default-language>
+
+  &lt;languages>
+    &lt;language>en&lt;/language>
+    &lt;language>de&lt;/language>
+    &lt;language>es&lt;/language>
+  &lt;/languages>
+  &lt;translation-manager class="org.wyona.yanel.core.attributes.translatable.PrefixTranslationManager"/>
+
+  &lt;menu class="org.wyona.yanel.servlet.menu.impl.YanelWebsiteMenu"/>
+&lt;/realm-config>
+      </pre>
+    </div>
+  </body>
+</html>
