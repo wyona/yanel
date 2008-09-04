@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<project name="user-alice-test" default="test">
+
+  <import file="../definitions.xml"/>
+
+  <target name="test" depends="wt.defineMacros">
+
+    <webtest name="Usecase Test hello">
+      &config;
+      <invoke description="Get the page: " url="/${realm.prefix}hello"/>
+
+     <verifyText description="Verify that text is contained in the page" text="hello"/>
+     <verifyText description="Verify that text is contained in the page" text="Yanel Path (with regard to realm):"/>
+     <verifyText description="Verify that text is contained in the page" text="pdf-sample2.pdf"/>
+     <verifyText description="Verify that text is contained in the page" text="world.html"/>
+   </webtest>
+       
+  </target>
+
+</project>
