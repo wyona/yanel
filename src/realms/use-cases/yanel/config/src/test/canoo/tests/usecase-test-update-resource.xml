@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<project name="create-resource-test" default="test">
+
+  <import file="../definitions.xml"/>
+
+  <target name="test" depends="wt.defineMacros">
+    <webtest name="Usecase Test 'Yanel Updater'">
+      &config;
+      <invoke description="Get the page: " url="/${realm.prefix}update-webapp.html"/>
+      <verifyText description="Verify that text is contained in the page" text="Yanel Updater"/>
+    </webtest>
+
+    <webtest name="Usecase Test 'Update : Testing Control'">
+      &config;
+      <invoke description="Get the page: " url="http://localhost:8080/yanel/test/testing-control.html"/>
+      <verifyText description="Verify that text is contained in the page" text="HtmlUnit Tests"/>
+    </webtest>
+
+    <webtest name="Usecase Test 'Update : jMeter Results'">
+      &config;
+      <invoke description="Get the page: " url="http://localhost:8080/yanel/test/jmeter/jmeter-results/"/>
+
+<!--      
+      <verifyText description="Verify that text is contained in the page" text="Yanel Path (with regard to realm): /jmeter/jmeter-results/"/>
+-->
+      <verifyText description="Verify that text is contained in the page" text="Yanel Path (with regard to realm)"/>
+    </webtest>
+<!--
+    <webtest name="Usecase Test 'Create resource: New Resource'">
+      &config;
+      <invoke description="Get the page: " url="/${realm.prefix}test-resource-creator-wiki.html"/>
+      <verifyText description="Verify that text is contained in the page" text="Title 101"/>
+    </webtest>
+-->    
+  </target>
+
+</project>
