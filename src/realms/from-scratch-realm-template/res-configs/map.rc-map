@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 
 <rc-map>
+  <!-- TODO: Actually Xopus should be served from the xopus resource, but because of a Xopus bug one needs to add it here! -->
+  <matcher pattern="/Xopus**.html" rcpath="/node_yanel-rc.xml"/>
+
   <matcher pattern="/**.html" rcpath="/generic-xhtml-page_yanel-rc.xml"/>
 </rc-map>
