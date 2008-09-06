@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="xopus3" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="xslt" value="rthtdocs:/xslt/load-xopus-xhtml.xsl"/>
+  <yanel:property name="mime-type" value="application/xhtml+xml"/>
+</yanel:resource-config>
