@@ -446,6 +446,14 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
             return "application/xhtml+xml";
         } else if (suffix.equals("xml")) {
             return "application/xml";
+        } else if (suffix.equals("xsd")) {
+            return "application/xml";
+            // TODO: Clarify ...
+            //return "application/xsd+xml";
+        } else if (suffix.equals("xsl")) {
+            return "application/xml";
+            // TODO: Clarify ...
+            //return "application/xslt+xml";
         } else if (suffix.equals("css")) {
             return "text/css";
         } else if (suffix.equals("js")) {
