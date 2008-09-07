@@ -64,6 +64,10 @@ This page can be provided at any URL as for example http://127.0.0.1:8080/yanel/
 The actual content and it's related schema and XSLT are resolved then by Xopus relative to the location of the above page, for example http://127.0.0.1:8080/yanel/from-scratch-realm/sample.xml
 </p>
 
+<p>
+<b>NOTE:</b> After loading this page and in particular loading the Xopus javascript, one will be redirected to Xopus-3.xx/xopus/xopus.html, whereas this page will be kept as reference within the URL. (The page Xopus-3.x.x/xopus/xopus.html is referencing a favicon.ico, but which doesn't exist within the Xopus-3.x.x/xopus/media folder! One might want to add one in order to avoid 404 messages within the log-file.)
+</p>
+
 <a name="saving"/>
 <h2>Saving data</h2>
 <p>
