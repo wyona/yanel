@@ -1,2 +1,45 @@
-<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Xopus 3</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Xopus 3</h1>  <p><h2>Start Xopus and load data</h2>...</p></body>
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Xopus 3</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head>
+
+<body>
+<div class="instructions">
+<h1>Xopus 3</h1>
+
+<p>This document describes various items re integration of Xopus 3</p>
+
+<h2>Loading/Opening data with Xopus</h2>
+
+<p>
+Download Xopus from <a href="http://www.xopus.com/download/">http://www.xopus.com/download/</a> and unzip and deploy it such that it can be accessed for example with the following URL http://127.0.0.1:8080/yanel/from-scratch-realm/Xopus-3.2.10/xopus/xopus.js
+</p>
+
+<p>
+<b>WARNING:</b> It doesn't seem to be possible to make it accessible from within a resource, which means using a URL as for example http://127.0.0.1:8080/yanel/from-scratch-realm/yanel/resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3axopus3/Xopus-3.2.10/xopus/xopus.js
+</p>
+
+<pre>
+&lt;html xmlns="http://www.w3.org/1999/xhtml">
+  &lt;head>
+    &lt;title>Starting Xopus ...&lt;/title>
+    &lt;script src="./Xopus-3.2.10/xopus/xopus.js" type="text/javascript">&lt;/script>
+  &lt;/head>
+  &lt;body bgcolor="#ffffff">
+    &lt;div autostart="true" xopus="true">
+      &lt;xml>
+        &lt;x:config version="1.0" xmlns:x="http://www.xopus.com/xmlns/config">
+          &lt;x:pipeline xml="sample.xml" xsd="sample.xsd">
+            &lt;x:view name="WYSIWYG View">
+              &lt;x:transform xsl="sample.xsl"/>
+            &lt;/x:view>
+            &lt;x:view name="XML View">
+              &lt;x:treeTransform/>
+            &lt;/x:view>
+          &lt;/x:pipeline>
+        &lt;/x:config>
+      &lt;/xml>
+    &lt;/div>
+  &lt;/body>
+&lt;/html>
+</pre>
+</div>
+</body>
 </html>
