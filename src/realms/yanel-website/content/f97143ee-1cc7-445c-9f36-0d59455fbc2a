@@ -7,6 +7,8 @@
 <ul>
   <li><a href="#introduction">Introduction</a></li>
   <li><a href="#starting">Loading/Opening data</a></li>
+  <li><a href="#saving">Saving data</a></li>
+  <li><a href="#lookup">Lookup</a></li>
   <li><a href="#resources">Resources</a></li>
 </ul>
 
@@ -26,7 +28,11 @@ Download Xopus from <a href="http://www.xopus.com/download/">http://www.xopus.co
 </p>
 
 <p>
-In order to load data for editing with Xopus 3 one needs to provide an XHTML page containing a link to the main Xopus javascript and an XML configuration containing pointers to the actual XML data, its schema and some XSLT for the WYSIWYG transformation of the XML.
+In order to load data for editing with Xopus 3 one needs to provide an XHTML page containing a link to the main Xopus javascript (xopus.js) and an XML configuration (&lt;x:config>...&lt;/x:config>) containing pointers to the actual <a href="http://xopus.com/files/demo/examples/Simple/document.xml">XML data</a>, its <a href="http://xopus.com/files/demo/examples/Simple/schema.xsd">schema</a> and some <a href="http://xopus.com/files/demo/examples/Simple/stylesheet.xsl">XSLT</a> for the WYSIWYG transformation of the XML.
+</p>
+
+<p>
+This page can be provided at any URL as for example http://127.0.0.1:8080/yanel/from-scratch-realm/xopus-example.html and served with the mime type text/html, whereas please make sure to resolve the Xopus javascript path relative to the page's URL:
 </p>
 
 <pre>
@@ -53,6 +59,22 @@ In order to load data for editing with Xopus 3 one needs to provide an XHTML pag
   &lt;/body>
 &lt;/html>
 </pre>
+
+<p>
+The actual content and it's related schema and XSLT are resolved then by Xopus relative to the location of the above page, for example http://127.0.0.1:8080/yanel/from-scratch-realm/sample.xml
+</p>
+
+<a name="saving"/>
+<h2>Saving data</h2>
+<p>
+...
+</p>
+
+<a name="lookup"/>
+<h2>Lookup</h2>
+<p>
+...
+</p>
 
 <a name="resources"/>
 <h2>Resources</h2>
