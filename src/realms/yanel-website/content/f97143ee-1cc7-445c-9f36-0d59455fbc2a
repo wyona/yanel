@@ -4,9 +4,18 @@
 <div class="instructions">
 <h1>Xopus 3</h1>
 
+<ul>
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#starting">Loading/Opening data</a></li>
+  <li><a href="#resources">Resources</a></li>
+</ul>
+
+<a name="introduction"/>
+<h2>Introduction</h2>
 <p>This document describes various items re integration of Xopus 3</p>
 
-<h2>Loading/Opening data with Xopus</h2>
+<a name="starting"/>
+<h2>Loading/Opening data</h2>
 
 <p>
 Download Xopus from <a href="http://www.xopus.com/download/">http://www.xopus.com/download/</a> and unzip and deploy it such that it can be accessed for example with the following URL http://127.0.0.1:8080/yanel/from-scratch-realm/Xopus-3.2.10/xopus/xopus.js
@@ -14,6 +23,10 @@ Download Xopus from <a href="http://www.xopus.com/download/">http://www.xopus.co
 
 <p>
 <b>WARNING:</b> It doesn't seem to be possible to make it accessible from within a resource, which means using a URL as for example http://127.0.0.1:8080/yanel/from-scratch-realm/yanel/resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3axopus3/Xopus-3.2.10/xopus/xopus.js
+</p>
+
+<p>
+In order to load data for editing with Xopus 3 one needs to provide an XHTML page containing a link to the main Xopus javascript and an XML configuration containing pointers to the actual XML data, its schema and some XSLT for the WYSIWYG transformation of the XML.
 </p>
 
 <pre>
@@ -40,6 +53,12 @@ Download Xopus from <a href="http://www.xopus.com/download/">http://www.xopus.co
   &lt;/body>
 &lt;/html>
 </pre>
+
+<a name="resources"/>
+<h2>Resources</h2>
+<ul>
+  <li><a href="http://xopus.com/Documentation/Developer%20Guide%5CHow%20To%5CUpgrade%20from%20Xopus%202%20to%203.new">Upgrade from Xopus 2 to 3</a></li>
+</ul>
 </div>
 </body>
 </html>
