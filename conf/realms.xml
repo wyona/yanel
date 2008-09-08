@@ -30,6 +30,7 @@ NOTE: ROOT prefix which is equivalent to not setting the proxy-prefix. Please no
 <!--
 IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make sure to fix the cookie rewriting according to http://issues.apache.org/bugzilla/show_bug.cgi?id=10722 resp. see ../src/httpd-2.2.3/conf/extra/httpd-vhosts.conf
 -->
+<!-- TODO: One should use by default http://en.wikipedia.org/wiki/X-Forwarded-For -->
 <!--
   <reverse-proxy>
     <host-name>yanel.wyona.org</host-name>
