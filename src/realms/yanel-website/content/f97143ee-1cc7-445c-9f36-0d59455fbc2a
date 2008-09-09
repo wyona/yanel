@@ -95,6 +95,19 @@ var exitURL = unescape(window.location.href).split('#')[0].split('?')[0] + '?yan
 Editor.setExitURL(exitURL);
 </pre>
 
+<p>
+The file containing the javascript code above needs to be referenced from within the x:config
+</p>
+
+<pre>
+      &lt;!-- .. -->
+    &lt;/x:pipeline>
+
+    &lt;x:javascript src="./Xopus-3.2.10/custom/save.js"/>
+  &lt;/x:config>
+&lt;/xml>
+</pre>
+
 <a name="lookup"/>
 <h2>Lookup</h2>
 <p>
