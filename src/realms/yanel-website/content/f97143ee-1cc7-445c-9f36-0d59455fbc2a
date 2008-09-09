@@ -71,8 +71,29 @@ The actual content and it's related schema and XSLT are resolved then by Xopus r
 <a name="saving"/>
 <h2>Saving data</h2>
 <p>
-...
+In order to save data from Xopus to the server one needs to implement a custom javascript save function (and also an exit function):
 </p>
+
+<pre>
+// This function is called when the save button is pressed, or when the save function is called on an XMLDocument.
+function mySaveFunction(uri, xmlDocument)
+{
+  // HTTP POST the XML document
+  var result = HTTPTools.postXML(uri, xmlDocument,"UTF-8");
+
+  // Show a dialog with the result.  
+  //return confirm("Called save\n" + "Result: " + result + "\n");
+}
+
+// Register the save function.
+IO.setSaveXMLFunction(mySaveFunction);
+
+// Set exit URL:
+var exitURL = unescape(window.location.href).split('#')[0].split('?')[0] + '?yanel.resource.usecase=checkin';
+//alert(exitURL);
+
+Editor.setExitURL(exitURL);
+</pre>
 
 <a name="lookup"/>
 <h2>Lookup</h2>
