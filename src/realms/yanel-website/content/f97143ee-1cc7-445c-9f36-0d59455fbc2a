@@ -147,6 +147,10 @@ funtion doUnload() {
   sleep(500);
 </pre>
 
+<p>
+In order to transfer the values from the custom Lookup-Dialog into Xopus one needs to use top.dialogArguments (instead window.dialogArguments as used by Xopus 2)
+</p>
+
 <a name="resources"/>
 <h2>Resources</h2>
 <ul>
