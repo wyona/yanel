@@ -138,6 +138,15 @@ The "Lookups" need to be configured within x:config
 &lt;/xml>
 </pre>
 
+<p>
+Sometimes Xopus hangs after closing a lookup. This can be 'fixed' by adding a sleep() to Xopus-3.2.10/xopus/media/lookup.html
+</p>
+
+<pre>
+funtion doUnload() {
+  sleep(500);
+</pre>
+
 <a name="resources"/>
 <h2>Resources</h2>
 <ul>
