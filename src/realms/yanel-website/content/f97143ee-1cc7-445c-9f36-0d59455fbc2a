@@ -111,8 +111,32 @@ The file containing the javascript code above needs to be referenced from within
 <a name="lookup"/>
 <h2>Lookup</h2>
 <p>
-...
+The "Lookups" need to be configured within x:config
 </p>
+
+<pre>
+      &lt;!-- .. -->
+    &lt;/x:pipeline>
+
+    &lt;x:lookupConfig>
+      &lt;!-- Image Lookup -->
+      &lt;x:lookup xmlns:yanel="http://wyona.org/yanel/1.0"
+            parentPattern="self::yanel:image" 
+            name="src"
+            url="SOME_URL?yanel.resource.usecase=xopus-imagelookup" 
+            forceLookup="true" 
+            autoOpen="true"/>
+      &lt;!-- Link Lookup -->
+      &lt;x:lookup xmlns:xhtml="http://www.w3.org/1999/xhtml"
+            parentPattern="self::xhtml:a" 
+            name="href"
+            url="SOME_URL?yanel.resource.usecase=xopus-linklookup" 
+            forceLookup="true" 
+            autoOpen="true"/>
+    &lt;/x:lookupConfig>
+  &lt;/x:config>
+&lt;/xml>
+</pre>
 
 <a name="resources"/>
 <h2>Resources</h2>
