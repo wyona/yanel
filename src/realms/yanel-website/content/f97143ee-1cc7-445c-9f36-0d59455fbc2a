@@ -9,6 +9,7 @@
   <li><a href="#starting">Loading/Opening data</a></li>
   <li><a href="#saving">Saving data</a></li>
   <li><a href="#lookup">Lookup</a></li>
+  <li><a href="#misc">Misc</a></li>
   <li><a href="#resources">Resources</a></li>
 </ul>
 
@@ -151,10 +152,23 @@ funtion doUnload() {
 In order to transfer the values from the custom Lookup-Dialog into Xopus one needs to use top.dialogArguments (instead window.dialogArguments as used by Xopus 2)
 </p>
 
+<a name="misc"/>
+<h2>Misc</h2>
+<p>
+Xopus depends on the MSXML Parser, whereas depending on the version of the MSXML Parser one needs to adapt the schemas and XSLTs.
+In order to test what version you have installed, please browse to the following URL
+<a href="http://xopus.com/files/msxmltester/">http://xopus.com/files/msxmltester/</a>
+</p>
+
+<p>
+Depending on the schemas and XSLTs provided by the server you might have to upgrade your locally installed MSXML Parser.
+</p>
+
 <a name="resources"/>
 <h2>Resources</h2>
 <ul>
   <li><a href="http://xopus.com/Documentation/Developer%20Guide%5CHow%20To%5CUpgrade%20from%20Xopus%202%20to%203.new">Upgrade from Xopus 2 to 3</a></li>
+  <li><a href="http://lenya.apache.org/docu12x/components/misc/xopus.html">Xopus 2 integration re Lenya 1.2.x</a></li> 
 </ul>
 </div>
 </body>
