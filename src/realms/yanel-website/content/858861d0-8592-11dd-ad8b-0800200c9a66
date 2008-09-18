@@ -21,7 +21,7 @@
         <tr>
           <th>Element Name (namespace)</th>
           <th>Child-Element</th>
-          <th>Attribut</th>
+          <th>Attribute</th>
           <th>Explanation</th>
         </tr>
         <tr>
@@ -34,7 +34,7 @@
         </tr>
         <tr>
           <td>auto-indexing</td>
-          <td></td>
+          <td>PROPOSAL: could become obsolete. see below.</td>
           <td></td>
           <td>true or false. if not set it will fall back to true. Indicates if indexing should be done when calling close() on a InputStream. if turned off, you can index a node by using Indexer.index(node)</td>
         </tr>
@@ -46,13 +46,18 @@
         </tr>
         <tr>
           <td>index-fulltext</td>
-          <td></td>
+          <td>FIXME: if this is set to false it will just not configure a "fulltextSearchIndexFile" and the TikaConfig. If you are indexing with Indexer.index(node) you will get an exception.
+          <br/>
+          PROPOSAL: Also configure "fulltextSearchIndexFile" and the TikaConfig anyway. but control autoindexing of node.
+          </td>
           <td></td>
           <td>true or false. if not set it will fall back to true. </td>
         </tr>
         <tr>
           <td>index-properties</td>
-          <td></td>
+          <td>FIXME: if this is set to false it will just not configure a "propertiesSearchIndexFile". If you are indexing with Indexer.index(node) you will get an exception.
+          <br/>
+          PROPOSAL: Also configure "propertiesSearchIndexFile" anyway. but control autoindexing of property.</td>
           <td></td>
           <td>true or false. if not set it will fall back to true.</td>
         </tr>
