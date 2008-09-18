@@ -6,5 +6,103 @@
   </head>
   <body>
     <h1>Yarep Search</h1>
+    <p> Yarep comes with a search feature. To turn it on you just have to configure a index location
+      which is a directory where the index will be stored. </p>
+    <p> By default it uses Lucene as a standard search and indexing implementation. But if the
+      standard implementation doesn't fit your needs you can implement you own search by
+      implementing following interfaces: <ul>
+        <li>org.wyona.yarep.core.search.Indexer (used for indexing)</li>
+        <li>org.wyona.yarep.core.search.Searcher (used for searching)</li>
+        <li>org.wyona.yarep.core.search.Metadata (used to pass additional information to the Indexer)</li>
+      </ul> Have a look at the standard implementation at org.wyona.yarep.impl.search.lucene </p>
+    <h2>Configuration</h2>
+    <table>
+      <tbody>
+        <tr>
+          <th>Element Name (namespace)</th>
+          <th>Child-Element</th>
+          <th>Attribut</th>
+          <th>Explanation</th>
+        </tr>
+        <tr>
+          <td>search-index (http://www.wyona.org/yarep/search/2.0)</td>
+          <td>auto-indexing, index-location, index-fulltext, index-properties, lucene (implementation specific)</td>
+          <td>indexer-class, searcher-class</td>
+          <td>Root configuration element for search. The attribute indexer-class configures a specific implementation of org.wyona.yarep.core.search.Indexer.
+          If not set it will fall back to the standard implementation (org.wyona.yarep.impl.search.lucene.LuceneIndexer). 
+          The attribute searcher-class configures a specific implementation of org.wyona.yarep.core.search.Searcher. If not set it will fall back to the standard implementation (org.wyona.yarep.impl.search.lucene.LuceneSearcher).</td>
+        </tr>
+        <tr>
+          <td>auto-indexing</td>
+          <td></td>
+          <td></td>
+          <td>true or false. if not set it will fall back to true. Indicates if indexing should be done when calling close() on a InputStream. if turned off, you can index a node by using Indexer.index(node)</td>
+        </tr>
+        <tr>
+          <td>index-location</td>
+          <td></td>
+          <td></td>
+          <td>Path to a directory where the index will be stored. absoluth or relative to this config file. (Be sure your application has read/write access)</td>
+        </tr>
+        <tr>
+          <td>index-fulltext</td>
+          <td></td>
+          <td></td>
+          <td>true or false. if not set it will fall back to true. </td>
+        </tr>
+        <tr>
+          <td>index-properties</td>
+          <td></td>
+          <td></td>
+          <td>true or false. if not set it will fall back to true.</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Configuration Examples</h2>
+    <h3>Minimal Configuration</h3>
+    <div class="instructions">
+      <pre>
+  &lt;s:search-index xmlns:s="http://www.wyona.org/yarep/search/2.0" >
+    &lt;index-location file="index"/>
+  &lt;/s:search-index>        
+      </pre>
+    </div>
+    <h3>Full configuration</h3>
+    <div class="instructions">
+      <pre>
+  &lt;s:search-index xmlns:s="http://www.wyona.org/yarep/search/2.0" 
+      indexer-class="org.wyona.yarep.impl.search.lucene.LuceneIndexer" 
+      searcher-class="org.wyona.yarep.impl.search.lucene.LuceneSearcher">
+    &lt;auto-indexing boolean="true"/>
+    &lt;index-location file="index"/>
+    &lt;index-fulltext boolean="true"/>
+    &lt;index-properties boolean="true"/>
+    &lt;lucene>
+      &lt;!-- The element 'local-tika-config' attribute 'file' is used to patch the default tika config -->
+      &lt;local-tika-config file="tika-config.xml"/>
+
+      &lt;!-- if fulltext-analyzer/class is not set it will use org.apache.lucene.analysis.standard.StandardAnalyzer-->
+      &lt;fulltext-analyzer class="org.apache.lucene.analysis.standard.StandardAnalyzer"/>
+
+      &lt;!-- if property-analyzer/class is not set it will use org.apache.lucene.analysis.WhitespaceAnalyzer-->
+      &lt;property-analyzer class="org.apache.lucene.analysis.WhitespaceAnalyzer"/>
+
+      &lt;write-lock-timeout ms="3000"/>
+    &lt;/lucene>
+  &lt;/s:search-index>
+      </pre>
+    </div>
   </body>
 </html>
