@@ -1,12 +1,9 @@
 <?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Realm Configuration</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Realm Configuration<br/></h1> 
-
-<p> <ul><li><a href="#name">Name of realm</a><br/></li><li>Access policy manager</li><li>Access identity manager</li><li>Custom web authenticator (optional)<br/></li><li>Default Data/Content repository</li><li>Resource configurations repository</li><li>Default language of realm (optional)<br/></li><li>Languages supported by this realm (optional)<br/></li><li>Language handler (optional)<br/></li><li>Translation manager (optional)<br/></li><li><a href="#yarep-repos">Additional Yarep based repositories (optional)</a></li><li><a href="#i18n">I18n configuration of this realm</a> (optional)<br/></li><li>Custom menu implementation (optional)<br/></li><li><a href="#repo-navigation">Custom repository navigation implemenation</a> (optional)</li></ul>
-</p>
+<p> </p><ul><li><a href="#name">Name of realm</a><br/></li><li>Access policy manager</li><li>Access identity manager</li><li>Custom web authenticator (optional)<br/></li><li>Default Data/Content repository</li><li>Resource configurations repository</li><li>Default language of realm (optional)<br/></li><li>Languages supported by this realm (optional)<br/></li><li>Language handler (optional)<br/></li><li>Translation manager (optional)<br/></li><li><a href="#yarep-repos">Additional Yarep based repositories (optional)</a></li><li><a href="#i18n">I18n configuration of this realm</a> (optional)<br/></li><li>Custom menu implementation (optional)<br/></li><li><a href="#repo-navigation">Custom repository navigation implemenation</a> (optional)</li></ul>
 
 <p>
 Also see <a href="http://svn.wyona.com/repos/public/yanel/trunk/src/realms/from-scratch-realm-template/realm.xml">src/realms/from-scratch-realm-template/realm.xml</a>
 </p>
-
 
 <a name="name">
 </a><h2>Name of realm</h2>
@@ -15,7 +12,6 @@ The name of the realm can be configured as follows
 </p>
 <p>
 </p><pre space="preserve">&lt;name&gt;The name of my realm&lt;/name&gt;</pre>
-
 <a name="yarep-repos">
 </a><h2>Additional Yarep based repositories</h2>
 <p>
@@ -23,13 +19,7 @@ Additional Yarep repositories can be configured as follows
 </p>
 <p>
 </p>
-<pre space="preserve">
-&lt;yarep-repositories&gt;
-  &lt;repository id="my-extra-repo" config="config/my-extra-repository.xml"/&gt;
-&lt;/yarep-repositories&gt;
-</pre>
-
-
+<pre space="preserve">&lt;yarep-repositories&gt;<br/>  &lt;repository id=&quot;my-extra-repo&quot; config=&quot;config/my-extra-repository.xml&quot;/&gt;<br/>&lt;/yarep-repositories&gt;<br/></pre>
 
 <a name="i18n">
 </a>
@@ -40,15 +30,21 @@ The i18n catalogue can be configured as follows
 <pre space="preserve">&lt;i18n-catalogue&gt;yanelrepo:/my-i18n-catalogue.xml&lt;/i18n-catalogue&gt;</pre>
 <p>More information on i18n can be found within the <a href="../i18n.html">i18n documentation</a>.</p>
 
-
-<a name="repo-navigation"></a>
+<a name="repo-navigation"/>
 <h2>Custom repository navigation</h2>
 <p>
 The custom repository navigation can be configured as follows
 </p>
-<p><pre space="preserve">&lt;repo-navigation class=&quot;foo.bar.yanel.impl.navigation.CustomSitetreeImpl&quot;&gt;&quot;Custom Configuration&quot;&lt;/repo-navigation&gt;</pre></p>
+<pre space="preserve">&lt;repo-navigation class=&quot;foo.bar.yanel.impl.navigation.CustomSitetreeImpl&quot;&gt;&quot;Custom Configuration&quot;&lt;/repo-navigation&gt;</pre>
+<p>whereas Yanel is offering various implementations within the package <i>org.wyona.yanel.impl.navigation</i>.</p><p>The default implementation is <i>org.wyona.yanel.impl.navigation.SitetreeResConfigAndDataRepoImpl</i>, whereas this is configured within <i>spring-yanel-config.xml</i> (Yanel source: <i>conf/spring-yanel-config.xml</i>, Yanel webapp binary: <i>WEB-INF/classes/spring-yanel-config.xml</i>).</p><p>The XML file implementation <i>org.wyona.yanel.impl.navigation.SitetreeDOMImpl</i> requires a source element:<br/>
 
-<p>whereas Yanel is offering various implementations within the package <i>org.wyona.yanel.impl.navigation</i>.</p>
+<pre space="preserve">
+&lt;repo-navigation class=&quot;org.wyona.yanel.impl.navigation.SitetreeDOMImpl&quot;&gt;
+  &lt;src>data-repo/data/sitetree.xml&lt;/src>
+&lt;!--
+  &lt;src>yanelrepo:/sitetree.xml&lt;/src>
+--&gt;
+&lt;/repo-navigation&gt;</pre>
 
-</body>
+</p></body>
 </html>
