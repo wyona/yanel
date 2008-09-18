@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.wyona.yanel.impl.map;
+package org.wyona.yanel.core.util;
 
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.map.Realm;
