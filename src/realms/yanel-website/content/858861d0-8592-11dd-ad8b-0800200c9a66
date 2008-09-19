@@ -35,46 +35,75 @@
         <tr>
           <td>auto-indexing</td>
           <td>PROPOSAL: could become obsolete. see below.</td>
-          <td></td>
+          <td>boolean</td>
           <td>true or false. if not set it will fall back to true. Indicates if indexing should be done when calling close() on a InputStream. if turned off, you can index a node by using Indexer.index(node)</td>
         </tr>
         <tr>
           <td>index-location</td>
           <td></td>
-          <td></td>
+          <td>file</td>
           <td>Path to a directory where the index will be stored. absoluth or relative to this config file. (Be sure your application has read/write access)</td>
         </tr>
         <tr>
           <td>index-fulltext</td>
           <td>FIXME: if this is set to false it will just not configure a "fulltextSearchIndexFile" and the TikaConfig. If you are indexing with Indexer.index(node) you will get an exception.
           <br/>
-          PROPOSAL: Also configure "fulltextSearchIndexFile" and the TikaConfig anyway. but control autoindexing of node.
+          PROPOSAL: Also configure "fulltextSearchIndexFile" and the TikaConfig anyway. but control autoindexing of node with this element.
           </td>
-          <td></td>
+          <td>boolean</td>
           <td>true or false. if not set it will fall back to true. </td>
         </tr>
         <tr>
           <td>index-properties</td>
           <td>FIXME: if this is set to false it will just not configure a "propertiesSearchIndexFile". If you are indexing with Indexer.index(node) you will get an exception.
           <br/>
-          PROPOSAL: Also configure "propertiesSearchIndexFile" anyway. but control autoindexing of property.</td>
-          <td></td>
+          PROPOSAL: Also configure "propertiesSearchIndexFile" anyway. but control autoindexing of property with this element.</td>
+          <td>boolean</td>
           <td>true or false. if not set it will fall back to true.</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
         </tr>
       </tbody>
     </table>
+    <h2>Standard implementation (lucene) configuration</h2>
+    <table>
+      <tbody>
+        <tr>
+          <th>Element Name (namespace)</th>
+          <th>Child-Element</th>
+          <th>Attribute</th>
+          <th>Explanation</th>
+        </tr>
+        <tr>
+          <td>lucene</td>
+          <td>local-tika-config, fulltext-analyzer, property-analyzer, write-lock-timeout</td>
+          <td></td>
+          <td>Root configuration element for Standard Search/Index implementation (lucene)</td>
+        </tr>
+        <tr>
+          <td>local-tika-config</td>
+          <td></td>
+          <td>file</td>
+          <td>file-path pointing to a tika-config file. absoluth or relative to this config file.</td>
+        </tr>
+        <tr>
+          <td>fulltext-analyzer</td>
+          <td></td>
+          <td>class</td>
+          <td>A class which extends org.apache.lucene.analysis.Analyzer. if empty it will use org.apache.lucene.analysis.standard.StandardAnalyzer.</td>
+        </tr>
+        <tr>
+          <td>property-analyzer</td>
+          <td></td>
+          <td>class</td>
+          <td>A class which extends org.apache.lucene.analysis.Analyzer. if empty it will use org.apache.lucene.analysis.WhitespaceAnalyzer.</td>
+        </tr>
+        <tr>
+          <td>write-lock-timeout</td>
+          <td></td>
+          <td>ms</td>
+          <td>Milliseconds. Sets the maximum time to wait for a write lock (in milliseconds) for the index. (TODO: This is not implemented yet.)</td>
+        </tr>
+      </tbody>
+    </table>    
     <h2>Configuration Examples</h2>
     <h3>Minimal Configuration</h3>
     <div class="instructions">
@@ -95,15 +124,9 @@
     &lt;index-fulltext boolean="true"/>
     &lt;index-properties boolean="true"/>
     &lt;lucene>
-      &lt;!-- The element 'local-tika-config' attribute 'file' is used to patch the default tika config -->
       &lt;local-tika-config file="tika-config.xml"/>
-
-      &lt;!-- if fulltext-analyzer/class is not set it will use org.apache.lucene.analysis.standard.StandardAnalyzer-->
       &lt;fulltext-analyzer class="org.apache.lucene.analysis.standard.StandardAnalyzer"/>
-
-      &lt;!-- if property-analyzer/class is not set it will use org.apache.lucene.analysis.WhitespaceAnalyzer-->
       &lt;property-analyzer class="org.apache.lucene.analysis.WhitespaceAnalyzer"/>
-
       &lt;write-lock-timeout ms="3000"/>
     &lt;/lucene>
   &lt;/s:search-index>
