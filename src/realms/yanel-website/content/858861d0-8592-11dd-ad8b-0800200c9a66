@@ -46,7 +46,7 @@
         </tr>
         <tr>
           <td>index-fulltext</td>
-          <td>FIXME: if this is set to false it will just not configure a "fulltextSearchIndexFile" and the TikaConfig. If you are indexing with Indexer.index(node) it will silently ignore this.
+          <td>FIXME: if this is set to false it will just not configure a "fulltextSearchIndexFile" and the TikaConfig. If you are indexing with Indexer.index(node) it will silently ignore Indexer.index(node).
           <br/>
           PROPOSAL: Also configure "fulltextSearchIndexFile" and the TikaConfig anyway. but control autoindexing of node with this element.
           </td>
@@ -55,7 +55,7 @@
         </tr>
         <tr>
           <td>index-properties</td>
-          <td>FIXME: if this is set to false it will just not configure a "propertiesSearchIndexFile". If you are indexing with Indexer.index(node) it will silently ignore this.
+          <td>FIXME: if this is set to false it will just not configure a "propertiesSearchIndexFile". If you are indexing with Indexer.index(node) it will silently ignore Indexer.index(node).
           <br/>
           PROPOSAL: Also configure "propertiesSearchIndexFile" anyway. but control autoindexing of property with this element.</td>
           <td>boolean</td>
