@@ -33,33 +33,22 @@
           The attribute searcher-class configures a specific implementation of org.wyona.yarep.core.search.Searcher. If not set it will fall back to the standard implementation (org.wyona.yarep.impl.search.lucene.LuceneSearcher).</td>
         </tr>
         <tr>
-          <td>auto-indexing</td>
-          <td>PROPOSAL: could become obsolete. see below.</td>
-          <td>boolean</td>
-          <td>true or false. if not set it will fall back to true. Indicates if indexing should be done when calling close() on a InputStream. if turned off, you can index a node by using Indexer.index(node)</td>
-        </tr>
-        <tr>
           <td>index-location</td>
           <td></td>
           <td>file</td>
           <td>Path to a directory where the index will be stored. absoluth or relative to this config file. (Be sure your application has read/write access)</td>
         </tr>
         <tr>
-          <td>index-fulltext</td>
-          <td>FIXME: if this is set to false it will just not configure a "fulltextSearchIndexFile" and the TikaConfig. If you are indexing with Indexer.index(node) it will silently ignore Indexer.index(node).
-          <br/>
-          PROPOSAL: Also configure "fulltextSearchIndexFile" and the TikaConfig anyway. but control autoindexing of node with this element.
-          </td>
+          <td>repo-auto-index-fulltext</td>
+          <td></td>
           <td>boolean</td>
-          <td>true or false. if not set it will fall back to true. </td>
+          <td>true or false. if not set it will fall back to true. Indicates if indexing should be done when calling close() on a InputStream. if turned off, you can index a node by using Indexer.index(Node node) </td>
         </tr>
         <tr>
-          <td>index-properties</td>
-          <td>FIXME: if this is set to false it will just not configure a "propertiesSearchIndexFile". If you are indexing with Indexer.index(node) it will silently ignore Indexer.index(node).
-          <br/>
-          PROPOSAL: Also configure "propertiesSearchIndexFile" anyway. but control autoindexing of property with this element.</td>
+          <td>repo-auto-index-properties</td>
+          <td></td>
           <td>boolean</td>
-          <td>true or false. if not set it will fall back to true.</td>
+          <td>true or false. if not set it will fall back to true. Indicates if indexing should be done when saving a property. if turned off, you can index a node by using Indexer.index(Node node, Property property)</td>
         </tr>
       </tbody>
     </table>
