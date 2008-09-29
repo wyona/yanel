@@ -16,11 +16,11 @@ In order to run automatic tests of the various listed tests below, please read <
 </p>
 
 <table>
-  <tr><th>Pos</th><th>Test</th><th>Expected test result</th></tr>
+  <tr><th>Pos</th><th>Test</th><th>Expected test result</th><th>Automatic Test</th></tr>
 
-  <tr><td>1</td><td><a href="no-content.html">No content!</a></td><td>Empty page</td></tr>
+  <tr><td>1</td><td><a href="no-content.html">No content!</a></td><td>Empty page</td><td>-</td></tr>
 
-  <tr><td>2</td><td><a href="404.html">404</a></td><td>No such page:  /404.html</td></tr>
+  <tr><td>2</td><td><a href="404.html">404</a></td><td>No such page:  /404.html</td><td>-</td></tr>
 
   <tr><td>3</td><td><a href="resource-creator.html">Create a new Page resp. Resource</a> (<a href="resource-creator.html?yanel.resource.meta">Meta</a>)</td><td></td></tr>
 
@@ -34,8 +34,8 @@ In order to run automatic tests of the various listed tests below, please read <
 
   <tr><td>8</td><td><a href="introspection-index.xml">introspection-index.xml</a></td><td></td></tr>
   
-  <tr><td>9</td><td><a href="alice">Alice</a></td><td>Profile of user Alice</td></tr>  
-  <tr><td>10</td><td><a href="lenya">Lenya</a></td><td>Profile of user Lenya</td></tr>  
+  <tr><td>9</td><td><a href="alice">Alice</a></td><td>Profile of user Alice</td><td>usecase-test-alice-user.xml</td></tr>  
+  <tr><td>10</td><td><a href="lenya">Lenya</a></td><td>Profile of user Lenya</td><td>usecase-test-lenya-user.xml</td></tr>  
 
   <tr><td>11</td><td><a href="hello/">hello/</a></td><td></td></tr>
   <tr><td>12</td><td><a href="hello">hello</a></td><td></td></tr>
@@ -78,7 +78,7 @@ In order to run automatic tests of the various listed tests below, please read <
   <tr><td>33</td><td><a href="?yanel.usecase=create&amp;resource.type=%3C{http://www.wyona.org/yanel/resource/1.0}wiki/%3E">Create new Wiki resource</a> needs to be fixed!</td><td></td></tr>
   <tr><td>34</td><td><a href="?yanel.usecase=create&amp;create.name=test.html">Create</a> new resource <a href="test.html">test.html</a> needs to be fixed!</td><td></td></tr>
   <tr><td>35</td><td><a href="?yanel.usecase=create&amp;resource.type=%3C{http://www.wyona.org/yanel/resource/1.0}wiki/%3E&amp;create.name=test.html">Create</a> new Wiki resource at <a href="test.html">test.html</a> needs to be fixed!</td><td></td></tr>
-  <tr><td>36</td><td><a href="calendar/">Calendar</a> as <a href="http://www.mozilla.org/projects/calendar/faq.html#format">ICS</a> (<a href="calendar/?yanel.resource.viewid=xml">XML</a>, <a href="calendar.ics">ICS</a>, <a href="calendar.txt">TXT</a>, <a href="calendar/?yanel.resource.viewid=xhtml">XHTML</a>)</td><td></td></tr>
+  <tr><td>36</td><td><a href="calendar/">Calendar</a> as <a href="http://www.mozilla.org/projects/calendar/faq.html#format">ICS</a> (<a href="calendar/?yanel.resource.viewid=xml">XML</a>, <a href="calendar.ics">ICS</a>, <a href="calendar.txt">TXT</a>, <a href="calendar/?yanel.resource.viewid=xhtml">XHTML</a>)</td><td>Calendar with two entries</td><td>-</td></tr>
   <tr><td>37</td><td><a href="path/">xml resource called over path/</a> </td><td></td></tr>
   <tr><td>38</td><td><a href="path/index.html">xml resource called over path/index.html</a> </td><td></td></tr>
   <tr><td>39</td><td><a href="wikipath/">wiki resource called over wikipath/</a> </td><td></td></tr>
