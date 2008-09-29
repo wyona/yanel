@@ -18,6 +18,22 @@ if [ "$JAVA_HOME" = "" ];then
   exit 1
 fi
 
+# ----- Check for YANEL_HOME
+YANEL_HOME="$YANEL_HOME"
+if [ "$YANEL_HOME" = "" ];then
+  echo "WARNING: No YANEL_HOME set. Setting YANEL_HOME is optional, but makes development of individual resources and realms much more efficiently!"
+  echo "       Please set YANEL_HOME ..."
+  echo "       MacOS X/Linux/UNIX : Depending on the shell you're using either use"
+#TODO: $PWD is not really correct, because one might start this script from some other location!
+  echo "                 setenv YANEL_HOME $PWD"
+  echo "                 or"
+  echo "                 export YANEL_HOME=$PWD"
+  echo "       Windows : Click Start ..."
+  echo "Press enter/return to continue ..."
+  read answer
+  echo ""
+fi
+
 # ----- Check Java version
 # TODO: ....
 
