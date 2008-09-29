@@ -249,15 +249,15 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
     private InputStream writeICS(InputStream in) throws Exception {
         log.error("DEBUG: Write ICS as a whole to the repository: " + getPath());
         org.wyona.yarep.core.Path path = new org.wyona.yarep.core.Path(getPath());
-        OutputStream out = getRealm().getRepository().getOutputStream(path);
+
+        OutputStream out;
         byte[] buf = new byte[8192];
         int bytesR;
-
         bytesR = in.read(buf);
         if (bytesR <= 0) {
-            // out.close();
-            throw new Exception("InputStream seems to be empty!");
+            throw new Exception("InputStream seems to be empty! Current calendar will not be overwritten!");
         } else {
+            out = getRealm().getRepository().getOutputStream(path);
             out.write(buf, 0, bytesR);
         }
 
