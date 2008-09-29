@@ -2,6 +2,12 @@
 
 <project name="yanel-resource" default="compile">
 
+  <property environment="env"/>
+  <echo message="YANEL_HOME is set to = ${env.YANEL_HOME}"/>
+
+  <property file="${env.YANEL_HOME}/src/build/local.build.properties"/>
+  <property file="${env.YANEL_HOME}/src/build/build.properties"/>
+
   <import file="src/build/dependencies.xml"/>
 
   <target name="init" description="Initialize build" depends="dependencies">
