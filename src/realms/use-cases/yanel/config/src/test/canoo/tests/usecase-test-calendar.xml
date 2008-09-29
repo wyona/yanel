@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<project name="calendar-test" default="test">
+
+  <import file="../definitions.xml"/>
+
+  <target name="test" depends="wt.defineMacros">
+    <webtest name="Usecase Test Calendar">
+      &config;
+      <invoke description="Get the page: " url="/${realm.prefix}calendar.txt"/>
+      <verifyText description="Verify that text is contained in the page" text="Sheraton"/>
+    </webtest>
+  </target>
+
+</project>

@@ -11,6 +11,7 @@
     <ant antfile="usecase-test-create-resource.xml"/>
     <ant antfile="usecase-test-lenya-user.xml"/>
     <ant antfile="usecase-test-alice-user.xml"/>
+    <ant antfile="usecase-test-calendar.xml"/>
     <ant antfile="usecase-test-hello.xml"/>
     <ant antfile="usecase-test-update-resource.xml"/>
   </target>
