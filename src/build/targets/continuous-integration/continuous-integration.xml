@@ -33,7 +33,7 @@
     <echo message="* You have successfully started Yanel ${yanel.version} (Revision ${yanel.revision})"/>
     <echo message="*"/>
     <echo message="*"/>
-    <echo message="* Start you Browser and visit"/>
+    <echo message="* Start your Browser and visit"/>
     <echo message="*"/>
     <echo message="*                   http://127.0.0.1:8080/${servlet.context.prefix}/"/>
     <echo message="*"/>
