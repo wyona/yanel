@@ -23,10 +23,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 
-import org.wyona.yanel.core.Path;
-import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
-import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.junit.AbstractYanelTest;
 
