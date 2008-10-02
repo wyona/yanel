@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -34,10 +33,7 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceManager;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.map.Realm;
-import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Node;
-import org.wyona.yarep.core.RepositoryException;
-import org.apache.commons.id.uuid.UUID;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
