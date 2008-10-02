@@ -5,9 +5,6 @@ import java.io.UnsupportedEncodingException;
 
 import org.apache.log4j.Category;
 import org.wyona.yarep.core.Repository;
-import org.wyona.yarep.core.RepositoryFactory;
-import org.wyona.yarep.util.RepoPath;
-import org.wyona.yanel.core.Yanel;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
