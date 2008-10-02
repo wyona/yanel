@@ -77,8 +77,8 @@
   </target>
 
   <target name="build-resources" depends="init" description="Build tests of resources">
-    <condition property="local.yanel.config.exists">
-      <available file="${local.conf.dir}/local.yanel.xml" type="file"/>
+    <condition property="local.resource-types.config.exists">
+      <available file="${local.conf.dir}/local.resource-types.xml" type="file"/>
     </condition>
     <antcall target="generate-resources-test-build-from-default"/>
     <antcall target="generate-resources-test-build-from-local"/>
@@ -95,11 +95,12 @@
     <ant antfile="${build.dir}/test-resources.xml" target="build-test-resources" inheritRefs="true"/>
   </target>
   
-  <target name="generate-resources-test-build-from-default" depends="init" unless="local.yanel.config.exists">
+  <target name="generate-resources-test-build-from-default" depends="init" unless="local.resource-types.config.exists">
     <xslt in="${conf.dir}/resource-types.xml" out="${build.dir}/test-resources.xml" style="test-resources.xsl" force="false"/>
   </target>
 
-  <target name="generate-resources-test-build-from-local" depends="init" if="local.yanel.config.exists">
+  <target name="generate-resources-test-build-from-local" depends="init" if="local.resource-types.config.exists">
+    <echo>Create ant build file '${build.dir}/test-resources.xml' in order to build tests of resources</echo>
     <xslt in="${local.conf.dir}/local.resource-types.xml" out="${build.dir}/test-resources.xml" style="test-resources.xsl" force="true"/>
   </target>
   
