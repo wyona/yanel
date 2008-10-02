@@ -16,10 +16,7 @@
 
 package org.wyona.yanel.impl.resources.node;
 
-import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.ResourceConfiguration;
-import org.wyona.yanel.core.Topic;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
@@ -36,9 +33,7 @@ import org.wyona.yanel.servlet.communication.HttpRequest;
 
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
-import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.core.Revision;
-import org.wyona.yarep.util.RepoPath;
 
 import javax.servlet.http.HttpServletRequest;
 
