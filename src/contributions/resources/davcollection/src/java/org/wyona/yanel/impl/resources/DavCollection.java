@@ -3,17 +3,12 @@ package org.wyona.yanel.impl.resources;
 import java.io.IOException;
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Category;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
-import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yarep.core.Repository;
-import org.wyona.yarep.core.RepositoryFactory;
-import org.wyona.yarep.util.RepoPath;
 import org.xml.sax.SAXException;
 
 public class DavCollection extends XmlViewResource implements ViewableV2 {
