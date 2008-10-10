@@ -1452,9 +1452,12 @@ public class YanelServlet extends HttpServlet {
             String yanelFormat = request.getParameter("yanel.format");
             if(yanelFormat != null && yanelFormat.equals("xml")) {
                 response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
+                org.wyona.commons.xml.XMLHelper.writeDocument(doc, response.getOutputStream());
+/*
                 OutputStream out = response.getOutputStream();
                 javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
                 out.close();
+*/
             } else {
                 String mimeType = patchMimeType("application/xhtml+xml", request);
                 response.setContentType(mimeType + "; charset=" + DEFAULT_ENCODING);
@@ -1827,6 +1830,8 @@ public class YanelServlet extends HttpServlet {
      * Create a DOM Document
      */
     static public Document getDocument(String namespace, String localname) throws Exception {
+        return org.wyona.commons.xml.XMLHelper.createDocument(namespace, localname);
+/*
         javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
@@ -1837,6 +1842,7 @@ public class YanelServlet extends HttpServlet {
             doc.getDocumentElement().setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns", namespace);
         }
         return doc;
+*/
     }
 
     /**
