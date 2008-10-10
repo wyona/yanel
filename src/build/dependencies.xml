@@ -36,7 +36,7 @@
       <dependency groupId="yarep" artifactId="yarep-core" version="1.0-dev-r38914"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons" version="1.0-dev-r30752"/>
+      <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons" version="1.0-dev-r39222"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.2-dev-r38016"/>
