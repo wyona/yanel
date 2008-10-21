@@ -2,6 +2,8 @@
 
 echo "INFO: Build Yanel ..."
 
+BUILD_SCRIPT_DIR=$PWD/`dirname $0`
+
 # ----- Parameters
 
 # ----- Check for JAVA_HOME
@@ -24,10 +26,9 @@ if [ "$YANEL_HOME" = "" ];then
   echo "WARNING: No YANEL_HOME set. Setting YANEL_HOME is optional, but makes development of individual resources and realms much more efficiently!"
   echo "       Please set YANEL_HOME ..."
   echo "       MacOS X/Linux/UNIX : Depending on the shell you're using either use"
-#TODO: $PWD is not really correct, because one might start this script from some other location!
-  echo "                 setenv YANEL_HOME $PWD"
+  echo "                 setenv YANEL_HOME $BUILD_SCRIPT_DIR"
   echo "                 or"
-  echo "                 export YANEL_HOME=$PWD"
+  echo "                 export YANEL_HOME=$BUILD_SCRIPT_DIR"
   echo "       Windows : Click Start ..."
   echo "Press enter/return to continue ..."
   read answer
@@ -39,12 +40,12 @@ fi
 
 # ----- Set Environment Variables
 unset ANT_HOME
-ANT_HOME=$PWD/tools/apache-ant-1.6.5
+ANT_HOME=$BUILD_SCRIPT_DIR/tools/apache-ant-1.6.5
 #echo $ANT_HOME
 
 unset CATALINA_HOME
 
-PATH=$PWD/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
+PATH=$BUILD_SCRIPT_DIR/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 #echo $PATH
 
 # ----- Build Yanel
@@ -52,7 +53,7 @@ PATH=$PWD/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 ant -version
 # One might want to use the option "-f" for building resources, e.g. "./build.sh -f src/resources/xml/build.xml" instead having to build everything
 if [ "$1" = "-f" ];then
-  ant -f $2 $3 -Dyanel.source.home=$PWD
+  ant -f $2 $3 -Dyanel.source.home=$BUILD_SCRIPT_DIR
   exit 0
 fi
 # Build everything by default
