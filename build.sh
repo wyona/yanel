@@ -2,7 +2,8 @@
 
 echo "INFO: Build Yanel ..."
 
-BUILD_SCRIPT_DIR=$PWD/`dirname $0`
+BUILD_SCRIPT_DIR=$PWD
+#BUILD_SCRIPT_DIR=$PWD/`dirname $0`
 
 # ----- Parameters
 
