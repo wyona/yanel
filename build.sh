@@ -20,18 +20,14 @@ if [ "$JAVA_HOME" = "" ];then
   exit 1
 fi
 
-# ----- Check for YANEL_HOME
-YANEL_HOME="$YANEL_HOME"
-if [ "$YANEL_HOME" = "" ];then
-  echo "WARNING: No YANEL_HOME set. Setting YANEL_HOME is optional, but makes development of individual resources and realms much more efficiently!"
-  echo "       Please set YANEL_HOME ..."
-  echo "       MacOS X/Linux/UNIX : Depending on the shell you're using either use"
-  echo "                 setenv YANEL_HOME $BUILD_SCRIPT_DIR"
-  echo "                 or"
-  echo "                 export YANEL_HOME=$BUILD_SCRIPT_DIR"
-  echo "       Windows : Click Start ..."
-  echo "Press enter/return to continue ..."
-  read answer
+# ----- Check for .ant-global.properties
+if [ -f $HOME/.ant-global.properties ];then
+  echo "INFO: $HOME/.ant-global.properties exists!"
+else
+  echo ""
+  echo "WARNING: No $HOME/.ant-global.properties file exists! Setting property 'yanel.home' within .ant-global.properties is optional, but makes development of individual resources and realms much more efficiently!"
+  #echo "Press enter/return to continue ..."
+  #read answer
   echo ""
 fi
 
