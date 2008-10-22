@@ -1,6 +1,14 @@
 <?xml version="1.0"?>
 
-<project name="yanel-resource" default="compile">
+<project name="yanel-node-resource" default="compile">
+
+  <!-- For example set within build.sh ... -->
+  <property name="yanel.home" value="${yanel.source.home}"/>
+  <!-- See yanel.home ... -->
+  <property file="${user.home}/.ant-global.properties"/>
+  <echo>YANEL_HOME is set to: ${yanel.home}</echo>
+  <property file="${yanel.home}/src/build/local.build.properties"/>
+  <property file="${yanel.home}/src/build/build.properties"/>
 
   <import file="src/build/dependencies.xml"/>
 
