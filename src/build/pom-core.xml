@@ -31,6 +31,12 @@
       <version>1.0-dev-r39231</version>
     </dependency>
     <dependency>
+      <groupId>yarep</groupId>
+      <artifactId>yarep-impl</artifactId>
+      <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
+      <version>1.0-dev-r39231</version>
+    </dependency>
+    <dependency>
       <groupId>wyona-org-commons</groupId>
       <artifactId>wyona-org-commons</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
