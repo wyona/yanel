@@ -103,6 +103,9 @@
       <dependency groupId="com.ibm.icu" artifactId="icu4j" version="3.4.4"/>
 
       <dependency groupId="postgresql" artifactId="postgresql" version="8.1-409.jdbc3"/>
+
+
+      <dependency groupId="net.sf.ehcache" artifactId="ehcache" version="1.5.0"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
