@@ -60,6 +60,7 @@
       <dependency groupId="xml-resolver" artifactId="xml-resolver"
                   version="1.1"/>
 <!-- The XSLT engine of Java on MacOS X seems to have trouble. With Xalan enabled it should work! Also Abdera seems to need Xalan ... -->
+<!-- IMPORTANT: Please also see src/build/targets/webapp/webapp.xml re ambiguous libs -->
       <dependency groupId="xalan" artifactId="${xalan.artifactId}" version="${xalan.version}"/>
 
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="0.2-dev-r38016"/>
