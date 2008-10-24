@@ -135,6 +135,8 @@
     <ant antfile="${yanel.source.home}/build/build-resource-types.xml" target="copy-resources-dependencies"/>
 
     <antcall target="deploy-libs-of-realms"/>
+
+    <antcall target="remove-ambiguous-libs"/>
   </target>
 
   <target name="war" description="Build war file" depends="init, webapp">
@@ -209,6 +211,22 @@
       <param name="yanel.version" expression="${yanel.version}"/>
     </xslt>
   </target>
-  
+
+  <target name="remove-ambiguous-libs">
+    <echo>INFO: Remove ambiguous libs</echo>
+
+    <!-- TODO: The dependency manager should resolve these ambiguities! -->
+    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/commons-lang-2.1.jar"/>
+    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/xalan-2.6.0.jar"/>
+    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/xercesImpl-2.8.1.jar"/>
+    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/icu4j-2.6.1.jar"/>
+    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/jaxen-1.1-beta-10.jar"/>
+
+    <!-- TODO: The following should not be copied in the first place -->
+    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/pom-cmdl.xml"/>
+    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/pom-core.xml"/>
+    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/pom-impl.xml"/>
+    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/pom-webapp.xml"/>
+  </target>
 
 </project>

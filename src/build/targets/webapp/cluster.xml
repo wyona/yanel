@@ -20,9 +20,11 @@
 
     <antcall target="patch-tomcat-cluster-node-1-ssl-port"/>
 
+<!--
     <antcall target="remove-ambiguous-libs-from-tomcat-cluster-node">
       <param name="tomcat-cluster-node-home-dir" value="${tomcat1.home.dir}/"/>
     </antcall>
+-->
     
     <condition property="endorsed-xerces-at-node1-does-not-exist-yet">
       <not>
@@ -47,22 +49,22 @@
     
   </target>
 
+<!--
   <target name="remove-ambiguous-libs-from-tomcat-cluster-node">
     <echo>INFO: Remove ambiguous libs from Tomcat cluster node: ${tomcat-cluster-node-home-dir}</echo>
 
-    <!-- TODO: The dependency manager should resolve these ambiguities! -->
     <delete file="${tomcat-cluster-node-home-dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/commons-lang-2.1.jar"/>
     <delete file="${tomcat-cluster-node-home-dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/xalan-2.6.0.jar"/>
     <delete file="${tomcat-cluster-node-home-dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/xercesImpl-2.8.1.jar"/>
     <delete file="${tomcat-cluster-node-home-dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/icu4j-2.6.1.jar"/>
     <delete file="${tomcat-cluster-node-home-dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/jaxen-1.1-beta-10.jar"/>
 
-    <!-- TODO: The following should not be copied in the first place -->
     <delete file="${tomcat-cluster-node-home-dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/pom-cmdl.xml"/>
     <delete file="${tomcat-cluster-node-home-dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/pom-core.xml"/>
     <delete file="${tomcat-cluster-node-home-dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/pom-impl.xml"/>
     <delete file="${tomcat-cluster-node-home-dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/pom-webapp.xml"/>
   </target>
+-->
   
   <target name="patch-tomcat-cluster-node-1-ssl-port" if="property-tomcat1-ssl-port-is-set">
     <echo>SSL port for tomcat is set</echo>
