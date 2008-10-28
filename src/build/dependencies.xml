@@ -38,6 +38,7 @@
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons" version="1.0-dev-r39222"/>
 
+      <dependency groupId="net.sf.ehcache" artifactId="ehcache" version="1.5.0"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.2-dev-r38016"/>
 
@@ -106,7 +107,6 @@
       <dependency groupId="postgresql" artifactId="postgresql" version="8.1-409.jdbc3"/>
 
 
-      <dependency groupId="net.sf.ehcache" artifactId="ehcache" version="1.5.0"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
