@@ -48,6 +48,7 @@
       <version>1.2.8</version>
     </dependency>
     
+    <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache</artifactId>
