@@ -55,6 +55,7 @@
       <fileset dir="${yanel.source.home}/conf/entities"/>
     </copy>
 
+    <copy file="${yanel.source.home}/conf/ehcache.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.source.home}/conf/spring-yanel-config.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.source.home}/conf/realms.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.source.home}/conf/log4j.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
