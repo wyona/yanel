@@ -103,7 +103,7 @@
       <dependency groupId="sxip" artifactId="openxri-client" version="vUNKNOWN"/>
       <dependency groupId="sxip" artifactId="openxri-syntax" version="vUNKNOWN"/>
       <dependency groupId="sxip" artifactId="jug" version="1.1"/>
-      <dependency groupId="sxip" artifactId="xmlsec" version="1.1"/>
+      <dependency groupId="xml-security" artifactId="xmlsec" version="1.3.0"/>
       <dependency groupId="com.ibm.icu" artifactId="icu4j" version="3.4.4"/>
 
       <dependency groupId="postgresql" artifactId="postgresql" version="8.1-409.jdbc3"/>
