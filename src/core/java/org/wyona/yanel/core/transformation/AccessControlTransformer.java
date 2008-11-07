@@ -109,12 +109,12 @@ public class AccessControlTransformer extends AbstractTransformer {
                     if (classAttr != null && classAttr.indexOf("rubrikgruppe") != -1) {
                         String idAttr = parentAttrs.getValue("id");
                         if (idAttr != null) {
-                            log.error("DEBUG: Check policy for path: " + "/de/" + idAttr);
+                            if (log.isDebugEnabled()) log.debug("Check policy for path: " + "/de/" + idAttr);
                             if (policyManager.authorize("/de/" + idAttr, identity, usecase)) {
-                                log.error("DEBUG: Access granted for 'GROUP' with " + identity + ", " + usecase + ", " + path);
+                                if (log.isDebugEnabled()) log.debug("Access granted for 'GROUP' with " + identity + ", " + usecase + ", " + path);
                                 reinsertBufferedParentElementAndAnchor();
                             } else {
-                                log.error("DEBUG: Access denied for 'GROUP' with " + identity + ", " + usecase + ", " + path);
+                                if (log.isDebugEnabled()) log.debug("Access denied for 'GROUP' with " + identity + ", " + usecase + ", " + path);
                                 accessGranted = false;
                             }
                         }
