@@ -16,7 +16,7 @@ if [ "$JAVA_HOME" = "" ];then
   echo "                 setenv JAVA_HOME /System/Library/Frameworks/JavaVM.framework/Home"
   echo "                 or"
   echo "                 export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home"
-  echo "       Linux   : export JAVA_HOME=/usr/local/j2sdk-..."
+  echo "       Linux   : export JAVA_HOME=/usr/local/jdk-1.5.0 (whereas '/usr/local/jdk-1.5.0' is just an example path)"
   echo "       Windows : Click Start ..."
   exit 1
 fi
