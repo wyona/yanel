@@ -12,13 +12,13 @@
       </condition>
     </fail>
 
-    <property name="snapshot.dir" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin"/>
-    <fail message="Directory already exists: '${snapshot.dir}'. Either delete this directory or use a different version/revision!">
+    <property name="snapshot.dir.unix" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin"/>
+    <fail message="Directory already exists: '${snapshot.dir.unix}'. Either delete this directory or use a different version/revision!">
       <condition>
-        <available file="${snapshot.dir}" type="dir"/>
+        <available file="${snapshot.dir.unix}" type="dir"/>
       </condition>
     </fail>
-    <mkdir dir="${snapshot.dir}"/>
+    <mkdir dir="${snapshot.dir.unix}"/>
 
     <property name="snapshot.dir.win" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin-win"/>
     <fail message="Directory already exists: '${snapshot.dir.win}'. Either delete this directory or use a different version/revision!">
@@ -43,7 +43,7 @@
 
     <!-- UNIX specific snapshot -->
     <antcall target="bin-snapshot-unix"/>
-    <!--<delete dir="${snapshot.dir}"/>-->
+    <delete dir="${snapshot.dir.unix}"/>
 
     <delete dir="${tmp.dir}"/>
   </target>
@@ -57,41 +57,41 @@
     </artifact:dependencies>
     
     <!-- Unpack Tomcat -->
-    <unzip dest="${snapshot.dir}">
+    <unzip dest="${snapshot.dir.unix}">
       <fileset refid="maven2.tomcat.fileset"/>
     </unzip>
-    <delete dir="${snapshot.dir}/META-INF"/>
-    <chmod dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/bin" perm="755" includes="*"/>
+    <delete dir="${snapshot.dir.unix}/META-INF"/>
+    <chmod dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/bin" perm="755" includes="*"/>
 
     <!-- TODO: Differentiate between Java 1.4 and higher (jmx.jar)! -->
 <!--
-    <copy file="${yanel.source.home}/tools/apache-tomcat/java-1.4/apache-tomcat-5.5.20/bin/jmx.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/bin"/>
+    <copy file="${yanel.source.home}/tools/apache-tomcat/java-1.4/apache-tomcat-5.5.20/bin/jmx.jar" todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/bin"/>
 -->
 
     <!-- Endorsed libs -->
 <!--
-    <copy file="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/common/endorsed"/>
-    <copy file="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/common/endorsed"/>
+    <copy file="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar" todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/common/endorsed"/>
+    <copy file="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/common/endorsed"/>
 -->
 
     <!-- delete unused tomcat files -->
-    <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/ROOT"/>
-    <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/jsp-examples"/>
-    <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/servlets-examples"/>
-    <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/tomcat-docs"/>
-    <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/balancer"/>
-    <delete dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/webapps/webdav"/>
+    <delete dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/ROOT"/>
+    <delete dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/jsp-examples"/>
+    <delete dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/servlets-examples"/>
+    <delete dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/tomcat-docs"/>
+    <delete dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/balancer"/>
+    <delete dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/webdav"/>
     
     <!-- Create base dir of yanel webapps -->
-    <mkdir dir="${snapshot.dir}/apache-tomcat-${tomcat.version}/yanel-webapps"/>
+    <mkdir dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/yanel-webapps"/>
 
     <!-- Add context file -->
-    <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}.xml"/>
-    <replace file="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}.xml" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
+    <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}.xml"/>
+    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}.xml" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
       <replacetoken>@YANEL_VERSION@</replacetoken>
     </replace>
-    <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml"/>
-    <replace file="${snapshot.dir}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
+    <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml"/>
+    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
       <replacetoken>@YANEL_VERSION@</replacetoken>
     </replace>
   </target>
@@ -175,12 +175,12 @@
     <!-- Unpatch install.rdf ... -->
 
     <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}">
-      <fileset dir="${snapshot.dir}/apache-tomcat-${tomcat.version}" />
+      <fileset dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}" />
     </copy>
     <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/yanel-webapps/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
       <fileset dir="${tmp.dir}"/>
     </copy>
-    <!-- <move file="${snapshot.dir}/${servlet.context.prefix}.war" todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps"/> -->
+    <!-- <move file="${snapshot.dir.unix}/${servlet.context.prefix}.war" todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps"/> -->
 
     <copy file="${yanel.source.home}/LICENSE.txt" todir="${snapshot.dir.win}"/>
 
@@ -198,27 +198,27 @@
     </replace>
 
     <!-- Create ZIP file 
-    <zip destfile="${snapshot.dir}.zip">
-      <zipfileset dir="${snapshot.dir}" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin" filemode="755"/>
+    <zip destfile="${snapshot.dir.unix}.zip">
+      <zipfileset dir="${snapshot.dir.unix}" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin" filemode="755"/>
     </zip>
     -->
   </target>
   
   <target name="bin-snapshot-unix">
-    <copy todir="${snapshot.dir}/apache-tomcat-${tomcat.version}/yanel-webapps/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
+    <copy todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/yanel-webapps/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
       <fileset dir="${tmp.dir}"/>
     </copy>
     <!-- Copy UNIX and Windows specific files -->
-    <copy file="${yanel.source.home}/src/binary-dist/README-UNIX.txt" tofile="${snapshot.dir}/README.txt" overwrite="true"/>
-    <copy file="${yanel.source.home}/src/binary-dist/start.sh" todir="${snapshot.dir}"/>
-    <copy file="${yanel.source.home}/src/binary-dist/stop.sh" todir="${snapshot.dir}"/>
+    <copy file="${yanel.source.home}/src/binary-dist/README-UNIX.txt" tofile="${snapshot.dir.unix}/README.txt" overwrite="true"/>
+    <copy file="${yanel.source.home}/src/binary-dist/start.sh" todir="${snapshot.dir.unix}"/>
+    <copy file="${yanel.source.home}/src/binary-dist/stop.sh" todir="${snapshot.dir.unix}"/>
 
     <!-- Create TGZ file -->
-    <tar destfile="${snapshot.dir}.tar">
-      <tarfileset dir="${snapshot.dir}" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin" mode="775"/>
+    <tar destfile="${snapshot.dir.unix}.tar">
+      <tarfileset dir="${snapshot.dir.unix}" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin" mode="775"/>
     </tar>
-    <gzip src="${snapshot.dir}.tar" destfile="${snapshot.dir}.tar.gz"/>
-    <delete file="${snapshot.dir}.tar"/>
+    <gzip src="${snapshot.dir.unix}.tar" destfile="${snapshot.dir.unix}.tar.gz"/>
+    <delete file="${snapshot.dir.unix}.tar"/>
   </target>
   
 </project>
