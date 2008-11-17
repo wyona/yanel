@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
 
-<project name="javadoc" default="javadoc" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="javadoc" default="generate-javadoc" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <target name="generate-javadoc" description="Generate Javadoc" depends="init">
+      <condition property="javadoc-does-not-exist-yet">
+      <not>
+        <available file="${build.dir}/javadoc" type="dir"/>
+      </not>
+    </condition>
+    <antcall target="javadoc"/>
+    <antcall target="javadoc-exists"/>
+  </target>
   
 <target name="javadoc" description="Generate Javadoc" depends="init,set-javadoc-classpath" if="javadoc-does-not-exist-yet">
     <mkdir dir="${build.dir}/javadoc"/>
@@ -23,20 +33,10 @@
     <echo>You should find the javadoc under: ${build.dir}/javadoc/index.html</echo>
   </target>
 
-  <target name="generate-javadoc" description="Generate Javadoc" depends="init">
-      <condition property="javadoc-does-not-exist-yet">
-      <not>
-        <available file="${build.dir}/javadoc" type="dir"/>
-      </not>
-    </condition>
-    <antcall target="javadoc"/>
-    <antcall target="javadoc-exisits"/>
-  </target>
-
-  <target name="javadoc-exisits" unless="javadoc-does-not-exist-yet">
+  <target name="javadoc-exists" unless="javadoc-does-not-exist-yet">
     <echo/>
     <echo/>
-    <echo>The Javadoc already exisits. You should find it under: ${build.dir}/javadoc/index.html</echo>
+    <echo>The Javadoc already exists. You should find it under: ${build.dir}/javadoc/index.html</echo>
   </target>
   
   <target name="set-javadoc-classpath" description="Set javadoc classpath" depends="init, dependencies">
