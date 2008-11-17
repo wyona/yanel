@@ -125,12 +125,6 @@
       <mapper type="flatten"/>
     </copy>
 
-    <!-- TODO: So far only the javadoc of the core is being built -->
-    <condition property="javadoc-does-not-exist-yet">
-      <not>
-        <available file="${build.dir}/javadoc" type="dir"/>
-      </not>
-    </condition>
     <antcall target="generate-javadoc"/>
 
     <ant antfile="${yanel.source.home}/build/build-resource-types.xml" target="copy-resources-dependencies"/>
