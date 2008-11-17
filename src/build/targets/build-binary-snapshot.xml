@@ -28,9 +28,10 @@
     </fail>
     <mkdir dir="${snapshot.dir.win}"/>
 
-    <property name="tmp.dir" value="${snapshot.dir}/tmp"/>
-
     <antcall target="prepare-tomcat"/>
+
+    <property name="tmp.dir" value="${snapshot.dir}/tmp"/>
+    <mkdir dir="${tmp.dir}"/>
 
     <antcall target="copy-realms-resources"/>
 
@@ -45,7 +46,9 @@
 -->
     <!--<delete dir="${snapshot.dir}"/>-->
 
+<!--
     <delete dir="${tmp.dir}"/>
+-->
   </target>
 
   <target name="prepare-tomcat">
@@ -122,13 +125,13 @@
     <copy file="${yanel.source.home}/conf/resource-types.xml" tofile="${tmp.dir}/WEB-INF/classes/resource-types.xml" overwrite="true"/>
 
     <replace file="${tmp.dir}/WEB-INF/classes/resource-types.xml" value="../../resources">
-      <replacetoken>../src/resources</replacetoken>
+      <replacetoken>@YANEL_SRC_DIR@/src/resources</replacetoken>
     </replace>
     <replace file="${tmp.dir}/WEB-INF/classes/resource-types.xml" value="../../resources">
-      <replacetoken>../src/contributions/resources</replacetoken>
+      <replacetoken>@YANEL_SRC_DIR@/src/contributions/resources</replacetoken>
     </replace>
     <replace file="${tmp.dir}/WEB-INF/classes/resource-types.xml" value="../../resources">
-      <replacetoken>../src/realms/welcome-admin/yanel/resources</replacetoken>
+      <replacetoken>@YANEL_SRC_DIR@/src/realms/welcome-admin/yanel/resources</replacetoken>
     </replace>
 
     <copy todir="${tmp.dir}/resources">
