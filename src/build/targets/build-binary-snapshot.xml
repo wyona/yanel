@@ -3,22 +3,38 @@
 <project name="build-binary-snapshot" default="bin-snapshot" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
   
   <target name="bin-snapshot" description="Create a binary snapshot" depends="init, webapp">
-    <delete dir="${build.dir}/bin-snapshots"/>
-    <property name="target.servlet.context.prefix" value="ROOT"/>
+    <fail message="No revision specified! Please configure property 'yanel.revision' within 'src/build/local.build.properties'.">
+      <condition>
+        <equals arg1="${yanel.revision}" arg2="REVISION"/>
+      </condition>
+    </fail>
+
     <property name="snapshot.dir" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin"/>
+    <fail message="Directory already exists: '${snapshot.dir}'. Either delete this directory or use a different version/revision!">
+      <condition>
+        <available file="${snapshot.dir}" type="dir"/>
+      </condition>
+    </fail>
     <mkdir dir="${snapshot.dir}"/>
+
+    <property name="snapshot.dir.win" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin-win"/>
+    <fail message="Directory already exists: '${snapshot.dir.win}'. Either delete this directory or use a different version/revision!">
+      <condition>
+        <available file="${snapshot.dir.win}" type="dir"/>
+      </condition>
+    </fail>
+    <mkdir dir="${snapshot.dir.win}"/>
+
+    <property name="target.servlet.context.prefix" value="ROOT"/>
     <antcall target="prepare-tomcat"/>
     <antcall target="copy-realms-resources"/>
 
     <!-- Windows specific snapshot -->
-    <property name="snapshot.dir.win" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin-win"/>
-    <mkdir dir="${snapshot.dir.win}"/>
     <antcall target="bin-snapshot-win"/>
 
     <!-- UNIX specific snapshot -->
     <antcall target="bin-snapshot-unix"/>
-    
-    <delete dir="${snapshot.dir}"/>
+    <!--<delete dir="${snapshot.dir}"/>-->
   </target>
 
   <target name="prepare-tomcat">
