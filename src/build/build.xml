@@ -150,9 +150,31 @@
     </artifact:install>      
   </target>
 
-  <target name="source-snapshot" description="Create a source code snapshot" depends="init, clean-all">
-    <delete dir="${build.dir}/source-snapshots"/>
+  <target name="source-snapshot" description="Create a source code snapshot" depends="init">
+    <fail message="No revision specified! Please configure property 'yanel.revision' within 'src/build/local.build.properties'.">
+      <condition>
+        <equals arg1="${yanel.revision}" arg2="REVISION"/>
+      </condition>
+    </fail>
     <property name="snapshot.dir" value="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src"/>
+    <fail message="Directory already exists: '${snapshot.dir}'. Either delete this directory or use a different version/revision!">
+      <condition>
+        <available file="${snapshot.dir}" type="dir"/>
+      </condition>
+    </fail>
+
+<!-- Start exporting from SVN -->
+    <mkdir dir="${build.dir}/source-snapshots"/>
+    <exec executable="svn">
+      <arg value="export"/>
+      <arg value="-r${yanel.revision}"/>
+      <arg value="https://svn.wyona.com/repos/public/yanel/trunk"/>
+      <arg value="${snapshot.dir}"/>
+    </exec>
+<!-- End exporting from SVN -->
+
+<!-- Start copying the local version -->
+<!--
     <mkdir dir="${snapshot.dir}/src"/>
     <copy file="${yanel.source.home}/README.txt" todir="${snapshot.dir}"/>
     <copy file="${yanel.source.home}/configure.sh" todir="${snapshot.dir}"/>
@@ -168,14 +190,21 @@
       <fileset dir="${yanel.source.home}/src" excludes="build/local.build.properties, contributions/resources/nutch/conf/nutch-local.xml"/>
     </copy>
     <copy todir="${snapshot.dir}/tools">
-      <fileset dir="${yanel.source.home}/tools"/>
+      <fileset dir="${yanel.source.home}/tools" excludes="apache-tomcat/java-1.4/**"/>
     </copy>
     <chmod dir="${snapshot.dir}/tools/apache-ant-1.6.5/bin" perm="755" includes="*"/>
     <copy todir="${snapshot.dir}/conf">
       <fileset dir="${yanel.source.home}/conf" excludes="local/**"/>
     </copy>
-    <zip destfile="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src.zip">
-      <zipfileset dir="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src" filemode="755"/>
+-->
+<!-- End copying the local version -->
+
+    <replace file="${snapshot.dir}/src/build/build.properties" value="${yanel.revision}">
+      <replacetoken>REVISION</replacetoken>
+    </replace>
+
+    <zip destfile="${snapshot.dir}.zip">
+      <zipfileset dir="${snapshot.dir}" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src" filemode="755"/>
     </zip>
   </target>
   
