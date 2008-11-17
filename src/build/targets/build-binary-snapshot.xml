@@ -2,10 +2,10 @@
 
 <project name="build-binary-snapshot" default="bin-snapshot" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
   
-  <target name="bin-snapshot" description="Create a binary snapshot" depends="init">
 <!--
-  <target name="bin-snapshot" description="Create a binary snapshot" depends="init, webapp">
+  <target name="bin-snapshot" description="Create a binary snapshot" depends="init">
 -->
+  <target name="bin-snapshot" description="Create a binary snapshot" depends="init, webapp">
     <fail message="No revision specified! Please configure property 'yanel.revision' within 'src/build/local.build.properties'.">
       <condition>
         <equals arg1="${yanel.revision}" arg2="REVISION"/>
@@ -30,25 +30,22 @@
 
     <antcall target="prepare-tomcat"/>
 
-    <property name="tmp.dir" value="${snapshot.dir}/tmp"/>
+    <tstamp>
+      <format property="TIMESTAMP" pattern="yyyyMMddhhmmss"/>
+    </tstamp>
+    <property name="tmp.dir" value="${build.dir}/bin-snapshots/tmp-${TIMESTAMP}"/>
     <mkdir dir="${tmp.dir}"/>
 
     <antcall target="copy-realms-resources"/>
 
     <!-- Windows specific snapshot -->
-<!--
     <antcall target="bin-snapshot-win"/>
--->
 
     <!-- UNIX specific snapshot -->
-<!--
     <antcall target="bin-snapshot-unix"/>
--->
     <!--<delete dir="${snapshot.dir}"/>-->
 
-<!--
     <delete dir="${tmp.dir}"/>
--->
   </target>
 
   <target name="prepare-tomcat">
