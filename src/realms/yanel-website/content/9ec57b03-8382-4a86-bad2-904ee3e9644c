@@ -9,8 +9,8 @@
 <h1>Create Binary for Windows</h1>
 <ul>
 <li>Start Windows<br/></li>
-<li>Checkout Yanel from <a href="download/source-repository.html">SVN</a></li>
-<li>Run <i>build source-snapshot</i></li>
+<li>Checkout Yanel from <a href="download/source-repository.html">SVN</a></li><li>Update the property <i>yanel.revision</i> within <i>src/build/(local).build.properties</i></li>
+<li>Run <i>build source-snapshot</i> (<b>IMPORTANT:</b> whereas command line SVN is required)<br/></li>
 <li>Change directory <i>build/source-snapshots/wyona-yanel-SNAPSHOT-VERSION-rREVISION-src</i></li>
 <li>Run <i>build bin-snapshot</i></li>
 <li>Download NSIS 2.24 from <a href="http://nsis.sourceforge.net/">http://nsis.sourceforge.net/</a></li>
