@@ -2068,10 +2068,25 @@ public class YanelServlet extends HttpServlet {
                 int bytesRead;
                 bytesRead = is.read(buffer);
 
-                // TODO: Compare If-Modified-Since with lastModified and return 304 without content resp. check on ETag
-                String ifModifiedSince = request.getHeader("If-Modified-Since");
-                if (ifModifiedSince != null) {
-                    if (log.isDebugEnabled()) log.debug("TODO: Implement 304 ...");
+                try {
+                    // Compare If-Modified-Since with lastModified and return 304 without content resp. check on ETag
+                    long ifModifiedSince = request.getDateHeader("If-Modified-Since");
+                    if (ifModifiedSince != -1) {
+                        if (res instanceof ModifiableV2) {
+                            long resourceLastMod = ((ModifiableV2)res).getLastModified();
+                            //log.debug(resourceLastMod + " " +  ifModifiedSince);
+                            if (resourceLastMod <= ifModifiedSince) {
+                                response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED);
+                                return response;
+                            }
+                        } else {
+                            // TODO: Many resources do not implement ModifiableV2 and hence never return a lastModified and hence the browser will never ask for ifModifiedSince!
+                            //log.warn("Resource of path '" + res.getPath() + "' is not ModifiableV2 and hence cannot be cached!");
+                            if (log.isDebugEnabled()) log.debug("Resource of path '" + res.getPath() + "' is not ModifiableV2 and hence cannot be cached!");
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
                 }
                 if(lastModified >= 0) response.setDateHeader("Last-Modified", lastModified);
 
