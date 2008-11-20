@@ -56,13 +56,27 @@
   </target>
 
   <target name="startup-tomcat-unix" if="isUnix">
-     <condition property="isTomcat1HomeSet">
-       <isset property="tomcat1.home.dir"/>
+    <fail message="No Tomcat is set within local.build.properties!">
+     <condition>
+       <and>
+         <not>
+           <isset property="tomcat1.home.dir"/>
+         </not>
+         <not>
+           <isset property="tomcat2.home.dir"/>
+         </not>
+       </and>
      </condition>
+    </fail>
+
+    <condition property="isTomcat1HomeSet">
+      <isset property="tomcat1.home.dir"/>
+    </condition>
     <antcall target="startup-tomcat-unix-node1"/>
-     <condition property="isTomcat2HomeSet">
-       <isset property="tomcat2.home.dir"/>
-     </condition>
+
+    <condition property="isTomcat2HomeSet">
+      <isset property="tomcat2.home.dir"/>
+    </condition>
     <antcall target="startup-tomcat-unix-node2"/>
   </target>
 
