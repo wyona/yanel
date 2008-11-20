@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 
+<!-- IMPORTANT: Please also see src/build/targets/webapp/webapp.xml re ambiguous libs -->
 <project name="yanel-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
   <target name="probe-proxy">
