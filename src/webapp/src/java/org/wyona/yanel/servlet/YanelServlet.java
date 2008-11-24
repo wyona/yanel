@@ -61,6 +61,7 @@ import org.wyona.yanel.core.navigation.Node;
 import org.wyona.yanel.core.navigation.Sitetree;
 import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.SourceResolver;
+import org.wyona.yanel.core.source.YanelStreamSource;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.util.DateUtil;
 import org.wyona.yanel.core.workflow.WorkflowException;
@@ -1918,12 +1919,28 @@ public class YanelServlet extends HttpServlet {
                 }
                 SourceResolver resolver = new SourceResolver(resourceOfPrefix);
                 Source source = resolver.resolve(htdocsPath, null);
+                
+                long sourceLastModified = -1;
+                // Compare If-Modified-Since with lastModified and return 304 without content resp. check on ETag
+                if (source instanceof YanelStreamSource) {
+                    sourceLastModified = ((YanelStreamSource) source).getLastModified();
+                    long ifModifiedSince = request.getDateHeader("If-Modified-Since");
+                    if (log.isDebugEnabled()) log.debug("sourceLastModified <= ifModifiedSince: " + sourceLastModified + " <= " + ifModifiedSince);
+                    if (ifModifiedSince != -1) {
+                        if (sourceLastModified <= ifModifiedSince) {
+                            response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED);
+                            return;
+                        }
+                    }
+                }
+                
                 InputStream htdocIn = ((StreamSource) source).getInputStream();
                 
                 if (htdocIn != null) {
                     log.debug("Resource-Type specific data: " + htdocsPath);
                     // TODO: Set HTTP header (mime-type, size, etc.)
                     String mimeType = guessMimeType(FilenameUtils.getExtension(FilenameUtils.getName(htdocsPath)));
+                    if(sourceLastModified >= 0) response.setDateHeader("Last-Modified", sourceLastModified);
                     response.setHeader("Content-Type", mimeType);
 
                     byte buffer[] = new byte[8192];
