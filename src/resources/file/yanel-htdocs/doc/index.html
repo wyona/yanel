@@ -1,20 +1,73 @@
-<html>
+<?xml version="1.0"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>tbd</title>
+    <title>Node/File resource</title>
+    <style>
+h2 {
+  font-size: 130%;
+  color:     #ffffff;
+  background-color: #525D76;
+}
+pre {
+  background-color: efefef;
+}
+td {
+  background-color: eeeeee;
+  color:            000000;
+}
+
+/* first row */
+table tr:first-child td {
+  background-color: cccccc;
+  color:            000000;
+}
+
+/* or th as first row */
+table th {
+  background-color: cccccc;
+  color:            000000;
+}
+    </style>
   </head>
   <body>
-    <h1>from-scratch</h1>
+    <h1>Node/File resource</h1>
+
+    <h2>Overview</h2>
     <dl>
       <dt>Name:</dt>
-      <dd>tbd</dd>
+      <dd>file</dd>
       <dt>Namespace:</dt>
-      <dd>tbd</dd>
+      <dd>http://www.wyona.org/yanel/resource/1.0</dd>
       <dt>UniversalName</dt>
-      <dd>tbd</dd>
+      <dd>&lt;{http://www.wyona.org/yanel/resource/1.0}file/&gt;</dd>
       <dt>Description:</dt>
-      <dd>tbd</dd>
+      <dd>Generic node resource</dd>
       <dt>Java Class:</dt>
-      <dd>tbd</dd>
+      <dd>org.wyona.yanel.impl.resources.node.NodeResource</dd>
     </dl>
+
+    <h2>Examples</h2>
+
+<p><b>Specify mime type if suffix is not sufficient to guess mime type</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0"&gt;
+      &lt;yanel:rti name="file" namespace="http://www.wyona.org/yanel/resource/1.0"/&gt;
+
+      &lt;yanel:property name="mime-type" value="image/png"/&gt;
+    &lt;/yanel:resource-config&gt;
+</pre>
+
+<p><b>Specify repository source path if different from URL (e.g. /foo/bar.html)</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0"&gt;
+      &lt;yanel:rti name="file" namespace="http://www.wyona.org/yanel/resource/1.0"/&gt;
+
+      &lt;yanel:property name="src" value="/foo/bar.xhtml"/&gt;
+      &lt;yanel:property name="mime-type" value="application/xhtml+xml"/&gt;
+    &lt;/yanel:resource-config&gt;
+</pre>
   </body>
 </html>
