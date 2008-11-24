@@ -2,6 +2,8 @@ package org.wyona.yanel.core.source;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.URIResolver;
@@ -51,13 +53,22 @@ public class RTHtdocsResolver implements URIResolver {
             if (log.isDebugEnabled()) {
                 log.debug("Package: " + packageName);
             }
-            InputStream in = resource.getClass().getClassLoader().getResource(packageName.replace('.','/') + "/htdocs" + path).openStream();
-            return new StreamSource(in);
+            
+            URL url = resource.getClass().getClassLoader().getResource(packageName.replace('.','/') + "/htdocs" + path);
+            InputStream in = url.openStream();
+            YanelStreamSource source = new YanelStreamSource(in);
+            URLConnection uc = url.openConnection();
+            long resourceLastModifier = uc.getLastModified();
+            source.setLastModified(resourceLastModifier);
+            return source;
         } catch (Exception e) {
             try {
                 File resourceFile = new File(resource.getRTD().getConfigFile().getParentFile().getAbsolutePath() + "/htdocs" + path.replace('/', File.separatorChar));
                 InputStream in = new java.io.FileInputStream(resourceFile);
-                return new StreamSource(in);
+                YanelStreamSource source = new YanelStreamSource(in);
+                long resourceLastModifier = resourceFile.lastModified();
+                source.setLastModified(resourceLastModifier);
+                return source;
             } catch (Exception ex) {
                 String errorMsg = "Could not resolve URI: " + path + ": " + e.toString();
                 log.error(errorMsg, e);
