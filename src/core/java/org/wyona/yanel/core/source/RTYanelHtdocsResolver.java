@@ -2,6 +2,8 @@ package org.wyona.yanel.core.source;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.URIResolver;
@@ -54,18 +56,25 @@ public class RTYanelHtdocsResolver implements URIResolver {
             if (log.isDebugEnabled()) {
                 log.debug("Package: " + packageName);
             }
-            java.net.URL url = resource.getClass().getClassLoader().getResource(packageName.replace('.','/') + "/yanel-htdocs" + path);
+            URL url = resource.getClass().getClassLoader().getResource(packageName.replace('.','/') + "/yanel-htdocs" + path);
             if (url == null) {
                 log.info("Path " + path + " does not seem to be contained within package " + packageName + " of resource " + resource.getResourceTypeUniversalName());
             }
-            return new StreamSource(url.openStream());
+            InputStream in = url.openStream();
+            YanelStreamSource source = new YanelStreamSource(in);
+            URLConnection uc = url.openConnection();
+            long resourceLastModifier = uc.getLastModified();
+            source.setLastModified(resourceLastModifier);
+            return source;
         } catch (Exception e) {
             File resourceConfigDir = resource.getRTD().getConfigFile().getParentFile();
             log.info("Fallback to resource config location: " + resourceConfigDir);
             try {
                 File resourceFile = new File(resourceConfigDir.getAbsolutePath() + "/yanel-htdocs" + path.replace('/', File.separatorChar));
                 InputStream in = new java.io.FileInputStream(resourceFile);
-                return new StreamSource(in);
+                YanelStreamSource source = new YanelStreamSource(in);
+                source.setLastModified(resourceFile.lastModified());
+                return source;
             } catch (Exception ex) {
                 String errorMsg = "Could not resolve URI: " + path + " (" + e.toString() + ", " + resourceConfigDir + ")";
                 log.error(errorMsg, e);
