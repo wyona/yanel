@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<project name="resource-documentation-test" default="test">
+
+  <import file="../definitions.xml"/>
+
+  <target name="test" depends="wt.defineMacros">
+    <webtest name="Usecase Test resource documentation outside JAR package">
+      &config;
+      <invoke description="Get the page: " url="/yanel/resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3aodt/yanel/doc/index.html"/>
+      <verifyText description="Verify that text is contained in the page" text="ODT"/>
+    </webtest>
+
+    <webtest name="Usecase Test resource documentation inside JAR package">
+      &config;
+      <invoke description="Get the page: " url="/yanel/resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3afile/yanel/doc/index.html"/>
+      <verifyText description="Verify that text is contained in the page" text="Node"/>
+    </webtest>
+  </target>
+
+</project>
