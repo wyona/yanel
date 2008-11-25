@@ -366,7 +366,7 @@ The defaultCache has an implicit name "default" which is a reserved cache name.
         maxElementsInMemory="10000"
         eternal="false"
         timeToIdleSeconds="120"
-        timeToLiveSeconds="120"
+        timeToLiveSeconds="600"
         overflowToDisk="true"
         diskSpoolBufferSizeMB="30"
         maxElementsOnDisk="10000000"
