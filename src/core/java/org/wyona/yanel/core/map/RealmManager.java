@@ -28,7 +28,7 @@ import java.net.URLDecoder;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
@@ -55,16 +55,16 @@ import org.xml.sax.SAXException;
  */
 public class RealmManager {
 
-    private static Category log = Category.getInstance(RealmManager.class);
+    private static Logger log = Logger.getLogger(RealmManager.class);
 
     public static String CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
 
     public static String REALM_DEFAULT_CONFIG_NAME = "realm.xml";
 
     private URL propertiesURL;
-    private File configFile;
+    private File yanelConfigFile;
 
-    private File realmsConfigFile; 
+    private File _realmsConfigFile; 
 
     private LinkedHashMap hm = new LinkedHashMap();
     private Realm rootRealm = null;
@@ -77,21 +77,33 @@ public class RealmManager {
     }
 
     /**
-     *
+     * Initializes realms
+     * @param configurationFile Something like yanel.xml or yanel.properties
      */
     public RealmManager(String configurationFile) throws ConfigurationException {
+        File realmsConfigFile = getSetRealmsConfigFile(configurationFile);
+        log.debug("Realms Configuration: " + realmsConfigFile);
+        readRealms(realmsConfigFile);
+    }
+
+    /**
+     * Get realms configuration file
+     * @param configurationFile Something like yanel.xml or yanel.properties
+     */
+    public File getSetRealmsConfigFile(String configurationFile) throws ConfigurationException {
         CONFIGURATION_FILE = configurationFile;
 
         if (RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE) == null) {
             CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
         }
 
+        File realmsConfigFile = null;
         if (RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE) != null) {
             if (CONFIGURATION_FILE.endsWith(".xml")) {
 
                 try {
                     URI configFileUri = new URI(RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE).toString());
-                    configFile = new File(configFileUri.getPath());
+                    yanelConfigFile = new File(configFileUri.getPath());
                 } catch (Exception e) {
                     String errorMsg = "Failure while reading configuration: " + e.getMessage();
                     log.error(errorMsg, e);
@@ -101,27 +113,25 @@ public class RealmManager {
                 try {
                     DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
                     Configuration config;
-                    config = builder.buildFromFile(configFile);
+                    config = builder.buildFromFile(yanelConfigFile);
 
-                    realmsConfigFile = new File(config.getChild("realms-config")
-                            .getAttribute("src"));
+                    realmsConfigFile = new File(config.getChild("realms-config").getAttribute("src"));
                 } catch (Exception e) {
                     String errorMsg = "Failure while reading configuration: " + e.getMessage();
                     log.error(errorMsg, e);
                     throw new ConfigurationException(errorMsg, e);
                 }
                 if (!realmsConfigFile.isAbsolute()) {
-                    realmsConfigFile = FileUtil.file(configFile.getParentFile().getAbsolutePath(),
+                    realmsConfigFile = FileUtil.file(yanelConfigFile.getParentFile().getAbsolutePath(),
                             realmsConfigFile.toString());
                 }
-                log.debug("Realms Configuration: " + realmsConfigFile);
-                readRealms();
             } else if (CONFIGURATION_FILE.endsWith("properties")) {
                 propertiesURL = RealmManager.class.getClassLoader()
                         .getResource(CONFIGURATION_FILE);
                 if (propertiesURL == null) {
-                    log.error("No such resource: " + CONFIGURATION_FILE);
-                    return;
+                    String errMessage = "No such resource: " + CONFIGURATION_FILE;
+                    log.error(errMessage);
+                    throw new ConfigurationException(errMessage);
                 }
                 Properties props = new Properties();
                 try {
@@ -135,9 +145,6 @@ public class RealmManager {
                         realmsConfigFile = FileUtil.file(propsFile.getParentFile()
                                 .getAbsolutePath(), realmsConfigFile.toString());
                     }
-                    log.debug("Realms Configuration: " + realmsConfigFile);
-                    readRealms();
-                    // assignRepositories();
                 } catch (IOException e) {
                     log.error(e.getMessage(), e);
                     throw new ConfigurationException("Could not load realms configuration file: " + propertiesURL);
@@ -148,6 +155,11 @@ public class RealmManager {
         } else {
             log.error("No such configuration file: " + RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE));
         }
+        if (realmsConfigFile == null) {
+            throw new ConfigurationException("Realms configuration file could not be determined!");
+        }
+        _realmsConfigFile = realmsConfigFile;
+        return realmsConfigFile;
     }
 
     /**
@@ -158,9 +170,17 @@ public class RealmManager {
     }
 
     /**
-     *
+     * Read realms configuration
      */
     public void readRealms() throws ConfigurationException {
+        readRealms(_realmsConfigFile);
+    }
+
+    /**
+     * Read realms configuration
+     * @param realmsConfigFile Realms configuration file
+     */
+    public void readRealms(File realmsConfigFile) throws ConfigurationException {
         hm = new LinkedHashMap();
         rootRealm = null;
 
@@ -171,7 +191,7 @@ public class RealmManager {
         try {
             yanel = Yanel.getInstance();
         } catch (Exception e) {
-            String errorMsg = "Could not get yanel: " + e.getMessage(); 
+            String errorMsg = "Could not initialize yanel: " + e.getMessage();
             log.error(errorMsg, e);
             throw new ConfigurationException(errorMsg, e);
         }
@@ -180,16 +200,20 @@ public class RealmManager {
             PolicyManagerFactory pmFactory = (PolicyManagerFactory) yanel.getBeanFactory().getBean("PolicyManagerFactory");
             IdentityManagerFactory imFactory = (IdentityManagerFactory) yanel.getBeanFactory().getBean("IdentityManagerFactory");
 
-            RepositoryFactory repoFactory = yanel.getRepositoryFactory("DefaultRepositoryFactory");
-            repoFactory.reset();
+            RepositoryFactory defaultRepoFactory = yanel.getRepositoryFactory("DefaultRepositoryFactory");
+            defaultRepoFactory.reset();
+
             RepositoryFactory rtiRepoFactory = yanel.getRepositoryFactory("RTIRepositoryFactory");
             rtiRepoFactory.reset();
+
             RepositoryFactory policiesRepoFactory = yanel.getRepositoryFactory("ACPoliciesRepositoryFactory");
             policiesRepoFactory.reset();
+
             RepositoryFactory identitiesRepoFactory = yanel.getRepositoryFactory("ACIdentitiesRepositoryFactory");
             identitiesRepoFactory.reset();
+
+            log.info("Read realms configuration: " + realmsConfigFile);
             config = builder.buildFromFile(realmsConfigFile);
-            
             Configuration[] realmElements = config.getChildren("realm");
             for (int i = 0;i < realmElements.length; i++) {
                 String mountPoint = realmElements[i].getAttribute("mount-point", null);
@@ -210,8 +234,7 @@ public class RealmManager {
                 }
 
                 try {
-                    if (log.isDebugEnabled()) log.debug("Reading realm config file for [" + realmId + "]: " + realmConfigFile);
-
+                    log.info("Reading realm config file for [" + realmId + "]: " + realmConfigFile);
                     Configuration realmConfig = builder.buildFromFile(realmConfigFile);
                     Realm realm;
                     try {
@@ -313,6 +336,8 @@ public class RealmManager {
     /**
      * Adds a new realm which already physically exists in the filesystem.
      * The new realm will be added to realms.xml and registered in this RealmManager.
+     * @param realmID Realm ID
+     * @param realmName Realm name
      */
     public void addRealm(String realmID, String realmName, String mountPoint, String configFileSrc) throws Exception {
         if (getRealm(realmID) != null) {
@@ -321,7 +346,7 @@ public class RealmManager {
         }
         log.debug("adding realm: " + realmID);
         DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
-        Configuration config = builder.buildFromFile(realmsConfigFile);
+        Configuration config = builder.buildFromFile(_realmsConfigFile);
         Element documentElement = ConfigurationUtil.toElement(config);
         Document document = documentElement.getOwnerDocument(); 
         
@@ -340,7 +365,7 @@ public class RealmManager {
         
         DefaultConfigurationSerializer configSerializer = new DefaultConfigurationSerializer();
         configSerializer.setIndent(true);
-        configSerializer.serializeToFile(realmsConfigFile, config);
+        configSerializer.serializeToFile(_realmsConfigFile, config);
         
         // reload the realm configuration:
         readRealms();
@@ -397,7 +422,7 @@ public class RealmManager {
         }
         String srcConfigSrc = srcRealm.getConfigFile().getAbsolutePath();
         
-        File realmConfigFile = resolveFile(new File(srcConfigSrc), realmsConfigFile);
+        File realmConfigFile = resolveFile(new File(srcConfigSrc), _realmsConfigFile);
         Configuration realmConfig = builder.buildFromFile(realmConfigFile);
         Configuration srcRootConfig = realmConfig.getChild("root-dir", false);
         if (srcRootConfig == null) {
@@ -437,7 +462,7 @@ public class RealmManager {
         String destConfigSrc = destRootDir.getAbsolutePath() + configPath;
         log.debug("destConfigSrc: " + destConfigSrc);
         
-        realmConfigFile = resolveFile(new File(destConfigSrc), realmsConfigFile);
+        realmConfigFile = resolveFile(new File(destConfigSrc), _realmsConfigFile);
         realmConfig = builder.buildFromFile(realmConfigFile);
         Element realmDocument = ConfigurationUtil.toElement(realmConfig);
         
