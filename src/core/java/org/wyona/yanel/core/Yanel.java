@@ -32,7 +32,7 @@ import java.io.File;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  * This class is a singleton.
@@ -46,7 +46,7 @@ public class Yanel {
     private ResourceManager resourceManager;
     private boolean isInitialized = false;
     
-    private static final String SPRING_CONFIG_FILE = "spring-*-config.xml"; 
+    private static final String SPRING_CONFIG_FILE = "spring-*-config.xml";
 
     public static final String DEFAULT_CONFIGURATION_FILE = "yanel.properties";
     public static final String DEFAULT_CONFIGURATION_FILE_XML = "yanel.xml";
@@ -57,15 +57,15 @@ public class Yanel {
     private String revision = null;
     private String reservedPrefix = null;
 
-    private static Category log = Category.getInstance(Yanel.class);
+    private static Logger log = Logger.getLogger(Yanel.class);
 
     /**
-    * Private constructor
-    */
-   private Yanel() throws Exception {
-       applicationContext = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
-   } 
-   
+     * Private constructor
+     */
+    private Yanel() throws Exception {
+        applicationContext = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
+    } 
+
    /**
     * Initialize Yanel
     */
@@ -84,7 +84,8 @@ public class Yanel {
        resourceManager = new ResourceManager();
        resourceManager.setResourceTypeRegistry(rtr);
        
-       /*PolicyManager pm = (PolicyManager) yanel.getBeanFactory().getBean("policyManager");
+/* TODO: Why is this commented?
+       PolicyManager pm = (PolicyManager) yanel.getBeanFactory().getBean("policyManager");
        IdentityManager im = (IdentityManager) yanel.getBeanFactory().getBean("identityManager");
        
        Realm[] realms = realmConfig.getRealms();
@@ -93,7 +94,8 @@ public class Yanel {
            im.addIdentitiesRepository(realms[i].getIdentitiesRepository());
        }
 
-       im = (IdentityManager) yanel.getBeanFactory().getBean("identityManager");*/
+       im = (IdentityManager) yanel.getBeanFactory().getBean("identityManager");
+*/
 
        File configFile = new File(Yanel.class.getClassLoader().getResource(DEFAULT_CONFIGURATION_FILE_XML).getFile());
        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
@@ -144,10 +146,16 @@ public class Yanel {
         return rtr;
     }
     
+    /**
+     * Get resource manager
+     */
     public ResourceManager getResourceManager() {
         return resourceManager;
     }
     
+    /**
+     * Get realm manager
+     */
     public RealmManager getRealmConfiguration() {
         return realmConfig;
     }
