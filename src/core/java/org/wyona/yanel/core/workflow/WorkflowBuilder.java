@@ -46,7 +46,7 @@ public class WorkflowBuilder {
      */
     private Document readDocument(InputStream stream) throws Exception {
         return org.wyona.commons.xml.XMLHelper.readDocument(stream);
-/*
+/* NOTE: Obsolete, XMLHelper above instead
         DocumentBuilder builder = createBuilder();
         return builder.parse(stream);
 */
@@ -59,7 +59,7 @@ public class WorkflowBuilder {
      */
     protected DocumentBuilder createBuilder() throws ParserConfigurationException {
         return org.wyona.commons.xml.XMLHelper.createBuilder();
-/*
+/* NOTE: Obsolete, XMLHelper above instead
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
