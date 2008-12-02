@@ -75,7 +75,7 @@ public class Realm {
     private String proxyPrefix;
 
     /**
-     *
+     * Init realm
      */
     public Realm(String name, String id, String mountPoint, File configFile) throws Exception {
         // TODO: Get realm name from config if name is null (see method configure())!
@@ -84,6 +84,8 @@ public class Realm {
         this.id = id;
         this.mountPoint = mountPoint;
         this.configFile = configFile;
+
+        log.info("Init realm: " + id + ", " + mountPoint + ", " + configFile);
 
         proxySet = false;
 
@@ -107,7 +109,7 @@ public class Realm {
     }
 
     /**
-     *
+     * Configure realm based on configuration
      */
     protected void configure(Configuration config) throws Exception {
         Yanel yanel = Yanel.getInstance();
@@ -193,6 +195,7 @@ public class Realm {
 
         String repoConfigSrc = config.getChild("data", false).getValue();
         repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigSrc));
+        log.info("Set data repository: " + getID() + ", " + repoConfig);
         setRepository(repoFactory.newRepository(getID(), repoConfig));
 
         repoConfigSrc = config.getChild("rti", false).getValue();
