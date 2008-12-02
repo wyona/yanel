@@ -22,7 +22,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.xml.resolver.tools.CatalogResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -42,9 +41,15 @@ public class WorkflowBuilder {
         }
     }
 
+    /**
+     * Create DOM from input stream
+     */
     private Document readDocument(InputStream stream) throws Exception {
+        return org.wyona.commons.xml.XMLHelper.readDocument(stream);
+/*
         DocumentBuilder builder = createBuilder();
         return builder.parse(stream);
+*/
     }
 
     /**
@@ -53,6 +58,8 @@ public class WorkflowBuilder {
      * @throws ParserConfigurationException if an error occurs
      */
     protected DocumentBuilder createBuilder() throws ParserConfigurationException {
+        return org.wyona.commons.xml.XMLHelper.createBuilder();
+/*
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -60,6 +67,7 @@ public class WorkflowBuilder {
         CatalogResolver cr = new CatalogResolver();
         builder.setEntityResolver(cr);
         return builder;
+*/
     }
 
     /**
