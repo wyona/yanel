@@ -3,8 +3,6 @@ package org.wyona.yanel.servlet;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.log4j.Category;
-
 import org.wyona.security.core.api.Identity;
 
 /**
@@ -12,8 +10,6 @@ import org.wyona.security.core.api.Identity;
  */
 public class IdentityMap extends HashMap {
 
-    private static Category log = Category.getInstance(Identity.class);
-    
     public String toString() {
         StringBuffer buf = new StringBuffer();
         Iterator iter = this.keySet().iterator();
