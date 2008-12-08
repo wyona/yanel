@@ -104,11 +104,10 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                         log.warn("Authentication was successful for user: " + user.getID());
                         log.warn("TODO: Add user to session listener!");
                         return null;
-                    } else {
-                        log.warn("Login failed: " + loginUsername);
-                        getXHTMLAuthenticationForm(request, response, realm, "Login failed!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
-                        return response;
                     }
+                    log.warn("Login failed: " + loginUsername);
+                    getXHTMLAuthenticationForm(request, response, realm, "Login failed!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                    return response;
                 } catch (ExpiredIdentityException e) {
                     log.warn("Login failed: [" + loginUsername + "] " + e);
                     getXHTMLAuthenticationForm(request, response, realm, "The account has expired!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
@@ -156,10 +155,9 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                         // TODO: Do not return null (although successful), but rather strip-off all the openid query string stuff and then do a redirect
                         response.sendRedirect(request.getParameter("openid.return_to"));
                         return response;
-                    } else {
-                        log.error("No openid.identity!");
-                        getXHTMLAuthenticationForm(request, response, realm, "OpenID verification successful, but no openid.identity!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                     }
+                    log.error("No openid.identity!");
+                    getXHTMLAuthenticationForm(request, response, realm, "OpenID verification successful, but no openid.identity!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                 } else {
                     getXHTMLAuthenticationForm(request, response, realm, "Login failed: OpenID response from provider could not be verified!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                 }
@@ -215,60 +213,22 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
                         // TODO: send some XML content, e.g. <authentication-successful/>
                         response.setContentType("text/plain; charset=" + YanelServlet.DEFAULT_ENCODING);
-                        response.setStatus(response.SC_OK);
+                        response.setStatus(HttpServletResponse.SC_OK);
 
                         if (log.isDebugEnabled()) log.debug("Neutron Authentication successful.");
                         PrintWriter writer = response.getWriter();
                         writer.print("Neutron Authentication Successful!");
                         return response;
-                    } else {
-                        log.warn("Neutron Authentication failed: " + username);
-
-                        // TODO: Refactor this code with the one from doAuthenticate ...
-                        log.debug("Original Request: " + originalRequest);
-
-                        StringBuffer sb = new StringBuffer("");
-                        sb.append("<?xml version=\"1.0\"?>");
-                        sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authentication\">");
-                        sb.append("<message>Authentication failed!</message>");
-                        sb.append("<authentication>");
-                        // TODO: ...
-                        sb.append("<original-request url=\"" + YanelServlet.encodeXML(originalRequest) + "\"/>");
-                        //sb.append("<original-request url=\"" + getRequestURLQS(request, null, true) + "\"/>");
-                        //TODO: Also support https ...
-                        // TODO: ...
-                        sb.append("<login url=\"" + YanelServlet.encodeXML(originalRequest) + "&amp;yanel.usecase=neutron-auth" + "\" method=\"POST\">");
-                        //sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
-                        sb.append("<form>");
-                        sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
-                        sb.append("<param description=\"Username\" name=\"username\"/>");
-                        sb.append("<param description=\"Password\" name=\"password\"/>");
-                        sb.append("</form>");
-                        sb.append("</login>");
-                        // NOTE: Needs to be a full URL, because user might switch the server ...
-                        // TODO: ...
-                        sb.append("<logout url=\"" + YanelServlet.encodeXML(originalRequest) + "&amp;yanel.usecase=logout" + "\" realm=\"" + realm.getName() + "\"/>");
-                        sb.append("</authentication>");
-                        sb.append("</exception>");
-
-                        log.debug("Neutron-Auth response: " + sb);
-
-                        response.setContentType("application/xml; charset=" + YanelServlet.DEFAULT_ENCODING);
-                        response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
-                        response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
-
-                        PrintWriter w = response.getWriter();
-                        w.print(sb);
-                        return response;
                     }
-                } else {
-                    // TODO: Refactor resp. reuse response from above ...
-                    log.warn("Neutron Authentication failed because username is NULL!");
+                    log.warn("Neutron Authentication failed: " + username);
+
+                    // TODO: Refactor this code with the one from doAuthenticate ...
+                    log.debug("Original Request: " + originalRequest);
 
                     StringBuffer sb = new StringBuffer("");
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authentication\">");
-                    sb.append("<message>Authentication failed because no username was sent!</message>");
+                    sb.append("<message>Authentication failed!</message>");
                     sb.append("<authentication>");
                     // TODO: ...
                     sb.append("<original-request url=\"" + YanelServlet.encodeXML(originalRequest) + "\"/>");
@@ -289,17 +249,52 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                     sb.append("</authentication>");
                     sb.append("</exception>");
 
+                    log.debug("Neutron-Auth response: " + sb);
+
                     response.setContentType("application/xml; charset=" + YanelServlet.DEFAULT_ENCODING);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                     response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
 
-                    PrintWriter writer = response.getWriter();
-                    writer.print(sb);
+                    PrintWriter w = response.getWriter();
+                    w.print(sb);
                     return response;
                 }
-            } else {
-                if (log.isDebugEnabled()) log.debug("No Neutron based authentication request.");
+                // TODO: Refactor resp. reuse response from above ...
+                log.warn("Neutron Authentication failed because username is NULL!");
+
+                StringBuffer sb = new StringBuffer("");
+                sb.append("<?xml version=\"1.0\"?>");
+                sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authentication\">");
+                sb.append("<message>Authentication failed because no username was sent!</message>");
+                sb.append("<authentication>");
+                // TODO: ...
+                sb.append("<original-request url=\"" + YanelServlet.encodeXML(originalRequest) + "\"/>");
+                //sb.append("<original-request url=\"" + getRequestURLQS(request, null, true) + "\"/>");
+                //TODO: Also support https ...
+                // TODO: ...
+                sb.append("<login url=\"" + YanelServlet.encodeXML(originalRequest) + "&amp;yanel.usecase=neutron-auth" + "\" method=\"POST\">");
+                //sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true) + "\" method=\"POST\">");
+                sb.append("<form>");
+                sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
+                sb.append("<param description=\"Username\" name=\"username\"/>");
+                sb.append("<param description=\"Password\" name=\"password\"/>");
+                sb.append("</form>");
+                sb.append("</login>");
+                // NOTE: Needs to be a full URL, because user might switch the server ...
+                // TODO: ...
+                sb.append("<logout url=\"" + YanelServlet.encodeXML(originalRequest) + "&amp;yanel.usecase=logout" + "\" realm=\"" + realm.getName() + "\"/>");
+                sb.append("</authentication>");
+                sb.append("</exception>");
+
+                response.setContentType("application/xml; charset=" + YanelServlet.DEFAULT_ENCODING);
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
+
+                PrintWriter writer = response.getWriter();
+                writer.print(sb);
+                return response;
             }
+            if (log.isDebugEnabled()) log.debug("No Neutron based authentication request.");
 
 
             log.warn("No credentials specified yet!");
@@ -341,7 +336,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             } else if (request.getRequestURI().endsWith(".ics")) {
                 log.warn("Somebody seems to ask for a Calendar (ICS) ...");
                 response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
-                response.sendError(response.SC_UNAUTHORIZED);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             } else {
                 getXHTMLAuthenticationForm(request, response, realm, null, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
             }
