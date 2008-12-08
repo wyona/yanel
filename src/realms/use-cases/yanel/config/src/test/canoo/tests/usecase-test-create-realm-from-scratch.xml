@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<project name="create-realm-from-scratch-test" default="test">
+
+  <import file="../definitions.xml"/>
+
+  <target name="test" depends="wt.defineMacros">
+    <webtest name="Usecase Test create realm from scratch">
+      &config;
+      <invoke description="Get the page: " url="/yanel/add-realm-from-scratch.html"/>
+      <verifyText description="Verify that text is contained in the page" text="Add Realm From Scratch"/>
+    </webtest>
+  </target>
+
+</project>
