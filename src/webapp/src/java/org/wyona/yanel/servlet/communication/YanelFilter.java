@@ -26,14 +26,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 public class YanelFilter implements Filter {
-    private FilterConfig filterConfig;
-
     public void init(FilterConfig filterConfig) throws ServletException {
-        this.filterConfig = filterConfig;
     }
 
     public void destroy() {
-        this.filterConfig = null;
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
