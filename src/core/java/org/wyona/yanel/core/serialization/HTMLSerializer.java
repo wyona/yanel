@@ -1,12 +1,10 @@
 package org.wyona.yanel.core.serialization;
 
-import org.apache.log4j.Category;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 public class HTMLSerializer extends XMLSerializer {
 
-    private static Category log = Category.getInstance(HTMLSerializer.class);
     private boolean visitedRootElement = false;
     
     protected static final String[] nonCollapsableElements = { "textarea", "script", "style", "div" };
