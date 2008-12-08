@@ -32,7 +32,6 @@ import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
-import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 import org.wyona.yanel.core.workflow.Workflow;
 import org.wyona.yanel.core.workflow.WorkflowException;
@@ -133,7 +132,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         mimeType = getResourceConfigProperty("mime-type");
         if (mimeType != null) return mimeType;
 
-        String suffix = PathUtil.getSuffix(getPath());
+        String suffix = org.wyona.commons.io.PathUtil.getSuffix(getPath());
         if (suffix != null) {
             log.debug("SUFFIX: " + suffix);
             if (suffix.equals("html")) {
@@ -292,8 +291,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 
     public Date getCheckoutDate() throws Exception {
-        Node node = getRealm().getRepository().getNode(getPath());
-        // return node.getCheckoutDate();
+        log.warn("Get checkout date not implemented!");
+        //Node node = getRealm().getRepository().getNode(getPath());
+        //return node.getCheckoutDate();
         return null;
     }
 
@@ -414,7 +414,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * Get introspection for Introspectable interface
      */
     public String getIntrospection() throws Exception {
-        String name = PathUtil.getName(getPath());
+        String name = org.wyona.commons.io.PathUtil.getName(getPath());
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<introspection xmlns=\"http://www.wyona.org/neutron/2.0\">");
 
