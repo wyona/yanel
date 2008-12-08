@@ -82,16 +82,15 @@ public class HttpRequest extends HttpServletRequestWrapper {
         String value = super.getParameter(name);
         if(!isMultipartRequest()) {
             return fixEncoding(value);
-        } else {
-            Iterator iter = this.items.iterator();
-            while (iter.hasNext()) {
-                FileItem item = (FileItem)iter.next();
-                if (item.getFieldName().equals(name) && item.isFormField()) {
-                    return item.getString(); // TODO: fix encoding ?
-                }
-            }
-            return null;
         }
+        Iterator iter = this.items.iterator();
+        while (iter.hasNext()) {
+            FileItem item = (FileItem)iter.next();
+            if (item.getFieldName().equals(name) && item.isFormField()) {
+                return item.getString(); // TODO: fix encoding ?
+            }
+        }
+        return null;
     }
     
     private String fixEncoding(String str) {
@@ -124,20 +123,19 @@ public class HttpRequest extends HttpServletRequestWrapper {
     public Map getParameterMap() {
         if(!isMultipartRequest()) {
             return super.getParameterMap();
-        } else {
-            Map map = new HashMap();
-            Iterator iter = this.items.iterator();
-            while (iter.hasNext()) {
-                FileItem item = (FileItem)iter.next();
-                if (item.isFormField()) {
-                    map.put(item.getFieldName(), item.getString()); // TODO: fix encoding
-                    // TODO: fix multiple parameters for one name -> create array
-                } else {
-                    // TODO
-                }
+        }
+        Map map = new HashMap();
+        Iterator iter = this.items.iterator();
+        while (iter.hasNext()) {
+            FileItem item = (FileItem)iter.next();
+            if (item.isFormField()) {
+                map.put(item.getFieldName(), item.getString()); // TODO: fix encoding
+                // TODO: fix multiple parameters for one name -> create array
+            } else {
+                // TODO
             }
-            return map;
-        }        
+        }
+        return map;        
     }
     
     /**
@@ -146,19 +144,18 @@ public class HttpRequest extends HttpServletRequestWrapper {
     public Enumeration getParameterNames() {
         if(!isMultipartRequest()) {
             return super.getParameterNames();
-        } else {
-            // use a set to avoid duplicate entries
-            HashSet set = new HashSet();
-            Iterator iter = this.items.iterator();
-            while (iter.hasNext()) {
-                FileItem item = (FileItem)iter.next();
-                if (item.isFormField()) {
-                    // don't add file upload fields
-                    set.add(item.getFieldName());
-                }
-            }
-            return new Vector(set).elements();
         }
+        // use a set to avoid duplicate entries
+        HashSet set = new HashSet();
+        Iterator iter = this.items.iterator();
+        while (iter.hasNext()) {
+            FileItem item = (FileItem)iter.next();
+            if (item.isFormField()) {
+                // don't add file upload fields
+                set.add(item.getFieldName());
+            }
+        }
+        return new Vector(set).elements();
     }
     
     /**
@@ -168,17 +165,16 @@ public class HttpRequest extends HttpServletRequestWrapper {
         if(!isMultipartRequest()) {
             // TODO: fix encoding
             return super.getParameterValues(name);
-        } else {
-            ArrayList values = new ArrayList();
-            Iterator iter = this.items.iterator();
-            while (iter.hasNext()) {
-                FileItem item = (FileItem)iter.next();
-                if (item.getFieldName().equals(name)) {
-                    values.add(item.getString()); // TODO: fix encoding ?
-                }
-            }
-            return (String[]) values.toArray(new String[values.size()]);
         }
+        ArrayList values = new ArrayList();
+        Iterator iter = this.items.iterator();
+        while (iter.hasNext()) {
+            FileItem item = (FileItem)iter.next();
+            if (item.getFieldName().equals(name)) {
+                values.add(item.getString()); // TODO: fix encoding ?
+            }
+        }
+        return (String[]) values.toArray(new String[values.size()]);
     }
     
     public boolean isMultipartRequest() {
@@ -194,17 +190,16 @@ public class HttpRequest extends HttpServletRequestWrapper {
     public Enumeration getFileNames() {
         if(!isMultipartRequest()) {
             return null;
-        } else {
-            Vector parameterNames = new Vector(); 
-            Iterator iter = this.items.iterator();
-            while (iter.hasNext()) {
-                FileItem item = (FileItem)iter.next();
-                if (!item.isFormField()) {
-                    parameterNames.addElement(item.getFieldName());
-                }
-            }
-            return parameterNames.elements();
         }
+        Vector parameterNames = new Vector(); 
+        Iterator iter = this.items.iterator();
+        while (iter.hasNext()) {
+            FileItem item = (FileItem)iter.next();
+            if (!item.isFormField()) {
+                parameterNames.addElement(item.getFieldName());
+            }
+        }
+        return parameterNames.elements();
     }
     
     /**
@@ -215,16 +210,15 @@ public class HttpRequest extends HttpServletRequestWrapper {
     public String getFilesystemName(String name) {
         if(!isMultipartRequest()) {
             return null;
-        } else {
-            Iterator iter = this.items.iterator();
-            while (iter.hasNext()) {
-                FileItem item = (FileItem)iter.next();
-                if (item.getFieldName().equals(name)) {
-                    return fixFileName(item.getName());
-                }
-            }
-            return null;
         }
+        Iterator iter = this.items.iterator();
+        while (iter.hasNext()) {
+            FileItem item = (FileItem)iter.next();
+            if (item.getFieldName().equals(name)) {
+                return fixFileName(item.getName());
+            }
+        }
+        return null;
     }
     
     /**
@@ -235,16 +229,15 @@ public class HttpRequest extends HttpServletRequestWrapper {
     public String getContentType(String name) {
         if(!isMultipartRequest()) {
             return null;
-        } else {
-            Iterator iter = this.items.iterator();
-            while (iter.hasNext()) {
-                FileItem item = (FileItem)iter.next();
-                if (item.getFieldName().equals(name)) {
-                    return item.getContentType();
-                }
-            }
-            return null;
         }
+        Iterator iter = this.items.iterator();
+        while (iter.hasNext()) {
+            FileItem item = (FileItem)iter.next();
+            if (item.getFieldName().equals(name)) {
+                return item.getContentType();
+            }
+        }
+        return null;
     
     }
     
@@ -257,16 +250,15 @@ public class HttpRequest extends HttpServletRequestWrapper {
     public InputStream getInputStream(String name) throws IOException {
         if(!isMultipartRequest()) {
             return null;
-        } else {
-            Iterator iter = this.items.iterator();
-            while (iter.hasNext()) {
-                FileItem item = (FileItem)iter.next();
-                if (item.getFieldName().equals(name)) {
-                    return item.getInputStream();
-                }
-            }
-            return null;
         }
+        Iterator iter = this.items.iterator();
+        while (iter.hasNext()) {
+            FileItem item = (FileItem)iter.next();
+            if (item.getFieldName().equals(name)) {
+                return item.getInputStream();
+            }
+        }
+        return null;
     }    
     
     protected String fixFileName(String name) {
