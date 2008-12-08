@@ -19,10 +19,7 @@ package org.wyona.yanel.core.map;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
-import java.lang.IllegalAccessException;
-import java.lang.InstantiationException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.LinkedHashMap;
@@ -38,17 +35,10 @@ import org.apache.avalon.framework.configuration.DefaultConfigurationSerializer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.wyona.commons.io.FileUtil;
-import org.wyona.security.core.IdentityManagerFactory;
-import org.wyona.security.core.PolicyManagerFactory;
-import org.wyona.security.core.api.IdentityManager;
-import org.wyona.security.core.api.PolicyManager;
 import org.wyona.yanel.core.ConfigurationException;
 import org.wyona.yanel.core.Yanel;
-import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
-import org.xml.sax.SAXException;
 
 /**
  * Class managing registration of realms (adding, updating, copying, deleting, ...)
@@ -197,8 +187,8 @@ public class RealmManager {
         }
         
         try {
-            PolicyManagerFactory pmFactory = (PolicyManagerFactory) yanel.getBeanFactory().getBean("PolicyManagerFactory");
-            IdentityManagerFactory imFactory = (IdentityManagerFactory) yanel.getBeanFactory().getBean("IdentityManagerFactory");
+//            PolicyManagerFactory pmFactory = (PolicyManagerFactory) yanel.getBeanFactory().getBean("PolicyManagerFactory");
+//            IdentityManagerFactory imFactory = (IdentityManagerFactory) yanel.getBeanFactory().getBean("IdentityManagerFactory");
 
             RepositoryFactory defaultRepoFactory = yanel.getRepositoryFactory("DefaultRepositoryFactory");
             defaultRepoFactory.reset();
