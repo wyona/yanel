@@ -26,7 +26,6 @@ import org.wyona.yanel.core.api.attributes.WorkflowableV1;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
-import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.workflow.WorkflowException;
 import org.wyona.yanel.core.workflow.WorkflowHelper;
 import org.wyona.yanel.servlet.communication.HttpRequest;
@@ -106,7 +105,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         if (mimeType != null) return mimeType;
 
         // TODO: Load config mime.types ...
-        String suffix = PathUtil.getSuffix(getPath());
+        String suffix = org.wyona.commons.io.PathUtil.getSuffix(getPath());
         if (suffix != null) {
             log.debug("SUFFIX: " + suffix);
             mimeType = getMimeTypeBySuffix(suffix);
@@ -199,10 +198,9 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
                 log.warn("Node \"" + getPath() + "\" does not seem to have any revisions! The repository \"" + getRealm().getRepository() + "\"  might not support revisions!");
             }
             return revisionInfos;
-        } else {
-            log.warn("Node '" + getNode().getPath() + "' has no revisions!");
-            return null;
         }
+        log.warn("Node '" + getNode().getPath() + "' has no revisions!");
+        return null;
     }
 
     public void checkin(String comment) throws Exception {
@@ -249,7 +247,8 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     public Date getCheckoutDate() throws Exception {
-        Node node = getNode();
+        log.warn("Get checkout date not implemented yet!");
+        // Node node = getNode();
         // return node.getCheckoutDate();
         return null;
     }
@@ -325,7 +324,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
                         Streams.copy(is, output, true);
                         uploadMimeType = yanelRequest.getContentType(name);
 
-                        String suffix = PathUtil.getSuffix(newNode.getPath());
+                        String suffix = org.wyona.commons.io.PathUtil.getSuffix(newNode.getPath());
                         if (suffix != null) {
                             if (!getMimeTypeBySuffix(suffix).equals(uploadMimeType)) {
                                 log.warn("Upload request content type '" + uploadMimeType + "' is NOT the same as the guessed mime type '" + getMimeTypeBySuffix(suffix) + "' based on the suffix (Path: " + newNode.getPath() + ")");
@@ -404,7 +403,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      * Get introspection document
      */
     public String getIntrospection() throws Exception {
-        String name = PathUtil.getName(getPath());
+        String name = org.wyona.commons.io.PathUtil.getName(getPath());
         StringBuffer buf = new StringBuffer();
         buf.append("<?xml version=\"1.0\"?>");
         buf.append("<introspection xmlns=\"http://www.wyona.org/neutron/2.0\">");
