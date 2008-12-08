@@ -17,12 +17,9 @@
 package org.wyona.yanel.core.map;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.wyona.commons.io.FileUtil;
-import org.wyona.commons.io.Path;
 import org.wyona.security.core.IdentityManagerFactory;
 import org.wyona.security.core.PolicyManagerFactory;
 import org.wyona.security.core.api.IdentityManager;
@@ -252,14 +249,13 @@ public class Realm {
         }
 
         Configuration reposElement = config.getChild("yarep-repositories", false);
-        ArrayList repos = new ArrayList();
         if (reposElement != null) {
             Configuration[] repoElements = reposElement.getChildren("repository");
             for (int i = 0; i < repoElements.length; i++) {
                 String id = repoElements[i].getAttribute("id");
                 String repoConfigPath = repoElements[i].getAttribute("config");
                 repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigPath));
-                Repository repo = extraRepoFactory.newRepository(id, repoConfig);
+                extraRepoFactory.newRepository(id, repoConfig);
             }
         }
         
@@ -500,7 +496,7 @@ public class Realm {
     }
 
     public void setLanguages(String[] languages) {
-        this.languages = (String[])languages.clone();
+        this.languages = languages.clone();
     }
 
     public TranslationManager getTranslationManager() {
@@ -517,9 +513,8 @@ public class Realm {
         RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory("ExtraRepositoryFactory");
         if (extraRepoFactory.exists(id)) {
             return extraRepoFactory.newRepository(id);
-        } else {
-            return null;
-        }
+        } 
+        return null;
     }
 
     public LanguageHandler getLanguageHandler() {
