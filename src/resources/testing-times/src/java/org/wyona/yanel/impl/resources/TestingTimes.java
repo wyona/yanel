@@ -5,7 +5,6 @@
 package org.wyona.yanel.impl.resources;
 
 import java.awt.Color;
-import java.awt.geom.Arc2D.Double;
 import java.io.InputStream;
 
 import org.apache.log4j.Category;
@@ -51,15 +50,12 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.Second;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.RectangleInsets;
 import org.jfree.chart.ChartUtilities;
-import org.jfree.data.time.MovingAverage;
 
 /**
  * 
@@ -171,7 +167,6 @@ public class TestingTimes extends Resource implements ViewableV1 {
         sb.append("</body>");
         sb.append("</html>");
         
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         File result2htmlXsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile()
                 .getParentFile()
                 .getAbsolutePath(),
@@ -343,8 +338,7 @@ public class TestingTimes extends Resource implements ViewableV1 {
             if(showCases){
                 Node testcaseNode = node.getFirstChild();
                 NamedNodeMap testCaseAttributes = testcaseNode.getAttributes();
-                String caseDate = testCaseAttributes.getNamedItem("date").getNodeValue();
-                //parse date
+                // Parse date ...
                 String[] caseDateFields = date.split("-");
                 String caseTime = testCaseAttributes.getNamedItem("time").getNodeValue();
                 String caseName = name+": "+testCaseAttributes.getNamedItem("name").getNodeValue()+" Case";
@@ -397,7 +391,6 @@ public class TestingTimes extends Resource implements ViewableV1 {
     
     private Transformer globalTransformer(Repository repo) throws Exception,
             TransformerConfigurationException {
-        RepoPath rp = contentRepo();
         if (getXSLTPath() != null) {
             Transformer transformer = TransformerFactory.newInstance()
                     .newTransformer(new StreamSource(repo.getInputStream(getXSLTPath())));
@@ -406,10 +399,9 @@ public class TestingTimes extends Resource implements ViewableV1 {
             transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
             transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
             return transformer;
-        } else {
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            return transformer;
-        }
+        }   
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        return transformer;
     }   
     
     /**
