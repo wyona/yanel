@@ -56,16 +56,15 @@ public class CreateGroupResource extends ExecutableUsecaseResource {
         if (id == null || id.length()==0) {
             this.addError("Please enter a group ID.");
             return false;
-        } else {
-            GroupManager groupManager = getRealm().getIdentityManager().getGroupManager();
-            try {
-                if (groupManager.existsGroup(id)) {
-                    this.addError("Group with this ID exists already.");
-                    return false;
-                }
-            } catch (AccessManagementException e) {
-                throw new UsecaseException(e.getMessage(), e);
+        }
+        GroupManager groupManager = getRealm().getIdentityManager().getGroupManager();
+        try {
+            if (groupManager.existsGroup(id)) {
+                this.addError("Group with this ID exists already.");
+                return false;
             }
+        } catch (AccessManagementException e) {
+            throw new UsecaseException(e.getMessage(), e);
         }
         if (name == null || name.length()==0) {
             this.addError("Please enter a user name.");
