@@ -118,12 +118,10 @@ public class WorkflowHelper {
                 RevisionInformation[] revisions = ((VersionableV2)resource).getRevisions();
                 if (revisions == null || revisions.length == 0) {
                     return null;
-                } else {
-                    return revisions[revisions.length-1].getName();
                 }
-            } else {
-                return workflowable.getWorkflowVariable(LIVE_REVISION_PROPERTY);
+                return revisions[revisions.length-1].getName();
             }
+            return workflowable.getWorkflowVariable(LIVE_REVISION_PROPERTY);
         } catch (Exception e) {
             log.error(e, e);
             throw new WorkflowException(e.getMessage(), e);
@@ -143,9 +141,8 @@ public class WorkflowHelper {
             WorkflowableV1 workflowable = (WorkflowableV1)resource;
             if (getWorkflow(resource) == null || workflowable.getWorkflowVariable(LIVE_REVISION_PROPERTY) != null) {
                 return true;
-            } else {
-                return false;
             }
+            return false;
         } catch (Exception e) {
             log.error(e, e);
             throw new WorkflowException(e.getMessage(), e);
@@ -157,13 +154,11 @@ public class WorkflowHelper {
             String liveRevision = getLiveRevision(resource);
             if (liveRevision != null) {
                 return ((VersionableV2)resource).getView(viewid, liveRevision);
-            } else {
-                // if there are no revisions, show the normal view:
-                return ((ViewableV2)resource).getView(viewid);
             }
-        } else {
-            return null;
+            // if there are no revisions, show the normal view:
+            return ((ViewableV2)resource).getView(viewid);
         }
+        return null;
     }
 
     public static Workflow getWorkflow(Resource resource) throws WorkflowException {
@@ -171,12 +166,11 @@ public class WorkflowHelper {
             String workflowSchema = resource.getResourceConfigProperty("workflow-schema");
             if (workflowSchema == null) {
                 return null;
-            } else {
-                WorkflowBuilder builder = new WorkflowBuilder();
-                InputStream stream = resource.getRealm().getRepository().getNode(workflowSchema).getInputStream();
-                // TODO: cache of workflow
-                return builder.buildWorkflow(stream);
             }
+            WorkflowBuilder builder = new WorkflowBuilder();
+            InputStream stream = resource.getRealm().getRepository().getNode(workflowSchema).getInputStream();
+            // TODO: cache of workflow
+            return builder.buildWorkflow(stream);
         } catch (Exception e) {
             log.error(e, e);
             throw new WorkflowException(e.getMessage(), e);
@@ -253,9 +247,8 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
                 }
                 sb.append("</versions>");
                 return sb.toString();
-            } else {
-                return "<!-- No revisions! -->";
             }
+            return "<!-- No revisions! -->";
         } catch (Exception e) {
             log.error(e, e);
             throw new WorkflowException(e.getMessage(), e);
@@ -282,9 +275,8 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
             Property property = node.getProperty(name);
             if (property != null) {
                 return property.getString();
-            } else {
-                return null;
             }
+            return null;
         } catch (Exception e) {
             log.error(e, e);
             throw new WorkflowException(e.getMessage(), e);
@@ -353,9 +345,8 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
             Property stateProp = node.getRevision(revision).getProperty(WORKFLOW_STATE_PROPERTY);
             if (stateProp != null) {
                 return stateProp.getString();
-            } else {
-                return null;
             }
+            return null;
         } catch (Exception e) {
             log.error(e, e);
             throw new WorkflowException(e.getMessage(), e);
@@ -409,9 +400,8 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
             Property dateProp = node.getRevision(revision).getProperty(WORKFLOW_DATE_PROPERTY);
             if (dateProp != null) {
                 return dateProp.getDate();
-            } else {
-                return null;
             }
+            return null;
         } catch (Exception e) {
             log.error(e, e);
             throw new WorkflowException(e.getMessage(), e);
