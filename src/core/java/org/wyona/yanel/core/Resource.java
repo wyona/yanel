@@ -224,13 +224,11 @@ public abstract class Resource {
         Object param = this.parameters.get(name);
         if (param == null) {
             return null;
-        } else {
-            if (param instanceof String[]) {
-                return ((String [])param)[0];
-            } else {
-                return param.toString();
-            }
         }
+        if (param instanceof String[]) {
+            return ((String [])param)[0];
+        }
+        return param.toString();
     }
 
     /**
