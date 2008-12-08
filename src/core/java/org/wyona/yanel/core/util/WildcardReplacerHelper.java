@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.util.WildcardMatcherHelper;
 
 /**
