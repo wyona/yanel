@@ -23,14 +23,11 @@ import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
-import org.wyona.yanel.core.util.PathUtil;
 
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
-
-import javax.servlet.http.HttpServletRequest;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -89,7 +86,7 @@ public class ODTResource extends Resource implements ViewableV2, ModifiableV2 {
                 log.debug("XSLT file: " + xsltFile);
                 Transformer transformer = TransformerFactory.newInstance()
                         .newTransformer(new StreamSource(xsltFile));
-                transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+                transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
                 // TODO: Is this the best way to generate an InputStream from an OutputStream?
                 java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
                 transformer.transform(new StreamSource(getContentXML(dataRepo)), new StreamResult(baos));
@@ -137,7 +134,7 @@ public class ODTResource extends Resource implements ViewableV2, ModifiableV2 {
 
         }
 
-        String suffix = PathUtil.getSuffix(getPath());
+        String suffix = org.wyona.commons.io.PathUtil.getSuffix(getPath());
         if (suffix != null) {
             log.debug("SUFFIX: " + suffix);
             if (suffix.equals("html")) {
