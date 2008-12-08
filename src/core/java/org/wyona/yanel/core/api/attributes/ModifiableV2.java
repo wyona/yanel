@@ -21,8 +21,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 
-import org.wyona.yanel.core.Path;
-
 /**
  * DEV (not released yet), please be aware that this interface still might change ...
  */
