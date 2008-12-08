@@ -35,7 +35,6 @@ import org.apache.log4j.Category;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.api.attributes.TranslatableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.translatable.TranslationManager;
@@ -84,7 +83,6 @@ public class TranslationResource extends Resource implements ViewableV2 {
         String mimeType = getMimeType(viewId);
         defaultView.setMimeType(mimeType);
 
-        String siteTreePath = null;
         String language = null;
         String currentPath = null;
         if (getParameters() != null) {
@@ -119,7 +117,7 @@ public class TranslationResource extends Resource implements ViewableV2 {
                 TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPath.length];
                 for (int i = 0; i < xsltPath.length; i++) {
                     xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath[i]).getInputStream()));
-                    xsltHandlers[i].getTransformer().setParameter("yanel.path.name", PathUtil.getName(currentPath));
+                    xsltHandlers[i].getTransformer().setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(currentPath));
                     xsltHandlers[i].getTransformer().setParameter("yanel.path", currentPath);
                     xsltHandlers[i].getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, currentPath));
                     xsltHandlers[i].getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(currentPath));
@@ -161,10 +159,9 @@ public class TranslationResource extends Resource implements ViewableV2 {
                 // write result into view:
                 defaultView.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
                 return defaultView;
-            } else {
-                log.debug("Mime-Type: " + mimeType);
-                defaultView.setInputStream(getTranslationXML(resource, language));
             }
+            log.debug("Mime-Type: " + mimeType);
+            defaultView.setInputStream(getTranslationXML(resource, language));
         } catch(Exception e) {
             log.error(e + " (" + getPath() + ", " + getRealm() + ")", e);
             throw new Exception(e);
