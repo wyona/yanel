@@ -17,46 +17,30 @@
 package org.wyona.yanel.impl.resources.collection;
 
 import org.wyona.yanel.core.Environment;
-import org.wyona.yanel.core.Path;
-import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
-import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.wyona.yarep.core.NoSuchNodeException;
-import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
-import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.core.Node;
-import org.wyona.yarep.util.RepoPath;
 import org.wyona.yanel.core.util.DateUtil;
 import org.wyona.yanel.core.util.PathUtil;
 
 import org.apache.log4j.Category;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
 
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.sax.SAXSource;
-
 import java.util.Calendar;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 
 /**
  *
@@ -86,7 +70,6 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
      */
     public InputStream getContentXML(Repository repo, String yanelPath, String revisionName) {
         environment = getEnvironment();
-        View defaultView = new View();
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         String path;
         try {
@@ -141,14 +124,13 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
     }
 
     public View getXMLView(String viewId, InputStream xmlInputStream) throws Exception {
-        View view = new View();
         if (viewId == null || !viewId.equals("source")) {
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
             TransformerFactory tfactory = TransformerFactory.newInstance();
             Transformer transformerIntern = tfactory.newTransformer(getXSLTStreamSource());
             StreamSource orig = new StreamSource(xmlInputStream);
 
-            transformerIntern.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+            transformerIntern.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
             transformerIntern.setParameter("yanel.path", getPath().toString());
             transformerIntern.setParameter("yanel.back2context", backToContext()+backToRoot());
             transformerIntern.setParameter("yarep.back2realm", backToRoot());
@@ -200,15 +182,6 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
         File defaultXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "dir2xhtml.xsl");
         if (log.isDebugEnabled()) log.debug("XSLT file: " + defaultXSLTFile);
         return new StreamSource(defaultXSLTFile);
-    }
-
-    /**
-     * Get XSLT
-     */
-    private String[] getXSLTprop() throws Exception {
-        ResourceConfiguration rc = getConfiguration();
-        if (rc != null) return rc.getProperties("xslt");
-        return getRTI().getProperties("xslt");
     }
 
     /**
