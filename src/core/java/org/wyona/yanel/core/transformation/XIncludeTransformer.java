@@ -5,7 +5,6 @@ import javax.xml.transform.sax.SAXSource;
 
 import org.apache.log4j.Category;
 import org.apache.xml.resolver.tools.CatalogResolver;
-import org.wyona.yanel.core.source.SourceResolver;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
