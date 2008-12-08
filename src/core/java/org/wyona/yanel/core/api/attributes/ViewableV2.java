@@ -19,7 +19,6 @@ package org.wyona.yanel.core.api.attributes;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
-import java.io.OutputStream;
 
 /**
  * DEV (not released yet), please be aware that this interface still might change ...
