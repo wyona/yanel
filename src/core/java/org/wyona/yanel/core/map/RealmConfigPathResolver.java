@@ -17,30 +17,8 @@
 package org.wyona.yanel.core.map;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.wyona.commons.io.FileUtil;
-import org.wyona.commons.io.Path;
-import org.wyona.security.core.IdentityManagerFactory;
-import org.wyona.security.core.PolicyManagerFactory;
-import org.wyona.security.core.api.IdentityManager;
-import org.wyona.security.core.api.PolicyManager;
-import org.wyona.yanel.core.LanguageHandler;
-import org.wyona.yanel.core.Yanel;
-import org.wyona.yanel.core.attributes.translatable.DefaultTranslationManager;
-import org.wyona.yanel.core.attributes.translatable.TranslationManager;
-import org.wyona.yanel.core.api.security.WebAuthenticator;
-import org.wyona.yanel.core.util.ConfigurationUtil;
-import org.wyona.yarep.core.Repository;
-import org.wyona.yarep.core.RepositoryFactory;
-import org.xml.sax.SAXException;
-
-import org.apache.avalon.framework.configuration.Configuration;
-import org.apache.avalon.framework.configuration.ConfigurationException;
-import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -68,17 +46,16 @@ public class RealmConfigPathResolver implements javax.xml.transform.URIResolver 
             javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource();
             source.setSystemId(href);
             return source;
-        } else {
-            File file = FileUtil.resolve(realmConfigFile, new File(href));
-            javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource(file);
-            try {
-                source.setInputStream(new java.io.FileInputStream(file));
-            } catch (Exception e) {
-                log.error(e, e);
-                new javax.xml.transform.TransformerException(e.getMessage());
-            }
-            source.setSystemId(file.toString());
-            return source;
+        } 
+        File file = FileUtil.resolve(realmConfigFile, new File(href));
+        javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource(file);
+        try {
+            source.setInputStream(new java.io.FileInputStream(file));
+        } catch (Exception e) {
+            log.error(e, e);
+            new javax.xml.transform.TransformerException(e.getMessage());
         }
+        source.setSystemId(file.toString());
+        return source;
     }
 }
