@@ -1,8 +1,6 @@
 package org.wyona.yanel.core.serialization;
 
 import java.util.Properties;
-import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
 import org.apache.xml.serializer.Method;
 import org.apache.xml.serializer.OutputPropertiesFactory;
 import org.apache.xml.serializer.Serializer;
@@ -13,8 +11,6 @@ import org.apache.xml.serializer.ToTextStream;
  */
 public class SerializerFactory {
 
-    private static Logger log = Logger.getLogger(SerializerFactory.class);
-    
     public static final int XHTML_STRICT = 1;
     public static final int HTML_TRANSITIONAL = 2;
     public static final int XML = 3;
