@@ -17,10 +17,7 @@
 package org.wyona.yanel.core.api.attributes;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.api.attributes.CreatableV1;
-
 import java.util.HashMap;
 
 /**
