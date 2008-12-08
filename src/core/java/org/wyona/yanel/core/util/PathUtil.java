@@ -16,7 +16,6 @@
 
 package org.wyona.yanel.core.util;
 
-import org.apache.log4j.Category;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.Resource;
 
@@ -24,8 +23,6 @@ import org.wyona.yanel.core.Resource;
  *
  */
 public class PathUtil extends org.wyona.commons.io.PathUtil {
-
-    private static Category log = Category.getInstance(PathUtil.class);
 
     /**
      *
