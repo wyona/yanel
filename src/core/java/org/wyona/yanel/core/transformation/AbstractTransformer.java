@@ -51,9 +51,8 @@ public abstract class AbstractTransformer extends DefaultHandler implements Tran
         try {
             if (this.entityResolver != null) {
                     return this.entityResolver.resolveEntity(publicId, systemId);
-            } else {
-                return super.resolveEntity(publicId, systemId);
             }
+            return super.resolveEntity(publicId, systemId);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new SAXException(e);
