@@ -20,9 +20,6 @@ import java.io.File;
 import java.io.StringBufferInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
-import java.util.Calendar;
-import java.util.HashMap;
-
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 
@@ -458,7 +455,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
                 session.removeAttribute(SESSION_ATTR_REALM_NAME);
             }
         } else {
-            Element noEventLogElement = (Element) fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "no-event-log"));
+            fromExistingWebsiteElement.appendChild(doc.createElementNS(NAMESPACE, "no-event-log"));
         }
         return doc;
     }
@@ -708,8 +705,7 @@ public class AddRealmResource2 extends Resource implements ViewableV1 {
         }
         if (sampleRealmId != null) {
             return sampleRealmId;
-        } else {
-            return "from-scratch-realm-template";
         }
+        return "from-scratch-realm-template";
     }
 }
