@@ -48,8 +48,6 @@ public class AccessControlTransformer extends AbstractTransformer {
     private boolean accessGranted;
     private boolean bufferEnabled;
     private int numberOfNestedElements;
-    private StringBuffer textBuffer;
-
     private String parentElementName;
     private Attributes parentAttrs;
     private Attributes anchorAttrs;
@@ -132,8 +130,7 @@ public class AccessControlTransformer extends AbstractTransformer {
             bufferEnabled = true;
             parentAttrs = new AttributesImpl(attrs);
 
-            textBuffer = new StringBuffer();
-            //log.error("DEBUG: Entering '" + parentElementName + "' element!");
+            new StringBuffer();
         }
 
 
@@ -213,9 +210,8 @@ super.characters(characters, 0, characters.length);
     private boolean isParentElement(String namespaceURI, String localName, String qName) {
         if (namespaceURI.equals(NS_XHTML_URI) && localName.equals(parentElementName)) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
     
     /**
@@ -228,9 +224,8 @@ super.characters(characters, 0, characters.length);
     private boolean isAnchorElement(String namespaceURI, String localName, String qName) {
         if (namespaceURI.equals(NS_XHTML_URI) && localName.equals("a")) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
