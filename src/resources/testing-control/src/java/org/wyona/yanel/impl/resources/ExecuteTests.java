@@ -17,8 +17,6 @@
 package org.wyona.yanel.impl.resources;
 
 import java.io.File;
-import java.io.IOException;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Category;
 import org.apache.tools.ant.Project;
