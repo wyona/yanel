@@ -64,16 +64,15 @@ public class CreateUserResource extends ExecutableUsecaseResource {
         if (id == null || id.length()==0) {
             this.addError("Please enter a user ID.");
             return false;
-        } else {
-            UserManager userManager = getRealm().getIdentityManager().getUserManager();
-            try {
-                if (userManager.existsUser(id)) {
-                    this.addError("User with this ID exists already.");
-                    return false;
-                }
-            } catch (AccessManagementException e) {
-                throw new UsecaseException(e.getMessage(), e);
+        }
+        UserManager userManager = getRealm().getIdentityManager().getUserManager();
+        try {
+            if (userManager.existsUser(id)) {
+                this.addError("User with this ID exists already.");
+                return false;
             }
+        } catch (AccessManagementException e) {
+            throw new UsecaseException(e.getMessage(), e);
         }
         if (name == null || name.length()==0) {
             this.addError("Please enter a user name.");
