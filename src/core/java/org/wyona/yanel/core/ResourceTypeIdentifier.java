@@ -21,8 +21,6 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Category;
-
 /**
  * Abstraction of an rti file.
  * Convention:
@@ -38,8 +36,6 @@ import org.apache.log4j.Category;
  * @see org.wyona.yanel.core.ResourceConfiguration
  */
 public class ResourceTypeIdentifier {
-
-    private Category log = Category.getInstance(ResourceTypeIdentifier.class);
 
     protected Map properties;
     protected String universalName;
@@ -96,9 +92,8 @@ public class ResourceTypeIdentifier {
     	String property = (String)properties.get(key);
     	if (property != null) {
     		return property.split(",");
-    	} else {
-    		return null;
     	}
+        return null;
     }
     
     /**
