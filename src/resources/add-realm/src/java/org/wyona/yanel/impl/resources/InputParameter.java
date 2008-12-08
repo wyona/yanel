@@ -63,9 +63,8 @@ public class InputParameter {
     public boolean isValid() {
         if (validate(value) != null) {
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
 
     /**
