@@ -14,14 +14,10 @@ import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
-
 /**
  *
  */
 abstract public class Menu {
-
-    private static Logger log = Logger.getLogger(Menu.class);
 
     /**
      * Get custom menus. Implement this method in order to introduce custom menus.
