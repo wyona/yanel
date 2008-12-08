@@ -16,14 +16,10 @@
 
 package org.wyona.yanel.core;
 
-import org.apache.log4j.Category;
-
 /**
  *
  */
 public class Path extends org.wyona.yarep.core.Path {
-
-    private static Category log = Category.getInstance(Path.class);
 
     /**
      *
