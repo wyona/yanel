@@ -17,65 +17,37 @@
 package org.wyona.yanel.impl.resources;
 
 import org.w3c.dom.Document;
-import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
-import org.wyona.yanel.core.Topic;
-import org.wyona.yanel.core.Yanel;
-import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
-import org.wyona.yanel.core.api.attributes.VersionableV2;
-import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
-import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
-import org.wyona.yanel.core.serialization.HTMLSerializer;
 import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.ResourceResolver;
-import org.wyona.yanel.core.transformation.I18nTransformer;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
-import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
-import org.wyona.yarep.core.RepositoryFactory;
-import org.wyona.yarep.core.Revision;
-import org.wyona.yarep.util.RepoPath;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
-
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.Date;
-import java.util.Properties;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
 
 import org.apache.log4j.Category;
 import org.apache.xml.resolver.tools.CatalogResolver;
@@ -190,7 +162,7 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
                 TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPath.length];
                 for (int i = 0; i < xsltPath.length; i++) {
                     xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath[i]).getInputStream()));
-                    xsltHandlers[i].getTransformer().setParameter("yanel.path.name", PathUtil.getName(currentPath));
+                    xsltHandlers[i].getTransformer().setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(currentPath));
                     xsltHandlers[i].getTransformer().setParameter("yanel.path", currentPath);
                     xsltHandlers[i].getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, currentPath));
                     xsltHandlers[i].getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(currentPath));
@@ -234,10 +206,9 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
                 // write result into view:
                 defaultView.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
                 return defaultView;
-            } else {
-                log.debug("Mime-Type: " + mimeType);
-                defaultView.setInputStream(getContentXML(repo, siteTreePath));
             }
+            log.debug("Mime-Type: " + mimeType);
+            defaultView.setInputStream(getContentXML(repo, siteTreePath));
         } catch(Exception e) {
             log.error(e + " (" + getPath() + ", " + getRealm() + ")", e);
             throw new Exception(e);
@@ -273,7 +244,7 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
         String mimeType = getResourceConfigProperty("mime-type");
         if (mimeType != null) return mimeType;
 
-        String suffix = PathUtil.getSuffix(getPath());
+        String suffix = org.wyona.commons.io.PathUtil.getSuffix(getPath());
         if (suffix != null) {
             log.debug("SUFFIX: " + suffix);
             if (suffix.equals("html")) {
@@ -449,23 +420,4 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
     public void setProperty(String name, Object value) {
         log.warn("Not implemented yet!");
     }
-    
-    /**
-     * @param name
-     * @return introspection as string
-     */
-    private String getIntrospection(String name) {
-        StringBuffer sb = new StringBuffer();
-        sb.append("<?xml version=\"1.0\"?>");
-        sb.append("\n");
-        sb.append("\n<introspection xmlns=\"http://www.wyona.org/neutron/1.0\">");
-        sb.append("\n");
-        sb.append("\n  <edit mime-type=\"application/xhtml+xml\" name=\"" + name + "\">");
-        sb.append("\n    <checkout url=\"" + name + "?yanel.resource.viewid=source&amp;yanel.resource.usecase=checkout\" method=\"GET\"/>");
-        sb.append("\n    <checkin  url=\"" + name + "?yanel.resource.usecase=checkin\" method=\"PUT\"/>");
-        sb.append("\n  </edit>");
-        sb.append("\n</introspection>");
-        
-        return sb.toString();
-    }    
 }
