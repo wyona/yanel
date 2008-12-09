@@ -54,14 +54,10 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.ResourceResolver;
-import org.wyona.yanel.core.transformation.I18nTransformer;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
-
-import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
-import org.wyona.yarep.util.RepoPath;
 
 import org.wyona.security.core.api.Identity;
 
@@ -132,7 +128,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
                 File xsltFile = org.wyona.commons.io.FileUtil.file(getRTD().getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "wiki2xhtml.xsl");
                 log.debug("XSLT file: " + xsltFile);
                 transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltFile));
-                transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+                transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
                 transformer.setParameter("yanel.path", getPath());
                 transformer.setParameter("yanel.last.modified", new java.util.Date(getLastModified()));
                 defaultView.setMimeType("application/xhtml+xml");
@@ -164,7 +160,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
                 SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
                 xsltHandler = tf.newTransformerHandler(new StreamSource(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath().toString()))));
                 transformer = xsltHandler.getTransformer();
-                transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+                transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
                 transformer.setParameter("yanel.path", getPath());
                 transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
                 transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
@@ -220,13 +216,13 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
      *
      */
     public View getView(HttpServletRequest request, String viewId) {
-        String _language = getRealm().getDefaultLanguage();
-        try {
-            _language = request.getParameter("yanel.meta.language");
-        } catch(Exception e) {
-            //use fallback language
-            _language = getRealm().getDefaultLanguage();
-        }
+//        String _language = getRealm().getDefaultLanguage();
+//        try {
+//            _language = request.getParameter("yanel.meta.language");
+//        } catch(Exception e) {
+//            //use fallback language
+//            _language = getRealm().getDefaultLanguage();
+//        }
         //if(_language == null || ("").equals(_language)) _language = language;
         //else language = _language;
         return getView(new Path(request.getServletPath()), viewId);
