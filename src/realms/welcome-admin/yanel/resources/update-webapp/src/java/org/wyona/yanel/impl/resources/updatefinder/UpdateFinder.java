@@ -8,16 +8,13 @@ import org.apache.log4j.Category;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 
-import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.ResourceResolver;
-import org.wyona.yanel.core.transformation.I18nTransformer;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
@@ -26,9 +23,6 @@ import org.wyona.yanel.impl.resources.updatefinder.utils.*;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -39,37 +33,17 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.Collections;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
-
-import com.hp.hpl.jena.rdf.model.*;
-
 
 
 /**
@@ -78,9 +52,6 @@ import com.hp.hpl.jena.rdf.model.*;
 public class UpdateFinder extends Resource implements ViewableV2 {
 
     private static Category log = Category.getInstance(UpdateFinder.class);
-    private String defaultLanguage;
-    private String language = null;
-
     /**
      * 
      */
@@ -142,7 +113,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                     xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath[i])
                             .getInputStream()));
                     xsltHandlers[i].getTransformer().setParameter("yanel.path.name",
-                            PathUtil.getName(getPath()));
+                            org.wyona.commons.io.PathUtil.getName(getPath()));
                     xsltHandlers[i].getTransformer().setParameter("yanel.path", getPath());
                     xsltHandlers[i].getTransformer().setParameter("yanel.back2context",
                             PathUtil.backToContext(realm, getPath()));
@@ -184,11 +155,10 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 // write result into view:
                 view.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
                 return view;
-            } else {
-                log.debug("Mime-Type: " + mimeType);
-                view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
-                return view;
             }
+            log.debug("Mime-Type: " + mimeType);
+            view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
+            return view;
         } catch (Exception e) {
             log.error(e + " (" + getPath() + ", " + getRealm() + ")", e);
         }
