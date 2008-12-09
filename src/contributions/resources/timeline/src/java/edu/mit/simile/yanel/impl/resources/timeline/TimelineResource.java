@@ -165,7 +165,7 @@ public class TimelineResource extends Resource implements ViewableV2, Introspect
      * Get introspection for Introspectable interface
      */
     public String getIntrospection() throws Exception {
-        String name = PathUtil.getName(getPath());
+        String name = org.wyona.commons.io.PathUtil.getName(getPath());
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<introspection xmlns=\"http://www.wyona.org/neutron/2.0\">");
     
