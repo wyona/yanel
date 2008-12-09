@@ -75,9 +75,8 @@ public class ResourceResolver implements URIResolver {
                 View view = ((ViewableV2) targetResource).getView(viewid);
                 if (!view.isResponse()) {
                     throw new Exception("Reading from the response has not been implemented yet!");
-                } else {
-                    return new StreamSource(view.getInputStream());
                 }
+                return new StreamSource(view.getInputStream());
             } else {
                 log.warn("Resource is not viewable: " + uri);
                 return null;
