@@ -63,14 +63,13 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
             }
             if (mimeType != null) {
                 return mimeType;
-            } else {
-                return "text/calendar";
             }
+            return "text/calendar";
         }
-        if(viewId != null && viewId.equals("xml")) {
+        if( viewId.equals("xml")) {
             return "application/xml";
         }
-        if (viewId != null && viewId.equals("xhtml")) {
+        if ( viewId.equals("xhtml")) {
             return "application/xhtml+xml";
         }
         log.warn("No mime type for view id: " + viewId);
@@ -256,10 +255,9 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         bytesR = in.read(buf);
         if (bytesR <= 0) {
             throw new Exception("InputStream seems to be empty! Current calendar will not be overwritten!");
-        } else {
-            out = getRealm().getRepository().getOutputStream(path);
-            out.write(buf, 0, bytesR);
         }
+        out = getRealm().getRepository().getOutputStream(path);
+        out.write(buf, 0, bytesR);
 
         while ((bytesR = in.read(buf)) != -1) {
             out.write(buf, 0, bytesR);
@@ -349,9 +347,8 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
             map.put("public","PUBLIC");
             map.put("private","PRIVATE");
             return map;
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
