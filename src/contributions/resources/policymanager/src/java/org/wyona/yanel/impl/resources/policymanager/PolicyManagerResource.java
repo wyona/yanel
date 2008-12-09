@@ -10,7 +10,6 @@ import org.wyona.security.core.api.Item;
 import org.wyona.security.core.api.Policy;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.User;
-import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
@@ -20,6 +19,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Vector;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
@@ -33,8 +34,6 @@ public class PolicyManagerResource extends BasicXMLResource {
     
     private static String PARAMETER_EDIT_PATH = "policy-path";
     private static String PARAMETER_USECASE = "yanel.policy";
-
-    private static String DEFAULT_ENCODING = "UTF-8";
 
     /**
      * See src/webapp/global-resource-configs/policy-manager_yanel-rc.xml or realm specific
@@ -111,7 +110,7 @@ public class PolicyManagerResource extends BasicXMLResource {
                     } catch(Exception e) {
                         log.error(e,e);
                         //response.setStatus(response.SC_NOT_IMPLEMENTED);
-                        log.warn("TODO: Fix HTTP status code: " + response.SC_NOT_IMPLEMENTED);
+                        log.warn("TODO: Fix HTTP status code: " + HttpServletResponse.SC_NOT_IMPLEMENTED);
                         sb.append("<?xml version=\"1.0\"?><not-saved>" + e.getMessage() + "</not-saved>");
                     }
                 } else {
@@ -282,7 +281,6 @@ public class PolicyManagerResource extends BasicXMLResource {
      * Get groups (TODO: Move this code into the security package)
      */
     static public StringBuffer getPolicyGroups(Policy p) {
-        Vector world = new Vector();
         java.util.HashMap groups = new java.util.HashMap();
         org.wyona.security.core.UsecasePolicy[] up = p.getUsecasePolicies();
         if (up != null && up.length > 0) {
