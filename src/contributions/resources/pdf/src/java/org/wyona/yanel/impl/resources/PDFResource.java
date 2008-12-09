@@ -23,22 +23,15 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.source.SourceResolver;
 
-import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
-
 import org.wyona.yanel.core.util.WildcardReplacerHelper;
-
 import org.apache.log4j.Category;
-
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.MimeConstants;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Iterator;
-import java.util.Map;
-
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Source;
@@ -150,9 +143,8 @@ public class PDFResource extends Resource implements ViewableV2 {
         if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:")) {
             log.warn("Not implemented yet!");
             return true;
-        } else {
-            return repo.existsNode(yanelPath);
-        }
+        } 
+        return repo.existsNode(yanelPath);
     }
 
     /**
@@ -168,14 +160,12 @@ public class PDFResource extends Resource implements ViewableV2 {
      */
     private StreamSource getXSLTStreamSource(String path, Repository repo) throws Exception {
         String xsltPath = getXSLTPath(path);
-        if(xsltPath != null) {
+        if(xsltPath != null) 
             return new StreamSource(repo.getInputStream(new Path(xsltPath)));
-        } else {
-            File xsltFile = org.wyona.commons.io.FileUtil.file(
-            rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "xml2fo.xsl");
+        File xsltFile = org.wyona.commons.io.FileUtil.file( rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "xml2fo.xsl");
+        if( log.isDebugEnabled() )
             log.debug("XSLT file: " + xsltFile);
-            return new StreamSource(xsltFile);
-        }
+        return new StreamSource(xsltFile);
     }
 
     /**
