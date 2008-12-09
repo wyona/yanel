@@ -21,15 +21,11 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
-import org.wyona.yanel.core.util.PathUtil;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
-import org.wyona.yarep.util.RepoPath;
 
 import org.apache.abdera.model.AtomDate;
 import org.apache.abdera.model.Entry;
@@ -226,7 +222,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
 
         try {
             Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(path, contentRepo));
-            transformer.setParameter("yanel.path.name", PathUtil.getName(path));
+            transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(path));
             transformer.setParameter("yanel.path", path.toString());
             //transformer.setParameter("yanel.back2context", backToRoot(path, ""));
             //transformer.setParameter("yarep.back2realm", backToRoot(new org.wyona.yanel.core.Path(rp.getPath().toString()), ""));
@@ -264,11 +260,10 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
         String xsltPath = getXSLTPath(path);
         if(xsltPath != null) {
             return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath(path))));
-        } else {
-            File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "atomfeed2xhtml.xsl");
-            log.debug("XSLT file: " + xsltFile);
-            return new StreamSource(xsltFile);
         }
+        File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "atomfeed2xhtml.xsl");
+        log.debug("XSLT file: " + xsltFile);
+        return new StreamSource(xsltFile);
     }
 
     /**
@@ -323,29 +318,28 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
 
 	if (entriesPathString != null) {
             return entriesPathString;
-        } else {
-            try {
-                Repository repo = getRealm().getRepository();
-                org.wyona.yarep.core.Path entriesPath = new org.wyona.yarep.core.Path(feedPath);
-
-                // TODO: This doesn't seem to work ... (check on Yarep ...)
-                if (repo.isResource(entriesPath)) {
-                    log.warn("Path is a resource instead of a collection: " + entriesPath);
-                    //entriesPath = entriesPath.getParent();
-                }
-
-                // TODO: Implement org.wyona.yarep.core.Path.getParent()
-                if (!repo.isCollection(entriesPath)) {
-                    log.warn("Path is not a collection: " + entriesPath);
-                    entriesPath = new org.wyona.yarep.core.Path(new org.wyona.commons.io.Path(entriesPath.toString()).getParent().toString());
-                    log.warn("Use parent of path: " + entriesPath);
-                }
-                return entriesPath.toString();
-            } catch(Exception e) {
-                log.error(e);
-                return null;
-            }
         }
+    try {
+        Repository repo = getRealm().getRepository();
+        org.wyona.yarep.core.Path entriesPath = new org.wyona.yarep.core.Path(feedPath);
+
+        // TODO: This doesn't seem to work ... (check on Yarep ...)
+        if (repo.isResource(entriesPath)) {
+            log.warn("Path is a resource instead of a collection: " + entriesPath);
+            //entriesPath = entriesPath.getParent();
+        }
+
+        // TODO: Implement org.wyona.yarep.core.Path.getParent()
+        if (!repo.isCollection(entriesPath)) {
+            log.warn("Path is not a collection: " + entriesPath);
+            entriesPath = new org.wyona.yarep.core.Path(new org.wyona.commons.io.Path(entriesPath.toString()).getParent().toString());
+            log.warn("Use parent of path: " + entriesPath);
+        }
+        return entriesPath.toString();
+    } catch(Exception e) {
+        log.error(e);
+        return null;
+    }
     }
 
     /**
