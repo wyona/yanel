@@ -187,9 +187,8 @@ public class I18nTransformer2 extends AbstractTransformer {
     protected boolean isI18nElement(String namespaceURI, String localName, String qName) {
         if (namespaceURI.equals(NS_URI) && (localName.equals("text") || localName.equals("message"))) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     public void characters(char[] buf, int offset, int len) throws SAXException {
