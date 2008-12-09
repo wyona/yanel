@@ -28,17 +28,13 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Category;
 
-import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
-import org.wyona.yarep.core.RepositoryFactory;
-import org.wyona.yarep.util.RepoPath;
 import org.wyona.commons.io.PathUtil;
 
 /**
