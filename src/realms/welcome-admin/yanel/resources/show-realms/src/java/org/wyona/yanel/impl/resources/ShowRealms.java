@@ -16,27 +16,13 @@
 
 package org.wyona.yanel.impl.resources;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.util.Calendar;
-import java.io.StringBufferInputStream;
-//import java.io.StringReader;
-//import java.util.Enumeration;
-//import java.util.HashMap;
-//import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Category;
-import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
@@ -45,13 +31,7 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.util.PathUtil;
-import org.wyona.yanel.core.util.ResourceAttributeHelper;
-import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Repository;
-import org.wyona.yarep.core.RepositoryFactory;
-import org.wyona.yanel.core.Yanel;
-import org.wyona.yarep.util.RepoPath;
-import org.wyona.yarep.util.YarepUtil;
 
 /**
  * 
@@ -126,7 +106,7 @@ public class ShowRealms extends Resource implements ViewableV2 {
 
         Transformer transformer = TransformerFactory.newInstance()
                 .newTransformer(getXSLTStreamSource(getPath(), contentRepo));
-        transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+        transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
         transformer.setParameter("servlet.context", servletContext);
         transformer.setParameter("yanel.path", getPath());
         transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
@@ -154,13 +134,12 @@ public class ShowRealms extends Resource implements ViewableV2 {
         if (xsltPath != null) {
             return new StreamSource(repo
                     .getInputStream(new org.wyona.yarep.core.Path(getXSLTPath())));
-        } else {
-            File xsltFile = org.wyona.commons.io.FileUtil.file(rtd
-                    .getConfigFile().getParentFile().getAbsolutePath(), "xslt"
-                    + File.separator + "info2xhtml.xsl");
-            log.error("DEBUG: XSLT file: " + xsltFile);
-            return new StreamSource(xsltFile);
         }
+        File xsltFile = org.wyona.commons.io.FileUtil.file(rtd
+                .getConfigFile().getParentFile().getAbsolutePath(), "xslt"
+                + File.separator + "info2xhtml.xsl");
+        log.error("DEBUG: XSLT file: " + xsltFile);
+        return new StreamSource(xsltFile);
     }
 
     /**
@@ -185,7 +164,7 @@ public class ShowRealms extends Resource implements ViewableV2 {
     *
     */
    private String backToRoot(String path, String backToRoot) {
-       String parent = PathUtil.getParent(path);
+       String parent = org.wyona.commons.io.PathUtil.getParent(path);
        if (parent != null && !isRoot(parent)) {
            return backToRoot(parent, backToRoot + "../");
        }
