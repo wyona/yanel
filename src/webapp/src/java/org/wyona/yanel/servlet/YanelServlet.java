@@ -310,7 +310,7 @@ public class YanelServlet extends HttpServlet {
      * @param extension
      * @return
      */
-    private String guessMimeType(String extension) {
+    private static String guessMimeType(String extension) {
         String ext = extension.toLowerCase();
         if (ext.equals("html") || ext.equals("htm")) return "text/html";
         if (ext.equals("css")) return "text/css";
@@ -1849,16 +1849,23 @@ public class YanelServlet extends HttpServlet {
     /**
      * Get global data located below reserved prefix
      */
-    public void getGlobalData(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void getGlobalData(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Resource resource = getResource(request, response);
         String path = resource.getPath();
         String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
-        if (path.startsWith("/" + reservedPrefix + "/users/")) {
-            String userName = path.substring(reservedPrefix.length() + 8);
-            userName = userName.substring(0, userName.lastIndexOf(".html"));
+
+        final String pathPrefix = "/" + reservedPrefix + "/";
+        final String usersPathPrefix = pathPrefix + "users/";
+        final String userListPagePath = pathPrefix + "user-mgmt/list-users.html";
+        final String aboutPagePath = pathPrefix + "about.html";
+        final String dataRepoSitetreePagePath = pathPrefix + "data-repository-sitetree.html";
+        final String resourceTypesPathPrefix = pathPrefix + "resource-types/";
+
+        if (path.startsWith(usersPathPrefix)) {
+            final String userName = path.substring(usersPathPrefix.length(), path.length() - ".html".length());
 
             try {
-                java.util.Map properties = new HashMap();
+                java.util.Map<String, String> properties = new HashMap<String, String>();
                 properties.put("user", userName);
                 ResourceConfiguration rc = new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
                 Realm realm = yanel.getMap().getRealm(request.getServletPath());
@@ -1885,7 +1892,7 @@ public class YanelServlet extends HttpServlet {
             PrintWriter w = response.getWriter();
             w.print(sb);
             return;
-        } else if (path.indexOf("data-repository-sitetree.html") >= 0) {
+        } else if (path.equals(dataRepoSitetreePagePath)) {
             try {
                 Realm realm = yanel.getMap().getRealm(request.getServletPath());
                 File drsResConfigFile = getGlobalResourceConfiguration("data-repo-sitetree_yanel-rc.xml", realm);
@@ -1898,25 +1905,25 @@ public class YanelServlet extends HttpServlet {
             } catch (Exception e) {
                 throw new ServletException(e);
             }
-        } else if (path.indexOf("resource-types") >= 0) {
-            //log.debug("Resource path: " + resource.getPath());
-            String[] pathPart1 = path.split("/resource-types/");
-            String[] pathPart2 = pathPart1[1].split("::");
-            String[] pathPart3 = pathPart2[1].split("/");
-            String name = pathPart3[0];
+        } else if (path.startsWith(resourceTypesPathPrefix)) {
+            //final Matcher matcher = rtURLpattern.matcher(path.substring(resourceTypesPathPrefix.length()));
+            final String[] namespaceURI_and_rest = path.substring(resourceTypesPathPrefix.length()).split("::", 2);
+            final String namespaceURI = namespaceURI_and_rest[0];
+            final String[] name_and_rest = namespaceURI_and_rest[1].split("/", 2);
+            final String name = name_and_rest[0];
             // The request (see resource.getPath()) seems to replace 'http://' or 'http%3a%2f%2f' by 'http:/', so let's change this back
-            String namespace = pathPart2[0].replaceAll("http:/", "http://");
+            final String namespace = namespaceURI.replaceAll("http:/", "http://");
 
             try {
-                java.util.Map properties = new HashMap();
+                java.util.Map<String, String> properties = new HashMap<String, String>();
                 Realm realm = yanel.getMap().getRealm(request.getServletPath());
                 ResourceConfiguration rc = new ResourceConfiguration(name, namespace, properties);
                 Resource resourceOfPrefix = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
                 String htdocsPath;
-                if (pathPart2[1].indexOf("/" + reservedPrefix + "/") >= 0) {
-                    htdocsPath =  "rtyanelhtdocs:" + path.split("::" + name)[1].split("/" + reservedPrefix)[1].replace('/', File.separatorChar);
+                if (name_and_rest[1].startsWith(reservedPrefix + "/")) {
+                    htdocsPath =  "rtyanelhtdocs:" + name_and_rest[1].substring(reservedPrefix.length()).replace('/', File.separatorChar);
                 } else {
-                    htdocsPath = "rthtdocs:" + path.split("::" + name)[1].replace('/', File.separatorChar); 
+                    htdocsPath = "rthtdocs:" + File.separatorChar + name_and_rest[1].replace('/', File.separatorChar); 
                 }
                 SourceResolver resolver = new SourceResolver(resourceOfPrefix);
                 Source source = resolver.resolve(htdocsPath, null);
@@ -1965,7 +1972,7 @@ public class YanelServlet extends HttpServlet {
                 throw new ServletException(e);
             }
         } else {
-            File globalFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "htdocs" + File.separator + path.substring(reservedPrefix.length() + 2));
+            File globalFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "htdocs" + File.separator + path.substring(pathPrefix.length()));
             if (globalFile.exists()) {
                 log.debug("Global data: " + globalFile);
 
@@ -2262,7 +2269,7 @@ public class YanelServlet extends HttpServlet {
     /**
      *
      */
-    private boolean isToolbarEnabled(HttpServletRequest request) {
+    private static boolean isToolbarEnabled(HttpServletRequest request) {
         String toolbarStatus = (String) request.getSession(true).getAttribute(TOOLBAR_KEY);
         if (toolbarStatus != null && toolbarStatus.equals("on")) {
             String yanelToolbar = request.getParameter("yanel.toolbar");
