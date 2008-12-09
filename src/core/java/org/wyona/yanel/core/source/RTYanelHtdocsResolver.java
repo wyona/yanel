@@ -7,8 +7,6 @@ import java.net.URLConnection;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.URIResolver;
-import javax.xml.transform.stream.StreamSource;
-
 import org.apache.log4j.Logger;
 import org.wyona.yanel.core.Resource;
 
