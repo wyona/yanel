@@ -6,19 +6,14 @@ package org.wyona.yanel.impl.resources.updatefinder.utils;
 
 import org.apache.log4j.Category;
 
-import java.io.File;
 import java.io.InputStream;
-import java.io.FileInputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.vocabulary.*;
 import com.hp.hpl.jena.rdf.model.impl.PropertyImpl;
 import java.util.HashMap;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * 
@@ -28,7 +23,7 @@ public class UpdateInfo {
     private static Category log = Category.getInstance(UpdateInfo.class);
     private ArrayList updateVersions = new ArrayList();
     private Model updateRdfModel;
-    private InstallInfo installInfo;
+//    private InstallInfo installInfo;
     
     private String updateManagerNS = "http://www.wyona.org/update-manager/1.0#"; 
 
@@ -56,7 +51,7 @@ public class UpdateInfo {
         //read the RDF/XML file
         model.read(updateRdfIn, "");
         this.updateRdfModel = model;
-        this.installInfo = installInfo;
+//        this.installInfo = installInfo;
 
         setUpdateVersions();
     }
@@ -81,9 +76,9 @@ public class UpdateInfo {
         
         NodeIterator iter2 = versionsSeq.iterator();
         Property idProperty = new PropertyImpl(updateManagerNS, "id");
-        Property targetApplicationIdProperty = new PropertyImpl(updateManagerNS, TARGET_APPLICATION_ID);
-        Property targetApplicationminVersionProperty = new PropertyImpl(updateManagerNS, "targetApplicationMinVersion");
-        Property targetApplicationmaxVersionProperty = new PropertyImpl(updateManagerNS, "targetApplicationMaxVersion");
+//        Property targetApplicationIdProperty = new PropertyImpl(updateManagerNS, TARGET_APPLICATION_ID);
+//        Property targetApplicationminVersionProperty = new PropertyImpl(updateManagerNS, "targetApplicationMinVersion");
+//        Property targetApplicationmaxVersionProperty = new PropertyImpl(updateManagerNS, "targetApplicationMaxVersion");
         Property targetApplicationminRevisionProperty = new PropertyImpl(updateManagerNS, "targetApplicationMinRevision");
         Property targetApplicationmaxRevisionProperty = new PropertyImpl(updateManagerNS, "targetApplicationMaxRevision");
         Property changeLogProperty = new PropertyImpl(updateManagerNS, "changelog");
