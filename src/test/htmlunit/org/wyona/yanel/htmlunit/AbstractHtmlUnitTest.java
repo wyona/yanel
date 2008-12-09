@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.configuration.ConfigurationFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.impl.SimpleLog;
 
