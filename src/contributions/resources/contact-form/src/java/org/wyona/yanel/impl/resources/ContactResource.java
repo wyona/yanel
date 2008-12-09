@@ -16,33 +16,20 @@
 
 package org.wyona.yanel.impl.resources;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.StringReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Category;
@@ -55,16 +42,13 @@ import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yarep.core.NoSuchNodeException;
-import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.ResourceResolver;
-import org.wyona.yanel.core.transformation.I18nTransformer;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yarep.util.RepoPath;
-import org.wyona.yarep.util.YarepUtil;
 import org.wyona.yanel.core.util.PathUtil;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -89,7 +73,6 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
     private String messageBundle = "contact-form";
 
     private HashMap properties = new HashMap();
-    private Repository repository  = null;
     private RepoPath rp = null;
     private Path path = null;
     private String language = null;
@@ -123,7 +106,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             throws Exception {
         path = new Path(request.getServletPath());
         rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-        repository = rp.getRepo();
+        rp.getRepo();
         try {
             language = request.getParameter("yanel.meta.language");
         } catch(Exception e) {
@@ -173,7 +156,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             // create xslt transformer for global layout
             TransformerHandler xsltHandler2 = tf.newTransformerHandler(getGlobalXSLTStreamSource(path));
             transformer = xsltHandler2.getTransformer();
-            transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+            transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
             transformer.setParameter("yanel.path", getPath());
             transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
             transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
@@ -350,17 +333,6 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
     }
 
     /**
-     *
-     * @param path
-     * @return
-     * @throws Exception
-     */
-    private RepoPath contentRepo(Path path) throws Exception {
-        return new YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(
-                path.toString()), getRepositoryFactory());
-    }
-
-    /**
      * Get global XSLT
      * @param path
      */
@@ -368,11 +340,10 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
         String xsltPath = getResourceConfigProperty("xslt");
         if (xsltPath != null) {
             return new StreamSource(getRealm().getRepository().getNode(xsltPath).getInputStream());
-        } else {
-            File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "global.xsl");
-            log.error("DEBUG: XSLT file: " + xsltFile);
-            return new StreamSource(xsltFile);
         }
+        File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "global.xsl");
+        log.error("DEBUG: XSLT file: " + xsltFile);
+        return new StreamSource(xsltFile);
     }
 
     /**
@@ -382,9 +353,8 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
         String xsltPath = getResourceConfigProperty("xslt-body");
         if (xsltPath != null) {
             return new StreamSource(getRealm().getRepository().getNode(xsltPath).getInputStream());
-        } else {
-            return new StreamSource(org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "contact-form.xsl"));
         }
+        return new StreamSource(org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "contact-form.xsl"));
     }
 
     /**
