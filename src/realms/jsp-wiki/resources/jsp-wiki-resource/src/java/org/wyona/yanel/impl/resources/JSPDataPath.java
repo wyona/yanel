@@ -1,13 +1,9 @@
 package org.wyona.yanel.impl.resources;
 
-import org.apache.log4j.Category;
-
 /**
  *
  */
 public class JSPDataPath implements DataPath {
-
-    private static Category log = Category.getInstance(JSPDataPath.class);
 
     /*
      *
