@@ -16,7 +16,6 @@
 
 package org.wyona.yanel.impl.navigation;
 
-import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.map.RealmConfigPathResolver;
 import org.wyona.yanel.core.navigation.Node;
@@ -53,8 +52,9 @@ public class SitetreeDOMImpl implements Sitetree {
         NodeList nl = configDoc.getDocumentElement().getElementsByTagName("src");
         if (nl.getLength() == 1) {
             src = nl.item(0).getFirstChild().getNodeValue();
-            if(log.isDebugEnabled()) log.debug("src: " + src + ", " + nl.item(0).getNodeName());
-            log.error("DEBUG: src: " + src + ", " + nl.item(0).getNodeName());
+            if(log.isDebugEnabled()) {
+                log.debug("src: " + src + ", " + nl.item(0).getNodeName());
+            }
             try {
                 javax.xml.transform.Source source = resolver.resolve(src, null);
                 javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
@@ -89,10 +89,9 @@ public class SitetreeDOMImpl implements Sitetree {
                 Element element = getElement(sitetreeDoc.getDocumentElement(), path);
                 if (element != null) {
                     return new NodeDOMImpl(element, this);
-                } else {
-                    log.error("No node for path: " + path);
-                    return null;
                 }
+                log.error("No node for path: " + path);
+                return null;
             } else {
                 log.error("Path is not valid: " + path);
                 return null;
@@ -158,13 +157,11 @@ public class SitetreeDOMImpl implements Sitetree {
                    return getElement(child, subtreePath);
                }
                return child;
-           } else {
-               log.error("No such node: " + path);
-               return null;
            }
-       } else {
-           return sitetreeDoc.getDocumentElement();
+        log.error("No such node: " + path);
+           return null;
        }
+    return sitetreeDoc.getDocumentElement();
     }
 
     /**
