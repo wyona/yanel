@@ -15,20 +15,9 @@
  */
 package org.wyona.yanel.impl.resources;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
 import java.io.File;
 
-import org.wyona.yanel.core.Path;
-import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.Environment;
-import org.wyona.yanel.core.api.attributes.ModifiableV2;
-import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.junit.AbstractYanelTest;
 
@@ -45,7 +34,6 @@ public class NutchResourceTest extends AbstractYanelTest {
         this.testName = "Test for the NUTCH Resource";
         
         String url = "/yanel-website/en/search.html";
-        Map map = yanel.getMap();
         Realm realm = yanel.getMap().getRealm(url);
         String path = yanel.getMap().getPath(realm, url);
         Environment environment = new Environment(null, null, null, null, null);
