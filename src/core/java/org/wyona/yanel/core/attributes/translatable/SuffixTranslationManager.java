@@ -16,16 +16,12 @@
 
 package org.wyona.yanel.core.attributes.translatable;
 
-import org.apache.log4j.Category;
-
 /**
  * This translation manager works with a path format where the language
  * is a suffix: /foo/bar_en.html
  */
 public class SuffixTranslationManager extends AbstractPathTranslationManager {
 
-    private static Category log = Category.getInstance(SuffixTranslationManager.class);
-    
     /**
      * Empty constructor. Don't forget to call the init() method.
      */
@@ -50,9 +46,8 @@ public class SuffixTranslationManager extends AbstractPathTranslationManager {
         }
         if (suffix != null && suffix.length() == 2) {
             return suffix;
-        } else {
-            return null;
         }
+        return null;
     }
     
     /**
@@ -77,9 +72,8 @@ public class SuffixTranslationManager extends AbstractPathTranslationManager {
         }
         if (basePath != null && basePath.length() > 0) {
             return basePath + "_" + language + "." + extension;
-        } else {
-            return null;
         }
+        return null;
     }
     
 }
