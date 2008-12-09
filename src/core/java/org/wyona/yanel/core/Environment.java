@@ -18,8 +18,6 @@ package org.wyona.yanel.core;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Category;
 import org.wyona.security.core.api.Identity;
 
 /**
@@ -27,9 +25,6 @@ import org.wyona.security.core.api.Identity;
  * is called, i.e. the request, the response, the identity, the state of view, and the resource container path.
  */
 public class Environment {
-
-    private static Category log = Category.getInstance(Environment.class);
-
     private HttpServletRequest request;
     private HttpServletResponse response;
     private Identity identity;
