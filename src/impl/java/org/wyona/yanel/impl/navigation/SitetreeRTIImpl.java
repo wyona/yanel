@@ -16,7 +16,6 @@
 
 package org.wyona.yanel.impl.navigation;
 
-import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.map.RealmConfigPathResolver;
 import org.wyona.yanel.core.navigation.Node;
