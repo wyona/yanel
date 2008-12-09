@@ -11,7 +11,6 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.apache.log4j.Logger;
 
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.AffineTransformOp;
 import java.awt.geom.AffineTransform;
