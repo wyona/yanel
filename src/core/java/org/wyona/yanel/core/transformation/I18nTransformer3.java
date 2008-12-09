@@ -1,22 +1,15 @@
 package org.wyona.yanel.core.transformation;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
-import javax.xml.transform.sax.SAXSource;
 
 import org.apache.log4j.Category;
 import org.wyona.yanel.core.i18n.MessageManager;
 import org.wyona.yanel.core.i18n.MessageProvider;
 import org.wyona.yanel.core.i18n.MessageProviderFactory;
-import org.wyona.yanel.core.i18n.ResourceBundleMessageProvider;
-import org.wyona.yanel.core.i18n.XMLMessageProvider;
 import org.wyona.yanel.core.source.SourceException;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -299,25 +292,22 @@ public class I18nTransformer3 extends AbstractTransformer {
     protected boolean isI18nTextElement(String namespaceURI, String localName, String qName) {
         if (namespaceURI.equals(NS_URI) && (localName.equals("text") || localName.equals("message"))) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     protected boolean isI18nTranslateElement(String namespaceURI, String localName, String qName) {
         if (namespaceURI.equals(NS_URI) && localName.equals("translate")) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     protected boolean isI18nParamElement(String namespaceURI, String localName, String qName) {
         if (namespaceURI.equals(NS_URI) && localName.equals("param")) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     public void characters(char[] buf, int offset, int len) throws SAXException {
