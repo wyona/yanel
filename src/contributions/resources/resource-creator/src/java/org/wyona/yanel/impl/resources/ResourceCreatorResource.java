@@ -26,11 +26,8 @@ import org.apache.log4j.Category;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileReader;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
@@ -117,7 +114,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPath.length];
                 for (int i = 0; i < xsltPath.length; i++) {
                     xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath[i]).getInputStream()));
-                    xsltHandlers[i].getTransformer().setParameter("yanel.path.name", PathUtil.getName(getPath()));
+                    xsltHandlers[i].getTransformer().setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
                     xsltHandlers[i].getTransformer().setParameter("yanel.path", getPath());
                     xsltHandlers[i].getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
                     xsltHandlers[i].getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
@@ -154,11 +151,10 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 // write result into view:
                 view.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
                 return view;
-            } else {
-                log.debug("Mime-Type: " + mimeType);
-                view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
-                return view;
             }
+            log.debug("Mime-Type: " + mimeType);
+            view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
+            return view;
         } catch(Exception e) {
             log.error(e + " (" + getPath() + ", " + getRealm() + ")", e);
         }
@@ -510,10 +506,10 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      */
     private void addToSitetree(Resource newResource) throws Exception {
         org.wyona.yanel.core.navigation.Sitetree sitetree = getRealm().getRepoNavigation();
-        String parentPath = PathUtil.getParent(newResource.getPath());
+        String parentPath = org.wyona.commons.io.PathUtil.getParent(newResource.getPath());
         org.wyona.yanel.core.navigation.Node parentNode = sitetree.getNode(getRealm(), parentPath);
         if (parentNode != null) {
-            String nodeName = PathUtil.getName(newResource.getPath());
+            String nodeName = org.wyona.commons.io.PathUtil.getName(newResource.getPath());
             String label = nodeName;
             parentNode.appendChild(sitetree.createNode(nodeName, label));
         } else {
@@ -639,10 +635,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     // TODO: It seems like document does not contain text nodes ...
                     if (log.isDebugEnabled()) log.debug("Display name: " + displayNameElement + " :: " + displayNameElement.getText() + " :: " + displayNameElement.getName());
                     return displayNameElement.getText();
-                } else {
-                    log.warn("No display name: " + resName);
-                    return resName;
                 }
+                log.warn("No display name: " + resName);
+                return resName;
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 return resName;
