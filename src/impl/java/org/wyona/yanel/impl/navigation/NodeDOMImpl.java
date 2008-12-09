@@ -73,9 +73,12 @@ public class NodeDOMImpl implements Node {
     }
 
     /**
+     * Remove child
      */
     public void removeChild(Node child) {
-        log.error("TODO: Implementation not finished yet!");
+        log.warn("TODO: Implementation not finished yet!");
+        //this.element.removeChild( ((NodeDOMImpl) child).getElement() );
+        //sitetree.save();
     }
 
     /**
@@ -83,15 +86,11 @@ public class NodeDOMImpl implements Node {
      */
     public boolean isResource() {
         org.w3c.dom.NodeList nl = element.getElementsByTagName("node");
-        if (nl == null) {
+        if (nl == null)
             return true;
-        } else {
-            if (nl.getLength() > 0) {
-                return false;
-            } else {
-                return true;
-            }
-        }
+        if (nl.getLength() > 0) 
+            return false;
+        return true;
     }
 
     /**
@@ -102,12 +101,10 @@ public class NodeDOMImpl implements Node {
         if (nl != null) {
             if (nl.getLength() > 0) {
                 return true;
-            } else {
-                return false;
             }
-        } else {
             return false;
         }
+        return false;
     }
 
     /**
@@ -137,9 +134,8 @@ public class NodeDOMImpl implements Node {
     public Node getParent() {
         if (!element.getNodeName().equals("sitetree")) {
             return new NodeDOMImpl((org.w3c.dom.Element) element.getParentNode(), sitetree);
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -168,9 +164,8 @@ public class NodeDOMImpl implements Node {
                 name = name + "/";
             }
             return getParent().getPath() + name;
-        } else { // Root node reached
-            return "/";
         }
+        return "/";
     }
 
     /**
@@ -191,9 +186,8 @@ public class NodeDOMImpl implements Node {
         if (element.getNodeName().equals("sitetree")) {
             log.warn("Sitetree node has no label");
             return null;
-        } else {
-            return element.getElementsByTagName("label").item(0).getFirstChild().getNodeValue();
         }
+        return element.getElementsByTagName("label").item(0).getFirstChild().getNodeValue();
     }
 
     /**
