@@ -197,7 +197,7 @@ public class NodeResConfigAndDataRepoImpl implements Node {
      */
     public Node getParent() {
         try {
-	    return new NodeResConfigAndDataRepoImpl(resRepo, dataRepo, (String) resRepo.getNode(path.toString() + ".yanel-rc").getParent().getPath());
+	    return new NodeResConfigAndDataRepoImpl(resRepo, dataRepo, resRepo.getNode(path.toString() + ".yanel-rc").getParent().getPath());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
