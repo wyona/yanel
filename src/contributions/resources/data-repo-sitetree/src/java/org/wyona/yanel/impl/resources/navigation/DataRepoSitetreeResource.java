@@ -4,10 +4,6 @@
 
 package org.wyona.yanel.impl.resources.navigation;
 
-import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.api.attributes.ViewableV2;
-import org.wyona.yanel.core.attributes.viewable.View;
-import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.navigation.Node;
 import org.wyona.yanel.core.navigation.Sitetree;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
