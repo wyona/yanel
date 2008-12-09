@@ -37,11 +37,6 @@ import org.wyona.security.core.api.User;
 import org.wyona.security.core.api.Group;
 import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.yarep.core.Repository;
-
-import org.apache.avalon.framework.configuration.Configuration;
-import org.apache.avalon.framework.configuration.DefaultConfiguration;
-import org.apache.avalon.framework.configuration.DefaultConfigurationSerializer;
-
 import org.apache.log4j.Category;
 
 import javax.xml.transform.Transformer;
@@ -240,9 +235,8 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
     public String getPropertyType(String propertyName) {
         if (propertyName.equals("password") || propertyName.equals("passwordConfirmed")) {
             return CreatableV2.TYPE_PASSWORD;
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -299,9 +293,8 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
     public String getCreateName(String suggestedName) {
         if (suggestedName != null && suggestedName.equals("")) {
             return null;
-        } else {
-            return suggestedName;
         }
+        return suggestedName;
     }
 
     /**
@@ -329,68 +322,68 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
         return property;
     }
 
-    /**
-     * Create a configuration object with the policies to access the user data.
-     * Only the user and lenya will be able to access the user data.
-     *
-     * @param userId
-     *            The user who must be granted permission to modify data
-     * @return Configuration object containing the corresponding policies
-     */
-    private Configuration createPolicyConfiguration(String userId) {
-        DefaultConfiguration config = new DefaultConfiguration(POLICY);
-        config.setAttribute(XMLNS_ATTR, XMLNS);
-
-        DefaultConfiguration child = null;
-
-        child = new DefaultConfiguration(ROLE);
-        child.setAttribute(ID_ATTR, "view");
-        config.addChild(child);
-
-        DefaultConfiguration worldNode = new DefaultConfiguration(WORLD);
-        worldNode.setAttribute(PERMISSION_ATTR, "false");
-        child.addChild(worldNode);
-
-        DefaultConfiguration userNode = new DefaultConfiguration(GROUP);
-        userNode.setAttribute(ID_ATTR, "admin");
-        userNode.setAttribute(PERMISSION_ATTR, "true");
-        child.addChild(userNode);
-
-        userNode = new DefaultConfiguration(USER);
-        userNode.setAttribute(ID_ATTR, userId);
-        userNode.setAttribute(PERMISSION_ATTR, "true");
-        child.addChild(userNode);
-
-        child = new DefaultConfiguration(ROLE);
-        child.setAttribute(ID_ATTR, "open");
-        config.addChild(child);
-
-        userNode = new DefaultConfiguration(GROUP);
-        userNode.setAttribute(ID_ATTR, "admin");
-        userNode.setAttribute(PERMISSION_ATTR, "true");
-        child.addChild(userNode);
-
-        userNode = new DefaultConfiguration(USER);
-        userNode.setAttribute(ID_ATTR, userId);
-        userNode.setAttribute(PERMISSION_ATTR, "true");
-        child.addChild(userNode);
-
-        child = new DefaultConfiguration(ROLE);
-        child.setAttribute(ID_ATTR, "write");
-        config.addChild(child);
-
-        userNode = new DefaultConfiguration(GROUP);
-        userNode.setAttribute(ID_ATTR, "admin");
-        userNode.setAttribute(PERMISSION_ATTR, "true");
-        child.addChild(userNode);
-
-        userNode = new DefaultConfiguration(USER);
-        userNode.setAttribute(ID_ATTR, userId);
-        userNode.setAttribute(PERMISSION_ATTR, "true");
-        child.addChild(userNode);
-
-        return config;
-    }
+//    /**
+//     * Create a configuration object with the policies to access the user data.
+//     * Only the user and lenya will be able to access the user data.
+//     *
+//     * @param userId
+//     *            The user who must be granted permission to modify data
+//     * @return Configuration object containing the corresponding policies
+//     */
+//    private Configuration createPolicyConfiguration(String userId) {
+//        DefaultConfiguration config = new DefaultConfiguration(POLICY);
+//        config.setAttribute(XMLNS_ATTR, XMLNS);
+//
+//        DefaultConfiguration child = null;
+//
+//        child = new DefaultConfiguration(ROLE);
+//        child.setAttribute(ID_ATTR, "view");
+//        config.addChild(child);
+//
+//        DefaultConfiguration worldNode = new DefaultConfiguration(WORLD);
+//        worldNode.setAttribute(PERMISSION_ATTR, "false");
+//        child.addChild(worldNode);
+//
+//        DefaultConfiguration userNode = new DefaultConfiguration(GROUP);
+//        userNode.setAttribute(ID_ATTR, "admin");
+//        userNode.setAttribute(PERMISSION_ATTR, "true");
+//        child.addChild(userNode);
+//
+//        userNode = new DefaultConfiguration(USER);
+//        userNode.setAttribute(ID_ATTR, userId);
+//        userNode.setAttribute(PERMISSION_ATTR, "true");
+//        child.addChild(userNode);
+//
+//        child = new DefaultConfiguration(ROLE);
+//        child.setAttribute(ID_ATTR, "open");
+//        config.addChild(child);
+//
+//        userNode = new DefaultConfiguration(GROUP);
+//        userNode.setAttribute(ID_ATTR, "admin");
+//        userNode.setAttribute(PERMISSION_ATTR, "true");
+//        child.addChild(userNode);
+//
+//        userNode = new DefaultConfiguration(USER);
+//        userNode.setAttribute(ID_ATTR, userId);
+//        userNode.setAttribute(PERMISSION_ATTR, "true");
+//        child.addChild(userNode);
+//
+//        child = new DefaultConfiguration(ROLE);
+//        child.setAttribute(ID_ATTR, "write");
+//        config.addChild(child);
+//
+//        userNode = new DefaultConfiguration(GROUP);
+//        userNode.setAttribute(ID_ATTR, "admin");
+//        userNode.setAttribute(PERMISSION_ATTR, "true");
+//        child.addChild(userNode);
+//
+//        userNode = new DefaultConfiguration(USER);
+//        userNode.setAttribute(ID_ATTR, userId);
+//        userNode.setAttribute(PERMISSION_ATTR, "true");
+//        child.addChild(userNode);
+//
+//        return config;
+//    }
 
     /**
      * Updates the user profile
