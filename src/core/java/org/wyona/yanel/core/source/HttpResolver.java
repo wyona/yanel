@@ -1,16 +1,11 @@
 package org.wyona.yanel.core.source;
 
-import java.io.InputStream;
-
 import javax.xml.transform.Source;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Category;
 import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.Yanel;
-import org.wyona.yanel.core.map.Realm;
-import org.wyona.yarep.core.Repository;
 
 
 /**
@@ -29,10 +24,10 @@ public class HttpResolver implements URIResolver {
 
     private static final String SCHEME = "http";
     
-    private Resource resource;
+    //private Resource resource;
     
     public HttpResolver(Resource resource) {
-        this.resource = resource;
+        //this.resource = resource;
     }
 
     public Source resolve(String href, String base) throws SourceException {
