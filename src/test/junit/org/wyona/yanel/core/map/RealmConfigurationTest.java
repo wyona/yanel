@@ -15,8 +15,6 @@
  */
 package org.wyona.yanel.core.map;
 
-import java.io.File;
-
 import org.wyona.yanel.junit.AbstractYanelTest;
 
 /**
