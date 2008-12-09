@@ -48,11 +48,10 @@ public class SourceResolver implements URIResolver {
                 //int colBaseIndex = base.indexOf(":/");
                 if(colBaseIndex <=0 ){//Check for scheme in Base
                     throw new SourceException("invalid url syntax (missing scheme): " + uri);//no scheme found in uri and base
-                }else{//base contains scheme. Use base scheme for uri scheme
-                    uriScheme = base.substring(0, colBaseIndex);
-                    uri = PathUtil.concat(base,uri);                
-                    //log.error("DEBUG: Use scheme of base: " + uriScheme + ", " + uri);
                 }
+                uriScheme = base.substring(0, colBaseIndex);
+                uri = PathUtil.concat(base,uri);                
+                //log.error("DEBUG: Use scheme of base: " + uriScheme + ", " + uri);
             } else {
                 log.error("Neither scheme for URI nor base specified for URI: " + uri);
                 throw new SourceException("invalid url syntax (missing scheme): " + uri);//no scheme found in uri and base
@@ -72,9 +71,8 @@ public class SourceResolver implements URIResolver {
             } catch (TransformerException e) {
                 throw new SourceException(e.getMessage(), e);
             }
-        } else {
-            throw new SourceException("No resolver could be loaded for scheme: " + uriScheme);
         }
+        throw new SourceException("No resolver could be loaded for scheme: " + uriScheme);
     }
     
     /**
