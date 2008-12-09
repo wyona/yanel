@@ -20,10 +20,8 @@ import java.io.Reader;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
-import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.util.HttpServletRequestHelper;
 import org.wyona.yanel.core.util.PathUtil;
