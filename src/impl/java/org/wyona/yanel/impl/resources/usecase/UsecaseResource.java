@@ -18,46 +18,17 @@ package org.wyona.yanel.impl.resources.usecase;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamSource;
-
-import org.apache.avalon.framework.configuration.Configuration;
-import org.apache.avalon.framework.configuration.ConfigurationException;
-import org.apache.avalon.framework.configuration.ConfigurationUtil;
 import org.apache.commons.jelly.JellyContext;
 import org.apache.commons.jelly.XMLOutput;
 import org.apache.log4j.Category;
-import org.apache.xml.resolver.tools.CatalogResolver;
-import org.apache.xml.serializer.Serializer;
-import org.w3c.dom.Document;
-import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.ResourceConfiguration;
-import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
-import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
-import org.wyona.yanel.core.serialization.SerializerFactory;
-import org.wyona.yanel.core.source.SourceResolver;
-import org.wyona.yanel.core.transformation.I18nTransformer2;
-import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.impl.resources.xml.ConfigurableViewDescriptor;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
 import org.wyona.yarep.core.Repository;
 import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  *
