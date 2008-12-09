@@ -6,8 +6,6 @@ package org.wyona.yanel.ant;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
-import org.wyona.yanel.core.map.RealmManager;
-
 /**
  *
  */
