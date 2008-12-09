@@ -236,8 +236,8 @@ class VersionPartTokenizer implements Enumeration {
       String numPart = part.substring(0, index);
       part = part.substring(index);
       return numPart;
-    } else {
-      // ... or if this is the non-numeric part of version string
+    }
+    // ... or if this is the non-numeric part of version string
       int index = 0;
       while (index < part.length() && !Character.isDigit(part.charAt(index))) {
         index++;
@@ -246,7 +246,6 @@ class VersionPartTokenizer implements Enumeration {
       String alphaPart = part.substring(0, index);
       part = part.substring(index);
       return alphaPart;
-    }
   }
 
   public String nextToken() {
