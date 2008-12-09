@@ -16,16 +16,12 @@
 
 package org.wyona.yanel.core.attributes.translatable;
 
-import org.apache.log4j.Category;
-
 /**
  * This translation manager works with a path format where the language is
  * a prefix: /en/foo/bar.html
  */
 public class PrefixTranslationManager extends AbstractPathTranslationManager {
 
-    private static Category log = Category.getInstance(PrefixTranslationManager.class);
-    
     /**
      * Empty constructor. Don't forget to call the init() method.
      */
