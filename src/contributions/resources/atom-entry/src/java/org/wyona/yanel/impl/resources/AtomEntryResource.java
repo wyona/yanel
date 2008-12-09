@@ -18,7 +18,6 @@ package org.wyona.yanel.impl.resources;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.Topic;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
@@ -27,7 +26,6 @@ import org.wyona.yanel.core.util.PathUtil;
 
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
-import org.wyona.yarep.util.RepoPath;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -35,13 +33,10 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
 
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Entry;
@@ -84,7 +79,7 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
                 TransformerFactory tf = TransformerFactory.newInstance();
                 //tf.setURIResolver(null);
                 Transformer transformer = tf.newTransformer(new StreamSource(getRealm().getRepository().getInputStream(new org.wyona.yarep.core.Path(getXSLTPath().toString()))));
-                transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+                transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
                 transformer.setParameter("yanel.path", getPath());
                 transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
                 transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
@@ -124,7 +119,7 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
         String mimeType = getRTI().getProperty("mime-type");
         if (mimeType != null) return mimeType;
 
-        String suffix = PathUtil.getSuffix(getPath());
+        String suffix = org.wyona.commons.io.PathUtil.getSuffix(getPath());
         if (suffix != null) {
             log.debug("SUFFIX: " + suffix);
             if (suffix.equals("html")) {
@@ -216,10 +211,9 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
         String xslt = getRTI().getProperty("xslt");
         if (xslt != null) {
             return xslt;
-        } else {
-            log.error("No XSLT Path within: " + PathUtil.getRTIPath(getPath()));
-            return null;
         }
+        log.error("No XSLT Path within: " + PathUtil.getRTIPath(getPath()));
+        return null;
     }
 
     /**
