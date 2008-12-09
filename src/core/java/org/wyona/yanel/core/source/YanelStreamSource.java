@@ -6,13 +6,9 @@ import java.io.Reader;
 
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Logger;
-
 /**
  */
 public class YanelStreamSource extends StreamSource {
-    private static Logger log = Logger.getLogger(YanelStreamSource.class);
-
     protected long lastModified = -1;
     
     public YanelStreamSource() {
