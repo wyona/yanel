@@ -21,23 +21,18 @@ import java.lang.ClassNotFoundException;
 import java.lang.IllegalAccessException;
 import java.lang.InstantiationException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Properties;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.WildcardFilter;
 import org.apache.log4j.Category;
 
 import org.wyona.commons.io.FileUtil;
-import org.wyona.yanel.core.map.Map;
-import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.map.RealmManager;
 
 /**
@@ -253,10 +248,9 @@ public class ResourceTypeRegistry {
             //resource.setYanel(...);
 
             return resource;
-        } else {
-            log.error("No resource registered for rti: " + universalName);
-            return null;
         }
+        log.error("No resource registered for rti: " + universalName);
+        return null;
     }
 
 
