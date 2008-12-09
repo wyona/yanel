@@ -125,9 +125,8 @@ public class MessageManager {
         String text = getText(key, arguments, locale);
         if (text != null) {
             return text;
-        } else {
-            return defaultText;
         }
+        return defaultText;
     }
 
     /**
