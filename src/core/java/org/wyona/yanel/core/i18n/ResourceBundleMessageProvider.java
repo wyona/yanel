@@ -21,15 +21,11 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
-
 /**
  * The <code>ResourceBundleMessageProvider</code> deals with messages defined in 
  * resource bundles.
  */
 public class ResourceBundleMessageProvider implements MessageProvider {
-    private static Logger log = Logger.getLogger(ResourceBundleMessageProvider.class.getName());
-
     private final String baseName;
 
     /**
