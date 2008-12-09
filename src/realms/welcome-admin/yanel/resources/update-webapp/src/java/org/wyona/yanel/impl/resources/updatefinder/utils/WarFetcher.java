@@ -5,25 +5,15 @@
 package org.wyona.yanel.impl.resources.updatefinder.utils;
 
 import org.apache.log4j.Category;
-import org.apache.tools.ant.taskdefs.Delete;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
-import org.apache.commons.io.FileUtils;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.net.JarURLConnection;
-
 
 public class WarFetcher implements Runnable {
     
