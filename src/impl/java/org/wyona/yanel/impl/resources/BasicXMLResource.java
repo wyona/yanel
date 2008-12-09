@@ -24,8 +24,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.transform.Transformer;
@@ -50,7 +48,6 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.SourceResolver;
-import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.I18nTransformer3;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
@@ -152,20 +149,19 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                     this.viewDescriptors.put(id, viewDescriptor);
                 }
                 return (ViewDescriptor[])this.viewDescriptors.values().toArray(new ViewDescriptor[this.viewDescriptors.size()]);
-            } else {
-                // no custom config
-                ConfigurableViewDescriptor[] vd = new ConfigurableViewDescriptor[2];
-                vd[0] = new ConfigurableViewDescriptor(DEFAULT_VIEW_ID);
-                String mimeType = getResourceConfigProperty("mime-type");
-                vd[0].setMimeType(mimeType);
-                this.viewDescriptors.put(DEFAULT_VIEW_ID, vd[0]);
-
-                vd[1] = new ConfigurableViewDescriptor(SOURCE_VIEW_ID);
-                mimeType = getResourceConfigProperty("source-view-mime-type");
-                vd[1].setMimeType(mimeType);
-                this.viewDescriptors.put(SOURCE_VIEW_ID, vd[1]);
-                return vd;
             }
+            // no custom config
+            ConfigurableViewDescriptor[] vd = new ConfigurableViewDescriptor[2];
+            vd[0] = new ConfigurableViewDescriptor(DEFAULT_VIEW_ID);
+            String mimeType = getResourceConfigProperty("mime-type");
+            vd[0].setMimeType(mimeType);
+            this.viewDescriptors.put(DEFAULT_VIEW_ID, vd[0]);
+
+            vd[1] = new ConfigurableViewDescriptor(SOURCE_VIEW_ID);
+            mimeType = getResourceConfigProperty("source-view-mime-type");
+            vd[1].setMimeType(mimeType);
+            this.viewDescriptors.put(SOURCE_VIEW_ID, vd[1]);
+            return vd;
         } catch (Exception e) {
             String errorMsg = "Error configuring resource: " + getPath() + ": " + e.toString();
             log.error(errorMsg, e);
@@ -399,36 +395,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * @param transformer
      * @throws Exception
      */
-    protected void passTransformerParameters(Transformer transformer) throws Exception {
-/*
-        // TODO: getParameters() are not the Http Request parameters! Let's find out first ...
-        // Attach all parameters that came with the request. Templates can make use of them.
-        // NOTE: all parameter values will be of type String. In XSLT: <param name="p" value="'actual_value'"/>
-        for (Iterator i = getParameters().entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry) i.next();
-            if (entry.getValue() instanceof String) {
-                String value = (String) entry.getValue();
-                transformer.setParameter(String.valueOf(entry.getKey()), value);
-            } else if(entry.getValue() instanceof String[]){
-                // values separated by a space
-                String separator = " ";
-                
-                StringBuffer finalValue = new StringBuffer();
-                String [] values = (String[]) entry.getValue();
-                for (int j = 0; j < values.length; j++) {
-                    finalValue.append(values[j]);
-                    if(j + 1 != values.length){
-                        finalValue.append(separator);
-                    }
-                }
-            } else{
-                // Never happens
-            }
-        }
-*/
-        
+    protected void passTransformerParameters(Transformer transformer) throws Exception {      
         // Set general parameters
-        transformer.setParameter("yanel.path.name", PathUtil.getName(getPath()));
+        transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
         transformer.setParameter("yanel.path", getPath());
         transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
         transformer.setParameter("yanel.globalHtdocsPath", PathUtil.getGlobalHtdocsPath(this));
@@ -519,10 +488,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         javax.servlet.http.HttpSession session = getRequest().getSession(true);
         if (session != null) {
             return (String) session.getAttribute("toolbar");
-        } else {
-            log.warn("No session exists or could be created!");
-            return null;
         }
+        log.warn("No session exists or could be created!");
+        return null;
     }
 
     /**
