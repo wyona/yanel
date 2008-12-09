@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 
 import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.vocabulary.*;
 import com.hp.hpl.jena.rdf.model.impl.PropertyImpl;
 
 /**
