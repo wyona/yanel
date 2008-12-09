@@ -18,14 +18,9 @@ package org.wyona.yanel.impl.resources;
 import org.wyona.yanel.htmlunit.AbstractHtmlUnitTest;
 
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
-import com.gargoylesoftware.htmlunit.html.HtmlOption;
-import com.gargoylesoftware.htmlunit.html.HtmlSelect;
-
-
 
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.map.Realm;
