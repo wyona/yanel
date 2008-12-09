@@ -169,7 +169,7 @@ public class NodeRTIImpl implements Node {
      */
     public Node getParent() {
         try {
-	    return new NodeRTIImpl(repo, (String) repo.getNode(path.toString() + ".yanel-rc").getParent().getPath());
+	    return new NodeRTIImpl(repo, repo.getNode(path.toString() + ".yanel-rc").getParent().getPath());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
