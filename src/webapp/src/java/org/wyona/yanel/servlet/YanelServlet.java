@@ -1877,6 +1877,7 @@ public class YanelServlet extends HttpServlet {
             log.warn("TODO: Implementation not finished yet!");
         } else if (path.indexOf("about.html") >= 0) {
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+            response.setHeader("Content-Type", "text/html");
             StringBuffer sb = new StringBuffer("<html>");
             sb.append("<head><title>About Yanel</title></head>");
             sb.append("<body><h1>About Yanel</h1><p>Version " + yanel.getVersion() + "-r" + yanel.getRevision() + "</p><p>Copyright &#169; 2005 - 2008 Wyona. All rights reserved.</p></body>");
@@ -1938,7 +1939,7 @@ public class YanelServlet extends HttpServlet {
                 
                 if (htdocIn != null) {
                     log.debug("Resource-Type specific data: " + htdocsPath);
-                    // TODO: Set HTTP header (mime-type, size, etc.)
+                    // TODO: Set more HTTP headers (size, etc.)
                     String mimeType = guessMimeType(FilenameUtils.getExtension(FilenameUtils.getName(htdocsPath)));
                     if(sourceLastModified >= 0) response.setDateHeader("Last-Modified", sourceLastModified);
                     response.setHeader("Content-Type", mimeType);
@@ -1968,7 +1969,7 @@ public class YanelServlet extends HttpServlet {
             if (globalFile.exists()) {
                 log.debug("Global data: " + globalFile);
 
-                // TODO: Set HTTP header (mime-type, size, etc.)
+                // TODO: Set more HTTP headers (size, etc.)
                 String mimeType = guessMimeType(FilenameUtils.getExtension(globalFile.getName()));
                 response.setHeader("Content-Type", mimeType);
 

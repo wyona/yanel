@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.impl.SimpleLog;
 
 import com.gargoylesoftware.htmlunit.CollectingAlertHandler;
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -199,6 +200,25 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
         this.currentPage = handlePage(page);
     }
 
+    protected void loadErrorPage(String pageURL, int expectedErrorCode) throws Exception {
+        int statusCode;
+        try {
+            loadHtmlPage(pageURL);
+            statusCode = this.response.getStatusCode();
+        } catch (FailingHttpStatusCodeException e) {
+            statusCode = e.getStatusCode();
+        }
+        assertTrue("Response status for reserved "+pageURL+" error page not "+
+         expectedErrorCode+" but "+statusCode, statusCode == expectedErrorCode);
+    }
+
+    protected void loadResource(String resourceURL) throws Exception {
+        URL url = new URL(baseURL + resourceURL);
+        Page resource = webClient.getPage(url);
+        this.response = resource.getWebResponse();
+        assertTrue("Response should not be a HTML page", ! (resource instanceof HtmlPage));
+    }
+    
     /**
      * Click on an element like a button or an anchor (link).
      * 
