@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2006,2008 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 package org.wyona.yanel.core.util;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 /**
  * TODO:
@@ -59,4 +61,25 @@ public class HttpServletRequestHelper  {
             throw new RuntimeException(uee.toString(), uee);
         }
     }
+
+    /**
+     * Decode an URI that was part of an URL path.
+     *
+     * Algorithm: If the 1st character of the URI is the escape character,
+     *  replace all occurrences of this character by '%' and decode as Percent-Encoded URI.
+     */
+    public static String decodeURIinURLpath(final char escapeCharacter, final String URLpathPart) {
+        final char firstCharacter = URLpathPart.charAt(0);
+        if (firstCharacter != escapeCharacter) {
+            return URLpathPart;
+        }
+        final String decodedURLpathPart = URLpathPart.substring(1).replace(escapeCharacter, '%');
+        final String encodedURL = decodedURLpathPart.replaceAll("\\+", "%2B");
+        try {
+            return URLDecoder.decode(encodedURL, "UTF-8");
+        } catch (UnsupportedEncodingException uee) {
+            throw new RuntimeException(uee); // this should never happen, as UTF-8 encoding should be always available
+        }
+    }
+
 }
