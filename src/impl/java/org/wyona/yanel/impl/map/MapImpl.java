@@ -24,7 +24,6 @@ import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.map.RealmManager;
 
-import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
@@ -177,12 +176,11 @@ public class MapImpl implements Map {
                         + matchingRealm.getMountPoint());
             }
             return matchingRealm;
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("nothing matched! - > root realm");
-            }
-            return realmConfig.getRootRealm();
         }
+        if (log.isDebugEnabled()) {
+            log.debug("nothing matched! - > root realm");
+        }
+        return realmConfig.getRootRealm();
     }
 
     /**
