@@ -53,7 +53,7 @@ Content Language: <xsl:value-of select="$content-language"/>
 
 
           <div id="header">
-           <a href="{$yarep.back2realm}index.html">LOGO</a>
+           <a href="{$yarep.back2realm}index.html"><img src="{$yarep.back2realm}app/images/yanel-logo.png" alt="yanel logo" id="header-logo"/></a>
 <!--
            <img src="{$yarep.back2realm}app/images/logo.gif"/>
 -->
