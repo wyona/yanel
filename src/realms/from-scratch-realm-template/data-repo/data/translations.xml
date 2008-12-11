@@ -8,6 +8,6 @@
   <page>
     <translation path="/en/about.html" uuid="" language="en"/>
     <translation path="/de/ueber.html" uuid="" language="de"/>
-    <translation path="/es/acerca.html" uuid="" language="es"/>
+    <!--<translation path="/es/acerca.html" uuid="" language="es"/>--> <!-- Also see ../../realm.xml -->
   </page>
 </pages>
