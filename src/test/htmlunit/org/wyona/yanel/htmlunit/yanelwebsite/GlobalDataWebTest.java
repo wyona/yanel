@@ -71,12 +71,22 @@ public class GlobalDataWebTest extends AbstractHtmlUnitTest {
         loadReservedErrorPage("resource-types/dummy", /* XXX: should be 404: */500);
 
         loadReservedErrorPage("resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3afile/yanel/icons/1x1/rt-icon.png", /* XXX: should be 404: */500);
+        loadReservedErrorPage("resource-types/^http^3a^2f^2fwww.wyona.org^2fyanel^2fresource^2f1.0::file/yanel/icons/1x1/rt-icon.png", /* XXX: should be 404: */500);
+        loadReservedErrorPage("resource-types/http://www.wyona.org/yanel/resource/1.0::file/yanel/icons/1x1/rt-icon.png", /* XXX: should be 404: */500);
+
         loadReservedResource("resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3afile/yanel/icons/32x32/rt-icon.png");
+        loadReservedResource("resource-types/^http^3a^2f^2fwww.wyona.org^2fyanel^2fresource^2f1.0::file/yanel/icons/32x32/rt-icon.png");
+        loadReservedResource("resource-types/http://www.wyona.org/yanel/resource/1.0::file/yanel/icons/32x32/rt-icon.png");
         assertNotNull(response.getResponseHeaderValue("Last-Modified"));
         //TODO: test 304 handling
 
         loadReservedErrorPage("resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3atesting-control/dummy", /* XXX: should be 404: */500);
+        loadReservedErrorPage("resource-types/^http^3a^2f^2fwww.wyona.org^2fyanel^2fresource^2f1.0::testing-control/dummy", /* XXX: should be 404: */500);
+        loadReservedErrorPage("resource-types/http://www.wyona.org/yanel/resource/1.0::testing-control/dummy", /* XXX: should be 404: */500);
+
         loadReservedResource("resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3atesting-control/js/ajaxexecutetests.js");
+        loadReservedResource("resource-types/^http^3a^2f^2fwww.wyona.org^2fyanel^2fresource^2f1.0::testing-control/js/ajaxexecutetests.js");
+        loadReservedResource("resource-types/http://www.wyona.org/yanel/resource/1.0::testing-control/js/ajaxexecutetests.js");
         assertNotNull(response.getResponseHeaderValue("Last-Modified"));
         //TODO: test 304 handling
     }

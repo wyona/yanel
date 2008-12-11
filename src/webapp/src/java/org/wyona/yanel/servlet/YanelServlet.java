@@ -1,23 +1,18 @@
 package org.wyona.yanel.servlet;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Properties;
-import java.util.Vector;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -25,24 +20,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 
+import org.wyona.yanel.core.ResourceTypeIdentifier;
 import org.wyona.yanel.core.StateOfView;
 import org.wyona.yanel.core.Environment;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
-import org.wyona.yanel.core.ResourceTypeDefinition;
-import org.wyona.yanel.core.ResourceTypeIdentifier;
 import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.api.attributes.IntrospectableV1;
@@ -64,8 +54,8 @@ import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yanel.core.source.YanelStreamSource;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.util.DateUtil;
+import org.wyona.yanel.core.util.HttpServletRequestHelper;
 import org.wyona.yanel.core.workflow.WorkflowException;
-import org.wyona.yanel.core.workflow.WorkflowHelper;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
@@ -75,10 +65,6 @@ import org.wyona.yanel.servlet.communication.HttpRequest;
 import org.wyona.yanel.servlet.communication.HttpResponse;
 
 import org.wyona.security.core.api.Identity;
-import org.wyona.security.core.api.IdentityManager;
-import org.wyona.security.core.api.Policy;
-import org.wyona.security.core.api.PolicyManager;
-import org.wyona.security.core.api.Role;
 import org.wyona.security.core.api.Usecase;
 import org.wyona.security.core.api.User;
 
@@ -87,14 +73,10 @@ import org.apache.xalan.transformer.TransformerIdentityImpl;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 
-import org.apache.avalon.framework.configuration.Configuration;
-import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 import org.apache.commons.io.FilenameUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  *
@@ -1880,9 +1862,9 @@ public class YanelServlet extends HttpServlet {
 
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
             return;
-        } else if (path.indexOf("user-mgmt/list-users.html") >= 0) {
+        } else if (path.equals(userListPagePath)) {
             log.warn("TODO: Implementation not finished yet!");
-        } else if (path.indexOf("about.html") >= 0) {
+        } else if (path.equals(aboutPagePath)) {
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             response.setHeader("Content-Type", "text/html");
             StringBuffer sb = new StringBuffer("<html>");
@@ -1906,13 +1888,14 @@ public class YanelServlet extends HttpServlet {
                 throw new ServletException(e);
             }
         } else if (path.startsWith(resourceTypesPathPrefix)) {
-            //final Matcher matcher = rtURLpattern.matcher(path.substring(resourceTypesPathPrefix.length()));
             final String[] namespaceURI_and_rest = path.substring(resourceTypesPathPrefix.length()).split("::", 2);
             final String namespaceURI = namespaceURI_and_rest[0];
             final String[] name_and_rest = namespaceURI_and_rest[1].split("/", 2);
             final String name = name_and_rest[0];
+            final String decoded_namespaceURI = HttpServletRequestHelper.decodeURIinURLpath('^', namespaceURI);
+            if (log.isDebugEnabled()) log.debug("decoded_namespaceURI: "+decoded_namespaceURI);
             // The request (see resource.getPath()) seems to replace 'http://' or 'http%3a%2f%2f' by 'http:/', so let's change this back
-            final String namespace = namespaceURI.replaceAll("http:/", "http://");
+            final String namespace = ! decoded_namespaceURI.equals(namespaceURI) ? decoded_namespaceURI : namespaceURI.replaceAll("http:/", "http://");
 
             try {
                 java.util.Map<String, String> properties = new HashMap<String, String>();
