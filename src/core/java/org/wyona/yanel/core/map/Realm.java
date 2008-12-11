@@ -496,7 +496,8 @@ public class Realm {
     }
 
     public void setLanguages(String[] languages) {
-        this.languages = languages.clone();
+        //TODO: the cast should not be necessary. but under strange circumstances build fails without.
+        this.languages = (String[]) languages.clone();
     }
 
     public TranslationManager getTranslationManager() {
