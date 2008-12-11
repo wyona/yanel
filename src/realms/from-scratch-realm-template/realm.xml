@@ -18,6 +18,7 @@
   <languages>
     <language>en</language>
     <language>de</language>
+    <!--<language>es</language>--> <!-- Also data-repo/data/translations.xml -->
   </languages>
   <translation-manager class="org.wyona.yanel.core.attributes.translatable.PrefixTranslationManager"/>
 <!--
