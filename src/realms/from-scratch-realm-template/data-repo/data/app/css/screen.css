@@ -124,7 +124,7 @@ div.section a:visited {color: #999999; text-decoration:none; }
 
 #contact-translations {
     position: relative; 
-    top:91px;
+    top:41px;
     left:626px;
     font-size: 10px;
     width: 200px;
@@ -290,4 +290,12 @@ table.border td{
 
 div.nowrap {
     white-space: nowrap;
+}
+
+a img {
+    border: 0px;
+}
+
+#header-logo {
+    padding: 20px;
 }
