@@ -6,17 +6,17 @@
   <name>Home</name>
 </node>
 
-<node href="de/kontakt.html">
+<node href="de/ueber.html">
   <name>Ueber</name>
-  <node href="de/about/organization.html">
-    <name>Organization</name>
+  <node href="de/ueber/organization.html">
+    <name>Organisation</name>
     <node href="de/about/organization/sales.html"><name>Verkauf</name></node>
     <node href="de/about/organization/development.html"><name>Entwicklung</name></node>
     <node href="de/about/organization/support.html"><name>Support</name></node>
   </node>
   <node href="de/about/corporate-governance.html"><name>Corporate Governance</name></node>
   <node href="de/about/management.html"><name>Gesch&#228;ftsf&#252;hrung</name></node>
-  <node href="de/about/board.html"><name>Board of Directors</name></node>
+  <node href="de/about/board.html"><name>Verwaltungsrat</name></node>
   <node href="de/about/history.html"><name>Geschichte</name></node>
 </node>
 
