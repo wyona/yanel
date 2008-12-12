@@ -76,9 +76,8 @@ public class NodeDOMImpl implements Node {
      * Remove child
      */
     public void removeChild(Node child) {
-        log.warn("TODO: Implementation not finished yet!");
-        //this.element.removeChild( ((NodeDOMImpl) child).getElement() );
-        //sitetree.save();
+        this.element.removeChild( ((NodeDOMImpl) child).getElement() );
+        this.sitetree.save();
     }
 
     /**
