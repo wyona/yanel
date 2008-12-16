@@ -23,7 +23,6 @@ import org.wyona.yanel.htmlunit.AbstractHtmlUnitTest;
 public class GlobalDataWebTest extends AbstractHtmlUnitTest {
 
     private String getReservedURL(String resourceRelativeURL) throws Exception {
-        String reservedPrefix = "yanel/";//XXX HACK
         return reservedPrefix  + resourceRelativeURL;
     }
 
@@ -70,13 +69,13 @@ public class GlobalDataWebTest extends AbstractHtmlUnitTest {
     public void testResourceTypesPages() throws Exception {
         loadReservedErrorPage("resource-types/dummy", /* XXX: should be 404: */500);
 
-        loadReservedErrorPage("resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3afile/yanel/icons/1x1/rt-icon.png", /* XXX: should be 404: */500);
-        loadReservedErrorPage("resource-types/^http^3a^2f^2fwww.wyona.org^2fyanel^2fresource^2f1.0::file/yanel/icons/1x1/rt-icon.png", /* XXX: should be 404: */500);
-        loadReservedErrorPage("resource-types/http://www.wyona.org/yanel/resource/1.0::file/yanel/icons/1x1/rt-icon.png", /* XXX: should be 404: */500);
+        loadReservedErrorPage("resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3afile/"+reservedPrefix+"icons/1x1/rt-icon.png", /* XXX: should be 404: */500);
+        loadReservedErrorPage("resource-types/^http^3a^2f^2fwww.wyona.org^2fyanel^2fresource^2f1.0::file/"+reservedPrefix+"icons/1x1/rt-icon.png", /* XXX: should be 404: */500);
+        loadReservedErrorPage("resource-types/http://www.wyona.org/yanel/resource/1.0::file/"+reservedPrefix+"icons/1x1/rt-icon.png", /* XXX: should be 404: */500);
 
-        loadReservedResource("resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3afile/yanel/icons/32x32/rt-icon.png");
-        loadReservedResource("resource-types/^http^3a^2f^2fwww.wyona.org^2fyanel^2fresource^2f1.0::file/yanel/icons/32x32/rt-icon.png");
-        loadReservedResource("resource-types/http://www.wyona.org/yanel/resource/1.0::file/yanel/icons/32x32/rt-icon.png");
+        loadReservedResource("resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3afile/"+reservedPrefix+"icons/32x32/rt-icon.png");
+        loadReservedResource("resource-types/^http^3a^2f^2fwww.wyona.org^2fyanel^2fresource^2f1.0::file/"+reservedPrefix+"icons/32x32/rt-icon.png");
+        loadReservedResource("resource-types/http://www.wyona.org/yanel/resource/1.0::file/"+reservedPrefix+"icons/32x32/rt-icon.png");
         assertNotNull(response.getResponseHeaderValue("Last-Modified"));
         //TODO: test 304 handling
 

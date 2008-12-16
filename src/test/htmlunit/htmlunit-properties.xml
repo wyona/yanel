@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <config>
   <htmlunit>
     <!--
@@ -12,6 +11,7 @@
     -->
     <debugLevel>4</debugLevel>
     <baseUrl>http://localhost:8080/yanel/</baseUrl>
+    <reservedPrefix>yanel/</reservedPrefix>
     <language>en</language>
 <!--
     <language>en-us</language>

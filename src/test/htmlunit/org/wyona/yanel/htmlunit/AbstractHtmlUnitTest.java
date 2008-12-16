@@ -109,7 +109,12 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
 
     protected File baseDir;
 
-    protected List collectedAlerts = new ArrayList();
+    protected List<Object> collectedAlerts = new ArrayList<Object>();
+
+    /**
+     * The prefix reserved by Yanel just at the start of the realm URI to host pages like about.html, the repository browser, etc.
+     */
+    protected String reservedPrefix;
 
     /*
      * (non-Javadoc)
@@ -119,14 +124,18 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        // read the config file
-        URL configURL = this.getClass().getClassLoader().getResource("htmlunit-properties.xml");
+        // read the configuration file
+        URL configURL = this.getClass().getClassLoader().getResource("local.htmlunit-properties.xml");
+        if (configURL == null) {
+            configURL = this.getClass().getClassLoader().getResource("htmlunit-properties.xml");
+        }
         config = new XMLConfiguration(configURL);
 
         SimpleLog log = new SimpleLog("htmlunit log");
         log.setLevel(Integer.parseInt(this.config.getString("htmlunit.debugLevel")));
         this.logger = log;
         this.baseURL = this.config.getString("htmlunit.baseUrl");
+        this.reservedPrefix = this.config.getString("htmlunit.reservedPrefix");
         // this.webClient = new WebClient(BrowserVersion.MOZILLA_1_0);
         // this.webClient = new WebClient(BrowserVersion.INTERNET_EXPLORER_6_0);
         this.webClient = new WebClient();
@@ -279,7 +288,7 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
     protected void clickLink(String linkPath) throws Exception {
 
         final HtmlElement documentElement = currentPage.getDocumentElement();
-        final List links = documentElement.getHtmlElementsByAttribute("a", "href", linkPath);
+        final List<?> links = documentElement.getHtmlElementsByAttribute("a", "href", linkPath);
         HtmlAnchor link = (HtmlAnchor) links.get(0);
         click(link);
     }
