@@ -6,6 +6,10 @@
     <world permission="true"/>
   </role>
 
+  <role id="yanel.resource.meta">
+    <world permission="true"/>
+  </role>
+
   <role id="open">
     <group id="editor" permission="true"/>
   </role>
