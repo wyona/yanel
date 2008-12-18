@@ -121,6 +121,7 @@ public class YanelServlet extends HttpServlet {
     public static final String DEFAULT_ENCODING = "UTF-8";
 
     public static final String VIEW_ID_PARAM_NAME = "yanel.resource.viewid";
+    public static final String RESOURCE_META_ID_PARAM_NAME = "yanel.resource.meta";
 
     /**
      *
@@ -496,7 +497,7 @@ public class YanelServlet extends HttpServlet {
                     }
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
                         // retrieve the revisions, but only in the meta usecase (for performance reasons):
-                        if (request.getParameter("yanel.resource.meta") != null) {
+                        if (request.getParameter(RESOURCE_META_ID_PARAM_NAME) != null) {
                             RevisionInformation[] revisions = ((VersionableV2)res).getRevisions();
                             Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement("revisions"));
                             if (revisions != null && revisions.length > 0) {
@@ -605,7 +606,7 @@ public class YanelServlet extends HttpServlet {
             }
 
 
-        String meta = request.getParameter("yanel.resource.meta");
+        String meta = request.getParameter(RESOURCE_META_ID_PARAM_NAME);
         if (meta != null) {
             if (meta.length() > 0) {
                 log.warn("TODO: meta: " + meta);
@@ -2141,7 +2142,7 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Get usecase. Maps query strings, etc. to usecases, which then can be used for example within access control policies
      */
     private Usecase getUsecase(HttpServletRequest request) {
         Usecase usecase = null;
@@ -2206,6 +2207,10 @@ public class YanelServlet extends HttpServlet {
             } else {
                 log.warn("No such policy usecase: " + value);
             }
+        }
+        String showResourceMeta = request.getParameter(RESOURCE_META_ID_PARAM_NAME);
+        if (showResourceMeta != null) {
+            usecase = new Usecase(RESOURCE_META_ID_PARAM_NAME);
         }
         return usecase;
     }
