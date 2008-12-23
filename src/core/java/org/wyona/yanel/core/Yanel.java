@@ -16,12 +16,9 @@
 
 package org.wyona.yanel.core;
 
-import org.wyona.security.core.api.IdentityManager;
-import org.wyona.security.core.api.PolicyManager;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.map.RealmManager;
-import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.RepositoryFactory;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -72,9 +69,8 @@ public class Yanel {
    public void init() throws Exception {
        if (isInitialized) {
            return;
-       } else {
-           isInitialized = true;
        }
+    isInitialized = true;
        
        map = (Map) applicationContext.getBean("map");
        realmConfig = new RealmManager();
