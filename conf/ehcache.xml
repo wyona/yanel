@@ -126,6 +126,7 @@ The hostname is the hostname of the remote CacheManager peer. The port is the li
 port of the RMICacheManagerPeerListener of the remote CacheManager peer.
 
 -->
+<!-- TODO: Heartbeat does not work if offline or rather network device not configured!
 <cacheManagerPeerProviderFactory
         class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
         properties="peerDiscovery=automatic,
@@ -133,6 +134,7 @@ port of the RMICacheManagerPeerListener of the remote CacheManager peer.
                     multicastGroupPort=4446, timeToLive=1"
         propertySeparator=","
         />
+-->
 
 
 <!--
