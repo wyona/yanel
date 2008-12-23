@@ -28,7 +28,7 @@ public class ResourceAttributeHelper {
     private static Category log = Category.getInstance(ResourceAttributeHelper.class);
 
     /**
-     *
+     * Check if a resource has a specific interface with a specific version implemented or not
      */
     static public boolean hasAttributeImplemented(Resource res, String attribute, String version) {
         boolean implemented = false;
@@ -48,9 +48,9 @@ public class ResourceAttributeHelper {
             clazz = clazz.getSuperclass();
         }
         if (implemented) {
-            log.info(res.getClass().getName() + " does implement " + attribute + "V" + version + " interface!");
+            if (log.isDebugEnabled()) log.debug(res.getClass().getName() + " does implement " + attribute + "V" + version + " interface!");
         } else {
-            log.info(res.getClass().getName() + " does NOT implement " + attribute + "V" + version + " interface!");
+            if (log.isDebugEnabled()) log.debug(res.getClass().getName() + " does NOT implement " + attribute + "V" + version + " interface!");
         }
         return implemented;
     }
