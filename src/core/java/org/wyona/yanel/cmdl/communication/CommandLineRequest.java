@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2006-2009 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,32 +30,32 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
- * Not implemented yet.
+ * Not fully implemented yet.
  */
 public class CommandLineRequest implements HttpServletRequest {
 
-    private static Category log = Category.getInstance(CommandLineRequest.class);
+    private static Logger log = Logger.getLogger(CommandLineRequest.class);
     
     protected String url;
 
     /**
      *
      */
-    private class ParameterNames implements Enumeration {
-        private java.util.Vector names;
-        public ParameterNames(Enumeration names) {
+    private class ParameterNames implements Enumeration<String> {
+        private java.util.Vector<String> names;
+        public ParameterNames(Enumeration<?> names) {
             log.error("DEBUG: Copy parameters: " + names.getClass().getName());
-            this.names = new java.util.Vector();
+            this.names = new java.util.Vector<String>();
             while (names.hasMoreElements()) {
-                this.names.add(names.nextElement());
+                this.names.add((String)names.nextElement());
             }
         }
 
         // TODO: Isn't this implementation wrong, because it empties the vector and can only be used once!
-        public Object nextElement() {
+        public String nextElement() {
             String name = (String) names.elementAt(0);
             names.removeElementAt(0);
             return name;
@@ -68,7 +68,7 @@ public class CommandLineRequest implements HttpServletRequest {
     }
 
     ParameterNames parameterNames;
-    java.util.HashMap map = new java.util.HashMap();
+    java.util.HashMap<String, String[]> map = new java.util.HashMap<String, String[]>();
     
     public CommandLineRequest(String url) {
         this.url = url;
@@ -76,7 +76,7 @@ public class CommandLineRequest implements HttpServletRequest {
     
     public CommandLineRequest(HttpServletRequest request) {
         log.error("DEBUG: Copy request: " + request.getClass().getName());
-        Enumeration pn = request.getParameterNames();
+        Enumeration<?> pn = request.getParameterNames();
         while(pn.hasMoreElements()) {
             String name = (String) pn.nextElement();
             String[] values = request.getParameterValues(name);
@@ -107,7 +107,7 @@ public class CommandLineRequest implements HttpServletRequest {
         return null;
     }
 
-    public Enumeration getAttributeNames() {
+    public Enumeration<?> getAttributeNames() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -137,20 +137,17 @@ public class CommandLineRequest implements HttpServletRequest {
         return null;
     }
 
-    public Enumeration getLocales() {
+    public Enumeration<?> getLocales() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public Map getParameterMap() {
+    public Map<?, ?> getParameterMap() {
         log.error("Not implemented yet!");
         return null;
     }
 
-    /**
-     *
-     */
-    public Enumeration getParameterNames() {
+    public Enumeration<?> getParameterNames() {
         return parameterNames;
     }
 
@@ -249,12 +246,12 @@ public class CommandLineRequest implements HttpServletRequest {
         return null;
     }
 
-    public Enumeration getHeaderNames() {
+    public Enumeration<?> getHeaderNames() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public Enumeration getHeaders(String arg0) {
+    public Enumeration<?> getHeaders(String arg0) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -342,6 +339,30 @@ public class CommandLineRequest implements HttpServletRequest {
     public boolean isUserInRole(String arg0) {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    // Servlet API 2.4
+    public String getLocalAddr() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    // Servlet API 2.4
+    public String getLocalName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    // Servlet API 2.4
+    public int getLocalPort() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    // Servlet API 2.4
+    public int getRemotePort() {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
 }

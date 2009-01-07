@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2006-2009 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -180,6 +180,18 @@ public class CommandLineResponse implements HttpServletResponse {
     }
 
     public void setLocale(Locale arg0) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    // Servlet API 2.4
+    public String getContentType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    // Servlet API 2.4
+    public void setCharacterEncoding(String arg0) {
         // TODO Auto-generated method stub
         
     }
