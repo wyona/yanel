@@ -120,6 +120,9 @@ public class YanelServlet extends HttpServlet {
     
     public static final String DEFAULT_ENCODING = "UTF-8";
 
+    public static final String YANEL_RESOURCE = "yanel.resource";
+    public static final String YANEL_RESOURCE_REVN = YANEL_RESOURCE + ".revision";
+    public static final String YANEL_RESOURCE_WORKFLOW_TRANSITION = YANEL_RESOURCE + ".workflow.transition";
     public static final String VIEW_ID_PARAM_NAME = "yanel.resource.viewid";
     public static final String RESOURCE_META_ID_PARAM_NAME = "yanel.resource.meta";
 
@@ -228,9 +231,18 @@ public class YanelServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(true);
         Resource resource = getResource(request, response);
-
+        
         // Enable or disable toolbar
         switchToolbar(request);
+        
+        String transition = request.getParameter(YANEL_RESOURCE_WORKFLOW_TRANSITION);
+        if (transition != null) {
+            executeWorkflowTransition(getResource(request, response),
+                                      response,
+                                      request.getParameter(YANEL_RESOURCE_REVN),
+                                      transition);
+            return;
+        }
 
         // Check for requests refered by WebDAV
         String yanelWebDAV = request.getParameter("yanel.webdav");
@@ -444,7 +456,7 @@ public class YanelServlet extends HttpServlet {
 
 
                         try {
-                            String revisionName = request.getParameter("yanel.resource.revision");
+                            String revisionName = request.getParameter(YANEL_RESOURCE_REVN);
                             if (revisionName != null && ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
                                 view = ((VersionableV2) res).getView(viewId, revisionName);
                             } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1") && environment.getStateOfView().equals(StateOfView.LIVE)) {
@@ -636,31 +648,13 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String transition = request.getParameter("yanel.resource.workflow.transition");
+        String transition = request.getParameter(YANEL_RESOURCE_WORKFLOW_TRANSITION);
         if (transition != null) {
-            
-            Resource resource = getResource(request, response);
-            if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Workflowable", "1")) {
-                WorkflowableV1 workflowable = (WorkflowableV1)resource;
-                try {
-                    String revision = request.getParameter("yanel.resource.revision");
-                    workflowable.doTransition(transition, revision);
-                    
-                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
-                    StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-                    sb.append(workflowable.getWorkflowIntrospection());
-                    PrintWriter w = response.getWriter();
-                    w.print(sb);
-                    return;
-                } catch (WorkflowException e) {
-                    // TODO: Implement response if transition has failed ...
-                    log.error(e, e);
-                    throw new ServletException(e.getMessage(), e);
-                }
-            } else {
-                log.warn("Resource not workflowable: " + resource.getPath());
-            }
-
+            executeWorkflowTransition(getResource(request, response),
+                                      response,
+                                      request.getParameter(YANEL_RESOURCE_REVN),
+                                      transition);
+            return;
         }
 
         String value = request.getParameter("yanel.resource.usecase");
@@ -718,6 +712,40 @@ public class YanelServlet extends HttpServlet {
             switchToolbar(request);
             
             getContent(request, response);
+        }
+    }
+
+    /**
+     * Perform the given transition on the indicated revision.
+     * @param request
+     * @param response
+     * @param transition
+     * @throws ServletException
+     * @throws IOException
+     */
+    private void executeWorkflowTransition(Resource resource,
+                                           HttpServletResponse response,
+                                           String revision,
+                                           String transition)
+            throws ServletException, IOException {
+        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Workflowable", "1")) {
+            WorkflowableV1 workflowable = (WorkflowableV1)resource;
+            try {
+                workflowable.doTransition(transition, revision);
+                
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+                StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+                sb.append(workflowable.getWorkflowIntrospection());
+                PrintWriter w = response.getWriter();
+                w.print(sb);
+
+            } catch (WorkflowException e) {
+                // TODO: Implement response if transition has failed ...
+                log.error(e, e);
+                throw new ServletException(e.getMessage(), e);
+            }
+        } else {
+            log.warn("Resource not workflowable: " + resource.getPath());
         }
     }
 
@@ -2150,7 +2178,7 @@ public class YanelServlet extends HttpServlet {
         // TODO: Replace hardcoded roles by mapping between roles amd query strings ...
         String value = request.getParameter("yanel.resource.usecase");
         String yanelUsecaseValue = request.getParameter("yanel.usecase");
-        String workflowTransitionValue = request.getParameter("yanel.resource.workflow.transition");
+        String workflowTransitionValue = request.getParameter(YANEL_RESOURCE_WORKFLOW_TRANSITION);
         String contentType = request.getContentType();
         String method = request.getMethod();
         if (value != null && value.equals("save")) {
