@@ -146,6 +146,18 @@ div#yaneltoolbar_menu li li li li:hover ul
 
 /* End of non-anchor hover selectors */
 
+#yaneltoolbar_menu li.inactive {
+  font-style:italic;
+}
+#yaneltoolbar_menu li.inactive:hover {
+  cursor:default;
+  background:lightgrey;
+}
+#yaneltoolbar_menu li.info:hover {
+  cursor:default;
+  background:lightgrey;
+}
+
 /* Styling for Expand 
 
 #yaneltoolbar_menu a.x, #yaneltoolbar_menu a.x:visited{
