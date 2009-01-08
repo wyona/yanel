@@ -50,8 +50,15 @@ public class CalendarEvent {
     /**
      *
      */
-    public void setClass(String _class) {
+    public void setAccessClassification(String _class) {
         this._class = _class;
+    }
+
+    /**
+     *
+     */
+    public String getAccessClassification() {
+        return _class;
     }
 
     /**
@@ -131,7 +138,7 @@ public class CalendarEvent {
         } else if (icsLine.startsWith("LOCATION:")) {
             setLocation(icsLine.split(":")[1]);
         } else if (icsLine.startsWith("CLASS:")) {
-            setClass(icsLine.split(":")[1]);
+            setAccessClassification(icsLine.split(":")[1]);
         } else if (icsLine.startsWith("CATEGORIES:")) {
             setCategories(icsLine.split(":")[1]);
         } else if (icsLine.startsWith("CREATED:")) {
