@@ -5,21 +5,12 @@ import org.wyona.yanel.core.api.attributes.TranslatableV1;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.map.Map;
-import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
-
-import org.wyona.yanel.servlet.IdentityMap;
-import org.wyona.yanel.servlet.YanelServlet;
 import org.wyona.yanel.servlet.menu.Menu;
-
-import org.wyona.security.core.api.Identity;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
