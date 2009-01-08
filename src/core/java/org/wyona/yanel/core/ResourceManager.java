@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2006-2009 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.util.HttpServletRequestHelper;
 import org.wyona.yanel.core.util.PathUtil;
@@ -32,7 +32,7 @@ import org.wyona.yarep.core.NoSuchNodeException;
  */
 public class ResourceManager {
 
-    private static Category log = Category.getInstance(ResourceManager.class);
+    private static Logger log = Logger.getLogger(ResourceManager.class);
     
     protected ResourceTypeRegistry rtRegistry;
     
@@ -85,7 +85,6 @@ public class ResourceManager {
         ResourceTypeDefinition rtd = rtRegistry.getResourceTypeDefinition(rc.getUniversalName());
 
         if (rtd != null) {
-            String universalName = rtd.getResourceTypeUniversalName();
             try {
                 Resource resource = (Resource) Class.forName(rtd.getResourceTypeClassname()).newInstance();
 
@@ -164,18 +163,18 @@ public class ResourceManager {
      */
     protected void passParameters(Resource resource, HttpServletRequest request) {
         if (request != null) {
-            Enumeration paramNames = request.getParameterNames();
+            Enumeration<?> paramNames = request.getParameterNames();
             
             while (paramNames.hasMoreElements()) {
                 String name = (String)paramNames.nextElement();
                 String[] values = request.getParameterValues(name);
                 if (values != null) {
                     if (values.length == 1) {
-                        resource.setParameter(name, HttpServletRequestHelper.decode(values[0]));
+                        resource.setParameter(name, HttpServletRequestHelper.getParameterValue(request, values[0]));
                     } else {
                         String[] stringValues = new String[values.length];
                         for (int i = 0; i < values.length; i++) {
-                            stringValues[i] = HttpServletRequestHelper.decode(values[i]);
+                            stringValues[i] = HttpServletRequestHelper.getParameterValue(request, values[i]);
                         }
                         resource.setParameter(name, stringValues);
                     }

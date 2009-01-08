@@ -1,5 +1,5 @@
 /*
- * Copyright 2006,2008 Wyona
+ * Copyright 2006-2009 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@
 
 package org.wyona.yanel.core.util;
 
-import javax.servlet.http.HttpServletRequest;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
 
 /**
  * TODO:
@@ -31,31 +33,36 @@ public class HttpServletRequestHelper  {
     public static String form_encoding = "UTF-8";
     public static String container_encoding = "ISO-8859-1";
     
+    private static Logger log = Logger.getLogger(HttpServletRequestHelper.class);
+
     public static String getParameter(HttpServletRequest req, String name) {
-        String value = req.getParameter(name);
-        if (form_encoding == null || container_encoding == null || value == null) {
+        return getParameterValue(req, req.getParameter(name));
+    }
+
+    public static String getParameterValue(HttpServletRequest req, String value) {
+        if ("POST".equals(req.getMethod())) {
+            final String request_body_encoding = req.getCharacterEncoding();
+            if (log.isDebugEnabled()) log.debug("request_body_encoding: "+request_body_encoding);
+            if (request_body_encoding != null) {
+                if (value == null) {
+                    return value;
+                }
+                try {
+                    value = new String(value.getBytes(request_body_encoding), container_encoding);
+                } catch (UnsupportedEncodingException uee) {
+                    throw new RuntimeException(uee.toString(), uee);
+                }
+            }
+        }
+        if (value == null) {
             return value;
         }
         // Form and container encoding are equal, skip expensive value decoding
         if (container_encoding.equals(form_encoding)) {
             return value;
         }
-        return decode(value);
-    }
-
-    /**
-     * Fixes the encoding of a request parameter.
-     * The servlet container normally decodes parameters as iso-8859-1, although they are
-     * actually encoded as utf-8. This is wrong and has to be corrected by this method.
-     * @param str parameter with wrong encoding
-     * @return parameter with fixed encoding.
-     */
-    public static String decode(String str) {
-        if (str == null) return null;
         try {
-            if (container_encoding == null)
-                container_encoding = "ISO-8859-1";
-            byte[] bytes = str.getBytes(container_encoding);
+            byte[] bytes = value.getBytes(container_encoding);
             return new String(bytes, form_encoding);
         } catch (UnsupportedEncodingException uee) {
             throw new RuntimeException(uee.toString(), uee);
