@@ -18,7 +18,23 @@
 <dl><dt>Toolbar</dt><dd> See <a href="https://127.0.0.1:8443/yanel/yanel-website/en/documentation/yanel-toolbar.html" class="external">https://127.0.0.1:8443/yanel/yanel-website/en/documentation/yanel-toolbar.html</a><img alt="" src="http://documentation.yanel.wyona.org/images/out.png" class="outlink"/></dd></dl>
 <dl><dt>Usecase</dt><dd>TODO</dd></dl>
 <dl><dt>WebAuthenticator</dt><dd>not documented yet</dd></dl>
-<dl><dt>Workflow</dt><dd>See src/realms/yanel-website/content/rtd/page.rc and </dd></dl>
-src/realms/yanel-website/content/workflow/workflow-with-review.xml
-<dl><dt><a href="http://documentation.yanel.wyona.org/Wiki.jsp?page=Yarep" class="wikipage">Yarep</a></dt><dd>yetAnotherRepository, a repository abstraction layer</dd></dl></body>
+
+<dl>
+  <dt>Workflow</dt>
+  <dd>See src/realms/yanel-website/content/rtd/page.rc and
+ src/realms/yanel-website/content/workflow/workflow-with-review.xml
+  </dd>
+</dl>
+
+<dl>
+  <dt><a name="YANEL_HOME"/>YANEL_HOME</dt>
+  <dd>Directory which contains yanel.sh/yanel.bat (https://svn.wyona.com/repos/public/yanel/trunk)</dd>
+</dl>
+
+<dl>
+  <dt><a href="http://documentation.yanel.wyona.org/Wiki.jsp?page=Yarep" class="wikipage">Yarep (Yet another repository)</a></dt>
+  <dd>A repository abstraction layer (similar to JCR, but with a simpler API)</dd>
+</dl>
+
+</body>
 </html>
