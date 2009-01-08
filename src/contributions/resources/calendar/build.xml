@@ -2,11 +2,14 @@
 
 <project name="yanel-resource" default="compile">
 
-  <property environment="env"/>
-  <echo message="YANEL_HOME is set to = ${env.YANEL_HOME}"/>
+  <!-- For example set within build.sh ... -->
+  <property name="yanel.home" value="${yanel.source.home}"/>
+  <!-- See yanel.home ... -->
+  <property file="${user.home}/.ant-global.properties"/>
+  <echo>YANEL_HOME is set to: ${yanel.home}</echo>
 
-  <property file="${env.YANEL_HOME}/src/build/local.build.properties"/>
-  <property file="${env.YANEL_HOME}/src/build/build.properties"/>
+  <property file="${yanel.home}/src/build/local.build.properties"/>
+  <property file="${yanel.home}/src/build/build.properties"/>
 
   <import file="src/build/dependencies.xml"/>
 
