@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2007-2009 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,10 +20,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
 import org.apache.commons.jelly.JellyContext;
 import org.apache.commons.jelly.XMLOutput;
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.wyona.yanel.core.attributes.viewable.View;
+import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.impl.resources.xml.ConfigurableViewDescriptor;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
@@ -35,7 +39,7 @@ import org.xml.sax.InputSource;
  */
 public class UsecaseResource extends BasicXMLResource {
 
-    private static Category log = Category.getInstance(UsecaseResource.class);
+    private static Logger log = Logger.getLogger(UsecaseResource.class);
 
     /**
      *
@@ -115,8 +119,21 @@ public class UsecaseResource extends BasicXMLResource {
             //XMLOutput jellyOutput = XMLOutput.createXMLOutput(jellyResultStream, true);
             XMLOutput jellyOutput = XMLOutput.createXMLOutput(jellyResultStream);
             
-            //String viewTemplate = view.getTemplate();
-            jellyContext.runScript(new InputSource(repo.getNode(viewTemplate).getInputStream()), jellyOutput);
+            if (viewTemplate.startsWith("/")) {
+                if (log.isDebugEnabled()) log.debug("Accessing view template directly from the repo (no protocol specified). View Template: " + viewTemplate);
+                // for backwards compatibility. when not using a protocol
+                jellyContext.runScript(new InputSource(repo.getNode(viewTemplate).getInputStream()), jellyOutput);
+            } else {
+                if (log.isDebugEnabled()) log.debug("Accessing view template through the source-resolver (protocol specified). View Template: " + viewTemplate);
+                SourceResolver resolver = new SourceResolver(this);
+                Source templateSource = resolver.resolve(viewTemplate, null);
+                InputStream templateInputStream = ((StreamSource)templateSource).getInputStream();
+                
+                jellyContext.runScript(new InputSource(templateInputStream), jellyOutput);
+            }
+            
+            
+            
             jellyOutput.flush();
             byte[] result = jellyResultStream.toByteArray();
             //System.out.println(new String(result, "utf-8"));
