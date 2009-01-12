@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 
-<project name="yanel-continuous-integration" default="continuous-integration" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="yanel-cruise-control" default="cruise-control" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
   <description>Yanel Build for Continuous Integration</description>
 
   <!-- This is file is imported by ../../build.xml and hence resolved relative to ../../build.xml -->
-  <property file="targets/continuous-integration/local.continuous-integration.properties"/>
-  <property file="targets/continuous-integration/continuous-integration.properties"/>
+  <property file="targets/cruise-control/local.continuous-integration.properties"/>
+  <property file="targets/cruise-control/continuous-integration.properties"/>
 
-  <target name="continuous-integration">
+  <target name="cruise-control" description="Cruise control build process">
     <echo>Cleaning Yanel</echo>
     <antcall target="clean"/>
     <echo>Deploying Yanel</echo>
