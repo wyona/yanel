@@ -32,7 +32,7 @@
   </condition>
 
   <import file="dependencies.xml"/>
-  <import file="targets/continuous-integration/continuous-integration.xml"/>
+  <import file="targets/cruise-control/continuous-integration.xml"/>
   <import file="targets/install-tomcat.xml"/>
   <import file="targets/add-third-party-realm.xml"/>
   <import file="targets/create-new-resource-type.xml"/>
