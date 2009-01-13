@@ -1,5 +1,8 @@
 #!/bin/sh
 
+SCRIPT_DIR=$PWD
+#SCRIPT_DIR=$PWD/`dirname $0`
+
 # ----- Check for JAVA_HOME
 JAVA_HOME="$JAVA_HOME"
 if [ "$JAVA_HOME" = "" ];then
@@ -20,12 +23,12 @@ fi
 
 # ----- Set Environment Variables
 unset ANT_HOME
-ANT_HOME=$PWD/tools/apache-ant-1.6.5
+ANT_HOME=$SCRIPT_DIR/tools/apache-ant-1.6.5
 #echo $ANT_HOME
 
 unset CATALINA_HOME
 
-PATH=$PWD/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
+PATH=$SCRIPT_DIR/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 #echo $PATH
 
 # ----- Yanel subcommands:
@@ -51,6 +54,30 @@ elif [ "$1" = "start-jetty" ]; then
 elif [ "$1" = "configure" ]; then
   echo "INFO: Configuring Yanel..."
   ant -f src/build/build.xml config
+elif [ "$1" = "build" ]; then
+  echo "INFO: Building Yanel..."
+  shift
+
+# ----- Check for .ant-global.properties
+if [ -f $HOME/.ant-global.properties ];then
+  echo "INFO: $HOME/.ant-global.properties exists!"
+else
+  echo ""
+  echo "WARNING: No $HOME/.ant-global.properties file exists! Setting property 'yanel.home' within .ant-global.properties is optional, but makes development of individual resources and realms much more efficiently!"
+  #echo "Press enter/return to continue ..."
+  #read answer
+  echo ""
+fi
+
+# One might want to use the option "-f" for building resources, e.g. "./yanel.sh build -f src/resources/xml/build.xml" instead having to build everything
+#FIXME: this very example seems not to work anymore because properties are initialized too late in the Ant build file (e.g. Maven URL to fetch dependancies), YMMV...
+if [ "$1" = "-f" ];then
+  ant -f $2 $3 -Dyanel.source.home=$SCRIPT_DIR
+  exit 0
+fi
+# Build everything by default
+ant -f src/build/build.xml "$@"
+
 else
   ant -f src/build/build.xml run-yanel-cmdl -Dyanel.path=$1
 fi

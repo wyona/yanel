@@ -17,6 +17,7 @@ if "%1" == "start"; goto start
 if "%1" == "stop"; goto stop
 if "%1" == "start-jetty"; goto startJetty
 if "%1" == "configure"; goto configure
+if "%1" == "build"; goto build
 goto cmdl
 
 :start
@@ -39,6 +40,11 @@ goto cmdl
   echo "INFO: Configuring Yanel..."
   rem %ANT_HOME%\bin\ant -f src\build\build.xml -Djava.endorsed.dirs=lib\endorsed -logger org.apache.tools.ant.NoBannerLogger -emacs config
   call %ANT_HOME%\bin\ant -f src/build/build.xml config
+  goto restoreAntHome
+:build
+  echo "INFO: Building Yanel..."
+  rem call %ANT_HOME%\bin\ant -f src\build\build.xml
+  call %ANT_HOME%\bin\ant -f src\build\build.xml -Djava.endorsed.dirs=lib\endorsed -logger org.apache.tools.ant.NoBannerLogger -emacs %1 %2 %3 %4 %5 %6 %7 %8 %9
   goto restoreAntHome
 :cmdl
   call %ANT_HOME%\bin\ant -f src/build/build.xml run-yanel-cmdl -Dyanel.path=""
