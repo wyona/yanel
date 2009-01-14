@@ -44,7 +44,7 @@ goto cmdl
 :build
   echo "INFO: Building Yanel..."
   rem call %ANT_HOME%\bin\ant -f src\build\build.xml
-  call %ANT_HOME%\bin\ant -f src\build\build.xml -Djava.endorsed.dirs=lib\endorsed -logger org.apache.tools.ant.NoBannerLogger -emacs %1 %2 %3 %4 %5 %6 %7 %8 %9
+  call %ANT_HOME%\bin\ant -f src\build\build.xml -Djava.endorsed.dirs=lib\endorsed -logger org.apache.tools.ant.NoBannerLogger -emacs %2 %3 %4 %5 %6 %7 %8 %9
   goto restoreAntHome
 :cmdl
   call %ANT_HOME%\bin\ant -f src/build/build.xml run-yanel-cmdl -Dyanel.path=""
