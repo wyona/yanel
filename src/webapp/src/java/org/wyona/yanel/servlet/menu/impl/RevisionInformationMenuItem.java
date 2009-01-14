@@ -26,7 +26,10 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
     private RevisionInformation revision;
     private String language;
     
-    RevisionInformationMenuItem(Resource resource, RevisionInformation revn, String lang) {
+    /**
+     *
+     */
+    public RevisionInformationMenuItem(Resource resource, RevisionInformation revn, String lang) {
         this.resource = resource;
         this.revision = revn;
         this.language = lang;
