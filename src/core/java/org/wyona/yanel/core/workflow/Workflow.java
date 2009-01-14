@@ -21,9 +21,9 @@ public interface Workflow {
     
     String getInitialState();
     
-//    String[] getStates();
+    String[] getStates();
     
-//    Transition[] getTransitions();
+    Transition[] getTransitions();
     
     Transition[] getLeavingTransitions(String state);
 }
