@@ -1,4 +1,4 @@
-package org.wyona.yanel.servlet.menu.impl;
+package org.wyona.yanel.website.menu.impl;
 
 import org.apache.log4j.Logger;
 import org.wyona.yanel.core.Resource;
