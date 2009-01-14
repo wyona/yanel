@@ -82,17 +82,14 @@
     <delete dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/balancer"/>
     <delete dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/webdav"/>
     
-    <!-- Create base dir of yanel webapps -->
-    <mkdir dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/yanel-webapps"/>
-
     <!-- Add context file -->
     <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}.xml"/>
-    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}.xml" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
-      <replacetoken>@YANEL_VERSION@</replacetoken>
+    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}.xml" value="yanel-webapp-v${yanel.version}-r${yanel.revision}">
+      <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace>
     <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml"/>
-    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
-      <replacetoken>@YANEL_VERSION@</replacetoken>
+    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml" value="yanel-webapp-v${yanel.version}-r${yanel.revision}">
+      <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace>
   </target>
   
@@ -154,7 +151,7 @@
     </replace>
 
     <copy file="${yanel.source.home}/src/binary-dist/log4j.properties" todir="${tmp.dir}/WEB-INF/classes" overwrite="true"/>
-    <replace file="${tmp.dir}/WEB-INF/classes/log4j.properties" value="wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
+    <replace file="${tmp.dir}/WEB-INF/classes/log4j.properties" value="yanel-webapp-v${yanel.version}-r${yanel.revision}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace>
     <mkdir dir="${tmp.dir}/WEB-INF/logs"/>
@@ -177,7 +174,7 @@
     <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}">
       <fileset dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}" />
     </copy>
-    <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/yanel-webapps/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
+    <copy todir="${snapshot.dir.win}/yanel-webapp-v${yanel.version}-r${yanel.revision}">
       <fileset dir="${tmp.dir}"/>
     </copy>
     <!-- <move file="${snapshot.dir.unix}/${servlet.context.prefix}.war" todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps"/> -->
@@ -205,7 +202,7 @@
   </target>
   
   <target name="bin-snapshot-unix">
-    <copy todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/yanel-webapps/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}">
+    <copy todir="${snapshot.dir.unix}/yanel-webapp-v${yanel.version}-r${yanel.revision}">
       <fileset dir="${tmp.dir}"/>
     </copy>
     <!-- Copy UNIX and Windows specific files -->

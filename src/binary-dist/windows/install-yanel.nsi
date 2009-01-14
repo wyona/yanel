@@ -76,6 +76,8 @@ Section -Main SEC0000
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\yanel stop.lnk" "$INSTDIR\stop.bat" "" "$INSTDIR\stop.ico" 
     SetOutPath $INSTDIR\apache-tomcat-5.5.20
     File /r apache-tomcat-5.5.20\*
+    SetOutPath $INSTDIR\yanel-webapp-v${VERSION}
+    File /r yanel-webapp-v${VERSION}\*
     SetOutPath $INSTDIR
     File LICENSE.txt
     File README.txt
@@ -121,6 +123,7 @@ Section /o un.Main UNSEC0000
     Delete /REBOOTOK $INSTDIR\README.txt
     Delete /REBOOTOK $INSTDIR\LICENSE.txt
     RmDir /r /REBOOTOK $INSTDIR\apache-tomcat-5.5.20
+    RmDir /r /REBOOTOK $INSTDIR\yanel-webapp-v${VERSION}
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\yanel stop.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\yanel start.lnk"
     Delete /REBOOTOK $INSTDIR\stop.bat
