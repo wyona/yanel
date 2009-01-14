@@ -19,5 +19,5 @@
   </languages>
   <translation-manager class="org.wyona.yanel.core.attributes.translatable.PrefixTranslationManager"/>
 
-  <menu class="org.wyona.yanel.servlet.menu.impl.YanelWebsiteMenu"/>
+  <menu class="org.wyona.yanel.website.menu.impl.YanelWebsiteMenu"/>
 </realm-config>
