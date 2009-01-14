@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 
-<project name="javadoc" default="generate-javadoc" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
-
-  <target name="generate-javadoc" description="Generate Javadoc" depends="init">
+<project name="javadoc" default="generate-javadoc">
+  <!-- Generate Javadoc (if not already done) -->
+  <target name="generate-javadoc" depends="init">
       <condition property="javadoc-does-not-exist-yet">
       <not>
-        <available file="${build.dir}/javadoc" type="dir"/>
+        <available file="${build.dir}/javadoc/index-all.html" type="file"/>
       </not>
     </condition>
-    <antcall target="javadoc"/>
+    <antcall target="javadoc-not-exists"/>
     <antcall target="javadoc-exists"/>
   </target>
   
-<target name="javadoc" description="Generate Javadoc" depends="init,set-javadoc-classpath" if="javadoc-does-not-exist-yet">
+  <target name="javadoc-not-exists" depends="init,set-javadoc-classpath" if="javadoc-does-not-exist-yet">
     <mkdir dir="${build.dir}/javadoc"/>
     <javadoc
       packagenames="org.*"
@@ -39,8 +39,8 @@
     <echo>The Javadoc already exists. You should find it under: ${build.dir}/javadoc/index.html</echo>
   </target>
   
-  <target name="set-javadoc-classpath" description="Set javadoc classpath" depends="init, dependencies">
-    <!-- TODO: This seems never to be used -->
+  <!-- Set javadoc classpath -->
+  <target name="set-javadoc-classpath" depends="init, dependencies">
     <path id="classpath.javadoc">
       <pathelement path="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
 
@@ -55,4 +55,9 @@
     <echo>INFO: Classpath to generate Javadoc: ${javadoc.cp}</echo>
   </target>
 
+  <target name="javadoc" description="generate Javadoc (if not already done)" depends="generate-javadoc"/>
+
+  <target name="clean-javadoc" description="clean javadoc" depends="init">
+    <delete dir="${build.dir}/javadoc"/>
+  </target>
 </project>  
