@@ -1,5 +1,6 @@
 package org.wyona.yanel.servlet.menu.impl;
 
+import org.apache.log4j.Logger;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.TranslatableV1;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
@@ -18,6 +19,8 @@ import java.util.List;
  *
  */
 public class YanelWebsiteMenu extends Menu {
+    
+    private static Logger log = Logger.getLogger(YanelWebsiteMenu.class);
 
     /**
      * Get toolbar menus
@@ -64,7 +67,9 @@ public class YanelWebsiteMenu extends Menu {
             if (revisions !=  null && revisions.length > 0) {
                 sb.append("<li class=\"haschild\">Revisions&#160;&#160;&#160;<ul>");
                 for (int i = 0; i < revisions.length; i++) {
-                    sb.append("<li class=\"haschild\">"+revisions[i].getName()+"&#160;&#160;&#160;<ul><li><a href=\"?yanel.resource.revision=" + revisions[i].getName() + "\">View</a></li><li>Show diff</li><li>Revert to</li></ul></li>");
+                    sb.append((new RevisionInformationMenuItem(resource,
+                                                               revisions[i],
+                                                               resource.getRequestedLanguage())).toHTML());
                 }
                 sb.append("</ul></li>");
             }
