@@ -8,6 +8,7 @@ import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 import org.wyona.yanel.servlet.menu.Menu;
+import org.wyona.yanel.servlet.menu.impl.RevisionInformationMenuItem;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
