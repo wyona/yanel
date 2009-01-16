@@ -23,8 +23,9 @@ fi
 
 # ----- Set Environment Variables
 unset ANT_HOME
-ANT_HOME=$SCRIPT_DIR/tools/apache-ant-1.6.5
+ANT_HOME=$SCRIPT_DIR/tools/apache-ant
 #echo $ANT_HOME
+OUR_ANT="ant -lib $SCRIPT_DIR/tools/apache-ant_extras -f src/build/build.xml"
 
 unset CATALINA_HOME
 
@@ -33,13 +34,13 @@ PATH=$SCRIPT_DIR/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 
 # ----- Yanel subcommands:
 #mvn --version
-ant -version
+$OUR_ANT -version
 if [ "$1" = "start" ]; then
   echo "INFO: Starting Yanel..."
-  ant -f src/build/build.xml start-tomcat
+  $OUR_ANT start-tomcat
 elif [ "$1" = "stop" ]; then
   echo "INFO: Stopping Yanel..."
-  ant -f src/build/build.xml stop-tomcat
+  $OUR_ANT stop-tomcat
 elif [ "$1" = "start-jetty" ]; then
   echo "INFO: Starting Yanel on Jetty..."
   MAVEN=`which mvn`
@@ -48,12 +49,12 @@ elif [ "$1" = "start-jetty" ]; then
     echo "       Have you installed Maven 2.0.4? If so, then check your PATH environment variable and try again or install Maven 2.0.4 from http://maven.apache.org"
   else
     shift
-    ant -f src/build/build.xml war
+    $OUR_ANT war
     mvn jetty:run-war -f  src/build/pom-jetty.xml $@
   fi  
 elif [ "$1" = "configure" ]; then
   echo "INFO: Configuring Yanel..."
-  ant -f src/build/build.xml config
+  $OUR_ANT config
 elif [ "$1" = "build" ]; then
   echo "INFO: Building Yanel..."
   shift
@@ -72,12 +73,12 @@ fi
 # One might want to use the option "-f" for building resources, e.g. "./yanel.sh build -f src/resources/xml/build.xml" instead having to build everything
 #FIXME: this very example seems not to work anymore because properties are initialized too late in the Ant build file (e.g. Maven URL to fetch dependancies), YMMV...
 if [ "$1" = "-f" ];then
-  ant -f $2 $3 -Dyanel.source.home=$SCRIPT_DIR
+  $OUR_ANT -f $2 $3 -Dyanel.source.home=$SCRIPT_DIR
   exit 0
 fi
 # Build everything by default
-ant -f src/build/build.xml "$@"
+$OUR_ANT "$@"
 
 else
-  ant -f src/build/build.xml run-yanel-cmdl -Dyanel.path=$1
+  $OUR_ANT run-yanel-cmdl -Dyanel.path=$1
 fi

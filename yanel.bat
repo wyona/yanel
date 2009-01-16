@@ -8,9 +8,12 @@ goto end
 
 rem ----- Ignore system ANT_HOME variable
 set ORIGINAL_ANT_HOME=%ANT_HOME%
-set ANT_HOME=tools\apache-ant-1.6.5
+set ANT_HOME=tools\apache-ant
 
-call %ANT_HOME%\bin\ant -version
+rem XXX: about to clobber an hypothetic system OUR_ANT variable, which hopefully should not be too problematic:
+set OUR_ANT=%ANT_HOME%\bin\ant -lib tools\apache-ant_extras -f src\build\build.xml
+
+call %OUR_ANT% -version
 
 rem ----- Yanel subcommands:
 if "%1" == "start"; goto start
@@ -22,11 +25,11 @@ goto cmdl
 
 :start
   echo "INFO: Starting Yanel..."
-  call %ANT_HOME%\bin\ant -f src/build/build.xml start-tomcat
+  call %OUR_ANT% start-tomcat
   goto restoreAntHome
 :stop
   echo "INFO: Stopping Yanel..."
-  call %ANT_HOME%\bin\ant -f src/build/build.xml stop-tomcat
+  call %OUR_ANT% stop-tomcat
   goto restoreAntHome
 :startJetty
   echo "INFO: Starting Yanel on Jetty..."
@@ -38,16 +41,16 @@ goto cmdl
   goto restoreAntHome
 :configure
   echo "INFO: Configuring Yanel..."
-  rem %ANT_HOME%\bin\ant -f src\build\build.xml -Djava.endorsed.dirs=lib\endorsed -logger org.apache.tools.ant.NoBannerLogger -emacs config
-  call %ANT_HOME%\bin\ant -f src/build/build.xml config
+  rem %OUR_ANT% -Djava.endorsed.dirs=lib\endorsed -logger org.apache.tools.ant.NoBannerLogger -emacs config
+  call %OUR_ANT% config
   goto restoreAntHome
 :build
   echo "INFO: Building Yanel..."
-  rem call %ANT_HOME%\bin\ant -f src\build\build.xml
-  call %ANT_HOME%\bin\ant -f src\build\build.xml -Djava.endorsed.dirs=lib\endorsed -logger org.apache.tools.ant.NoBannerLogger -emacs %2 %3 %4 %5 %6 %7 %8 %9
+  rem call %OUR_ANT%
+  call %OUR_ANT% -Djava.endorsed.dirs=lib\endorsed -logger org.apache.tools.ant.NoBannerLogger -emacs %2 %3 %4 %5 %6 %7 %8 %9
   goto restoreAntHome
 :cmdl
-  call %ANT_HOME%\bin\ant -f src/build/build.xml run-yanel-cmdl -Dyanel.path=""
+  call %OUR_ANT% run-yanel-cmdl -Dyanel.path=""
   goto restoreAntHome
 
 
