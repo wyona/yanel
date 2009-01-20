@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 
 <realm-config xmlns="http://www.wyona.org/yanel/realm/1.0">
-  <name>Yanel Source Code Realm</name>
+  <name>Yanel Source Code Realm (similar to ViewVC, http://www.viewvc.org/)</name>
 
-  <rti>rc-repository.xml</rti>
-  <data>data-repository.xml</data>
-  <ac-policies>ac-policies-repository.xml</ac-policies>
-  <ac-identities>ac-identities-repository.xml</ac-identities>
+  <rti>config/rc-repository.xml</rti>
+  <data>config/data-repository.xml</data>
+  <ac-policies>config/ac-policies-repository.xml</ac-policies>
+  <ac-identities>config/ac-identities-repository.xml</ac-identities>
 </realm-config>
