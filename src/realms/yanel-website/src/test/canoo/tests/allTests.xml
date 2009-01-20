@@ -5,5 +5,7 @@
     <!-- note: the order of the tests matters because some tests depend on others -->
 
     <ant antfile="exists-homepage.xml"/>
+    <ant antfile="login-logout.xml"/>
+    <!--<ant antfile="workflow.xml"/>-->
   </target>
 </project>

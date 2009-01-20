@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<project name="login-toolbar-logout" default="test-login">
+
+  <import file="../definitions.xml"/>
+
+  <target name="test-login" depends="wt.defineMacros">
+    <webtest name="Login - Toolbar - Logout">
+      &config;
+      <login/>
+      <invoke description="Get the login page: " url="${realm.prefix}index.html?yanel.toolbar=on"/>
+      <verifyText description="Verify that text is contained in the page" text="Turn off toolbar"/>
+      <logout/>
+      <invoke description="Get the login page: " url="${realm.prefix}index.html?yanel.toolbar=on"/>
+      <verifyText description="Verify that text is contained in the page" text="Login"/>
+    </webtest>
+  </target>
+
+</project>
