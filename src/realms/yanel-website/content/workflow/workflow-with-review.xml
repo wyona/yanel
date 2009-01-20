@@ -11,6 +11,7 @@
     <transition id="submit" from="draft" to="review">
       <condition class="org.wyona.yanel.impl.workflow.RoleCondition">write</condition>
       <description xml:lang="en">Submit for Review</description>
+      <description xml:lang="de">Zum gegenlesen einreichen</description>
     </transition>
 
     <transition id="reject" from="review" to="draft">
