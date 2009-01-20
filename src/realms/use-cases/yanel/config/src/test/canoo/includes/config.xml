@@ -9,4 +9,5 @@
 -->
   <option name="JavaScriptEnabled" value="true"/>
   <option name="ThrowExceptionOnScriptError" value="false"/>
+  <option name="ThrowExceptionOnFailingStatusCode" value="false"/>
 </config>
