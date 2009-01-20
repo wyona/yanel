@@ -46,12 +46,13 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
         String value = "";
         
         try {
-            value = "<li class=\"haschild\">"
-                  + this.revision.getName()
-                  + "&#160;&#160;&#160;";
-            
             WorkflowableV1 workflowable = (WorkflowableV1) this.resource;
             String state = workflowable.getWorkflowState(revision.getName());
+            value = "<li class=\"haschild\">"
+                  + this.revision.getName()
+                  + " (" + formatDate(this.revision.getDate()) + ", " + state + ")"
+                  + "&#160;&#160;&#160;";
+            
             ITransitionMenuContent x =
                 new TransitionMenuContentImpl(getResource(), state, getRevisionInfo().getName(), getMenuLanguageCode());
             RevisionTransitionsMenuContent rt = new RevisionTransitions(getResource(), getRevisionInfo().getName(), getMenuLanguageCode(), x);
@@ -92,5 +93,12 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
     public RevisionInformation getRevisionInfo() {
         return this.revision;
     }
-    
+
+    /**
+     *
+     */
+    private String formatDate(java.util.Date date) {
+        java.text.DateFormat df = new java.text.SimpleDateFormat();
+        return df.format(date);
+    }
 }
