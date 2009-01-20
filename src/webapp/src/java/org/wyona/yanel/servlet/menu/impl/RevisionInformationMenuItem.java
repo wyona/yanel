@@ -15,7 +15,11 @@ import org.wyona.yanel.servlet.menu.RevisionTransitionsMenuContent;
 import org.wyona.yanel.servlet.menu.TransitionMenuContentImpl;
 
 /**
- * @author gary
+ * Representation of a Revision item for a revision menu. The representation
+ * contains an html <li> containing the revision number, and then an html
+ * representation of the transitions on that revision.
+ * (@see org.wyona.yanel.servlet.menu.RevisionTransitions).
+ * TODO this class really belongs to YanelWebsite, so move it into that realm.
  *
  */
 public class RevisionInformationMenuItem implements RevisionInformationMenuContent {
@@ -25,9 +29,12 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
     private Resource resource;
     private RevisionInformation revision;
     private String language;
-    
+
     /**
-     *
+     * ctor.
+     * @param resource the resource on which the representation is to be based.
+     * @param revn the revision of the resource on which the representation is to be based.
+     * @param lang the desired language of the menu.
      */
     public RevisionInformationMenuItem(Resource resource, RevisionInformation revn, String lang) {
         this.resource = resource;
