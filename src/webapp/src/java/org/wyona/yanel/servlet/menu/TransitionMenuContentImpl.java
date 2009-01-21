@@ -34,6 +34,13 @@ public class TransitionMenuContentImpl implements ITransitionMenuContent {
     private String isoMenuLang;
     private Transition[] transitions;
     
+    /**
+     * ctor.
+     * @param resource the resource which the transitions are "from"
+     * @param status status of the revision (draft, review, etc.) 
+     * @param revision revn the revision of the resource which the transitions are "from"
+     * @param langCode desired language of the resulting menu
+     */
     public TransitionMenuContentImpl(final Resource resource, final String status, final String revision, final String langCode) {
         this.resource = resource;
         this.state = status;
@@ -41,8 +48,13 @@ public class TransitionMenuContentImpl implements ITransitionMenuContent {
         this.isoMenuLang = langCode.toLowerCase();
     }
     
-    /* (non-Javadoc)
-     * @see org.wyona.yanel.servlet.menu.impl.ITransitionMenuContent#getTransitionElement(org.wyona.yanel.core.workflow.Transition)
+    /**
+     * Returns an html <li> element containing either an html <a> element to
+     * activate the desired action, or plain text if it is not allowed to take
+     * the action.
+     * based on the revision state.
+     * @param t
+     * @return
      */
     public String getTransitionElement(final Transition t) {
         String result = null;
@@ -53,7 +65,12 @@ public class TransitionMenuContentImpl implements ITransitionMenuContent {
                 this.transitions = workflow.getLeavingTransitions(this.state);
             }
 
-            String label = t.getDescription(t.getDescriptionLanguages()[getDescriptionLanguageIndex(t)]);
+            String label = "Exception: No label!";
+            try {
+                label = t.getDescription(this.resource.getRequestedLanguage());
+            } catch(Exception e) {
+                log.error(e, e);
+            }
 
             for (int i = 0; i < this.transitions.length; i++) {
                 if (transitionsMatch(this.transitions[i], t)) {
@@ -77,10 +94,15 @@ public class TransitionMenuContentImpl implements ITransitionMenuContent {
         
         return result;
     }
-        
+
+    /**
+     * Two transitions match if they have the same description in the same language.
+     * @param t1 "left hand side"
+     * @param t2 "right hand side"
+     * @return true if they match, else false
+     */
     private boolean transitionsMatch(final Transition t1, final Transition t2) {
-        return t1.getDescription(t1.getDescriptionLanguages()[getDescriptionLanguageIndex(t1)]).
-            equals(t2.getDescription(t2.getDescriptionLanguages()[getDescriptionLanguageIndex(t2)]));
+        return t1.getID().equals(t2.getID());
     }
     
     private String getTransitionURL(final String transitionId) throws Exception {
@@ -102,30 +124,5 @@ public class TransitionMenuContentImpl implements ITransitionMenuContent {
         url = url.replaceAll("//", "/");
 
         return url;
-    }
-    
-    private int getDescriptionLanguageIndex(Transition t) {
-        int langIdx = -1;
-        String[] availableLanguages = t.getDescriptionLanguages();
-        
-        for (int i = 0; i < availableLanguages.length; i++) {
-            if (availableLanguages[i].toLowerCase().equals(this.isoMenuLang)) {
-                langIdx = i;
-                break;
-            }
-        }
-        
-        if (langIdx < 0) {
-            String defaultLang = this.resource.getRealm().getDefaultLanguage().toLowerCase();
-
-            for (int i = 0; i < availableLanguages.length; i++) {
-                if (availableLanguages[i].toLowerCase().equals(defaultLang)) {
-                    langIdx = i;
-                    break;
-                }
-            }
-        }
-        
-        return langIdx;
     }
 }
