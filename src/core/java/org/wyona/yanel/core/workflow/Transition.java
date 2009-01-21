@@ -15,6 +15,9 @@
  */
 package org.wyona.yanel.core.workflow;
 
+/**
+ * Workflow transition
+ */
 public interface Transition {
     
     String getID();
@@ -27,7 +30,14 @@ public interface Transition {
     
     Action[] getActions();
     
+    /**
+     * Get all languages for which descriptions/labels of this transition exist
+     */
     String[] getDescriptionLanguages();
     
+    /**
+     * Get language specific description/label of this transition
+     * @param language Language
+     */
     String getDescription(String language);
 }
