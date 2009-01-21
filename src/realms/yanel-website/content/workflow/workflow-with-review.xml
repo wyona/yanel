@@ -17,6 +17,7 @@
     <transition id="reject" from="review" to="draft">
       <condition class="org.wyona.yanel.impl.workflow.RoleCondition">workflow.review</condition>
       <description xml:lang="en">Reject</description>
+      <description xml:lang="de">Ablehnen</description>
     </transition>
 
     <transition id="approve" from="review" to="approved">
