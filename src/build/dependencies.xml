@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 
+<!-- TODO: Split this file into four files re core, impl, webapp, cmdl and also generate the pom files from these dependencies files! -->
+
 <!-- IMPORTANT: Please also see src/build/targets/webapp/webapp.xml re ambiguous libs -->
 <project name="yanel-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
