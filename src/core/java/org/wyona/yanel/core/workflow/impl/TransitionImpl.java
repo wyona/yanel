@@ -78,7 +78,9 @@ public class TransitionImpl implements Transition {
     }
 
     public String getDescription(String language) {
-        return (String)this.descriptions.get(language);
+        String label = (String)this.descriptions.get(language);
+        if (label != null) return label;
+        return (String)this.descriptions.get(getDescriptionLanguages()[0]);
     }
 
     public String[] getDescriptionLanguages() {
