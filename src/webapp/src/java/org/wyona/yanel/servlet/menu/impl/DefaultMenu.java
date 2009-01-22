@@ -11,6 +11,7 @@ import org.wyona.yanel.core.workflow.Workflow;
 import org.wyona.yanel.core.workflow.WorkflowHelper;
 
 import org.wyona.yanel.servlet.menu.Menu;
+import org.wyona.yanel.servlet.menu.impl.RevisionInformationMenuItem;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -78,6 +79,20 @@ public class DefaultMenu extends Menu {
             } else {
                 sb.append("<li>Workflowable, but no Workflow associated with resource yet!</li>");
             }
+        }
+        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
+            RevisionInformation[] revisions = ((VersionableV2) resource).getRevisions();
+            if (revisions !=  null && revisions.length > 0) {
+                sb.append("<li class=\"haschild\">Revisions&#160;&#160;&#160;<ul>");
+                for (int i = 0; i < revisions.length; i++) {
+                    sb.append((new RevisionInformationMenuItem(resource,
+                                                               revisions[i],
+                                                               resource.getRequestedLanguage())).toHTML());
+                }
+                sb.append("</ul></li>");
+            }
+        } else {
+            log.info("This resource does not implement interface VersionableV2!");
         }
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
             sb.append("<li><a href=\"?yanel.resource.usecase=delete\">Delete this page</a></li>");
