@@ -7,7 +7,9 @@ import org.apache.log4j.Logger;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
+import org.wyona.yanel.core.util.ResourceAttributeHelper;
 import org.wyona.yanel.core.workflow.WorkflowException;
+import org.wyona.yanel.core.workflow.WorkflowHelper;
 import org.wyona.yanel.servlet.menu.ITransitionMenuContent;
 import org.wyona.yanel.servlet.menu.RevisionInformationMenuContent;
 import org.wyona.yanel.servlet.menu.RevisionTransitions;
@@ -46,18 +48,26 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
         String value = "";
         
         try {
-            WorkflowableV1 workflowable = (WorkflowableV1) this.resource;
-            String state = workflowable.getWorkflowState(revision.getName());
-            value = "<li class=\"haschild\">"
-                  + this.revision.getName()
-                  + " (" + formatDate(this.revision.getDate()) + ", " + state + ")"
-                  + "&#160;&#160;&#160;";
+            if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Workflowable", "1") && WorkflowHelper.hasWorkflow(resource)) {
+                WorkflowableV1 workflowable = (WorkflowableV1) this.resource;
+                String state = workflowable.getWorkflowState(revision.getName());
+                value = "<li class=\"haschild\">"
+                      + this.revision.getName()
+                      + " (" + formatDate(this.revision.getDate()) + ", " + state + ")"
+                      + "&#160;&#160;&#160;";
             
-            ITransitionMenuContent x =
-                new TransitionMenuContentImpl(getResource(), state, getRevisionInfo().getName(), getMenuLanguageCode());
-            RevisionTransitionsMenuContent rt = new RevisionTransitions(getResource(), getRevisionInfo().getName(), getMenuLanguageCode(), x);
-            value += rt.toHTML();
-            value += "</li>";
+                ITransitionMenuContent x =
+                    new TransitionMenuContentImpl(getResource(), state, getRevisionInfo().getName(), getMenuLanguageCode());
+                RevisionTransitionsMenuContent rt = new RevisionTransitions(getResource(), getRevisionInfo().getName(), getMenuLanguageCode(), x);
+                value += rt.toHTML();
+                value += "</li>";
+            } else {
+                value = "<li>"
+                      + this.revision.getName()
+                      + " (" + formatDate(this.revision.getDate()) + ")"
+                      + "&#160;&#160;&#160;";
+                value += "</li>";
+            }
         } catch (WorkflowException e) {
             value = "";
             log.error("Could not get workflow.", e);
