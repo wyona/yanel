@@ -161,6 +161,23 @@ public class WorkflowHelper {
         return null;
     }
 
+    /**
+     * Check if resource is associated with workflow
+     */
+    public static boolean hasWorkflow(Resource resource) throws WorkflowException {
+        try {
+            if (resource.getResourceConfigProperty("workflow-schema") != null) {
+                return true;
+            }
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Get workflow which is associated with resource
+     */
     public static Workflow getWorkflow(Resource resource) throws WorkflowException {
         try {
             String workflowSchema = resource.getResourceConfigProperty("workflow-schema");
