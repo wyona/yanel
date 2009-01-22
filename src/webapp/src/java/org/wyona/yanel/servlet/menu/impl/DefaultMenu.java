@@ -84,7 +84,7 @@ public class DefaultMenu extends Menu {
             RevisionInformation[] revisions = ((VersionableV2) resource).getRevisions();
             if (revisions !=  null && revisions.length > 0) {
                 sb.append("<li class=\"haschild\">Revisions&#160;&#160;&#160;<ul>");
-                for (int i = 0; i < revisions.length; i++) {
+                for (int i = revisions.length -1; i >= 0; i--) {
                     sb.append((new RevisionInformationMenuItem(resource,
                                                                revisions[i],
                                                                resource.getRequestedLanguage())).toHTML());
