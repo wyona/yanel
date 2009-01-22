@@ -35,7 +35,7 @@
   <i18n-catalogue>yanelrepo:/i18n-from-scratch-realm.xml</i18n-catalogue>
 -->
 
-<!--
+<!-- NOTE: If no menu element is set, then the DefaultMenu.class (see below) will be used
   <menu class="org.wyona.yanel.servlet.menu.impl.DefaultMenu"/>
 -->
 
