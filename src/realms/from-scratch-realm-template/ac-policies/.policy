@@ -6,6 +6,10 @@
     <world permission="true"/>
   </usecase>
 
+  <usecase id="yanel.resource.meta">
+    <user id="lenya" permission="true"/>
+  </usecase>
+
   <usecase id="open">
     <user id="lenya" permission="true"/>
   </usecase>
