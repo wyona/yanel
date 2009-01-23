@@ -30,7 +30,38 @@ public class DefaultMenu extends Menu {
      * Get toolbar menus
      */
     public  String getMenus(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
-        return getFileMenu(resource);
+        return getFileMenu(resource) + getEditMenu(resource);
+    }
+
+    /**
+     * Get generic edit menu
+     */
+    public String getEditMenu(Resource resource) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<ul><li>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">Edit</div>");
+        sb.append("<ul>");
+
+        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
+        sb.append("<li class=\"haschild\">Open with&#160;&#160;&#160;");
+        sb.append("<ul><li>Source editor</li>");
+        sb.append("<li class=\"haschild\">WYSIWYG editor");
+        sb.append("<ul>");
+        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
+            sb.append("<li><a href=\"" + backToRealm + "usecases/xinha.html?edit-path=" + resource.getPath() + "\">Edit page with Xinha&#160;&#160;&#160;</a></li>");
+        } else {
+            sb.append("<li><a>Edit page with Xinha&#160;&#160;&#160;</a></li>");
+        }
+        // TODO: Add TinyMCE
+        sb.append("</ul>");
+        sb.append("</li>");
+        sb.append("</ul>");
+        sb.append("</li>");
+
+        sb.append("</ul>");
+        sb.append("</li></ul>");
+
+        return sb.toString();
     }
 
     /**
@@ -41,7 +72,6 @@ public class DefaultMenu extends Menu {
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">File</div>");
         sb.append("<ul>");
-        sb.append("<li><a href=\"?yanel.resource.meta\">View page info</a></li>");
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Workflowable", "1")) {
             Workflow wf = WorkflowHelper.getWorkflow(resource);
             if (wf != null) {
