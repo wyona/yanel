@@ -6,6 +6,6 @@
 
     <ant antfile="exists-homepage.xml"/>
     <ant antfile="login-logout.xml"/>
-    <!--<ant antfile="workflow.xml"/>-->
+    <ant antfile="workflow.xml"/>
   </target>
 </project>
