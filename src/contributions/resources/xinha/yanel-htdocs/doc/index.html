@@ -1,0 +1,139 @@
+<html>
+  <head>
+    <style>
+h2 {
+  font-size: 130%;
+  color:     #ffffff;
+  background-color: #525D76;
+}
+pre {
+  background-color: efefef;
+}
+td {
+  background-color: eeeeee;
+  color:            000000;
+}
+
+/* first row */
+table tr:first-child td {
+  background-color: cccccc;
+  color:            000000;
+}
+
+/* or th as first row */
+table th {
+  background-color: cccccc;
+  color:            000000;
+}
+    </style>    
+    <title>Xinha Resource</title>
+  </head>
+  <body>
+    <h1>Xinha Resource</h1>
+    <dl>
+      <dt>Name:</dt>
+      <dd>xinha</dd>
+      <dt>Namespace:</dt>
+      <dd>http://www.wyona.org/yanel/resource/1.0</dd>
+      <dt>UniversalName</dt>
+      <dd>http://www.wyona.org/yanel/resource/1.0::xinha</dd>
+      <dt>Description:</dt>
+      <dd>xinha Editor to edit xhtml</dd>
+      <dt>Java Class:</dt>
+      <dd>org.wyona.yanel.impl.resources.Xinhaesource</dd>
+    </dl>
+
+    <h2>Views</h2>
+    <table border="1">
+      <tr><th>View ID</th><th>Mime type</th><th>Type</th></tr>
+      <tr><td>DEFAULT</td><td>text/html</td><td>jelly</td></tr>
+      <tr><td>fix-wellformness</td><td>text/html</td><td>jelly</td></tr>
+      <tr><td>done</td><td>text/html</td><td>jelly</td></tr>
+      <tr><td>cancel</td><td>text/html</td><td>jelly</td></tr>
+      <tr><td>error</td><td>text/html</td><td>jelly</td></tr>
+    </table>
+    <h2>Request Parameter</h2>
+    <table border="1">
+      <tr><th>View ID</th><th>Name</th><th>Explanations</th></tr>
+      <tr><td>DEFAULT</td><td>edit-path</td><td>a data repository path. points to the document you want to edit</td></tr>
+    </table>
+        
+    <h2>Examples</h2>
+    <h3>.yanel-rc Example</h3>
+<pre>
+&lt;?xml version="1.0"?>
+&lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  &lt;yanel:rti name="xinha" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+    &lt;yanel:custom-config>
+     &lt;views>
+      &lt;view id="default" type="jelly">
+        &lt;template>rthtdocs:/xinha.jelly&lt;/template>
+        &lt;xslt>/xslt/global.xsl&lt;/xslt>
+        &lt;mime-type>text/html&lt;/mime-type>
+      &lt;/view>
+      &lt;view id="fix-wellformness" type="jelly">
+        &lt;template>rthtdocs:/xinha-fix.jelly&lt;/template>
+        &lt;xslt>/xslt/global.xsl&lt;/xslt>
+        &lt;mime-type>text/html&lt;/mime-type>
+      &lt;/view>
+      &lt;view id="done" type="jelly">
+        &lt;template>rthtdocs:/xinha-status.jelly&lt;/template>
+        &lt;xslt>/xslt/global.xsl&lt;/xslt>
+      &lt;/view>
+      &lt;view id="cancel" type="jelly">
+        &lt;template>rthtdocs:/xinha-status.jelly&lt;/template>
+        &lt;xslt>/xslt/global.xsl&lt;/xslt>
+      &lt;/view>
+      &lt;view id="error" type="jelly">
+        &lt;template>rthtdocs:/xinha-status.jelly&lt;/template>
+        &lt;xslt>/xslt/global.xsl&lt;/xslt>
+      &lt;/view>
+    &lt;/views>
+  &lt;/yanel:custom-config>
+&lt;/yanel:resource-config>
+</pre>
+
+<h2>Explanations</h2>
+
+<p>
+Once you registered the xinha resource in yanel (add &lt;resource-type src="$XINHA_RESOURCE_HOME" compile="true"/> to yanels resource-types.xml) 
+your realms resource-config (e.g. /usecases/xinha.yanel-rc) repository 
+<br/>you can access xinha via browser e.g. https://localhost:8443/yanel/$YOUR_REALM/usecases/xinha.html?edit-path=/de/ueber.html.
+</p>
+<p>you have to provide a request parameter "edith-path" in order to allow the xinha resource to know which document to edit.</p>
+
+<h3>Menu Example</h3>
+<p>an example how to add this resource to the menu</p>
+<pre>
+Index: src/realms/yanel-website/src/java/org/wyona/yanel/servlet/menu/impl/YanelWebsiteMenu.java
+===================================================================
+--- src/realms/yanel-website/src/java/org/wyona/yanel/servlet/menu/impl/YanelWebsiteMenu.java	(revision 31673)
++++ src/realms/yanel-website/src/java/org/wyona/yanel/servlet/menu/impl/YanelWebsiteMenu.java	(working copy)
+@@ -61,7 +61,15 @@
+ 
+         sb.append("&lt;ul>&lt;li>");
+         sb.append("&lt;div id=\"yaneltoolbar_menutitle\">Edit&lt;/div>&lt;ul>");
+-        sb.append("&lt;li class=\"haschild\">Open with&amp;#160;&amp;#160;&amp;#160;&lt;ul>&lt;li>Source editor&lt;/li>&lt;li>WYSIWYG editor&lt;/li>&lt;/ul>&lt;/li>");
++        sb.append("&lt;li class=\"haschild\">Open with&amp;#160;&amp;#160;&amp;#160;");
++        sb.append("&lt;ul>&lt;li>Source editor&lt;/li>");
++        sb.append("&lt;li>WYSIWYG editor&lt;/li>");
++        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
++            sb.append("&lt;li>&lt;a href=\"" + backToRealm + "usecases/xinha.html?edit-path=" + resource.getPath() + "\">Edit page with Xinha&amp;#160;&amp;#160;&amp;#160;&lt;/a>&lt;/li>");
++        } else {
++            sb.append("&lt;li>&lt;a>Edit page with Xinha&amp;#160;&amp;#160;&amp;#160;&lt;/a>&lt;/li>");
++        }
++        sb.append("&lt;/ul>&lt;/li>");
+ 
+         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
+             RevisionInformation[] revisions = ((VersionableV2) resource).getRevisions();
+
+</pre>
+<h2>Todo</h2>
+<ul>
+<li>don't open all ModifiableV2 it could be something which Xinha doesn't like e.g. no html</li>
+<li>maybe provide a file lookup when request parameter "edit-path" is not provided</li>
+<li>integrate a lookup for inserting images and links</li>
+<li>fix line breaks/formatting</li>
+</ul>
+  </body>
+</html>

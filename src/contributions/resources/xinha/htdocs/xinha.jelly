@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly xmlns:j="jelly:core">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+      <title>Edit ${resource.getEditPath()} with Xinha</title>
+      <link rel="stylesheet" type="text/css" href="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/^http:^2f^2fwww.wyona.org^2fyanel^2fresource^2f1.0::xinha/css/xinha-resource.css"/>
+      
+      <script type="text/javascript">
+        _editor_url  = resolveRelative("${yanel.back2realm}") + "${yanel.reservedPrefix}/resource-types/^http:^2f^2fwww.wyona.org^2fyanel^2fresource^2f1.0::xinha/xinha/";  // (preferably absolute) URL (including trailing slash) where Xinha is installed
+        _editor_lang = "${resource.getRequestedLanguage()}";      // And the language we need to use in the editor.
+        _editor_skin = "silva";   // If you want use a skin, add the name (of the folder) here
+        
+        // resolves a path relative to the current window.location.href
+        function resolveRelative(path, relativeTo) {
+            var url = window.location.href;
+            url = url.split('?')[0];
+            url = url.substring(0, url.lastIndexOf('/'));
+            return url + '/' + path;
+        }
+      </script>
+      <script type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/^http:^2f^2fwww.wyona.org^2fyanel^2fresource^2f1.0::xinha/xinha/XinhaCore.js"></script>
+      <script type="text/javascript">
+        var editeur = null;
+        function initXinha() {
+         var config = new Xinha.Config();
+         //following would be nice, but unsave since there is no convention on css location and nothing that knows about except the xsl.;
+         //but one could use this in a customized xinha.jelly
+         //config.pageStyleSheets = ["${yanel.back2realm}css/global.css"];
+         config.fullPage = true;
+         
+         editeur = Xinha.makeEditors(['${resource.getEditPath()}'], config);
+         Xinha.startEditors(editeur);
+        }
+        window.onload = initXinha;
+      </script>
+    </head>
+    <body>
+      <p class="yanel-usecase-error">${resource.getErrorMessages()}</p>
+      <p>${resource.getInfoMessages()}</p>
+      <j:choose>
+        <j:when test="${resource.getEditPath() != null &amp;&amp; !resource.getEditPath().equals('')}">
+          <form method="post" action="">
+            <input type="hidden" name="edit-path" value="${resource.getEditPath()}"/>
+            <textarea id="${resource.getEditPath()}" name="${resource.getEditPath()}" rows="15" cols="80" style="width: 100%">
+              ${resource.escapeXML(resource.getContentToEdit())}
+            </textarea>
+            <br />
+            <input type="submit" id="submit" name="submit" value="Save" />
+            <input type="submit" id="submit" name="cancel" value="Cancel" />
+          </form>
+        </j:when>
+        <j:otherwise>
+          ${resource.getLookup()}
+        </j:otherwise>
+      </j:choose>
+      
+
+    </body>
+  </html>
+</j:jelly>

@@ -1,0 +1,23 @@
+#resourceCreatorSaveAsTable {
+  width:100%;
+}
+
+#lookupfilesTable {
+  width:100%;
+}
+
+#lookupfiles {
+  height:160px;
+  overflow:auto;
+  position:relative;
+}
+
+/* kind a hack. had to overwrite definitions, made in global.css but not in xinha.css, disturbing the editors style */
+#content .htmlarea table {
+  border:0px;
+}
+
+#content .htmlarea td {
+  border:0px;
+  padding:0px;
+}

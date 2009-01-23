@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="xinha"
+  namespace="http://www.wyona.org/yanel/resource/1.0"
+  class="org.wyona.yanel.impl.resources.xinha.XinhaResource"
+  >
+<description>
+xinha Editor to edit xhtml
+</description>
+
+<rtd>
+<!--
+  <property name="foo" default-value="bar"/>
+-->
+</rtd>
+</resource>
