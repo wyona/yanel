@@ -63,13 +63,16 @@ public class YanelWebsiteMenu extends Menu {
         sb.append("<div id=\"yaneltoolbar_menutitle\">Edit</div><ul>");
         sb.append("<li class=\"haschild\">Open with&#160;&#160;&#160;");
         sb.append("<ul><li>Source editor</li>");
-        sb.append("<li class=\"haschild\">WYSIWYG editor");
+        sb.append("<li class=\"haschild\">WYSIWYG editor&#160;&#160;&#160;");
         sb.append("<ul>");
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
             sb.append("<li><a href=\"" + backToRealm + "usecases/xinha.html?edit-path=" + resource.getPath() + "\">Edit page with Xinha&#160;&#160;&#160;</a></li>");
+            sb.append("<li><a href=\"" + backToRealm + "usecases/tinymce.html?edit-path=" + resource.getPath() + "\">Edit page with tinyMCE&#160;&#160;&#160;</a></li>");
         } else {
             sb.append("<li><a>Edit page with Xinha&#160;&#160;&#160;</a></li>");
+            sb.append("<li><a>Edit page with tinyMCE&#160;&#160;&#160;</a></li>");
         }
+        sb.append("<li><a href=\"http://www.yulup.org\">Edit page with Yulup&#160;&#160;&#160;</a></li>");
         sb.append("</ul></li>"); // End of WYSIWYG editor
         sb.append("</ul></li>");
 
