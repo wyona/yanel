@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<project name="realm.homepage" default="all.workflow">
+
+  <import file="../definitions.xml"/>
+
+<!--  <property name="login.realm.path" value="${realm.prefix}" />-->
+
+  <target name="all.workflow">
+   <antcall target="workflow-menu"/>
+   <antcall target="workflow-introspection"/>
+  </target>
+
+  <target name="workflow-menu" depends="wt.defineMacros">
+    <webtest name="Check workflow menu content">
+      &config;
+      <steps>
+       <login/>
+       <invoke description="Get the page: " url="/${realm.prefix}en/about.html"/>
+       <verifyText description="Verify that correct page retrieved" text="About"/>
+       <verifyText description="Verify that correct page retrieved" text="Main Focus"/>
+
+       <verifytext description="revn 1171842541025" text="1171842541025"/>
+       <verifytext description="revn 1180700931944" text="1180700931944"/>
+
+       <verifyText description="submit for review" text="Submit for Review"/>
+       <verifyText description="reject" text="Reject"/>
+       <verifyText description="approve" text="Approve"/>
+       <verifyText description="publish" text="Publish"/>
+       <verifyText description="republish" text="Re-Publish"/>
+       <verifyText description="deactivate" text="Deactivate"/>
+       <verifyText description="cancel approve" text="Cancel Approve"/>
+
+       <verifyText description="check submit link exists" text="../en/about.html?yanel.resource.workflow.transition=submit&amp;amp;yanel.resource.revision=1180700931944&amp;amp;yanel.resource.workflow.transition.output=xhtml"/>
+       <verifyText description="check publish link exists" text="../en/about.html?yanel.resource.workflow.transition=publish&amp;amp;yanel.resource.revision=1180700931944&amp;amp;yanel.resource.workflow.transition.output=xhtml"/>
+
+     </steps>
+    </webtest>
+  </target>
+
+  <target name="workflow-introspection" depends="wt.defineMacros">
+    <property name="revision.number1" value="1180700931944" />
+    <property name="revision.number2" value="1171842541025" />
+    <property name="xp" value=""/>
+    <webtest name="Check if introspection produces correct results">
+      &config;
+      <steps>
+       <login/> <!-- NOTE: The login automatically enables the toolbar -->
+       <invoke description="Get the introspection page: " url="/${realm.prefix}en/about.html?yanel.resource.usecase=introspection"/>
+
+        <verifyText description="Verify we have the correct page" text="resource name=&quot;about.html&quot;"/>
+
+        <verifyXPath description="check user element" xpath="//*[local-name()='user']" text="lenya" />
+
+        <verifyXPath description="check number of revision elements" xpath="count(//*[local-name()='revision'])" text="2" />
+        <!-- Note: this actually gets two revision elements. How do we check each one individually? (see TODO) -->
+        <verifyXPath description="check revision element ${revision.number1}" xpath="//*[local-name()='version'][1]/*[local-name()='revision']" text="${revision.number1}" />
+        <verifyXPath description="check revision element ${revision.number2}" xpath="//*[local-name()='version'][2]/*[local-name()='revision']" text="${revision.number2}" />
+
+        <!-- TODO add more testing of element values, such as date of version and so on -->
+
+        <logout/>
+      </steps>
+    </webtest>
+  </target>
+
+</project>
