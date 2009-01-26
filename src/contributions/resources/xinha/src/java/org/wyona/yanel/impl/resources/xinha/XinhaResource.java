@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -70,33 +71,63 @@ public class XinhaResource extends ExecutableUsecaseResource {
      * @see org.wyona.yanel.impl.resources.usecase.ExecutableUsecaseResource#processUsecase(java.lang.String)
      */
     protected View processUsecase(String viewID) throws UsecaseException {
+        String userID = getEnvironment().getIdentity().getUsername();
+        String editorContent = getEditorContent();
+        String checkoutUserID = getResToEditCheckoutUserID();
+        String resourceContent = getResourceContent();
+        
+        if (getParameter(PARAM_CANCEL) != null) {
+            cancel();
+            return generateView(VIEW_CANCEL);
+        } 
         if (!checkPreconditions() || hasErrors()) {
             setParameter(PARAMETER_CONTINUE_PATH, PathUtil.backToRealm(getPath()) + getEditPath().substring(1));
             return generateView(VIEW_CANCEL);
         }
         if (getParameter(PARAM_SUBMIT) != null) {
-            if (!isWellformed(IOUtils.toInputStream(getEditorContent()))) {
-                contentToEdit = getEditorContent();
+            if (!isWellformed(IOUtils.toInputStream(editorContent))) {
+                contentToEdit = editorContent;
                 return generateView(VIEW_FIX_WELLFORMNESS);
             }
             execute();
             return generateView(VIEW_DONE);
-        } else if (getParameter(PARAM_SUBMIT_TIDY_SAVE) != null) {
-            editorContent = tidy(getEditorContent());
+        }         
+        if (isResToEditCheckedOut()) {
+            addError("Resource is checked out. ");
+            if (checkoutUserID != null) {
+                if(checkoutUserID.equals(userID)) {
+                    addError("by YOU! ");
+                } else if (!checkoutUserID.equals("null")) {
+                    addError("by user: " + checkoutUserID + " ");
+                    return generateView(VIEW_CANCEL);
+                } else if (checkoutUserID.equals("null")) {
+                    addError("by a not loged in user. ");
+                }
+            }
+        }
+        if (getParameter(PARAM_SUBMIT_TIDY_SAVE) != null) {
+            editorContent = tidy(editorContent);
             execute();
             return generateView(VIEW_DONE);
         } else if (getParameter(PARAM_SUBMIT_TIDY) != null) {
-            editorContent = tidy(getEditorContent());
-            contentToEdit = getEditorContent();
+            editorContent = tidy(editorContent);
+            contentToEdit = editorContent;
             return generateView(DEFAULT_VIEW_ID);
-        } else if (getParameter(PARAM_CANCEL) != null) {
-            cancel();
-            return generateView(VIEW_CANCEL);
-        } else if (!isWellformed(IOUtils.toInputStream(getResourceContent()))) {
-            contentToEdit = tidy(getResourceContent());
+        } else if (!isWellformed(IOUtils.toInputStream(resourceContent))) {
+            contentToEdit = tidy(resourceContent);
             return generateView(VIEW_FIX_WELLFORMNESS);
         }else {
-            contentToEdit = getResourceContent();
+            contentToEdit = resourceContent;
+            try {
+                if (isResToEditVersionableV2() && !isResToEditCheckedOut()) {
+                    VersionableV2 versionable = (VersionableV2) getResToEdit();
+                    if (!versionable.isCheckedOut()) {
+                        versionable.checkout(userID);
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("Could not checkout resource: " + getResToEdit().getPath() + " " + e.getMessage());
+            }
             return generateView(viewID); // this will show the default view if the param is not set
         }
     }
@@ -118,7 +149,7 @@ public class XinhaResource extends ExecutableUsecaseResource {
                     return false;
                 }
             } catch (Exception e) {
-                addError("Could not find out mime-type. ");
+                addError("Could not find out mime-type. " + e.getMessage() + " ");
                 return false;
             }
         } else {
@@ -139,13 +170,14 @@ public class XinhaResource extends ExecutableUsecaseResource {
                 try {
                     OutputStream os = ((ModifiableV2) resToEdit).getOutputStream();
                     IOUtils.write(content, os);
-
-                    if (ResourceAttributeHelper.hasAttributeImplemented(resToEdit, "Versionable", "2")) {
+                    addInfoMessage("Succesfully saved resource " + resToEdit.getPath() + ". ");
+                    if (isResToEditVersionableV2()) {
                         VersionableV2 versionable  = (VersionableV2)resToEdit;
                         try {
                             versionable.checkin("Updated with Xinha");
+                            addInfoMessage("Succesfully checked in resource " + resToEdit.getPath() + ". ");
                         } catch (Exception e) {
-                            String msg = "Could not check in resource: " + resToEdit.getPath() + " " + e.getMessage();
+                            String msg = "Could not check in resource: " + resToEdit.getPath() + " " + e.getMessage() + ". ";
                             log.error(msg, e);
                             addError(msg);
                             throw new UsecaseException(msg, e);
@@ -155,9 +187,8 @@ public class XinhaResource extends ExecutableUsecaseResource {
                     log.error("Exception: " + e);
                     throw new UsecaseException(e.getMessage(), e);
                 }
-                addInfoMessage("Successfully saved.");
             } else {
-                addError("Could not save the document.");
+                addError("Could not save the document. ");
             }
             setParameter(PARAMETER_CONTINUE_PATH, PathUtil.backToRealm(getPath()) + getEditPath().substring(1)); // allow jelly template to show link to new event
     }
@@ -166,7 +197,19 @@ public class XinhaResource extends ExecutableUsecaseResource {
      * @see org.wyona.yanel.impl.resources.usecase.ExecutableUsecaseResource#cancel()
      */
     public void cancel() throws UsecaseException {
-        addInfoMessage("Cancled.");
+        addInfoMessage("Canceled. ");
+        final Resource resToEdit = getResToEdit();
+        if (isResToEditVersionableV2()) {
+            VersionableV2 versionable  = (VersionableV2)resToEdit;
+            try {
+                versionable.cancelCheckout();
+                addInfoMessage("Released lock for: " + resToEdit.getPath() + ". ");
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                addInfoMessage("Releasing of lock failed because of: " + resToEdit.getPath() 
+                        + " " + e.getMessage() + ". ");
+            }
+        }
         setParameter(PARAMETER_CONTINUE_PATH, PathUtil.backToRealm(getPath()) + getEditPath().substring(1)); // allow jelly template to show link to new event
     }
     
@@ -264,25 +307,6 @@ public class XinhaResource extends ExecutableUsecaseResource {
             Resource resToEdit = getResToEdit();
             if (ResourceAttributeHelper.hasAttributeImplemented(resToEdit, "Modifiable", "2")) {
                 try {
-
-                    if (ResourceAttributeHelper.hasAttributeImplemented(resToEdit, "Versionable", "2")) {
-                        VersionableV2 versionable = (VersionableV2)resToEdit;
-                        String userID = getEnvironment().getIdentity().getUsername();
-                        if (versionable.isCheckedOut()) {
-                            String checkoutUserID = versionable.getCheckoutUserID();
-                            if (checkoutUserID.equals(userID)) {
-                                log.warn("Resource " + resToEdit.getPath() + " is already checked out by this user: " + checkoutUserID);
-                            } else {
-                                String msg = "Resource is already checked out by another user: " + checkoutUserID;
-                                log.warn(msg);
-                                addError(msg);
-                                return null;
-                            }
-                        } else {
-                            versionable.checkout(userID);
-                        }
-                    }
-
                     InputStream is = ((ModifiableV2) resToEdit).getInputStream();
                     resourceContent = IOUtils.toString(is);
                 } catch (Exception e) {
@@ -290,7 +314,7 @@ public class XinhaResource extends ExecutableUsecaseResource {
                     throw new UsecaseException(e.getMessage(), e);
                 }
             } else {
-                addError("This resource can not be edited.");
+                addError("This resource can not be edited. ");
             }
         }
         if(log.isDebugEnabled()) log.debug("content set to: " + resourceContent);
@@ -327,4 +351,50 @@ public class XinhaResource extends ExecutableUsecaseResource {
         if(log.isDebugEnabled()) log.debug("resToEdit set to: " + resToEdit.getResourceTypeLocalName());
         return resToEdit;
     }
+
+    private boolean isResToEditVersionableV2() {
+        try {
+            if (ResourceAttributeHelper.hasAttributeImplemented(getResToEdit(), "Versionable", "2")) {
+                return true;     
+            }
+        } catch (Exception e) {
+            return false;     
+        }
+        return false;     
+    }
+    
+    private boolean isResToEditCheckedOut()  {
+        try {
+            if (isResToEditVersionableV2()) {
+                VersionableV2 versionable = (VersionableV2) getResToEdit();
+                if (versionable.isCheckedOut()) {
+                    return true;
+                }
+            }     
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
+    }
+
+    
+    /**
+     * Returns the user id which was supplied when calling checkout(). can be null if not known, or the resource doesn't implement VersionableV2, or resource is not checked out yet. or no way to find out.
+     * @return String
+     */
+    private String getResToEditCheckoutUserID() {
+        try {
+            if (isResToEditVersionableV2() && isResToEditCheckedOut()) {
+                final Resource resToEdit = getResToEdit();
+                VersionableV2 versionable = (VersionableV2)resToEdit;
+                if (versionable.isCheckedOut()) {
+                    return versionable.getCheckoutUserID();
+                }
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
+    
 }
