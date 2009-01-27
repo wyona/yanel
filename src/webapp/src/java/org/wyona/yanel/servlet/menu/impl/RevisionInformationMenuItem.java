@@ -44,34 +44,39 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
         this.language = lang;
     }
 
-    private String getContent() {
-        String value = "";
+    /**
+     * Generate revision menu
+     */
+    private String getContent(boolean mostRecent, boolean oldestRevision) {
+        String value = "<li class=\"haschild\">" + this.revision.getName();
         
         try {
             if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Workflowable", "1") && WorkflowHelper.hasWorkflow(resource)) {
                 WorkflowableV1 workflowable = (WorkflowableV1) this.resource;
                 String state = workflowable.getWorkflowState(revision.getName());
-                value = "<li class=\"haschild\">"
-                      + this.revision.getName()
-                      + " (" + formatDate(this.revision.getDate()) + ", " + state + ")"
-                      + "&#160;&#160;&#160;";
+
+                value += " (" + formatDate(this.revision.getDate()) + ", " + state + ")&#160;&#160;&#160;<ul><li class=\"haschild\">Workflow";
             
-                ITransitionMenuContent x =
-                    new TransitionMenuContentImpl(getResource(), state, getRevisionInfo().getName(), getMenuLanguageCode());
+                ITransitionMenuContent x = new TransitionMenuContentImpl(getResource(), state, getRevisionInfo().getName(), getMenuLanguageCode());
                 RevisionTransitionsMenuContent rt = new RevisionTransitions(getResource(), getRevisionInfo().getName(), getMenuLanguageCode(), x);
+
                 value += rt.toHTML();
                 value += "</li>";
             } else {
-                value = "<li>"
-                      + this.revision.getName()
-                      + " (" + formatDate(this.revision.getDate()) + ")"
-                      + "&#160;&#160;&#160;";
-                value += "</li>";
+                value += " (" + formatDate(this.revision.getDate()) + ")&#160;&#160;&#160;<ul>";
             }
         } catch (WorkflowException e) {
-            value = "";
-            log.error("Could not get workflow.", e);
+            log.error("Could not get workflow: " + e.getMessage(), e);
         }
+        if (!mostRecent) value += "<li>Revert to (roll back)</li>";
+        value += "<li>Show more details</li>";
+        value += "<li><a href=\"?yanel.resource.revision=" + this.revision.getName() + "\">Display</a></li>";
+        value += "<li class=\"haschild\">Diff<ul>";
+        if (!mostRecent) value += "<li>Most recent</li><li>Next</li>";
+        if (!oldestRevision) value += "<li>Previous</li>";
+        value += "</ul></li>";
+        value += "</ul>";
+        value += "</li>";
 
         return value;
     }
@@ -79,8 +84,8 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
     /* (non-Javadoc)
      * @see org.wyona.yanel.servlet.menu.impl.RevisionInformationMenuContent#toHTML()
      */
-    public String toHTML() {
-        return getContent();
+    public String toHTML(boolean mostRecent, boolean oldestRevision) {
+        return getContent(mostRecent, oldestRevision);
     }
 
     /* (non-Javadoc)

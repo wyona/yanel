@@ -117,9 +117,13 @@ public class DefaultMenu extends Menu {
             if (revisions !=  null && revisions.length > 0) {
                 sb.append("<li class=\"haschild\">Revisions&#160;&#160;&#160;<ul>");
                 for (int i = revisions.length -1; i >= 0; i--) {
+                    boolean mostRecent = false;
+                    boolean oldestRevision = false;
+                    if (i == revisions.length - 1) mostRecent = true;
+                    if (i == 0) oldestRevision = true;
                     sb.append((new RevisionInformationMenuItem(resource,
                                                                revisions[i],
-                                                               resource.getRequestedLanguage())).toHTML());
+                                                               resource.getRequestedLanguage())).toHTML(mostRecent, oldestRevision));
                 }
                 sb.append("</ul></li>");
             }

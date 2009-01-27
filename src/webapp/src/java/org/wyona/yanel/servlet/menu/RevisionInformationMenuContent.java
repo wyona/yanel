@@ -7,12 +7,15 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 
 /**
- * @author gary
- *
+ * Interface for revision menu
  */
 public interface RevisionInformationMenuContent {
 
-    public abstract String toHTML();
+    /**
+     * @param mostRecent Flag to indicate if this is about the most recent revision
+     * @param oldestRevision Flag to indicate if this is about the oldest revision
+     */
+    public abstract String toHTML(boolean mostRecent, boolean oldestRevision);
     
     public abstract String getMenuLanguageCode();
     
