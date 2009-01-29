@@ -21,26 +21,26 @@ import org.wyona.yanel.servlet.menu.TransitionMenuContentImpl;
  * contains an html <li> containing the revision number, and then an html
  * representation of the transitions on that revision.
  * (@see org.wyona.yanel.servlet.menu.RevisionTransitions).
- * TODO this class really belongs to YanelWebsite, so move it into that realm.
  *
  */
 public class RevisionInformationMenuItem implements RevisionInformationMenuContent {
     
     private static Logger log = Logger.getLogger(RevisionInformationMenuItem.class);
+    private static String NBSP = "&#160;&#160;&#160;";
     
     private Resource resource;
-    private RevisionInformation revision;
+    private RevisionInformation revisionInfo;
     private String language;
 
     /**
      * ctor.
      * @param resource the resource on which the representation is to be based.
-     * @param revn the revision of the resource on which the representation is to be based.
+     * @param revisionInfo the revision information of the resource on which the representation is to be based.
      * @param lang the desired language of the menu.
      */
-    public RevisionInformationMenuItem(Resource resource, RevisionInformation revn, String lang) {
+    public RevisionInformationMenuItem(Resource resource, RevisionInformation revisionInfo, String lang) {
         this.resource = resource;
-        this.revision = revn;
+        this.revisionInfo = revisionInfo;
         this.language = lang;
     }
 
@@ -48,14 +48,15 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
      * Generate revision menu
      */
     private String getContent(boolean mostRecent, boolean oldestRevision) {
-        String value = "<li class=\"haschild\">" + this.revision.getName();
+        String value = "<li class=\"haschild\">" + this.revisionInfo.getName();
         
+        WorkflowableV1 workflowableRes = null;
         try {
             if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Workflowable", "1") && WorkflowHelper.hasWorkflow(resource)) {
-                WorkflowableV1 workflowable = (WorkflowableV1) this.resource;
-                String state = workflowable.getWorkflowState(revision.getName());
+                workflowableRes = (WorkflowableV1) this.resource;
+                String state = workflowableRes.getWorkflowState(revisionInfo.getName());
 
-                value += " (" + formatDate(this.revision.getDate()) + ", " + state + ")&#160;&#160;&#160;<ul><li class=\"haschild\">Workflow";
+                value += " (" + formatDate(this.revisionInfo.getDate()) + ", " + state + ")" + NBSP + "<ul><li class=\"haschild\">Workflow";
             
                 ITransitionMenuContent x = new TransitionMenuContentImpl(getResource(), state, getRevisionInfo().getName(), getMenuLanguageCode());
                 RevisionTransitionsMenuContent rt = new RevisionTransitions(getResource(), getRevisionInfo().getName(), getMenuLanguageCode(), x);
@@ -63,18 +64,35 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
                 value += rt.toHTML();
                 value += "</li>";
             } else {
-                value += " (" + formatDate(this.revision.getDate()) + ")&#160;&#160;&#160;<ul>";
+                value += " (" + formatDate(this.revisionInfo.getDate()) + ")" + NBSP + "<ul>";
             }
         } catch (WorkflowException e) {
             log.error("Could not get workflow: " + e.getMessage(), e);
         }
-        if (!mostRecent) value += "<li>Revert to (roll back)</li>";
-        value += "<li>Show more details</li>";
-        value += "<li><a href=\"?yanel.resource.revision=" + this.revision.getName() + "\">Display</a></li>";
+        if (!mostRecent) value += "<li><a href=\"?yanel.resource.usecase=roll-back&amp;yanel.resource.revision=" + revisionInfo.getName() + "\">Revert to (roll back)</a></li>";
+        value += "<li class=\"haschild\">Show more details" + NBSP + "<ul>";
+        value += "<li>Revision name: " + this.revisionInfo.getName() + "</li>";
+        value += "<li>Creation date of revision: " + formatDate(this.revisionInfo.getDate()) + "</li>";
+        value += "<li>Author: " + this.revisionInfo.getUser() + "</li>";
+        value += "<li>Comment: " + this.revisionInfo.getComment() + "</li>";
+        if (workflowableRes != null) {
+            try {
+                value += "<li>Workflow state: " + workflowableRes.getWorkflowState(revisionInfo.getName()) + "</li>";
+                value += "<li>Transition date: " + formatDate(workflowableRes.getWorkflowDate(revisionInfo.getName())) + "</li>";
+            } catch(Exception e) {
+                log.error(e, e);
+            }
+        }
+        value += "</ul></li>";
+        value += "<li><a href=\"?yanel.resource.revision=" + this.revisionInfo.getName() + "\">Display</a></li>";
+
+/* TODO: Implement diff
         value += "<li class=\"haschild\">Diff<ul>";
         if (!mostRecent) value += "<li>Most recent</li><li>Next</li>";
         if (!oldestRevision) value += "<li>Previous</li>";
         value += "</ul></li>";
+*/
+
         value += "</ul>";
         value += "</li>";
 
@@ -106,7 +124,7 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
      * @see org.wyona.yanel.servlet.menu.impl.RevisionInformationMenuContent#getRevisionInfo()
      */
     public RevisionInformation getRevisionInfo() {
-        return this.revision;
+        return this.revisionInfo;
     }
 
     /**
