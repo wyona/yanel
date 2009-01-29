@@ -34,10 +34,7 @@
       </fileset>
     </copy>
 
-    <!-- TODO: Copy only core, impl, webapp, but NOT cmdl, etc. -->
-    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
-      <fileset dir="${yanel.source.home}/build/lib"/>
-    </copy>
+    <antcall target="copy-basic-webapp-libs"/>
 
     <antcall target="deploy-resources"/>
 
@@ -132,6 +129,13 @@
     <antcall target="deploy-libs-of-realms"/>
 
     <antcall target="remove-ambiguous-libs"/>
+  </target>
+
+  <target name="copy-basic-webapp-libs" description="Copy basic webapp libraries (core, impl, webapp)" depends="init">
+    <!-- TODO: Copy only core, impl, webapp, but NOT cmdl, etc. -->
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
+      <fileset dir="${yanel.source.home}/build/lib"/>
+    </copy>
   </target>
 
   <target name="war" description="Build war file" depends="init, webapp">
