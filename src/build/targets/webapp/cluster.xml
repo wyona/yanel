@@ -9,9 +9,7 @@
       <condition><not><available file="${tomcat1.webapps.dir}"/></not></condition>
     </fail>
 
-    <copy todir="${tomcat1.webapps.dir}/${servlet.context.prefix}">
-      <fileset dir="${yanel.source.home}/build/webapps/${servlet.context.prefix}"/>
-    </copy>
+    <antcall target="copy-webapp-files-to-tomcat-cluster-node1"/>
 
     <replace file="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="log4j-cnode1.log">
       <replacetoken>log4j-cmdl.log</replacetoken>
@@ -44,6 +42,12 @@
     <antcall target="ask-to-copy-endorsed-xalan-to-node1"/>
 -->
     
+  </target>
+
+  <target name="copy-webapp-files-to-tomcat-cluster-node1" depends="init">
+    <copy todir="${tomcat1.webapps.dir}/${servlet.context.prefix}">
+      <fileset dir="${yanel.source.home}/build/webapps/${servlet.context.prefix}"/>
+    </copy>
   </target>
 
   <target name="patch-tomcat-cluster-node-1-ssl-port" if="property-tomcat1-ssl-port-is-set">
