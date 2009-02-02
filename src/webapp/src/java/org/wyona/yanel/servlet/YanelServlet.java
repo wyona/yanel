@@ -273,7 +273,7 @@ public class YanelServlet extends HttpServlet {
                 return;
 	    } else if (value != null && value.equals("roll-back")) {
                 log.debug("Roll back ...");
-                org.wyona.yanel.core.util.VersioningUtil.rollBack(resource, request.getParameter("yanel.resource.revision"));
+                org.wyona.yanel.core.util.VersioningUtil.rollBack(resource, request.getParameter(YANEL_RESOURCE_REVN));
                 // TODO: Send confirmation screen
                 getContent(request, response);
                 return;
@@ -467,7 +467,8 @@ public class YanelServlet extends HttpServlet {
 
                         try {
                             String revisionName = request.getParameter(YANEL_RESOURCE_REVN);
-                            if (revisionName != null && ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
+                            // NOTE: Check also if usecase is not roll-back, because roll-back is also using the yanel.resource.revision
+                            if (revisionName != null && ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2") && !request.getParameter(YANEL_RESOURCE_USECASE).equals("roll-back")) {
                                 view = ((VersionableV2) res).getView(viewId, revisionName);
                             } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1") && environment.getStateOfView().equals(StateOfView.LIVE)) {
                                 WorkflowableV1 workflowable = (WorkflowableV1)res;
