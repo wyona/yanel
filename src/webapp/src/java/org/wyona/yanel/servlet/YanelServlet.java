@@ -1916,12 +1916,8 @@ public class YanelServlet extends HttpServlet {
         } else if (path.equals(aboutPagePath)) {
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             response.setHeader("Content-Type", "text/html");
-            StringBuffer sb = new StringBuffer("<html>");
-            sb.append("<head><title>About Yanel</title></head>");
-            sb.append("<body><h1>About Yanel</h1><p>Version " + yanelInstance.getVersion() + "-r" + yanelInstance.getRevision() + "</p><p>Copyright &#169; 2005 - 2008 Wyona. All rights reserved.</p></body>");
-            sb.append("</html>");
             PrintWriter w = response.getWriter();
-            w.print(sb);
+            w.print(About.toHTML(yanelInstance.getVersion(), yanelInstance.getRevision()));
             return;
         } else if (path.equals(dataRepoSitetreePagePath)) {
             try {
