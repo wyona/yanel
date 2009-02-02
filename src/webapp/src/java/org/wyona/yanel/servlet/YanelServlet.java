@@ -119,6 +119,7 @@ public class YanelServlet extends HttpServlet {
     
     public static final String DEFAULT_ENCODING = "UTF-8";
 
+    public static final String YANEL_USECASE = "yanel.usecase";
     public static final String YANEL_RESOURCE = "yanel.resource";
     public static final String YANEL_RESOURCE_USECASE = YANEL_RESOURCE + ".usecase";
     public static final String YANEL_RESOURCE_REVN = YANEL_RESOURCE + ".revision";
@@ -169,7 +170,7 @@ public class YanelServlet extends HttpServlet {
         String httpAcceptMediaTypes = request.getHeader("Accept");
         String httpAcceptLanguage = request.getHeader("Accept-Language");
 
-        String yanelUsecase = request.getParameter("yanel.usecase");
+        String yanelUsecase = request.getParameter(YANEL_USECASE);
         if(yanelUsecase != null && yanelUsecase.equals("logout")) {
             // Logout from Yanel
             if(doLogout(request, response) != null) return;
@@ -2193,7 +2194,7 @@ public class YanelServlet extends HttpServlet {
 
         // TODO: Replace hardcoded roles by mapping between roles amd query strings ...
         String value = request.getParameter(YANEL_RESOURCE_USECASE);
-        String yanelUsecaseValue = request.getParameter("yanel.usecase");
+        String yanelUsecaseValue = request.getParameter(YANEL_USECASE);
         String workflowTransitionValue = request.getParameter(YANEL_RESOURCE_WORKFLOW_TRANSITION);
         String contentType = request.getContentType();
         String method = request.getMethod();
@@ -2202,6 +2203,9 @@ public class YanelServlet extends HttpServlet {
             usecase = new Usecase("write");
         } else if (value != null && value.equals("checkin")) {
             log.debug("Checkin data ...");
+            usecase = new Usecase("write");
+        } else if (value != null && value.equals("roll-back")) {
+            log.debug("Roll back to previous revision ...");
             usecase = new Usecase("write");
         } else if (yanelUsecaseValue != null && yanelUsecaseValue.equals("create")) {
             log.debug("Create new resource ...");
