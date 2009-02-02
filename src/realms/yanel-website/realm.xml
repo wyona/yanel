@@ -7,7 +7,7 @@
 
   <rti>config/res-config-repository.xml</rti>
   <data>config/repository.xml</data>
-  <ac-policies>config/ac-policies-repository.xml</ac-policies>
+  <ac-policies>config/ac-policies-repository2.xml</ac-policies>
   <ac-identities>config/ac-identities-repository.xml</ac-identities>
 
   <default-language>en</default-language>
