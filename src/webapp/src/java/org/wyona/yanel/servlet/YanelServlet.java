@@ -89,10 +89,8 @@ public class YanelServlet extends HttpServlet {
 
     private ResourceTypeRegistry rtr;
 
-    //PolicyManager pm;
-    //IdentityManager im;
     private Map map;
-    private Yanel yanel;
+    private Yanel yanelInstance;
     private Sitetree sitetree;
 
     private File xsltInfoAndException;
@@ -142,18 +140,18 @@ public class YanelServlet extends HttpServlet {
         xsltInfoAndException = org.wyona.commons.io.FileUtil.file(servletContextRealPath, config.getInitParameter("exception-and-info-screen-xslt"));
         xsltLoginScreenDefault = config.getInitParameter("login-screen-xslt");
         try {
-            yanel = Yanel.getInstance();
-            yanel.init();
+            yanelInstance = Yanel.getInstance();
+            yanelInstance.init();
             
-            rtr = yanel.getResourceTypeRegistry();
+            rtr = yanelInstance.getResourceTypeRegistry();
 
-            map = (Map) yanel.getBeanFactory().getBean("map");
+            map = (Map) yanelInstance.getBeanFactory().getBean("map");
 
-            sitetree = (Sitetree) yanel.getBeanFactory().getBean("repo-navigation");
+            sitetree = (Sitetree) yanelInstance.getBeanFactory().getBean("repo-navigation");
 
             sslPort = config.getInitParameter("ssl-port");
             toolbarMasterSwitch = config.getInitParameter("toolbar-master-switch");
-            reservedPrefix = yanel.getReservedPrefix();
+            reservedPrefix = yanelInstance.getReservedPrefix();
             String expires = config.getInitParameter("static-content-cache-expires");
             if (expires != null) {
                 this.cacheExpires = Integer.parseInt(expires);
@@ -685,11 +683,11 @@ public class YanelServlet extends HttpServlet {
                 // Create new Atom entry
                 try {
                     String atomEntryUniversalName = "<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>";
-                    Realm realm = yanel.getMap().getRealm(request.getServletPath());
-                    String newEntryPath = yanel.getMap().getPath(realm, request.getServletPath() + "/" + new java.util.Date().getTime() + ".xml");
+                    Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
+                    String newEntryPath = yanelInstance.getMap().getPath(realm, request.getServletPath() + "/" + new java.util.Date().getTime() + ".xml");
 
                     log.error("DEBUG: Realm and Path of new Atom entry: " + realm + " " + newEntryPath);
-                    Resource atomEntryResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, newEntryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new ResourceTypeIdentifier(atomEntryUniversalName, null));
+                    Resource atomEntryResource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, newEntryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new ResourceTypeIdentifier(atomEntryUniversalName, null));
                     
                     ((ModifiableV2)atomEntryResource).write(in);
 
@@ -799,12 +797,12 @@ public class YanelServlet extends HttpServlet {
                 // Overwrite existing atom entry
                 try {
                     String atomEntryUniversalName = "<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>";
-                    Realm realm = yanel.getMap().getRealm(request.getServletPath());
-                    String entryPath = yanel.getMap().getPath(realm, request.getServletPath());
+                    Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
+                    String entryPath = yanelInstance.getMap().getPath(realm, request.getServletPath());
 
                     log.error("DEBUG: Realm and Path of new Atom entry: " + realm + " " + entryPath);
 
-                    Resource atomEntryResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, entryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new ResourceTypeIdentifier(atomEntryUniversalName, null));
+                    Resource atomEntryResource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, entryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new ResourceTypeIdentifier(atomEntryUniversalName, null));
                     
                     // TODO: There seems to be a problem ...
                     ((ModifiableV2)atomEntryResource).write(in);
@@ -878,7 +876,7 @@ public class YanelServlet extends HttpServlet {
             String path = map.getPath(realm, request.getServletPath());
             HttpRequest httpRequest = (HttpRequest)request;
             HttpResponse httpResponse = new HttpResponse(response);
-            Resource res = yanel.getResourceManager().getResource(getEnvironment(httpRequest, httpResponse), realm, path);
+            Resource res = yanelInstance.getResourceManager().getResource(getEnvironment(httpRequest, httpResponse), realm, path);
             
             return res;
         } catch(Exception e) {
@@ -1506,7 +1504,7 @@ public class YanelServlet extends HttpServlet {
                 xsltTransformer.getTransformer().setParameter("yanel.reservedPrefix", reservedPrefix);
                 
                 // create i18n transformer:
-                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage(request),yanel.getMap().getRealm(request.getServletPath()).getDefaultLanguage());
+                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage(request), yanelInstance.getMap().getRealm(request.getServletPath()).getDefaultLanguage());
                 CatalogResolver catalogResolver = new CatalogResolver();
                 i18nTransformer.setEntityResolver(new CatalogResolver());
                 
@@ -1547,7 +1545,7 @@ public class YanelServlet extends HttpServlet {
             }
         }
         if(language != null && language.length() > 0) return language;
-        return yanel.getMap().getRealm(request.getServletPath()).getDefaultLanguage();
+        return yanelInstance.getMap().getRealm(request.getServletPath()).getDefaultLanguage();
     }
 
     /**
@@ -1901,8 +1899,8 @@ public class YanelServlet extends HttpServlet {
                 java.util.Map<String, String> properties = new HashMap<String, String>();
                 properties.put("user", userName);
                 ResourceConfiguration rc = new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
-                Realm realm = yanel.getMap().getRealm(request.getServletPath());
-                Resource yanelUserResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
+                Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
+                Resource yanelUserResource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
                 View view = ((ViewableV2) yanelUserResource).getView(viewId);
                 if (view != null) {
                     if (generateResponse(view, yanelUserResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
@@ -1920,17 +1918,17 @@ public class YanelServlet extends HttpServlet {
             response.setHeader("Content-Type", "text/html");
             StringBuffer sb = new StringBuffer("<html>");
             sb.append("<head><title>About Yanel</title></head>");
-            sb.append("<body><h1>About Yanel</h1><p>Version " + yanel.getVersion() + "-r" + yanel.getRevision() + "</p><p>Copyright &#169; 2005 - 2008 Wyona. All rights reserved.</p></body>");
+            sb.append("<body><h1>About Yanel</h1><p>Version " + yanelInstance.getVersion() + "-r" + yanelInstance.getRevision() + "</p><p>Copyright &#169; 2005 - 2008 Wyona. All rights reserved.</p></body>");
             sb.append("</html>");
             PrintWriter w = response.getWriter();
             w.print(sb);
             return;
         } else if (path.equals(dataRepoSitetreePagePath)) {
             try {
-                Realm realm = yanel.getMap().getRealm(request.getServletPath());
+                Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
                 File drsResConfigFile = getGlobalResourceConfiguration("data-repo-sitetree_yanel-rc.xml", realm);
                 ResourceConfiguration rc = new ResourceConfiguration(new java.io.FileInputStream(drsResConfigFile));
-                Resource sitetreeResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
+                Resource sitetreeResource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
                 View view = ((ViewableV2) sitetreeResource).getView(viewId);
                 if (view != null) {
                     if (generateResponse(view, sitetreeResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
@@ -1950,9 +1948,9 @@ public class YanelServlet extends HttpServlet {
 
             try {
                 java.util.Map<String, String> properties = new HashMap<String, String>();
-                Realm realm = yanel.getMap().getRealm(request.getServletPath());
+                Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
                 ResourceConfiguration rc = new ResourceConfiguration(name, namespace, properties);
-                Resource resourceOfPrefix = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
+                Resource resourceOfPrefix = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
                 String htdocsPath;
                 if (name_and_rest[1].startsWith(reservedPrefix + "/")) {
                     htdocsPath =  "rtyanelhtdocs:" + name_and_rest[1].substring(reservedPrefix.length()).replace('/', File.separatorChar);
@@ -2187,7 +2185,7 @@ public class YanelServlet extends HttpServlet {
      */
     public void destroy() {
         super.destroy();
-        yanel.destroy();
+        yanelInstance.destroy();
         log.warn("Yanel webapp has been shut down.");
     }
 
@@ -2276,7 +2274,7 @@ public class YanelServlet extends HttpServlet {
             String path = map.getPath(realm, request.getServletPath());
             
             File pmrcGlobalFile = getGlobalResourceConfiguration("policy-manager_yanel-rc.xml", realm);
-            Resource policyManagerResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, new ResourceConfiguration(new java.io.FileInputStream(pmrcGlobalFile)));
+            Resource policyManagerResource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, path, new ResourceConfiguration(new java.io.FileInputStream(pmrcGlobalFile)));
             View view = ((ViewableV2) policyManagerResource).getView(viewId);
             if (view != null) {
                 if (generateResponse(view, policyManagerResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
@@ -2383,11 +2381,11 @@ public class YanelServlet extends HttpServlet {
         // TODO: Finish the XML (as it used to be before)!
         response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
         try {
-            Realm realm = yanel.getMap().getRealm(request.getServletPath());
+            Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
             File pnfResConfigFile = getGlobalResourceConfiguration("404_yanel-rc.xml", realm);
             ResourceConfiguration rc = new ResourceConfiguration(new java.io.FileInputStream(pnfResConfigFile));
             String path = getResource(request, response).getPath();
-            Resource pageNotFoundResource = yanel.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
+            Resource pageNotFoundResource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
             String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
             if (request.getParameter("yanel.format") != null) { // backwards compatible
                 viewId = request.getParameter("yanel.format");
