@@ -468,7 +468,7 @@ public class YanelServlet extends HttpServlet {
                         try {
                             String revisionName = request.getParameter(YANEL_RESOURCE_REVN);
                             // NOTE: Check also if usecase is not roll-back, because roll-back is also using the yanel.resource.revision
-                            if (revisionName != null && ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2") && !request.getParameter(YANEL_RESOURCE_USECASE).equals("roll-back")) {
+                            if (revisionName != null && ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2") && !isRollBack(request)) {
                                 view = ((VersionableV2) res).getView(viewId, revisionName);
                             } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1") && environment.getStateOfView().equals(StateOfView.LIVE)) {
                                 WorkflowableV1 workflowable = (WorkflowableV1)res;
@@ -2407,5 +2407,16 @@ public class YanelServlet extends HttpServlet {
             log.error(e, e);
             return;
         }
+    }
+
+    /**
+     * Check if yanel resource usecase is 'roll back" usecase
+     */
+    private boolean isRollBack(HttpServletRequest request) {
+        String yanelResUsecase = request.getParameter(YANEL_RESOURCE_USECASE);
+        if (yanelResUsecase != null) {
+            if (yanelResUsecase.equals("roll-back")) return true;
+        }
+        return false;
     }
 }
