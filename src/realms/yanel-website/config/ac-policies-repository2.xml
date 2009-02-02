@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<repository class="org.wyona.yarep.impl.repo.vfs.VirtualFileSystemRepository">
+  <name>Yanel Website Access Control Policies Repository</name>
+  <content src="../ac-policies2/data"/>
+  <meta src="../ac-policies2/yarep-meta"/>
+  <search-index src="../ac-policies2/search-index"/>
+</repository>
