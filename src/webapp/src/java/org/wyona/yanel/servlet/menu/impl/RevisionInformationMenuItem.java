@@ -77,8 +77,13 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
         value += "<li>Comment: " + this.revisionInfo.getComment() + "</li>";
         if (workflowableRes != null) {
             try {
-                value += "<li>Workflow state: " + workflowableRes.getWorkflowState(revisionInfo.getName()) + "</li>";
-                value += "<li>Transition date: " + formatDate(workflowableRes.getWorkflowDate(revisionInfo.getName())) + "</li>";
+                String wfState = workflowableRes.getWorkflowState(revisionInfo.getName());
+                if (wfState != null) {
+                    value += "<li>Workflow state: " + wfState + "</li>";
+                    value += "<li>Transition date: " + formatDate(workflowableRes.getWorkflowDate(revisionInfo.getName())) + "</li>";
+                } else {
+                    log.warn("Workflow state of revision '" + revisionInfo.getName() + "' is null. Maybe workflow was enabled at some later stage and hence this revision has no workflow!");
+                }
             } catch(Exception e) {
                 log.error(e, e);
             }
