@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 
-<realms xmlns="http://www.wyona.org/yanel/1.0" version="2007060600">
+<realms xmlns="http://www.wyona.org/yanel/1.0" version="2009020200">
 
 <changes>
+  <change version="2009020200">Use-cases realm config moved</change>
   <change version="2007060600">From scratch realm config/@src updated</change>
   <change version="2007053100">Javadoc realm config/@src updated</change>
   <change version="2007052900">Welcome realm config/@src updated</change>
@@ -71,7 +72,7 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
 
 <realm id="test-cases" mount-point="/test/use-cases/">
   <!--<name>Use-Cases</name>-->
-  <config src="@REALMS_DIR@/use-cases/yanel/config/yanel-realm-config.xml"/>
+  <config src="@REALMS_DIR@/use-cases/yanel/"/>
 </realm>
 
 <realm id="test" mount-point="/test/">
