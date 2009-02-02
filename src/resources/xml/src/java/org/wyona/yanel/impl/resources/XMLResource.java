@@ -286,6 +286,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         node.cancelCheckout();
     }
 
+    /**
+     * Roll back to previous revision
+     */
     public void restore(String revisionName) throws Exception {
         getRealm().getRepository().getNode(getPath()).restore(revisionName);
     }
