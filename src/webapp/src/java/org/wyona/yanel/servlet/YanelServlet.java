@@ -79,7 +79,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- *
+ * Main entry of Yanel webapp
  */
 public class YanelServlet extends HttpServlet {
 
@@ -122,6 +122,7 @@ public class YanelServlet extends HttpServlet {
     public static final String DEFAULT_ENCODING = "UTF-8";
 
     public static final String YANEL_RESOURCE = "yanel.resource";
+    public static final String YANEL_RESOURCE_USECASE = YANEL_RESOURCE + ".usecase";
     public static final String YANEL_RESOURCE_REVN = YANEL_RESOURCE + ".revision";
     public static final String YANEL_RESOURCE_WORKFLOW_TRANSITION = YANEL_RESOURCE + ".workflow.transition";
     public static final String YANEL_RESOURCE_WORKFLOW_TRANSITION_OUTPUT = YANEL_RESOURCE_WORKFLOW_TRANSITION + ".output";
@@ -2090,26 +2091,26 @@ public class YanelServlet extends HttpServlet {
                 String mimeType = view.getMimeType();
                 if (mimeType != null && mimeType.indexOf("html") > 0) {
                     // TODO: What about other query strings or frames or TinyMCE?
-                    if (request.getParameter("yanel.resource.usecase") == null) {
-                    if (toolbarMasterSwitch.equals("on")) {
-                        OutputStream os = response.getOutputStream();
-                        try {
-                            mergeToolbarWithContent(request, response, res, view);
-                        } catch (Exception e) {
-                            log.error(e, e);
-                            String message = "Error merging toolbar into content: " + e.toString();
-                            Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
-                            exceptionElement.appendChild(doc.createTextNode(message));
-                            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                            setYanelOutput(request, response, doc);
+                    if (request.getParameter(YANEL_RESOURCE_USECASE) == null) {
+                        if (toolbarMasterSwitch.equals("on")) {
+                            OutputStream os = response.getOutputStream();
+                            try {
+                                mergeToolbarWithContent(request, response, res, view);
+                            } catch (Exception e) {
+                                log.error(e, e);
+                                String message = "Error merging toolbar into content: " + e.toString();
+                                Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                                exceptionElement.appendChild(doc.createTextNode(message));
+                                response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                                setYanelOutput(request, response, doc);
+                                return response;
+                            }
                             return response;
+                        } else {
+                            log.info("Toolbar has been disabled. Please check web.xml!");
                         }
-                        return response;
                     } else {
-                        log.info("Toolbar has been disabled. Please check web.xml!");
-                    }
-                    } else {
-                        log.error("DEBUG: Exception to the rule: " + request.getParameter("yanel.resource.usecase"));
+                        log.error("DEBUG: Exception to the rule. Yanel resource usecase is not null: " + request.getParameter(YANEL_RESOURCE_USECASE));
                     }
                 } else {
                     log.debug("No HTML related mime type: " + mimeType);
