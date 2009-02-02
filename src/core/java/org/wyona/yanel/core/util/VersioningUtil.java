@@ -33,8 +33,24 @@ public class VersioningUtil {
     /**
      * @param resource Resource which shall be rolled back
      * @param revisionName Revision name to which shall be rolled back
+     * @param userName User who is executing the roll back
      */
-    public static void rollBack(Resource resource, String revisionName) {
-        log.error("DEBUG: Implementation not finished yet!");
+    public static void rollBack(Resource resource, String revisionName, String userName) {
+        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
+            try {
+                VersionableV2 versionableRes = (VersionableV2) resource;
+                if (!versionableRes.isCheckedOut()) {
+                    versionableRes.checkout(userName);
+                    versionableRes.restore(revisionName);
+                    versionableRes.checkin("Rolled back to revision '" + revisionName + "'");
+                } else {
+                    log.warn("Resource is already checked out by user '" + versionableRes.getCheckoutUserID() + "' and hence cannot be rolled back at the moment!");
+                }
+            } catch(Exception e) {
+                log.error(e, e);
+            }
+        } else {
+            log.warn("Cannot be rolled back, because resource is not VersionableV2");
+        }
     }
 }

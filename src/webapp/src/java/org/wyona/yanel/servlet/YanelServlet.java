@@ -273,7 +273,7 @@ public class YanelServlet extends HttpServlet {
                 return;
 	    } else if (value != null && value.equals("roll-back")) {
                 log.debug("Roll back ...");
-                org.wyona.yanel.core.util.VersioningUtil.rollBack(resource, request.getParameter(YANEL_RESOURCE_REVN));
+                org.wyona.yanel.core.util.VersioningUtil.rollBack(resource, request.getParameter(YANEL_RESOURCE_REVN), getIdentity(request).getUsername());
                 // TODO: Send confirmation screen
                 getContent(request, response);
                 return;
