@@ -203,7 +203,7 @@ public class YanelServlet extends HttpServlet {
             return;
         }
         
-        String value = request.getParameter("yanel.resource.usecase");
+        String value = request.getParameter(YANEL_RESOURCE_USECASE);
         // Delete node
         if (value != null && value.equals("delete")) {
             handleDeleteUsecase(request, response);
@@ -256,7 +256,7 @@ public class YanelServlet extends HttpServlet {
             //return;
         }
         
-        String value = request.getParameter("yanel.resource.usecase");
+        String value = request.getParameter(YANEL_RESOURCE_USECASE);
         try {
             if (value != null && value.equals("release-lock")) {
                 log.debug("Release lock ...");
@@ -363,7 +363,7 @@ public class YanelServlet extends HttpServlet {
             sessionAttributeElement.appendChild(doc.createTextNode(value));
         }
 
-        String usecase = request.getParameter("yanel.resource.usecase");
+        String usecase = request.getParameter(YANEL_RESOURCE_USECASE);
 
         
         Resource res = null;
@@ -662,7 +662,7 @@ public class YanelServlet extends HttpServlet {
             return;
         }
 
-        String value = request.getParameter("yanel.resource.usecase");
+        String value = request.getParameter(YANEL_RESOURCE_USECASE);
 
         if (value != null && value.equals("save")) {
             log.debug("Save data ...");
@@ -676,7 +676,7 @@ public class YanelServlet extends HttpServlet {
             // releaseLock();
             return;
         } else {
-            log.info("No parameter yanel.resource.usecase!");
+            log.info("No parameter " + YANEL_RESOURCE_USECASE + "!");
 
             String contentType = request.getContentType();
             // TODO: Check for type (see section 9.2 of APP spec (e.g. draft 16)
@@ -777,7 +777,7 @@ public class YanelServlet extends HttpServlet {
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // TODO: Reuse code doPost resp. share code with doPut
 
-        String value = request.getParameter("yanel.resource.usecase");
+        String value = request.getParameter(YANEL_RESOURCE_USECASE);
 
         if (value != null && value.equals("save")) {
             log.debug("Save data ...");
@@ -791,7 +791,7 @@ public class YanelServlet extends HttpServlet {
             // releaseLock();
             return;
         } else {
-            log.warn("No parameter yanel.resource.usecase!");
+            log.warn("No parameter " + YANEL_RESOURCE_USECASE + "!");
 
             String contentType = request.getContentType();
             if (contentType != null && contentType.indexOf("application/atom+xml") >= 0) {
@@ -2198,7 +2198,7 @@ public class YanelServlet extends HttpServlet {
         Usecase usecase = null;
 
         // TODO: Replace hardcoded roles by mapping between roles amd query strings ...
-        String value = request.getParameter("yanel.resource.usecase");
+        String value = request.getParameter(YANEL_RESOURCE_USECASE);
         String yanelUsecaseValue = request.getParameter("yanel.usecase");
         String workflowTransitionValue = request.getParameter(YANEL_RESOURCE_WORKFLOW_TRANSITION);
         String contentType = request.getContentType();
@@ -2333,7 +2333,7 @@ public class YanelServlet extends HttpServlet {
         } else {
             log.warn("Delete has not been confirmed by client yet!");
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
-            StringBuffer sb = new StringBuffer("<html><body>Do you really want to delete this page? <a href=\"?yanel.resource.usecase=delete&confirmed\">YES</a>, <a href=\"\">no</a></body></html>");
+            StringBuffer sb = new StringBuffer("<html><body>Do you really want to delete this page? <a href=\"?" + YANEL_RESOURCE_USECASE + "=delete&confirmed\">YES</a>, <a href=\"\">no</a></body></html>");
             PrintWriter w = response.getWriter();
             w.print(sb);
             return;
