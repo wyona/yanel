@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<policy xmlns="http://www.wyona.org/security/1.0" use-inherited-policies="false">
+
+  <role id="view">
+    <user id="alice" permission="true"/>
+  </role>
+
+  <role id="open">
+    <user id="alice" permission="true"/>
+  </role>
+
+  <role id="write">
+    <user id="alice" permission="true"/>
+  </role>
+
+</policy>
