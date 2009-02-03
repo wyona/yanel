@@ -84,14 +84,6 @@ public class XinhaResource extends ExecutableUsecaseResource {
             setParameter(PARAMETER_CONTINUE_PATH, PathUtil.backToRealm(getPath()) + getEditPath().substring(1));
             return generateView(VIEW_CANCEL);
         }
-        if (getParameter(PARAM_SUBMIT) != null) {
-            if (!isWellformed(IOUtils.toInputStream(editorContent))) {
-                contentToEdit = editorContent;
-                return generateView(VIEW_FIX_WELLFORMNESS);
-            }
-            execute();
-            return generateView(VIEW_DONE);
-        }         
         if (isResToEditCheckedOut()) {
             addError("Resource is checked out. ");
             if (checkoutUserID != null) {
@@ -105,31 +97,44 @@ public class XinhaResource extends ExecutableUsecaseResource {
                 }
             }
         }
+        if (getParameter(PARAM_SUBMIT_TIDY) != null) {
+            contentToEdit = tidy(editorContent);
+            if(!isWellformed(IOUtils.toInputStream(contentToEdit))) {
+                addError("Tidy seems to have a problem to make the content wellformed. Please fix it manually!");
+                return generateView(VIEW_FIX_WELLFORMNESS);
+            }
+            return generateView(DEFAULT_VIEW_ID);
+        }
         if (getParameter(PARAM_SUBMIT_TIDY_SAVE) != null) {
-            editorContent = tidy(editorContent);
+            this.editorContent = tidy(editorContent);
+            if(!isWellformed(IOUtils.toInputStream(this.editorContent))) {
+                contentToEdit = this.editorContent;
+                addError("Tidy seems to have a problem to make to content wellformed. Please fix it manually!");
+                return generateView(VIEW_FIX_WELLFORMNESS);
+            }
             execute();
             return generateView(VIEW_DONE);
-        } else if (getParameter(PARAM_SUBMIT_TIDY) != null) {
-            editorContent = tidy(editorContent);
-            contentToEdit = editorContent;
-            return generateView(DEFAULT_VIEW_ID);
-        } else if (!isWellformed(IOUtils.toInputStream(resourceContent))) {
-            contentToEdit = tidy(resourceContent);
-            return generateView(VIEW_FIX_WELLFORMNESS);
-        }else {
-            contentToEdit = resourceContent;
-            try {
-                if (isResToEditVersionableV2() && !isResToEditCheckedOut()) {
-                    VersionableV2 versionable = (VersionableV2) getResToEdit();
-                    if (!versionable.isCheckedOut()) {
-                        versionable.checkout(userID);
-                    }
-                }
-            } catch (Exception e) {
-                log.warn("Could not checkout resource: " + getResToEdit().getPath() + " " + e.getMessage());
-            }
-            return generateView(viewID); // this will show the default view if the param is not set
         }
+        if (editorContent != null && !isWellformed(IOUtils.toInputStream(editorContent))) {
+            contentToEdit = getEditorContent();
+            return generateView(VIEW_FIX_WELLFORMNESS);
+        } 
+        if (getParameter(PARAM_SUBMIT) != null) {
+            execute();
+            return generateView(VIEW_DONE);
+        }         
+        contentToEdit = resourceContent;
+        try {
+            if (isResToEditVersionableV2() && !isResToEditCheckedOut()) {
+                VersionableV2 versionable = (VersionableV2) getResToEdit();
+                if (!versionable.isCheckedOut()) {
+                    versionable.checkout(userID);
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Could not checkout resource: " + getResToEdit().getPath() + " " + e.getMessage());
+        }
+        return generateView(viewID); // this will show the default view if the param is not set
     }
     
     /* (non-Javadoc)
@@ -256,6 +261,8 @@ public class XinhaResource extends ExecutableUsecaseResource {
         String out = "";
         Tidy tidy = new Tidy();
         tidy.setXHTML(true);
+        tidy.setNumEntities(true);
+        tidy.setTidyMark(false);
         tidy.setInputEncoding("utf-8");
         tidy.setOutputEncoding("utf-8");
         tidy.parse(IOUtils.toInputStream(content), os);
