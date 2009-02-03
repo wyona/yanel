@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 
 <rc-map>
+  <matcher pattern="/es/**.html" rcpath="/spanish-yanel-rc.xml"/>
   <matcher pattern="/**.html" rcpath="/en/documentation/index.html.yanel-rc"/>
 </rc-map>
