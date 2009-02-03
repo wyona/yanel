@@ -2,5 +2,5 @@
 
 <rc-map>
   <matcher pattern="/es/**.html" rcpath="/spanish-yanel-rc.xml"/>
-  <matcher pattern="/**.html" rcpath="/en/documentation/index.html.yanel-rc"/>
+  <matcher pattern="/**.html" rcpath="/english-yanel-rc.xml"/>
 </rc-map>
