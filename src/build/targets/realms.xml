@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="realms" default="realms" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="realms" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
   
   <target name="deploy-libs-of-realms" description="Deploy libraries of realms" depends="generate-realms-build">
     <ant antfile="${yanel.source.home}/build/build-realms.xml" target="deploy-realms"/>
@@ -8,6 +8,11 @@
 
   <!-- Build Realms -->
   <target name="build-realms" description="Build realms" depends="generate-realms-build">
+    <condition property="local.realms.config.exists">
+      <available file="${yanel.source.home}/${local.config.dir}/local.realms.xml" type="file"/>
+    </condition>
+    <antcall target="check-config-version-realms-xml"/>
+
     <ant antfile="${yanel.source.home}/build/build-realms.xml" target="build-realms"/>
     <ant antfile="${yanel.source.home}/build/build-realms.xml" target="copy-dependencies"/>
   </target>
