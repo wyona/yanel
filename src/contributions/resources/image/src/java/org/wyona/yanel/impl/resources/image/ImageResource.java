@@ -59,6 +59,7 @@ public class ImageResource extends Resource implements ViewableV2  {
 
         double destRatio = (double) destWidth / (double) destHeight;
 
+        // TODO: If either destination width or destination height is not specified, then use sourceRatio in order to compute the correct width ot height which was not specified!
         if (sourceRatio !=  destRatio) log.error("Source (" + sourceRatio + ") and destination (" + destRatio + ") width/height ratio are NOT the same!");
 
         double scaleFactor = (double) destHeight / (double) sourceHeight;
