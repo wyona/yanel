@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="image" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="width" value="176"/>
+  <yanel:property name="height" value="144"/>
+  <yanel:property name="cache-root-path" value="/my-scaled-images"/>
+</yanel:resource-config>
