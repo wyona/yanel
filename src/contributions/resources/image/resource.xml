@@ -6,11 +6,11 @@
   class="org.wyona.yanel.impl.resources.image.ImageResource"
   >
 <description>
-Image resource which allows scaling of images
+Image resource which allows scaling of images (jpeg at least ...)
 </description>
 
 <rtd>
-  <property name="width"/>
+  <property name="width"/> <!-- width and height are required! (see TODO within java class ImageResource) -->
   <property name="height"/>
   <property name="cache-root-path" default-value="/cached-images"/>
 </rtd>
