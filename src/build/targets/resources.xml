@@ -3,7 +3,55 @@
 <project name="resources" default="deploy-resources" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
   <target name="generate-resources-build" description="Generate resources build" depends="init">
+<!--
+  <target name="generate-resources-build" description="Generate resources build" depends="init, set-classpath">
+-->
+<!-- The core needs to exist, because certain classes will be re-used within custom tasks
+  <target name="generate-resources-build" description="Generate resources build" depends="init, compile-core">
+-->
     <echo>INFO: Generate build file to build resources</echo>
+
+    <!-- Build custom ant tasks -->
+<!--
+    <javac srcdir="${yanel.source.home}/src/build/java"
+           destdir="${classes.dir}"
+    />
+-->
+
+<!--
+    <taskdef name="merge-resource-types-configs" classpath="${yanel.source.home}/build/classes" classname="org.wyona.yanel.ant.MergeResourceTypesConfigsTask"/>
+-->
+
+<!--
+    <path id="classpath.taskdef.merge-resource-types-configs">
+      <pathelement path="${yanel.source.home}/conf/"/>
+      <pathelement path="${yanel.source.home}/conf/local-foaf/"/>
+      <pathelement path="${yanel.source.home}/src/build/"/> <!++ Necessary to resolve log4j.properties ++>
+      <pathelement path="${classes.dir}"/>
+      <fileset dir="${yanel.source.home}/build/lib">
+        <include name="*.jar"/>
+      </fileset>
+      <pathelement path="${maven2.cp}"/>
+      <pathelement path="${maven2.compile.cp}"/>
+    </path>
+
+    <property name="property.classpath.taskdef.merge-resource-types-configs" refid="classpath.taskdef.merge-resource-types-configs"/>
+    <echo>CLASSPATH: ${property.classpath.taskdef.merge-resource-types-configs}</echo>
+-->
+
+<!--
+    <taskdef name="merge-resource-types-configs" classpathref="classpath.taskdef.merge-resource-types-configs" classname="org.wyona.yanel.ant.MergeResourceTypesConfigsTask"/>
+-->
+<!--
+    <taskdef name="merge-resource-types-configs" classname="org.wyona.yanel.ant.MergeResourceTypesConfigsTask">
+      <classpath refid="classpath.taskdef.merge-resource-types-configs"/>
+    </taskdef>
+-->
+<!--
+    <merge-resource-types-configs defaultrealmsconfigdir="${yanel.source.home}/conf/" localrealmsconfigdir="${yanel.source.home}/${local.config.dir}/"/>
+-->
+
+
     <condition property="local.resource-types.config.exists">
       <available file="${yanel.source.home}/${local.config.dir}/local.resource-types.xml" type="file"/>
     </condition>
@@ -32,6 +80,11 @@
   </target>
 
   <target name="build-resources" description="Build resources" depends="generate-resources-build">
+    <condition property="local.resource-types.config.exists">
+      <available file="${yanel.source.home}/${local.config.dir}/local.resource-types.xml" type="file"/>
+    </condition>
+    <antcall target="check-config-version-resource-types-xml"/>
+
     <ant antfile="${yanel.source.home}/build/build-resource-types.xml" target="build-resources"/>
   </target>
 
