@@ -67,7 +67,10 @@
     </condition>
     <antcall target="generate-resource-types-registry"/>
 
-    <antcall target="check-config-version"/>
+    <condition property="local.yanel.config.exists">
+      <available file="${yanel.source.home}/${local.config.dir}/local.yanel.xml" type="file"/>
+    </condition>
+    <antcall target="check-config-version-yanel-xml"/>
 
     <!-- Overwrite default by local properties -->
     <!-- TODO: Make the patching selectable within the build.properties of the build ... -->
