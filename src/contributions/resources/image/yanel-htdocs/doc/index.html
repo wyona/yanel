@@ -53,6 +53,16 @@ table th {
     <p>TODO</p>
 
     <h2>Examples</h2>
-    <p>TODO</p>
+    <p>Scale an image and cache the scaled image within a particular repository folder</p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0"&gt;
+      &lt;yanel:rti name="image" namespace="http://www.wyona.org/yanel/resource/1.0"/&gt;
+
+      &lt;yanel:property name="width" value="160"/&gt;
+      &lt;yanel:property name="height" value="90"/&gt;
+      &lt;yanel:property name="cache-root-path" value="/my-cached-scaled-images"/&gt;
+    &lt;/yanel:resource-config&gt;
+</pre>
   </body>
 </html>
