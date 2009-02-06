@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="yanel-main" default="deploy" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="yanel-main" default="deploy" xmlns:artifact="antlib:org.apache.maven.artifact.ant" xmlns:svnant="antlib:org.tigris.subversion.svnant">
 
   <description>Yanel Build</description>
 
@@ -15,6 +15,13 @@
    </not>
   </condition>
 -->
+
+  <!--
+   XXX: We cannot simply use the svnant namespace probably just because
+    the antlib definition XML file in the svnant 1.1.0-RC2 JAR is not named "antlib.xml":
+  -->
+  <!--FIXME: javahl does not seem to be found in CLASSPATH when using this (tested under Windows): -->
+  <typedef uri="antlib:org.tigris.subversion.svnant" resource="org/tigris/subversion/svnant/svnantlib.xml" classpath="C:\Documents and Settings\Guillaume\Bureau\yanel.VC\tools\apache-ant_extras\svnjavahl.jar"/><!-- classpathref="svnant.classpath"-->
     
   <property file="local.build.properties"/>
   <property file="build.properties"/>
@@ -165,12 +172,20 @@
 
 <!-- Start exporting from SVN -->
     <mkdir dir="${build.dir}/source-snapshots"/>
-    <exec executable="svn">
+    <!--exec executable="svn">
       <arg value="export"/>
       <arg value="-r${yanel.revision}"/>
       <arg value="https://svn.wyona.com/repos/public/yanel/trunk"/>
       <arg value="${snapshot.dir}"/>
-    </exec>
+    </exec-->
+    <svnant:svn username="anonymous" password="anonymous">
+      <export
+       revision="${yanel.revision}"
+       srcUrl="http://svn.wyona.com/repos/public/yanel/trunk"
+       destPath="${snapshot.dir}"
+      />
+    </svnant:svn>
+
 <!-- End exporting from SVN -->
 
 <!-- Start copying the local version -->
