@@ -143,7 +143,7 @@ public class XinhaResource extends ExecutableUsecaseResource {
     public boolean checkPreconditions() throws UsecaseException {
         Resource resToEdit = getResToEdit();
         if (!ResourceAttributeHelper.hasAttributeImplemented(resToEdit, "Modifiable", "2")) {
-            addError("The resource you wanted to edit does not ireturn mplement ModifiableV2 and is therefor not editable with this editor. ");
+            addError("The resource you wanted to edit does not implement ModifiableV2 and is therefor not editable with this editor. ");
             return false;
         }
         if (ResourceAttributeHelper.hasAttributeImplemented(resToEdit, "Viewable", "2")) {
