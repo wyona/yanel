@@ -1,0 +1,188 @@
+<html>
+  <head>
+    <style>
+h2 {
+  font-size: 130%;
+  color:     #ffffff;
+  background-color: #525D76;
+}
+pre {
+  background-color: efefef;
+}
+td {
+  background-color: eeeeee;
+  color:            000000;
+}
+
+/* first row */
+table tr:first-child td {
+  background-color: cccccc;
+  color:            000000;
+}
+
+/* or th as first row */
+table th {
+  background-color: cccccc;
+  color:            000000;
+}
+    </style>    
+    <title>TinyMCE Resource</title>
+  </head>
+  <body>
+    <h1>TinyMCE Resource</h1>
+    <dl>
+      <dt>Name:</dt>
+      <dd>tinymce</dd>
+      <dt>Namespace:</dt>
+      <dd>http://www.wyona.org/yanel/resource/1.0</dd>
+      <dt>UniversalName</dt>
+      <dd>http://www.wyona.org/yanel/resource/1.0::tinymce</dd>
+      <dt>Description:</dt>
+      <dd>tinyMCE to edit xhtml</dd>
+      <dt>Java Class:</dt>
+      <dd>org.wyona.yanel.impl.resources.TinyMCEResource</dd>
+    </dl>
+
+    <h2>Views</h2>
+    <table border="1">
+      <tr><th>View ID</th><th>Mime type</th><th>Type</th></tr>
+      <tr><td>DEFAULT</td><td>text/html</td><td>jelly</td></tr>
+      <tr><td>fix-wellformness</td><td>text/html</td><td>jelly</td></tr>
+      <tr><td>done</td><td>text/html</td><td>jelly</td></tr>
+      <tr><td>cancel</td><td>text/html</td><td>jelly</td></tr>
+      <tr><td>error</td><td>text/html</td><td>jelly</td></tr>
+    </table>
+    <h2>Request Parameter</h2>
+    <table border="1">
+      <tr><th>View ID</th><th>Name</th><th>Explanations</th></tr>
+      <tr><td>DEFAULT</td><td>edit-path</td><td>a data repository path. points to the document you want to edit</td></tr>
+    </table>
+        
+    <h2>Examples</h2>
+    <h3>.yanel-rc Example</h3>
+<pre>
+&lt;?xml version="1.0"?>
+&lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  &lt;yanel:rti name="tinymce" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+    &lt;yanel:custom-config>
+     &lt;views>
+      &lt;view id="default" type="jelly">
+        &lt;template>rthtdocs:/tinymce.jelly&lt;/template>
+        &lt;xslt>/xslt/global.xsl&lt;/xslt>
+        &lt;mime-type>text/html&lt;/mime-type>
+      &lt;/view>
+      &lt;view id="fix-wellformness" type="jelly">
+        &lt;template>rthtdocs:/tinymce-fix.jelly&lt;/template>
+        &lt;xslt>/xslt/global.xsl&lt;/xslt>
+        &lt;mime-type>text/html&lt;/mime-type>
+      &lt;/view>
+      &lt;view id="done" type="jelly">
+        &lt;template>rthtdocs:/tinymce-status.jelly&lt;/template>
+        &lt;xslt>/xslt/global.xsl&lt;/xslt>
+      &lt;/view>
+      &lt;view id="cancel" type="jelly">
+        &lt;template>rthtdocs:/tinymce-status.jelly&lt;/template>
+        &lt;xslt>/xslt/global.xsl&lt;/xslt>
+      &lt;/view>
+      &lt;view id="error" type="jelly">
+        &lt;template>rthtdocs:/tinymce-status.jelly&lt;/template>
+        &lt;xslt>/xslt/global.xsl&lt;/xslt>
+      &lt;/view>
+    &lt;/views>
+  &lt;/yanel:custom-config>
+&lt;/yanel:resource-config>
+</pre>
+
+<!--     <h3>tinymce.jelly Example</h3>
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?>
+&lt;j:jelly xmlns:j="jelly:core">
+  &lt;html xmlns="http://www.w3.org/1999/xhtml">
+    &lt;head>
+      &lt;title>tinyMCE&lt;/title>
+      &lt;link rel="stylesheet" type="text/css" href="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/css/tinymce-resource.css"/>
+      &lt;script language="javascript" type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/tinymce/jscripts/tiny_mce/tiny_mce.js">&lt;/script>
+      &lt;script language="javascript" type="text/javascript">
+        tinyMCE.init({
+            mode : "textareas",
+            theme : "advanced",
+            theme_advanced_layout_manager: "RowLayout",
+            theme_advanced_containers: "container1,mceEditor",
+            theme_advanced_container_container1: "bold,italic,underline,separator,bullist,separator,undo,redo,separator,link,unlink,separator,formatselect,image,code",
+            plugins : "fullpage",
+            entity_encoding : "raw"
+        });
+      &lt;/script>
+    &lt;/head>
+    &lt;body>
+      ${resource.getEditorForm()}
+    &lt;/body>
+  &lt;/html>
+&lt;/j:jelly>
+</pre>
+
+    <h3>tinymce-status.jelly Example</h3>
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?>
+&lt;j:jelly xmlns:j="jelly:core">
+  &lt;html xmlns="http://www.w3.org/1999/xhtml">
+    &lt;head>
+    &lt;title>tinyMCE&lt;/title>
+    &lt;/head>
+    &lt;body>
+      &lt;p class="yanel-usecase-error">${resource.getErrorMessages()}&lt;/p>
+      &lt;p>${resource.getInfoMessages()}&lt;/p>
+      &lt;form action="">
+        &lt;input type="button" name="finish" value="Finish" onclick="window.location.href='${resource.getParameterAsString('continue-path')}'"/>
+      &lt;/form>
+    &lt;/body>
+  &lt;/html>
+&lt;/j:jelly>
+</pre> -->
+
+<h2>Explanations</h2>
+
+<p>
+Once you registered the tinymce resource in yanel (add &lt;resource-type src="$TINYMCE_RESOURCE_HOME" compile="true"/> to yanels resource-types.xml) 
+<!-- <br/>and you added the above mentioned jelly files to your realms data repository (e.g. /tinymce.jelly, /tinymce.jelly)  --><br/>and added the above mentioned .yanel-rc to 
+your realms resource-config (e.g. /usecases/tinymce.yanel-rc) repository 
+<br/>you can access tinymce via browser e.g. https://localhost:8443/yanel/$YOUR_REALM/usecases/tinymce.html?edit-path=/de/ueber.html.
+</p>
+<p>you have to provide a request parameter "edith-path" in order to allow the tinymce resource to know which document to edit.</p>
+
+<!-- <p>you can configure the tinymce by editing the javascript tinyMCE.init in the tinymce.jelly. See: <a href="http://wiki.moxiecode.com/index.php/TinyMCE:Index">tinyMCE wiki</a></p> -->
+<h3>Menu Example</h3>
+<p>an example how to add this resource to the menu</p>
+<pre>
+Index: src/realms/yanel-website/src/java/org/wyona/yanel/servlet/menu/impl/YanelWebsiteMenu.java
+===================================================================
+--- src/realms/yanel-website/src/java/org/wyona/yanel/servlet/menu/impl/YanelWebsiteMenu.java	(revision 31673)
++++ src/realms/yanel-website/src/java/org/wyona/yanel/servlet/menu/impl/YanelWebsiteMenu.java	(working copy)
+@@ -61,7 +61,15 @@
+ 
+         sb.append("&lt;ul>&lt;li>");
+         sb.append("&lt;div id=\"yaneltoolbar_menutitle\">Edit&lt;/div>&lt;ul>");
+-        sb.append("&lt;li class=\"haschild\">Open with&amp;#160;&amp;#160;&amp;#160;&lt;ul>&lt;li>Source editor&lt;/li>&lt;li>WYSIWYG editor&lt;/li>&lt;/ul>&lt;/li>");
++        sb.append("&lt;li class=\"haschild\">Open with&amp;#160;&amp;#160;&amp;#160;");
++        sb.append("&lt;ul>&lt;li>Source editor&lt;/li>");
++        sb.append("&lt;li>WYSIWYG editor&lt;/li>");
++        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
++            sb.append("&lt;li>&lt;a href=\"" + backToRealm + "usecases/tinymce.html?edit-path=" + resource.getPath() + "\">Edit page with tinyMCE&amp;#160;&amp;#160;&amp;#160;&lt;/a>&lt;/li>");
++        } else {
++            sb.append("&lt;li>&lt;a>Edit page with tinyMCE&amp;#160;&amp;#160;&amp;#160;&lt;/a>&lt;/li>");
++        }
++        sb.append("&lt;/ul>&lt;/li>");
+ 
+         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
+             RevisionInformation[] revisions = ((VersionableV2) resource).getRevisions();
+
+</pre>
+<h2>Todo</h2>
+<ul>
+<li>don't open all ModifiableV2 it could be something which tinyMCE doesn't like e.g. no html</li>
+<li>maybe provide a file lookup when request parameter "edit-path" is not provided</li>
+<li>integrate a lookup for inserting images and links</li>
+<li>fix line breaks/formatting</li>
+</ul>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly xmlns:j="jelly:core">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    <title>YUI Rich Text Editor</title>
+    </head>
+    <body>
+      <p class="yanel-usecase-error">${resource.getErrorMessages()}</p>
+      <p>${resource.getInfoMessages()}</p>
+      <form action="">
+        <input type="button" name="finish" value="Finish" onclick="window.location.href='${resource.getParameterAsString('continue-path')}'"/>
+      </form>
+    </body>
+  </html>
+</j:jelly>
