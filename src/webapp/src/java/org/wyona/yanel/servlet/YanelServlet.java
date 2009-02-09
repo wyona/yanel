@@ -4,9 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Calendar;
@@ -85,10 +83,6 @@ public class YanelServlet extends HttpServlet {
 
     private static Category log = Category.getInstance(YanelServlet.class);
 
-    private ServletConfig config;
-
-    private ResourceTypeRegistry rtr;
-
     private Map map;
     private Yanel yanelInstance;
     private Sitetree sitetree;
@@ -97,8 +91,7 @@ public class YanelServlet extends HttpServlet {
     private String xsltLoginScreenDefault;
 
     public static final String IDENTITY_MAP_KEY = "identity-map";
-    private static final String TOOLBAR_KEY = "toolbar";
-    private static final String TOOLBAR_USECASE = "toolbar"; //TODO is this the same as TOOLBAR_KEY?
+    private static final String TOOLBAR_USECASE = "toolbar"; //TODO is this the same as YanelAuthoringUI.TOOLBAR_KEY?
     public static final String NAMESPACE = "http://www.wyona.org/yanel/1.0";
 
     private static final String METHOD_PROPFIND = "PROPFIND";
@@ -108,14 +101,14 @@ public class YanelServlet extends HttpServlet {
     private static final String METHOD_PUT = "PUT";
     private static final String METHOD_DELETE = "DELETE";
     private static final String HTTP_REFERRER = "Referer"; // ah, misspellings, how I hate thee (http://en.wikipedia.org/wiki/Referer)!
-    private static final int INSIDE_TAG = 0;
-    private static final int OUTSIDE_TAG = 1;
 
     private String sslPort = null;
     private String toolbarMasterSwitch = "off";
     private String reservedPrefix;
     private String servletContextRealPath;
     private int cacheExpires = 0;
+
+    private YanelHTMLUI yanelUI;
     
     public static final String DEFAULT_ENCODING = "UTF-8";
 
@@ -134,8 +127,6 @@ public class YanelServlet extends HttpServlet {
      *
      */
     public void init(ServletConfig config) throws ServletException {
-        this.config = config;
-
         servletContextRealPath = config.getServletContext().getRealPath("/");
 
         xsltInfoAndException = org.wyona.commons.io.FileUtil.file(servletContextRealPath, config.getInitParameter("exception-and-info-screen-xslt"));
@@ -144,8 +135,6 @@ public class YanelServlet extends HttpServlet {
             yanelInstance = Yanel.getInstance();
             yanelInstance.init();
             
-            rtr = yanelInstance.getResourceTypeRegistry();
-
             map = (Map) yanelInstance.getBeanFactory().getBean("map");
 
             sitetree = (Sitetree) yanelInstance.getBeanFactory().getBean("repo-navigation");
@@ -157,6 +146,8 @@ public class YanelServlet extends HttpServlet {
             if (expires != null) {
                 this.cacheExpires = Integer.parseInt(expires);
             }
+
+            yanelUI = new YanelHTMLUI(map, reservedPrefix);
         } catch (Exception e) {
             log.error(e);
             throw new ServletException(e.getMessage(), e);
@@ -237,7 +228,7 @@ public class YanelServlet extends HttpServlet {
         Resource resource = getResource(request, response);
         
         // Enable or disable toolbar
-        switchToolbar(request);
+        yanelUI.switchToolbar(request);
         
         String transition = request.getParameter(YANEL_RESOURCE_WORKFLOW_TRANSITION);
         if (transition != null) {
@@ -271,9 +262,9 @@ public class YanelServlet extends HttpServlet {
                     }
                 }
                 return;
-	    } else if (value != null && value.equals("roll-back")) {
+            } else if (value != null && value.equals("roll-back")) {
                 log.debug("Roll back ...");
-                org.wyona.yanel.core.util.VersioningUtil.rollBack(resource, request.getParameter(YANEL_RESOURCE_REVN), getIdentity(request).getUsername());
+                org.wyona.yanel.core.util.VersioningUtil.rollBack(resource, request.getParameter(YANEL_RESOURCE_REVN), getIdentity(request, map).getUsername());
                 // TODO: Send confirmation screen
                 getContent(request, response);
                 return;
@@ -284,28 +275,6 @@ public class YanelServlet extends HttpServlet {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);
-        }
-    }
-    
-    /**
-     * Checks if the yanel.toolbar request parameter is set and stores
-     * the value of the parameter in the session.
-     * @param request
-     */
-    private void switchToolbar(HttpServletRequest request) {
-        // Check for toolbar ...
-        String yanelToolbar = request.getParameter("yanel.toolbar");
-        if(yanelToolbar != null) {
-            HttpSession session = request.getSession(false);
-            if (yanelToolbar.equals("on")) {
-                log.info("Turn on toolbar!");
-                enableToolbar(request);
-            } else if (yanelToolbar.equals("off")) {
-                log.info("Turn off toolbar!");
-                disableToolbar(request);
-            } else {
-                log.warn("No such toolbar value: " + yanelToolbar);
-            }
         }
     }
     
@@ -356,7 +325,7 @@ public class YanelServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
         Element sessionElement = (Element) rootElement.appendChild(doc.createElement("session"));
         sessionElement.setAttribute("id", session.getId());
-        Enumeration attrNames = session.getAttributeNames();
+        Enumeration<?> attrNames = session.getAttributeNames();
         if (!attrNames.hasMoreElements()) {
             Element sessionNoAttributesElement = (Element) sessionElement.appendChild(doc.createElement("no-attributes"));
         }
@@ -720,7 +689,7 @@ public class YanelServlet extends HttpServlet {
             }
 
             // Enable or disable toolbar
-            switchToolbar(request);
+            yanelUI.switchToolbar(request);
             
             getContent(request, response);
         }
@@ -901,10 +870,10 @@ public class YanelServlet extends HttpServlet {
     private Environment getEnvironment(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         Identity identity;
         try {
-            identity = getIdentity(request);
+            identity = getIdentity(request, map);
             Realm realm = map.getRealm(request.getServletPath());
             String stateOfView = StateOfView.AUTHORING;
-            if (isToolbarEnabled(request)) {
+            if (yanelUI.isToolbarEnabled(request)) {
                 stateOfView = StateOfView.AUTHORING;
             } else {
                 stateOfView = StateOfView.LIVE;
@@ -1083,7 +1052,7 @@ public class YanelServlet extends HttpServlet {
         Realm realm;
         String path;
         try {
-            identity = getIdentity(request);
+            identity = getIdentity(request, map);
             realm = map.getRealm(request.getServletPath());
             path = map.getPath(realm, request.getServletPath());
         } catch (Exception e) {
@@ -1147,9 +1116,9 @@ public class YanelServlet extends HttpServlet {
                         - Or authentication was successful and web authenticator sends a redirect
                 */
                 return response;
-	    } else {
+            } else {
                 try {
-                    log.warn("Authentication was successful for user: " + getIdentity(request).getUsername());
+                    log.warn("Authentication was successful for user: " + getIdentity(request, map).getUsername());
                 } catch (Exception e) {
                     log.error(e, e);
                 }
@@ -1392,10 +1361,10 @@ public class YanelServlet extends HttpServlet {
      */
     public HttpServletResponse doLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            if (isToolbarEnabled(request)) {
+            if (yanelUI.isToolbarEnabled(request)) {
                 // TODO: Check if WORLD has access to the toolbar
                 //if (getRealm().getPolicyManager().authorize(path, new Identity(), new Usecase(TOOLBAR_USECASE))) {
-                    disableToolbar(request);
+                    yanelUI.disableToolbar(request);
                 //}
             }
 
@@ -1608,198 +1577,12 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Get toolbar menus
-     */
-    private  String getToolbarMenus(Resource resource, HttpServletRequest request) throws ServletException, IOException, Exception {
-        org.wyona.yanel.servlet.menu.Menu menu = null;
-        String menuRealmClass = resource.getRealm().getMenuClass();
-        if (menuRealmClass != null) {
-            menu = (org.wyona.yanel.servlet.menu.Menu) Class.forName(menuRealmClass).newInstance();
-        // TODO: Check resource configuration ...
-        //} else if (RESOURCE) {
-        } else {
-            menu = new org.wyona.yanel.servlet.menu.impl.DefaultMenu();
-        }
-        return menu.getAllMenus(resource, request, map, reservedPrefix);
-    }
-
-    /**
-     * Gets the part of the toolbar which has to be inserted into the html header.
-     * @param resource
-     * @param request
-     * @return
-     * @throws Exception
-     */
-    private String getToolbarHeader(Resource resource, HttpServletRequest request) throws Exception {
-        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        StringBuffer sb= new StringBuffer();
-        
-        sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbar.css\" rel=\"stylesheet\"/>");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("<style type=\"text/css\" media=\"screen\">");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("#yaneltoolbar_menu li li.haschild{ background: lightgrey url(" + backToRealm + reservedPrefix + "/yanel-img/submenu.gif) no-repeat 98% 50%;}");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("#yaneltoolbar_menu li li.haschild:hover{  background: lightsteelblue url(" + backToRealm + reservedPrefix + "/yanel-img/submenu.gif) no-repeat 98% 50%;}");
-        sb.append("</style>");
-        sb.append(System.getProperty("line.separator"));
-        
-        // If browser is Mozilla (gecko engine rv:1.7)
-        if (request.getHeader("User-Agent").indexOf("rv:1.7") >= 0) {
-            sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbarMozilla.css\" rel=\"stylesheet\"/>");
-            sb.append(System.getProperty("line.separator"));
-        }
-        // If browser is IE
-        if (request.getHeader("User-Agent").indexOf("compatible; MSIE") >= 0 && request.getHeader("User-Agent").indexOf("Windows") >= 0 ) {
-            sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbarIE.css\" rel=\"stylesheet\"/>");
-            sb.append(System.getProperty("line.separator"));
-            sb.append("<style type=\"text/css\" media=\"screen\">");
-            sb.append("  body{behavior:url(" + backToRealm + reservedPrefix + "/csshover.htc);font-size:100%;}");
-            sb.append("</style>");
-            
-        }
-        // If browser is IE6
-        if (request.getHeader("User-Agent").indexOf("compatible; MSIE 6") >= 0 && request.getHeader("User-Agent").indexOf("Windows") >= 0 ) {
-            sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbarIE6.css\" rel=\"stylesheet\"/>");
-            sb.append(System.getProperty("line.separator"));
-        }
-
-        return sb.toString();
-    }
-    
-    /**
-     * Gets the part of the toolbar which has to be inserted into the html body 
-     * right after the opening body tag.
-     * @param resource
-     * @param request
-     * @return
-     * @throws Exception
-     */
-    private String getToolbarBodyStart(Resource resource, HttpServletRequest request) throws Exception {
-        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        StringBuffer buf = new StringBuffer();
-        buf.append("<div id=\"yaneltoolbar_headerwrap\">");
-        buf.append("<div id=\"yaneltoolbar_menu\">");
-        buf.append(getToolbarMenus(resource, request));
-        buf.append("</div>");
-        
-        buf.append("<span id=\"yaneltoolbar_info\">");
-        //buf.append("Version: " + yanel.getVersion() + "-r" + yanel.getRevision() + "&#160;&#160;");
-        buf.append("Realm: <b>" + resource.getRealm().getName() + "</b>&#160;&#160;");
-        Identity identity = getIdentity(request);
-        if (identity != null && !identity.isWorld()) {
-            buf.append("User: <b>" + identity.getUsername() + "</b>");
-        } else {
-            buf.append("User: <b>Not signed in!</b>");
-        }
-        buf.append("</span>");
-        
-        buf.append("<span id=\"yaneltoolbar_logo\">");
-        buf.append("<img src=\"" + backToRealm + reservedPrefix + "/yanel_toolbar_logo.png\"/>");
-        buf.append("</span>");
-
-        buf.append("</div>");
-        buf.append("<div id=\"yaneltoolbar_middlewrap\">");
-        return buf.toString();
-    }
-    
-    /**
-     * Gets the part of the toolbar which has to be inserted into the html body
-     * right before the closing body tag.
-     * @param resource
-     * @param request
-     * @return
-     * @throws Exception
-     */
-    private String getToolbarBodyEnd(Resource resource, HttpServletRequest request) throws Exception {
-        return "</div>";
-    }
-    
-    /**
-     * Merges the toolbar and the page content. This will parse the html stream and add
-     * the toolbar.
-     * @param request
-     * @param response
-     * @param resource
-     * @param view
-     * @throws Exception
-     */
-    private void mergeToolbarWithContent(HttpServletRequest request, HttpServletResponse response, 
-            Resource resource, View view) throws Exception {
-        String encoding = view.getEncoding();
-        if (encoding == null) {
-            encoding = "UTF-8";
-        }
-        InputStreamReader reader = new InputStreamReader(view.getInputStream(), encoding);
-        OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream(), encoding);
-        int c;
-        int state = OUTSIDE_TAG;
-        StringBuffer tagBuf = null;
-        int headcount = 0;
-        int bodycount = 0;
-        while ((c = reader.read()) != -1) {
-            switch (state) {
-            case OUTSIDE_TAG:
-                if (c == '<') {
-                    tagBuf = new StringBuffer("<");
-                    state = INSIDE_TAG;
-                } else {
-                    writer.write(c);
-                }
-                break;
-            case INSIDE_TAG:
-                //writer.write(c);
-                if (c == '>') {
-                    state = OUTSIDE_TAG;
-                    tagBuf.append((char)c);
-                    String tag = tagBuf.toString();
-                    if (tag.startsWith("<head")) {
-                        if (headcount == 0) {
-                            writer.write(tag, 0, tag.length());
-                            String toolbarString = getToolbarHeader(resource, request);
-                            writer.write(toolbarString, 0, toolbarString.length());
-                        } else {
-                            writer.write(tag, 0, tag.length());
-                        }
-                        headcount++;
-                    } else if (tag.startsWith("<body")) {
-                        if (bodycount == 0) {
-                            writer.write(tag, 0, tag.length());
-                            String toolbarString = getToolbarBodyStart(resource, request);
-                            writer.write(toolbarString, 0, toolbarString.length());
-                        } else {
-                            writer.write(tag, 0, tag.length());
-                        }
-                        bodycount++;
-                    } else if (tag.equals("</body>")) {
-                        bodycount--;
-                        if (bodycount == 0) {
-                            String toolbarString = getToolbarBodyEnd(resource, request);
-                            writer.write(toolbarString, 0, toolbarString.length());
-                            writer.write(tag, 0, tag.length());
-                        } else {
-                            writer.write(tag, 0, tag.length());
-                        }
-                    } else {
-                        writer.write(tag, 0, tag.length());
-                    }
-                } else {
-                    tagBuf.append((char)c);
-                }
-                break;
-            }
-        }
-        writer.flush();
-        writer.close();
-        reader.close();
-    }
-    
-    /**
      * Gets the identity from the session associated with the given request.
      * @param request
+     * @param map
      * @return identity or null if there is no identity in the session for the current realm or if there is no session at all
      */
-    private Identity getIdentity(HttpServletRequest request) throws Exception {
+    static Identity getIdentity(HttpServletRequest request, Map map) throws Exception {
         Realm realm = map.getRealm(request.getServletPath());
         HttpSession session = request.getSession(false);
         if (session != null) {
@@ -2076,8 +1859,8 @@ public class YanelServlet extends HttpServlet {
             }
             
             // Set HTTP headers:
-            HashMap headers = view.getHttpHeaders();
-            Iterator iter = headers.keySet().iterator();
+            HashMap<?, ?> headers = view.getHttpHeaders();
+            Iterator<?> iter = headers.keySet().iterator();
             while (iter.hasNext()) {
                 String name = (String)iter.next();
                 String value = (String)headers.get(name);
@@ -2089,7 +1872,7 @@ public class YanelServlet extends HttpServlet {
             
             // Possibly embed toolbar:
             // TODO: Check if user is authorized to actually see toolbar (Current flaw: Enabled Toolbar, Login, Toolbar is enabled, Logout, Toolbar is still visible!)
-            if (isToolbarEnabled(request)) {
+            if (yanelUI.isToolbarEnabled(request)) {
                 String mimeType = view.getMimeType();
                 if (mimeType != null && mimeType.indexOf("html") > 0) {
                     // TODO: What about other query strings or frames or TinyMCE?
@@ -2097,7 +1880,7 @@ public class YanelServlet extends HttpServlet {
                         if (toolbarMasterSwitch.equals("on")) {
                             OutputStream os = response.getOutputStream();
                             try {
-                                mergeToolbarWithContent(request, response, res, view);
+                                yanelUI.mergeToolbarWithContent(request, response, res, view);
                             } catch (Exception e) {
                                 log.error(e, e);
                                 String message = "Error merging toolbar into content: " + e.toString();
@@ -2293,36 +2076,6 @@ public class YanelServlet extends HttpServlet {
             log.error(e, e);
             throw new ServletException(e.getMessage());
         }
-    }
-
-    /**
-     *
-     */
-    private void enableToolbar(HttpServletRequest request) {
-        request.getSession(true).setAttribute(TOOLBAR_KEY, "on");
-    }
-
-    /**
-     *
-     */
-    private void disableToolbar(HttpServletRequest request) {
-        request.getSession(true).setAttribute(TOOLBAR_KEY, "off");
-    }
-
-    /**
-     *
-     */
-    private static boolean isToolbarEnabled(HttpServletRequest request) {
-        String toolbarStatus = (String) request.getSession(true).getAttribute(TOOLBAR_KEY);
-        if (toolbarStatus != null && toolbarStatus.equals("on")) {
-            String yanelToolbar = request.getParameter("yanel.toolbar");
-            if(yanelToolbar != null && request.getParameter("yanel.toolbar").equals("suppress")) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
