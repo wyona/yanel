@@ -163,7 +163,7 @@
         <equals arg1="${yanel.revision}" arg2="REVISION"/>
       </condition>
     </fail>
-    <property name="snapshot.dir" value="${build.dir}/source-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src"/>
+    <property name="snapshot.dir" value="${build.dir}/source-snapshots/wyona-yanel-${yanel.version}-r${yanel.revision}-src"/>
     <fail message="Directory already exists: '${snapshot.dir}'. Either delete this directory or use a different version/revision!">
       <condition>
         <available file="${snapshot.dir}" type="dir"/>
@@ -219,7 +219,7 @@
     </replace>
 
     <zip destfile="${snapshot.dir}.zip">
-      <zipfileset dir="${snapshot.dir}" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-src" filemode="755"/>
+      <zipfileset dir="${snapshot.dir}" prefix="wyona-yanel-${yanel.version}-r${yanel.revision}-src" filemode="755"/>
     </zip>
   </target>
   

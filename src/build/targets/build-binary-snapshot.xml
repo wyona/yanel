@@ -12,7 +12,7 @@
       </condition>
     </fail>
 
-    <property name="snapshot.dir.unix" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin"/>
+    <property name="snapshot.dir.unix" value="${build.dir}/bin-snapshots/wyona-yanel-${yanel.version}-r${yanel.revision}-bin"/>
     <fail message="Directory already exists: '${snapshot.dir.unix}'. Either delete this directory or use a different version/revision!">
       <condition>
         <available file="${snapshot.dir.unix}" type="dir"/>
@@ -20,7 +20,7 @@
     </fail>
     <mkdir dir="${snapshot.dir.unix}"/>
 
-    <property name="snapshot.dir.win" value="${build.dir}/bin-snapshots/wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin-win"/>
+    <property name="snapshot.dir.win" value="${build.dir}/bin-snapshots/wyona-yanel-${yanel.version}-r${yanel.revision}-bin-win"/>
     <fail message="Directory already exists: '${snapshot.dir.win}'. Either delete this directory or use a different version/revision!">
       <condition>
         <available file="${snapshot.dir.win}" type="dir"/>
@@ -196,7 +196,7 @@
 
     <!-- Create ZIP file 
     <zip destfile="${snapshot.dir.unix}.zip">
-      <zipfileset dir="${snapshot.dir.unix}" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin" filemode="755"/>
+      <zipfileset dir="${snapshot.dir.unix}" prefix="wyona-yanel-${yanel.version}-r${yanel.revision}-bin" filemode="755"/>
     </zip>
     -->
   </target>
@@ -212,7 +212,7 @@
 
     <!-- Create TGZ file -->
     <tar destfile="${snapshot.dir.unix}.tar">
-      <tarfileset dir="${snapshot.dir.unix}" prefix="wyona-yanel-SNAPSHOT-${yanel.version}-r${yanel.revision}-bin" mode="775"/>
+      <tarfileset dir="${snapshot.dir.unix}" prefix="wyona-yanel-${yanel.version}-r${yanel.revision}-bin" mode="775"/>
     </tar>
     <gzip src="${snapshot.dir.unix}.tar" destfile="${snapshot.dir.unix}.tar.gz"/>
     <delete file="${snapshot.dir.unix}.tar"/>

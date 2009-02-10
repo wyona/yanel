@@ -16,13 +16,13 @@ set _YANEL_REVISION=
 set _YANEL_VERSION=
 echo INFO: Building Yanel %_YANEL_ID%...
 
-::TODO UNCOMMENTME really needed? call yanel build %_YANEL_LBP% clean-all
+call yanel build %_YANEL_LBP% clean-all
 
 
 ::::
 :: build source snapshots (including Windows installer):
 
-yanel build %_YANEL_LBP% source-snapshot
+call yanel build %_YANEL_LBP% source-snapshot
 
 
 :JRE_not_sufficient_JDK_needed
@@ -35,26 +35,32 @@ subst Y: .
 Y:
 cd \
 
-yanel build %_YANEL_LBP% bin-snapshot
+call yanel build %_YANEL_LBP% bin-snapshot
 
 :Windows_needed
 
-subst W: Y:\build\bin-snapshots\wyona-yanel-SNAPSHOT-%_YANEL_ID%-bin-win
+echo on
+subst W: Y:\build\bin-snapshots\wyona-yanel-%_YANEL_ID%-bin-win
 W:
 cd \
 echo INFO: Building Yanel Windows installer...
 C:\Programme\NSIS\makensis /Oinstall-yanel.log /V4 install-yanel.nsi
 Y:
 subst /D W:
+echo off
 
 C:
 subst /D Y:
 
 
+echo INFO: Yanel %_YANEL_ID% built successfully!
+
+
 ::::
 :: run the installer:
 
-build\bin-snapshots\wyona-yanel-SNAPSHOT-%_YANEL_ID%-bin-win\install-yanel-%_YANEL_ID%.exe
+echo INFO: Starting Yanel Windows installer (a new window will open)
+build\bin-snapshots\wyona-yanel-%_YANEL_ID%-bin-win\install-Wyona-Yanel-%_YANEL_ID%.exe
 goto end
 
 

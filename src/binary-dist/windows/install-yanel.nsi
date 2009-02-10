@@ -45,7 +45,7 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE "Japanese"
 
 # Installer attributes
-OutFile install-yanel-@YANEL_VERSION@.exe
+OutFile install-Wyona-Yanel-@YANEL_VERSION@.exe
 InstallDir $PROGRAMFILES\Yanel
 CRCCheck on
 XPStyle on
