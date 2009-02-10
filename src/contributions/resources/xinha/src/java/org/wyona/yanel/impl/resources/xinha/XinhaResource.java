@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2009 Wyona
  */
 
 package org.wyona.yanel.impl.resources.xinha;
@@ -68,6 +68,39 @@ public class XinhaResource extends ExecutableUsecaseResource {
     private Resource resToEdit;
 
     /* (non-Javadoc)
+     * @see org.wyona.yanel.impl.resources.usecase.UsecaseResource#init()
+     */
+    protected void init() throws UsecaseException {
+        editPath = getParameterAsString(PARAMETER_EDIT_PATH);
+        if (editPath == null || editPath.equals("")) {
+            addError("Could not get paramter edit-path. Don't know what to edit.");
+            return;
+        }
+        try {
+            resToEdit = getYanel().getResourceManager().getResource(getEnvironment(), getRealm(), editPath);
+        } catch (Exception e) {
+            log.error("Exception: " + e);
+        }
+        if (resToEdit == null) {
+            addError("Could not get Resource-Type to edit.");
+            return;
+        }
+        editorContent = getParameterAsString(editPath); 
+        if (ResourceAttributeHelper.hasAttributeImplemented(resToEdit, "Modifiable", "2")) {
+            try {
+                InputStream is = ((ModifiableV2) resToEdit).getInputStream();
+                resourceContent = IOUtils.toString(is);
+            } catch (Exception e) {
+                log.error("Exception: " + e);
+                addError("Could not get Resource-Type content.");
+            }
+        } else {
+            addError("This resource can not be edited. ");
+        }
+        
+    }
+    
+    /* (non-Javadoc)
      * @see org.wyona.yanel.impl.resources.usecase.ExecutableUsecaseResource#processUsecase(java.lang.String)
      */
     protected View processUsecase(String viewID) throws UsecaseException {
@@ -80,15 +113,25 @@ public class XinhaResource extends ExecutableUsecaseResource {
             cancel();
             return generateView(VIEW_CANCEL);
         } 
-        if (!checkPreconditions() || hasErrors()) {
-            setParameter(PARAMETER_CONTINUE_PATH, PathUtil.backToRealm(getPath()) + getEditPath().substring(1));
+        if (hasErrors() || !checkPreconditions()) {
+            String editPath =  getEditPath();
+            String continuePath;
+            String referer = getEnvironment().getRequest().getHeader("referer");
+            if (editPath != null && editPath.length() > 1) {
+                continuePath = PathUtil.backToRealm(getPath()) + editPath.substring(1);
+            } else if (referer != null)  {
+                continuePath = referer;
+            } else {
+                continuePath = PathUtil.backToRealm(getPath());
+            }
+            setParameter(PARAMETER_CONTINUE_PATH, continuePath);
             return generateView(VIEW_CANCEL);
         }
-        if (isResToEditCheckedOut()) {
-            addError("Resource is checked out. ");
+        if (isResToEditCheckedOut() && !(getParameter(PARAM_SUBMIT) != null || getParameter(PARAM_SUBMIT_TIDY_SAVE) != null)) {
+            addError("Resource is checked out ");
             if (checkoutUserID != null) {
                 if(checkoutUserID.equals(userID)) {
-                    addError("by YOU! ");
+                    addError("by you (User: " + userID + ")! ");
                 } else if (!checkoutUserID.equals("null")) {
                     addError("by user: " + checkoutUserID + " ");
                     return generateView(VIEW_CANCEL);
@@ -223,11 +266,6 @@ public class XinhaResource extends ExecutableUsecaseResource {
      * @return String
      */
     public String getEditPath() {
-        if (editPath == null) {
-            if(log.isDebugEnabled()) log.debug("editPath not set yet.");
-            editPath = getEnvironment().getRequest().getParameter(PARAMETER_EDIT_PATH);
-        }
-        if(log.isDebugEnabled()) log.debug("editPath set to: " + editPath);
         return editPath;
     }
 
@@ -309,22 +347,6 @@ public class XinhaResource extends ExecutableUsecaseResource {
      * @return String 
      */
     private String getResourceContent() throws UsecaseException {
-        if (resourceContent == null) {
-            if(log.isDebugEnabled()) log.debug("resourceContent not set yet. Path: " + getEditPath());
-            Resource resToEdit = getResToEdit();
-            if (ResourceAttributeHelper.hasAttributeImplemented(resToEdit, "Modifiable", "2")) {
-                try {
-                    InputStream is = ((ModifiableV2) resToEdit).getInputStream();
-                    resourceContent = IOUtils.toString(is);
-                } catch (Exception e) {
-                    log.error("Exception: " + e);
-                    throw new UsecaseException(e.getMessage(), e);
-                }
-            } else {
-                addError("This resource can not be edited. ");
-            }
-        }
-        if(log.isDebugEnabled()) log.debug("content set to: " + resourceContent);
         return resourceContent;
     }
     
@@ -333,11 +355,6 @@ public class XinhaResource extends ExecutableUsecaseResource {
      * @return String 
      */
     private String getEditorContent() {
-        if (editorContent == null) {
-            if(log.isDebugEnabled()) log.debug("content not set yet.");
-            editorContent = getParameterAsString(getEditPath()); 
-        }
-        if(log.isDebugEnabled()) log.debug("content set to: " + editorContent);
         return editorContent;
     }
     
@@ -346,16 +363,6 @@ public class XinhaResource extends ExecutableUsecaseResource {
      * @return Resource
      */
     private Resource getResToEdit() throws UsecaseException {
-        if (resToEdit == null) {
-            if(log.isDebugEnabled()) log.debug("resToEdit not set yet.");
-            try {
-                resToEdit = getYanel().getResourceManager().getResource(getEnvironment(), getRealm(), getEditPath());
-            } catch (Exception e) {
-                log.error("Exception: " + e);
-                throw new UsecaseException(e.getMessage(), e);
-            }
-        }
-        if(log.isDebugEnabled()) log.debug("resToEdit set to: " + resToEdit.getResourceTypeLocalName());
         return resToEdit;
     }
 
