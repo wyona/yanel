@@ -20,7 +20,7 @@
   <node uuid="" href="mailing-lists.html"><name>Mailing Lists</name></node>
   <node uuid="" href="roadmap.html"><name>Roadmap</name></node>
   <node uuid="" href="en/task-bug-tracker.html"><name>Task/Bug Tracker</name></node>
-  <node uuid="" href="testing.html"><name>Continuous Integration</name></node>
+  <!--node uuid="" href="testing.html"><name>Continuous Integration</name></node-->
   <node uuid="" href="en/governance.html"><name>Governance</name></node>
   <node uuid="" href="principles.html"><name>Principles</name></node>
   <node uuid="" href="en/development/processes/index.html"><name>Processes</name></node>
