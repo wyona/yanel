@@ -1,7 +1,10 @@
+yarep_revisionComment<string>:updated
 yarep_type<string>:resource
+yarep_revisionCreator<string>:lenya
 yarep_isCheckedOut<boolean>:false
 yarep_checkoutDate<date>:2009-02-11T13:29:34+0100
 yarep_size<long>:890
 yarep_checkoutUserID<string>:lenya
 yarep_lastModifed<long>:1234355441000
-yarep_checkinDate<date>:2009-02-11T13:30:41+0100
+yarep_checkinDate<date>:2007-10-03T11:18:39+0200
+yarep_revisionCreationDate<date>:2009-02-11T13:30:41+0100
