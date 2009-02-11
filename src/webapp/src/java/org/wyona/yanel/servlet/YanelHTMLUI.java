@@ -188,6 +188,7 @@ class YanelHTMLUI {
         int c;
         int state = OUTSIDE_TAG;
         StringBuffer tagBuf = null;
+        boolean headExists = false;
         int headcount = 0;
         int bodycount = 0;
         while ((c = reader.read()) != -1) {
@@ -207,6 +208,7 @@ class YanelHTMLUI {
                     tagBuf.append((char)c);
                     String tag = tagBuf.toString();
                     if (tag.startsWith("<head")) {
+                        headExists = true;
                         if (headcount == 0) {
                             writer.write(tag, 0, tag.length());
                             String toolbarString = getToolbarHeader(resource, request);
@@ -216,6 +218,16 @@ class YanelHTMLUI {
                         }
                         headcount++;
                     } else if (tag.startsWith("<body")) {
+                        if (!headExists) {
+                            log.warn("No <head> exists. Hence <head> will be added dynamically.");
+                            String headStartTag = "<head>";
+                            writer.write(headStartTag, 0, headStartTag.length());
+                            String toolbarString = getToolbarHeader(resource, request);
+                            writer.write(toolbarString, 0, toolbarString.length());
+                            String headEndTag = "</head>";
+                            writer.write(headEndTag, 0, headEndTag.length());
+                        }
+
                         if (bodycount == 0) {
                             writer.write(tag, 0, tag.length());
                             String toolbarString = getToolbarBodyStart(resource, request);
