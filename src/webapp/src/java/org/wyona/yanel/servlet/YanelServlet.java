@@ -1880,7 +1880,17 @@ public class YanelServlet extends HttpServlet {
                         if (toolbarMasterSwitch.equals("on")) {
                             OutputStream os = response.getOutputStream();
                             try {
-                                yanelUI.mergeToolbarWithContent(request, response, res, view);
+                                Usecase usecase = new Usecase(TOOLBAR_USECASE);
+                                Identity identity = getIdentity(request, map);
+                                Realm realm = map.getRealm(request.getServletPath());
+                                String path = map.getPath(realm, request.getServletPath());
+                                // NOTE: This extra authorization check is necessary within a multi-realm environment, because after activating the toolbar with a query string, the toolbar flag attached to the session will be ignored by doAccessControl(). One could possibly do this check within doAccessControl(), but could be a peformance issue! Or as an alternative one could refactor the code, such that the toolbar session flag is realm aware.
+                                if(realm.getPolicyManager().authorize(path, identity, usecase)) {
+                                    yanelUI.mergeToolbarWithContent(request, response, res, view);
+                                    return response;
+                                } else {
+                                    log.warn("Toolbar authorization denied (Realm: '" + realm.getName() + "', User: '" + identity.getUsername() + "', Path: '" + path + "')!");
+                                }
                             } catch (Exception e) {
                                 log.error(e, e);
                                 String message = "Error merging toolbar into content: " + e.toString();
@@ -1890,7 +1900,6 @@ public class YanelServlet extends HttpServlet {
                                 setYanelOutput(request, response, doc);
                                 return response;
                             }
-                            return response;
                         } else {
                             log.info("Toolbar has been disabled. Please check web.xml!");
                         }
