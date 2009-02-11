@@ -78,8 +78,10 @@ class YanelHTMLUI {
         final String reservedPrefix = this.reservedPrefix;
  
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        StringBuffer sb= new StringBuffer();
+        StringBuilder sb= new StringBuilder();
         
+        sb.append("<!-- START: Dynamically added code by " + this.getClass().getName() + " -->");
+        sb.append(System.getProperty("line.separator"));
         sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbar.css\" rel=\"stylesheet\"/>");
         sb.append(System.getProperty("line.separator"));
         sb.append("<style type=\"text/css\" media=\"screen\">");
@@ -109,6 +111,7 @@ class YanelHTMLUI {
             sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbarIE6.css\" rel=\"stylesheet\"/>");
             sb.append(System.getProperty("line.separator"));
         }
+        sb.append("<!-- END: Dynamically added code by " + this.getClass().getName() + " -->");
 
         return sb.toString();
     }
