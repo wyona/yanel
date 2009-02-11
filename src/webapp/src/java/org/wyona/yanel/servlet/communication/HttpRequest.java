@@ -60,7 +60,10 @@ public class HttpRequest extends HttpServletRequestWrapper {
                 DiskFileItemFactory factory = new DiskFileItemFactory();
 
                 // Set factory constraints
-                factory.setSizeThreshold(64000);
+                // TODO: Do not hardcode the maximum size
+                int maxSize = 64000;
+                log.warn("The max upload size is " + maxSize);
+                factory.setSizeThreshold(maxSize);
                 factory.setRepository(new File(System.getProperty("java.io.tmpdir")));
                 //Create a new file upload handler
                 ServletFileUpload upload = new ServletFileUpload(factory);
