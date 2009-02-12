@@ -28,10 +28,20 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
- * Based on DOM, whereas persistance is done through the src configuration, e.g.
+ * Based on DOM, whereas persistance is done through the src configuration, for example within realm.xml
  * <repo-navigation class="org.wyona.yanel.impl.navigation.SitetreeDOMImpl">
- *   <src>yanelrepo:/sitetree.xml</src>
+ *   <src>data-repo/data/sitetree.xml</src>
  * </repo-navigation>
+ *
+ * or .yanel-rc
+ *
+ * <yanel:custom-config>
+ *   <s:repo-navigation xmlns:s="http://www.wyona.org/yanel/sitetree-dom-impl/1.0" class="org.wyona.yanel.impl.navigation.SitetreeDOMImpl">
+ *     <s:src>yanelrepo:/sitetree.xml</s:src>
+ *   </s:repo-navigation>
+ * </yanel:custom-config>
+ *
+ * Please note that the class org.wyona.yanel.core.map.Realm is using the RealmConfigPathResolver whereas that a resource might use a different resolver implementation!
  */
 public class SitetreeDOMImpl implements Sitetree {
 
