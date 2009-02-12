@@ -38,6 +38,7 @@
   <xsl:template match="/">
     <html>
       <head>
+        <!-- TODO: the title should not be hard-coded, but rather some specific (e.g. the first !title) pattern of the content or the name of the URL of the page -->
         <title>A Wiki page</title>
           <link rel="neutron-introspection" href="introspection-{$yanel.path.name}.xml" type="application/neutron+xml"/>
 <!--
