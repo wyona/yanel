@@ -1476,6 +1476,7 @@ public class YanelServlet extends HttpServlet {
 
                 // create xslt transformer:
                 SAXTransformerFactory saxTransformerFactory = (SAXTransformerFactory)SAXTransformerFactory.newInstance();
+                // TODO: Make xslt configurable per realm (see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6985)
                 TransformerHandler xsltTransformer = saxTransformerFactory.newTransformerHandler(new StreamSource(xsltInfoAndException));
                 xsltTransformer.getTransformer().setParameter("yanel.back2realm", backToRealm);
                 xsltTransformer.getTransformer().setParameter("yanel.reservedPrefix", reservedPrefix);
