@@ -35,7 +35,7 @@ public class SitetreeResConfigAndDataRepoImpl implements Sitetree {
     /**
      *
      */
-    public void init(Document document, RealmConfigPathResolver resolver) {
+    public void init(Document document, javax.xml.transform.URIResolver resolver) {
         // Not needed yet.
     }
 

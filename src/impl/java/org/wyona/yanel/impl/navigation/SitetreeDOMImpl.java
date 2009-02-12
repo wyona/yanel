@@ -48,7 +48,7 @@ public class SitetreeDOMImpl implements Sitetree {
     /**
      * @see
      */
-    public void init(Document configDoc, RealmConfigPathResolver resolver) {
+    public void init(Document configDoc, javax.xml.transform.URIResolver resolver) {
         NodeList nl = configDoc.getDocumentElement().getElementsByTagName("src");
         if (nl.getLength() == 1) {
             src = nl.item(0).getFirstChild().getNodeValue();

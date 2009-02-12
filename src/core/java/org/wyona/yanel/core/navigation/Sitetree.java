@@ -16,20 +16,22 @@
 
 package org.wyona.yanel.core.navigation;
 
+import org.wyona.yanel.core.navigation.Node;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.map.RealmConfigPathResolver;
 
 import org.w3c.dom.Document;
 
 /**
- *
+ * Sitetree interface
  */
 public interface Sitetree {
 
     /**
-     *
+     * @param document Implementation specific configuration (for example snippet of realm.xml or .yanel-rc)
+     * @param resolver In case the configuration contains implementation specific paths (for example relative to realm.xml or .yanel-rc), then these paths can be resolved accordingly
      */
-    public void init(Document document, RealmConfigPathResolver resolver);
+    public void init(Document document, javax.xml.transform.URIResolver resolver);
 
     /**
      *
