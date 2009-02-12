@@ -5,6 +5,7 @@
   namespace="http://www.wyona.org/yanel/resource/1.0"
   class="org.wyona.yanel.impl.resources.WikiResource"
   >
+<!-- NOTE: The main idea of the wiki resource is to allow Yanel to read/write JSPWiki content without having to migrate the JSPWiki to Yanel. Also see https://svn.wyona.com/repos/public/yanel/trunk/src/realms/jsp-wiki -->
 <description>
 Wiki (tested with JSPWiki content)
 </description>
