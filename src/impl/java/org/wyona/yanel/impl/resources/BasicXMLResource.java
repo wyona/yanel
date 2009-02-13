@@ -405,7 +405,10 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         String backToRealm = PathUtil.backToRealm(getPath());
         transformer.setParameter("yanel.back2realm", backToRealm);
         transformer.setParameter("yarep.back2realm", backToRealm); // for backwards compatibility
-        String userAgent = getEnvironment().getRequest().getHeader("User-Agent");
+
+        // Set OS and client
+        javax.servlet.http.HttpServletRequest request = getEnvironment().getRequest();
+        String userAgent = request.getHeader("User-Agent");
         if (userAgent == null) {
              log.warn("Header contains no User-Agent!");
              userAgent = "null";
@@ -415,6 +418,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         if (os != null) transformer.setParameter("os", os);
         String client = getClient(userAgent);
         if (client != null) transformer.setParameter("client", client);
+
+        // Set query string
+        String queryString = request.getQueryString();
+        if (queryString != null) {
+            transformer.setParameter("yanel.request.query-string", queryString);
+        }
+
         // localization
         transformer.setParameter("language", getRequestedLanguage());
 
@@ -485,6 +495,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      */
     protected String getToolbarStatus() {
         // TODO: Use YanelServlet.TOOLBAR_KEY instead "toolbar"!
+        //javax.servlet.http.HttpSession session = getEnvironment().getRequest().getSession(true);
         javax.servlet.http.HttpSession session = getRequest().getSession(true);
         if (session != null) {
             return (String) session.getAttribute("toolbar");
