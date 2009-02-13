@@ -1,13 +1,11 @@
-<?xml version="1.0"?>
-
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"  
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
   xmlns:atom="http://www.w3.org/2005/Atom"
-  exclude-result-prefixes="atom"
+  exclude-result-prefixes="xhtml"
 >
 
-<xsl:output method="xml" encoding="UTF-8" indent="yes" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"/>
+<xsl:output method="xml" encoding="UTF-8"/><!-- indent="yes"-->
 
 <xsl:template match="/">
   <rss version="2.0">
@@ -16,7 +14,19 @@
       <description>
         <xsl:value-of select="/atom:feed/atom:subtitle"/>
       </description>
-      <link><xsl:value-of select="/atom:feed/atom:link/@href"/></link>     
+
+
+      <!--XXX: the URL query string manipulations that follow are a bit of HACK, but should be reasonably robust: -->
+
+      <xsl:variable name="ATOM-alternative-URL" select="/atom:feed/atom:link/@href"/>
+      <xsl:variable name="ATOM-view-parameter" select="'yanel.resource.viewid=atom'"/>
+      <xsl:variable name="HTML-alternative-URL" select="concat(substring-before($ATOM-alternative-URL, $ATOM-view-parameter), 'yanel.resource.viewid=default', substring-after($ATOM-alternative-URL, $ATOM-view-parameter))"/>
+      <link><xsl:value-of select="$HTML-alternative-URL"/></link><!-- e.g.: http://localhost:8080/yanel/yanel-website/news/news-atom-entries/?yanel.resource.viewid=default-->
+
+      <xsl:variable name="RSS2.0-view-parameter" select="'yanel.resource.viewid=rss2.0'"/>
+      <xsl:variable name="self-URL" select="concat(substring-before($ATOM-alternative-URL, $ATOM-view-parameter), $RSS2.0-view-parameter, substring-after($ATOM-alternative-URL, $ATOM-view-parameter))"/>
+      <atom:link href="{$self-URL}" rel="self" type="application/rss+xml" /><!-- e.g. (for testing with a local feedvalidator): http://localhost:8080/yanel/yanel-website/news/news-atom-entries/?yanel.resource.viewid=rss2.0-->
+
 
       <xsl:apply-templates select="/atom:feed/atom:entry"/>
     </channel>
@@ -39,7 +49,7 @@
   </item>
 </xsl:template>
 
-<xsl:template match="*[namespace-uri()='http://www.w3.org/1999/xhtml']">
+<xsl:template match="xhtml:*">
 &lt;<xsl:value-of select="local-name()"/>&gt;
 <xsl:apply-templates/>
 &lt;/<xsl:value-of select="local-name()"/>&gt;
