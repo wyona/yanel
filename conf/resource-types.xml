@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 
 <!-- NOTE: The "compile" attribute is true by default -->
+<!-- NOTE: The attribute "copy-dir-name" is optional and if set, then the resource will be copied into the webapp from where it will be referenced, which is useful in the case of binary releases -->
+<!-- NOTE: The attribute "package" is optional and if set, then all the relevant files (resource.xml, classes, etc.) are contained within a jar file, which will be copied to and loaded from WEB-INF/lib -->
 <!-- NOTE: Do not use relative paths to reference resource types, because the paths are not being resolved re the location of (local.)resource-types.xml -->
 
 <resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2009020900">
