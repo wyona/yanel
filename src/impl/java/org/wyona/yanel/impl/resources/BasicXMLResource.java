@@ -495,8 +495,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      */
     protected String getToolbarStatus() {
         // TODO: Use YanelServlet.TOOLBAR_KEY instead "toolbar"!
-        //javax.servlet.http.HttpSession session = getEnvironment().getRequest().getSession(true);
-        javax.servlet.http.HttpSession session = getRequest().getSession(true);
+        javax.servlet.http.HttpSession session = getEnvironment().getRequest().getSession(true);
         if (session != null) {
             return (String) session.getAttribute("toolbar");
         }
