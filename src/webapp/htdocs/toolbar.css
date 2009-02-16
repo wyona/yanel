@@ -36,12 +36,13 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
 }
 
 /* menu style starts here */
-#yaneltoolbar_menu{
+#yaneltoolbar_menu {
   width:100%;
   float:left;
   margin-top:0px;
   margin-left:6px;
   text-align:left;
+  font-size: 10px;
 }
 
 #yaneltoolbar_menu a, #yaneltoolbar_menu #yaneltoolbar_menutitle{
