@@ -1990,76 +1990,92 @@ public class YanelServlet extends HttpServlet {
      * Get usecase. Maps query strings, etc. to usecases, which then can be used for example within access control policies
      */
     private Usecase getUsecase(HttpServletRequest request) {
-        Usecase usecase = null;
-
         // TODO: Replace hardcoded roles by mapping between roles amd query strings ...
-        String value = request.getParameter(YANEL_RESOURCE_USECASE);
+        Usecase usecase = new Usecase("view");
+
+        String yanelResUsecaseValue = request.getParameter(YANEL_RESOURCE_USECASE);
+        if (yanelResUsecaseValue != null) {
+            if (yanelResUsecaseValue.equals("save")) {
+                log.debug("Save data ...");
+                usecase = new Usecase("write");
+            } else if (yanelResUsecaseValue.equals("checkin")) {
+                log.debug("Checkin data ...");
+                usecase = new Usecase("write");
+            } else if (yanelResUsecaseValue.equals("roll-back")) {
+                log.debug("Roll back to previous revision ...");
+                usecase = new Usecase("write");
+            } else if (yanelResUsecaseValue.equals("introspection")) {
+                if(log.isDebugEnabled()) log.debug("Dynamically generated introspection ...");
+                usecase = new Usecase("introspection");
+            } else if (yanelResUsecaseValue.equals("checkout")) {
+                log.debug("Checkout data ...");
+                usecase = new Usecase("open");
+            } else if (yanelResUsecaseValue.equals("delete")) {
+                log.info("Delete resource (yanel resource usecase delete)");
+                usecase = new Usecase("delete");
+            } else {
+                log.warn("No such resource usecase: " + yanelResUsecaseValue);
+            }
+        }
+
         String yanelUsecaseValue = request.getParameter(YANEL_USECASE);
-        String workflowTransitionValue = request.getParameter(YANEL_RESOURCE_WORKFLOW_TRANSITION);
+        if (yanelUsecaseValue != null) {
+            if (yanelUsecaseValue.equals("create")) {
+                log.debug("Create new resource ...");
+                usecase = new Usecase("resource.create");
+            } else {
+                log.warn("No such usecase: " + yanelUsecaseValue);
+            }
+        }
+
         String contentType = request.getContentType();
         String method = request.getMethod();
-        if (value != null && value.equals("save")) {
-            log.debug("Save data ...");
-            usecase = new Usecase("write");
-        } else if (value != null && value.equals("checkin")) {
-            log.debug("Checkin data ...");
-            usecase = new Usecase("write");
-        } else if (value != null && value.equals("roll-back")) {
-            log.debug("Roll back to previous revision ...");
-            usecase = new Usecase("write");
-        } else if (yanelUsecaseValue != null && yanelUsecaseValue.equals("create")) {
-            log.debug("Create new resource ...");
-            usecase = new Usecase("resource.create");
-        } else if (value != null && value.equals("introspection")) {
-            if(log.isDebugEnabled()) log.debug("Dynamically generated introspection ...");
-            usecase = new Usecase("introspection");
-        } else if (value != null && value.equals("checkout")) {
-            log.debug("Checkout data ...");
-            usecase = new Usecase("open");
-        } else if (contentType != null && contentType.indexOf("application/atom+xml") >= 0 && (method.equals(METHOD_PUT) || method.equals(METHOD_POST))) {
+        if (contentType != null && contentType.indexOf("application/atom+xml") >= 0 && (method.equals(METHOD_PUT) || method.equals(METHOD_POST))) {
             // TODO: Is posting atom entries different from a general post (see below)?!
-            log.error("DEBUG: Write/Checkin Atom entry ...");
+            log.warn("Write/Checkin Atom entry ...");
             usecase = new Usecase("write");
         // TODO: METHOD_POST is not generally protected, but save, checkin, application/atom+xml are being protected. See doPost(.... 
         } else if (method.equals(METHOD_PUT)) {
-            log.error("DEBUG: Upload data ...");
+            log.warn("Upload data ...");
             usecase = new Usecase("write");
         } else if (method.equals(METHOD_DELETE)) {
-            log.error("DEBUG: Delete resource (HTTP method delete)");
+            log.warn("Delete resource (HTTP method delete)");
             usecase = new Usecase("delete");
-        } else if (value != null && value.equals("delete")) {
-            log.info("Delete resource (yanel resource usecase delete)");
-            usecase = new Usecase("delete");
-        } else if (workflowTransitionValue != null) {
+        }
+
+        String workflowTransitionValue = request.getParameter(YANEL_RESOURCE_WORKFLOW_TRANSITION);
+        if (workflowTransitionValue != null) {
             // TODO: How shall we protect workflow transitions?!
-            log.error("DEBUG: Workflow transition ...");
-            usecase = new Usecase("view");
-        } else {
+            log.warn("Workflow transition is currently handled as view usecase: " + workflowTransitionValue);
             usecase = new Usecase("view");
         }
-        value = request.getParameter("yanel.toolbar");
-        if (value != null && value.equals("on")) {
+
+        String toolbarValue = request.getParameter("yanel.toolbar");
+        if (toolbarValue != null && toolbarValue.equals("on")) {
             log.debug("Turn on toolbar ...");
             usecase = new Usecase(TOOLBAR_USECASE);
         }
-        value = request.getParameter("yanel.policy");
-        if (value != null) {
-            if (value.equals("create")) {
+
+        String yanelPolicyValue = request.getParameter("yanel.policy");
+        if (yanelPolicyValue != null) {
+            if (yanelPolicyValue.equals("create")) {
                 usecase = new Usecase("policy.create");
-            } else if (value.equals("read")) {
+            } else if (yanelPolicyValue.equals("read")) {
                 usecase = new Usecase("policy.read");
-            } else if (value.equals("update")) {
+            } else if (yanelPolicyValue.equals("update")) {
                 usecase = new Usecase("policy.update");
-            } else if (value.equals("delete")) {
+            } else if (yanelPolicyValue.equals("delete")) {
                 usecase = new Usecase("policy.delete");
             } else {
-                log.warn("No such policy usecase: " + value);
+                log.warn("No such policy usecase: " + yanelPolicyValue);
             }
         }
+
         String showResourceMeta = request.getParameter(RESOURCE_META_ID_PARAM_NAME);
         if (showResourceMeta != null) {
             usecase = new Usecase(RESOURCE_META_ID_PARAM_NAME);
         }
+
         return usecase;
     }
 
