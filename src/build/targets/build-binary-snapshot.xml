@@ -83,12 +83,12 @@
     <delete dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/webdav"/>
     
     <!-- Add context file -->
-    <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}.xml"/>
-    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/wyona-yanel-webapp-v-${yanel.version}-r-${yanel.revision}.xml" value="yanel-webapp-v${yanel.version}-r${yanel.revision}">
+    <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/Wyona-Yanel-webapp-${yanel.version}-r${yanel.revision}.xml"/>
+    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/Wyona-Yanel-webapp-${yanel.version}-r${yanel.revision}.xml" value="yanel-webapp-${yanel.version}-r${yanel.revision}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace>
     <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml"/>
-    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml" value="yanel-webapp-v${yanel.version}-r${yanel.revision}">
+    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml" value="yanel-webapp-${yanel.version}-r${yanel.revision}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace>
   </target>
@@ -151,7 +151,7 @@
     </replace>
 
     <copy file="${yanel.source.home}/src/binary-dist/log4j.properties" todir="${tmp.dir}/WEB-INF/classes" overwrite="true"/>
-    <replace file="${tmp.dir}/WEB-INF/classes/log4j.properties" value="yanel-webapp-v${yanel.version}-r${yanel.revision}">
+    <replace file="${tmp.dir}/WEB-INF/classes/log4j.properties" value="yanel-webapp-${yanel.version}-r${yanel.revision}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace>
     <mkdir dir="${tmp.dir}/WEB-INF/logs"/>
@@ -174,12 +174,14 @@
     <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}">
       <fileset dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}" />
     </copy>
-    <copy todir="${snapshot.dir.win}/yanel-webapp-v${yanel.version}-r${yanel.revision}">
+    <copy todir="${snapshot.dir.win}/yanel-webapp-${yanel.version}-r${yanel.revision}">
       <fileset dir="${tmp.dir}"/>
     </copy>
     <!-- <move file="${snapshot.dir.unix}/${servlet.context.prefix}.war" todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps"/> -->
 
+    <!-- Copy licensing-related files -->
     <copy file="${yanel.source.home}/LICENSE.txt" todir="${snapshot.dir.win}"/>
+    <copy file="${yanel.source.home}/NOTICE.txt" todir="${snapshot.dir.win}"/>
 
     <!-- Copy Windows specific files -->
     <copy file="${yanel.source.home}/src/binary-dist/README-WINDOWS.txt" tofile="${snapshot.dir.win}/README.txt"/>
@@ -202,20 +204,25 @@
   </target>
   
   <target name="bin-snapshot-unix">
-    <copy todir="${snapshot.dir.unix}/yanel-webapp-v${yanel.version}-r${yanel.revision}">
+    <copy todir="${snapshot.dir.unix}/yanel-webapp-${yanel.version}-r${yanel.revision}">
       <fileset dir="${tmp.dir}"/>
     </copy>
-    <!-- Copy UNIX and Windows specific files -->
+
+    <!-- Copy licensing-related files -->
+    <copy file="${yanel.source.home}/LICENSE.txt" todir="${snapshot.dir.unix}"/>
+    <copy file="${yanel.source.home}/NOTICE.txt" todir="${snapshot.dir.unix}"/>
+
+    <!-- Copy UNIX specific files -->
     <copy file="${yanel.source.home}/src/binary-dist/README-UNIX.txt" tofile="${snapshot.dir.unix}/README.txt" overwrite="true"/>
     <copy file="${yanel.source.home}/src/binary-dist/start.sh" todir="${snapshot.dir.unix}"/>
     <copy file="${yanel.source.home}/src/binary-dist/stop.sh" todir="${snapshot.dir.unix}"/>
 
     <!-- Create TGZ file -->
-    <tar destfile="${snapshot.dir.unix}.tar">
+    <tar destfile="${snapshot.dir.unix}.tar.gz" compression="gzip" longfile="gnu"><!-- we need GNU tar, our filenames are too long and cannot reasonably be reduced to less than 100 characters -->
       <tarfileset dir="${snapshot.dir.unix}" prefix="wyona-yanel-${yanel.version}-r${yanel.revision}-bin" mode="775"/>
     </tar>
-    <gzip src="${snapshot.dir.unix}.tar" destfile="${snapshot.dir.unix}.tar.gz"/>
-    <delete file="${snapshot.dir.unix}.tar"/>
+    <!--gzip src="${snapshot.dir.unix}.tar" destfile="${snapshot.dir.unix}.tar.gz"/>
+    <delete file="${snapshot.dir.unix}.tar"/-->
   </target>
   
 </project>

@@ -76,10 +76,11 @@ Section -Main SEC0000
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\yanel stop.lnk" "$INSTDIR\stop.bat" "" "$INSTDIR\stop.ico" 
     SetOutPath $INSTDIR\apache-tomcat-5.5.20
     File /r apache-tomcat-5.5.20\*
-    SetOutPath $INSTDIR\yanel-webapp-v${VERSION}
-    File /r yanel-webapp-v${VERSION}\*
+    SetOutPath $INSTDIR\yanel-webapp-${VERSION}
+    File /r yanel-webapp-${VERSION}\*
     SetOutPath $INSTDIR
     File LICENSE.txt
+    File NOTICE.txt
     File README.txt
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
 SectionEnd
@@ -121,9 +122,10 @@ done${UNSECTION_ID}:
 # Uninstaller sections
 Section /o un.Main UNSEC0000
     Delete /REBOOTOK $INSTDIR\README.txt
+    Delete /REBOOTOK $INSTDIR\NOTICE.txt
     Delete /REBOOTOK $INSTDIR\LICENSE.txt
     RmDir /r /REBOOTOK $INSTDIR\apache-tomcat-5.5.20
-    RmDir /r /REBOOTOK $INSTDIR\yanel-webapp-v${VERSION}
+    RmDir /r /REBOOTOK $INSTDIR\yanel-webapp-${VERSION}
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\yanel stop.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\yanel start.lnk"
     Delete /REBOOTOK $INSTDIR\stop.bat
