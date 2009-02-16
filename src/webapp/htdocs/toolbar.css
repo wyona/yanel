@@ -11,7 +11,7 @@ html>body #yaneltoolbar_headerwrap {height:23px;} /* 100 % height */
 	background:lightgrey;
 	border-bottom:1px solid #888;
         font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
-        font-size: 13px;
+        font-size: 12px;
 }
 html>body #yaneltoolbar_headerwrap {
 	position:fixed;
@@ -42,7 +42,7 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
   margin-top:0px;
   margin-left:6px;
   text-align:left;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 #yaneltoolbar_menu a, #yaneltoolbar_menu #yaneltoolbar_menutitle{
@@ -53,22 +53,22 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
 }
 
 #yaneltoolbar_menutitle {
-  padding-right:70px;
+  padding-right:30px;
 }
 
-#yaneltoolbar_menu a{
+#yaneltoolbar_menu a {
   text-decoration:none;
 }
 
-#yaneltoolbar_menu a, #yaneltoolbar_menu a:visited{
+#yaneltoolbar_menu a, #yaneltoolbar_menu a:visited {
   color:#000;
 }
 
-#yaneltoolbar_menu a:hover{
+#yaneltoolbar_menu a:hover {
   color:#000;
 }
 
-#yaneltoolbar_menu a:active{
+#yaneltoolbar_menu a:active {
   color:#060;
   background:#ccc;
 }
