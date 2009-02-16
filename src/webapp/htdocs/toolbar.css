@@ -110,7 +110,7 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
   font-weight: normal;
   font-style: normal;
   font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
-  color: grey;
+  color: #777777;
 }
 
 #yaneltoolbar_menu li .haschild {
