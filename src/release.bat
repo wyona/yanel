@@ -45,6 +45,8 @@ W:
 cd \
 echo INFO: Building Yanel Windows installer...
 C:\Programme\NSIS\makensis /Oinstall-yanel.log /V4 install-yanel.nsi
+::TODO: check %ERRORLEVEL% to assert that the installer was successfully built!
+echo WARNING: please check install-yanel.log to verify that the installer was successfully built!
 Y:
 subst /D W:
 echo off
