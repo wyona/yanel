@@ -68,11 +68,11 @@
     <copy file="${yanel.source.home}/tools/apache-tomcat/java-1.4/apache-tomcat-5.5.20/bin/jmx.jar" todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/bin"/>
 -->
 
-    <!-- Endorsed libs -->
-<!--
-    <copy file="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xerces.impl.artifactId}-${xerces.impl.version}.jar" todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/common/endorsed"/>
-    <copy file="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib/${xml.apis.artifactId}-${xml.apis.version}.jar" todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/common/endorsed"/>
--->
+    <!-- Endorsed JARs -->
+    <copy todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/common/endorsed">
+      <fileset dir="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib"
+       includes="${stax-api.artifactId}-${stax-api.version}.jar, ${stax-impl.artifactId}-${stax-impl.version}.jar"/>
+    </copy>
 
     <!-- delete unused tomcat files -->
     <delete dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/ROOT"/>
