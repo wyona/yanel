@@ -214,15 +214,13 @@
     </xslt>
   </target>
 
-  <target name="remove-ambiguous-libs">
-    <echo>INFO: Remove ambiguous libs</echo>
+  <target name="remove-ambiguous-libs" depends="init">
+    <echo>INFO: Remove ambiguous libs (${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/): ${duplicated.libs}</echo>
 
     <!-- TODO: The dependency manager should resolve these ambiguities! -->
-    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/commons-lang-2.1.jar"/>
-    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/xalan-2.6.0.jar"/>
-    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/xercesImpl-2.8.1.jar"/>
-    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/icu4j-2.6.1.jar"/>
-    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/jaxen-1.1-beta-10.jar"/>
+    <delete>
+      <fileset dir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/" includes="${duplicated.libs}"/>
+    </delete>
 
     <!-- TODO: The following should not be copied in the first place -->
     <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/pom-cmdl.xml"/>
