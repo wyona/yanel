@@ -2,6 +2,15 @@
 
 <project name="yanel-resource" default="compile">
 
+  <!-- For example set within build.sh ... -->
+  <property name="yanel.home" value="${yanel.source.home}"/>
+  <!-- See yanel.home ... -->
+  <property file="${user.home}/.ant-global.properties"/>
+  <echo>YANEL_HOME is set to: ${yanel.home}</echo>
+
+  <property file="${yanel.home}/src/build/local.build.properties"/>
+  <property file="${yanel.home}/src/build/build.properties"/>
+
   <import file="src/build/dependencies.xml"/>
 
   <target name="init" description="Initialize build" depends="dependencies">
@@ -33,6 +42,7 @@
     <jar destfile="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}.jar"
       basedir="${resource.classes.dir}"
     />
+    <antcall target="install-jar"/>
   </target>
 
   <target name="clean" depends="init">
@@ -44,5 +54,21 @@
       <fileset refid="maven2.resource.fileset"/>
       <mapper type="flatten"/>
     </copy>
+  </target>
+
+  <target name="install-jar" description="Place jar file for this resource into local maven repository" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+    <copy file="src/build/pom.xml" tofile="build/lib/pom.xml"/>
+
+    <replace file="build/lib/pom.xml" value="${resource.version}">
+      <replacetoken>@VERSION@</replacetoken>
+    </replace>
+    <replace file="build/lib/pom.xml" value="${resource.name}">
+      <replacetoken>@NAME@</replacetoken>
+    </replace>
+
+    <artifact:pom id="maven.project.core" file="build/lib/pom.xml"/>
+    <artifact:install file="build/lib/yanel-resource-${resource.name}-${resource.version}.jar">
+      <pom refid="maven.project.core"/>
+    </artifact:install>
   </target>
 </project>
