@@ -176,9 +176,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     }
 
     /**
-     * Flow
+     * Generate XHTML screen
      */
-    private String getScreen() {
+    protected String getScreen() {
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
         sb.append("<head><title>create resource</title>");
@@ -191,7 +191,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         sb.append("</head>");
         sb.append("<body>");
 
-        HttpServletRequest request = getRequest();
+        HttpServletRequest request = getEnvironment().getRequest();
         Enumeration parameters = request.getParameterNames();
         if (!parameters.hasMoreElements()) {
             getSelectResourceTypeScreen(sb);
@@ -675,7 +675,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
             node = sitetree.getNode(getRealm(), "/");
         }
 
-        String rtps = getRequest().getParameter("resource-type");
+        String rtps = getEnvironment().getRequest().getParameter("resource-type");
         String resNamespace = rtps.substring(0, rtps.indexOf("::"));
         String resName = rtps.substring(rtps.indexOf("::") + 2);
 
