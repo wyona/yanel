@@ -29,12 +29,12 @@ import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfiguration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 import org.apache.log4j.Logger;
-import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.wyona.commons.xml.XMLHelper;
 import org.wyona.yanel.core.util.ConfigurationUtil;
 import org.wyona.yarep.core.Node;
 
@@ -63,8 +63,8 @@ public class ResourceConfiguration {
     }
     
     /**
-     * Creates a resource configuration from an inpustream.
-     * @deprecated use ResourceConfiguration(Node node) instead. if a rc is created using this constructor, saving won't work.
+     * Creates a resource configuration from an InputStream.
+     * NOTE: If you want to be able to save the resource, use ResourceConfiguration(Node node) instead. If a rc is created using this constructor, saving won't work.
      */
     public ResourceConfiguration(InputStream in) throws Exception {
         load(in);
@@ -72,7 +72,7 @@ public class ResourceConfiguration {
     
     /**
      * Create a resource configuration from a property map.
-     * NOTE: if a rc is created using this constructor, saving won't work.
+     * NOTE: If you want to be able to save the resource, use ResourceConfiguration(Node node) instead. If a rc is created using this constructor, saving won't work.
      * @param name Resource Type Name
      * @param namespace Resource Type Namespace
      */
@@ -334,9 +334,7 @@ public class ResourceConfiguration {
             rootElement.appendChild(customElement);
         }
         
-        XMLSerializer serializer = new XMLSerializer();
-        serializer.setOutputByteStream(this.node.getOutputStream());
-        serializer.serialize(document);        
+        XMLHelper.writeDocument(document, this.node.getOutputStream());
     }
 
 }
