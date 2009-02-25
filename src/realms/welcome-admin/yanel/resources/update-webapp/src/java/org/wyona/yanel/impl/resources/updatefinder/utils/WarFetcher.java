@@ -1,23 +1,38 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2007-2009 Wyona
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.wyona.org/licenses/APACHE-LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package org.wyona.yanel.impl.resources.updatefinder.utils;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.Enumeration;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.jar.JarFile;
 
 public class WarFetcher implements Runnable {
     
-    private static Category log = Category.getInstance(WarFetcher.class);
+    private static Logger log = Logger.getLogger(WarFetcher.class);
     //private String contextDirectoryPath;
     private String DestinationDirectoryPath;
     private String updateLink;
@@ -63,10 +78,10 @@ public class WarFetcher implements Runnable {
         session.setAttribute(SESSION_ATTR_ITEMS_TO_BE_DONE, ""+targetContentLength);
 
         UpdateInfo updateInfo = new UpdateInfo(installInfo.getUpdateURL(), installInfo);
-        HashMap versionDetails = updateInfo.getUpdateVersionDetail("updateLink", updateLink);
-        String version = (String) versionDetails.get("version");
-        String revision = (String) versionDetails.get("revision");
-        String id = (String) versionDetails.get("id");
+        Map<String, String> versionDetails = updateInfo.getUpdateVersionDetail("updateLink", updateLink);
+        String version = versionDetails.get("version");
+        String revision = versionDetails.get("revision");
+        String id = versionDetails.get("id");
 
         OutputStream out = new FileOutputStream(DestinationDirectoryPath + File.separator + id + "-v-" + version + "-r-" + revision + ".war");
     
@@ -100,7 +115,7 @@ public class WarFetcher implements Runnable {
         session.setAttribute(SESSION_ATTR_ITEMS_TO_BE_DONE, ""+targetContentLength);
         
         new File(destDir).mkdir();
-        java.util.Enumeration entries = jar.entries();
+        Enumeration<?> entries = jar.entries();
         while (entries.hasMoreElements()) {
             currentContentLength++;
             currentPercentage = currentContentLength / (targetContentLength / 100);

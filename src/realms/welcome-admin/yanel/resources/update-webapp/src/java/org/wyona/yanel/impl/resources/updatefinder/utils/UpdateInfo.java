@@ -1,15 +1,29 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2007-2009 Wyona
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.wyona.org/licenses/APACHE-LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package org.wyona.yanel.impl.resources.updatefinder.utils;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.rdf.model.impl.PropertyImpl;
@@ -20,8 +34,8 @@ import java.util.HashMap;
  */
 public class UpdateInfo {
     
-    private static Category log = Category.getInstance(UpdateInfo.class);
-    private ArrayList updateVersions = new ArrayList();
+    private static Logger log = Logger.getLogger(UpdateInfo.class);
+    private List<Map<String, String>> updateVersions = new ArrayList<Map<String, String>>();
     private Model updateRdfModel;
 //    private InstallInfo installInfo;
     
@@ -88,7 +102,7 @@ public class UpdateInfo {
         while (iter2.hasNext()) {
             Resource versionResource = ((Resource) iter2.next());
             
-            HashMap updateVersionDetail = new HashMap();
+            Map<String, String> updateVersionDetail = new HashMap<String, String>();
             updateVersionDetail.put("type", typeResource.getProperty(typeProperty).getString());
             updateVersionDetail.put("title", versionResource.getProperty(titleProperty).getString());
             updateVersionDetail.put("id", versionResource.getProperty(idProperty).getString());
@@ -107,19 +121,19 @@ public class UpdateInfo {
     /**
      * @return ArrayList with all update version
      */
-    public ArrayList getUpdateVersions() {
+    public List<Map<String, String>> getUpdateVersions() {
         
         return updateVersions;
     }
     
     /**
-     * @return HashMap with version details which are matching the value of the key
+     * @return map with version details which are matching the value of the key
      * @param String key
      * @param String value 
      */    
-    public HashMap getUpdateVersionDetail(String key, String value) {
+    public Map<String, String> getUpdateVersionDetail(String key, String value) {
         for (int i = 0; i < updateVersions.size(); i++) {
-            HashMap versionDetail = (HashMap) updateVersions.get(i);
+            Map<String, String> versionDetail = updateVersions.get(i);
             if (versionDetail.get(key).equals(value)) {
                 return versionDetail;
             }
@@ -133,12 +147,12 @@ public class UpdateInfo {
      * @param String key
      * @param String value 
      */
-    public ArrayList getUpdateVersionsOf(String key, String value) {
-        ArrayList allUpdateVersions = getUpdateVersions();
-        ArrayList selectedUpdateVersions = new ArrayList();
+    public List<Map<String, String>> getUpdateVersionsOf(String key, String value) {
+        List<Map<String, String>> allUpdateVersions = getUpdateVersions();
+        List<Map<String, String>> selectedUpdateVersions = new ArrayList<Map<String, String>>();
         if (allUpdateVersions == null) return null;
         for (int i = 0; i < allUpdateVersions.size(); i++) {
-            HashMap versionDetail = (HashMap) allUpdateVersions.get(i);
+            Map<String, String> versionDetail = allUpdateVersions.get(i);
             if (versionDetail.get(key).equals(value)) {
                 selectedUpdateVersions.add(allUpdateVersions.get(i));
             }
@@ -154,16 +168,16 @@ public class UpdateInfo {
      * @param String value 
      * @param String installInfoRevision 
      */
-    public ArrayList getUpdateVersionsOf(String key, String value, String InstallInfoRevision) {
-        ArrayList selectedUpdateVersions = getUpdateVersionsOf(key, value);
+    public List<Map<String, String>> getUpdateVersionsOf(String key, String value, String InstallInfoRevision) {
+        List<Map<String, String>> selectedUpdateVersions = getUpdateVersionsOf(key, value);
         if (selectedUpdateVersions == null) return null;
         VersionComparator versionComparator = new VersionComparator();  
         for (int i = 0; i < selectedUpdateVersions.size(); i++) {
-            HashMap versionDetail = (HashMap) selectedUpdateVersions.get(i);
-            if (versionComparator.compare((String) versionDetail.get(TARGET_APPLICATION_MIN_REVISION), InstallInfoRevision) > 0 ) {
+            Map<String, String> versionDetail = selectedUpdateVersions.get(i);
+            if (versionComparator.compare(versionDetail.get(TARGET_APPLICATION_MIN_REVISION), InstallInfoRevision) > 0 ) {
                 selectedUpdateVersions.remove(i);
             }
-            if (versionComparator.compare((String) versionDetail.get(TARGET_APPLICATION_MAX_REVISION), InstallInfoRevision) < 0 ) {
+            if (versionComparator.compare(versionDetail.get(TARGET_APPLICATION_MAX_REVISION), InstallInfoRevision) < 0 ) {
                 selectedUpdateVersions.remove(i);
             }
         }
@@ -196,18 +210,18 @@ public class UpdateInfo {
      * @return ArrayList with all updaters which are installable within the given YanelRevision. return null if non.
      * @param String YanelRevision
      */
-    public ArrayList getUpdatersForYanelRevision(String yanelRevision) {
+    public List<Map<String, String>> getUpdatersForYanelRevision(String yanelRevision) {
         VersionComparator versionComparator = new VersionComparator();
-        ArrayList bestUpdater = getUpdateVersionsOf("type", "updater");
+        List<Map<String, String>> bestUpdater = getUpdateVersionsOf("type", "updater");
         if (bestUpdater == null) return null;
         for (int i = 0; i < bestUpdater.size(); i++) {
-            HashMap versionDetail = (HashMap) bestUpdater.get(i);
-            log.error("DEBUG: Updater MinRevision: " + (String) versionDetail.get(TARGET_APPLICATION_MIN_REVISION));
-            log.error("DEBUG: Updater MaxRevision: " + (String) versionDetail.get(TARGET_APPLICATION_MAX_REVISION));
-            if (versionComparator.compare((String) versionDetail.get(TARGET_APPLICATION_MIN_REVISION), yanelRevision) > 0 ) {
+            Map<String, String> versionDetail = bestUpdater.get(i);
+            log.error("DEBUG: Updater MinRevision: " + versionDetail.get(TARGET_APPLICATION_MIN_REVISION));
+            log.error("DEBUG: Updater MaxRevision: " +versionDetail.get(TARGET_APPLICATION_MAX_REVISION));
+            if (versionComparator.compare( versionDetail.get(TARGET_APPLICATION_MIN_REVISION), yanelRevision) > 0 ) {
                 bestUpdater.remove(i);
             }
-            if (versionComparator.compare((String) versionDetail.get(TARGET_APPLICATION_MAX_REVISION), yanelRevision) < 0 ) {
+            if (versionComparator.compare(versionDetail.get(TARGET_APPLICATION_MAX_REVISION), yanelRevision) < 0 ) {
                 bestUpdater.remove(i);
             }
         }
@@ -220,30 +234,30 @@ public class UpdateInfo {
      * @return ArrayList with all yanelUpdates which are installable within the given YanelRevision. return null if non.
      * @param String YanelRevision
      */
-    public ArrayList getYanelUpdatesForYanelRevision(String yanelRevision) {
+    public List<Map<String, String>> getYanelUpdatesForYanelRevision(String yanelRevision) {
         // Get all updaters which work for a  specific yanel revision
-        ArrayList updaters = getUpdatersForYanelRevision(yanelRevision);
+        List<Map<String, String>> updaters = getUpdatersForYanelRevision(yanelRevision);
         if (updaters == null) return null;
 
         // Get all updates
-        ArrayList allUpdates = getUpdateVersionsOf("type", "updates");
+        List<Map<String, String>> allUpdates = getUpdateVersionsOf("type", "updates");
         if (allUpdates == null) return null;
 
         // Match updates with updaters
         VersionComparator versionComparator = new VersionComparator();
         for (int i = 0; i < allUpdates.size(); i++) {
-            HashMap updatesVersionDetail = (HashMap) allUpdates.get(i);
-            String revision = (String) updatesVersionDetail.get("revision");
+            Map<String, String> updatesVersionDetail = allUpdates.get(i);
+            String revision = updatesVersionDetail.get("revision");
             log.error("DEBUG: Update revision: " + revision);
             
             
             for (int j = 0; j < updaters.size(); j++) {
-                HashMap updatersVersionDetail = (HashMap) updaters.get(j);
-                log.error("DEBUG: Updater revision: " + (String) updatersVersionDetail.get("revision"));
-                if (versionComparator.compare((String) updatersVersionDetail.get(TARGET_APPLICATION_MIN_REVISION), revision) > 0 ) {
+                Map<String, String> updatersVersionDetail = updaters.get(j);
+                log.error("DEBUG: Updater revision: " + updatersVersionDetail.get("revision"));
+                if (versionComparator.compare(updatersVersionDetail.get(TARGET_APPLICATION_MIN_REVISION), revision) > 0 ) {
                     allUpdates.remove(i);
                 }
-                if (versionComparator.compare((String) updatersVersionDetail.get(TARGET_APPLICATION_MAX_REVISION), revision) < 0 ) {
+                if (versionComparator.compare(updatersVersionDetail.get(TARGET_APPLICATION_MAX_REVISION), revision) < 0 ) {
                     allUpdates.remove(i);
                 }
             }

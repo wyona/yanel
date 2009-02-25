@@ -1,10 +1,22 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2007-2009 Wyona
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.wyona.org/licenses/APACHE-LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package org.wyona.yanel.impl.resources.updatefinder.utils;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
@@ -16,6 +28,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -24,7 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 
 
 public class TomcatContextHandler {
-    private static Category log = Category.getInstance(TomcatContextHandler.class);
+    private static Logger log = Logger.getLogger(TomcatContextHandler.class);
     private String webappsDirectoryPath;
     private File webappsDirectory;
     private String contextConfPath;
@@ -63,8 +76,8 @@ public class TomcatContextHandler {
         return contexts;
     }
     
-    public Map getContextAndWebapp() throws Exception {
-        Map contextAndWebapps = new HashMap();
+    public Map<String, String> getContextAndWebapp() throws Exception {
+        Map<String, String> contextAndWebapps = new HashMap<String, String>();
         for (int i = 0; i < this.contextConfDirectory.listFiles().length; i++) {
             String context = this.contextConfDirectory.listFiles()[i].getName().replaceAll(".xml", "");;
             String webapp = getWebappOfContext(context);
@@ -116,8 +129,8 @@ public class TomcatContextHandler {
     * @param ArrayList contexts
     * @return ArrayList with all contexts which pionts to the webapp or null if webapp not exists or no conext points to this webapp (will never return ROOT as context)
     */
-    public ArrayList getContextsOfWebapp (String webapp) throws FileNotFoundException, IOException {
-        ArrayList contexts = new ArrayList();
+    public List<String> getContextsOfWebapp (String webapp) throws FileNotFoundException, IOException {
+        List<String> contexts = new ArrayList<String>();
         for (int i = 0; i < this.contextConfDirectory.listFiles().length; i++) {
             String line = "";
             FileInputStream fis = new FileInputStream(contextConfDirectory.listFiles()[i]);

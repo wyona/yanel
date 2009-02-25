@@ -1,15 +1,28 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2007-2009 Wyona
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.wyona.org/licenses/APACHE-LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package org.wyona.yanel.impl.resources.updatefinder.utils;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,7 +34,7 @@ import com.hp.hpl.jena.rdf.model.impl.PropertyImpl;
  */
 public class InstallInfo {
     
-    private static Category log = Category.getInstance(InstallInfo.class);
+    private static Logger log = Logger.getLogger(InstallInfo.class);
     private String id;
     private String version;
     private String revision;
@@ -33,7 +46,7 @@ public class InstallInfo {
     private String javaVersion;
     private String targetApplicationId;
     private String targetApplicationVersion;
-    private ArrayList protectedFiles = new ArrayList();
+    private List<String> protectedFiles = new ArrayList<String>();
     
     private String updateManagerNS = "http://www.wyona.org/update-manager/1.0#"; 
 
@@ -68,7 +81,7 @@ public class InstallInfo {
         String webappsDirectoryPath = request.getSession().getServletContext().getRealPath(".") + File.separator + ".." + File.separator;
         TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
         webappName = webapp;
-        contextPrefix = (String) tomcatContextHandler.getContextsOfWebapp(webapp).get(0);
+        contextPrefix = tomcatContextHandler.getContextsOfWebapp(webapp).get(0);
         
         if (contextPrefix.equalsIgnoreCase("ROOT")) {
             contextPrefix = "ROOT";
@@ -183,7 +196,7 @@ public class InstallInfo {
         return targetApplicationVersion;
     }
 
-    public ArrayList getProtectedFiles() {
+    public List<String> getProtectedFiles() {
         return protectedFiles;
     }
 

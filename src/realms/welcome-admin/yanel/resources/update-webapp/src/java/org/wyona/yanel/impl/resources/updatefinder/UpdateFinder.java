@@ -1,10 +1,22 @@
 /*
- * Copyright 2007 Wyona
+ * Copyright 2007-2009 Wyona
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.wyona.org/licenses/APACHE-LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package org.wyona.yanel.impl.resources.updatefinder;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 
@@ -26,9 +38,8 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Collections;
@@ -51,7 +62,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 public class UpdateFinder extends Resource implements ViewableV2 {
 
-    private static Category log = Category.getInstance(UpdateFinder.class);
+    private static Logger log = Logger.getLogger(UpdateFinder.class);
     /**
      * 
      */
@@ -186,7 +197,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         
         StringBuffer body = new StringBuffer();
         StringBuffer head = new StringBuffer();
-        Enumeration parameters = request.getParameterNames();
+        Enumeration<?> parameters = request.getParameterNames();
         if (!parameters.hasMoreElements()) {
             plainRequest(body);
         } else {
@@ -268,7 +279,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         }
 
         if (!installInfo.getInstalltype().equals("bin-snapshot")) {
-            htmlBodyContent.append("<p>This Yanel was not installed from binary. You can only use the updater if you installed yanel from binary. Please use Subversion or get another source snapshot.</p><p>NOTE: In order to enhance the Yanel Updater resource developers might want to modify <a href=\"file://" + installInfo.getInstallRdfFilename() + "\">" + installInfo.getInstallRdfFilename() + "</a> by replacing the installtype \"source\" with \"bin-snapshot\" and also customize the version and revision!</p>");
+            htmlBodyContent.append("<p>This Yanel was not installed from binary. You can only use the updater if you installed yanel from binary. Please use Subversion or get another source snapshot.</p><p>NOTE for developers: In order to work on the Yanel Updater resource you might want to modify <a href=\"file://" + installInfo.getInstallRdfFilename() + "\">" + installInfo.getInstallRdfFilename() + "</a> by replacing the installtype \"source\" with \"bin-snapshot\" and also customize the version and revision!</p>");
             return;
         }
 
@@ -283,7 +294,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         // yanel-updater which fits the targetRevision requirement of the current yanel and is not
         // already installed.
 
-        ArrayList updatebleYanelVersions = null;
+        List<Map<String, String>> updatebleYanelVersions = null;
         try {
             updatebleYanelVersions = getSuitableYanelUpdates(installInfo, updateInfo);
         } catch (Exception e) {
@@ -296,10 +307,10 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             htmlBodyContent.append("No updates found.");
             htmlBodyContent.append("</p>");
         } else {
-            HashMap newestYanel = (HashMap) updatebleYanelVersions.get(updatebleYanelVersions.size() - 1);
-            String newestYanelName = (String) newestYanel.get("id") + "-v-"
-                    + (String) newestYanel.get("version") + "-r-"
-                    + (String) newestYanel.get("revision");
+            Map<String, String> newestYanel =updatebleYanelVersions.get(updatebleYanelVersions.size() - 1);
+            String newestYanelName = newestYanel.get("id") + "-v-"
+                    + newestYanel.get("version") + "-r-"
+                    + newestYanel.get("revision");
             if (newestYanelName.equals(idVersionRevisionCurrent)) {
                 htmlBodyContent.append("<p>");
                 htmlBodyContent.append("Your yanel is already the newest version.");
@@ -317,10 +328,10 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         htmlBodyContent.append("<ul>");
 
         for (int i = 0; i < updatebleYanelVersions.size(); i++) {
-            HashMap versionDetails = (HashMap) updatebleYanelVersions.get(i);
-            String idVersionRevisionItem = (String) versionDetails.get("id") + "-v-"
-                    + (String) versionDetails.get("version") + "-r-"
-                    + (String) versionDetails.get("revision");
+            Map<String, String> versionDetails = updatebleYanelVersions.get(i);
+            String idVersionRevisionItem = versionDetails.get("id") + "-v-"
+                    + versionDetails.get("version") + "-r-"
+                    + versionDetails.get("revision");
 
                 htmlBodyContent.append("<li>"
                         + versionDetails.get("title")
@@ -346,18 +357,18 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             htmlBodyContent.append("Installed versions:");
             htmlBodyContent.append("</p>");
             TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
-            Map contextAndWebapp = tomcatContextHandler.getContextAndWebapp();
+            Map<String, String> contextAndWebapp = tomcatContextHandler.getContextAndWebapp();
 
             htmlBodyContent.append("<table class=\"sortable\">");
             htmlBodyContent.append("<thead>");
             htmlBodyContent.append("<tr><th>Context</th><th>Webapp</th></tr>");
             htmlBodyContent.append("</thead>");
             htmlBodyContent.append("<tbody>");
-            Iterator iterator = contextAndWebapp.keySet().iterator();
+            Iterator<String> iterator = contextAndWebapp.keySet().iterator();
 
             while (iterator.hasNext()) {
-                String context = (String) iterator.next();
-                String webapp = (String) contextAndWebapp.get(context);
+                String context = iterator.next();
+                String webapp = contextAndWebapp.get(context);
                 htmlBodyContent.append("<tr><td><a href=\"" + "http://" + request.getServerName()
                         + ":" + request.getServerPort() + "/" + context.replaceAll("/", "") + "\">"
                         + context + "</a></td><td>" + webapp + "</td></tr>");
@@ -379,13 +390,13 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         try {
             UpdateInfo updateInfo = getUpdateInfo();
             InstallInfo installInfo = getInstallInfo();
-            Map bestUpdater = getBestUpdater();
+            Map<String, String> bestUpdater = getBestUpdater();
             TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
             
-            HashMap versionDetails = updateInfo.getUpdateVersionDetail("updateLink", request.getParameter("updatelink"));
-            String version = (String) versionDetails.get("version");
-            String revision = (String) versionDetails.get("revision");
-            String id = (String) versionDetails.get("id");
+            Map<String, String> versionDetails = updateInfo.getUpdateVersionDetail("updateLink", request.getParameter("updatelink"));
+            String version = versionDetails.get("version");
+            String revision = versionDetails.get("revision");
+            String id = versionDetails.get("id");
             
             if (tomcatContextHandler.getWebappOfContext(bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision")) != null) {
                 htmlBodyContent.append("<p>Yanel will redirect you to the update-manager which will download and install " + id + "-v-" + version + "-r-" + revision  + "</p>");
@@ -432,7 +443,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         HttpSession session = request.getSession();
         try {
             String destDir = request.getSession().getServletContext().getRealPath(".") + File.separator + "..";
-            Map bestUpdater = getBestUpdater();
+            Map<String, String> bestUpdater = getBestUpdater();
             InstallInfo installInfo = getInstallInfo();
             
             URL updaterURL = new URL("http://" + request.getServerName() + ":" + request.getServerPort() + "/" + bestUpdater.get("id") + "-v-" + bestUpdater.get("version") + "-r-" + bestUpdater.get("revision"));
@@ -449,7 +460,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             }
             
             if (session.getAttribute(WarFetcher.SESSION_ATTR_TASK) == null ){
-                Runnable runFetcher = new WarFetcher(request, (String) bestUpdater.get("updateLink"), destDir);
+                Runnable runFetcher = new WarFetcher(request, bestUpdater.get("updateLink"), destDir);
                 new Thread(runFetcher).start();
                 session.setAttribute(WarFetcher.SESSION_ATTR_TASK, "started");
                 session.setAttribute(WarFetcher.SESSION_ATTR_PROGRESS, "0");
@@ -502,23 +513,23 @@ public class UpdateFinder extends Resource implements ViewableV2 {
     /**
      * Get Updater
      */
-    private HashMap getBestUpdater() throws Exception {
+    private Map<String, String> getBestUpdater() throws Exception {
         InstallInfo installInfo = getInstallInfo();
         UpdateInfo updateInfo = getUpdateInfo();
         
-        HashMap updateVersionDetails = updateInfo.getUpdateVersionDetail("updateLink", request.getParameter("updatelink"));
+        Map<String, String> updateVersionDetails = updateInfo.getUpdateVersionDetail("updateLink", request.getParameter("updatelink"));
         VersionComparator versionComparator = new VersionComparator();
-        String updateId = (String) updateVersionDetails.get("id");
-        String updateVersion = (String) updateVersionDetails.get("version");
-        String updateRevision = (String) updateVersionDetails.get("revision");
-        ArrayList bestUpdater = updateInfo.getUpdateVersionsOf("type", "updater", installInfo.getRevision());
+        String updateId = updateVersionDetails.get("id");
+        String updateVersion = updateVersionDetails.get("version");
+        String updateRevision = updateVersionDetails.get("revision");
+        List<Map<String, String>> bestUpdater = updateInfo.getUpdateVersionsOf("type", "updater", installInfo.getRevision());
         for (int i = 0; i < bestUpdater.size(); i++) {
-            HashMap versionDetail = (HashMap) bestUpdater.get(i);
+            Map<String, String> versionDetail =bestUpdater.get(i);
             log.error("DEBUG: Updater details: " + versionDetail);
-            if (versionComparator.compare((String) versionDetail.get(UpdateInfo.TARGET_APPLICATION_MIN_REVISION), updateRevision) > 0 ) {
+            if (versionComparator.compare(versionDetail.get(UpdateInfo.TARGET_APPLICATION_MIN_REVISION), updateRevision) > 0 ) {
                 bestUpdater.remove(i);
             }
-            if (versionComparator.compare((String) versionDetail.get(UpdateInfo.TARGET_APPLICATION_MAX_REVISION), updateRevision) < 0 ) {
+            if (versionComparator.compare(versionDetail.get(UpdateInfo.TARGET_APPLICATION_MAX_REVISION), updateRevision) < 0 ) {
                 bestUpdater.remove(i);
             }
         }
@@ -526,21 +537,21 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         if (bestUpdater.size() < 1) {
             throw new Exception("No updater found for updating your current version (" + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision() + ") to your requested version (" + updateId + "-v-" + updateVersion + "-r-" + updateRevision + ")");
         }
-        return (HashMap) bestUpdater.get(bestUpdater.size() - 1);
+        return bestUpdater.get(bestUpdater.size() - 1);
     }
     
     /**
      * @return ArrayList with all updates which are matching the revision requirement and are not installed yet. or null if none.
      * @throws Exception
      */
-    private ArrayList getSuitableYanelUpdates(InstallInfo installInfo, UpdateInfo updateInfo) throws Exception {
+    private List<Map<String, String>> getSuitableYanelUpdates(InstallInfo installInfo, UpdateInfo updateInfo) throws Exception {
         TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
         
-        ArrayList updates = updateInfo.getYanelUpdatesForYanelRevision(installInfo.getRevision());
+        List<Map<String, String>> updates = updateInfo.getYanelUpdatesForYanelRevision(installInfo.getRevision());
         if (updates == null) return null;
 
         for (int i = 0; i < updates.size(); i++) {
-            HashMap versionDetail = (HashMap) updates.get(i);
+            Map<String, String> versionDetail = updates.get(i);
             log.error("DEBUG: Update: " + versionDetail.get("id") + "-v-" + versionDetail.get("version") + "-r-" + versionDetail.get("revision"));
 
             for (int j = 0; j < tomcatContextHandler.getWebappNames().length; j++) {

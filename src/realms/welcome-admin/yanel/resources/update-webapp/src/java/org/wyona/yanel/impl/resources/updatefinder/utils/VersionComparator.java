@@ -205,7 +205,7 @@ public class VersionComparator {
  * &lt;number-a&gt;&lt;string-b&gt;&lt;number-c&gt;
  * &lt;string-d (everything else)&gt;</code>.
  */
-class VersionPartTokenizer implements Enumeration {
+class VersionPartTokenizer implements Enumeration<String> {
 
   String part;
 
@@ -221,7 +221,7 @@ class VersionPartTokenizer implements Enumeration {
     return part.length() != 0;
   }
 
-  public Object nextElement() {
+  public String nextElement() {
     if (part.matches("[\\+\\-]?[0-9].*")) {
       // if string starts with a number...
       int index = 0;
@@ -249,7 +249,7 @@ class VersionPartTokenizer implements Enumeration {
   }
 
   public String nextToken() {
-    return (String) nextElement();
+    return nextElement();
   }
 
   /**
