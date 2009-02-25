@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Wyona
+ * Copyright 2007-2009 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -115,7 +115,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     protected static String DEFAULT_VIEW_ID = "default";
     protected static String SOURCE_VIEW_ID = "source";
 
-    protected HashMap viewDescriptors;
+    protected HashMap<String, ViewDescriptor> viewDescriptors;
 
     public ViewDescriptor getViewDescriptor(String viewId) {
         ViewDescriptor[] viewDescriptors = getViewDescriptors();
@@ -135,7 +135,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             return (ViewDescriptor[])this.viewDescriptors.values().toArray(new ViewDescriptor[this.viewDescriptors.size()]);
         }
         try {
-            this.viewDescriptors = new HashMap();
+            this.viewDescriptors = new HashMap<String, ViewDescriptor>();
             // reads views from configuration:
             if (getConfiguration() != null && getConfiguration().getCustomConfiguration() != null) {
                 Document customConfigDoc = getConfiguration().getCustomConfiguration();
@@ -355,7 +355,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         // allow to override xml declaration and doctype:
         Properties properties = viewDescriptor.getSerializerProperties();
         if (properties != null) {
-            Enumeration propNames = properties.propertyNames();
+            Enumeration<?> propNames = properties.propertyNames();
             while (propNames.hasMoreElements()) {
                 String name = (String)propNames.nextElement();
                 String value = properties.getProperty(name);
@@ -375,7 +375,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * @return i18n catalogue name
      */
     protected String[] getI18NCatalogueNames() throws Exception {
-        ArrayList catalogues = new ArrayList();
+        ArrayList<String> catalogues = new ArrayList<String>();
         String[] rcCatalogues = getResourceConfigProperties("i18n-catalogue");
         if (rcCatalogues != null) {
             for (int i = 0; i < rcCatalogues.length; i++) {
@@ -435,7 +435,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         String username = getUsername();
         if (username != null) transformer.setParameter("username", username);
 
-        transformer.setParameter("yanel.reservedPrefix", "yanel"); // TODO don't hardcode
+        transformer.setParameter("yanel.reservedPrefix", this.getYanel().getReservedPrefix());
 
         // Add toolbar status
         String toolbarStatus = getToolbarStatus();
