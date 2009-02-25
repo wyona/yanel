@@ -174,7 +174,7 @@
     <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}">
       <fileset dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}" />
     </copy>
-    <copy todir="${snapshot.dir.win}/yanel-webapp-${yanel.version}-r${yanel.revision}">
+    <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps/yanel-webapp-${yanel.version}-r${yanel.revision}">
       <fileset dir="${tmp.dir}"/>
     </copy>
     <!-- <move file="${snapshot.dir.unix}/${servlet.context.prefix}.war" todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps"/> -->
@@ -204,7 +204,7 @@
   </target>
   
   <target name="bin-snapshot-unix">
-    <copy todir="${snapshot.dir.unix}/yanel-webapp-${yanel.version}-r${yanel.revision}">
+    <copy todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/yanel-webapp-${yanel.version}-r${yanel.revision}">
       <fileset dir="${tmp.dir}"/>
     </copy>
 
