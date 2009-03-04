@@ -94,7 +94,11 @@ public class SitetreeDOMImpl implements Sitetree {
         //log.debug("Path: " + path);
         try {
             if (path.equals("/")) {
-                return new NodeDOMImpl(sitetreeDoc.getDocumentElement(), this);
+                if (sitetreeDoc != null) {
+                    return new NodeDOMImpl(sitetreeDoc.getDocumentElement(), this);
+                }
+               log.error("It seems like the sitetree '" + src + "' was not initialized properly!");
+               return null;
             } else if (path.startsWith("/") && path.length() > 1) {
                 Element element = getElement(sitetreeDoc.getDocumentElement(), path);
                 if (element != null) {
