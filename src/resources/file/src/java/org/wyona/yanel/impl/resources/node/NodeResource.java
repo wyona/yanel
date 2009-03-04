@@ -44,7 +44,7 @@ import java.io.Writer;
 import java.util.Date;
 import java.util.Enumeration;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import org.apache.commons.fileupload.util.Streams;
 
@@ -54,7 +54,7 @@ import org.apache.commons.fileupload.util.Streams;
 public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, IntrospectableV1, WorkflowableV1, CreatableV2 {
 //public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2 {
 
-    private static Category log = Category.getInstance(NodeResource.class);
+    private static Logger log = Logger.getLogger(NodeResource.class);
 
     private String uploadMimeType;
 
