@@ -41,18 +41,21 @@
     <ant inheritAll="false" antfile="{@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
       <property name="maven.url" value="{$maven.url}"/>
+      <property name="yanel.source.home" value="@YANEL_SRC_DIR@"/>
     </ant>
         </xsl:when>
         <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
     <ant inheritAll="false" antfile="{@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
       <property name="maven.url" value="{$maven.url}"/>
+      <property name="yanel.source.home" value="@YANEL_SRC_DIR@"/>
     </ant>
         </xsl:when>
         <xsl:otherwise>
     <ant inheritAll="false" antfile="${{build.dir}}/{@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
       <property name="maven.url" value="{$maven.url}"/>
+      <property name="yanel.source.home" value="@YANEL_SRC_DIR@"/>
     </ant>
         </xsl:otherwise>
       </xsl:choose>
@@ -151,6 +154,7 @@
       <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
       <property name="maven.url" value="{$maven.url}"/>
+      <property name="yanel.source.home" value="@YANEL_SRC_DIR@"/>
     </ant>
       </xsl:when>
       <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
@@ -159,6 +163,7 @@
       <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
       <property name="maven.url" value="{$maven.url}"/>
+      <property name="yanel.source.home" value="@YANEL_SRC_DIR@"/>
     </ant>
       </xsl:when>
       <xsl:otherwise>
@@ -167,6 +172,7 @@
       <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
       <property name="maven.url" value="{$maven.url}"/>
+      <property name="yanel.source.home" value="@YANEL_SRC_DIR@"/>
     </ant>
       </xsl:otherwise>
     </xsl:choose>
