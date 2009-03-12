@@ -1,0 +1,30 @@
+<project name="build-artifacts"
+ xmlns:artifact="antlib:org.apache.maven.artifact.ant"
+>
+
+  <!-- Install a Yanel JAR: core, impl, webapp, cmdl, etc. -->
+  <macrodef name="install-jar" uri="http://www.wyona.org/yanel/1.0">
+   <attribute name="id"/>
+   <attribute name="package-dir" default="@{id}"/>
+   <sequential>
+
+    <mkdir dir="${yanel.source.home}/build/lib"/>
+    <jar destfile="${yanel.source.home}/build/lib/yanel-@{id}-${yanel.version}-r${yanel.revision}.jar"
+      basedir="${classes.dir}"
+      includes="org/wyona/yanel/@{package-dir}/**"/>
+
+    <copy file="${yanel.source.home}/src/build/pom-@{id}.xml" todir="${yanel.source.home}/build/lib"/>
+    <replace file="${yanel.source.home}/build/lib/pom-@{id}.xml" value="${yanel.version}-r${yanel.revision}">
+      <replacetoken>@VERSION@</replacetoken>
+    </replace>
+
+    <artifact:pom id="@{id}.project" file="${yanel.source.home}/build/lib/pom-@{id}.xml"/>
+
+    <artifact:install file="${yanel.source.home}/build/lib/yanel-@{id}-${yanel.version}-r${yanel.revision}.jar">
+      <pom refid="@{id}.project"/>
+    </artifact:install>
+
+   </sequential>
+  </macrodef>
+
+</project>

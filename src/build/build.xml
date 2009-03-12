@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 
-<project name="yanel-main" default="deploy" xmlns:artifact="antlib:org.apache.maven.artifact.ant" xmlns:svnant="antlib:org.tigris.subversion.svnant">
+<project name="yanel-main" default="deploy"
+ xmlns:yanel="http://www.wyona.org/yanel/1.0"
+ xmlns:svnant="antlib:org.tigris.subversion.svnant"
+>
 
   <description>Yanel Build</description>
 
@@ -56,6 +59,7 @@
   <import file="targets/cmdl.xml"/>
   <import file="targets/test.xml"/>
   <import file="targets/config.xml"/>
+  <import file="targets/build-artifacts.build.xml"/>
   
 
     
@@ -108,7 +112,7 @@
   </target>
 
 
-  <target name="compile-core" description="Compile Java classes of Yanel core" depends="init, set-classpath">
+  <target name="compile-core-classes" description="Compile Java classes of Yanel core" depends="init, set-classpath">
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${yanel.source.home}/src/core/java/org/wyona/yanel/core"
       destdir="${classes.dir}"
@@ -117,44 +121,27 @@
       debug="true">
       <classpath refid="classpath.compile"/>
     </javac>
-    <mkdir dir="${yanel.source.home}/build/lib"/>
-    <jar destfile="${yanel.source.home}/build/lib/yanel-core-${yanel.version}-r${yanel.revision}.jar"
-      basedir="${classes.dir}"
-      includes="org/wyona/yanel/core/**"/>
-
-    <copy file="${yanel.source.home}/src/build/pom-core.xml" todir="${yanel.source.home}/build/lib"/>
-    <replace file="${yanel.source.home}/build/lib/pom-core.xml" value="${yanel.version}-r${yanel.revision}">
-      <replacetoken>@VERSION@</replacetoken>
-    </replace>
-
-    <artifact:pom id="core.project" file="${yanel.source.home}/build/lib/pom-core.xml"/>
-
-    <artifact:install file="${yanel.source.home}/build/lib/yanel-core-${yanel.version}-r${yanel.revision}.jar">
-      <pom refid="core.project"/>
-    </artifact:install>
   </target>
 
-  <target name="compile-impl" description="Compile Java classes of Yanel implementation" depends="init">
+  <target name="install-core-jar" description="Install Yanel core JAR" depends="compile-core-classes">
+    <yanel:install-jar id="core"/>
+  </target>
+
+  <target name="compile-core" depends="compile-core-classes, install-core-jar">
+  </target>
+
+  <target name="compile-impl-classes" description="Compile Java classes of Yanel implementation" depends="init, compile-core">
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${yanel.source.home}/src/impl/java/org/wyona/yanel/impl" destdir="${classes.dir}" debug="true">
       <classpath refid="classpath.compile"/>
     </javac>
+  </target>
 
-    <mkdir dir="${yanel.source.home}/build/lib"/>
-    <jar destfile="${yanel.source.home}/build/lib/yanel-impl-${yanel.version}-r${yanel.revision}.jar"
-      basedir="${classes.dir}"
-      includes="org/wyona/yanel/impl/**"/>
-      
-    <copy file="${yanel.source.home}/src/build/pom-impl.xml" todir="${yanel.source.home}/build/lib"/>
-    <replace file="${yanel.source.home}/build/lib/pom-impl.xml" value="${yanel.version}-r${yanel.revision}">
-      <replacetoken>@VERSION@</replacetoken>
-    </replace>
+  <target name="install-impl-jar" description="Install Yanel implementation JAR" depends="compile-impl-classes">
+    <yanel:install-jar id="impl"/>
+  </target>
 
-    <artifact:pom id="impl.project" file="${yanel.source.home}/build/lib/pom-impl.xml"/>
-
-    <artifact:install file="${yanel.source.home}/build/lib/yanel-impl-${yanel.version}-r${yanel.revision}.jar">
-      <pom refid="impl.project"/>
-    </artifact:install>      
+  <target name="compile-impl" depends="compile-impl-classes, install-impl-jar">
   </target>
 
   <target name="source-snapshot" description="Create a source code snapshot" depends="init">

@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
-
-<project name="webapp" default="deploy" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="webapp" default="deploy"
+ xmlns:yanel="http://www.wyona.org/yanel/1.0"
+>
    
   <target name="deploy" description="Deploy war file" depends="init, webapp">
     <condition property="property-tomcat-cluster-node1-is-set">
@@ -145,28 +146,19 @@
     <jar jarfile="${yanel.source.home}/build/webapps/${servlet.context.prefix}.war" basedir="${yanel.source.home}/build/webapps/${servlet.context.prefix}"/>
   </target>
   
-  <target name="compile-webapp" description="Compile Java classes of Yanel webapp" depends="init, compile-core, compile-cmdl">
+  <target name="compile-webapp-classes" description="Compile Java classes of Yanel webapp" depends="init, compile-core, compile-cmdl"><!--XXX HACK: This is the only place where we compile the command line interface, we should do that elsewhere. -->
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${yanel.source.home}/src/webapp/src/java/org/wyona/yanel/servlet" destdir="${classes.dir}"
       debug="true"
       classpathref="classpath.compile"
     />
-    <mkdir dir="${yanel.source.home}/build/lib"/>
-    <jar destfile="${yanel.source.home}/build/lib/yanel-webapp-${yanel.version}-r${yanel.revision}.jar"
-      basedir="${classes.dir}"
-      includes="org/wyona/yanel/servlet/**"/>
-      
-    <copy file="${yanel.source.home}/src/build/pom-webapp.xml" todir="${yanel.source.home}/build/lib"/>
-    <replace file="${yanel.source.home}/build/lib/pom-webapp.xml" value="${yanel.version}-r${yanel.revision}">
-      <replacetoken>@VERSION@</replacetoken>
-    </replace>
-
-    <artifact:pom id="webapp.project" file="${yanel.source.home}/build/lib/pom-webapp.xml"/>
-
-    <artifact:install file="${yanel.source.home}/build/lib/yanel-webapp-${yanel.version}-r${yanel.revision}.jar">
-      <pom refid="webapp.project"/>
-    </artifact:install>            
   </target>
+
+  <target name="install-webapp-jar" description="Install Yanel webapp JAR" depends="compile-webapp-classes">
+    <yanel:install-jar id="webapp" package-dir="servlet"/>
+  </target>
+
+  <target name="compile-webapp" depends="compile-webapp-classes, install-webapp-jar"/>
   
   <target name="createCK" description="Add ssl configuration to your webserver"> 
     <!-- delete already created file -->
