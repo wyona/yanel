@@ -30,6 +30,15 @@
     <property name="resource.java.dir" value="${resource.home.dir}/src/java"/>
     <property name="resource.resource.xml" value="${resource.home.dir}/resource.xml"/>
     <xmlproperty prefix="resource.resource.xml" file="${resource.resource.xml}"/>    
+
+  </target>
+
+  <target name="eclipse:classpath" description="Update Eclipse's .classpath file" depends="init">
+    <ant dir="${yanel.home}/tools/eclipse.settings" target="update-classpath"
+     inheritAll="false" inheritRefs="false">
+      <reference torefid="classpath.ref" refid="classpath"/>
+      <property name="classpath.dir" value="${resource.home.dir}"/>
+    </ant>
   </target>
 
   <target name="compile" description="Compile Java classes" depends="init">
