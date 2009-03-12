@@ -59,21 +59,14 @@ elif [ "$1" = "build" ]; then
   echo "INFO: Building Yanel..."
   shift
 
-# ----- Check for .ant-global.properties
-if [ -f $HOME/.ant-global.properties ];then
-  echo "INFO: $HOME/.ant-global.properties exists!"
-else
-  echo ""
-  echo "WARNING: No $HOME/.ant-global.properties file exists! Setting property 'yanel.home' within .ant-global.properties is optional, but makes development of individual resources and realms much more efficiently!"
-  #echo "Press enter/return to continue ..."
-  #read answer
-  echo ""
-fi
-
 # One might want to use the option "-f" for building resources, e.g. "./yanel.sh build -f src/resources/xml/build.xml" instead having to build everything
-#FIXME: this very example seems not to work anymore because properties are initialized too late in the Ant build file (e.g. Maven URL to fetch dependancies), YMMV...
 if [ "$1" = "-f" ];then
   $OUR_ANT -f $2 $3 -Dyanel.source.home=$SCRIPT_DIR
+  error=$?
+  if [ $error -ne 0 ];then
+    echo "WARN: Some resource-types may not yet support the '-f' option, please refer to bug 6898 for how to implement it."
+    exit $error
+  fi
   exit 0
 fi
 # Build everything by default
