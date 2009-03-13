@@ -13,6 +13,7 @@ import org.wyona.security.core.api.User;
 import org.wyona.security.core.api.UserManager;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -81,7 +82,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             String path = map.getPath(realm, request.getServletPath());
             //Realm realm = map.getRealm(new Path(request.getServletPath()));
             if (log.isDebugEnabled()) log.debug("Generic WebAuthenticator called for realm path " + path);
-
+            HttpSession session = request.getSession(true);
 
 
 
@@ -89,8 +90,8 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             String loginUsername = request.getParameter("yanel.login.username");
             String openID = request.getParameter("yanel.login.openid");
             String openIDSignature = request.getParameter("openid.sig");
+            boolean rememberMyLoginName = doRememberMyLoginName(request, response, loginUsername, openID);
             if(loginUsername != null) {
-                HttpSession session = request.getSession(true);
                 try {
                     User user = realm.getIdentityManager().getUserManager().getUser(loginUsername, true);
                     if (user != null && user.authenticate(request.getParameter("yanel.login.password"))) {
@@ -144,10 +145,10 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                         }
                         User user = uManager.getUser(openIdentity);
                         //User user = uManager.getUser(openIdentity, true);
-                        IdentityMap identityMap = (IdentityMap)request.getSession(true).getAttribute(YanelServlet.IDENTITY_MAP_KEY);
+                        IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
                         if (identityMap == null) {
                             identityMap = new IdentityMap();
-                            request.getSession().setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
+                            session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
                         }
                         log.debug("User: " + user.getID());
                         identityMap.put(realm.getID(), new Identity(user));
@@ -165,6 +166,9 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             } else {
                 if (log.isDebugEnabled()) log.debug("No form based authentication request.");
             }
+
+
+
 
             // Check for Neutron-Auth based authentication
             String yanelUsecase = request.getParameter("yanel.usecase");
@@ -199,7 +203,6 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 log.debug("Username: " + username);
 
                 if (username != null) {
-                    HttpSession session = request.getSession(true);
                     log.debug("Realm ID: " + realm.getID());
                     User user = realm.getIdentityManager().getUserManager().getUser(username, true);
                     if (user != null && user.authenticate(password)) {
@@ -556,5 +559,33 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             if (identity != null && !identity.isWorld()) return identity.getUsername();
         }
         return null;
+    }
+
+    /**
+     * Handle "remember my login"
+     */
+    private boolean doRememberMyLoginName(HttpServletRequest request, HttpServletResponse response, String loginUsername, String openID) {
+        boolean rememberMyLoginName = false;
+        if (request.getParameter("remember-my-login-name") != null) {
+                log.info("Remember my login name: " + loginUsername + "," + openID);
+                rememberMyLoginName = true;
+                Cookie rememberLoginNameCookie = null;
+                if (loginUsername != null) {
+                    rememberLoginNameCookie = new Cookie("_yanel-login-default", loginUsername);
+                } else if (openID != null) {
+                    rememberLoginNameCookie = new Cookie("_yanel-login-openid", openID);
+                } else {
+                    log.warn("Neither default nor OpenID login!");
+                }
+                if (rememberLoginNameCookie != null) {
+		    rememberLoginNameCookie.setMaxAge(86400); // 1 day is 86400 seconds
+                    response.addCookie(rememberLoginNameCookie);
+                }
+        } else {
+                log.info("Do not remember my login name: " + loginUsername + "," + openID);
+                rememberMyLoginName = false;
+                // TODO: Unset Cookie ...
+        }
+        return rememberMyLoginName;
     }
 }
