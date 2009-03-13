@@ -58,6 +58,9 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
     private static String OPENID_DISCOVERED_KEY = "openid-discovered";
 
+    private static String LOGIN_DEFAULT_COOKIE_NAME = "_yanel-login-default";
+    private static String LOGIN_OPENID_COOKIE_NAME = "_yanel-login-openid";
+
     // NOTE: The OpenID consumer manager needs to be the same instance for redirect to provider and provider verification
     private ConsumerManager manager;
     private boolean allowOpenIdUserCreation;
@@ -398,6 +401,20 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             } else {
                 sslElement.setAttributeNS(YanelServlet.NAMESPACE, "status", "OFF");
             }
+
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (int i = 0; i < cookies.length; i++) {
+                    log.debug("Cookie: " + cookies[i].getName() + ", " + cookies[i].getValue());
+                    if (cookies[i].getName().equals(LOGIN_DEFAULT_COOKIE_NAME)) {
+                        Element loginDefaultElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-default"));            
+                        loginDefaultElement.setAttributeNS(YanelServlet.NAMESPACE, "username", cookies[i].getValue());
+                    } else if (cookies[i].getName().equals(LOGIN_OPENID_COOKIE_NAME)) {
+                        Element loginOpenIDElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-openid"));            
+                        loginOpenIDElement.setAttributeNS(YanelServlet.NAMESPACE, "openid", cookies[i].getValue());
+                    }
+                }
+            }
             
             String yanelFormat = request.getParameter("yanel.format");
             if(yanelFormat != null && yanelFormat.equals("xml")) {
@@ -571,9 +588,9 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 rememberMyLoginName = true;
                 Cookie rememberLoginNameCookie = null;
                 if (loginUsername != null) {
-                    rememberLoginNameCookie = new Cookie("_yanel-login-default", loginUsername);
+                    rememberLoginNameCookie = new Cookie(LOGIN_DEFAULT_COOKIE_NAME, loginUsername);
                 } else if (openID != null) {
-                    rememberLoginNameCookie = new Cookie("_yanel-login-openid", openID);
+                    rememberLoginNameCookie = new Cookie(LOGIN_OPENID_COOKIE_NAME, openID);
                 } else {
                     log.warn("Neither default nor OpenID login!");
                 }
