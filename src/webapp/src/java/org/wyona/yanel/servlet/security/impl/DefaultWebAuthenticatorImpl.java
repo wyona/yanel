@@ -93,7 +93,9 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             String loginUsername = request.getParameter("yanel.login.username");
             String openID = request.getParameter("yanel.login.openid");
             String openIDSignature = request.getParameter("openid.sig");
-            boolean rememberMyLoginName = doRememberMyLoginName(request, response, loginUsername, openID);
+            if (loginUsername !=  null || openID != null) {
+                boolean rememberMyLoginName = doRememberMyLoginName(request, response, loginUsername, openID);
+            }
             if(loginUsername != null) {
                 try {
                     User user = realm.getIdentityManager().getUserManager().getUser(loginUsername, true);
@@ -584,24 +586,32 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     private boolean doRememberMyLoginName(HttpServletRequest request, HttpServletResponse response, String loginUsername, String openID) {
         boolean rememberMyLoginName = false;
         if (request.getParameter("remember-my-login-name") != null) {
-                log.info("Remember my login name: " + loginUsername + "," + openID);
-                rememberMyLoginName = true;
-                Cookie rememberLoginNameCookie = null;
-                if (loginUsername != null) {
-                    rememberLoginNameCookie = new Cookie(LOGIN_DEFAULT_COOKIE_NAME, loginUsername);
-                } else if (openID != null) {
-                    rememberLoginNameCookie = new Cookie(LOGIN_OPENID_COOKIE_NAME, openID);
-                } else {
-                    log.warn("Neither default nor OpenID login!");
-                }
-                if (rememberLoginNameCookie != null) {
-		    rememberLoginNameCookie.setMaxAge(86400); // 1 day is 86400 seconds
-                    response.addCookie(rememberLoginNameCookie);
-                }
+            log.error("DEBUG:Remember my login name: " + loginUsername + "," + openID);
+            rememberMyLoginName = true;
+            Cookie rememberLoginNameCookie = null;
+            if (loginUsername != null) {
+                rememberLoginNameCookie = new Cookie(LOGIN_DEFAULT_COOKIE_NAME, loginUsername);
+            } else if (openID != null) {
+                rememberLoginNameCookie = new Cookie(LOGIN_OPENID_COOKIE_NAME, openID);
+            } else {
+                log.warn("Neither default nor OpenID login!");
+            }
+            if (rememberLoginNameCookie != null) {
+                rememberLoginNameCookie.setMaxAge(86400); // 1 day is 86400 seconds
+                response.addCookie(rememberLoginNameCookie);
+            }
         } else {
-                log.info("Do not remember my login name: " + loginUsername + "," + openID);
-                rememberMyLoginName = false;
-                // TODO: Unset Cookie ...
+            log.error("DEBUG: Do NOT remember my login name: " + loginUsername + "," + openID);
+            rememberMyLoginName = false;
+
+            // Unset Login Cookies (http://java.sun.com/j2ee/sdk_1.3/techdocs/api/javax/servlet/http/Cookie.html#setMaxAge(int))
+            Cookie rememberLoginDefaultCookie = new Cookie(LOGIN_DEFAULT_COOKIE_NAME, "");
+            rememberLoginDefaultCookie.setMaxAge(0); // Expire it immediately
+            response.addCookie(rememberLoginDefaultCookie);
+
+            Cookie rememberLoginOpenIDCookie = new Cookie(LOGIN_OPENID_COOKIE_NAME, "");
+            rememberLoginOpenIDCookie.setMaxAge(0); // Expire it immediately
+            response.addCookie(rememberLoginOpenIDCookie);
         }
         return rememberMyLoginName;
     }
