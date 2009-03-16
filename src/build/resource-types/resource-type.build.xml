@@ -21,13 +21,6 @@
   <target name="init" description="Initialize build" depends="dependencies">
     <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
 
-    <artifact:dependencies pathId="Yanel.test.jars.classpath" filesetId="Yanel.test.jars.fileset">
-      <remoteRepository refid="wyona.remote.repository"/>
-      <dependency groupId="wyona-org-yanel" artifactId="yanel-test" version="${yanel.source.version}"/>
-    </artifact:dependencies>
-    <echo level="verbose">Yanel test JARs classpath: ${toString:Yanel.test.jars.classpath}</echo>
-
-
     <property file="${resource.home.dir}/src/build/local.build.properties"/>
     <property file="${resource.home.dir}/src/build/build.properties"/>
 
@@ -44,6 +37,12 @@
   </target>
 
   <target name="eclipse:classpath" description="Update Eclipse's .classpath file" depends="init">
+    <artifact:dependencies pathId="Yanel.test.jars.classpath" filesetId="Yanel.test.jars.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-test" version="${yanel.source.version}"/>
+    </artifact:dependencies>
+    <echo level="verbose">Yanel test JARs classpath: ${toString:Yanel.test.jars.classpath}</echo>
+
     <path id="eclipse.classpath">
       <fileset refid="maven2.fileset"/>
       <fileset refid="Yanel.test.jars.fileset"/>
