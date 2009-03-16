@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<project name="test" default="test" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="test" default="test"
+ xmlns:yanel="http://www.wyona.org/yanel/1.0"
+ xmlns:artifact="antlib:org.apache.maven.artifact.ant"
+>
 
   <property file="../build/local.build.properties"/>
   <property file="../build/build.properties"/>
@@ -21,6 +23,9 @@
   <property name="webapp.lib.dir" value="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib"/>
 
   <property name="yanel.source.version" value="${yanel.version}-r${yanel.revision}"/>
+
+
+  <import file="../build/targets/build-artifacts.build.xml"/>
   
   <target name="init" depends="dependencies">
     <path id="classpath">
@@ -59,7 +64,7 @@
     <property name="maven2.cp" refid="maven2.classpath"/>
   </target>
  
-  <target name="build" depends="init" description="Build tests">
+  <target name="compile-classes" depends="init" description="Compile Java test classes of Yanel">
     <mkdir dir="${build.dir}"/>
     <mkdir dir="${junit.build.dir}"/>
     <mkdir dir="${htmlunit.build.dir}"/>
@@ -73,7 +78,18 @@
     <javac srcdir="${htmlunit.src.dir}" destdir="${htmlunit.build.dir}">
       <classpath refid="classpath" />
     </javac>
+  </target>
+
+  <target name="build" depends="compile-classes" description="Build tests">
     <antcall target="build-resources"/>
+  </target>
+
+  <target name="install-jar" description="Install Yanel test JAR" depends="compile-classes">
+    <yanel:install-jar id="test"
+     classes-dir="${yanel.build.dir}" package-dir="foo"><!--: these attributes have dummy values, we only use the elements here: -->
+      <fileset dir="${junit.build.dir}" includes="org/wyona/yanel/junit/**"/>
+      <fileset dir="${htmlunit.build.dir}" includes="org/wyona/yanel/htmlunit/**"/>
+    </yanel:install-jar>
   </target>
 
   <target name="build-resources" depends="init" description="Build tests of resources">

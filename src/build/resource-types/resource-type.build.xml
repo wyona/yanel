@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <!-- Everything common to most resource types. -->
 <project name="yanel-resource"
+ xmlns:artifact="antlib:org.apache.maven.artifact.ant"
 >
 <!-- the default task seems not to be imported at least with Ant 1.6.5
  default="compile"
@@ -18,6 +19,15 @@
   <import file="${resource.home.dir}/src/build/dependencies.xml"/>
 
   <target name="init" description="Initialize build" depends="dependencies">
+    <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
+
+    <artifact:dependencies pathId="Yanel.test.jars.classpath" filesetId="Yanel.test.jars.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-test" version="${yanel.source.version}"/>
+    </artifact:dependencies>
+    <echo level="verbose">Yanel test JARs classpath: ${toString:Yanel.test.jars.classpath}</echo>
+
+
     <property file="${resource.home.dir}/src/build/local.build.properties"/>
     <property file="${resource.home.dir}/src/build/build.properties"/>
 
@@ -34,9 +44,13 @@
   </target>
 
   <target name="eclipse:classpath" description="Update Eclipse's .classpath file" depends="init">
+    <path id="eclipse.classpath">
+      <fileset refid="maven2.fileset"/>
+      <fileset refid="Yanel.test.jars.fileset"/>
+    </path>
     <ant dir="${yanel.home}/tools/eclipse.settings" target="update-classpath"
      inheritAll="false" inheritRefs="false">
-      <reference torefid="classpath.ref" refid="classpath"/>
+      <reference torefid="classpath.ref" refid="eclipse.classpath"/>
       <property name="classpath.dir" value="${resource.home.dir}"/>
     </ant>
   </target>

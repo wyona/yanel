@@ -6,12 +6,17 @@
   <macrodef name="install-jar" uri="http://www.wyona.org/yanel/1.0">
    <attribute name="id"/>
    <attribute name="package-dir" default="@{id}"/>
+   <attribute name="classes-dir" default="${classes.dir}"/>
+   <element name="jar-elements" optional="true" implicit="true"/>
    <sequential>
 
     <mkdir dir="${yanel.source.home}/build/lib"/>
     <jar destfile="${yanel.source.home}/build/lib/yanel-@{id}-${yanel.version}-r${yanel.revision}.jar"
-      basedir="${classes.dir}"
-      includes="org/wyona/yanel/@{package-dir}/**"/>
+      basedir="@{classes-dir}"
+      includes="org/wyona/yanel/@{package-dir}/**"
+    >
+      <jar-elements/>
+    </jar>
 
     <copy file="${yanel.source.home}/src/build/pom-@{id}.xml" todir="${yanel.source.home}/build/lib"/>
     <replace file="${yanel.source.home}/build/lib/pom-@{id}.xml" value="${yanel.version}-r${yanel.revision}">
