@@ -112,6 +112,7 @@ public class YanelServlet extends HttpServlet {
     
     public static final String DEFAULT_ENCODING = "UTF-8";
 
+    public static final String YANEL_ACCESS_POLICY_USECASE = "yanel.policy";
     public static final String YANEL_USECASE = "yanel.usecase";
     public static final String YANEL_RESOURCE = "yanel.resource";
     public static final String YANEL_RESOURCE_USECASE = YANEL_RESOURCE + ".usecase";
@@ -179,7 +180,7 @@ public class YanelServlet extends HttpServlet {
         }
 
         // Check for requests re policies
-        String policyRequestPara = request.getParameter("yanel.policy");
+        String policyRequestPara = request.getParameter(YANEL_ACCESS_POLICY_USECASE);
         if (policyRequestPara != null) {
             doAccessPolicyRequest(request, response, policyRequestPara);
             return;
@@ -2056,7 +2057,7 @@ public class YanelServlet extends HttpServlet {
             usecase = new Usecase(TOOLBAR_USECASE);
         }
 
-        String yanelPolicyValue = request.getParameter("yanel.policy");
+        String yanelPolicyValue = request.getParameter(YANEL_ACCESS_POLICY_USECASE);
         if (yanelPolicyValue != null) {
             if (yanelPolicyValue.equals("create")) {
                 usecase = new Usecase("policy.create");
