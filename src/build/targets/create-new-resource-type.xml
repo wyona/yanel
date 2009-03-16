@@ -67,6 +67,12 @@
       <replacetoken>from-scratch</replacetoken>
     </replace>
 
+    <!-- Patch build.xml -->
+    <replace file="${yanel.source.home}/src/contributions/resources/${new.resource.name}/build.xml" value="${new.resource.name}">
+      <replacetoken>from-scratch</replacetoken>
+    </replace>
+
+    <!-- Finalize creation based on chosen Java class template -->
     <echo>${new.resource.java.class}</echo>
     
     <if>
@@ -225,5 +231,8 @@
         </replace>        
       </then>
     </if>
+
+    <!-- Help user to find out what he can do next -->
+    <echo>New resource type "${new.resource.name}" is now created!  Please note that to build it you can either keep using the integrated build system or directly use Eclipse: for details, please run `build -f ${yanel.source.home}/src/contributions/resources/${new.resource.name}/build.xml -p`.</echo>
   </target>
 </project>

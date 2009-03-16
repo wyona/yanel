@@ -1,3 +1,3 @@
-<project name="yanel-resource">
+<project name="yanel-from-scratch-resource-type">
   <import file="${yanel.source.home}/src/build/resource-types/resource-type.build.xml"/>
 </project>

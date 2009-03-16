@@ -54,6 +54,17 @@
     </ant>
   </target>
 
+  <target name="eclipse" description="Generate all files needed to use the resource type under Eclipse (WARNING: .project file will be overwritten!)" depends="eclipse:classpath">
+    <copy file="${yanel.home}/src/build/resource-types/Eclipse-3.template.project" tofile="${resource.home.dir}/.project">
+      <filterset>
+        <filter token="RESOURCE_TYPE_NAME" value="${ant.project.name}"/>
+        <filter token="YANEL_VERSION" value="${yanel.version}-r${yanel.revision}"/>
+        <filter token="GENERATION_COMMAND" value="build -f ${ant.file} eclipse"/>
+      </filterset>
+    </copy>
+    <echo>Eclipse project created: in Eclipse you can now import (as an existing project into your workspace) this resource-type with root directory set to ${resource.home.dir} and build it there!</echo>
+  </target>
+
   <target name="compile" description="Compile Java classes" depends="init">
 
     <mkdir dir="${resource.classes.dir}"/>
