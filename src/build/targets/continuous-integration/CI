@@ -1,0 +1,17 @@
+#!/bin/sh
+YANEL_SOURCE_HOME=`dirname $0`/../../../..
+cd $YANEL_SOURCE_HOME
+#TODO: clean and reconfigure the build automatically
+#rm -f src/build/local.build.properties
+#rm -Rf conf/local
+#./build.sh clean-all
+#./configure.sh ...
+./build.sh clean
+#TODO: delete then recreate a few resources from scratch:
+#./build.sh new-resource-type ...
+./build.sh #FIXME: endorsed lib management asks for user input
+./yanel.sh start
+./build.sh test
+#TODO: test the resources from scratch
+#TODO: run Canoo tests
+./yanel.sh stop
