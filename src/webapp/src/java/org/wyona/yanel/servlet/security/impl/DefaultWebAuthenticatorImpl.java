@@ -408,6 +408,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             if (cookies != null) {
                 for (int i = 0; i < cookies.length; i++) {
                     log.debug("Cookie: " + cookies[i].getName() + ", " + cookies[i].getValue());
+                    // TODO: Parse realm and login name (see method doRememberMyLoginName())
                     if (cookies[i].getName().equals(LOGIN_DEFAULT_COOKIE_NAME)) {
                         Element loginDefaultElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-default"));            
                         loginDefaultElement.setAttributeNS(YanelServlet.NAMESPACE, "username", cookies[i].getValue());
@@ -589,6 +590,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             log.error("DEBUG:Remember my login name: " + loginUsername + "," + openID);
             rememberMyLoginName = true;
             Cookie rememberLoginNameCookie = null;
+            // TODO: Add realm as additional information
             if (loginUsername != null) {
                 rememberLoginNameCookie = new Cookie(LOGIN_DEFAULT_COOKIE_NAME, loginUsername);
             } else if (openID != null) {
