@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import java.util.Vector;
 
 /**
- * Utility class to view policies
+ * Utility class to view policies (TODO: It would be good to refactor this by generating a more generic XML and then allow a custom XSLT to generate the actual XHTML)
  */
 public class PolicyViewer {
 
@@ -31,8 +31,9 @@ public class PolicyViewer {
      * @param orderedBy Allows ordering by usecases or identities
      * @param showParents Show the policies of the parent nodes, which allows to figure out how the policy has been aggregated
      * @param showTabs Show the tabs which allow to switch between parent policies and node policy
+     * @param showAbbreviatedLabels Show abbreviated labels
      */
-    static public String getXHTMLView (PolicyManager pm, GroupManager gm, String path, String contentItemId, int orderedBy, boolean showParents, boolean showTabs) {
+    static public String getXHTMLView (PolicyManager pm, GroupManager gm, String path, String contentItemId, int orderedBy, boolean showParents, boolean showTabs, boolean showAbbreviatedLabels) {
         try {
             StringBuffer sb = new StringBuffer("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
             sb.append("<head>");
@@ -58,10 +59,10 @@ public class PolicyViewer {
                 sb.append("<tr><td>Path</td>" + getSplittedPath(pm, path, contentItemId) + "</tr>");
 
                 boolean aggregate = false;
-                sb.append("<tr valign=\"top\"><td>Policy</td>" + getPolicies(pm, gm, path, contentItemId, aggregate, orderedBy) + "</tr>");
+                sb.append("<tr valign=\"top\"><td>Policy</td>" + getPolicies(pm, gm, path, contentItemId, aggregate, orderedBy, showAbbreviatedLabels) + "</tr>");
 
                 aggregate = true;
-                sb.append("<tr valign=\"top\"><td>Aggregated Policy</td>" + getPolicies(pm, gm, path, contentItemId, aggregate, orderedBy) + "</tr>");
+                sb.append("<tr valign=\"top\"><td>Aggregated Policy</td>" + getPolicies(pm, gm, path, contentItemId, aggregate, orderedBy, showAbbreviatedLabels) + "</tr>");
                 sb.append("</table></p>");
             } else {
                 // Show policy of this node only
@@ -77,7 +78,7 @@ public class PolicyViewer {
                 boolean aggregate = true;
                 Policy p = pm.getPolicy(path, aggregate);
                 sb.append("<p><table border=\"1\"><tr>");
-		sb.append(getPolicy(p, aggregate, orderedBy, null, gm));
+		sb.append(getPolicy(p, aggregate, orderedBy, null, pm, gm, showAbbreviatedLabels));
                 if (contentItemId != null) {
                     sb.append("<td>contentItemId (" + contentItemId + ") not implemented yet into API!</td>");
                 }
@@ -125,7 +126,7 @@ public class PolicyViewer {
      * @param aggregate If aggregate true, then the policy will be aggregated/merged with existing parent policies, otherwise only the node specific policy will be returned
      * @param orderedBy Ordered by identities or usecases
      */
-    static private StringBuffer getPolicies(PolicyManager pm, GroupManager groupManager, String path, String contentItemId, boolean aggregate, int orderedBy) throws AuthorizationException {
+    static private StringBuffer getPolicies(PolicyManager pm, GroupManager groupManager, String path, String contentItemId, boolean aggregate, int orderedBy, boolean abbreviation) throws AuthorizationException {
 
         String[] names = path.split("/");
         StringBuffer sb = new StringBuffer();
@@ -155,12 +156,12 @@ public class PolicyViewer {
             //log.debug("Back path: " + i + ", " + names[i] + ", " + back);
 
 
-            sb.append(getPolicy(p, aggregate, orderedBy, back, groupManager));
+            sb.append(getPolicy(p, aggregate, orderedBy, back, pm, groupManager, abbreviation));
         }
 
         // Show policy of the actual node
         Policy p = pm.getPolicy(path, aggregate);
-        sb.append(getPolicy(p, aggregate, orderedBy, null, groupManager));
+        sb.append(getPolicy(p, aggregate, orderedBy, null, pm, groupManager, abbreviation));
 
         // Show policy according to content id
         if (contentItemId != null) {
@@ -173,7 +174,7 @@ public class PolicyViewer {
     /**
      * Get policy as XHTML list ordered by usecases
      */
-    static private StringBuffer getPolicyAsXHTMLListOrderedByUsecases(Policy p) {
+    static private StringBuffer getPolicyAsXHTMLListOrderedByUsecases(Policy p, boolean abbreviation) {
         StringBuffer sb = new StringBuffer();
         UsecasePolicy[] up = p.getUsecasePolicies();
         if (up != null && up.length > 0) {
@@ -186,12 +187,12 @@ public class PolicyViewer {
                     if (ids[j].isWorld()) {
                         sb.append("<li>WORLD</li>");
                     } else {
-                        sb.append("<li>User: " + ids[j].getUsername() + "</li>");
+                        sb.append("<li>" + getUserLabel(abbreviation) + ": " + ids[j].getUsername() + "</li>");
                     }
                 }
                 GroupPolicy[] gps = up[i].getGroupPolicies();
                 for (int j = 0; j < gps.length; j++) {
-                    sb.append("<li>Group: " + gps[j].getId() + "</li>");
+                    sb.append("<li>" + getGroupLabel(abbreviation) + ": " + gps[j].getId() + "</li>");
                 }
                 sb.append("</ol>");
                 sb.append("</li>");
@@ -207,7 +208,7 @@ public class PolicyViewer {
      * Get policy as XHTML list ordered by identities
      * @param dismantleGroups Show all members of a group instead the group itself
      */
-    static private StringBuffer getPolicyAsXHTMLListOrderedByIdentities(Policy p, boolean dismantleGroups, GroupManager gm) {
+    static private StringBuffer getPolicyAsXHTMLListOrderedByIdentities(Policy p, boolean dismantleGroups, PolicyManager pm, GroupManager gm, boolean abbreviation) {
         Vector worldRights = new Vector();
         java.util.HashMap users = new java.util.HashMap();
         java.util.HashMap groups = new java.util.HashMap();
@@ -260,23 +261,23 @@ public class PolicyViewer {
         }
 
         if (worldRights.size() > 0) {
-            sb.append("<li>WORLD (" + getCommaSeparatedList(worldRights) + ")</li>");
+            sb.append("<li>WORLD (" + getCommaSeparatedList(worldRights, pm) + ")</li>");
         }
 
         // Users
         java.util.Iterator userIterator = users.keySet().iterator();
         while (userIterator.hasNext()) {
             String userName = (String) userIterator.next();
-            sb.append("<li>User: " + userName + " (" + getCommaSeparatedList((Vector) users.get(userName)) + ")</li>");
+            sb.append("<li>" + getUserLabel(abbreviation) + ": " + userName + " (" + getCommaSeparatedList((Vector) users.get(userName), pm) + ")</li>");
         }
 
         //Groups 
         java.util.Iterator groupIterator = groups.keySet().iterator();
         while (groupIterator.hasNext()) {
             String groupName = (String) groupIterator.next();
-            String rights = getCommaSeparatedList((Vector) groups.get(groupName));
+            String rights = getCommaSeparatedList((Vector) groups.get(groupName), pm);
             if (!dismantleGroups) {
-                sb.append("<li>Group: " + groupName + " (" + rights + ")</li>");
+                sb.append("<li>" + getGroupLabel(abbreviation) + ": " + groupName + " (" + rights + ")</li>");
             } else {
                 //sb.append("<li>Dismantle Group: " + groupName + " (" + rights + ")</li>");
                 try {
@@ -284,9 +285,9 @@ public class PolicyViewer {
                     for (int i = 0; i < groupMembers.length; i++) {
                         if (groupMembers[i] instanceof org.wyona.security.core.api.Group) {
                             log.warn("TODO: Also dismantle sub-group '" + groupMembers[i].getID() + "' contained by group '" + groupName + "'.");
-                            sb.append("<li>Sub-Group: " + groupMembers[i].getID() + " (" + rights + ")</li>");
+                            sb.append("<li>" + getSubGroupLabel(abbreviation) + ": " + groupMembers[i].getID() + " (" + rights + ")</li>");
                         } else if (groupMembers[i] instanceof org.wyona.security.core.api.User) {
-                            sb.append("<li>User: " + groupMembers[i].getID() + " (" + rights + ")</li>");
+                            sb.append("<li>" + getUserLabel(abbreviation) + ": " + groupMembers[i].getID() + " (" + rights + ")</li>");
                         } else {
                             sb.append("<li>Item: " + groupMembers[i].getID() + " (" + rights + ")</li>");
                         }
@@ -310,10 +311,13 @@ public class PolicyViewer {
     }
 
     /**
-     * @param rights
+     * Generate a comma separated list, whereas compare with list of rights declared by policy manager implementation
+     * @param rights Rights
+     * @param pm PolicyManager
      */
-    private static String getCommaSeparatedList(Vector rights) {
-        StringBuffer sb = new StringBuffer();
+    private static String getCommaSeparatedList(Vector rights, PolicyManager pm) {
+        //pm.getUsecases();
+        StringBuilder sb = new StringBuilder();
         if (rights.size() > 0) {
             sb.append((String) rights.elementAt(0));
             for (int i = 1; i < rights.size(); i++) {
@@ -346,7 +350,7 @@ public class PolicyViewer {
      * @param aggregate If aggregate true, then the policy will be aggregated/merged with existing parent policies, otherwise only the node specific policy will be returned
      * @param back ../../../
      */
-    static private StringBuffer getPolicy(Policy policy, boolean aggregate, int orderedBy, String back, GroupManager groupManager) throws AuthorizationException {
+    static private StringBuffer getPolicy(Policy policy, boolean aggregate, int orderedBy, String back, PolicyManager pm, GroupManager groupManager, boolean abbreviation) throws AuthorizationException {
         StringBuffer sb = new StringBuffer("<td>");
         if (policy != null) {
             String showUseInheritedPolicies = "";
@@ -361,9 +365,9 @@ public class PolicyViewer {
             }
 
             if (orderedBy == ORDERED_BY_USECASES) {
-                sb.append(editPolicy + showUseInheritedPolicies + getPolicyAsXHTMLListOrderedByUsecases(policy));
+                sb.append(editPolicy + showUseInheritedPolicies + getPolicyAsXHTMLListOrderedByUsecases(policy, abbreviation));
             } else if (orderedBy == ORDERED_BY_IDENTITIES) {
-                sb.append(editPolicy + showUseInheritedPolicies + getPolicyAsXHTMLListOrderedByIdentities(policy, aggregate, groupManager));
+                sb.append(editPolicy + showUseInheritedPolicies + getPolicyAsXHTMLListOrderedByIdentities(policy, aggregate, pm, groupManager, abbreviation));
             } else {
                 sb.append("No such orderedBy implemented: " + orderedBy);
             }
@@ -389,5 +393,29 @@ public class PolicyViewer {
             backPath.append("../");
         }
         return backPath.toString();
+    }
+
+    /**
+     *
+     */
+    private static String getUserLabel(boolean abbreviation) {
+        if (abbreviation) return "u";
+        return "User";
+    }
+
+    /**
+     *
+     */
+    private static String getGroupLabel(boolean abbreviation) {
+        if (abbreviation) return "g";
+        return "Group";
+    }
+
+    /**
+     *
+     */
+    private static String getSubGroupLabel(boolean abbreviation) {
+        if (abbreviation) return "sg";
+        return "Sub-Group";
     }
 }
