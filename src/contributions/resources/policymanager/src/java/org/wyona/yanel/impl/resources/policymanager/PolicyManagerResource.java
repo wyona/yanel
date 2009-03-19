@@ -178,7 +178,7 @@ public class PolicyManagerResource extends BasicXMLResource {
             String[] rights = pm.getUsecases();
             if (rights != null) {
                 for (int i = 0; i < rights.length; i++) {
-                    sb.append("<right id=\"" + rights[i] + "\">" + pm.getUsecaseLabel(rights[i], language) + "</right>");
+                    sb.append("<right id=\"" + rights[i] + "\">" + rights[i] + " (" + pm.getUsecaseLabel(rights[i], language) + ")</right>");
                 }
             }
             sb.append("</rights>");
