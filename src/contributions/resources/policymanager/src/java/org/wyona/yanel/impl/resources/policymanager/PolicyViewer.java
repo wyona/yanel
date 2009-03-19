@@ -316,16 +316,35 @@ public class PolicyViewer {
      * @param pm PolicyManager
      */
     private static String getCommaSeparatedList(Vector rights, PolicyManager pm) {
-        //pm.getUsecases();
         StringBuilder sb = new StringBuilder();
-        if (rights.size() > 0) {
-            sb.append((String) rights.elementAt(0));
-            for (int i = 1; i < rights.size(); i++) {
-                sb.append(", " + (String) rights.elementAt(i));
+        try {
+            String[] usecases = pm.getUsecases();
+            for (int i = 0; i < usecases.length; i++) {
+                boolean noSuchRight = true;
+                for (int k = 0; k < rights.size(); k++) {
+                    if (usecases[i].equals((String) rights.elementAt(k))) {
+                        sb.append(usecases[i]);
+                        noSuchRight = false;
+                        break;
+                    }
+                }
+                if (noSuchRight) sb.append("-");
+                if (i < usecases.length -1) sb.append(", ");
             }
-        } else {
-            if(log.isDebugEnabled()) log.debug("No rights asigned!");
-            return "No rights!";
+/*
+            if (rights.size() > 0) {
+                sb.append((String) rights.elementAt(0));
+                for (int i = 1; i < rights.size(); i++) {
+                    sb.append(", " + (String) rights.elementAt(i));
+                }
+            } else {
+                if(log.isDebugEnabled()) log.debug("No rights asigned!");
+                sb.append("No rights!");
+      		}
+*/
+        } catch(Exception e) {
+            log.error(e, e);
+            sb.append(e.getMessage());
         }
         return sb.toString();
     }
