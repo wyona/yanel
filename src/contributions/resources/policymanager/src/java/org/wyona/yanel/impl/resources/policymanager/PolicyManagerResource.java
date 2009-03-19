@@ -74,7 +74,7 @@ public class PolicyManagerResource extends BasicXMLResource {
         }
         
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(getPath());
-        StringBuffer sb = new StringBuffer("");
+        StringBuilder sb = new StringBuilder("");
         try {
             if (policyUsecase.equals("read")) {
 
@@ -126,6 +126,7 @@ public class PolicyManagerResource extends BasicXMLResource {
                     sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
                     sb.append("<head>");
                     sb.append("<title>Update Access Policy</title>");
+		    sb.append("<meta name=\"generator\" content=\"" + this.getClass().getName() + "\"/>");
 
 	            sb.append("<link rel=\"stylesheet\" href=\"" + PathUtil.getResourcesHtdocsPath(this) + "js/accesspolicyeditor/style.css\" type=\"text/css\"/>");
 
