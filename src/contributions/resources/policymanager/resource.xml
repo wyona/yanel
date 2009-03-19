@@ -6,12 +6,10 @@
   class="org.wyona.yanel.impl.resources.policymanager.PolicyManagerResource"
   >
 <description>
-Policy Manager
+Policy manager resource in order to view existing access policies
 </description>
 
 <rtd>
-<!--
-  <property name="foo" default-value="bar"/>
--->
+  <property name="show-abbreviated-labels" default-value="false"/>
 </rtd>
 </resource>
