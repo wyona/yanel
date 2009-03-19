@@ -92,7 +92,9 @@ public class PolicyManagerResource extends BasicXMLResource {
                 String showTabsParam = request.getParameter("showTabs");
                 if (showTabsParam != null) showTabs = new java.lang.Boolean(showTabsParam).booleanValue();
 
-                sb.append(PolicyViewer.getXHTMLView(getRealm().getPolicyManager(), getRealm().getIdentityManager().getGroupManager(), getPath(), null, orderedBy, showParents, showTabs));
+                boolean showAbbreviatedLabels = false;
+                if (getResourceConfigProperty("show-abbreviated-labels") != null) showAbbreviatedLabels = Boolean.valueOf(getResourceConfigProperty("show-abbreviated-labels"));
+                sb.append(PolicyViewer.getXHTMLView(getRealm().getPolicyManager(), getRealm().getIdentityManager().getGroupManager(), getPath(), null, orderedBy, showParents, showTabs, showAbbreviatedLabels));
 	    } else if (policyUsecase.equals("update")) {
                 String getXML = request.getParameter("get");
                 String postXML = request.getParameter("post");
