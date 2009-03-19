@@ -45,7 +45,7 @@
       <dependency groupId="net.sf.ehcache" artifactId="ehcache" version="1.5.0"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.2-dev-r38016"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.2-dev-r42034"/>
 
       <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
@@ -69,8 +69,8 @@
 <!-- IMPORTANT: Please also see src/build/targets/webapp/webapp.xml re ambiguous libs -->
       <dependency groupId="xalan" artifactId="xalan" version="2.7.0"/>
 
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="0.2-dev-r38016"/>
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="0.2-dev-r38016"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="0.2-dev-r42034"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="0.2-dev-r42034"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="yarep" artifactId="yarep-impl" version="1.0-dev-r39487"/>
       <dependency groupId="spring" artifactId="spring"
