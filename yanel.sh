@@ -54,7 +54,8 @@ elif [ "$1" = "start-jetty" ]; then
   fi  
 elif [ "$1" = "configure" ]; then
   echo "INFO: Configuring Yanel..."
-  $OUR_ANT config
+  shift
+  $OUR_ANT config "$@"
 elif [ "$1" = "build" ]; then
   echo "INFO: Building Yanel..."
   shift

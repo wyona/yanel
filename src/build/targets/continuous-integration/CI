@@ -1,17 +1,28 @@
-#!/bin/sh
+#!/bin/sh -ex
+#TODO: allow ports configuration
+
 YANEL_SOURCE_HOME=`dirname $0`/../../../..
 cd $YANEL_SOURCE_HOME
-#TODO: clean and reconfigure the build automatically
-#rm -f src/build/local.build.properties
-#rm -Rf conf/local
-#./build.sh clean-all
-#./configure.sh ...
-./build.sh clean
+
+rm -f src/build/local.build.properties
+./build.sh clean-all
+#TODO: use our own Maven local repo instead of the user's!
+
+./yanel.sh configure -Danswer=NO \
+ -DanswerReconfigureTomcat1=YES \
+ -DpathOfUserSpecificTomcat=/opt/hudson/home/jobs/Yanel-trunk/workspace/yanel-trunk.working-copy/local/apache-tomcat-5.5.20 #XXX HACK
+
 #TODO: delete then recreate a few resources from scratch:
 #./build.sh new-resource-type ...
-./build.sh #FIXME: endorsed lib management asks for user input
+
+./build.sh -Danswer=YES #XXX HACK: endorsed lib management always uses the same variable to ask for user input
+
 ./yanel.sh start
+
 ./build.sh test
 #TODO: test the resources from scratch
 #TODO: run Canoo tests
+
 ./yanel.sh stop
+
+./build.sh clean -Dforce-clean=true
