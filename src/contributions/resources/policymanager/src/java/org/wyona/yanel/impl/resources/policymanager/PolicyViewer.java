@@ -33,7 +33,7 @@ public class PolicyViewer {
      * @param showTabs Show the tabs which allow to switch between parent policies and node policy
      * @param showAbbreviatedLabels Show abbreviated labels
      */
-    static public String getXHTMLView (PolicyManager pm, GroupManager gm, String path, String contentItemId, int orderedBy, boolean showParents, boolean showTabs, boolean showAbbreviatedLabels) {
+    static public String getXHTMLView(PolicyManager pm, GroupManager gm, String path, String contentItemId, int orderedBy, boolean showParents, boolean showTabs, boolean showAbbreviatedLabels) {
         try {
             StringBuffer sb = new StringBuffer("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
             sb.append("<head>");
@@ -59,10 +59,10 @@ public class PolicyViewer {
                 sb.append("<tr><td>Path</td>" + getSplittedPath(pm, path, contentItemId) + "</tr>");
 
                 boolean aggregate = false;
-                sb.append("<tr valign=\"top\"><td>Policy</td>" + getPolicies(pm, gm, path, contentItemId, aggregate, orderedBy, showAbbreviatedLabels) + "</tr>");
+                sb.append("<tr valign=\"top\"><td>Policy</td>" + getPoliciesAsXHTML(pm, gm, path, contentItemId, aggregate, orderedBy, showAbbreviatedLabels) + "</tr>");
 
                 aggregate = true;
-                sb.append("<tr valign=\"top\"><td>Aggregated Policy</td>" + getPolicies(pm, gm, path, contentItemId, aggregate, orderedBy, showAbbreviatedLabels) + "</tr>");
+                sb.append("<tr valign=\"top\"><td>Aggregated Policy</td>" + getPoliciesAsXHTML(pm, gm, path, contentItemId, aggregate, orderedBy, showAbbreviatedLabels) + "</tr>");
                 sb.append("</table></p>");
             } else {
                 // Show policy of this node only
@@ -78,7 +78,7 @@ public class PolicyViewer {
                 boolean aggregate = true;
                 Policy p = pm.getPolicy(path, aggregate);
                 sb.append("<p><table border=\"1\"><tr>");
-		sb.append(getPolicy(p, aggregate, orderedBy, null, pm, gm, showAbbreviatedLabels));
+		sb.append(getPolicyAsXHTML(p, aggregate, orderedBy, null, pm, gm, showAbbreviatedLabels));
                 if (contentItemId != null) {
                     sb.append("<td>contentItemId (" + contentItemId + ") not implemented yet into API!</td>");
                 }
@@ -118,7 +118,7 @@ public class PolicyViewer {
     }
 
     /**
-     * Get policies
+     * Get policies as XHTML
 
      * @param pm Policy manager
      * @param path Path of node
@@ -126,7 +126,7 @@ public class PolicyViewer {
      * @param aggregate If aggregate true, then the policy will be aggregated/merged with existing parent policies, otherwise only the node specific policy will be returned
      * @param orderedBy Ordered by identities or usecases
      */
-    static private StringBuffer getPolicies(PolicyManager pm, GroupManager groupManager, String path, String contentItemId, boolean aggregate, int orderedBy, boolean abbreviation) throws AuthorizationException {
+    static private StringBuffer getPoliciesAsXHTML(PolicyManager pm, GroupManager groupManager, String path, String contentItemId, boolean aggregate, int orderedBy, boolean abbreviation) throws AuthorizationException {
 
         String[] names = path.split("/");
         StringBuffer sb = new StringBuffer();
@@ -156,12 +156,12 @@ public class PolicyViewer {
             //log.debug("Back path: " + i + ", " + names[i] + ", " + back);
 
 
-            sb.append(getPolicy(p, aggregate, orderedBy, back, pm, groupManager, abbreviation));
+            sb.append(getPolicyAsXHTML(p, aggregate, orderedBy, back, pm, groupManager, abbreviation));
         }
 
         // Show policy of the actual node
         Policy p = pm.getPolicy(path, aggregate);
-        sb.append(getPolicy(p, aggregate, orderedBy, null, pm, groupManager, abbreviation));
+        sb.append(getPolicyAsXHTML(p, aggregate, orderedBy, null, pm, groupManager, abbreviation));
 
         // Show policy according to content id
         if (contentItemId != null) {
@@ -346,11 +346,12 @@ public class PolicyViewer {
     }
 
     /**
-     * Get policy
+     * Get policy as XHTML
+     *
      * @param aggregate If aggregate true, then the policy will be aggregated/merged with existing parent policies, otherwise only the node specific policy will be returned
      * @param back ../../../
      */
-    static private StringBuffer getPolicy(Policy policy, boolean aggregate, int orderedBy, String back, PolicyManager pm, GroupManager groupManager, boolean abbreviation) throws AuthorizationException {
+    static private StringBuffer getPolicyAsXHTML(Policy policy, boolean aggregate, int orderedBy, String back, PolicyManager pm, GroupManager groupManager, boolean abbreviation) throws AuthorizationException {
         StringBuffer sb = new StringBuffer("<td>");
         if (policy != null) {
             String showUseInheritedPolicies = "";
