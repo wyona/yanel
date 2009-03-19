@@ -18,6 +18,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/>
+  <meta name="generator" content="Wyona Yanel"/>
   
   <xsl:choose>
   <xsl:when test="$language = 'es'">
