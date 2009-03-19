@@ -242,6 +242,7 @@
     <move file="${tomcat1.home.dir}/conf/server.xml.ssl" tofile="${tomcat1.home.dir}/conf/server.xml"/>
   </target>
   
+<!-- NOTE: This is called from ../config.xml, but is not necessary as long as we do not provide a minimal cluster setup by default
   <target name="ask-to-reconfigure-tomcat-cluster-node2" description="reconfigure Tomcat cluster node 2" if="isTomcat2HomeSet">
     <input message="Do you want to reconfigure tomcat cluster node 2 in order to support SSL? (yes/NO):" defaultvalue="NO" addproperty="answerReconfigureTomcat2"/>
     <condition property="reconfigureTomcat2">
@@ -267,5 +268,6 @@
     <copy file="${tomcat2.home.dir}/conf/server.xml" tofile="${tomcat2.home.dir}/conf/server.xml.BAK_${timestamp}"/>
     <move file="${tomcat2.home.dir}/conf/server.xml.ssl" tofile="${tomcat2.home.dir}/conf/server.xml"/>
   </target>
+-->
 
 </project>
