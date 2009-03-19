@@ -2,7 +2,7 @@
 
 <project name="config" default="config" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
     
-    <target name="config" description="Initialize all local properties files" depends="init">
+  <target name="config" description="Initialize all local properties files" depends="init">
     <condition property="local.build.properties.does.not.exist.yet">
       <not>
         <available file="local.build.properties" type="file"/>
@@ -34,10 +34,12 @@
     </condition>
     <antcall target="ask-to-reconfigure-tomcat-cluster-node1"/>
     
+<!-- NOTE: This is only necessary if we want to provide a setup of a minimal cluster
     <condition property="isTomcat2HomeSet">
       <isset property="tomcat2.home.dir"/>
     </condition>
     <antcall target="ask-to-reconfigure-tomcat-cluster-node2"/>
+-->
 
     <antcall target="first-time-user-configuration-message"/>
     <input message="Do you want to continue the configuration nevertheless? (yes/NO)" addproperty="answer" defaultvalue="NO"/>
@@ -48,7 +50,7 @@
     <antcall target="configure-local"/>
   </target>
   
-    <target name="first-time-user-configuration-message">
+  <target name="first-time-user-configuration-message">
     <echo>#################################################################################</echo>
     <echo># As a first time user one does NOT have to configure anything any further, but #</echo>
     <echo># rather exit here and just run build.sh on UNIX resp. build.bat on Windows!    #</echo>
