@@ -2015,7 +2015,7 @@ public class YanelServlet extends HttpServlet {
                 log.info("Delete resource (yanel resource usecase delete)");
                 usecase = new Usecase("delete");
             } else {
-                log.warn("No such resource usecase: " + yanelResUsecaseValue);
+                log.warn("No such generic Yanel resource usecase: " + yanelResUsecaseValue + " (maybe some custom resource usecase)");
             }
         }
 
