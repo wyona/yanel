@@ -1,9 +1,21 @@
 <?xml version="1.0"?>
-
-<project name="test" default="test" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="test" default="test">
 
   <target name="test" description="Run tests">
     <ant dir="../test" target="test" inheritall="false"/>
+    <antcall target="test-using-webtest"/>
+  </target>
+
+  <target name="test-using-webtest" if="webtest.home.dir">
+    <subant target=""
+     inheritall="false"
+    >
+    <!--
+     failonerror="false"
+    -->
+      <property name="webtest.home" value="${webtest.home.dir}"/>
+      <fileset dir="../.." includes="src/realms/**/canoo/build.xml"/>
+    </subant>
   </target>
   
 </project>

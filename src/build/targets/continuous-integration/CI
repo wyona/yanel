@@ -19,9 +19,8 @@ rm -f src/build/local.build.properties
 
 ./yanel.sh start
 
-./build.sh test
+./build.sh test #TODO: we would need a headless setup (e.g. Xvfb) to run the Canoo tests: -Dwebtest.home.dir=/opt/canoo/webtest-3.0-R_1758
 #TODO: test the resources from scratch
-#TODO: run Canoo tests
 
 ./yanel.sh stop
 
