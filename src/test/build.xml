@@ -3,6 +3,7 @@
  xmlns:yanel="http://www.wyona.org/yanel/1.0"
  xmlns:artifact="antlib:org.apache.maven.artifact.ant"
 >
+  <dirname property="tests.home.dir" file="${ant.file}"/>
 
   <property file="../build/local.build.properties"/>
   <property file="../build/build.properties"/>
@@ -28,6 +29,7 @@
   <import file="../build/targets/build-artifacts.build.xml"/>
   
   <target name="init" depends="dependencies">
+    <!--XXX HACK: we should distinguish between the build classpath and the runtime classpath... -->
     <path id="classpath">
       <pathelement location="${webapp.classes.dir}"/>
       <pathelement path="${maven2.cp}"/>
@@ -63,7 +65,28 @@
 
     <property name="maven2.cp" refid="maven2.classpath"/>
   </target>
+
+  <target name="eclipse:classpath" description="Update Eclipse's .classpath file" depends="init">
+    <ant dir="${yanel.home.dir}/tools/eclipse.settings" target="update-classpath"
+     inheritAll="false" inheritRefs="false">
+      <reference torefid="classpath.ref" refid="classpath"/>
+      <property name="classpath.dir" value="${tests.home.dir}"/>
+      <property name="classpath.template.file" value="${tests.home.dir}/.empty.classpath"/>
+    </ant>
+  </target>
  
+  <target name="eclipse" description="Generate all files needed to use the project under Eclipse (WARNING: .project file will be overwritten!)" depends="eclipse:classpath">
+    <!--XXX HACK: we should generify this instead of stealing files from resource-types' build... -->
+    <copy file="${yanel.home.dir}/src/build/resource-types/Eclipse-3.template.project" tofile="${tests.home.dir}/.project">
+      <filterset>
+        <filter token="RESOURCE_TYPE_NAME" value="yanel-test"/>
+        <filter token="YANEL_VERSION" value="${yanel.version}-r${yanel.revision}"/>
+        <filter token="GENERATION_COMMAND" value="build -f src/test/build.xml eclipse"/>
+      </filterset>
+    </copy>
+    <echo>Eclipse project created: in Eclipse you can now import (as an existing project into your workspace) this project with root directory set to ${tests.home.dir} and build it there!</echo>
+  </target>
+
   <target name="compile-classes" depends="init" description="Compile Java test classes of Yanel">
     <mkdir dir="${build.dir}"/>
     <mkdir dir="${junit.build.dir}"/>
