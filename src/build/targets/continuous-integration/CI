@@ -1,5 +1,12 @@
-#!/bin/sh -ex
-#TODO: allow ports configuration
+#!/bin/sh
+if [ $# -ne 2 ]; then
+	echo "Usage: CI <HTTP port> <HTTPS port>"
+	exit 2
+fi
+set -ex
+HTTP_PORT=$1
+HTTPS_PORT=$2
+TOMCAT_HOME=/opt/hudson/home/jobs/Yanel-trunk/workspace/yanel-trunk.working-copy/local/apache-tomcat-5.5.20 #XXX HACK: leaving that blank does not work yet
 
 YANEL_SOURCE_HOME=`dirname $0`/../../../..
 cd $YANEL_SOURCE_HOME
@@ -10,16 +17,31 @@ rm -f src/build/local.build.properties
 
 ./yanel.sh configure -Danswer=NO \
  -DanswerReconfigureTomcat1=YES \
- -DpathOfUserSpecificTomcat=/opt/hudson/home/jobs/Yanel-trunk/workspace/yanel-trunk.working-copy/local/apache-tomcat-5.5.20 #XXX HACK
+ -DpathOfUserSpecificTomcat=$TOMCAT_HOME
+
+BUILD_OPTS="-Dtomcat1.ssl.port=$HTTPS_PORT -Dtomcat1.http.port=$HTTP_PORT"
 
 #TODO: delete then recreate a few resources from scratch:
 #./build.sh new-resource-type ...
 
-./build.sh -Danswer=YES #XXX HACK: endorsed lib management always uses the same variable to ask for user input
+./build.sh $BUILD_OPTS -Danswer=YES #XXX HACK: endorsed lib management always uses the same variable to ask for user input
+
+# Patch Tomcat ports:
+tools/apache-ant/bin/ant -f tools/apache-tomcat/build.xml configure-host -Dtomcat.home.dir=$TOMCAT_HOME -Dhost=localhost -Dhost.HTTP.port=$HTTP_PORT -Dhost.HTTPS.port=$HTTPS_PORT
 
 ./yanel.sh start
 
-./build.sh test #TODO: we would need a headless setup (e.g. Xvfb) to run the Canoo tests: -Dwebtest.home.dir=/opt/canoo/webtest-3.0-R_1758
+cat > src/test/htmlunit/local.htmlunit-properties.xml <<EOF #FIXME: do this in a portable way
+<config>
+  <htmlunit>
+    <debugLevel>4</debugLevel>
+    <baseUrl>http://localhost:$HTTP_PORT/yanel/</baseUrl>
+    <reservedPrefix>yanel/</reservedPrefix>
+    <language>en</language>
+  </htmlunit>
+</config>
+EOF
+./build.sh test #TODO: we would need a headless setup (e.g. Xvfb) to run the Canoo tests: -Dwebtest.home.dir=/opt/canoo/webtest-3.0-R_1758 -Dwebtest.config.host=localhost -Dwebtest.config.protocol=http -Dwebtest.config.port=$HTTP_PORT
 #TODO: test the resources from scratch
 
 ./yanel.sh stop
