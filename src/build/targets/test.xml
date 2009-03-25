@@ -14,6 +14,10 @@
      failonerror="false"
     -->
       <property name="webtest.home" value="${webtest.home.dir}"/>
+      <propertyset>
+        <propertyref prefix="webtest.config."/>
+      </propertyset>
+      <property name="wt.headless" value="${headless}"/>
       <fileset dir="../.." includes="src/realms/**/canoo/build.xml"/>
     </subant>
   </target>
