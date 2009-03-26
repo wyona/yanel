@@ -8,8 +8,8 @@
   <target name="test" depends="wt.defineMacros">
     <webtest name="Usecase Test resource documentation outside JAR package">
       &config;
-      <invoke description="Get the page: " url="/yanel/resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3aodt/yanel/doc/index.html"/>
-      <verifyText description="Verify that text is contained in the page" text="ODT"/>
+      <invoke description="Get the page: " url="/yanel/resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3adirectory/yanel/doc/index.html"/>
+      <verifyText description="Verify that text is contained in the page" text="Collection"/>
     </webtest>
 
     <webtest name="Usecase Test resource documentation inside JAR package">
