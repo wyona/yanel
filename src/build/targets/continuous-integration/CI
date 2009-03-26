@@ -41,7 +41,7 @@ cat > src/test/htmlunit/local.htmlunit-properties.xml <<EOF #FIXME: do this in a
   </htmlunit>
 </config>
 EOF
-./build.sh test -Dwebtest.home.dir=/opt/canoo/webtest-3.0-R_1758 -Dwebtest.config.host=localhost -Dwebtest.config.protocol=http -Dwebtest.config.port=$HTTP_PORT
+./build.sh test -Dwebtest.home.dir=/opt/canoo/webtest-3.0-R_1758 -Dwebtest.config.host=localhost -Dwebtest.config.protocol=http -Dwebtest.config.port=$HTTP_PORT -Dheadless=
 #TODO: test the resources from scratch
 
 ./yanel.sh stop
