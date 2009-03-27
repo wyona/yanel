@@ -146,6 +146,27 @@
     <jar jarfile="${yanel.source.home}/build/webapps/${servlet.context.prefix}.war" basedir="${yanel.source.home}/build/webapps/${servlet.context.prefix}"/>
   </target>
   
+  <target name="eclipse:classpath" description="Update Eclipse's .classpath file" depends="init, set-classpath">
+    <ant dir="${yanel.source.home}/tools/eclipse.settings" target="update-classpath"
+     inheritAll="false" inheritRefs="false">
+      <reference torefid="classpath.ref" refid="classpath.compile"/>
+      <property name="classpath.dir" value="${yanel.source.home}"/>
+      <property name="classpath.template.file" value="${yanel.source.home}/src/build/empty.classpath"/>
+    </ant>
+  </target>
+ 
+  <target name="eclipse" description="Generate all files needed to use the project under Eclipse (WARNING: .project file will be overwritten!)" depends="eclipse:classpath">
+    <!--XXX HACK: we should generify this instead of stealing files from resource-types' build... -->
+    <copy file="${yanel.source.home}/src/build/resource-types/Eclipse-3.template.project" tofile="${yanel.source.home}/.project">
+      <filterset>
+        <filter token="RESOURCE_TYPE_NAME" value="yanel"/>
+        <filter token="YANEL_VERSION" value="${yanel.version}-r${yanel.revision}"/>
+        <filter token="GENERATION_COMMAND" value="build eclipse"/>
+      </filterset>
+    </copy>
+    <echo>Eclipse project created: in Eclipse you can now import (as an existing project into your workspace) this project with root directory set to ${yanel.source.home} and build it there!</echo>
+  </target>
+
   <target name="compile-webapp-classes" description="Compile Java classes of Yanel webapp" depends="init, compile-core, compile-cmdl"><!--XXX HACK: This is the only place where we compile the command line interface, we should do that elsewhere. -->
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${yanel.source.home}/src/webapp/src/java/org/wyona/yanel/servlet" destdir="${classes.dir}"
