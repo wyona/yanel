@@ -16,10 +16,13 @@ rm -f src/build/local.build.properties
 #TODO: use our own Maven local repo instead of the user's!
 
 ./yanel.sh configure -Danswer=NO \
- -DanswerReconfigureTomcat1=YES \
+ -DanswerReconfigureTomcat1=no \
  -DpathOfUserSpecificTomcat=$TOMCAT_HOME
+#FIXME: we do not reconfigure Tomcat for SSL because Canoo tests fail with SSL activated! :/
 
-BUILD_OPTS="-Dtomcat1.ssl.port=$HTTPS_PORT -Dtomcat1.http.port=$HTTP_PORT"
+#BUILD_OPTS="-Dtomcat1.ssl.port=$HTTPS_PORT -Dtomcat1.http.port=$HTTP_PORT"
+BUILD_OPTS=
+#FIXME: we do not configure the ports used for switching back and forth to HTTPS from HTTP because Canoo tests fail with SSL activated! :/
 
 #TODO: delete then recreate a few resources from scratch:
 #./build.sh new-resource-type ...
