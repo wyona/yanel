@@ -83,9 +83,11 @@
 
     <!-- Patch properties ... -->
 
+    <!-- DEPRECATED -->
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.xml" value="${yanel.source.home.forward.slashes}">
       <replacetoken>..</replacetoken>
     </replace>
+    <!-- /DEPRECATED -->
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" value="${yanel.source.home.forward.slashes}/src/realms">
       <replacetoken>@REALMS_DIR@</replacetoken>
