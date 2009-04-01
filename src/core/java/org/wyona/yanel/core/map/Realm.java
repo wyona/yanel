@@ -39,14 +39,14 @@ import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  *
  */
 public class Realm {
 
-    private Category log = Category.getInstance(Realm.class);
+    private static Logger log = Logger.getLogger(Realm.class);
 
     private String name;
     private String id;
