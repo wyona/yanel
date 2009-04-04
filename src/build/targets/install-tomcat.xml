@@ -13,6 +13,11 @@
       <dependency groupId="apache-org" artifactId="apache-tomcat" version="${tomcat.version}" scope="provided"/>
     </artifact:dependencies>
 
+<!-- DEBUG
+    <property name="prop.maven2.tomcat.fileset" refid="maven2.tomcat.fileset"/>
+    <echo>Refid: ${prop.maven2.tomcat.fileset}</echo>
+-->
+
     <mkdir dir="${yanel.source.home}/local"/>
     <unzip dest="${yanel.source.home}/local">
       <fileset refid="maven2.tomcat.fileset"/>
