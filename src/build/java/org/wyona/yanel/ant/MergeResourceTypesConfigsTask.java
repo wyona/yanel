@@ -12,10 +12,14 @@ import java.io.File;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.map.RealmManager;
 
+import org.apache.log4j.Logger;
+
 /**
  * Merge resource-types.xml config files of the various realms and core
  */
 public class MergeResourceTypesConfigsTask extends Task {
+
+    private static Logger log = Logger.getLogger(MergeResourceTypesConfigsTask.class);
 
     private Path defaultRealmsConfigDir;
     private Path localRealmsConfigDir;
@@ -24,6 +28,7 @@ public class MergeResourceTypesConfigsTask extends Task {
      *
      */
     public void execute() throws BuildException {
+        log.error("DEBUG: Hugo ...");
         log("INFO: Default realms config directory: " + defaultRealmsConfigDir);
         log("INFO: Local realms config directory: " + localRealmsConfigDir);
         File defaultRealmsConfig = new File(defaultRealmsConfigDir.toString(), "realms.xml");
@@ -32,11 +37,13 @@ public class MergeResourceTypesConfigsTask extends Task {
         try {
             if (localRealmsConfig.isFile()) {
                 log("INFO: Local realms config exists: " + localRealmsConfig.getAbsolutePath());
+                // TODO: ...
                 realmManager = new RealmManager("yanel.xml");
                 //realmManager = new RealmManager("local.realms.xml");
                 //realmManager = new RealmManager(localRealmsConfig.getAbsolutePath());
             } else {
                 log("WARN: No local realms config '" + localRealmsConfig.getAbsolutePath() + "' exists, hence use default one '" + defaultRealmsConfig.getAbsolutePath() + "'");
+                // TODO: ...
                 realmManager = new RealmManager("yanel.xml");
                 //realmManager = new RealmManager(defaultRealmsConfig.getAbsolutePath());
             }
