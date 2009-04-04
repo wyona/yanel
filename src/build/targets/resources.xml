@@ -2,26 +2,28 @@
 
 <project name="resources" default="deploy-resources" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
-<!--
   <target name="generate-resources-build" description="Generate resources build" depends="init">
--->
 <!--
   <target name="generate-resources-build" description="Generate resources build" depends="init, set-classpath">
 -->
 <!-- The core needs to exist, because certain classes will be re-used within custom tasks -->
-  <target name="generate-resources-build" description="Generate resources build" depends="init, compile-core, set-classpath">
-    <echo>INFO: Generate build file to build resources</echo>
+<!--
+<target name="generate-resources-build" description="Generate resources build" depends="init, compile-core, set-classpath">
+<echo>INFO: Generate build file to build resources</echo>
+-->
 
 <!--
     <property name="property.classpath.compile" refid="classpath.compile"/>
     <echo>COMPILE CORE CLASSPATH: ${property.classpath.compile}</echo>
 -->
 
-    <!-- Build custom ant tasks -->
+<!-- Build custom ant tasks -->
+<!--
     <javac srcdir="${yanel.source.home}/src/build/java"
            destdir="${classes.dir}">
       <classpath refid="classpath.compile"/>
     </javac>
+-->
 
     <path id="classpath.taskdef.merge-resource-types-configs">
       <pathelement path="${yanel.source.home}/src/build/"/> <!-- Location of log4j.properties (NOTE: The conf directory also contains a log4j.properties and hence this lines needs to be set first!) -->
@@ -40,7 +42,9 @@
     <echo>CLASSPATH: ${property.classpath.taskdef.merge-resource-types-configs}</echo>
 -->
 
-    <taskdef name="merge-resource-types-configs" classpathref="classpath.taskdef.merge-resource-types-configs" classname="org.wyona.yanel.ant.MergeResourceTypesConfigsTask"/>
+<!--
+<taskdef name="merge-resource-types-configs" classpathref="classpath.taskdef.merge-resource-types-configs" classname="org.wyona.yanel.ant.MergeResourceTypesConfigsTask"/>
+-->
 
 <!--
     <taskdef name="merge-resource-types-configs" classname="org.wyona.yanel.ant.MergeResourceTypesConfigsTask">
