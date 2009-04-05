@@ -207,7 +207,7 @@ public class ODTResource extends Resource implements ViewableV2, ModifiableV2 {
     }
 
     protected RepositoryFactory getRepositoryFactory() {
-        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
+        return yanel.getRepositoryFactory(org.wyona.yanel.core.map.Realm.DEFAULT_REPOSITORY_FACTORY_BEAN_ID);
     }
 
     /**
