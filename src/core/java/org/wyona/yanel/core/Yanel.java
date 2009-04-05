@@ -127,7 +127,12 @@ public class Yanel {
         return applicationContext;
     }
     
+    /**
+     * Get repository factory
+     * @param id Repository factory bean ID
+     */
     public RepositoryFactory getRepositoryFactory(String id) {
+        //log.debug("Repository factory bean id: " + id);
         return (RepositoryFactory)applicationContext.getBean(id);
     }
     
