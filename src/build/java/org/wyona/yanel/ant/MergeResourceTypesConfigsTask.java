@@ -28,7 +28,7 @@ public class MergeResourceTypesConfigsTask extends Task {
      *
      */
     public void execute() throws BuildException {
-        log.error("DEBUG: Hugo ...");
+        log.info("Merge ...");
         log("INFO: Default realms config directory: " + defaultRealmsConfigDir);
         log("INFO: Local realms config directory: " + localRealmsConfigDir);
         File defaultRealmsConfig = new File(defaultRealmsConfigDir.toString(), "realms.xml");
