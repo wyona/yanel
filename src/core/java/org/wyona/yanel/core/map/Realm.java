@@ -46,6 +46,8 @@ import org.apache.log4j.Logger;
  */
 public class Realm {
 
+    public static String DEFAULT_REPOSITORY_FACTORY_BEAN_ID = "DefaultRepositoryFactory";
+
     private static Logger log = Logger.getLogger(Realm.class);
 
     private String name;
@@ -186,7 +188,7 @@ public class Realm {
 
 
 
-        RepositoryFactory repoFactory = yanel.getRepositoryFactory("DefaultRepositoryFactory");
+        RepositoryFactory repoFactory = yanel.getRepositoryFactory(DEFAULT_REPOSITORY_FACTORY_BEAN_ID);
         RepositoryFactory rtiRepoFactory = yanel.getRepositoryFactory("RTIRepositoryFactory");
         RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory("ExtraRepositoryFactory");
 
