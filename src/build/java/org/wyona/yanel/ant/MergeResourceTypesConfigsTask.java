@@ -37,7 +37,7 @@ public class MergeResourceTypesConfigsTask extends Task {
         try {
             if (localRealmsConfig.isFile()) {
                 log("INFO: Local realms config exists: " + localRealmsConfig.getAbsolutePath());
-                // TODO: ...
+                // TODO: Unfortunately the class RealmManager consumes at the moment a yanel configuration rather than a realms configuration ...
                 realmManager = new RealmManager("yanel.xml");
                 //realmManager = new RealmManager("local.realms.xml");
                 //realmManager = new RealmManager(localRealmsConfig.getAbsolutePath());
