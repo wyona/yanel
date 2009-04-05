@@ -372,7 +372,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
     * @return
     */
    protected RepositoryFactory getRepositoryFactory() {
-       return yanel.getRepositoryFactory("DefaultRepositoryFactory");
+       return yanel.getRepositoryFactory(org.wyona.yanel.core.map.Realm.DEFAULT_REPOSITORY_FACTORY_BEAN_ID);
    }
 
     /**

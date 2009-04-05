@@ -224,7 +224,7 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
     }
     
     protected RepositoryFactory getRepositoryFactory() {
-        return yanel.getRepositoryFactory("DefaultRepositoryFactory");
+        return yanel.getRepositoryFactory(org.wyona.yanel.core.map.Realm.DEFAULT_REPOSITORY_FACTORY_BEAN_ID);
     }
     
     public boolean exists() throws Exception {
