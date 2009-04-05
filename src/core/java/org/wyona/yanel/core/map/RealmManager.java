@@ -187,9 +187,6 @@ public class RealmManager {
         }
         
         try {
-//            PolicyManagerFactory pmFactory = (PolicyManagerFactory) yanel.getBeanFactory().getBean("PolicyManagerFactory");
-//            IdentityManagerFactory imFactory = (IdentityManagerFactory) yanel.getBeanFactory().getBean("IdentityManagerFactory");
-
             RepositoryFactory defaultRepoFactory = yanel.getRepositoryFactory(Realm.DEFAULT_REPOSITORY_FACTORY_BEAN_ID);
             defaultRepoFactory.reset();
 
