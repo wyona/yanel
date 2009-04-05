@@ -47,7 +47,7 @@ public class RealmManager {
 
     private static Logger log = Logger.getLogger(RealmManager.class);
 
-    private static String CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
+    private static String YANEL_CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
 
     public static String REALM_DEFAULT_CONFIG_NAME = "realm.xml";
 
@@ -83,18 +83,18 @@ public class RealmManager {
      * @return Something like realms.xml
      */
     public File getSetRealmsConfigFile(String yanelConfigurationFile) throws ConfigurationException {
-        CONFIGURATION_FILE = yanelConfigurationFile;
+        YANEL_CONFIGURATION_FILE = yanelConfigurationFile;
 
-        if (RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE) == null) {
-            CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
+        if (RealmManager.class.getClassLoader().getResource(YANEL_CONFIGURATION_FILE) == null) {
+            YANEL_CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
         }
 
         File realmsConfigFile = null;
-        if (RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE) != null) {
-            if (CONFIGURATION_FILE.endsWith(".xml")) {
+        if (RealmManager.class.getClassLoader().getResource(YANEL_CONFIGURATION_FILE) != null) {
+            if (YANEL_CONFIGURATION_FILE.endsWith(".xml")) {
 
                 try {
-                    URI configFileUri = new URI(RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE).toString());
+                    URI configFileUri = new URI(RealmManager.class.getClassLoader().getResource(YANEL_CONFIGURATION_FILE).toString());
                     yanelConfigFile = new File(configFileUri.getPath());
                 } catch (Exception e) {
                     String errorMsg = "Failure while reading configuration: " + e.getMessage();
@@ -117,11 +117,11 @@ public class RealmManager {
                     realmsConfigFile = FileUtil.file(yanelConfigFile.getParentFile().getAbsolutePath(),
                             realmsConfigFile.toString());
                 }
-            } else if (CONFIGURATION_FILE.endsWith("properties")) {
+            } else if (YANEL_CONFIGURATION_FILE.endsWith("properties")) {
                 propertiesURL = RealmManager.class.getClassLoader()
-                        .getResource(CONFIGURATION_FILE);
+                        .getResource(YANEL_CONFIGURATION_FILE);
                 if (propertiesURL == null) {
-                    String errMessage = "No such resource: " + CONFIGURATION_FILE;
+                    String errMessage = "No such resource: " + YANEL_CONFIGURATION_FILE;
                     log.error(errMessage);
                     throw new ConfigurationException(errMessage);
                 }
@@ -142,10 +142,10 @@ public class RealmManager {
                     throw new ConfigurationException("Could not load realms configuration file: " + propertiesURL);
                 }
             } else {
-                log.error(CONFIGURATION_FILE + " has to be either .xml or .properties");
+                log.error(YANEL_CONFIGURATION_FILE + " has to be either .xml or .properties");
             }
         } else {
-            log.error("No such configuration file: " + RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE));
+            log.error("No such configuration file: " + RealmManager.class.getClassLoader().getResource(YANEL_CONFIGURATION_FILE));
         }
         if (realmsConfigFile == null) {
             throw new ConfigurationException("Realms configuration file could not be determined!");
@@ -158,7 +158,7 @@ public class RealmManager {
      * Get yanel configuration file
      */
     public String getConfigurationFile() {
-        return CONFIGURATION_FILE;
+        return YANEL_CONFIGURATION_FILE;
     }
 
     /**
