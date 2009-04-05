@@ -60,6 +60,7 @@ public class Yanel {
      * Private constructor
      */
     private Yanel() throws Exception {
+        log.info("Spring config file: " + SPRING_CONFIG_FILE);
         applicationContext = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
     } 
 
@@ -70,7 +71,6 @@ public class Yanel {
        if (isInitialized) {
            return;
        }
-    isInitialized = true;
        
        map = (Map) applicationContext.getBean("map");
        realmConfig = new RealmManager();
@@ -100,6 +100,8 @@ public class Yanel {
        version = versionConfig.getAttribute("version");
        revision = versionConfig.getAttribute("revision");
        reservedPrefix = config.getChild("reserved-prefix").getValue();
+
+       isInitialized = true;
     }
 
     /**
