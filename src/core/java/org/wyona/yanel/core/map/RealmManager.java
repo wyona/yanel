@@ -47,7 +47,7 @@ public class RealmManager {
 
     private static Logger log = Logger.getLogger(RealmManager.class);
 
-    public static String CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
+    private static String CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
 
     public static String REALM_DEFAULT_CONFIG_NAME = "realm.xml";
 
@@ -68,20 +68,22 @@ public class RealmManager {
 
     /**
      * Initializes realms
-     * @param configurationFile Something like yanel.xml or yanel.properties
+     * @param yanelConfigurationFile Yanel configuration, something like yanel.xml or yanel.properties
      */
-    public RealmManager(String configurationFile) throws ConfigurationException {
-        File realmsConfigFile = getSetRealmsConfigFile(configurationFile);
+    public RealmManager(String yanelConfigurationFile) throws ConfigurationException {
+        log.debug("Yanel Configuration: " + yanelConfigurationFile);
+        File realmsConfigFile = getSetRealmsConfigFile(yanelConfigurationFile);
         log.debug("Realms Configuration: " + realmsConfigFile);
         readRealms(realmsConfigFile);
     }
 
     /**
      * Get realms configuration file
-     * @param configurationFile Something like yanel.xml or yanel.properties
+     * @param yanelConfigurationFile Yanel configuration, something like yanel.xml or yanel.properties
+     * @return Something like realms.xml
      */
-    public File getSetRealmsConfigFile(String configurationFile) throws ConfigurationException {
-        CONFIGURATION_FILE = configurationFile;
+    public File getSetRealmsConfigFile(String yanelConfigurationFile) throws ConfigurationException {
+        CONFIGURATION_FILE = yanelConfigurationFile;
 
         if (RealmManager.class.getClassLoader().getResource(CONFIGURATION_FILE) == null) {
             CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
@@ -153,7 +155,7 @@ public class RealmManager {
     }
 
     /**
-     *
+     * Get yanel configuration file
      */
     public String getConfigurationFile() {
         return CONFIGURATION_FILE;
@@ -187,8 +189,10 @@ public class RealmManager {
         }
         
         try {
+            log.debug("Get default repo factory ...");
             RepositoryFactory defaultRepoFactory = yanel.getRepositoryFactory(Realm.DEFAULT_REPOSITORY_FACTORY_BEAN_ID);
             defaultRepoFactory.reset();
+            log.debug("Get default repo factory DONE.");
 
             RepositoryFactory rtiRepoFactory = yanel.getRepositoryFactory("RTIRepositoryFactory");
             rtiRepoFactory.reset();
