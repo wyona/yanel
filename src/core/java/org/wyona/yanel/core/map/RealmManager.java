@@ -156,9 +156,17 @@ public class RealmManager {
 
     /**
      * Get yanel configuration file
+     * @deprecated
      */
     public String getConfigurationFile() {
         return YANEL_CONFIGURATION_FILE;
+    }
+
+    /**
+     * Get realms configuration file
+     */
+    public String getRealmsConfigurationFile() {
+        return _realmsConfigFile.getAbsolutePath();
     }
 
     /**
