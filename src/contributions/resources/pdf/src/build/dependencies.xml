@@ -18,18 +18,10 @@
       <dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3"/>
     </artifact:dependencies>
 
-    <condition property="jdk.version" value="jdk14">
-      <equals arg1="${ant.java.version}" arg2="1.4"/>
-    </condition>
-    <condition property="jdk.version" value="jdk15">
-      <equals arg1="${ant.java.version}" arg2="1.5"/>
-    </condition>
-    <!-- TODO: What about other versions?! -->
-
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
 
-      <dependency groupId="fop" artifactId="fop" version="0.93" classifier="${jdk.version}"/>
+      <dependency groupId="fop" artifactId="fop" version="0.93" classifier="jdk15"/>
 
       <!--<dependency groupId="fop" artifactId="fop" version="0.20.5"/>-->
 
