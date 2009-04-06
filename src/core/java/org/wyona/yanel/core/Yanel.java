@@ -125,7 +125,12 @@ public class Yanel {
         return yanel;
     }
    
+    /**
+     * Some resources are still using this, such as for example src/contributions/resources/wiki/src/java/org/wyona/yanel/impl/resources/WikiResource.java
+     * @deprecated
+     */
     public BeanFactory getBeanFactory() {
+        log.warn("DEPRECATED");
         return applicationContext;
     }
     
@@ -136,6 +141,38 @@ public class Yanel {
     public RepositoryFactory getRepositoryFactory(String id) {
         //log.debug("Repository factory bean id: " + id);
         return (RepositoryFactory)applicationContext.getBean(id);
+    }
+    
+    /**
+     * Get policy manager factory
+     * @param id Policy manager factory bean ID
+     */
+    public org.wyona.security.core.PolicyManagerFactory getPolicyManagerFactory(String id) {
+        return (org.wyona.security.core.PolicyManagerFactory)applicationContext.getBean(id);
+    }
+    
+    /**
+     * Get identity manager factory
+     * @param id Identity manager factory bean ID
+     */
+    public org.wyona.security.core.IdentityManagerFactory getIdentityManagerFactory(String id) {
+        return (org.wyona.security.core.IdentityManagerFactory)applicationContext.getBean(id);
+    }
+    
+    /**
+     * Get sitetree implementation
+     * @param id Sitetree implementation bean ID
+     */
+    public org.wyona.yanel.core.navigation.Sitetree getSitetreeImpl(String id) {
+        return (org.wyona.yanel.core.navigation.Sitetree)applicationContext.getBean(id);
+    }
+    
+    /**
+     * Get map implementation
+     * @param id Map implementation bean ID
+     */
+    public org.wyona.yanel.core.map.Map getMapImpl(String id) {
+        return (org.wyona.yanel.core.map.Map)applicationContext.getBean(id);
     }
     
     /**
