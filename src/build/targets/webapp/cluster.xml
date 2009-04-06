@@ -190,7 +190,7 @@
   
   
   <target name="ask-to-reconfigure-tomcat-cluster-node1" description="reconfigure Tomcat cluster node 1" if="isTomcat1PortsSet">
-    <input message="Do you want to reconfigure tomcat cluster node 1 in order to support SSL? (YES/no):" defaultvalue="NO" addproperty="answerReconfigureTomcat1"/>
+    <input message="Do you want to reconfigure tomcat cluster node 1 in order to support SSL? (YES/no):" defaultvalue="YES" addproperty="answerReconfigureTomcat1"/>
     <condition property="doNotReconfigureTomcat1">
       <equals arg1="no" arg2="${answerReconfigureTomcat1}"/>
     </condition>
