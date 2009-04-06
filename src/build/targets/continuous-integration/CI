@@ -9,14 +9,15 @@ HTTP_PORT=$1
 HTTPS_PORT=$2
 #TOMCAT_HOME=/home/michi/src/yanel-trunk/hudson/yanel-trunk/apache-tomcat-5.5.20 #XXX HACK: leaving that blank does not work yet
 TOMCAT_HOME=/opt/hudson/home/jobs/Yanel-trunk/workspace/yanel-trunk.working-copy/local/apache-tomcat-5.5.20 #XXX HACK: leaving that blank does not work yet
+#TOMCAT_HOME=/Users/michaelwechner/src/wyona/public/yanel/trunk/hudson/apache-tomcat-5.5.20 #XXX HACK: leaving that blank does not work yet
 #WEBTEST_HOME_DIR=/home/michi/local/canoo-DEV_R_1721
 WEBTEST_HOME_DIR=/opt/canoo/webtest-3.0-R_1758
+#WEBTEST_HOME_DIR=/Users/michaelwechner/local/canoo-VERSION_r_1762
 
 YANEL_SOURCE_HOME=`dirname $0`/../../../..
 cd $YANEL_SOURCE_HOME
 
-rm -f src/build/local.build.properties
-./build.sh clean-all -DanswerDeleteLocalConfigDir=NO
+./build.sh clean-all -DanswerDeleteLocalBuildProperties=yes -DanswerDeleteLocalConfigDir=NO -DanswerCleanTomcatClusterNode1=yes
 #TODO: use our own Maven local repo instead of the user's!
 
 ./yanel.sh configure -Danswer=NO \
