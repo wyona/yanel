@@ -1,4 +1,5 @@
 #!/bin/sh
+
 if [ $# -ne 2 ]; then
 	echo "Usage: CI <HTTP port> <HTTPS port>"
 	exit 2
@@ -6,13 +7,16 @@ fi
 set -ex
 HTTP_PORT=$1
 HTTPS_PORT=$2
+#TOMCAT_HOME=/home/michi/src/yanel-trunk/hudson/yanel-trunk/apache-tomcat-5.5.20 #XXX HACK: leaving that blank does not work yet
 TOMCAT_HOME=/opt/hudson/home/jobs/Yanel-trunk/workspace/yanel-trunk.working-copy/local/apache-tomcat-5.5.20 #XXX HACK: leaving that blank does not work yet
+#WEBTEST_HOME_DIR=/home/michi/local/canoo-DEV_R_1721
+WEBTEST_HOME_DIR=/opt/canoo/webtest-3.0-R_1758
 
 YANEL_SOURCE_HOME=`dirname $0`/../../../..
 cd $YANEL_SOURCE_HOME
 
 rm -f src/build/local.build.properties
-./build.sh clean-all
+./build.sh clean-all -DanswerDeleteLocalConfigDir=NO
 #TODO: use our own Maven local repo instead of the user's!
 
 ./yanel.sh configure -Danswer=NO \
@@ -44,9 +48,12 @@ cat > src/test/htmlunit/local.htmlunit-properties.xml <<EOF #FIXME: do this in a
   </htmlunit>
 </config>
 EOF
-./build.sh test -Dwebtest.home.dir=/opt/canoo/webtest-3.0-R_1758 -Dwebtest.config.host=localhost -Dwebtest.config.protocol=http -Dwebtest.config.port=$HTTP_PORT -Dheadless=
+
+# Also see src/build/targets/test.xml
+./build.sh test -Dwebtest.home.dir=$WEBTEST_HOME_DIR -Dwebtest.config.host=localhost -Dwebtest.config.protocol=http -Dwebtest.config.port=$HTTP_PORT -Dheadless=
 #TODO: test the resources from scratch
 
 ./yanel.sh stop
 
-./build.sh clean -Dforce-clean=true
+# clean-all is already executed at the beginning of this script
+#./build.sh clean -Dforce-clean=true
