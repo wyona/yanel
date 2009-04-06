@@ -151,9 +151,9 @@
 
 
     <target name="ask-to-clean-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Clean Tomcat cluster node 1">
-    <input message="Do you really want to delete your deployed (maybe productive) Yanel version at '${tomcat1.webapps.dir}/${servlet.context.prefix}'? (yes/NO):" addproperty="answer"/>
+    <input message="Do you really want to delete your deployed (maybe productive) Yanel version at '${tomcat1.webapps.dir}/${servlet.context.prefix}'? (yes/NO):" addproperty="answerCleanTomcatClusterNode1"/>
     <condition property="yes-delete-tomcat-cluster-node1">
-      <equals arg1="yes" arg2="${answer}"/>
+      <equals arg1="yes" arg2="${answerCleanTomcatClusterNode1}"/>
     </condition>
     <antcall target="do-clean-tomcat-cluster-node1"/>
   </target>
@@ -170,9 +170,9 @@
   </target>
 
   <target name="ask-to-clean-tomcat-cluster-node2" if="property-tomcat-cluster-node2-is-set" description="Clean Tomcat cluster node 2">
-    <input message="Do you really want to delete your deployed (maybe productive) Yanel version at '${tomcat2.webapps.dir}/${servlet.context.prefix}'? (yes/NO):" addproperty="answer"/>
+    <input message="Do you really want to delete your deployed (maybe productive) Yanel version at '${tomcat2.webapps.dir}/${servlet.context.prefix}'? (yes/NO):" addproperty="answerCleanTomcatClusterNode2"/>
     <condition property="yes-delete-tomcat-cluster-node2">
-      <equals arg1="yes" arg2="${answer}"/>
+      <equals arg1="yes" arg2="${answerCleanTomcatClusterNode2}"/>
     </condition>
     <antcall target="do-clean-tomcat-cluster-node2"/>
   </target>
