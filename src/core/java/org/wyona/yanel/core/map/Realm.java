@@ -131,7 +131,7 @@ public class Realm {
                 pmFactory = (PolicyManagerFactory) Class.forName(customPolicyManagerFactoryImplClassName).newInstance();
                 policyManager = pmFactory.newPolicyManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "policy-manager-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
             } catch (ConfigurationException e) {
-                pmFactory = (PolicyManagerFactory) yanel.getBeanFactory().getBean("PolicyManagerFactory");
+                pmFactory = yanel.getPolicyManagerFactory("PolicyManagerFactory");
                 log.info("Default PolicyManager will be used for realm: " + getName());
                 repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
                 RepositoryFactory policiesRepoFactory = yanel.getRepositoryFactory("ACPoliciesRepositoryFactory");
@@ -155,7 +155,7 @@ public class Realm {
                 identityManager = imFactory.newIdentityManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "identity-manager-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
                 log.debug("Custom identity manager " + identityManager.getClass().getName() + " has been set for realm: " + getName());
             } catch (ConfigurationException e) {
-            	imFactory = (IdentityManagerFactory) yanel.getBeanFactory().getBean("IdentityManagerFactory");
+            	imFactory = yanel.getIdentityManagerFactory("IdentityManagerFactory");
             	log.info("Default IdentityManager will be used for realm: " + getName());
             	repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
                 RepositoryFactory identitiesRepoFactory = yanel.getRepositoryFactory("ACIdentitiesRepositoryFactory");
@@ -277,12 +277,12 @@ public class Realm {
                 log.info("Custom repo navigation implementation will be used for realm: " + getName());
             } catch (ConfigurationException e) {
                 log.error(e, e);
-                repoNavigation = (Sitetree) yanel.getBeanFactory().getBean("repo-navigation");
+                repoNavigation = yanel.getSitetreeImpl("repo-navigation");
                 log.warn("Default repo navigation implementation will be used for realm: " + getName());
             }
         } else {
             log.info("Default repo navigation implementation will be used for realm: " + getName());
-            repoNavigation = (Sitetree) yanel.getBeanFactory().getBean("repo-navigation");
+            repoNavigation = yanel.getSitetreeImpl("repo-navigation");
         }
     }
 
