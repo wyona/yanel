@@ -58,22 +58,38 @@
   </target>
 
   <target name="create-local-build-properties" if="local.build.properties.does.not.exist.yet" depends="init">
-    <echo>Build configuration ${yanel.source.home}/local.build.properties does not exist yet!</echo>
+    <echo>Local build configuration ${yanel.source.home}/src/build/local.build.properties does not exist yet!</echo>
+    <copy file="${yanel.source.home}/src/build/build.properties" tofile="${yanel.source.home}/src/build/local.build.properties" overwrite="false"/>
 
-    <input message="Do you have an existing Tomcat instance which you want to use as servlet engine for Yanel?  If so, please enter the path of your Tomcat instance (e.g. /home/yanel/jakarta-tomcat-5.0.30). IMPORTANT NOTE (especially for Windows): Please use '/' instead of '\' in the Tomcat path.  Otherwise just hit return (recommended to first time users :-) and Tomcat ${tomcat.version} will be installed at ${default.tomcat.home.dir}.  (You will always be able to change this setting at some later stage within src/build/local.build.properties): " defaultvalue="${default.tomcat.home.dir.forward.slashes}" addproperty="pathOfUserSpecificTomcat"/>
+    <input message="Do you have an existing Tomcat instance which you want to use as servlet engine for Yanel (if not, then this build process will install Tomcat '${tomcat.version}' at '${default.tomcat.home.dir}' automatically)? (yes/NO): " defaultvalue="NO" addproperty="answerAskForCustomTomcatPath"/>
+
+    <condition property="setCustomTomcatPath">
+      <equals arg1="yes" arg2="${answerAskForCustomTomcatPath}"/>
+    </condition>
+    <antcall target="set-custom-tomcat-path"/>
+
+    <condition property="yes.install.default.tomcat">
+      <not>
+        <equals arg1="yes" arg2="${answerAskForCustomTomcatPath}"/>
+      </not>
+    </condition>
+    <antcall target="install-default-tomcat"/>
+  </target>
+
+  <target name="set-custom-tomcat-path" if="setCustomTomcatPath" depends="init">
+    <input message="Please enter the path of your custom Tomcat instance (e.g. /home/yanel/jakarta-tomcat-5.0.30). IMPORTANT NOTE (especially for Windows): Please use '/' instead of '\' in the Tomcat path. (Btw, you will always be able to change this setting at some later stage within src/build/local.build.properties): " defaultvalue="null" addproperty="pathOfUserSpecificTomcat"/>
+
+    <fail message="No such path or directory: ${pathOfUserSpecificTomcat}">
+        <condition>
+          <not><available file="${pathOfUserSpecificTomcat}" type="dir"/></not>
+        </condition>
+    </fail>
 
     <echo>User specific Tomcat: ${pathOfUserSpecificTomcat}</echo>
 
-    <copy file="${yanel.source.home}/src/build/build.properties" tofile="${yanel.source.home}/src/build/local.build.properties" overwrite="false"/>
     <replace file="${yanel.source.home}/src/build/local.build.properties" value="tomcat1.home.dir=${pathOfUserSpecificTomcat}">
       <replacetoken>#tomcat1.home.dir=../tomcat-cluster/build/jakarta-tomcat-5.0.30-cnode1</replacetoken>
     </replace>
-
-    <condition property="yes.install.default.tomcat">
-      <equals arg1="${pathOfUserSpecificTomcat}" arg2="${default.tomcat.home.dir.forward.slashes}"/>
-    </condition>
-
-    <antcall target="install-default-tomcat"/>
   </target>
 
   <target name="configure-local" if="yes.continue">

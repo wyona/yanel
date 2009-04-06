@@ -34,6 +34,11 @@
     </condition>
     <antcall target="copy-java1.4-libs"/>
     
+    <replace file="${yanel.source.home}/src/build/local.build.properties" value="tomcat1.home.dir=${default.tomcat.home.dir.forward.slashes}">
+      <replacetoken>#tomcat1.home.dir=../tomcat-cluster/build/jakarta-tomcat-5.0.30-cnode1</replacetoken>
+    </replace>
+
+    <!-- NOTE: Assume that SSL will be enabled (see targets/webapp/cluster.xml), and if not, then the target comment-local-tomcat1-ports will disable them again! -->
     <replace file="${yanel.source.home}/src/build/local.build.properties" value="tomcat1.http.port=8080">
       <replacetoken>#tomcat1.http.port=9190</replacetoken>
     </replace>
