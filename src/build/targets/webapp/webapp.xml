@@ -47,6 +47,23 @@
       </fileset>
     </copy>
 -->
+    <antcall target="webapp-configuration"/>
+
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
+      <fileset refid="maven2.fileset"/>
+      <mapper type="flatten"/>
+    </copy>
+
+    <antcall target="generate-javadoc"/>
+
+    <ant antfile="${yanel.source.home}/build/build-resource-types.xml" target="copy-resources-dependencies"/>
+
+    <antcall target="deploy-libs-of-realms"/>
+
+    <antcall target="remove-ambiguous-libs"/>
+  </target>
+
+  <target name="webapp-configuration" depends="init">
     <copy file="${yanel.source.home}/conf/CatalogManager.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.source.home}/conf/catalog.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/entities" overwrite="false">
@@ -122,19 +139,6 @@
       <replacetoken>@LOG4J_FILE@</replacetoken>
     </replace>
     <touch file="${log4j.file}"/>
-
-    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
-      <fileset refid="maven2.fileset"/>
-      <mapper type="flatten"/>
-    </copy>
-
-    <antcall target="generate-javadoc"/>
-
-    <ant antfile="${yanel.source.home}/build/build-resource-types.xml" target="copy-resources-dependencies"/>
-
-    <antcall target="deploy-libs-of-realms"/>
-
-    <antcall target="remove-ambiguous-libs"/>
   </target>
 
   <target name="copy-basic-webapp-libs" description="Copy basic webapp libraries (core, impl, webapp)" depends="init">
