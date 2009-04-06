@@ -74,9 +74,9 @@
   </target>
   
     <target name="ask-if-local-build-properties-shall-be-deleted" if="local.build.properties.exists">
-    <input message="Do you really want to delete local build.properties file '${yanel.source.home}/src/build/local.build.properties'? (yes/NO):" addproperty="answer"/>
+    <input message="Do you really want to delete local build.properties file '${yanel.source.home}/src/build/local.build.properties'? (yes/NO):" addproperty="answerDeleteLocalBuildProperties"/>
     <condition property="yes-delete-local-build-properties">
-      <equals arg1="yes" arg2="${answer}"/>
+      <equals arg1="yes" arg2="${answerDeleteLocalBuildProperties}"/>
     </condition>
     <antcall target="do-delete-local-build-properties"/>
   </target>
