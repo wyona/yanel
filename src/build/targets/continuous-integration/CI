@@ -7,10 +7,13 @@ fi
 set -ex
 HTTP_PORT=$1
 HTTPS_PORT=$2
-TOMCAT_HOME=../../local/apache-tomcat-5.5.20 #NOTE: Relative to tools/apache-tomcat/ directory
+# TODO: Each project can have a different Canoo version and hence this should be configurable just as the ports
 #WEBTEST_HOME_DIR=/home/michi/local/canoo-DEV_R_1721
 WEBTEST_HOME_DIR=/opt/canoo/webtest-3.0-R_1758
 #WEBTEST_HOME_DIR=/Users/michaelwechner/local/canoo-2.6_r_1689
+
+
+TOMCAT_HOME=../../local/apache-tomcat-5.5.20 #NOTE: Relative to tools/apache-tomcat/ directory
 
 YANEL_SOURCE_HOME=`dirname $0`/../../../..
 cd $YANEL_SOURCE_HOME
