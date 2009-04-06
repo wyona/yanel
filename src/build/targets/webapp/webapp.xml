@@ -75,26 +75,26 @@
     <copy file="${yanel.source.home}/conf/log4j.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <!-- Create yanel.xml -->
     <condition property="local.yanel.config.exists">
-      <available file="${yanel.source.home}/${local.config.dir}/local.yanel.xml" type="file"/>
+      <available file="${local.config.home}/local.yanel.xml" type="file"/>
     </condition>
     <antcall target="generate-yanel-properties"/>
 
     <copy file="${yanel.source.home}/conf/realms.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
 
     <condition property="local.resource-types.config.exists">
-      <available file="${yanel.source.home}/${local.config.dir}/local.resource-types.xml" type="file"/>
+      <available file="${local.config.home}/local.resource-types.xml" type="file"/>
     </condition>
     <antcall target="generate-resource-types-registry"/>
 
     <condition property="local.yanel.config.exists">
-      <available file="${yanel.source.home}/${local.config.dir}/local.yanel.xml" type="file"/>
+      <available file="${local.config.home}/local.yanel.xml" type="file"/>
     </condition>
     <antcall target="check-config-version-yanel-xml"/>
 
     <!-- Overwrite default by local properties -->
     <!-- TODO: Make the patching selectable within the build.properties of the build ... -->
-    <copy file="${yanel.source.home}/${local.config.dir}/local.log4j.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" overwrite="true" failonerror="false"/>
-    <copy file="${yanel.source.home}/${local.config.dir}/local.realms.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" overwrite="true" failonerror="false"/>
+    <copy file="${local.config.home}/local.log4j.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" overwrite="true" failonerror="false"/>
+    <copy file="${local.config.home}/local.realms.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" overwrite="true" failonerror="false"/>
     <antcall target="patch-with-local-yanel-config"/>
     <antcall target="patch-with-local-resource-types-registry"/>
 
@@ -215,7 +215,7 @@
   </target>
 
   <target name="patch-with-local-resource-types-registry" if="local.resource-types.config.exists">
-    <copy file="${yanel.source.home}/${local.config.dir}/local.resource-types.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" overwrite="true"/>
+    <copy file="${local.config.home}/local.resource-types.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" overwrite="true"/>
   </target>
 
   <target name="generate-yanel-properties" unless="local.yanel.config.exists">
@@ -227,7 +227,7 @@
   </target>
 
   <target name="patch-with-local-yanel-config" if="local.yanel.config.exists">
-    <xslt in="${yanel.source.home}/${local.config.dir}/local.yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.xml" style="yanel2properties.xsl" force="true">
+    <xslt in="${local.config.home}/local.yanel.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/yanel.xml" style="yanel2properties.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.revision" expression="${yanel.revision}"/>
       <param name="yanel.version" expression="${yanel.version}"/>
