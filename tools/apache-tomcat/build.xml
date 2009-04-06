@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
-<project name="tomcat"
->
+
+<!-- Re-configures the conf/server.xml of Tomcat and creates a backup copy -->
+<!-- This script is executed by src/build/targets/continuous-integration/CI -->
+<project name="tomcat">
 
   <target name="configure-host">
     <property name="server.file"
@@ -24,8 +26,11 @@
 
     <!-- we need another intermediary file to swap the original file
      and the new one, which also can be handy if something goes wrong: -->
+    <tstamp>
+      <format property="TIMESTAMP" pattern="yyyyMMddhhmmss"/>
+    </tstamp>
     <property name="server.old.file"
-     value="${tomcat.home.dir}/conf/server-before-ports-were-patched.xml"/>
+     value="${tomcat.home.dir}/conf/server-before-ports-were-patched_${TIMESTAMP}.xml"/>
 
     <move file="${server.file}" tofile="${server.old.file}"/>
     <move file="${server.new.file}" tofile="${server.file}"/>
