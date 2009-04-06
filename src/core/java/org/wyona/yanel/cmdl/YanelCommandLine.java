@@ -57,7 +57,7 @@ public class YanelCommandLine {
 
         Yanel yanel = Yanel.getInstance();
         yanel.init();
-        Map map = (Map) yanel.getBeanFactory().getBean("map");
+        Map map = yanel.getMapImpl("map");
 
         ResourceTypeRegistry rtr = new ResourceTypeRegistry();
 
