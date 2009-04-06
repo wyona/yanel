@@ -18,7 +18,6 @@ package org.wyona.yanel.core.navigation;
 
 import org.wyona.yanel.core.navigation.Node;
 import org.wyona.yanel.core.map.Realm;
-import org.wyona.yanel.core.map.RealmConfigPathResolver;
 
 import org.w3c.dom.Document;
 
