@@ -136,9 +136,9 @@ public class YanelServlet extends HttpServlet {
             yanelInstance = Yanel.getInstance();
             yanelInstance.init();
             
-            map = (Map) yanelInstance.getBeanFactory().getBean("map");
+            map = yanelInstance.getMapImpl("map");
 
-            sitetree = (Sitetree) yanelInstance.getBeanFactory().getBean("repo-navigation");
+            sitetree = yanelInstance.getSitetreeImpl("repo-navigation");
 
             sslPort = config.getInitParameter("ssl-port");
             toolbarMasterSwitch = config.getInitParameter("toolbar-master-switch");
