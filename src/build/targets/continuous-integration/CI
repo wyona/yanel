@@ -1,15 +1,16 @@
 #!/bin/sh
 
-if [ $# -ne 2 ]; then
-	echo "Usage: CI <HTTP port> <HTTPS port>"
+if [ $# -ne 3 ]; then
+	echo "Usage: CI <HTTP port> <HTTPS port> <Canoo webtest path>"
 	exit 2
 fi
 set -ex
 HTTP_PORT=$1
 HTTPS_PORT=$2
 # TODO: Each project can have a different Canoo version and hence this should be configurable just as the ports
+WEBTEST_HOME_DIR=$3
 #WEBTEST_HOME_DIR=/home/michi/local/canoo-DEV_R_1721
-WEBTEST_HOME_DIR=/opt/canoo/webtest-3.0-R_1758
+#WEBTEST_HOME_DIR=/opt/canoo/webtest-3.0-R_1758
 #WEBTEST_HOME_DIR=/Users/michaelwechner/local/canoo-2.6_r_1689
 
 
