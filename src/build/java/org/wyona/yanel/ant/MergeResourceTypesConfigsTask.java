@@ -55,7 +55,7 @@ public class MergeResourceTypesConfigsTask extends Task {
 
         log("Number of realms: " + realmContextConfigs.length);
         for (int i = 0; i < realmContextConfigs.length; i++) {
-            log("Realm context config: " + realmContextConfigs[i].getConfigurationFile());
+            log("Realm context config: " + realmContextConfigs[i]);
         }
     }
 
