@@ -212,22 +212,12 @@ public class RealmManager {
             identitiesRepoFactory.reset();
 
             log.info("Read realms configuration: " + realmsConfigFile);
-            config = builder.buildFromFile(realmsConfigFile);
-            Configuration[] realmElements = config.getChildren("realm");
-            for (int i = 0;i < realmElements.length; i++) {
-                String mountPoint = realmElements[i].getAttribute("mount-point", null);
-                String realmId = realmElements[i].getAttribute("id", null);
-                String rootFlag = realmElements[i].getAttribute("root", "false");
-                Configuration nameConfig = realmElements[i].getChild("name", false);
-                String name = null;
-                if (nameConfig != null) name = nameConfig.getValue();
-                Configuration configElement = realmElements[i].getChild("config", false);
-                if (configElement == null) {
-                    throw new ConfigurationException("Missing <config src=\"...\"/> child element for realm " + realmId);
-                }
-                String configSrc = configElement.getAttribute("src", null);
+            RealmContextConfig[] rcc = new RealmManagerConfig().getRealmContextConfigs(realmsConfigFile);
+            for (int i = 0;i < rcc.length; i++) {
+                String mountPoint = rcc[i].getMountPoint();
+                String realmId = rcc[i].getID();
                 
-                File realmConfigFile = resolveFile(new File(configSrc), realmsConfigFile);
+                File realmConfigFile = resolveFile(rcc[i].getConfigurationFile(), realmsConfigFile);
                 if (realmConfigFile.isDirectory()) {
                     realmConfigFile = new File(realmConfigFile, REALM_DEFAULT_CONFIG_NAME);
                 }
@@ -240,7 +230,7 @@ public class RealmManager {
                         String customRealmImplClassName = realmConfig.getAttribute("class");
                         Class[] classArgs = new Class[]{String.class, String.class, String.class, File.class};
                         Object[] values = new Object[4];
-                        values[0] = name;
+                        values[0] = rcc[i].getLabel();
                         values[1] = realmId;
                         values[2] = mountPoint;
                         values[3] = realmConfigFile;
@@ -248,26 +238,25 @@ public class RealmManager {
                         realm = (Realm) ct.newInstance(values);
                     } catch(ClassNotFoundException e) {
                         log.error("Class not found: " + e.getMessage() + ". Fallback to default realm implementation!");
-                        realm = new Realm(name, realmId, mountPoint, realmConfigFile);
+                        realm = new Realm(rcc[i].getLabel(), realmId, mountPoint, realmConfigFile);
                     } catch(Exception e) {
                         log.info("Default realm implementation will be used.");
-                        realm = new Realm(name, realmId, mountPoint, realmConfigFile);
+                        realm = new Realm(rcc[i].getLabel(), realmId, mountPoint, realmConfigFile);
                     }
                     
-                    Configuration proxy = realmElements[i].getChild("reverse-proxy", false);
-                    if (proxy != null) {
-                        int proxyPort = new Integer(proxy.getChild("port").getValue("-1")).intValue();
-                        int proxySSLPort = new Integer(proxy.getChild("ssl-port").getValue("-1")).intValue();
-                        String prefixValue = proxy.getChild("prefix").getValue("");
-                        if (prefixValue.length() == 0) prefixValue = null;
+                    ReverseProxyConfig rpc = rcc[i].getReverseProxyConfig();
+                    if (rpc != null) {
+                        int proxyPort = rpc.getPort();
+                        int proxySSLPort = rpc.getSSLPort();
+                        String prefixValue = rpc.getPrefix();
                         log.debug("Prefix value: " + prefixValue);
-                        realm.setProxy(proxy.getChild("host-name").getValue(), proxyPort, proxySSLPort, prefixValue);
+                        realm.setProxy(rpc.getHostName(), proxyPort, proxySSLPort, prefixValue);
                     }
                     
                     log.info("Realm: " + realm);
                     
                     hm.put(realmId, realm);
-                    if (rootFlag.equals("true")) {
+                    if (rcc[i].isRoot()) {
                         log.debug("Root realm found: " + realm.getID());
                         if (rootRealm == null) {
                             log.debug("Root realm set: " + realm.getID());
@@ -289,7 +278,11 @@ public class RealmManager {
             throw new ConfigurationException("Error setting up realms from file " + 
                     realmsConfigFile + ": " + e, e);
         }
-        inheritRootRealmProperties();
+        if (rootRealm != null) {
+            inheritRootRealmProperties();
+        } else {
+            throw new ConfigurationException("No root realm configured!");
+        }
     }
     
     /**
@@ -326,7 +319,7 @@ public class RealmManager {
     }
 
     /**
-     *
+     * Get root realm
      */
     public Realm getRootRealm() {
         return rootRealm;
@@ -371,7 +364,7 @@ public class RealmManager {
     }
 
     /**
-     *
+     * Inherit properties of root realm to other realms
      */
     private void inheritRootRealmProperties() {
         java.util.Iterator keyIterator = hm.keySet().iterator();
