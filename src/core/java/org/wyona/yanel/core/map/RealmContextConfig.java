@@ -32,6 +32,9 @@ public class RealmContextConfig {
     private boolean rootFlag;
     private File realmConfigFile;
 
+    private String label;
+    private ReverseProxyConfig reverseProxyConfig;
+
     public RealmContextConfig(String id, String mountPoint, boolean rootFlag, File realmConfigFile) {
         this.id = id;
         this.mountPoint = mountPoint;
@@ -47,13 +50,62 @@ public class RealmContextConfig {
     }
 
     /**
+     * Get realm mount point
+     */
+    public String getMountPoint() {
+        return mountPoint;
+    }
+
+    /**
+     * Get realm ID
+     */
+    public String getID() {
+        return id;
+    }
+
+    /**
+     * Get root flag
+     */
+    public boolean isRoot() {
+        return rootFlag;
+    }
+
+    /**
+     * Set label
+     */
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    /**
+     * Get label
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * Set reverse proxy config
+     */
+    public void setReverseProxyConfig(ReverseProxyConfig rpc) {
+        this.reverseProxyConfig = rpc;
+    }
+
+    /**
+     * Get reverse proxy config
+     */
+    public ReverseProxyConfig getReverseProxyConfig() {
+        return reverseProxyConfig;
+    }
+
+    /**
      *
      */
     public String toString() {
-        String s = "Realm context configuration:\n";
-        s = s + "  ID = " + id;
-        s = s + "  Mount point = " + mountPoint;
-        s = s + "  Root flag = " + rootFlag;
+        String s = "Realm context configuration: ";
+        s = s + "  ID = " + id + ", ";
+        s = s + "  Mount point = " + mountPoint + ", ";
+        s = s + "  Root flag = " + rootFlag + ", ";
         s = s + "  Realm config file = " + realmConfigFile;
         return s;
     }
