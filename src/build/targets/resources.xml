@@ -53,11 +53,11 @@
 -->
 
 <!-- TODO: An exception is thrown by the spring framework ...
-    <merge-resource-types-configs defaultrealmsconfigdir="${yanel.source.home}/conf/" localrealmsconfigdir="${yanel.source.home}/${local.config.dir}/"/>
+    <merge-resource-types-configs defaultrealmsconfigdir="${yanel.source.home}/conf/" localrealmsconfigdir="${local.config.home}/"/>
 -->
 
     <condition property="local.resource-types.config.exists">
-      <available file="${yanel.source.home}/${local.config.dir}/local.resource-types.xml" type="file"/>
+      <available file="${local.config.home}/local.resource-types.xml" type="file"/>
     </condition>
     <antcall target="generate-resources-build-from-default"/>
     <antcall target="generate-resources-build-from-local"/>
@@ -76,7 +76,7 @@
   </target>
 
   <target name="generate-resources-build-from-local" description="Generate resources build from local config" depends="init" if="local.resource-types.config.exists">
-    <xslt in="${yanel.source.home}/${local.config.dir}/local.resource-types.xml" out="../../build/build-resource-types.xml" style="yanel2resources.xsl" force="true">
+    <xslt in="${local.config.home}/local.resource-types.xml" out="../../build/build-resource-types.xml" style="yanel2resources.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
       <param name="maven.url" expression="${maven.url}"/>
@@ -85,7 +85,7 @@
 
   <target name="build-resources" description="Build resources" depends="generate-resources-build">
     <condition property="local.resource-types.config.exists">
-      <available file="${yanel.source.home}/${local.config.dir}/local.resource-types.xml" type="file"/>
+      <available file="${local.config.home}/local.resource-types.xml" type="file"/>
     </condition>
     <antcall target="check-config-version-resource-types-xml"/>
 

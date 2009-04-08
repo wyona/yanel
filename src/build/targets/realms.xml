@@ -9,7 +9,7 @@
   <!-- Build Realms -->
   <target name="build-realms" description="Build realms" depends="generate-realms-build">
     <condition property="local.realms.config.exists">
-      <available file="${yanel.source.home}/${local.config.dir}/local.realms.xml" type="file"/>
+      <available file="${local.config.home}/local.realms.xml" type="file"/>
     </condition>
     <antcall target="check-config-version-realms-xml"/>
 
@@ -19,7 +19,7 @@
 
   <target name="generate-realms-build" description="Generate realms build" depends="init">
     <condition property="local.realms.config.exists">
-      <available file="${yanel.source.home}/${local.config.dir}/local.realms.xml" type="file"/>
+      <available file="${local.config.home}/local.realms.xml" type="file"/>
     </condition>
     <antcall target="generate-realms-build-from-default"/>
     <antcall target="generate-realms-build-from-local"/>
@@ -37,7 +37,7 @@
   </target>
 
   <target name="generate-realms-build-from-local" description="Generate realms build from local config" depends="init" if="local.realms.config.exists">
-    <xslt in="${yanel.source.home}/${local.config.dir}/local.realms.xml" out="../../build/build-realms.xml" style="yanel2realms.xsl" force="true">
+    <xslt in="${local.config.home}/local.realms.xml" out="../../build/build-realms.xml" style="yanel2realms.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
       <param name="maven.url" expression="${maven.url}"/>

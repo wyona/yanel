@@ -60,7 +60,7 @@
     <antcall target="ask-if-local-build-properties-shall-be-deleted"/>
 
     <condition property="local.config.dir.exists">
-      <available file="${yanel.source.home}/${local.config.dir}" type="dir"/>
+      <available file="${local.config.home}" type="dir"/>
     </condition>
     <antcall target="ask-if-local-config-dir-shall-be-deleted"/>
   </target>
@@ -86,7 +86,7 @@
   </target>
 
   <target name="ask-if-local-config-dir-shall-be-deleted" if="local.config.dir.exists">
-    <input message="Do you really want to delete local config dir '${yanel.source.home}/${local.config.dir}'? (yes/NO):" addproperty="answerDeleteLocalConfigDir"/>
+    <input message="Do you really want to delete local config dir '${local.config.home}'? (yes/NO):" addproperty="answerDeleteLocalConfigDir"/>
     <condition property="yes-delete-local-config-dir">
       <equals arg1="yes" arg2="${answerDeleteLocalConfigDir}"/>
     </condition>
@@ -94,7 +94,7 @@
   </target>
 
   <target name="do-delete-local-config-dir" if="yes-delete-local-config-dir">
-    <delete dir="${yanel.source.home}/${local.config.dir}"/>
+    <delete dir="${local.config.home}"/>
   </target>
   
 </project>
