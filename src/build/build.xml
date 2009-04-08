@@ -30,7 +30,6 @@
   <property file="build.properties"/>
   <property name="yanel.source.home" value="${basedir}/../../"/>
 
-  <!--TODO: Use this property everywhere and then we may advertise it in build.properties! -->
   <property name="local.config.home" location="${yanel.source.home}/${local.config.dir}"/>
   <!--echo>local.config.home: ${local.config.home}</echo-->
 

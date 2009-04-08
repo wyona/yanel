@@ -15,7 +15,8 @@
   <property name="test.results.dir" value="${test.data.dir}/test-results"/>
   <property name="test.results.archive.dir" value="${test.data.dir}/test-results-archive"/>  
   <property name="conf.dir" value="${yanel.home.dir}/conf"/>
-  <property name="local.conf.dir" value="${yanel.home.dir}/${local.config.dir}"/>
+  <property name="local.config.home" value="${yanel.home.dir}/${local.config.dir}"/>
+  <!--echo>local.config.home: ${local.config.home}</echo-->
   <property name="build.dir" value="${yanel.home.dir}/build"/>
   <property name="yanel.build.dir" value="${build.dir}/classes"/>
   <property name="junit.build.dir" value="${build.dir}/test/junit"/>
@@ -117,7 +118,7 @@
 
   <target name="build-resources" depends="init" description="Build tests of resources">
     <condition property="local.resource-types.config.exists">
-      <available file="${local.conf.dir}/local.resource-types.xml" type="file"/>
+      <available file="${local.config.home}/local.resource-types.xml" type="file"/>
     </condition>
     <antcall target="generate-resources-test-build-from-default"/>
     <antcall target="generate-resources-test-build-from-local"/>
@@ -140,7 +141,7 @@
 
   <target name="generate-resources-test-build-from-local" depends="init" if="local.resource-types.config.exists">
     <echo>Create ant build file '${build.dir}/test-resources.xml' in order to build tests of resources</echo>
-    <xslt in="${local.conf.dir}/local.resource-types.xml" out="${build.dir}/test-resources.xml" style="test-resources.xsl" force="true"/>
+    <xslt in="${local.config.home}/local.resource-types.xml" out="${build.dir}/test-resources.xml" style="test-resources.xsl" force="true"/>
   </target>
   
   <target name="copy-properties">

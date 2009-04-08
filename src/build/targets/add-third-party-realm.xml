@@ -4,7 +4,7 @@
   <description>Add third party realm</description>
 
   <target name="add-realm" description="Add third party realm" depends="init, build-add-realm-task">
-    <echo>Add third party realm ${realm-config} to local config ${yanel.source.home}/${local.config.dir}</echo>
+    <echo>Add third party realm ${realm-config} to local config ${local.config.home}</echo>
 
     <taskdef name="addrealm" classpath="${yanel.source.home}/build/classes" classname="org.wyona.yanel.ant.AddRealmTask"/>
 

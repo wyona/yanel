@@ -95,14 +95,14 @@
   <target name="configure-local" if="yes.continue">
     <echo>Will now create local properties files if these do not exist.</echo>
 
-    <mkdir dir="${yanel.source.home}/${local.config.dir}"/>
+    <mkdir dir="${local.config.home}"/>
 
-    <copy file="${yanel.source.home}/conf/yanel.xml" tofile="${yanel.source.home}/${local.config.dir}/local.yanel.xml" overwrite="false"/>
-    <copy file="${yanel.source.home}/conf/realms.xml" tofile="${yanel.source.home}/${local.config.dir}/local.realms.xml" overwrite="false"/>
-    <copy file="${yanel.source.home}/conf/resource-types.xml" tofile="${yanel.source.home}/${local.config.dir}/local.resource-types.xml" overwrite="false"/>
-    <copy file="${yanel.source.home}/conf/log4j.properties" tofile="${yanel.source.home}/${local.config.dir}/local.log4j.properties" overwrite="false"/>
+    <copy file="${yanel.source.home}/conf/yanel.xml" tofile="${local.config.home}/local.yanel.xml" overwrite="false"/>
+    <copy file="${yanel.source.home}/conf/realms.xml" tofile="${local.config.home}/local.realms.xml" overwrite="false"/>
+    <copy file="${yanel.source.home}/conf/resource-types.xml" tofile="${local.config.home}/local.resource-types.xml" overwrite="false"/>
+    <copy file="${yanel.source.home}/conf/log4j.properties" tofile="${local.config.home}/local.log4j.properties" overwrite="false"/>
 
-    <echo>Customize the ${local.config.dir}/local.* files and run build.sh OR run build.sh first and then customize the config files within build/webapps/yanel/WEB-INF/classes</echo>
+    <echo>Customize the ${local.config.home}/local.* files and run build.sh OR run build.sh first and then customize the config files within build/webapps/yanel/WEB-INF/classes</echo>
   </target>
   
 </project>
