@@ -10,7 +10,8 @@ import org.apache.tools.ant.types.Path;
 import java.io.File;
 
 import org.wyona.yanel.core.map.Realm;
-import org.wyona.yanel.core.map.RealmManager;
+import org.wyona.yanel.core.map.RealmContextConfig;
+import org.wyona.yanel.core.map.RealmManagerConfig;
 
 import org.apache.log4j.Logger;
 
@@ -33,31 +34,29 @@ public class MergeResourceTypesConfigsTask extends Task {
         log("INFO: Local realms config directory: " + localRealmsConfigDir);
         File defaultRealmsConfig = new File(defaultRealmsConfigDir.toString(), "realms.xml");
         File localRealmsConfig = new File(localRealmsConfigDir.toString(), "local.realms.xml");
-        RealmManager realmManager;
+        RealmManagerConfig realmManagerConfig = new RealmManagerConfig();
+        RealmContextConfig[] realmContextConfigs;
         try {
             if (localRealmsConfig.isFile()) {
                 log("INFO: Local realms config exists: " + localRealmsConfig.getAbsolutePath());
                 // TODO: Unfortunately the class RealmManager consumes at the moment a yanel configuration rather than a realms configuration ...
-                realmManager = new RealmManager("yanel.xml");
-                //realmManager = new RealmManager("local.realms.xml");
-                //realmManager = new RealmManager(localRealmsConfig.getAbsolutePath());
+                //realmManager = new RealmManager("yanel.xml");
+                realmContextConfigs = realmManagerConfig.getRealmContextConfigs(localRealmsConfig);
             } else {
                 log("WARN: No local realms config '" + localRealmsConfig.getAbsolutePath() + "' exists, hence use default one '" + defaultRealmsConfig.getAbsolutePath() + "'");
                 // TODO: ...
-                realmManager = new RealmManager("yanel.xml");
-                //realmManager = new RealmManager(defaultRealmsConfig.getAbsolutePath());
+                //realmManager = new RealmManager("yanel.xml");
+                realmContextConfigs = realmManagerConfig.getRealmContextConfigs(defaultRealmsConfig);
             }
         } catch (Exception e) {
             log("ERROR: " + e.getMessage());
             throw new BuildException(e.getMessage(), e);
         }
 
-        Realm[] realms = realmManager.getRealms();
-        log("Number of realms: " + realms.length);
-        for (int i = 0; i < realms.length; i++) {
-            log("Realm config: " + realms[i].getConfigFile());
+        log("Number of realms: " + realmContextConfigs.length);
+        for (int i = 0; i < realmContextConfigs.length; i++) {
+            log("Realm context config: " + realmContextConfigs[i].getConfigurationFile());
         }
-        log("HUGO");
     }
 
     /**
