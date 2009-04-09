@@ -13,10 +13,11 @@
 <div class="instructions">
 <h1>Testing Framework</h1>
 <h3>General information</h3>
-There are two kinds of tests:
+There are different kind of tests:
 <ul>
 <li>junit:    used to test specific functionality of certain java components/classes see <a href="http://junit.org/">http://junit.org/</a></li>
 <li>htmlunit: used to test the web pages (simulating user interaction) see <a href="http://htmlunit.sourceforge.net/">http://htmlunit.sourceforge.net/</a></li>
+<li>canoo: used to test the web pages (simulating user interaction) see <a href="http://webtest.canoo.com/">http://webtest.canoo.com</a></li>
 </ul>
 
 <h3>How to run the tests</h3>
@@ -40,6 +41,17 @@ cd $YANEL_HOME/src/test
 ant junit -Dtest.class.name=org.wyona.yanel.impl.map.MapImplTest
 ant htmlunit -Dtest.class.name=org.wyona.yanel.htmlunit.yanelwebsite.SimpleWebTest
 </pre>
+</p>
+
+<p>
+Some Canoo web-tests are located at
+
+<pre>
+src/realms/use-cases/yanel/src/test/canoo/
+src/realms/yanel-website/src/test/canoo/
+</pre>
+
+See the README.txt files within these directories in order to run the Canoo web-tests.
 </p>
 
 <h3>How to write tests</h3>
@@ -68,7 +80,7 @@ the testing framework.
 Have a look at the existing tests to see how it works, e.g. in the xml resource.
 </p>
 <p>
-You can find more example htmlunit tests at: <a href="http://svn.wyona.com/repos/public/lenya/htmlunit/">http://svn.wyona.com/repos/public/lenya/htmlunit/</a> Username:anonymous Password: anonymous.<br/>
+You can find more example htmlunit tests at: <a href="http://svn.wyona.com/repos/public/lenya/htmlunit/">http://svn.wyona.com/repos/public/lenya/htmlunit/</a> (Username:anonymous Password: anonymous).<br/>
 </p>
 </div>
 </body>
