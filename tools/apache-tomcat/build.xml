@@ -15,18 +15,32 @@
      value="${tomcat.home.dir}/conf/server-with-ports-patched.xml"/>
 
     <!-- generate the new server.xml file: -->
+    <copy file="${server.file}" tofile="${server.new.file}"/>
+    <replace file="${server.new.file}" value="${host.HTTP.port}">
+      <replacetoken>8080</replacetoken>
+    </replace>
+    <replace file="${server.new.file}" value="${host.SHUTDOWN.port}">
+      <replacetoken>8005</replacetoken>
+    </replace>
+    <replace file="${server.new.file}" value="${host.HTTPS.port}">
+      <replacetoken>8443</replacetoken>
+    </replace>
+    <replace file="${server.new.file}" value="${host.AJP.port}">
+      <replacetoken>8009</replacetoken>
+    </replace>
+<!--
     <xslt
      in="${server.file}"
      style="configure-Tomcat-server.xslt"
      out="${server.new.file}"
     >
-      <!-- Passed as arguments, see for example src/build/targets/continuous-integration/CI -->
       <param name="host" expression="${host}"/>
       <param name="ssl-port" expression="${host.HTTPS.port}"/>
       <param name="http-port" expression="${host.HTTP.port}"/>
       <param name="shutdown-port" expression="${host.SHUTDOWN.port}"/>
       <param name="ajp-port" expression="${host.AJP.port}"/>
     </xslt>
+-->
 
     <!-- we need another intermediary file to swap the original file
      and the new one, which also can be handy if something goes wrong: -->
