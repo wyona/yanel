@@ -2,6 +2,7 @@
 
 <!-- Re-configures the conf/server.xml of Tomcat and creates a backup copy -->
 <!-- This script is executed by src/build/targets/continuous-integration/CI -->
+<!-- Usage: build.xml configure-host -Dtomcat.home.dir=/foo/bar/apache-tomcat-5.5.20 -Dhost=localhost -Dhost.HTTP.port=8180 -Dhost.HTTPS.port=8543 -Dhost.SHUTDOWN.port=8105 -Dhost.AJP.port=8109 -->
 <project name="tomcat">
 
   <target name="configure-host">
@@ -19,9 +20,12 @@
      style="configure-Tomcat-server.xslt"
      out="${server.new.file}"
     >
+      <!-- Passed as arguments, see for example src/build/targets/continuous-integration/CI -->
       <param name="host" expression="${host}"/>
       <param name="ssl-port" expression="${host.HTTPS.port}"/>
       <param name="http-port" expression="${host.HTTP.port}"/>
+      <param name="shutdown-port" expression="${host.SHUTDOWN.port}"/>
+      <param name="ajp-port" expression="${host.AJP.port}"/>
     </xslt>
 
     <!-- we need another intermediary file to swap the original file
