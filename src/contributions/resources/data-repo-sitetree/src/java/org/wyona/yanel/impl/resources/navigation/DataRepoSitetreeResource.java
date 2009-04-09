@@ -89,7 +89,7 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
         //log.error("DEBUG: Path: " + path);
         Sitetree sitetree = getRealm().getRepoNavigation();
         Node node = sitetree.getNode(getRealm(), path);
-        StringBuffer sb = new StringBuffer("");
+        StringBuilder sb = new StringBuilder("");
 
         // TODO: Check for statements "parentOf" for this resource
         /*
@@ -108,7 +108,7 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
             if (node.isCollection()) {
                 if (showAllSubnodes) {
                     sb.append("<collection path=\"" + path + "\" name=\"" + node.getName() + "\">");
-                    // TODO: ...
+                    // TODO: There seems to be a problem re special characters
                     sb.append("<label><![CDATA[" + node.getName() + "]]></label>");
                     //sb.append("<label><![CDATA[" + node.getLabel() + "]]></label>");
                 }
