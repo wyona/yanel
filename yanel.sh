@@ -62,6 +62,7 @@ elif [ "$1" = "build" ]; then
 # One might want to use the option "-f" for building resources, e.g. "./yanel.sh build -f src/resources/xml/build.xml" instead having to build everything
 if [ "$1" = "-f" ];then
   echo "INFO: Build using -f ..."
+  # TODO: Pass all parameters (not just 7 or rather 6)
   $OUR_ANT -f $2 $3 $4 $5 $6 $7 -Dyanel.source.home=$SCRIPT_DIR
   error=$?
   if [ $error -ne 0 ];then
