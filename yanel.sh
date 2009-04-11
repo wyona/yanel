@@ -57,12 +57,12 @@ elif [ "$1" = "configure" ]; then
   shift
   $OUR_ANT config "$@"
 elif [ "$1" = "build" ]; then
-  echo "INFO: Building Yanel..."
   shift
 
 # One might want to use the option "-f" for building resources, e.g. "./yanel.sh build -f src/resources/xml/build.xml" instead having to build everything
 if [ "$1" = "-f" ];then
-  $OUR_ANT -f $2 $3 -Dyanel.source.home=$SCRIPT_DIR
+  echo "INFO: Build using -f ..."
+  $OUR_ANT -f $2 $3 $4 $5 $6 $7 -Dyanel.source.home=$SCRIPT_DIR
   error=$?
   if [ $error -ne 0 ];then
     echo "WARN: Some resource-types may not yet support the '-f' option, please refer to bug 6898 for how to implement it."
@@ -70,8 +70,10 @@ if [ "$1" = "-f" ];then
   fi
   exit 0
 fi
-# Build everything by default
-$OUR_ANT "$@"
+
+  # Build everything by default
+  echo "INFO: Building Yanel..."
+  $OUR_ANT "$@"
 
 else
   $OUR_ANT run-yanel-cmdl -Dyanel.path=$1
