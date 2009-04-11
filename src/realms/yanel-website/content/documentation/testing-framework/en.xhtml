@@ -37,9 +37,9 @@ Then execute in $YANEL_HOME: ./build.sh test
 <p>
 To run single tests standalone:
 <pre>
-cd $YANEL_HOME/src/test
-ant junit -Dtest.class.name=org.wyona.yanel.impl.map.MapImplTest
-ant htmlunit -Dtest.class.name=org.wyona.yanel.htmlunit.yanelwebsite.SimpleWebTest
+cd $YANEL_HOME
+./build.sh -f src/test/build.xml junit -Dtest.class.name=org.wyona.yanel.impl.map.MapImplTest
+./build.sh -f src/test/build.xml htmlunit -Dtest.class.name=org.wyona.yanel.htmlunit.yanelwebsite.SimpleWebTest
 </pre>
 </p>
 
