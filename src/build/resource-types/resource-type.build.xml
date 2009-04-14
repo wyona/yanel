@@ -26,6 +26,7 @@
 
     <path id="classpath">
       <pathelement path="${maven2.cp}"/>
+      <pathelement path="${maven2.resource.cp}"/>
     </path>
     <property name="resource.build.dir" value="${resource.home.dir}/build"/>
     <property name="resource.classes.dir" value="${resource.build.dir}/classes"/>
@@ -45,6 +46,7 @@
 
     <path id="eclipse.classpath">
       <fileset refid="maven2.fileset"/>
+      <fileset refid="maven2.resource.fileset"/>
       <fileset refid="Yanel.test.jars.fileset"/>
     </path>
     <ant dir="${yanel.home}/tools/eclipse.settings" target="update-classpath"
