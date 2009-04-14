@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="lookup" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="name4path-parameter" value="node"/>
+  <yanel:property name="filter-pattern-image" value=".*[.]gif"/>
+  <yanel:property name="filter-pattern-image" value=".*[.]jpg"/>
+  <yanel:property name="filter-pattern-image" value=".*[.]png"/>
+  
+  
+  <yanel:custom-config>
+    <views xmlns="http://www.wyona.org/yanel/rti/1.0">
+      <view id="default" type="jelly">
+        <template>/jelly/tinymce-lookup.jelly</template>
+        <mime-type>text/html</mime-type>
+      </view>
+
+      <!-- json view -->
+      <view id="json-node" type="jelly">
+        <template>rthtdocs:/json-node.jelly</template>
+        <xslt>rthtdocs:/json-node.xsl</xslt>
+        <mime-type>application/json</mime-type>
+        <serializer key="TEXT">
+        </serializer>
+      </view>
+
+    </views>
+    
+    <rc:sitetree class="org.wyona.yanel.impl.navigation.SitetreeResConfigAndDataRepoImpl" xmlns:rc="http://www.wyona.org/yanel/resource/sitetree/1.0"/>
+    
+  </yanel:custom-config>
+</yanel:resource-config>
