@@ -5,6 +5,9 @@
       <title>Edit ${resource.getEditPath()} with tinyMCE</title>
       <link rel="stylesheet" type="text/css" href="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/css/tinymce-resource.css"/>
       <script language="javascript" type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+      <script language="javascript">
+        var BACK2REALM = '${yanel.back2realm}';
+      </script>        
       <script language="javascript" type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/js/tinymceinit.js"></script>
     </head>
     <body>
