@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="lookup"
+  namespace="http://www.wyona.org/yanel/resource/1.0"
+  class="org.wyona.yanel.impl.resources.navigation.LookupResource"
+  >
+<description>
+Allows browsing the sitetree of the realm (default is configured within conf/spring-yanel-config.xml (see bean with id repo-navigation), whereas can also be realm specific. If realm specific, then see realm.xml (see repo-navigation element))
+</description>
+
+<rtd>
+  <property name="name4path-parameter" default-value="path"/>
+  <property name="filter-pattern-$TYPE" default-value="regex"/>
+</rtd>
+</resource>
