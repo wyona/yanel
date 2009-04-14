@@ -8,8 +8,8 @@
           var lookupTreeConfig = {
               "lookup-panel-border": "false", 
               "lookup-panel-padding": "15", 
-              "lookup-treepanel-width": "160", 
-              "lookup-treepanel-height": "600", 
+              "lookup-treepanel-width": "360", 
+              "lookup-treepanel-height": "340", 
               "lookup-root-node-label": "test",
               "lookup-hook": "lookupHook",
               "lookup-request-paramter-type": '${resource.getParameterAsString("type")}'
@@ -48,6 +48,7 @@
         <link rel="stylesheet" href="${yanel.back2realm}${yanel.reservedPrefix}/yanel-css/global.css" type="text/css"/>
       </head>
       <body>
+        <h1>Lookup</h1>
         <script language="javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::lookup/js/org.wyona.yanel.navigation.gwt.lookuptree.LookupTree.nocache.js"></script>
         <div id="lookupHook"/>
         <iframe id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
