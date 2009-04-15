@@ -23,6 +23,9 @@
     </condition>
     <antcall target="generate-realms-build-from-default"/>
     <antcall target="generate-realms-build-from-local"/>
+    <replace file="../../build/build-realms.xml" value="${yanel.source.home.forward.slashes}/src/realms">
+      <replacetoken>@REALMS_DIR@</replacetoken>
+    </replace>
   </target>
 
   <target name="generate-realms-build-from-default" description="Generate realms build from default config" depends="init" unless="local.realms.config.exists">
@@ -31,9 +34,6 @@
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
       <param name="maven.url" expression="${maven.url}"/>
     </xslt>
-    <replace file="../../build/build-realms.xml" value="${yanel.source.home.forward.slashes}/src/realms">
-      <replacetoken>@REALMS_DIR@</replacetoken>
-    </replace>
   </target>
 
   <target name="generate-realms-build-from-local" description="Generate realms build from local config" depends="init" if="local.realms.config.exists">
@@ -42,9 +42,6 @@
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
       <param name="maven.url" expression="${maven.url}"/>
     </xslt>
-    <replace file="../../build/build-realms.xml" value="${yanel.source.home.forward.slashes}/src/realms">
-      <replacetoken>@REALMS_DIR@</replacetoken>
-    </replace>
   </target>
   
 </project>
