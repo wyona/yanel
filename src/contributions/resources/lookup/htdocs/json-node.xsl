@@ -28,7 +28,7 @@
   </xsl:template>
 
   <xsl:template match="resource">
-      {"id":"<xsl:value-of select="@path"/>", "text":"<xsl:value-of select="@name"/>","cls":"file-txt","disabled":false,"leaf":true,"qtip":"Size: 1047552"}
+      {"id":"<xsl:value-of select="@path"/>", "text":"<xsl:value-of select="@name"/>","cls":"file-txt","disabled":false,"leaf":true}
         <xsl:if test="following-sibling::*">,</xsl:if>
   </xsl:template>
 
