@@ -71,7 +71,6 @@ public class LookupResource extends ExecutableUsecaseResource {
                             sb.append("</collection>");
                     } else if (children[i].isResource()) {
                         String nodeName = children[i].getName();
-                        boolean test = filterMatch(nodeName);
                         if (filterMatch(nodeName)) {
                             sb.append("<resource path=\"" + childPath + "\" name=\"" + nodeName + "\">");
                             sb.append("<label><![CDATA[" + nodeName + "]]></label>");
