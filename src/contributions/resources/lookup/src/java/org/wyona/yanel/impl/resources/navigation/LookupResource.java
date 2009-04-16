@@ -64,13 +64,13 @@ public class LookupResource extends ExecutableUsecaseResource {
                     if (path.equals("/")) {
                         childPath = path + children[i].getName();
                     }
+                    String nodeName = children[i].getName();
                     if (children[i].isCollection()) {
-                            sb.append("<collection path=\"" + childPath + "\" name=\"" + children[i].getName() + "\">");
+                            sb.append("<collection path=\"" + childPath + "\" name=\"" + children[i].getName() + "\" isSelectable=\"" + filterMatch(nodeName) + "\">");
                             // TODO: ...
                             sb.append("<label><![CDATA[" +children[i].getName() + "]]></label>");
                             sb.append("</collection>");
                     } else if (children[i].isResource()) {
-                        String nodeName = children[i].getName();
                         if (filterMatch(nodeName)) {
                             sb.append("<resource path=\"" + childPath + "\" name=\"" + nodeName + "\">");
                             sb.append("<label><![CDATA[" + nodeName + "]]></label>");

@@ -19,7 +19,7 @@
   </xsl:template>
 
   <xsl:template match="collection">
-    {"id":"<xsl:value-of select="@path"/>", "text":"<xsl:value-of select="@name"/>","cls":"folder","disabled":false,"leaf":false}
+    {"id":"<xsl:value-of select="@path"/>", "text":"<xsl:value-of select="@name"/>","cls":"folder","disabled":false,"leaf":false, "isSelectable":"<xsl:value-of select="@isSelectable"/>"}
     <xsl:choose>
       <xsl:when test="following-sibling::*">,</xsl:when>
       <xsl:otherwise></xsl:otherwise>
@@ -28,7 +28,7 @@
   </xsl:template>
 
   <xsl:template match="resource">
-      {"id":"<xsl:value-of select="@path"/>", "text":"<xsl:value-of select="@name"/>","cls":"file-txt","disabled":false,"leaf":true}
+      {"id":"<xsl:value-of select="@path"/>", "text":"<xsl:value-of select="@name"/>","cls":"file-txt","disabled":false,"leaf":true, "isSelectable":"true"}
         <xsl:if test="following-sibling::*">,</xsl:if>
   </xsl:template>
 
