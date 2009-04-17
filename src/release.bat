@@ -1,4 +1,4 @@
-:: Yanel release script
+:: Yanel release script for Windows
 
 
 ::::
@@ -31,6 +31,7 @@ call yanel build %_YANEL_LBP% source-snapshot
 ::::
 :: build binary snapshots (including Windows installer):
 
+:: NOTE: Workaround in order to shorten paths
 subst Y: .
 Y:
 cd \
