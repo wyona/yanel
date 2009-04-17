@@ -2,19 +2,13 @@
 
 <project name="resources" default="deploy-resources" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
-<!--
-  <target name="generate-resources-build" description="Generate resources build" depends="init">
--->
-<!--
-  <target name="generate-resources-build" description="Generate resources build" depends="init, set-classpath">
--->
 <!-- The core needs to exist, because certain classes will be re-used within custom tasks -->
   <target name="generate-resources-build" description="Generate resources build" depends="init, compile-core, set-classpath">
   <echo>INFO: Generate build file to build resources</echo>
 
 <!--
     <property name="property.classpath.compile" refid="classpath.compile"/>
-    <echo>COMPILE CORE CLASSPATH: ${property.classpath.compile}</echo>
+    <echo>DEBUG COMPILE CORE CLASSPATH: ${property.classpath.compile}</echo>
 -->
 
 <!-- Build custom ant tasks -->
@@ -28,9 +22,6 @@
       <pathelement path="${yanel.source.home}/conf/"/>
       <pathelement path="${yanel.source.home}/conf/local-foaf/"/>
       <pathelement path="${classes.dir}"/> <!-- Location of the custom ant tasks -->
-      <fileset dir="${yanel.source.home}/build/lib"> <!-- Location of yanel core lib -->
-        <include name="*.jar"/>
-      </fileset>
       <pathelement path="${maven2.cp}"/>
       <pathelement path="${maven2.compile.cp}"/>
     </path>
@@ -40,15 +31,9 @@
     <echo>CLASSPATH: ${property.classpath.taskdef.merge-resource-types-configs}</echo>
 -->
 
-<!--
-<taskdef name="merge-resource-types-configs" classpathref="classpath.taskdef.merge-resource-types-configs" classname="org.wyona.yanel.ant.MergeResourceTypesConfigsTask"/>
--->
-
-<!--
     <taskdef name="merge-resource-types-configs" classname="org.wyona.yanel.ant.MergeResourceTypesConfigsTask">
       <classpath refid="classpath.taskdef.merge-resource-types-configs"/>
     </taskdef>
--->
 
 <!-- TODO: An exception is thrown by the spring framework ...
     <merge-resource-types-configs defaultrealmsconfigdir="${yanel.source.home}/conf/" localrealmsconfigdir="${local.config.home}/"/>
