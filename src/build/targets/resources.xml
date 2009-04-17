@@ -35,9 +35,7 @@
       <classpath refid="classpath.taskdef.merge-resource-types-configs"/>
     </taskdef>
 
-<!-- TODO: An exception is thrown by the spring framework ...
     <merge-resource-types-configs defaultrealmsconfigdir="${yanel.source.home}/conf/" localrealmsconfigdir="${local.config.home}/"/>
--->
 
     <condition property="local.resource-types.config.exists">
       <available file="${local.config.home}/local.resource-types.xml" type="file"/>
