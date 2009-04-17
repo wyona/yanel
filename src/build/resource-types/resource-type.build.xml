@@ -18,7 +18,8 @@
 
   <import file="${resource.home.dir}/src/build/dependencies.xml"/>
 
-  <target name="init" description="Initialize build" depends="dependencies">
+  <!-- Initialize build -->
+  <target name="init" depends="dependencies">
     <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
 
     <property file="${resource.home.dir}/src/build/local.build.properties"/>
@@ -97,6 +98,8 @@
     <jar destfile="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}.jar"
       basedir="${resource.classes.dir}"
     />
+    <available property="resource.install.needed" file="src/build/pom.xml"/>
+    <antcall target="install-jar"/>
   </target>
 
   <target name="clean" depends="init">
@@ -110,7 +113,8 @@
     </copy>
   </target>
 
-  <target name="install-jar" description="Place jar file for this resource into local maven repository" depends="init, clean, compile" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+  <!-- Place jar file for this resource into local maven repository -->
+  <target name="install-jar" if="resource.install.needed">
     <copy file="src/build/pom.xml" tofile="build/lib/pom.xml"/>
 
     <replace file="build/lib/pom.xml" value="${resource.version}">
