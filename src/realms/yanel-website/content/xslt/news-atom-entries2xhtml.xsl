@@ -21,10 +21,12 @@
 <head>
   <link rel="introspection" href="introspection-atom.xml" type="application/atomserv+xml"/>
 
-  <link rel="alternate" title="Yanel News" href="news-atom-entries/?yanel.resource.viewid=source" type="application/atom+xml"/>
+<!--XXX: we'd better use absolute URLs in the feeds' "href" attributes according to http://www.rssboard.org/rss-autodiscovery#element-link-href -->
+  <!--FIXME: ATOM feed is invalid and too buggy ATM (see bug #5018): link rel="alternate" title="Yanel News" href="news-atom-entries/?yanel.resource.viewid=source" type="application/atom+xml"/-->
 <!--
   <link rel="alternate" title="Yanel News" href="news-atom-entries/?yanel.resource.viewid=atom" type="application/atom+xml"/>
 -->
+  <link rel="alternate" title="Yanel News" href="news-atom-entries/?yanel.resource.viewid=rss2.0" type="application/rss+xml"/>
 
   <title>News</title>
 </head>
@@ -37,9 +39,9 @@
 
 
 <p>
-<a href="http://www.feedvalidator.org/check.cgi?url=http%3A//yanel.wyona.org/news/news-atom-entries/?yanel.resource.viewid=atom"><img src="../img/valid-atom.png" alt="[Valid Atom 1.0]" title="Validate my Atom 1.0 feed" border="0"/></a>
+<!--FIXME: ATOM feed is invalid and too buggy ATM (see bug #5018): a href="http://www.feedvalidator.org/check.cgi?url=http%3A//yanel.org/news/news-atom-entries/?yanel.resource.viewid=atom"><img src="../img/valid-atom.png" alt="[Valid Atom 1.0]" title="Validate my Atom 1.0 feed" border="0"/></a-->
 
-<a href="http://www.feedvalidator.org/check.cgi?url=http%3A//yanel.wyona.org/news/news-atom-entries/?yanel.resource.viewid=rss2.0"><img src="../img/valid-rss.png" alt="[Valid RSS 2.0]" title="Validate my RSS 2.0 feed" border="0"/></a>
+<a href="http://www.feedvalidator.org/check.cgi?url=http%3A//yanel.org/news/news-atom-entries/?yanel.resource.viewid=rss2.0"><img src="../img/valid-rss.png" alt="[Valid RSS 2.0]" title="Validate my RSS 2.0 feed" border="0"/></a>
 
 &#160;
 <a href="news-atom-entries/?yanel.resource.viewid=rss2.0"><img src="../img/feed-icon-16x16.png" alt="[RSS 2.0]" border="0"/></a>
