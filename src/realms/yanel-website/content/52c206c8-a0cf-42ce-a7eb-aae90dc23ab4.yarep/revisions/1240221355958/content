@@ -25,7 +25,7 @@
 <h3 id="section-YanelFeatures-ContentCreation">Content creation</h3>
 <ul>
 <li>create/edit/delete static pages </li>
-<li>Web-based editor (<a href="http://tinymce.moxiecode.com/">TinyMCE</a>, <a href="http://xinha.webfactional.com/">Xinha</a>) with management facilities for: 
+<li>Web-based editor (TinyMCE, Xinha) with management facilities for: 
 <ul>
 <li>text </li>
 <li>images or other assets (PDF documents, Flash videos, or other binary files) </li>
