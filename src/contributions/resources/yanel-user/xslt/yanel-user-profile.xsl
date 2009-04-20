@@ -19,6 +19,8 @@
   <xsl:param name="success" select="''"/>
   <xsl:param name="error" select="''"/>
   <xsl:param name="deletion" select="'false'"/>
+  <xsl:param name="yanel.back2realm" select="'BACK2REALM_IS_NULL'"/>
+  <xsl:param name="yanel.reservedPrefix" select="'RESERVEDPREFIX_IS_NULL'"/>
 
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
@@ -26,6 +28,7 @@
         <xsl:when test="contains('true',$deletion)">
           <head>
             <title></title>
+            <link type="text/css" href="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-css/global.css" rel="stylesheet"></link>
           </head>
           <body>	    
             <xsl:call-template name="show-message"/>
@@ -34,13 +37,18 @@
         <xsl:otherwise>
           <head>
             <title>Change user profile</title>
+            <link type="text/css" href="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-css/global.css" rel="stylesheet"></link>
           </head>
           <body>        
+            <table id="bodytable" cellpadding="0" cellspacing="0"><tr><td id="title">
+              Change user profile of <xsl:value-of select="$userId"/>
+            </td><td id="logo"><img src="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-img/yanel_header.png"/></td></tr><tr><td colspan="2" valign="top" width="100%"><div id="content">
             <h1> 
               User Profile of <xsl:value-of select="$userId"/>
             </h1>
               <xsl:call-template name="show-message"/>     
               <xsl:apply-templates select="form"/>
+            </div></td></tr></table>
           </body>
         </xsl:otherwise>
       </xsl:choose>

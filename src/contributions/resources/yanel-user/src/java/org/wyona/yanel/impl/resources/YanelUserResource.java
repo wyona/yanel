@@ -75,7 +75,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
 
     private static Category log = Category.getInstance(YanelUserResource.class);
 
-    private HashMap properties = new HashMap();
+    private HashMap<String, Object> properties = new HashMap<String, Object>();
 
     /**
      * Constructor
@@ -202,6 +202,10 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
                 defaultView.setInputStream(new java.io.FileInputStream(xmlFile));
             } else {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(getPath());
+                String reservedPrefix = yanel.getReservedPrefix();
+                transformer.setParameter("yanel.back2realm", backToRealm);
+                transformer.setParameter("yanel.reservedPrefix", reservedPrefix);
                 transformer.transform(new javax.xml.transform.stream.StreamSource(xmlFile), new StreamResult(baos));
                 defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
             }
@@ -282,7 +286,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
      * @see org.wyona.yanel.core.api.attributes.CreatableV2#createRTIProperties(HttpServletRequest)
      */
     public HashMap createRTIProperties(HttpServletRequest request) {
-        HashMap map = new HashMap();
+        HashMap<String, String> map = new HashMap<String, String>();
         map.put("user", request.getParameter("rp.userId"));
         return map;
     }
@@ -525,7 +529,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
         boolean submit = false;
         String action = "defaultView";
 
-        Enumeration enumeration = request.getParameterNames();
+        Enumeration<?> enumeration = request.getParameterNames();
         while (enumeration.hasMoreElements() && !submit) {
             action = enumeration.nextElement().toString();
             if (action.startsWith("submit")) {
