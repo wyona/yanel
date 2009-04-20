@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
 <!-- Everything common to most resource types. -->
-<project name="yanel-resource"
+<project name="yanel-resource-type"
  xmlns:artifact="antlib:org.apache.maven.artifact.ant"
 >
-<!-- the default task seems not to be imported at least with Ant 1.6.5
+<!-- the default task seems not to be imported at least with Ant 1.6.5 or Ant 1.7.1
  default="compile"
- default="install-jar"
 -->
   <dirname property="resource.home.dir" file="${ant.file}"/>
 
