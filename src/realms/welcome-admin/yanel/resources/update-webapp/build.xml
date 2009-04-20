@@ -1,7 +1,7 @@
 <project name="yanel-update-webapp-resource">
   <import file="${yanel.source.home}/src/build/resource-types/resource-type.build.xml"/>
 
-  <target name="copy-dependencies" depends="yanel-resource.copy-dependencies">
+  <target name="copy-dependencies" depends="yanel-resource-type.copy-dependencies">
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes">
       <fileset dir="config" includes="update_*.properties"/>
     </copy>
