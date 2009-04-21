@@ -37,6 +37,9 @@
 
   </target>
 
+  <property name="eclipse.yanel.build.classes.dir.link" value="yanel-build-webapp-classes"/>
+  <property name="eclipse.classes.dir.link" value="cnode1-webapp-WEB-INF-classes"/>
+
   <target name="eclipse:classpath" description="Update Eclipse's .classpath file" depends="init">
     <artifact:dependencies pathId="Yanel.test.jars.classpath" filesetId="Yanel.test.jars.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
@@ -49,11 +52,20 @@
       <fileset refid="maven2.resource.fileset"/>
       <fileset refid="Yanel.test.jars.fileset"/>
     </path>
+    <condition property="eclipse.classes.dir" value="${eclipse.classes.dir.link}" else="">
+      <isset property="do.autopatch.cnode1.webapp.WEB-INF.classes"/>
+    </condition>
+    <condition property="eclipse.source.dirs" value="src/java:${eclipse.yanel.build.classes.dir.link}" else="">
+      <isset property="do.autopatch.cnode1.webapp.WEB-INF.classes"/>
+    </condition>
     <ant dir="${yanel.home}/tools/eclipse.settings" target="update-classpath"
      inheritAll="false" inheritRefs="false">
       <reference torefid="classpath.ref" refid="eclipse.classpath"/>
       <property name="classpath.dir" value="${resource.home.dir}"/>
+      <property name="classes.dir" value="${eclipse.classes.dir}"/>
+      <property name="source.dirs" value="${eclipse.source.dirs}"/>
     </ant>
+    <echo><!--XXX -->WARNING (if you used -Ddo.autopatch.cnode1.webapp.WEB-INF.classes=foo to make Eclipse automatically patch the webapp's classes in place during compilation): the logs will show up in ${yanel.home}/build/log4j-cmdl.log and not in ${yanel.home}/build/log4j-cnode1.log (due to to way the build is currently set up).</echo>
   </target>
 
   <target name="eclipse" description="Generate all files needed to use the resource type under Eclipse (WARNING: .project file will be overwritten!)" depends="eclipse:classpath">
@@ -62,6 +74,10 @@
         <filter token="RESOURCE_TYPE_NAME" value="${ant.project.name}"/>
         <filter token="YANEL_VERSION" value="${yanel.version}-r${yanel.revision}"/>
         <filter token="GENERATION_COMMAND" value="build -f ${ant.file} eclipse"/>
+        <filter token="YANEL_BUILD_CLASSES_DIR_LINK" value="${eclipse.yanel.build.classes.dir.link}"/>
+        <filter token="YANEL_BUILD_CLASSES_DIR" value="${yanel.build.webapp.classes.dir}"/>
+        <filter token="CLASSES_DIR_LINK" value="${eclipse.classes.dir.link}"/>
+        <filter token="CLASSES_DIR" value="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes"/><!--FIXME: this should not be Tomcat-specific... -->
       </filterset>
     </copy>
     <echo>Eclipse project created: in Eclipse you can now import (as an existing project into your workspace) this resource-type with root directory set to ${resource.home.dir} and build it there!</echo>
