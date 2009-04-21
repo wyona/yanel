@@ -35,6 +35,9 @@
       <classpath refid="classpath.taskdef.merge-resource-types-configs"/>
     </taskdef>
 
+    <antcall target="prepare-realms-config"/>
+    <antcall target="prepare-global-resource-types-config"/>
+
     <merge-resource-types-configs defaultrealmsconfigdir="${yanel.source.home}/conf/" localrealmsconfigdir="${local.config.home}/"/>
 
     <condition property="local.resource-types.config.exists">
@@ -45,6 +48,40 @@
 
     <replace file="../../build/build-resource-types.xml" value="${yanel.source.home.forward.slashes}">
       <replacetoken>@YANEL_SRC_DIR@</replacetoken>
+    </replace>
+  </target>
+
+  <target name="prepare-global-resource-types-config">
+    <if> <!-- See ant-contrib lib: http://ant-contrib.sourceforge.net/tasks/tasks/if.html -->
+      <available file="${local.config.home}/local.resource-types.xml" type="file"/>
+      <then>
+        <echo>INFO: Local resource-types file exists: ${local.config.home}/local.resource-types.xml</echo>
+        <copy file="${local.config.home}/local.resource-types.xml" tofile="${classes.dir}/resource-types.xml"/>
+      </then>
+      <else>
+        <echo>Local resource-types file does NOT exists</echo>
+        <copy file="${yanel.source.home}/conf/resource-types.xml" tofile="${classes.dir}/resource-types.xml"/>
+      </else>
+    </if>
+    <replace file="${classes.dir}/resource-types.xml" value="${yanel.source.home.forward.slashes}">
+      <replacetoken>@YANEL_SRC_DIR@</replacetoken>
+    </replace>
+  </target>
+
+  <target name="prepare-realms-config">
+    <if>
+      <available file="${local.config.home}/local.realms.xml" type="file"/>
+      <then>
+        <echo>INFO: Local realms file exists: ${local.config.home}/local.realms.xml</echo>
+        <copy file="${local.config.home}/local.realms.xml" tofile="${classes.dir}/realms.xml"/>
+      </then>
+      <else>
+        <echo>Local realms file does NOT exists</echo>
+        <copy file="${yanel.source.home}/conf/realms.xml" tofile="${classes.dir}/realms.xml"/>
+      </else>
+    </if>
+    <replace file="${classes.dir}/realms.xml" value="${yanel.source.home.forward.slashes}/src/realms">
+      <replacetoken>@REALMS_DIR@</replacetoken>
     </replace>
   </target>
 
