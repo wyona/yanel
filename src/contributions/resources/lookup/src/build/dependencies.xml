@@ -4,17 +4,6 @@
 
   <target name="dependencies" description="Dependencies">
     <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
-
-    <!--     get ext by maven -->    
-    <artifact:dependencies filesetId="maven2.ext.fileset">
-      <remoteRepository refid="wyona.remote.repository"/>
-      <dependency groupId="ext" artifactId="gwtext" version="2.0.2" scope="provided" type="zip"/>
-    </artifact:dependencies>
-    
-    <unzip dest="htdocs/ext">
-      <fileset refid="maven2.ext.fileset"/>
-    </unzip>
-    <!--     get ext by maven -->
     
     <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
