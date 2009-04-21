@@ -51,7 +51,16 @@ public class LookupResource extends ExecutableUsecaseResource {
     /**
      * Get node as XML
      */
-    private String getNodeAsXML(String path) {
+    private String getNodeAsXML(String path) throws Exception {
+        String collectionsOnly = "false";
+        
+        if (getResourceConfigProperty("show-collections-only") != null) {
+            collectionsOnly = getResourceConfigProperty("show-collections-only");
+        }
+        if (getEnvironment().getRequest().getParameter("show-collections-only") != null) {
+            collectionsOnly = getEnvironment().getRequest().getParameter("show-collections-only");
+        }
+        
         Sitetree sitetree = getSitetree();
         Node node = sitetree.getNode(getRealm(), path);
         StringBuilder sb = new StringBuilder();
@@ -66,11 +75,18 @@ public class LookupResource extends ExecutableUsecaseResource {
                     }
                     String nodeName = children[i].getName();
                     if (children[i].isCollection()) {
-                            sb.append("<collection path=\"" + childPath + "\" name=\"" + children[i].getName() + "\" isSelectable=\"" + filterMatch(nodeName) + "\">");
+                        if(Boolean.parseBoolean(collectionsOnly)) {
+                            sb.append("<collection path=\"" + childPath + "\" name=\"" + children[i].getName() + "\">");
                             // TODO: ...
                             sb.append("<label><![CDATA[" +children[i].getName() + "]]></label>");
                             sb.append("</collection>");
-                    } else if (children[i].isResource()) {
+                        } else if (filterMatch(nodeName)) {
+                            sb.append("<collection path=\"" + childPath + "\" name=\"" + children[i].getName() + "\">");
+                            // TODO: ...
+                            sb.append("<label><![CDATA[" +children[i].getName() + "]]></label>");
+                            sb.append("</collection>");
+                        }
+                    } else if (children[i].isResource() && !Boolean.parseBoolean(collectionsOnly)) {
                         if (filterMatch(nodeName)) {
                             sb.append("<resource path=\"" + childPath + "\" name=\"" + nodeName + "\">");
                             sb.append("<label><![CDATA[" + nodeName + "]]></label>");
@@ -80,7 +96,7 @@ public class LookupResource extends ExecutableUsecaseResource {
                         sb.append("<neither-resource-nor-collection path=\"" + childPath + "\" name=\"" + children[i].getName() + "\"/>");
                     }
                 }
-            } else {
+            } else if (!Boolean.parseBoolean(collectionsOnly)) {
                 String nodeName = node.getName();
                 if (filterMatch(nodeName)) {
                     sb.append("<resource path=\"" + path + "\" name=\"" + nodeName + "\">");

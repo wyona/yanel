@@ -13,9 +13,13 @@
   <xsl:param name="domain" select="'DOMAIN_IS_NULL'"/>
 
   <xsl:template match="/">
-    [
-    <xsl:apply-templates/>
-    ]
+    {
+      "totalCount" : <xsl:value-of select="count(collection) + count(resource)"/>,  
+      "data":
+      [
+      <xsl:apply-templates/>
+      ]
+    }
   </xsl:template>
 
   <xsl:template match="collection">
