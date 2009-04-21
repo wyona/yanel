@@ -113,6 +113,17 @@
 
 
     </artifact:dependencies>
+    
+    <!--     get ext by maven -->    
+    <artifact:dependencies filesetId="maven2.ext.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="ext" artifactId="gwtext" version="2.0.2" scope="provided" type="zip"/>
+    </artifact:dependencies>
+    
+    <unzip dest="../webapp/htdocs/ext">
+      <fileset refid="maven2.ext.fileset"/>
+    </unzip>
+    <!--     get ext by maven -->
 
     <property name="maven2.cp" refid="maven2.classpath"/>
     <property name="maven2.compile.cp" refid="maven2.compile.classpath"/>
