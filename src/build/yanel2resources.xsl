@@ -10,6 +10,7 @@
 <xsl:param name="servlet.context.prefix" select="'NULL_servlet_context_prefix'"/>
 <xsl:param name="yanel.source.version" select="'NULL_yanel_source_version'"/>
 <xsl:param name="maven.url" select="'NULL_maven_url'"/>
+<xsl:param name="yanel.source.home" select="'NULL_yanel_source_home'"/>
 
 <xsl:template match="/">
 
@@ -41,21 +42,21 @@
     <ant inheritAll="false" antfile="{@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
       <property name="maven.url" value="{$maven.url}"/>
-      <property name="yanel.source.home" value="@YANEL_SRC_DIR@"/>
+      <property name="yanel.source.home" value="{$yanel.source.home}"/>
     </ant>
         </xsl:when>
         <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
     <ant inheritAll="false" antfile="{@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
       <property name="maven.url" value="{$maven.url}"/>
-      <property name="yanel.source.home" value="@YANEL_SRC_DIR@"/>
+      <property name="yanel.source.home" value="{$yanel.source.home}"/>
     </ant>
         </xsl:when>
         <xsl:otherwise>
     <ant inheritAll="false" antfile="${{build.dir}}/{@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
       <property name="maven.url" value="{$maven.url}"/>
-      <property name="yanel.source.home" value="@YANEL_SRC_DIR@"/>
+      <property name="yanel.source.home" value="{$yanel.source.home}"/>
     </ant>
         </xsl:otherwise>
       </xsl:choose>
@@ -154,7 +155,7 @@
       <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
       <property name="maven.url" value="{$maven.url}"/>
-      <property name="yanel.source.home" value="@YANEL_SRC_DIR@"/>
+      <property name="yanel.source.home" value="{$yanel.source.home}"/>
     </ant>
       </xsl:when>
       <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
@@ -163,7 +164,7 @@
       <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
       <property name="maven.url" value="{$maven.url}"/>
-      <property name="yanel.source.home" value="@YANEL_SRC_DIR@"/>
+      <property name="yanel.source.home" value="{$yanel.source.home}"/>
     </ant>
       </xsl:when>
       <xsl:otherwise>
@@ -172,7 +173,7 @@
       <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
       <property name="maven.url" value="{$maven.url}"/>
-      <property name="yanel.source.home" value="@YANEL_SRC_DIR@"/>
+      <property name="yanel.source.home" value="{$yanel.source.home}"/>
     </ant>
       </xsl:otherwise>
     </xsl:choose>

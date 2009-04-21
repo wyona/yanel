@@ -37,18 +37,8 @@
 
     <antcall target="prepare-realms-config"/>
     <antcall target="prepare-global-resource-types-config"/>
-
     <merge-resource-types-configs defaultrealmsconfigdir="${yanel.source.home}/conf/" localrealmsconfigdir="${local.config.home}/"/>
-
-    <condition property="local.resource-types.config.exists">
-      <available file="${local.config.home}/local.resource-types.xml" type="file"/>
-    </condition>
-    <antcall target="generate-resources-build-from-default"/>
-    <antcall target="generate-resources-build-from-local"/>
-
-    <replace file="../../build/build-resource-types.xml" value="${yanel.source.home.forward.slashes}">
-      <replacetoken>@YANEL_SRC_DIR@</replacetoken>
-    </replace>
+    <antcall target="generate-resources-build-file"/>
   </target>
 
   <target name="prepare-global-resource-types-config">
@@ -85,19 +75,12 @@
     </replace>
   </target>
 
-  <target name="generate-resources-build-from-default" description="Generate resources build from default config" depends="init" unless="local.resource-types.config.exists">
-    <xslt in="${yanel.source.home}/conf/resource-types.xml" out="../../build/build-resource-types.xml" style="yanel2resources.xsl" force="false">
+  <target name="generate-resources-build-file" description="Generate resources build file" depends="init">
+    <xslt in="${classes.dir}/resource-types.xml" out="../../build/build-resource-types.xml" style="yanel2resources.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
       <param name="maven.url" expression="${maven.url}"/>
-    </xslt>
-  </target>
-
-  <target name="generate-resources-build-from-local" description="Generate resources build from local config" depends="init" if="local.resource-types.config.exists">
-    <xslt in="${local.config.home}/local.resource-types.xml" out="../../build/build-resource-types.xml" style="yanel2resources.xsl" force="true">
-      <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
-      <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
-      <param name="maven.url" expression="${maven.url}"/>
+      <param name="yanel.source.home" expression="${yanel.source.home.forward.slashes}"/>
     </xslt>
   </target>
 
