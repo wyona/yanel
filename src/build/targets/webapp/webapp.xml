@@ -81,10 +81,6 @@
 
     <copy file="${yanel.source.home}/conf/realms.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
 
-    <condition property="local.resource-types.config.exists">
-      <available file="${local.config.home}/local.resource-types.xml" type="file"/>
-    </condition>
-    <antcall target="generate-resource-types-registry"/>
 
     <condition property="local.yanel.config.exists">
       <available file="${local.config.home}/local.yanel.xml" type="file"/>
@@ -96,7 +92,8 @@
     <copy file="${local.config.home}/local.log4j.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" overwrite="true" failonerror="false"/>
     <copy file="${local.config.home}/local.realms.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" overwrite="true" failonerror="false"/>
     <antcall target="patch-with-local-yanel-config"/>
-    <antcall target="patch-with-local-resource-types-registry"/>
+
+    <copy file="${classes.dir}/resource-types.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" overwrite="true"/>
 
 
     <!-- Patch properties ... -->
@@ -208,14 +205,6 @@
       <arg line="-dname"/>
       <arg value="CN=${certificate.common.name}, OU=${certificate.organisation.unit}, O=${certificate.organisation}, L=${certificate.locality.name}, S=${certificate.state.name}, C=${certificate.country.code}"/>
     </exec>
-  </target>
-
-  <target name="generate-resource-types-registry" unless="local.resource-types.config.exists">
-    <copy file="${yanel.source.home}/conf/resource-types.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" overwrite="false"/>
-  </target>
-
-  <target name="patch-with-local-resource-types-registry" if="local.resource-types.config.exists">
-    <copy file="${local.config.home}/local.resource-types.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" overwrite="true"/>
   </target>
 
   <target name="generate-yanel-properties" unless="local.yanel.config.exists">
