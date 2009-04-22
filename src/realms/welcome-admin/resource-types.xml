@@ -5,5 +5,5 @@
   <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
 
   <resource-type src="@REALM_SRC_DIR@/yanel/resources/show-realms/" compile="true"/>
-  <resource-type src="@REALM_SRC_DIR@/resources/update-webapp/" compile="true"/>
+  <resource-type src="@REALM_SRC_DIR@/yanel/resources/update-webapp/" compile="true"/>
 </resource-types>
