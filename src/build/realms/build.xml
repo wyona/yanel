@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<project name="realm" default="compile">
+  <!--echo>###### ${ant.file} ${basedir} ######</echo-->
+  <dirname property="realms.build.scripts.dir" file="${ant.file}"/>
+  <property name="realm.home.dir" location="${basedir}"/>
+
+  <property name="yanel.source.home" location="${realms.build.scripts.dir}/../../.."/>
+  <property file="${yanel.source.home}/src/build/local.build.properties"/>
+  <property file="${yanel.source.home}/src/build/build.properties"/>
+
+  <target name="init">
+    <property name="build.dir" location="${yanel.source.home}/build"/>
+    <mkdir dir="${build.dir}"/>
+
+    <property name="realm.ant.file" location="${realm.home.dir}/build.xml"/>
+    <condition property="ant-file-of-realm-exists">
+      <available file="${realm.ant.file}"/>
+    </condition>
+    <!--echo>### ${realm.ant.file} ${ant-file-of-realm-exists} ###</echo-->
+
+    <property name="realm.build.dir" location="${realm.home.dir}/build"/>
+    <condition property="build-dir-of-realm-exists">
+      <available file="${realm.build.dir}" type="dir"/>
+    </condition>
+    <!--echo>### ${realm.build.dir} ${build-dir-of-realm-exists} ###</echo-->
+
+    <property name="realm.lib.dir" location="${realm.home.dir}/build/lib"/>
+    <condition property="lib-dir-of-realm-exists">
+      <available file="${realm.lib.dir}" type="dir"/>
+    </condition>
+    <!--echo>### ${realm.lib.dir} ${lib-dir-of-realm-exists} ###</echo-->
+
+  </target>
+
+  <target name="compile" description="Compile realm" depends="init" if="ant-file-of-realm-exists">
+    <ant inheritAll="false" antfile="${realm.ant.file}" target="compile">
+      <property name="yanel.source.version" value="${yanel.source.version}"/>
+      <property name="maven.url" value="${maven.url}"/>
+    </ant>
+  </target>
+
+  <target name="deploy-libs" description="Deploy libs of realm" depends="init" if="lib-dir-of-realm-exists">
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
+      <fileset dir="${realm.lib.dir}"/>
+    </copy>
+  </target>
+
+  <target name="clean" description="Clean realm" depends="init" if="build-dir-of-realm-exists">
+    <delete dir="${realm.build.dir}"/>
+  </target>
+
+  <target name="copy-dependencies" description="Copy dependencies of realm" depends="init" if="build-dir-of-realm-exists">
+    <ant inheritAll="false" antfile="${realm.ant.file}" target="copy-dependencies">
+      <property name="build.dir" value="${build.dir}"/>
+      <property name="servlet.context.prefix" value="${servlet.context.prefix}"/>
+      <property name="yanel.source.version" value="${yanel.source.version}"/>
+      <property name="maven.url" value="${maven.url}"/>
+    </ant>
+  </target>
+
+</project>

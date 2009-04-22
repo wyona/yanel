@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<project name="yanel-realms" default="build-realms">
+
+  <dirname property="realms.build.scripts.dir" file="${ant.file.yanel-realms}"/>
+
+  <presetdef name="realm-subant">
+    <subant genericantfile="${realms.build.scripts.dir}/build.xml"
+     buildpathref="realms.path"
+     inheritall="false"
+     verbose="true"
+    >
+    <!--
+     failonerror="false"
+    -->
+    </subant>
+  </presetdef>
+
+  <target name="build-realms">
+    <realm-subant target="compile"/>
+  </target>
+
+  <target name="copy-dependencies">
+    <realm-subant target="copy-dependencies"/>
+  </target>
+
+  <target name="deploy-realms">
+    <realm-subant target="deploy-libs"/>
+  </target>
+
+  <target name="clean-realms">
+    <realm-subant target="clean"/>
+  </target>
+
+</project>
