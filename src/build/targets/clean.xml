@@ -71,6 +71,9 @@
 
   <target name="clean-realms" description="Clean realms" depends="generate-realms-build">
     <ant antfile="${yanel.source.home}/build/build-realms.xml" target="clean-realms"/>
+<!--
+    <ant antfile="${yanel.source.home}/build/build-realms-v2.xml" target="clean-realms"/>
+-->
   </target>
   
     <target name="ask-if-local-build-properties-shall-be-deleted" if="local.build.properties.exists">

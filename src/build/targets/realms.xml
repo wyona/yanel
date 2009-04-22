@@ -4,6 +4,9 @@
   
   <target name="deploy-libs-of-realms" description="Deploy libraries of realms" depends="generate-realms-build">
     <ant antfile="${yanel.source.home}/build/build-realms.xml" target="deploy-realms"/>
+<!--
+    <ant antfile="${yanel.source.home}/build/build-realms-v2.xml" target="deploy-realms"/>
+-->
   </target>
 
   <!-- Build Realms -->
@@ -15,6 +18,10 @@
 
     <ant antfile="${yanel.source.home}/build/build-realms.xml" target="build-realms"/>
     <ant antfile="${yanel.source.home}/build/build-realms.xml" target="copy-dependencies"/>
+<!--
+    <ant antfile="${yanel.source.home}/build/build-realms-v2.xml" target="build-realms"/>
+    <ant antfile="${yanel.source.home}/build/build-realms-v2.xml" target="copy-dependencies"/>
+-->
   </target>
 
   <target name="generate-realms-build" description="Generate realms build" depends="init">
@@ -39,7 +46,7 @@
 
     <!-- Alternative way of building realms:
     -->
-    <xslt in="${yanel.source.home}/conf/realms.xml" out="../../build/build1-realms.xml" style="realms2build.xsl" force="false">
+    <xslt in="${yanel.source.home}/conf/realms.xml" out="../../build/build-realms-v2.xml" style="realms2build.xsl" force="false">
       <param name="local-build-realms-file" expression="${local.config.home}/local.realms.xml"/>
     </xslt>
   </target>
@@ -55,7 +62,7 @@
 
     <!-- Alternative way of building realms:
     -->
-    <xslt in="${yanel.source.home}/conf/realms.xml" out="../../build/build1-realms.xml" style="realms2build.xsl" force="false">
+    <xslt in="${yanel.source.home}/conf/realms.xml" out="../../build/build-realms-v2.xml" style="realms2build.xsl" force="false">
       <param name="local-build-realms-file" expression="${local.config.home}/local.realms.xml"/>
     </xslt>
   </target>
