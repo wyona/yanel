@@ -13,6 +13,11 @@ import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.map.RealmContextConfig;
 import org.wyona.yanel.core.map.RealmManagerConfig;
 
+import org.wyona.commons.xml.XMLHelper;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -86,24 +91,61 @@ public class MergeResourceTypesConfigsTask extends Task {
         if (resourceTypesConfigOfRealm.isFile()) {
             log("INFO: Realm has specific resource-types configured: " + resourceTypesConfigOfRealm);
             try {
-                org.w3c.dom.Document globalDoc = org.wyona.commons.xml.XMLHelper.readDocument(new java.io.FileInputStream(globalResourceTypesConfig));
-                org.w3c.dom.Document realmDoc = org.wyona.commons.xml.XMLHelper.readDocument(new java.io.FileInputStream(resourceTypesConfigOfRealm));
+                Document globalDoc = XMLHelper.readDocument(new java.io.FileInputStream(globalResourceTypesConfig));
+                Document realmDoc = XMLHelper.readDocument(new java.io.FileInputStream(resourceTypesConfigOfRealm));
 
-                org.w3c.dom.Element rootElement = globalDoc.getDocumentElement();
+                Element rootElement = globalDoc.getDocumentElement();
                 rootElement.appendChild(globalDoc.createComment("Realm specific resource-types (" + resourceTypesConfigOfRealm + "):")); // Only formatting
-                rootElement.appendChild(globalDoc.createTextNode("\n")); // Only formatting
 
-                // TODO: Check for duplicated resource-types!
-                rootElement.appendChild(globalDoc.createElement("todo"));
-                //rootElement.appendChild(globalDoc.createElementNS(namespace, ""));
+                String namespace = "http://www.wyona.org/yanel/1.0";
+                Element[] resourceTypeElements = XMLHelper.getChildElements(realmDoc.getDocumentElement(), "resource-type", namespace);
+                for (int i = 0; i < resourceTypeElements.length; i++) {
+                    String srcAttr = resourceTypeElements[i].getAttribute("src");
+                    if (srcAttr != null) {
+                        srcAttr = srcAttr.replace("@REALM_SRC_DIR@", resourceTypesConfigOfRealm.getParent());
+                    }
 
-                rootElement.appendChild(globalDoc.createTextNode("\n")); // Only formatting
-                org.wyona.commons.xml.XMLHelper.writeDocument(globalDoc, new java.io.FileOutputStream(globalResourceTypesConfig));
+                    // TODO: Check for duplicated resource-types also based re package attribute!
+                    if (!resourceTypeExists(srcAttr, rootElement)) {
+                        rootElement.appendChild(globalDoc.createTextNode("\n  ")); // Only formatting
+                        Element rtElement = globalDoc.createElementNS(namespace, "resource-type");
+                        //Element rtElement = globalDoc.createElementNS(namespace, "todo");
+
+                        if (srcAttr != null && !srcAttr.equals("")) {
+                            rtElement.setAttribute("src", srcAttr);
+                        }
+                        String packageAttr = resourceTypeElements[i].getAttribute("package");
+                        if (packageAttr != null && !packageAttr.equals("")) {
+                            rtElement.setAttribute("package", packageAttr);
+                        }
+                        String compileAttr = resourceTypeElements[i].getAttribute("compile");
+                        if (compileAttr != null && !compileAttr.equals("")) {
+                            rtElement.setAttribute("compile", compileAttr);
+                        }
+                        String copyDirNameAttr = resourceTypeElements[i].getAttribute("copy-dir-name");
+                        if (copyDirNameAttr != null && !copyDirNameAttr.equals("")) {
+                            rtElement.setAttribute("copy-dir-name", copyDirNameAttr);
+                        }
+                        rootElement.appendChild(rtElement);
+                    }
+                }
+
+                rootElement.appendChild(globalDoc.createTextNode("\n\n")); // Only formatting
+                XMLHelper.writeDocument(globalDoc, new java.io.FileOutputStream(globalResourceTypesConfig));
             } catch(Exception e) {
                 log.error(e, e);
             }
         } else {
             log("INFO: Realm has no specific resource-types configured.");
         }
+    }
+
+    /**
+     *
+     */
+    private boolean resourceTypeExists(String src, Element rootElement) throws Exception {
+        Element[] elements = XMLHelper.getElements(rootElement, "resource-type", "src", src);
+        if (elements.length > 0) return true;
+        return false;
     }
 }
