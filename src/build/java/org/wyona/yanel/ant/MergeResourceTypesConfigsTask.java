@@ -1,5 +1,5 @@
 /*
- * ALSO SEE: build/lenya/src-tools/org/apache/lenya/cms/ant/CopyJavaSourcesTask.java
+ * Merge global resource-types config with realm specific resource-types configs
  */
 package org.wyona.yanel.ant;
 
