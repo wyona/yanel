@@ -85,6 +85,23 @@ public class MergeResourceTypesConfigsTask extends Task {
         File resourceTypesConfigOfRealm = new File(realmDir, "resource-types.xml");
         if (resourceTypesConfigOfRealm.isFile()) {
             log("INFO: Realm has specific resource-types configured: " + resourceTypesConfigOfRealm);
+            try {
+                org.w3c.dom.Document globalDoc = org.wyona.commons.xml.XMLHelper.readDocument(new java.io.FileInputStream(globalResourceTypesConfig));
+                org.w3c.dom.Document realmDoc = org.wyona.commons.xml.XMLHelper.readDocument(new java.io.FileInputStream(resourceTypesConfigOfRealm));
+
+                org.w3c.dom.Element rootElement = globalDoc.getDocumentElement();
+                rootElement.appendChild(globalDoc.createComment("Realm specific resource-types (" + resourceTypesConfigOfRealm + "):")); // Only formatting
+                rootElement.appendChild(globalDoc.createTextNode("\n")); // Only formatting
+
+                // TODO: Check for duplicated resource-types!
+                rootElement.appendChild(globalDoc.createElement("todo"));
+                //rootElement.appendChild(globalDoc.createElementNS(namespace, ""));
+
+                rootElement.appendChild(globalDoc.createTextNode("\n")); // Only formatting
+                org.wyona.commons.xml.XMLHelper.writeDocument(globalDoc, new java.io.FileOutputStream(globalResourceTypesConfig));
+            } catch(Exception e) {
+                log.error(e, e);
+            }
         } else {
             log("INFO: Realm has no specific resource-types configured.");
         }
