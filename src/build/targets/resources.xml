@@ -37,7 +37,9 @@
 
     <antcall target="prepare-realms-config"/>
     <antcall target="prepare-global-resource-types-config"/>
+<!-- TODO: There is a problem with paths on Windows, but works fine on UNIX
     <merge-resource-types-configs realmsconfigfile="${classes.dir}/realms.xml" globalresourcetypesconfigfile="${classes.dir}/resource-types.xml"/>
+-->
     <antcall target="generate-resources-build-file"/>
   </target>
 
