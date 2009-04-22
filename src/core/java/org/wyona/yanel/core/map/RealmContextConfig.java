@@ -30,23 +30,23 @@ public class RealmContextConfig {
     private String id;
     private String mountPoint;
     private boolean rootFlag;
-    private File realmConfigFile;
+    private File unresolvedRealmConfigFile;
 
     private String label;
     private ReverseProxyConfig reverseProxyConfig;
 
-    public RealmContextConfig(String id, String mountPoint, boolean rootFlag, File realmConfigFile) {
+    public RealmContextConfig(String id, String mountPoint, boolean rootFlag, File unresolvedRealmConfigFile) {
         this.id = id;
         this.mountPoint = mountPoint;
         this.rootFlag = rootFlag;
-        this.realmConfigFile = realmConfigFile;
+        this.unresolvedRealmConfigFile = unresolvedRealmConfigFile;
     }
 
     /**
-     * Get realm configuration file
+     * Get realm configuration file not resolved yet
      */
-    public File getConfigurationFile() {
-        return realmConfigFile;
+    public File getUnresolvedConfigurationFile() {
+        return unresolvedRealmConfigFile;
     }
 
     /**
@@ -106,7 +106,7 @@ public class RealmContextConfig {
         s = s + "  ID = " + id + ", ";
         s = s + "  Mount point = " + mountPoint + ", ";
         s = s + "  Root flag = " + rootFlag + ", ";
-        s = s + "  Realm config file = " + realmConfigFile;
+        s = s + "  Unresolved realm config file = " + unresolvedRealmConfigFile;
         return s;
     }
 }

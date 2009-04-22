@@ -217,7 +217,7 @@ public class RealmManager {
                 String mountPoint = rcc[i].getMountPoint();
                 String realmId = rcc[i].getID();
                 
-                File realmConfigFile = resolveFile(rcc[i].getConfigurationFile(), realmsConfigFile);
+                File realmConfigFile = resolveFile(rcc[i].getUnresolvedConfigurationFile(), realmsConfigFile);
                 if (realmConfigFile.isDirectory()) {
                     realmConfigFile = new File(realmConfigFile, REALM_DEFAULT_CONFIG_NAME);
                 }
