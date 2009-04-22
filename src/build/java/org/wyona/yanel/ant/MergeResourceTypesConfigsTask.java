@@ -22,54 +22,47 @@ public class MergeResourceTypesConfigsTask extends Task {
 
     private static Logger log = Logger.getLogger(MergeResourceTypesConfigsTask.class);
 
-    private Path defaultRealmsConfigDir;
-    private Path localRealmsConfigDir;
+    private Path realmsConfigFile;
+    private Path globalResourceTypesConfigFile;
 
     /**
      *
      */
     public void execute() throws BuildException {
         log.info("Merge ...");
-        log("INFO: Default realms config directory: " + defaultRealmsConfigDir);
-        log("INFO: Local realms config directory: " + localRealmsConfigDir);
-        File defaultRealmsConfig = new File(defaultRealmsConfigDir.toString(), "realms.xml");
-        File localRealmsConfig = new File(localRealmsConfigDir.toString(), "local.realms.xml");
+        log("INFO: Realms config file: " + realmsConfigFile);
+        log("INFO: Global resource-types config directory: " + globalResourceTypesConfigFile);
+        File realmsConfig = new File(realmsConfigFile.toString());
         RealmManagerConfig realmManagerConfig = new RealmManagerConfig();
-        RealmContextConfig[] realmContextConfigs;
         try {
-            if (localRealmsConfig.isFile()) {
-                log("INFO: Local realms config exists: " + localRealmsConfig.getAbsolutePath());
-                // TODO: Unfortunately the class RealmManager consumes at the moment a yanel configuration rather than a realms configuration ...
-                //realmManager = new RealmManager("yanel.xml");
-                realmContextConfigs = realmManagerConfig.getRealmContextConfigs(localRealmsConfig);
+            RealmContextConfig[] realmContextConfigs;
+            if (realmsConfig.isFile()) {
+                realmContextConfigs = realmManagerConfig.getRealmContextConfigs(realmsConfig);
+
+                log("Number of realms: " + realmContextConfigs.length);
+                for (int i = 0; i < realmContextConfigs.length; i++) {
+                    log("Realm context config: " + realmContextConfigs[i]);
+                }
             } else {
-                log("WARN: No local realms config '" + localRealmsConfig.getAbsolutePath() + "' exists, hence use default one '" + defaultRealmsConfig.getAbsolutePath() + "'");
-                // TODO: ...
-                //realmManager = new RealmManager("yanel.xml");
-                realmContextConfigs = realmManagerConfig.getRealmContextConfigs(defaultRealmsConfig);
+                log("ERROR: No such realms config '" + realmsConfig.getAbsolutePath() + "' exists!");
             }
         } catch (Exception e) {
             log("ERROR: " + e.getMessage());
             throw new BuildException(e.getMessage(), e);
         }
-
-        log("Number of realms: " + realmContextConfigs.length);
-        for (int i = 0; i < realmContextConfigs.length; i++) {
-            log("Realm context config: " + realmContextConfigs[i]);
-        }
     }
 
     /**
      *
      */
-    public void setDefaultRealmsConfigDir(Path defaultRealmsConfigDir) {
-        this.defaultRealmsConfigDir = defaultRealmsConfigDir;
+    public void setRealmsConfigFile(Path realmsConfigFile) {
+        this.realmsConfigFile = realmsConfigFile;
     }
 
     /**
      *
      */
-    public void setLocalRealmsConfigDir(Path localRealmsConfigDir) {
-        this.localRealmsConfigDir = localRealmsConfigDir;
+    public void setGlobalResourceTypesConfigFile(Path globalResourceTypesConfigFile) {
+        this.globalResourceTypesConfigFile = globalResourceTypesConfigFile;
     }
 }
