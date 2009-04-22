@@ -46,11 +46,11 @@
       <available file="${local.config.home}/local.resource-types.xml" type="file"/>
       <then>
         <echo>INFO: Local resource-types file exists: ${local.config.home}/local.resource-types.xml</echo>
-        <copy file="${local.config.home}/local.resource-types.xml" tofile="${classes.dir}/resource-types.xml"/>
+        <copy file="${local.config.home}/local.resource-types.xml" tofile="${classes.dir}/resource-types.xml" overwrite="true"/>
       </then>
       <else>
         <echo>Local resource-types file does NOT exists</echo>
-        <copy file="${yanel.source.home}/conf/resource-types.xml" tofile="${classes.dir}/resource-types.xml"/>
+        <copy file="${yanel.source.home}/conf/resource-types.xml" tofile="${classes.dir}/resource-types.xml" overwrite="true"/>
       </else>
     </if>
     <replace file="${classes.dir}/resource-types.xml" value="${yanel.source.home.forward.slashes}">
