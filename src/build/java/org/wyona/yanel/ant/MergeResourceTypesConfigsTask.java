@@ -33,6 +33,7 @@ public class MergeResourceTypesConfigsTask extends Task {
         log("INFO: Realms config file: " + realmsConfigFile);
         log("INFO: Global resource-types config directory: " + globalResourceTypesConfigFile);
         File realmsConfig = new File(realmsConfigFile.toString());
+        File globalResourceTypesConfig = new File(globalResourceTypesConfigFile.toString());
         RealmManagerConfig realmManagerConfig = new RealmManagerConfig();
         try {
             RealmContextConfig[] realmContextConfigs;
@@ -42,6 +43,7 @@ public class MergeResourceTypesConfigsTask extends Task {
                 log("Number of realms: " + realmContextConfigs.length);
                 for (int i = 0; i < realmContextConfigs.length; i++) {
                     log("Realm context config: " + realmContextConfigs[i]);
+                    mergeResourceTypesOfRealm(realmContextConfigs[i].getUnresolvedConfigurationFile(), globalResourceTypesConfig);
                 }
             } else {
                 log("ERROR: No such realms config '" + realmsConfig.getAbsolutePath() + "' exists!");
@@ -64,5 +66,27 @@ public class MergeResourceTypesConfigsTask extends Task {
      */
     public void setGlobalResourceTypesConfigFile(Path globalResourceTypesConfigFile) {
         this.globalResourceTypesConfigFile = globalResourceTypesConfigFile;
+    }
+
+    /**
+     *
+     */
+    private void mergeResourceTypesOfRealm(File unresolvedRealmConfig, File globalResourceTypesConfig) {
+        File realmDir;
+        if (unresolvedRealmConfig.isDirectory()) {
+            realmDir = unresolvedRealmConfig;
+        } else if (unresolvedRealmConfig.isFile()) {
+            realmDir = new File(unresolvedRealmConfig.getParent());
+        } else {
+            log.error("Neither file nor directory: " + unresolvedRealmConfig);
+            return;
+        }
+        log("INFO: Realm directory: " + realmDir);
+        File resourceTypesConfigOfRealm = new File(realmDir, "resource-types.xml");
+        if (resourceTypesConfigOfRealm.isFile()) {
+            log("INFO: Realm has specific resource-types configured: " + resourceTypesConfigOfRealm);
+        } else {
+            log("INFO: Realm has no specific resource-types configured.");
+        }
     }
 }
