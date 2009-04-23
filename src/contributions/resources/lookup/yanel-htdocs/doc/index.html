@@ -50,12 +50,155 @@ table th {
     </dl>
 
     <h2>Views</h2>
-    <p>TODO</p>
+    <table border="1">
+      <tr><th>View ID</th><th>Mime type</th><th>Type</th></tr>
+      <tr><td>DEFAULT</td><td>text/html</td><td>jelly</td></tr>
+      <tr><td>json-node</td><td>application/json</td><td>jelly</td></tr>
+      <tr><td>json-node-grid</td><td>application/json</td><td>jelly</td></tr>
+    </table>
+    
+    <h2>Request Parameter</h2>
+    <table border="1">
+      <tr><th>Name</th><th>Explanations</th></tr>
+      <tr><td>type</td><td>type of filters. see <a href="#filters">Filters.</a></td></tr>
+    </table>    
 
+    <h2>Resource Type Properties</h2>
+    <table border="1">
+      <tr><th>Name</th><th>multiple</th><th>Explanations</th></tr>
+      <tr><td>name4path-parameter</td><td>false</td><td>Here you could configure the request-parameter-name which will control which path is displayed</td></tr>
+      <tr><td>show-collections-only</td><td>false</td><td>If true only child nodes which are collections are displayed</td></tr>
+      <tr><td>filter-pattern-{TYPE}</td><td>true</td><td>Value is a regex to match node-names.</td></tr>
+    </table>
+    
+    <h2><a name="filters">Filters</a></h2>
+    <p>
+      filters allow you to filter out filetypes. filtering is controled by resource-type properties filter-pattern-{TYPE} and 
+      request-parameter type.
+    </p>
+    <h3>Example</h3>
+    <p>
+      if you want to display images of typ jpg, gif, png you have to configure filters within youre resource-configuration e.g.
+      <pre>
+        &lt;yanel:property name="filter-pattern-image" value=".*[.]gif"/>
+        &lt;yanel:property name="filter-pattern-image" value=".*[.]jpg"/>
+        &lt;yanel:property name="filter-pattern-image" value=".*[.]png"/>
+      </pre>
+      now if you call the node list with request parameter 'type=image' all the properties (filters) with name 'filter-pattern-image' are applied.
+    </p> 
+    
     <h2>Examples</h2>
-    <p>TODO</p>
-
+    <h3>Resource-type-configuration example (tinymce-lookup.html.yanel-rc)</h3>
+    <pre>
+      &lt;?xml version="1.0"?>
+      
+      &lt;&lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+        &lt;yanel:rti name="lookup" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+      
+        &lt;yanel:property name="name4path-parameter" value="node"/>
+        &lt;yanel:property name="filter-pattern-image" value=".*[.]gif"/>
+        &lt;yanel:property name="filter-pattern-image" value=".*[.]jpg"/>
+        &lt;yanel:property name="filter-pattern-image" value=".*[.]png"/>
+        
+        
+        &lt;yanel:custom-config>
+          &lt;views xmlns="http://www.wyona.org/yanel/rti/1.0">
+            &lt;view id="default" type="jelly">
+              &lt;template>/app/jelly/tinymce-lookup.jelly&lt;/template>
+              &lt;mime-type>text/html&lt;/mime-type>
+            &lt;/view>
+      
+            &lt;!-- json view -->
+            &lt;view id="json-node" type="jelly">
+              &lt;template>rthtdocs:/json-node.jelly&lt;/template>
+              &lt;xslt>rthtdocs:/json-node.xsl&lt;/xslt>
+              &lt;mime-type>application/json&lt;/mime-type>
+              &lt;serializer key="TEXT">
+              &lt;/serializer>
+            &lt;/view>
+      
+            &lt;!-- json view -->
+            &lt;view id="json-node-grid" type="jelly">
+              &lt;template>rthtdocs:/json-node.jelly&lt;/template>
+              &lt;xslt>rthtdocs:/json-node-grid.xsl&lt;/xslt>
+              &lt;mime-type>application/json&lt;/mime-type>
+              &lt;serializer key="TEXT">
+              &lt;/serializer>
+            &lt;/view>
+          &lt;/views>
+          
+          &lt;rc:sitetree class="org.wyona.yanel.impl.navigation.SitetreeResConfigAndDataRepoImpl" xmlns:rc="http://www.wyona.org/yanel/resource/sitetree/1.0"/>
+          
+        &lt;/yanel:custom-config>
+      &lt;/yanel:resource-config>
+    
+    </pre>
+    <h3>'default'-view example. (tinymce-lookup.jelly)</h3>
+    <pre>
+      &lt;?xml version="1.0" encoding="utf-8"?>
+      &lt;j:jelly xmlns:j="jelly:core">
+          &lt;html xmlns="http://www.w3.org/1999/xhtml">
+            &lt;head>
+              &lt;script language="javascript" type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/tinymce/jscripts/tiny_mce/tiny_mce_popup.js">&lt;/script>
+              &lt;script language="javascript">
+                var lookupTreeConfig = {
+                    "lookup-panel-border": "false", 
+                    "lookup-panel-padding": "15", 
+                    "lookup-treepanel-width": "160", 
+                    "lookup-treepanel-height": "340", 
+                    "lookup-gridpanel-width": "240", 
+                    "lookup-gridpanel-height": "340", 
+                    "lookup-root-node-label": "test",
+                    "lookup-hook": "lookupHook",
+                    "lookup-request-paramter-type": '${resource.getParameterAsString("type")}',
+                    "lookup-upload-action-url": "${yanel.back2realm}create-new-page.html",
+                    "lookup-upload-submit-button-label": "Upload",
+                    "lookup-upload-enabled": "true"
+                };
+                // this methode is called by gwt
+                function callback(path) {
+                    FileBrowserDialogue.mySubmit(path);
+                }
+                var FileBrowserDialogue = {
+                    mySubmit : function (path) {
+                        var URL = '${yanel.back2realm}' + path.slice(1);
+                        var win = tinyMCEPopup.getWindowArg("window");
+                
+                        // insert information now
+                        win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = URL;
+                
+                        // are we an image browser
+                        if (typeof(win.ImageDialog) != "undefined")
+                        {
+                            // we are, so update image dimensions and preview if necessary
+                            if (win.ImageDialog.getImageData) win.ImageDialog.getImageData();
+                            if (win.ImageDialog.showPreviewImage) win.ImageDialog.showPreviewImage(URL);
+                        }
+                
+                        // close popup window
+                        tinyMCEPopup.close();
+                    }
+                }
+                tinyMCEPopup.onInit.add(FileBrowserDialogue.init, FileBrowserDialogue);
+              &lt;/script>        
+              &lt;link rel="stylesheet" type="text/css" href="${yanel.back2realm}${yanel.reservedPrefix}/ext/ext/resources/css/ext-all.css"/>
+              &lt;script type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/ext/ext/adapter/yui/yui-utilities.js">&lt;/script>
+              &lt;script type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/ext/ext/adapter/yui/ext-yui-adapter.js">&lt;/script>
+              &lt;script type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/ext/ext/ext-all.js">&lt;/script>
+              &lt;title>TinyMCE Lookup&lt;/title>
+              &lt;link rel="stylesheet" href="${yanel.back2realm}${yanel.reservedPrefix}/yanel-css/global.css" type="text/css"/>
+            &lt;/head>
+            &lt;body>
+              &lt;script language="javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::lookup/js/org.wyona.yanel.navigation.gwt.lookuptree.LookupTree.nocache.js">&lt;/script>
+              &lt;div id="lookupHook"/>
+              &lt;iframe id="__gwt_historyFrame" style="width:0;height:0;border:0">&lt;/iframe>
+            &lt;/body>
+          &lt;/html>
+      &lt;/j:jelly>
+    
+    </pre>
     <h2>javascript/gwt source</h2>
-    <p>http://svn.wyona.com/repos/public/yanel/contributions/ajax-components/src/lookup-tree/</p>
+    <p>svn co https://svn.wyona.com/repos/public/yanel/contributions/ajax-components/src/lookup-tree/ </p>
+    <p>See:  http://svn.wyona.com/repos/public/yanel/contributions/ajax-components/src/lookup-tree/README.txt</p>
   </body>
 </html>
