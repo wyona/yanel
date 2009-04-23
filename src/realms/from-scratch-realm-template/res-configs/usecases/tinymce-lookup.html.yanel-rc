@@ -25,6 +25,14 @@
         </serializer>
       </view>
 
+      <!-- json view -->
+      <view id="json-node-grid" type="jelly">
+        <template>rthtdocs:/json-node.jelly</template>
+        <xslt>rthtdocs:/json-node-grid.xsl</xslt>
+        <mime-type>application/json</mime-type>
+        <serializer key="TEXT">
+        </serializer>
+      </view>
     </views>
     
     <rc:sitetree class="org.wyona.yanel.impl.navigation.SitetreeResConfigAndDataRepoImpl" xmlns:rc="http://www.wyona.org/yanel/resource/sitetree/1.0"/>
