@@ -2,7 +2,7 @@
  * Copyright 2006 Wyona
  */
 
-package org.wyona.yanel.impl.resources.navigation;
+package org.wyona.yanel.impl.resources.navigation.lookup;
 
 import javax.xml.transform.Transformer;
 
