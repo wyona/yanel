@@ -119,7 +119,7 @@
       <remoteRepository refid="wyona.remote.repository"/>
       <dependency groupId="ext" artifactId="gwtext" version="2.0.2" scope="provided" type="zip"/>
     </artifact:dependencies>
-    <unzip dest="${build.dir}/webapps/${servlet.context.prefix}/htdocs/ext">
+    <unzip dest="${build.dir}/webapps/${servlet.context.prefix}/htdocs/gwt-ext-2.0.2">
       <fileset refid="maven2.ext.fileset"/>
     </unzip>
     <!--     get ext by maven -->
