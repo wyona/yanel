@@ -139,9 +139,14 @@
       <replacetoken>@NAME@</replacetoken>
     </replace>
 
+    <jar destfile="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}-sources.jar"
+      basedir="${resource.java.dir}"
+    />
+
     <artifact:pom id="maven.project.core" file="build/lib/pom.xml"/>
     <artifact:install file="build/lib/yanel-resource-${resource.name}-${resource.version}.jar">
       <pom refid="maven.project.core"/>
+      <attach file="build/lib/yanel-resource-${resource.name}-${resource.version}-sources.jar" classifier="sources"/>
     </artifact:install>
   </target>
 </project>
