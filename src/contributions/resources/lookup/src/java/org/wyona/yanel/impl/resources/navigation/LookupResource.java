@@ -113,18 +113,6 @@ public class LookupResource extends ExecutableUsecaseResource {
         return sb.toString();
     }
     
-    protected void passTransformerParameters(Transformer transformer) throws Exception {
-        super.passTransformerParameters(transformer);
-        try {
-            String resourceConfigPropertyDomain = getResourceConfigProperty("domain");
-            if (resourceConfigPropertyDomain != null) {
-                transformer.setParameter("domain", resourceConfigPropertyDomain);
-            }
-        } catch (Exception e) {
-            log.error("could not get property domain. domain will not be availabel within transformer chain. " + e.getMessage(), e);
-        }
-    }
-    
     private Sitetree getSitetree() {
         if (sitetree == null) {
             try {
