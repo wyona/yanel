@@ -4,6 +4,8 @@
 
 package org.wyona.yanel.impl.resources.navigation;
 
+import javax.xml.transform.Transformer;
+
 import org.wyona.yanel.core.navigation.Node;
 import org.wyona.yanel.core.navigation.Sitetree;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
@@ -85,7 +87,12 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
         } catch (Exception e) {
             log.info("could not get property show-all-subnodes. falling back to show-all-subnodes=true.");
         }
-    //private String getNodeAsXML(com.hp.hpl.jena.rdf.model.Resource resource) {
+        String showAllSubnodesParameter = getParameterAsString("show-all-subnodes");
+        if (showAllSubnodesParameter != null && Boolean.valueOf(showAllSubnodesParameter).booleanValue()) {
+            showAllSubnodes = true;
+        }
+
+        //private String getNodeAsXML(com.hp.hpl.jena.rdf.model.Resource resource) {
         //log.error("DEBUG: Path: " + path);
         Sitetree sitetree = getRealm().getRepoNavigation();
         Node node = sitetree.getNode(getRealm(), path);
@@ -159,5 +166,17 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
             log.error(errorMessage);
         }
         return sb.toString();
+    }
+    
+    protected void passTransformerParameters(Transformer transformer) throws Exception {
+        super.passTransformerParameters(transformer);
+        try {
+            String resourceConfigPropertyDomain = getResourceConfigProperty("domain");
+            if (resourceConfigPropertyDomain != null) {
+                transformer.setParameter("domain", resourceConfigPropertyDomain);
+            }
+        } catch (Exception e) {
+            log.error("could not get property domain. domain will not be availabel within transformer chain. " + e.getMessage(), e);
+        }
     }
 }

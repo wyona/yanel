@@ -26,9 +26,17 @@
       </head>
       <body>
         <h1>Sitetree</h1>
-        <a href="?yanel.resource.viewid=xml">XML</a> (TODO: show-all-subnodes)
-<br/>
-        <a href="?yanel.resource.viewid=google-sitemap">"Google" sitemap</a> (TODO: show-all-subnodes)
+        <ul>
+          <li>
+            <a href="?yanel.resource.viewid=xml&amp;show-all-subnodes=true">XML</a>
+          </li>
+          <li>
+            <a href="?yanel.resource.viewid=google-sitemap&amp;show-all-subnodes=true">"Google" sitemap</a>
+          </li>
+          <li>
+            <a href="?yanel.resource.viewid=json-node&amp;show-all-subnodes=true">JSON</a>
+          </li>
+        </ul>
         <!-- <xsl:apply-templates select="/sitetree/collection"/> -->
         
         <script language="javascript" src="resource-types/http://www.wyona.org/yanel/resource/1.0::data-repo-sitetree/js/org.wyona.yanel.navigation.gwt.navigationtree.NavigationTree.nocache.js"></script>

@@ -4,6 +4,7 @@
   <yanel:rti name="data-repo-sitetree" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
   <yanel:property name="show-all-subnodes" value="false"/>
+  <!-- <yanel:property name="domain" value="ADD YOUR DOMAIN (e.g. http://localhost:8080)"/> -->
   <yanel:property name="name4path-parameter" value="node"/>
   
   
