@@ -146,15 +146,19 @@ table th {
                     "lookup-panel-border": "false", 
                     "lookup-panel-padding": "15", 
                     "lookup-treepanel-width": "160", 
-                    "lookup-treepanel-height": "340", 
+                    "lookup-treepanel-height": "315", 
                     "lookup-gridpanel-width": "240", 
-                    "lookup-gridpanel-height": "340", 
-                    "lookup-root-node-label": "test",
+                    "lookup-gridpanel-height": "300", 
+                    "lookup-root-node-label": "Root",
                     "lookup-hook": "lookupHook",
                     "lookup-request-paramter-type": '${resource.getParameterAsString("type")}',
                     "lookup-upload-action-url": "${yanel.back2realm}create-new-page.html",
                     "lookup-upload-submit-button-label": "Upload",
-                    "lookup-upload-enabled": "true"
+                    "lookup-create-folder-name-default": "Folder Name",
+                    "lookup-create-folder-submit-label": "new Folder",
+                    "lookup-current-path-label": "Current Path:", 
+                    "lookup-upload-enabled": "true",
+                    "lookup-create-folder-enabled": "true"
                 };
                 // this methode is called by gwt
                 function callback(path) {
@@ -182,10 +186,10 @@ table th {
                 }
                 tinyMCEPopup.onInit.add(FileBrowserDialogue.init, FileBrowserDialogue);
               &lt;/script>        
-              &lt;link rel="stylesheet" type="text/css" href="${yanel.back2realm}${yanel.reservedPrefix}/ext/ext/resources/css/ext-all.css"/>
-              &lt;script type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/ext/ext/adapter/yui/yui-utilities.js">&lt;/script>
-              &lt;script type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/ext/ext/adapter/yui/ext-yui-adapter.js">&lt;/script>
-              &lt;script type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/ext/ext/ext-all.js">&lt;/script>
+              &lt;link rel="stylesheet" type="text/css" href="${yanel.back2realm}${yanel.reservedPrefix}/gwt-ext-2.0.2/ext/resources/css/ext-all.css"/>
+              &lt;script type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/gwt-ext-2.0.2/ext/adapter/yui/yui-utilities.js">&lt;/script>
+              &lt;script type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/gwt-ext-2.0.2/ext/adapter/yui/ext-yui-adapter.js">&lt;/script>
+              &lt;script type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/gwt-ext-2.0.2/ext/ext-all.js">&lt;/script>
               &lt;title>TinyMCE Lookup&lt;/title>
               &lt;link rel="stylesheet" href="${yanel.back2realm}${yanel.reservedPrefix}/yanel-css/global.css" type="text/css"/>
             &lt;/head>
@@ -196,7 +200,6 @@ table th {
             &lt;/body>
           &lt;/html>
       &lt;/j:jelly>
-    
     </pre>
     <h2>javascript/gwt source</h2>
     <p>svn co https://svn.wyona.com/repos/public/yanel/contributions/ajax-components/src/lookup-tree/ </p>
