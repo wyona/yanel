@@ -11,7 +11,7 @@
               "lookup-treepanel-height": "340", 
               "lookup-gridpanel-width": "240", 
               "lookup-gridpanel-height": "340", 
-              "lookup-root-node-label": "test",
+              "lookup-root-node-label": "Root",
               "lookup-hook": "lookupHook",
               "lookup-request-paramter-type": '${resource.getParameterAsString("type")}',
               "lookup-upload-action-url": "${yanel.back2realm}create-new-page.html",
