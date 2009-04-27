@@ -7,9 +7,10 @@
 
 <!-- NOTE: Do not use relative paths to reference resource types, because the paths are not being resolved re the location of (local.)resource-types.xml -->
 
-<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2009041500">
+<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2009042700">
 
   <changes>
+    <change version="2009042700">welcome realm resources commented, because already contained by welcome realm itself</change>
     <change version="2009041500">lookup resource type added</change>
     <change version="2009020900">tinymce resource type added</change>
     <change version="2009020400">scaled image resource type added</change>
@@ -42,8 +43,12 @@
   <resource-type src="@YANEL_SRC_DIR@/src/resources/odt/"                         compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/xml/"                         compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/user-mgmt/"                   compile="true"/>
+
+<!-- NOTE: Obsolete, because will be directly retrieved from src/realms/welcome-admin/resource-types.xml
   <resource-type src="@YANEL_SRC_DIR@/src/realms/welcome-admin/yanel/resources/show-realms/"                 compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/realms/welcome-admin/yanel/resources/update-webapp/"                 compile="true"/>
+-->
+
   <resource-type src="@YANEL_SRC_DIR@/src/resources/testing-control/"             compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/testing-times/"               compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/atom/"          compile="true"/>
