@@ -102,7 +102,7 @@ public class MergeResourceTypesConfigsTask extends Task {
                 for (int i = 0; i < resourceTypeElements.length; i++) {
                     String srcAttr = resourceTypeElements[i].getAttribute("src");
                     if (srcAttr != null) {
-                        srcAttr = srcAttr.replace("@REALM_SRC_DIR@", resourceTypesConfigOfRealm.getParent());
+                        srcAttr = srcAttr.replace("@REALM_SRC_DIR@", resourceTypesConfigOfRealm.getParent().replace(File.separator, "/"));
                     }
 
                     // TODO: Check for duplicated resource-types also based re package attribute!
