@@ -29,6 +29,9 @@
   <target name="build-resources" description="Build resources" depends="init">
 <xsl:for-each select="/yanel:resource-types/yanel:resource-type">
   <xsl:choose>
+    <xsl:when test="not(@src)">
+      <echo>INFO: Do not compile, because no 'src' attribute specified (package: <xsl:value-of select="@package"/>)</echo>
+    </xsl:when>
     <xsl:when test="not(@compile)">
       <echo>INFO: Do not compile: <xsl:value-of select="@src"/></echo>
     </xsl:when>
@@ -117,6 +120,9 @@
   <xsl:choose>
     <xsl:when test="@compile='false'">
       <echo>INFO: Do not clean: <xsl:value-of select="@src"/>build</echo>
+    </xsl:when>
+    <xsl:when test="not(@src)">
+      <echo>INFO: Do not clean, because no 'src' attribute specified (package: <xsl:value-of select="@package"/>)</echo>
     </xsl:when>
     <xsl:otherwise>
       <xsl:choose>
