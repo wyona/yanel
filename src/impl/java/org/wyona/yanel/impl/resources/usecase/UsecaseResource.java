@@ -69,7 +69,7 @@ public class UsecaseResource extends BasicXMLResource {
             View view = null;
            
             if (viewDescriptor == null) {
-                throw new UsecaseException("Usecase " + getName() + " has no view with id: " + viewID);
+                throw new UsecaseException("Usecase resource '" + getName() + "' has no view with id: " + viewID);
             }
             
             if (viewDescriptor.getType().equals(ConfigurableViewDescriptor.TYPE_JELLY)) {
@@ -83,21 +83,31 @@ public class UsecaseResource extends BasicXMLResource {
             } else if (viewDescriptor.getType().equals(ConfigurableViewDescriptor.TYPE_CUSTOM)) {
                 view = renderCustomView(viewDescriptor);
             } else {
-                throw new UsecaseException("Usecase " + getName() + " has invalid view type: " + viewDescriptor.getType());
+                throw new UsecaseException("No such type '" + viewDescriptor.getType() + "' of view '" + viewID + "' of usecase resource " + getName() + " implemented!");
             }
             view.setHttpHeaders(viewDescriptor.getHttpHeaders());
             return view;
         } catch (Exception e) {
-            String errorMsg = "Error generating view of usecase: " + getName() + ": " + e;
+            String errorMsg = "Error generating view '" + viewID + "' of usecase resource: " + getName() + ": " + e;
             log.error(errorMsg, e);
             throw new UsecaseException(errorMsg, e);
         }
     }
     
+    /**
+     * TODO: What exactly is the name?
+     */
     protected String getName() {
-        return "name";
+        try {
+            return getConfiguration().getNode().getPath() + " (" + getResourceTypeUniversalName() +")";
+        } catch(Exception e) {
+            return  "(" + getResourceTypeUniversalName() +")";
+        }
     }
 
+    /**
+     * Generate jelly view
+     */
     protected InputStream getJellyXML(ConfigurableViewDescriptor viewDescriptor) throws UsecaseException {
         try {
             String viewTemplate = viewDescriptor.getTemplate();
@@ -139,7 +149,7 @@ public class UsecaseResource extends BasicXMLResource {
             //System.out.println(new String(result, "utf-8"));
             return new ByteArrayInputStream(result);
         } catch (Exception e) {
-            String errorMsg = "Error creating jelly view of usecase: " + getName() + ": " + e;
+            String errorMsg = "Error creating 'jelly' view '" + viewDescriptor.getId() + "' of usecase resource: " + getName() + ": " + e;
             log.error(errorMsg, e);
             throw new UsecaseException(errorMsg, e);
         }
