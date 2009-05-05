@@ -40,7 +40,7 @@
           <td valign="top">A single view. <br/>id can be 'default' or 'source' for built in views.
             Or any other id for a custom view. A view is accessed via id through a request parameter
               <b>yanel.resource.viewid <br/>
-            </b>type can bye xml, jelly, redirect (implementation not finished yet), custom. Default
+            </b>type can be xml, jelly, redirect (implementation not finished yet), custom. Default
             is xml. </td>
         </tr>
         <tr>
