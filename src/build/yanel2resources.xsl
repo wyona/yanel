@@ -75,26 +75,28 @@
 <xsl:for-each select="/yanel:resource-types/yanel:resource-type">
 
     <xsl:if test="@copy-dir-name">
-      <xsl:comment>TODO: Copy sources ...</xsl:comment>
-    <xsl:choose>
-      <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
+      <xsl:comment>Copy sources of resource type '<xsl:value-of select="@src"/>' to Yanel webapp folder ...</xsl:comment>
+      <xsl:choose>
+        <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
     <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources/{@copy-dir-name}">
       <fileset dir="{@src}" excludes="build/**, src/java/**, src/build/**, build.xml"/>
     </copy>
-      </xsl:when>
-      <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
+        </xsl:when>
+        <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
     <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources/{@copy-dir-name}">
       <fileset dir="{@src}" excludes="build/**, src/java/**, src/build/**, build.xml"/>
     </copy>
-      </xsl:when>
-      <xsl:otherwise>
+        </xsl:when>
+        <xsl:otherwise>
     <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources/{@copy-dir-name}">
       <fileset dir="${{build.dir}}/{@src}" excludes="build/**, src/java/**, src/build/**, build.xml"/>
     </copy>
-      </xsl:otherwise>
-    </xsl:choose>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
 
+    <xsl:choose>
+      <xsl:when test="@src">
     <xsl:choose>
       <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
     <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
@@ -110,6 +112,11 @@
     <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
       <fileset dir="${{build.dir}}/{@src}/build/lib"/>
     </copy>
+      </xsl:otherwise>
+    </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <echo>WARN: No 'src' attribute specified (package: <xsl:value-of select="@package"/>)</echo>
       </xsl:otherwise>
     </xsl:choose>
 </xsl:for-each>
@@ -154,6 +161,8 @@
     </xsl:otherwise>
   </xsl:choose>
 
+  <xsl:choose>
+    <xsl:when test="@src">
     <xsl:choose>
       <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
     <ant inheritAll="false" antfile="{@src}/build.xml" target="copy-dependencies">
@@ -183,6 +192,11 @@
     </ant>
       </xsl:otherwise>
     </xsl:choose>
+    </xsl:when>
+    <xsl:otherwise>
+      <echo>WARN: No 'src' attribute specified (package: <xsl:value-of select="@package"/>)</echo>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:for-each>
   </target>
 </project>
