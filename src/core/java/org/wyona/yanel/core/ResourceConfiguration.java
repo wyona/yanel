@@ -336,5 +336,16 @@ public class ResourceConfiguration {
         
         XMLHelper.writeDocument(document, this.node.getOutputStream());
     }
-
+    
+    /**
+     * Get yarep node if one exists
+     * @return Yarep node
+     */
+    public Node getNode() {
+        if (this.node == null) {
+            log.warn("This resource configuration '" + getUniversalName() + "' does not seem to be based on a yarep node!");
+            return null;
+        }
+        return node;
+    }
 }
