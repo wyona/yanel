@@ -1,7 +1,7 @@
 
 
-    Y A N E L
-    =========
+    YANEL  README
+    =============
 
 
     Prerequisites
@@ -40,19 +40,10 @@
     http://www.yanel.org
 
 
-    Deploy third-party resources
-    ----------------------------
-
-    1) Register resource by adding resource.xml path to conf/local/local.yanel.xml
-    2) Build Yanel and Resources: ./build.sh (OPTIONAL: ./build.sh clean)
-    3) Test resource: ./yanel.sh
-    4) Restart Tomcat
-
-
     Add third-party realm
     ---------------------
 
-    1) ./build.sh add-realm -Drealm-config=src/realms/from-scratch-realm-template/yanel/config/yanel-realm-config.xml
+    1) ./build.sh add-realm -Drealm-config=src/realms/from-scratch-realm-template/realm.xml
     2) Restart Tomcat
 
 
