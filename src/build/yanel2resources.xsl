@@ -40,29 +40,24 @@
     </xsl:when>
     <xsl:otherwise>
       <echo>INFO: Start compiling resource <xsl:value-of select="@src"/></echo>
+    <xsl:variable name="RT-ant-file">
       <xsl:choose>
         <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
-    <ant inheritAll="false" antfile="{@src}/build.xml" target="compile">
-      <property name="yanel.source.version" value="{$yanel.source.version}"/>
-      <property name="maven.url" value="{$maven.url}"/>
-      <property name="yanel.source.home" value="{$yanel.source.home}"/>
-    </ant>
+          <xsl:value-of select="concat(@src, '/build.xml')"/>
         </xsl:when>
         <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
-    <ant inheritAll="false" antfile="{@src}/build.xml" target="compile">
-      <property name="yanel.source.version" value="{$yanel.source.version}"/>
-      <property name="maven.url" value="{$maven.url}"/>
-      <property name="yanel.source.home" value="{$yanel.source.home}"/>
-    </ant>
+          <xsl:value-of select="concat(@src, '/build.xml')"/>
         </xsl:when>
         <xsl:otherwise>
-    <ant inheritAll="false" antfile="${{build.dir}}/{@src}/build.xml" target="compile">
+          <xsl:value-of select="concat('${build.dir}/', @src, '/build.xml')"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <ant inheritAll="false" antfile="{$RT-ant-file}" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
       <property name="maven.url" value="{$maven.url}"/>
       <property name="yanel.source.home" value="{$yanel.source.home}"/>
     </ant>
-        </xsl:otherwise>
-      </xsl:choose>
       <echo>INFO: End compiling resource <xsl:value-of select="@src"/></echo>
     </xsl:otherwise>
   </xsl:choose>
@@ -75,45 +70,43 @@
 <xsl:for-each select="/yanel:resource-types/yanel:resource-type">
 
     <xsl:if test="@copy-dir-name">
-      <xsl:comment>Copy sources of resource type '<xsl:value-of select="@src"/>' to Yanel webapp folder ...</xsl:comment>
+      <xsl:comment>TODO: Copy sources of resource type '<xsl:value-of select="@src"/>' to Yanel webapp folder ...</xsl:comment>
+    <xsl:variable name="RT-home-dir">
       <xsl:choose>
         <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
-    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources/{@copy-dir-name}">
-      <fileset dir="{@src}" excludes="build/**, src/java/**, src/build/**, build.xml"/>
-    </copy>
+          <xsl:value-of select="@src"/>
         </xsl:when>
         <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
-    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources/{@copy-dir-name}">
-      <fileset dir="{@src}" excludes="build/**, src/java/**, src/build/**, build.xml"/>
-    </copy>
+          <xsl:value-of select="@src"/>
         </xsl:when>
         <xsl:otherwise>
-    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources/{@copy-dir-name}">
-      <fileset dir="${{build.dir}}/{@src}" excludes="build/**, src/java/**, src/build/**, build.xml"/>
-    </copy>
+          <xsl:value-of select="concat('${build.dir}/', @src, '/build.xml')"/>
         </xsl:otherwise>
       </xsl:choose>
+    </xsl:variable>
+    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources/{@copy-dir-name}">
+      <fileset dir="{$RT-home-dir}" excludes="build/**, src/java/**, src/build/**, build.xml"/>
+    </copy>
     </xsl:if>
 
     <xsl:choose>
       <xsl:when test="@src">
+  <xsl:variable name="RT-lib-dir">
     <xsl:choose>
       <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
-    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
-      <fileset dir="{@src}/build/lib"/>
-    </copy>
+        <xsl:value-of select="concat(@src, '/build/lib')"/>
       </xsl:when>
       <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
-    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
-      <fileset dir="{@src}/build/lib"/>
-    </copy>
+        <xsl:value-of select="concat(@src, '/build/lib')"/>
       </xsl:when>
       <xsl:otherwise>
-    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
-      <fileset dir="${{build.dir}}/{@src}/build/lib"/>
-    </copy>
+        <xsl:value-of select="concat('${build.dir}/', @src, '/build/lib')"/>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:variable>
+    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
+      <fileset dir="{$RT-lib-dir}"/>
+    </copy>
       </xsl:when>
       <xsl:otherwise>
         <echo>WARN: No 'src' attribute specified (package: <xsl:value-of select="@package"/>)</echo>
@@ -132,18 +125,20 @@
       <echo>INFO: Do not clean, because no 'src' attribute specified (package: <xsl:value-of select="@package"/>)</echo>
     </xsl:when>
     <xsl:otherwise>
+    <xsl:variable name="RT-build-dir">
       <xsl:choose>
-        <!-- TODO: What about Windows, e.g. D:/foo/bar ...! -->
         <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
-          <delete dir="{@src}/build"/>
+          <xsl:value-of select="concat(@src, '/build')"/>
         </xsl:when>
         <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
-          <delete dir="{@src}/build"/>
+          <xsl:value-of select="concat(@src, '/build')"/>
         </xsl:when>
         <xsl:otherwise>
-          <delete dir="${{build.dir}}/{@src}/build"/>
+          <xsl:value-of select="concat('${build.dir}/', @src, '/build')"/>
         </xsl:otherwise>
       </xsl:choose>
+    </xsl:variable>
+          <delete dir="{$RT-build-dir}"/>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:for-each>
@@ -163,35 +158,26 @@
 
   <xsl:choose>
     <xsl:when test="@src">
+  <xsl:variable name="RT-ant-file">
     <xsl:choose>
       <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
-    <ant inheritAll="false" antfile="{@src}/build.xml" target="copy-dependencies">
-      <property name="build.dir" value="${{build.dir}}"/>
-      <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
-      <property name="yanel.source.version" value="{$yanel.source.version}"/>
-      <property name="maven.url" value="{$maven.url}"/>
-      <property name="yanel.source.home" value="{$yanel.source.home}"/>
-    </ant>
+        <xsl:value-of select="concat(@src, '/build.xml')"/>
       </xsl:when>
       <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
-    <ant inheritAll="false" antfile="{@src}/build.xml" target="copy-dependencies">
-      <property name="build.dir" value="${{build.dir}}"/>
-      <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
-      <property name="yanel.source.version" value="{$yanel.source.version}"/>
-      <property name="maven.url" value="{$maven.url}"/>
-      <property name="yanel.source.home" value="{$yanel.source.home}"/>
-    </ant>
+        <xsl:value-of select="concat(@src, '/build.xml')"/>
       </xsl:when>
       <xsl:otherwise>
-    <ant inheritAll="false" antfile="${{build.dir}}/{@src}/build.xml" target="copy-dependencies">
+        <xsl:value-of select="concat('${build.dir}/', @src, '/build.xml')"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+    <ant inheritAll="false" antfile="{$RT-ant-file}" target="copy-dependencies">
       <property name="build.dir" value="${{build.dir}}"/>
       <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
       <property name="maven.url" value="{$maven.url}"/>
       <property name="yanel.source.home" value="{$yanel.source.home}"/>
     </ant>
-      </xsl:otherwise>
-    </xsl:choose>
     </xsl:when>
     <xsl:otherwise>
       <echo>WARN: No 'src' attribute specified (package: <xsl:value-of select="@package"/>)</echo>
