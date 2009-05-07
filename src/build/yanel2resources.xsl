@@ -105,7 +105,7 @@
     </xsl:choose>
   </xsl:variable>
     <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/WEB-INF/lib">
-      <fileset dir="{$RT-lib-dir}"/>
+      <fileset dir="{$RT-lib-dir}" excludes="pom.xml, *-sources.jar"/>
     </copy>
       </xsl:when>
       <xsl:otherwise>
