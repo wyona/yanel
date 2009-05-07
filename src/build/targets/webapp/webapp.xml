@@ -158,6 +158,8 @@
       <reference torefid="classpath.ref" refid="classpath.compile"/>
       <property name="classpath.dir" value="${yanel.source.home}"/>
       <property name="classpath.template.file" value="${yanel.source.home}/src/build/empty.classpath"/>
+      <property name="classes.dir" value=""/>
+      <property name="source.dirs" value=""/>
     </ant>
   </target>
  

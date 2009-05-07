@@ -73,6 +73,8 @@
       <reference torefid="classpath.ref" refid="classpath"/>
       <property name="classpath.dir" value="${tests.home.dir}"/>
       <property name="classpath.template.file" value="${tests.home.dir}/.empty.classpath"/>
+      <property name="classes.dir" value=""/>
+      <property name="source.dirs" value=""/>
     </ant>
   </target>
  
