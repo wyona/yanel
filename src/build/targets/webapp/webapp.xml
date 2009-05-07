@@ -23,7 +23,6 @@
     <antcall target="final-message"/>
   </target>
   
-     <!-- TODO: Invoice depends on impl ...! -->
   <target name="webapp" description="Build webapp" depends="init, compile-core, compile-impl, compile-webapp, build-resources, build-realms">
 <!--
   <target name="webapp" description="Build webapp" depends="init, compile-webapp">
@@ -140,9 +139,12 @@
   </target>
 
   <target name="copy-basic-webapp-libs" description="Copy basic webapp libraries (core, impl, webapp)" depends="init">
-    <!-- TODO: Copy only core, impl, webapp, but NOT cmdl, etc. -->
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
-      <fileset dir="${yanel.source.home}/build/lib"/>
+      <fileset dir="${yanel.source.home}/build/lib">
+        <include name="yanel-core-${yanel.source.version}.jar"/>
+        <include name="yanel-impl-${yanel.source.version}.jar"/>
+        <include name="yanel-webapp-${yanel.source.version}.jar"/>
+      </fileset>
     </copy>
   </target>
 
@@ -230,12 +232,6 @@
     <delete>
       <fileset dir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/" includes="${duplicated.libs}"/>
     </delete>
-
-    <!-- TODO: The following should not be copied in the first place -->
-    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/pom-cmdl.xml"/>
-    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/pom-core.xml"/>
-    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/pom-impl.xml"/>
-    <delete file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/pom-webapp.xml"/>
   </target>
 
 </project>
