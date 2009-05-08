@@ -125,10 +125,8 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
 
     public View getXMLView(String viewId, InputStream xmlInputStream) throws Exception {
         if (viewId == null || !viewId.equals("source")) {
-            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
             TransformerFactory tfactory = TransformerFactory.newInstance();
             Transformer transformerIntern = tfactory.newTransformer(getXSLTStreamSource());
-            StreamSource orig = new StreamSource(xmlInputStream);
 
             transformerIntern.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
             transformerIntern.setParameter("yanel.path", getPath().toString());
@@ -136,7 +134,10 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
             transformerIntern.setParameter("yarep.back2realm", backToRoot());
             transformerIntern.setParameter("yarep.parent", getParent(getPath()));
             transformerIntern.setParameter("yanel.htdocs", PathUtil.getGlobalHtdocsPath(this));
-            transformerIntern.transform(orig, new StreamResult(baos));
+
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            transformerIntern.transform(new StreamSource(xmlInputStream), new StreamResult(baos));
+
             return super.getXMLView(viewId, new java.io.ByteArrayInputStream(baos.toByteArray()));
         }
         return super.getXMLView(viewId, xmlInputStream);
