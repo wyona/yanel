@@ -7,6 +7,8 @@
 
 <xsl:output method="xml" indent="yes"/>
 
+<xsl:param name="copy.resource-type-configs.to.webapp" select="'NULL_copy_resource-type-configs_to_webapp'"/>
+
 <xsl:template match="/">
   <y:resource-types xmlns:y="http://www.wyona.org/yanel/1.0" version="{/yanel:resource-types/@version}">
   <xsl:for-each select="/yanel:resource-types/yanel:resource-type">
@@ -14,7 +16,7 @@
       <xsl:when test="@package">
     <y:resource-type package="{@package}"/>
       </xsl:when>
-      <xsl:when test="@copy-dir-name">
+      <xsl:when test="@copy-dir-name and $copy.resource-type-configs.to.webapp = 'true'">
     <y:resource-type src="../../resources/{@copy-dir-name}"/>
       </xsl:when>
       <xsl:otherwise>

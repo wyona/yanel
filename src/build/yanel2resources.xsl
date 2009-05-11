@@ -11,6 +11,7 @@
 <xsl:param name="yanel.source.version" select="'NULL_yanel_source_version'"/>
 <xsl:param name="maven.url" select="'NULL_maven_url'"/>
 <xsl:param name="yanel.source.home" select="'NULL_yanel_source_home'"/>
+<xsl:param name="copy.resource-type-configs.to.webapp" select="'NULL_copy_resource-type-configs_to_webapp'"/>
 
 <xsl:template match="/">
 
@@ -69,24 +70,24 @@
     <mkdir dir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources"/>
 <xsl:for-each select="/yanel:resource-types/yanel:resource-type">
 
-    <xsl:if test="@copy-dir-name">
-      <xsl:comment>TODO: Copy sources of resource type '<xsl:value-of select="@src"/>' to Yanel webapp folder ...</xsl:comment>
-    <xsl:variable name="RT-home-dir">
-      <xsl:choose>
-        <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
-          <xsl:value-of select="@src"/>
-        </xsl:when>
-        <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
-          <xsl:value-of select="@src"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="concat('${build.dir}/', @src, '/build.xml')"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-    <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources/{@copy-dir-name}">
-      <fileset dir="{$RT-home-dir}" excludes="build/**, src/java/**, src/build/**, build.xml"/>
-    </copy>
+    <xsl:if test="@copy-dir-name and $copy.resource-type-configs.to.webapp = 'true'">
+      <xsl:comment>Copy sources of resource type '<xsl:value-of select="@src"/>' to Yanel webapp folder ...</xsl:comment>
+      <xsl:variable name="RT-home-dir">
+        <xsl:choose>
+          <xsl:when test="starts-with(@src, '/') or string-length(substring-before(@src, ':/'))='1'">
+            <xsl:value-of select="@src"/>
+          </xsl:when>
+          <xsl:when test="starts-with(@src, '@YANEL_SRC_DIR@')">
+            <xsl:value-of select="@src"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="concat('${build.dir}/', @src, '/build.xml')"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      <copy todir="${{build.dir}}/webapps/{$servlet.context.prefix}/resources/{@copy-dir-name}">
+        <fileset dir="{$RT-home-dir}" excludes="build/**, src/java/**, src/build/**, build.xml"/>
+      </copy>
     </xsl:if>
 
     <xsl:choose>

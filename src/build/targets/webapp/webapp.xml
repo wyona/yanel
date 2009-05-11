@@ -118,6 +118,7 @@
     <!-- /DEPRECATED -->
 
     <xslt in="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml" out="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml-OUT" style="fix-resources-src.xsl" force="true">
+      <param name="copy.resource-type-configs.to.webapp" expression="${copy.resource-type-configs.to.webapp}"/>
     </xslt>
     <move file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml-OUT" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/resource-types.xml"/>
     

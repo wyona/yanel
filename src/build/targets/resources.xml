@@ -81,6 +81,7 @@
       <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
       <param name="maven.url" expression="${maven.url}"/>
       <param name="yanel.source.home" expression="${yanel.source.home.forward.slashes}"/>
+      <param name="copy.resource-type-configs.to.webapp" expression="${copy.resource-type-configs.to.webapp}"/>
     </xslt>
   </target>
 
