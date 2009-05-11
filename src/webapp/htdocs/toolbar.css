@@ -63,6 +63,15 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
   font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
 }
 
+/* TODO: Should we allow tables, etc. within the yanel toolbar? I don't think so, because it is not compatible with a menu API
+#yaneltoolbar_menu td {
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
+}
+*/
+
 #yaneltoolbar_menu a {
   text-decoration:none;
   font-size: 12px;
