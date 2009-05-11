@@ -1,8 +1,11 @@
 <?xml version="1.0"?>
 
 <!-- NOTE: The attribute "compile" is false by default, which means if compile="true" is not explicitely set, then the source of the resource will not be compiled (src/build/yanel2resources.xsl, not(@compile))! -->
-<!-- NOTE: The attribute "copy-dir-name" is optional and if set, then the resource will be copied into the webapp from where it will be referenced, which is useful in the case of binary releases -->
+
+<!-- NOTE: The attribute "copy-dir-name" is optional and if set (and also if the global build parameter 'copy.resource-type-configs.to.webapp' within src/build/local.build.properties is set to true), then the resource will be copied into the webapp from where it will be referenced, which is useful in the case of binary releases -->
+
 <!-- NOTE: The attribute "package" is optional and if set, then all the relevant files (resource.xml, classes, etc.) are contained within a jar file, which will be copied to and loaded from WEB-INF/lib -->
+
 <!-- TODO: Is the "src" attribute required if a "package" is specified and set within the maven dependencies? -->
 
 <!-- NOTE: Do not use relative paths to reference resource types, because the paths are not being resolved re the location of (local.)resource-types.xml -->
