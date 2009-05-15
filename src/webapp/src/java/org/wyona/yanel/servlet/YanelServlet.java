@@ -123,6 +123,8 @@ public class YanelServlet extends HttpServlet {
     public static final String RESOURCE_META_ID_PARAM_NAME = "yanel.resource.meta";
     
     private static final String CONTENT_TYPE_XHTML = "xhtml";
+
+    public static final String DATA_REPOSITORY_SITETREE_HTML = "data-repository-sitetree.html";
     
     /**
      *
@@ -1682,7 +1684,7 @@ public class YanelServlet extends HttpServlet {
         final String usersPathPrefix = pathPrefix + "users/";
         final String userListPagePath = pathPrefix + "user-mgmt/list-users.html";
         final String aboutPagePath = pathPrefix + "about.html";
-        final String dataRepoSitetreePagePath = pathPrefix + "data-repository-sitetree.html";
+        final String dataRepoSitetreePagePath = pathPrefix + DATA_REPOSITORY_SITETREE_HTML;
         final String resourceTypesPathPrefix = pathPrefix + "resource-types/";
 
         if (path.startsWith(usersPathPrefix)) {

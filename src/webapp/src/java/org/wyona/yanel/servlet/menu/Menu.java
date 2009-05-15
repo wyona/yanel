@@ -42,7 +42,7 @@ abstract public class Menu {
         sb.append("<div id=\"yaneltoolbar_menutitle\">Yanel</div><ul>");
         // View page info moved to getFileMenu() of default implementation
         //sb.append("<li><a href=\"?yanel.resource.meta\">View page info</a></li>");
-        sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/data-repository-sitetree.html\">Browse Data Repository Sitetree</a></li>");
+        sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/" + YanelServlet.DATA_REPOSITORY_SITETREE_HTML + "\">Browse Data Repository Sitetree</a></li>");
         sb.append("<li class=\"haschild\">Page");
         sb.append("<ul>");
         sb.append("<li><a href=\"?yanel.resource.meta\">Info</a></li>");
