@@ -503,9 +503,11 @@ public class YanelServlet extends HttpServlet {
 
                             WorkflowableV1 workflowableResource = null;
                             Workflow workflow = null;
+                            String liveRevisionName = null;
                             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1")) {
                                 workflowableResource = (WorkflowableV1)res;
                                 workflow = WorkflowHelper.getWorkflow(res);
+                                liveRevisionName = WorkflowHelper.getLiveRevision(res);
 		     	    }
 
                             if (revisionsInfo != null && revisionsInfo.length > 0) {
@@ -527,7 +529,11 @@ public class YanelServlet extends HttpServlet {
                                         if (wfState  == null) {
                                            wfState = workflow.getInitialState();
                                         }
-                                        revisionWorkflowElement.appendChild(doc.createTextNode(wfState));
+                                        if (liveRevisionName != null && revisionsInfo[i].getName().equals(liveRevisionName)) {
+                                            revisionWorkflowElement.appendChild(doc.createTextNode(wfState + " (LIVE)"));
+                                        } else {
+                                            revisionWorkflowElement.appendChild(doc.createTextNode(wfState));
+                                        }
                                     }
                                 }
                             } else {
