@@ -182,6 +182,9 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
           <th>Date</th>
           <th>User</th>
           <th>Comment</th>
+          <xsl:if test="revision[1]/workflow-state">
+            <th>Workflow State</th>
+          </xsl:if>
         </tr>
         <xsl:for-each select="revision">
           <tr>
@@ -189,6 +192,9 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
             <td><xsl:value-of select="date"/></td>
             <td><xsl:value-of select="user"/></td>
             <td><xsl:value-of select="comment"/></td>
+            <xsl:if test="workflow-state">
+              <td><xsl:value-of select="workflow-state"/></td>
+            </xsl:if>
           </tr>
         </xsl:for-each>
       </table>
