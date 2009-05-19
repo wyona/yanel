@@ -74,6 +74,7 @@ public class DefaultMenu extends Menu {
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">File</div>");
         sb.append("<ul>");
+        sb.append("<li><a href=\"create-new-page.html\">Create new page</a></li>");
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Workflowable", "1")) {
             Workflow wf = WorkflowHelper.getWorkflow(resource);
             if (wf != null) {
