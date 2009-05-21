@@ -261,11 +261,19 @@ public class YanelServlet extends HttpServlet {
                 if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
                     VersionableV2 versionable  = (VersionableV2)resource;
                     try {
-                        versionable.cancelCheckout();
+                        // TODO: Compare the users
+                        String checkoutUserID = versionable.getCheckoutUserID(); 
+                        String userID = getEnvironment(request, response).getIdentity().getUsername();
+                        if (checkoutUserID.equals(userID)) {
+                            versionable.cancelCheckout();
+                        } else {
+                            String eMessage = "Releasing the lock of '" + resource.getPath() + "' failed because checkout user '" + checkoutUserID + "' and session user '" + userID + "' are not the same!";
+                            log.warn(eMessage);
+                            throw new ServletException(eMessage);
+                        }
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
-                        throw new ServletException("Releasing of lock failed because of: " + resource.getPath() 
-                                + " " + e.getMessage(), e);
+                        throw new ServletException("Releasing the lock of '" + resource.getPath() + "' failed because of: " + e.getMessage(), e);
                     }
                 }
                 return;
@@ -1050,9 +1058,9 @@ public class YanelServlet extends HttpServlet {
             String message = res.getClass().getName() + " is not modifiable (neither V1 nor V2)!";
             log.warn(message);
  
-            StringBuffer sb = new StringBuffer();
 
-            // TODO: Differentiate between Neutron based and other clients ...
+            // TODO: Differentiate between Neutron based and other clients ... (Use method isClientSupportingNeutron())
+            StringBuilder sb = new StringBuilder();
             sb.append("<?xml version=\"1.0\"?>");
             sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"neutron\">");
             sb.append("<message>" + message + "</message>");
