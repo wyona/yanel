@@ -23,7 +23,7 @@
     <antcall target="final-message"/>
   </target>
   
-  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-impl, compile-webapp, build-resources, build-realms">
+  <target name="webapp" description="Build webapp" depends="init, compile-core, compile-impl, compile-neutron, compile-webapp, build-resources, build-realms">
 <!--
   <target name="webapp" description="Build webapp" depends="init, compile-webapp">
 -->
@@ -144,6 +144,7 @@
       <fileset dir="${yanel.source.home}/build/lib">
         <include name="yanel-core-${yanel.source.version}.jar"/>
         <include name="yanel-impl-${yanel.source.version}.jar"/>
+        <include name="wyona-neutron-${yanel.source.version}.jar"/>
         <include name="yanel-webapp-${yanel.source.version}.jar"/>
       </fileset>
     </copy>
@@ -176,7 +177,7 @@
     <echo>Eclipse project created: in Eclipse you can now import (as an existing project into your workspace) this project with root directory set to ${yanel.source.home} and build it there!</echo>
   </target>
 
-  <target name="compile-webapp-classes" description="Compile Java classes of Yanel webapp" depends="init, compile-core, compile-cmdl"><!--XXX HACK: This is the only place where we compile the command line interface, we should do that elsewhere. -->
+  <target name="compile-webapp-classes" description="Compile Java classes of Yanel webapp" depends="init, compile-core, compile-cmdl, compile-neutron"><!--XXX HACK: This is the only place where we compile the command line interface, we should do that elsewhere. -->
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${yanel.source.home}/src/webapp/src/java/org/wyona/yanel/servlet" destdir="${classes.dir}"
       debug="true"
