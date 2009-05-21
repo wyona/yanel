@@ -237,8 +237,12 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         */
     }
 
+    /**
+     * Cancel checkout or rather release the lock
+     */
     public void cancelCheckout() throws Exception {
         Node node = getNode();
+        log.warn("Release the lock of '" + node.getPath() + "'");
         node.cancelCheckout();
     }
 
