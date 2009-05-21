@@ -25,6 +25,8 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 
+import org.wyona.neutron.XMLExceptionV1;
+
 import org.wyona.yanel.core.ResourceTypeIdentifier;
 import org.wyona.yanel.core.StateOfView;
 import org.wyona.yanel.core.Environment;
@@ -562,8 +564,7 @@ public class YanelServlet extends HttpServlet {
                         if(log.isDebugEnabled()) log.debug("Checkout data ...");
                         
                         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
-                            // note: this will throw an exception if the document is checked out already
-                            // by another user.
+                            // NOTE: The code below will throw an exception if the document is checked out already by another user.
                             String userID = environment.getIdentity().getUsername();
                             VersionableV2 versionable = (VersionableV2)res;
                             if (versionable.isCheckedOut()) {
@@ -571,7 +572,13 @@ public class YanelServlet extends HttpServlet {
                                 if (checkoutUserID.equals(userID)) {
                                     log.warn("Resource " + res.getPath() + " is already checked out by this user: " + checkoutUserID);
                                 } else {
-                                    throw new Exception("Resource is already checked out by another user: " + checkoutUserID);
+                                    if (isClientSupportingNeutron(request)) {
+                                        // TODO: Send back well-formed XML according to http://neutron.wyona.org/draft-neutron-protocol-v0.html#rfc.section.8.2
+                                        log.warn("Seems to be Neutron client ....");
+                                        throw new Exception("Resource '" + res.getPath() + "' is already checked out by another user: " + checkoutUserID);
+                                    } else {
+                                        throw new Exception("Resource '" + res.getPath() + "' is already checked out by another user: " + checkoutUserID);
+                                    }
                                 }
                             } else {
                                 versionable.checkout(userID);
@@ -988,17 +995,12 @@ public class YanelServlet extends HttpServlet {
                     in = new ByteArrayInputStream(memBuffer);
                     //org.w3c.dom.Document document = parser.parse(new ByteArrayInputStream(memBuffer));
                 } catch (org.xml.sax.SAXException e) {
-                    log.warn("Data is not well-formed: "+e.getMessage());
-
-                    StringBuffer sb = new StringBuffer();
-                    sb.append("<?xml version=\"1.0\"?>");
-                    sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"data-not-well-formed\">");
-                    sb.append("<message>Data is not well-formed: "+e.getMessage()+"</message>");
-                    sb.append("</exception>");
+                    String eMessage = "Data is not well-formed: " + e.getMessage();
+                    log.warn(eMessage);
                     response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     PrintWriter w = response.getWriter();
-                    w.print(sb);
+                    w.print(XMLExceptionV1.getDefaultException(XMLExceptionV1.DATA_NOT_WELL_FORMED, eMessage));
                     return;
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
@@ -1411,8 +1413,11 @@ public class YanelServlet extends HttpServlet {
                 identityMap.remove(realm.getID());
             }
 
-            String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
+            String clientSupportedAuthScheme = getClientAuthenticationScheme(request);
             if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
+                String neutronVersions = getClientSupportedNeutronVersions(request);
+                // TODO: Reply according to which neutron versions the client supports
+
                 // TODO: send some XML content, e.g. <logout-successful/>
                 response.setContentType("text/plain; charset=" + DEFAULT_ENCODING);
                 response.setStatus(response.SC_OK);
@@ -2230,5 +2235,31 @@ public class YanelServlet extends HttpServlet {
             if (yanelResUsecase.equals("roll-back")) return true;
         }
         return false;
+    }
+
+    /**
+     * Check if request comes from Neutron supporting client
+     */
+    private boolean isClientSupportingNeutron(HttpServletRequest request) {
+        String neutronVersions = request.getHeader("Neutron");
+        if (neutronVersions != null) {
+            log.warn("DEBUG: Neutron version(s) supported by client: " + neutronVersions);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Get Neutron versions which are supported by client
+     */
+    private String getClientSupportedNeutronVersions(HttpServletRequest request) {
+        return request.getHeader("Neutron");
+    }
+
+    /**
+     * Get client authentication scheme
+     */
+    private String getClientAuthenticationScheme(HttpServletRequest request) {
+        return request.getHeader("WWW-Authenticate");
     }
 }
