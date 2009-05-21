@@ -32,4 +32,34 @@
    </sequential>
   </macrodef>
 
+  <!-- Install Neutron JAR -->
+  <macrodef name="install-wyona-jar" uri="http://www.wyona.org/yanel/1.0">
+   <attribute name="id"/>
+   <attribute name="package-dir" default="@{id}"/>
+   <attribute name="classes-dir" default="${classes.dir}"/>
+   <element name="jar-elements" optional="true" implicit="true"/>
+   <sequential>
+
+    <mkdir dir="${yanel.source.home}/build/lib"/>
+    <jar destfile="${yanel.source.home}/build/lib/wyona-@{id}-${yanel.version}-r${yanel.revision}.jar"
+      basedir="@{classes-dir}"
+      includes="org/wyona/@{package-dir}/**"
+    >
+      <jar-elements/>
+    </jar>
+
+    <copy file="${yanel.source.home}/src/build/pom-@{id}.xml" todir="${yanel.source.home}/build/lib"/>
+    <replace file="${yanel.source.home}/build/lib/pom-@{id}.xml" value="${yanel.version}-r${yanel.revision}">
+      <replacetoken>@VERSION@</replacetoken>
+    </replace>
+
+    <artifact:pom id="@{id}.project" file="${yanel.source.home}/build/lib/pom-@{id}.xml"/>
+
+    <artifact:install file="${yanel.source.home}/build/lib/wyona-@{id}-${yanel.version}-r${yanel.revision}.jar">
+      <pom refid="@{id}.project"/>
+    </artifact:install>
+
+   </sequential>
+  </macrodef>
+
 </project>
