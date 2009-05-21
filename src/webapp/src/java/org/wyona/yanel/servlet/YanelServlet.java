@@ -1014,18 +1014,10 @@ public class YanelServlet extends HttpServlet {
                     return;
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
-
-                    StringBuffer sb = new StringBuffer();
-                    sb.append("<?xml version=\"1.0\"?>");
-                    sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"neutron\">");
-                    //sb.append("<message>" + e.getStackTrace() + "</message>");
-                    //sb.append("<message>" + e.getMessage() + "</message>");
-                    sb.append("<message>" + e + "</message>");
-                    sb.append("</exception>");
                     response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     PrintWriter w = response.getWriter();
-                    w.print(sb);
+                    w.print(XMLExceptionV1.getDefaultException(XMLExceptionV1.DATA_NOT_WELL_FORMED, "" + e));
                     return;
                 }
 
@@ -1059,15 +1051,11 @@ public class YanelServlet extends HttpServlet {
  
 
             // TODO: Differentiate between Neutron based and other clients ... (Use method isClientSupportingNeutron())
-            StringBuilder sb = new StringBuilder();
-            sb.append("<?xml version=\"1.0\"?>");
-            sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"neutron\">");
-            sb.append("<message>" + message + "</message>");
-            sb.append("</exception>");
             response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             PrintWriter w = response.getWriter();
-            w.print(sb);
+            // TODO: This is not really a 'checkin' problem, but rather a general 'save-data' problem, but the Neutron spec does not support such a type: http://neutron.wyona.org/draft-neutron-protocol-v0.html#rfc.section.8
+            w.print(XMLExceptionV1.getDefaultException(XMLExceptionV1.CHECKIN, message));
         }
         
         if (doCheckin) {
@@ -2253,7 +2241,7 @@ public class YanelServlet extends HttpServlet {
     private boolean isClientSupportingNeutron(HttpServletRequest request) {
         String neutronVersions = request.getHeader("Neutron");
         if (neutronVersions != null) {
-            log.warn("DEBUG: Neutron version(s) supported by client: " + neutronVersions);
+            log.info("Neutron version(s) supported by client: " + neutronVersions);
             return true;
         }
         return false;
