@@ -260,21 +260,20 @@ public class YanelServlet extends HttpServlet {
                 
                 if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
                     VersionableV2 versionable  = (VersionableV2)resource;
-                    try {
-                        // TODO: Compare the users
                         String checkoutUserID = versionable.getCheckoutUserID(); 
                         String userID = getEnvironment(request, response).getIdentity().getUsername();
                         if (checkoutUserID.equals(userID)) {
-                            versionable.cancelCheckout();
+                            try {
+                                versionable.cancelCheckout();
+                            } catch (Exception e) {
+                                log.error(e.getMessage(), e);
+                                throw new ServletException("Releasing the lock of '" + resource.getPath() + "' failed because of: " + e.getMessage(), e);
+                            }
                         } else {
                             String eMessage = "Releasing the lock of '" + resource.getPath() + "' failed because checkout user '" + checkoutUserID + "' and session user '" + userID + "' are not the same!";
                             log.warn(eMessage);
                             throw new ServletException(eMessage);
                         }
-                    } catch (Exception e) {
-                        log.error(e.getMessage(), e);
-                        throw new ServletException("Releasing the lock of '" + resource.getPath() + "' failed because of: " + e.getMessage(), e);
-                    }
                 }
                 return;
             } else if (value != null && value.equals("roll-back")) {
