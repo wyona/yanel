@@ -2,7 +2,7 @@
 
 <project>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>wyona-org-yanel</groupId>
+  <groupId>wyona-org-neutron</groupId>
   <artifactId>wyona-neutron</artifactId>
   <version>@VERSION@</version>
 
