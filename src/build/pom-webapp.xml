@@ -16,11 +16,13 @@
       <artifactId>yanel-core</artifactId>
       <version>1.0-dev-rREVISION</version>
     </dependency>
+<!-- NOTE: The webapp actually depends on Neutron, but the code below somehow generates errors when building resources which depend on the webapp lib, such as for example the session manager resource
     <dependency>
       <groupId>wyona-org-neutron</groupId>
       <artifactId>wyona-neutron</artifactId>
       <version>1.0-dev-rREVISION</version>
     </dependency>
+-->
   </dependencies>
 </project>
 
