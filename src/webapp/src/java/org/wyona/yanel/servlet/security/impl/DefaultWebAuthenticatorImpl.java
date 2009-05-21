@@ -233,7 +233,8 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                     // TODO: Refactor this code with the one from doAuthenticate ...
                     log.debug("Original Request: " + originalRequest);
 
-                    StringBuffer sb = new StringBuffer("");
+                    // TODO: Use org.wyona.neutron.XMLExceptionV1.getAuthenticationException(...)
+                    StringBuilder sb = new StringBuilder("");
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authentication\">");
                     sb.append("<message>Authentication failed!</message>");
@@ -310,13 +311,16 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
             // Check if this is a neutron request, a Sunbird/Calendar request or just a common GET request
             // Also see e-mail about recognizing a WebDAV request: http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
-            StringBuffer sb = new StringBuffer("");
             String neutronVersions = request.getHeader("Neutron");
             String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
             
             if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
                 log.debug("Neutron Versions supported by client: " + neutronVersions);
                 log.debug("Authentication Scheme supported by client: " + clientSupportedAuthScheme);
+
+
+                // TODO: Use org.wyona.neutron.XMLExceptionV1.getAuthorizationException(...)
+                StringBuilder sb = new StringBuilder("");
                 sb.append("<?xml version=\"1.0\"?>");
                 sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
                 sb.append("<message>Authorization denied: " + getRequestURLQS(request, null, true, map) + "</message>");
