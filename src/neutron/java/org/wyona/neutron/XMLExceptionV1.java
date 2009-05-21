@@ -15,7 +15,7 @@ public class XMLExceptionV1 {
     /**
      *
      */
-    public String getDefaultException(int type, String message) {
+    public static String getDefaultException(int type, String message) {
         StringBuilder sb = new StringBuilder();
         sb.append("<?xml version=\"1.0\"?>");
         sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"" + getTypeAsString(type) + "\">");
