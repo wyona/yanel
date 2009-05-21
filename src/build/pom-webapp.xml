@@ -16,6 +16,11 @@
       <artifactId>yanel-core</artifactId>
       <version>1.0-dev-rREVISION</version>
     </dependency>
+    <dependency>
+      <groupId>wyona-org-neutron</groupId>
+      <artifactId>wyona-neutron</artifactId>
+      <version>1.0-dev-rREVISION</version>
+    </dependency>
   </dependencies>
 </project>
 
