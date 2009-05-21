@@ -573,9 +573,12 @@ public class YanelServlet extends HttpServlet {
                                     log.warn("Resource " + res.getPath() + " is already checked out by this user: " + checkoutUserID);
                                 } else {
                                     if (isClientSupportingNeutron(request)) {
-                                        // TODO: Send back well-formed XML according to http://neutron.wyona.org/draft-neutron-protocol-v0.html#rfc.section.8.2
-                                        log.warn("Seems to be Neutron client ....");
-                                        throw new Exception("Resource '" + res.getPath() + "' is already checked out by another user: " + checkoutUserID);
+                                        String eMessage = "Resource '" + res.getPath() + "' is already checked out by another user: " + checkoutUserID;
+                                        response.setContentType("application/xml");
+                                        response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                                        // TODO: Checkout date and break-lock (optional)
+                                        response.getWriter().print(XMLExceptionV1.getCheckoutException(eMessage, res.getPath(), checkoutUserID, null));
+                                        return;
                                     } else {
                                         throw new Exception("Resource '" + res.getPath() + "' is already checked out by another user: " + checkoutUserID);
                                     }
