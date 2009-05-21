@@ -134,6 +134,24 @@
   <target name="compile-core" depends="compile-core-classes, install-core-jar">
   </target>
 
+  <target name="compile-neutron-classes" description="Compile Java classes of Neutron implementation" depends="init, set-classpath">
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="${yanel.source.home}/src/neutron/java/org/wyona/neutron"
+      destdir="${classes.dir}"
+      source="${source.java.version}"
+      target="${target.java.version}"
+      debug="true">
+      <classpath refid="classpath.compile"/>
+    </javac>
+  </target>
+
+  <target name="install-neutron-jar" description="Install Neutron implementation JAR" depends="compile-neutron-classes">
+    <yanel:install-wyona-jar id="neutron"/>
+  </target>
+
+  <target name="compile-neutron" depends="compile-neutron-classes, install-neutron-jar">
+  </target>
+
   <target name="compile-impl-classes" description="Compile Java classes of Yanel implementation" depends="init, compile-core">
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${yanel.source.home}/src/impl/java/org/wyona/yanel/impl" destdir="${classes.dir}" debug="true">
