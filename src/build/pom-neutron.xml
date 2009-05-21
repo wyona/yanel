@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>wyona-org-yanel</groupId>
+  <artifactId>wyona-neutron</artifactId>
+  <version>@VERSION@</version>
+
+<!--
+  <dependencies>
+    <dependency>
+      <groupId>wyona-org-yanel</groupId>
+      <artifactId>yanel-core</artifactId>
+      <version>@VERSION@</version>
+    </dependency>
+  </dependencies>
+-->
+</project>
+
