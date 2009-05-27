@@ -14,8 +14,8 @@ XML whereas an XSLT or multiple XSLTs can be specified and applied
   <property name="source-view-mime-type"/>
   <property name="xslt" multiple="true"/>
 
-  <!-- "yanel-path" allows to instantiate another resource which provides XML -->
-  <property name="yanel-path"/>
+  <!-- "yanel-path" allows to instantiate another resource which provides XML (or retrieve an XML from the content repository of the realm) -->
+  <property name="yanel-path"/> <!-- For example value="/sitetree-en.xml" -->
   <property name="workflow-schema"/>
 </rtd>
 </resource>
