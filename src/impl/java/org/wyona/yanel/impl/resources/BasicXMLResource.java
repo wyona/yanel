@@ -259,6 +259,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 } else if(xsltPaths[i].startsWith("rthtdocs:")) {
                     log.warn("Scheme: rthtdocs (" + xsltPaths[i] + ")");
                     xsltHandlers[i] = tf.newTransformerHandler(new org.wyona.yanel.core.source.RTHtdocsResolver(this).resolve(xsltPaths[i], null));
+                } else if(xsltPaths[i].startsWith("yanelresource:")) {
+                    log.warn("Scheme: yanelresource (" + xsltPaths[i] + ")");
+                    xsltHandlers[i] = tf.newTransformerHandler(new org.wyona.yanel.core.source.ResourceResolver(this).resolve(xsltPaths[i], null));
                 } else {
                     if (xsltPaths[i].indexOf(":/") > 0) {
                         log.error("No such protocol implemented: " + xsltPaths[i].substring(0, xsltPaths[i].indexOf(":/")));
