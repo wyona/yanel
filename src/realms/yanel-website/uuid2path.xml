@@ -1,5 +1,13 @@
 <?xml version="1.0"?>
 
+<!--
+UUID 2 Path Example:
+   UUID:about/de.xhtml => ueber.html => UUID:deutsch => de/ueber.html => UUID:/ => /de/ueber.html
+
+Path 2 UUID Example:
+  /de/ueber.html => search for 'de' with parent-uuid="/" => UUID:deutsch => search for 'ueber.html' with parent-uuid="deutsch => UUID: about/de.xhtml
+-->
+
 <uuid2path>
   <node uuid="about/de.xhtml"        ><name parent-uuid="deutsch">ueber.html</name></node>
   <node uuid="about/en.xhtml"        ><name parent-uuid="english">about.html</name></node>
