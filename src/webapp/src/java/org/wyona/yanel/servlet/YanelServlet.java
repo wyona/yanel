@@ -454,6 +454,9 @@ public class YanelServlet extends HttpServlet {
                             if (revisionName != null && ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2") && !isRollBack(request)) {
                                 view = ((VersionableV2) res).getView(viewId, revisionName);
                             } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1") && environment.getStateOfView().equals(StateOfView.LIVE)) {
+
+                                // TODO: Check if resource actually exists, because even it doesn't exist, the workflowable interfaces can return something although it doesn't really make sense. For example if a resource type is workflowable, but it has no workflow associated with it, then WorkflowHelper.isLive will nevertheless return true, whereas WorkflowHelper.getLiveView will throw an exception!
+                                // TODO: Check first on Viewable and sub-nest/move this "else if" into the "else" below!
                                 WorkflowableV1 workflowable = (WorkflowableV1)res;
                                 if (workflowable.isLive()) {
                                     view = workflowable.getLiveView(viewId);
