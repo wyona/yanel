@@ -625,29 +625,9 @@ public class YanelServlet extends HttpServlet {
         }
         // END first try
 
-        // TODO: Move this introspection generation somewhere else ...
         // START introspection generation
-        try {
-            if (usecase != null && usecase.equals("introspection")) {
-                if (ResourceAttributeHelper.hasAttributeImplemented(res, "Introspectable", "1")) {
-                    String introspection = ((IntrospectableV1)res).getIntrospection();
-                    response.setContentType("application/xml");
-                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
-                    response.getWriter().print(introspection);
-                } else {
-                    String message = "Resource is not introspectable.";
-                    Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
-                    exceptionElement.appendChild(doc.createTextNode(message));
-                    setYanelOutput(request, response, doc);
-                }
-                return;
-            }
-        } catch(Exception e) {
-            log.error(e.getMessage(), e);
-            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
-            exceptionElement.appendChild(doc.createTextNode(e.getMessage()));
-            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            setYanelOutput(request, response, doc);
+        if (usecase != null && usecase.equals("introspection")) {
+            sendIntrospectionAsResponse(res, doc, rootElement, request, response);
             return;
         }
         // END introspection generation
@@ -2264,5 +2244,32 @@ public class YanelServlet extends HttpServlet {
      */
     private String getClientAuthenticationScheme(HttpServletRequest request) {
         return request.getHeader("WWW-Authenticate");
+    }
+
+    /**
+     * Respond with introspection
+     */
+    private void sendIntrospectionAsResponse(Resource res, Document doc, Element rootElement, HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        try {
+            if (ResourceAttributeHelper.hasAttributeImplemented(res, "Introspectable", "1")) {
+                String introspection = ((IntrospectableV1)res).getIntrospection();
+                response.setContentType("application/xml");
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+                response.getWriter().print(introspection);
+            } else {
+                String message = "Resource is not introspectable.";
+                Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                exceptionElement.appendChild(doc.createTextNode(message));
+                setYanelOutput(request, response, doc);
+            }
+            return;
+        } catch(Exception e) {
+            log.error(e.getMessage(), e);
+            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+            exceptionElement.appendChild(doc.createTextNode(e.getMessage()));
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            setYanelOutput(request, response, doc);
+            return;
+        }
     }
 }
