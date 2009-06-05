@@ -362,12 +362,10 @@ public class YanelServlet extends HttpServlet {
             res = getResource(request, response);
             if (res != null) {
                 Element resourceElement = getResourceMetaData(res, doc, rootElement);
-
-
-                    if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
-                        if (log.isDebugEnabled()) log.debug("Resource is viewable V1");
-                        Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
-                        viewElement.setAttributeNS(NAMESPACE, "version", "1");
+                if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
+                    if (log.isDebugEnabled()) log.debug("Resource is viewable V1");
+                    Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
+                    viewElement.setAttributeNS(NAMESPACE, "version", "1");
 
                         // TODO: The same as for ViewableV2 ...
                         ViewDescriptor[] vd = ((ViewableV1) res).getViewDescriptors();
@@ -399,16 +397,16 @@ public class YanelServlet extends HttpServlet {
                             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                             setYanelOutput(request, response, doc);
                             return;
-                        }
-                    } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
-                        if (log.isDebugEnabled()) log.debug("Resource is viewable V2");
+                    }
+                } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
+                    if (log.isDebugEnabled()) log.debug("Resource is viewable V2");
 
-                        if (!((ViewableV2) res).exists()) {
-                            //log.warn("No such ViewableV2 resource: " + res.getPath());
-                            //log.warn("TODO: It seems like many ViewableV2 resources are not implementing exists() properly!");
-                            //do404(request, response, doc, res.getPath());
-                            //return;
-                        }
+                    if (!((ViewableV2) res).exists()) {
+                        //log.warn("No such ViewableV2 resource: " + res.getPath());
+                        //log.warn("TODO: It seems like many ViewableV2 resources are not implementing exists() properly!");
+                        //do404(request, response, doc, res.getPath());
+                        //return;
+                    }
 
                         String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
                         Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
@@ -469,32 +467,36 @@ public class YanelServlet extends HttpServlet {
                             log.warn(message);
                             do404(request, response, doc, message);
                             return;
-                        }
-                    } else {
-                        Element noViewElement = (Element) resourceElement.appendChild(doc.createElement("not-viewable"));
-                        String message = res.getClass().getName() + " is not viewable! (" + res.getPath() + ", " + res.getRealm() + ")";
-                        noViewElement.appendChild(doc.createTextNode(res.getClass().getName() + " is not viewable!"));
-                        log.error(message);
-                         Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
-                         exceptionElement.appendChild(doc.createTextNode(message));
-                         exceptionElement.setAttributeNS(NAMESPACE, "status", "501");
-                         response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_IMPLEMENTED);
-                         setYanelOutput(request, response, doc);
-                         return;
                     }
-                    if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
-                        lastModified = ((ModifiableV2) res).getLastModified();
-                        Element lastModifiedElement = (Element) resourceElement.appendChild(doc.createElement("last-modified"));
-                        lastModifiedElement.appendChild(doc.createTextNode(new java.util.Date(lastModified).toString()));
-                    } else {
-                        Element noLastModifiedElement = (Element) resourceElement.appendChild(doc.createElement("no-last-modified"));
-                    }
+                } else { // NO Viewable interface implemented!
+                    String message = res.getClass().getName() + " is not viewable! (" + res.getPath() + ", " + res.getRealm() + ")";
+                    log.error(message);
+                    Element noViewElement = (Element) resourceElement.appendChild(doc.createElement("not-viewable"));
+                    noViewElement.appendChild(doc.createTextNode(res.getClass().getName() + " is not viewable!"));
+                    Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                    exceptionElement.appendChild(doc.createTextNode(message));
+                    exceptionElement.setAttributeNS(NAMESPACE, "status", "501");
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_IMPLEMENTED);
+                    setYanelOutput(request, response, doc);
+                    return;
+                }
 
 
-                    // START Versionable (and Workflowable)
-                    if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
-                        // retrieve the revisions, but only in the meta usecase (for performance reasons):
-                        if (request.getParameter(RESOURCE_META_ID_PARAM_NAME) != null) {
+
+
+                if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
+                    lastModified = ((ModifiableV2) res).getLastModified();
+                    Element lastModifiedElement = (Element) resourceElement.appendChild(doc.createElement("last-modified"));
+                    lastModifiedElement.appendChild(doc.createTextNode(new java.util.Date(lastModified).toString()));
+                } else {
+                    Element noLastModifiedElement = (Element) resourceElement.appendChild(doc.createElement("no-last-modified"));
+                }
+
+
+                // START Versionable (and Workflowable)
+                if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
+                    // retrieve the revisions, but only in the meta usecase (for performance reasons):
+                    if (request.getParameter(RESOURCE_META_ID_PARAM_NAME) != null) {
                             RevisionInformation[] revisionsInfo = ((VersionableV2)res).getRevisions();
                             Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement("revisions"));
 
@@ -540,11 +542,13 @@ public class YanelServlet extends HttpServlet {
                     } else {
                         Element notVersionableElement = (Element) resourceElement.appendChild(doc.createElement("not-versionable"));
                     }
-                    // END Versionable (and Workflowable)
+                // END Versionable (and Workflowable)
 
 
-                    if (ResourceAttributeHelper.hasAttributeImplemented(res, "Translatable", "1")) {
-                        TranslatableV1 translatable = ((TranslatableV1) res);
+
+
+                if (ResourceAttributeHelper.hasAttributeImplemented(res, "Translatable", "1")) {
+                    TranslatableV1 translatable = ((TranslatableV1) res);
                         Element translationsElement = (Element) resourceElement.appendChild(doc.createElement("translations"));
                         String[] languages = translatable.getLanguages();
                         for (int i=0; i<languages.length; i++) {
@@ -553,9 +557,12 @@ public class YanelServlet extends HttpServlet {
                             String path = translatable.getTranslation(languages[i]).getPath();
                             translationElement.setAttribute("path", path);
                         }
-                    }
-                    
-                    if (usecase != null && usecase.equals("checkout")) {
+                }
+
+
+
+
+                if (usecase != null && usecase.equals("checkout")) {
                         if(log.isDebugEnabled()) log.debug("Checkout data ...");
                         
                         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
