@@ -391,8 +391,8 @@ public class YanelServlet extends HttpServlet {
                     appendViewDescriptors(doc, viewElement, ((ViewableV2) res).getViewDescriptors());
 
                     if (!((ViewableV2) res).exists()) {
-                        //log.warn("No such ViewableV2 resource: " + res.getPath());
-                        //log.warn("TODO: It seems like many ViewableV2 resources are not implementing exists() properly!");
+                        log.warn("No such ViewableV2 resource: " + res.getPath());
+                        log.warn("TODO: It seems like many ViewableV2 resources are not implementing exists() properly!");
                         //do404(request, response, doc, res.getPath());
                         //return;
                     }
@@ -410,13 +410,12 @@ public class YanelServlet extends HttpServlet {
                         if (revisionName != null && ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2") && !isRollBack(request)) {
                             view = ((VersionableV2) res).getView(viewId, revisionName);
                         } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1") && environment.getStateOfView().equals(StateOfView.LIVE)) {
-                            // TODO: Check if resource actually exists, because even it doesn't exist, the workflowable interfaces can return something although it doesn't really make sense. For example if a resource type is workflowable, but it has no workflow associated with it, then WorkflowHelper.isLive will nevertheless return true, whereas WorkflowHelper.getLiveView will throw an exception!
-                            // TODO: Check first on Viewable and sub-nest/move this "else if" into the "else" below!
+                            // TODO: Check if resource actually exists (see the exist problem above), because even it doesn't exist, the workflowable interfaces can return something although it doesn't really make sense. For example if a resource type is workflowable, but it has no workflow associated with it, then WorkflowHelper.isLive will nevertheless return true, whereas WorkflowHelper.getLiveView will throw an exception!
                             WorkflowableV1 workflowable = (WorkflowableV1)res;
                             if (workflowable.isLive()) {
                                 view = workflowable.getLiveView(viewId);
                             } else {
-                                String message = "The resource '" + res.getPath() + "' is WorkflowableV1, but has not been published yet. Instead the live version, the most recent version will be displayed!";
+                                String message = "The viewable (V2) resource '" + res.getPath() + "' is WorkflowableV1, but has not been published yet. Instead the live version, the most recent version will be displayed!";
                                 log.warn(message);
                                 view = ((ViewableV2) res).getView(viewId);
 
