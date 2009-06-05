@@ -352,16 +352,15 @@ public class YanelServlet extends HttpServlet {
         }
 
         String usecase = request.getParameter(YANEL_RESOURCE_USECASE);
-
-        
         Resource res = null;
         long lastModified = -1;
         long size = -1;
-            try {
-                Environment environment = getEnvironment(request, response);
-                res = getResource(request, response);
-                if (res != null) {
 
+        // START first try
+        try {
+            Environment environment = getEnvironment(request, response);
+            res = getResource(request, response);
+            if (res != null) {
                     Element resourceElement = (Element) rootElement.appendChild(doc.createElement("resource"));
                     ResourceConfiguration resConfig = res.getConfiguration();
                     if (resConfig != null) {
@@ -604,51 +603,54 @@ public class YanelServlet extends HttpServlet {
                 } else {
                         Element resourceIsNullElement = (Element) rootElement.appendChild(doc.createElement("resource-is-null"));
                 }
-            } catch(org.wyona.yarep.core.NoSuchNodeException e) {
-                String message = "" + e;
-                log.warn(e, e);
-                do404(request, response, doc, message);
-                return;
-            } catch(org.wyona.yanel.core.ResourceNotFoundException e) {
-                String message = "" + e;
-                log.warn(e, e);
-                do404(request, response, doc, message);
-                return;
-            } catch(Exception e) {
-                log.error(e.getMessage(), e);
-                String message = e.toString() + "\n\n" + getStackTrace(e);
-                //String message = e.toString();
-                Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
-                exceptionElement.appendChild(doc.createTextNode(message));
-                response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                setYanelOutput(request, response, doc);
-                return;
-            }
+        } catch(org.wyona.yarep.core.NoSuchNodeException e) {
+            String message = "" + e;
+            log.warn(e, e);
+            do404(request, response, doc, message);
+            return;
+        } catch(org.wyona.yanel.core.ResourceNotFoundException e) {
+            String message = "" + e;
+            log.warn(e, e);
+            do404(request, response, doc, message);
+            return;
+        } catch(Exception e) {
+            log.error(e.getMessage(), e);
+            String message = e.toString() + "\n\n" + getStackTrace(e);
+            //String message = e.toString();
+            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+            exceptionElement.appendChild(doc.createTextNode(message));
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            setYanelOutput(request, response, doc);
+            return;
+        }
+        // END first try
 
-            // TODO: Move this introspection generation somewhere else ...
-            try {
-                if (usecase != null && usecase.equals("introspection")) {
-                    if (ResourceAttributeHelper.hasAttributeImplemented(res, "Introspectable", "1")) {
-                        String introspection = ((IntrospectableV1)res).getIntrospection();
-                        response.setContentType("application/xml");
-                        response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
-                        response.getWriter().print(introspection);
-                    } else {
-                        String message = "Resource is not introspectable.";
-                        Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
-                        exceptionElement.appendChild(doc.createTextNode(message));
-                        setYanelOutput(request, response, doc);
-                    }
-                    return;
+        // TODO: Move this introspection generation somewhere else ...
+        // START introspection generation
+        try {
+            if (usecase != null && usecase.equals("introspection")) {
+                if (ResourceAttributeHelper.hasAttributeImplemented(res, "Introspectable", "1")) {
+                    String introspection = ((IntrospectableV1)res).getIntrospection();
+                    response.setContentType("application/xml");
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+                    response.getWriter().print(introspection);
+                } else {
+                    String message = "Resource is not introspectable.";
+                    Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                    exceptionElement.appendChild(doc.createTextNode(message));
+                    setYanelOutput(request, response, doc);
                 }
-            } catch(Exception e) {
-                log.error(e.getMessage(), e);
-                Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
-                exceptionElement.appendChild(doc.createTextNode(e.getMessage()));
-                response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                setYanelOutput(request, response, doc);
                 return;
             }
+        } catch(Exception e) {
+            log.error(e.getMessage(), e);
+            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+            exceptionElement.appendChild(doc.createTextNode(e.getMessage()));
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            setYanelOutput(request, response, doc);
+            return;
+        }
+        // END introspection generation
 
 
         String meta = request.getParameter(RESOURCE_META_ID_PARAM_NAME);
