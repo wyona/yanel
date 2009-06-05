@@ -362,44 +362,33 @@ public class YanelServlet extends HttpServlet {
             res = getResource(request, response);
             if (res != null) {
                 Element resourceElement = getResourceMetaData(res, doc, rootElement);
+                Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
                 if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                     if (log.isDebugEnabled()) log.debug("Resource is viewable V1");
-                    Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
                     viewElement.setAttributeNS(NAMESPACE, "version", "1");
+                    appendViewDescriptors(doc, viewElement, ((ViewableV1) res).getViewDescriptors());
 
-                        // TODO: The same as for ViewableV2 ...
-                        ViewDescriptor[] vd = ((ViewableV1) res).getViewDescriptors();
-                        if (vd != null) {
-                            for (int i = 0; i < vd.length; i++) {
-                                Element descriptorElement = (Element) viewElement.appendChild(doc.createElement("descriptor"));
-                                if (vd[i].getMimeType() != null) { 
-                                    descriptorElement.appendChild(doc.createTextNode(vd[i].getMimeType()));
-                                }
-                                descriptorElement.setAttributeNS(NAMESPACE, "id", vd[i].getId());
-                            }
-                        } else {
-                            viewElement.appendChild(doc.createTextNode("No View Descriptors!"));
-                        }
-
-                        String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
-                        try {
-                            view = ((ViewableV1) res).getView(request, viewId);
-                        } catch(org.wyona.yarep.core.NoSuchNodeException e) {
-                            do404(request, response, doc, e.getMessage());
-                            return;
-                        } catch(Exception e) {
-                            log.error(e.getMessage(), e);
-                            String message = e.toString();
-                            log.error(e.getMessage(), e);
-                            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
-                            exceptionElement.appendChild(doc.createTextNode(message));
-                            exceptionElement.setAttributeNS(NAMESPACE, "status", "500");
-                            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                            setYanelOutput(request, response, doc);
-                            return;
+                    String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
+                    try {
+                        view = ((ViewableV1) res).getView(request, viewId);
+                    } catch(org.wyona.yarep.core.NoSuchNodeException e) {
+                        do404(request, response, doc, e.getMessage());
+                        return;
+                    } catch(Exception e) {
+                        log.error(e.getMessage(), e);
+                        String message = e.toString();
+                        log.error(e.getMessage(), e);
+                        Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                        exceptionElement.appendChild(doc.createTextNode(message));
+                        exceptionElement.setAttributeNS(NAMESPACE, "status", "500");
+                        response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        setYanelOutput(request, response, doc);
+                        return;
                     }
                 } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
                     if (log.isDebugEnabled()) log.debug("Resource is viewable V2");
+                    viewElement.setAttributeNS(NAMESPACE, "version", "2");
+                    appendViewDescriptors(doc, viewElement, ((ViewableV2) res).getViewDescriptors());
 
                     if (!((ViewableV2) res).exists()) {
                         //log.warn("No such ViewableV2 resource: " + res.getPath());
@@ -408,65 +397,48 @@ public class YanelServlet extends HttpServlet {
                         //return;
                     }
 
-                        String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
-                        Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
-                        viewElement.setAttributeNS(NAMESPACE, "version", "2");
-                        ViewDescriptor[] vd = ((ViewableV2) res).getViewDescriptors();
-                        if (vd != null) {
-                            for (int i = 0; i < vd.length; i++) {
-                                Element descriptorElement = (Element) viewElement.appendChild(doc.createElement("descriptor"));
-                                if (vd[i].getMimeType() != null) {
-                                    descriptorElement.appendChild(doc.createTextNode(vd[i].getMimeType()));
-                                }
-                                descriptorElement.setAttributeNS(NAMESPACE, "id", vd[i].getId());
+                    size = ((ViewableV2) res).getSize();
+                    Element sizeElement = (Element) resourceElement.appendChild(doc.createElement("size"));
+                    sizeElement.appendChild(doc.createTextNode(String.valueOf(size)));
+
+
+
+                    String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
+                    try {
+                        String revisionName = request.getParameter(YANEL_RESOURCE_REVN);
+                        // NOTE: Check also if usecase is not roll-back, because roll-back is also using the yanel.resource.revision
+                        if (revisionName != null && ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2") && !isRollBack(request)) {
+                            view = ((VersionableV2) res).getView(viewId, revisionName);
+                        } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1") && environment.getStateOfView().equals(StateOfView.LIVE)) {
+                            // TODO: Check if resource actually exists, because even it doesn't exist, the workflowable interfaces can return something although it doesn't really make sense. For example if a resource type is workflowable, but it has no workflow associated with it, then WorkflowHelper.isLive will nevertheless return true, whereas WorkflowHelper.getLiveView will throw an exception!
+                            // TODO: Check first on Viewable and sub-nest/move this "else if" into the "else" below!
+                            WorkflowableV1 workflowable = (WorkflowableV1)res;
+                            if (workflowable.isLive()) {
+                                view = workflowable.getLiveView(viewId);
+                            } else {
+                                String message = "The resource '" + res.getPath() + "' is WorkflowableV1, but has not been published yet. Instead the live version, the most recent version will be displayed!";
+                                log.warn(message);
+                                view = ((ViewableV2) res).getView(viewId);
+
+                                // TODO: Maybe sending a 404 instead the most recent version should be configurable!
+                                /*
+                                do404(request, response, doc, message);
+                                return;
+                                */
                             }
                         } else {
-                            viewElement.appendChild(doc.createTextNode("No View Descriptors!"));
+                            view = ((ViewableV2) res).getView(viewId);
                         }
-
-
-                        size = ((ViewableV2) res).getSize();
-                        Element sizeElement = (Element) resourceElement.appendChild(doc.createElement("size"));
-                        sizeElement.appendChild(doc.createTextNode(String.valueOf(size)));
-
-
-
-                        try {
-                            String revisionName = request.getParameter(YANEL_RESOURCE_REVN);
-                            // NOTE: Check also if usecase is not roll-back, because roll-back is also using the yanel.resource.revision
-                            if (revisionName != null && ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2") && !isRollBack(request)) {
-                                view = ((VersionableV2) res).getView(viewId, revisionName);
-                            } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1") && environment.getStateOfView().equals(StateOfView.LIVE)) {
-
-                                // TODO: Check if resource actually exists, because even it doesn't exist, the workflowable interfaces can return something although it doesn't really make sense. For example if a resource type is workflowable, but it has no workflow associated with it, then WorkflowHelper.isLive will nevertheless return true, whereas WorkflowHelper.getLiveView will throw an exception!
-                                // TODO: Check first on Viewable and sub-nest/move this "else if" into the "else" below!
-                                WorkflowableV1 workflowable = (WorkflowableV1)res;
-                                if (workflowable.isLive()) {
-                                    view = workflowable.getLiveView(viewId);
-                                } else {
-                                    String message = "The resource '" + res.getPath() + "' is WorkflowableV1, but has not been published yet. Instead the live version, the most recent version will be displayed!";
-                                    log.warn(message);
-                                    view = ((ViewableV2) res).getView(viewId);
-
-                                    // TODO: Maybe sending a 404 instead the most recent version should be configurable!
-                                    /*
-                                    do404(request, response, doc, message);
-                                    return;
-                                    */
-                                }
-                            } else {
-                                view = ((ViewableV2) res).getView(viewId);
-                            }
-                        } catch(org.wyona.yarep.core.NoSuchNodeException e) {
-                            String message = "" + e;
-                            log.warn(message);
-                            do404(request, response, doc, message);
-                            return;
-                        } catch(org.wyona.yanel.core.ResourceNotFoundException e) {
-                            String message = "" + e;
-                            log.warn(message);
-                            do404(request, response, doc, message);
-                            return;
+                    } catch(org.wyona.yarep.core.NoSuchNodeException e) {
+                        String message = "" + e;
+                        log.warn(message);
+                        do404(request, response, doc, message);
+                        return;
+                    } catch(org.wyona.yanel.core.ResourceNotFoundException e) {
+                        String message = "" + e;
+                        log.warn(message);
+                        do404(request, response, doc, message);
+                        return;
                     }
                 } else { // NO Viewable interface implemented!
                     String message = res.getClass().getName() + " is not viewable! (" + res.getPath() + ", " + res.getRealm() + ")";
@@ -2287,5 +2259,22 @@ public class YanelServlet extends HttpServlet {
         Element identityManagerElement = (Element) realmElement.appendChild(doc.createElementNS(NAMESPACE, "identity-manager"));
         Element userManagerElement = (Element) identityManagerElement.appendChild(doc.createElementNS(NAMESPACE, "user-manager"));
         return resourceElement;
+    }
+
+    /**
+     * Append view descriptors to meta
+     */
+    private void appendViewDescriptors(Document doc, Element viewElement, ViewDescriptor[] vd) {
+        if (vd != null) {
+            for (int i = 0; i < vd.length; i++) {
+                Element descriptorElement = (Element) viewElement.appendChild(doc.createElement("descriptor"));
+                if (vd[i].getMimeType() != null) {
+                    descriptorElement.appendChild(doc.createTextNode(vd[i].getMimeType()));
+                }
+                descriptorElement.setAttributeNS(NAMESPACE, "id", vd[i].getId());
+            }
+        } else {
+            viewElement.appendChild(doc.createTextNode("No View Descriptors!"));
+        }
     }
 }
