@@ -361,22 +361,8 @@ public class YanelServlet extends HttpServlet {
             Environment environment = getEnvironment(request, response);
             res = getResource(request, response);
             if (res != null) {
-                    Element resourceElement = (Element) rootElement.appendChild(doc.createElement("resource"));
-                    ResourceConfiguration resConfig = res.getConfiguration();
-                    if (resConfig != null) {
-                        Element resConfigElement = (Element) resourceElement.appendChild(doc.createElementNS(NAMESPACE, "config"));
-                        resConfigElement.setAttributeNS(NAMESPACE, "rti-name", resConfig.getName());
-                        resConfigElement.setAttributeNS(NAMESPACE, "rti-namespace", resConfig.getNamespace());
-                    } else {
-                        Element noResConfigElement = (Element) resourceElement.appendChild(doc.createElementNS(NAMESPACE, "no-config"));
-                    }
+                Element resourceElement = getResourceMetaData(res, doc, rootElement);
 
-                    Element realmElement = (Element) resourceElement.appendChild(doc.createElementNS(NAMESPACE, "realm"));
-                    realmElement.setAttributeNS(NAMESPACE, "name", res.getRealm().getName());
-                    realmElement.setAttributeNS(NAMESPACE, "rid", res.getRealm().getID());
-                    realmElement.setAttributeNS(NAMESPACE, "prefix", res.getRealm().getMountPoint());
-                    Element identityManagerElement = (Element) realmElement.appendChild(doc.createElementNS(NAMESPACE, "identity-manager"));
-                    Element userManagerElement = (Element) identityManagerElement.appendChild(doc.createElementNS(NAMESPACE, "user-manager"));
 
                     if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                         if (log.isDebugEnabled()) log.debug("Resource is viewable V1");
@@ -2271,5 +2257,28 @@ public class YanelServlet extends HttpServlet {
             setYanelOutput(request, response, doc);
             return;
         }
+    }
+
+    /**
+     * Set/get meta data re resource
+     */
+    private Element getResourceMetaData(Resource res, Document doc, Element rootElement) {
+        Element resourceElement = (Element) rootElement.appendChild(doc.createElement("resource"));
+        ResourceConfiguration resConfig = res.getConfiguration();
+        if (resConfig != null) {
+            Element resConfigElement = (Element) resourceElement.appendChild(doc.createElementNS(NAMESPACE, "config"));
+            resConfigElement.setAttributeNS(NAMESPACE, "rti-name", resConfig.getName());
+            resConfigElement.setAttributeNS(NAMESPACE, "rti-namespace", resConfig.getNamespace());
+        } else {
+            Element noResConfigElement = (Element) resourceElement.appendChild(doc.createElementNS(NAMESPACE, "no-config"));
+        }
+
+        Element realmElement = (Element) resourceElement.appendChild(doc.createElementNS(NAMESPACE, "realm"));
+        realmElement.setAttributeNS(NAMESPACE, "name", res.getRealm().getName());
+        realmElement.setAttributeNS(NAMESPACE, "rid", res.getRealm().getID());
+        realmElement.setAttributeNS(NAMESPACE, "prefix", res.getRealm().getMountPoint());
+        Element identityManagerElement = (Element) realmElement.appendChild(doc.createElementNS(NAMESPACE, "identity-manager"));
+        Element userManagerElement = (Element) identityManagerElement.appendChild(doc.createElementNS(NAMESPACE, "user-manager"));
+        return resourceElement;
     }
 }
