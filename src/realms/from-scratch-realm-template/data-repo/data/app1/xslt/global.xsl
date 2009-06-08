@@ -23,8 +23,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
         <!-- See http://www.w3.org/TR/REC-CSS2/media.html -->
-        <link media="screen" type="text/css" href="{$yarep.back2realm}app/css/screen.css" rel="stylesheet"/>
-        <link media="print" type="text/css" href="{$yarep.back2realm}app/css/print.css" rel="stylesheet"/>
+        <link media="screen" type="text/css" href="{$yarep.back2realm}app1/css/screen.css" rel="stylesheet"/>
+        <link media="print" type="text/css" href="{$yarep.back2realm}app1/css/print.css" rel="stylesheet"/>
 
         <xsl:copy-of select="/xhtml:html/xhtml:head/*[name(.) != 'title']"/>
         <xsl:choose>
@@ -53,9 +53,9 @@ Content Language: <xsl:value-of select="$content-language"/>
 
 
           <div id="header">
-           <a href="{$yarep.back2realm}index.html"><img src="{$yarep.back2realm}app/images/yanel-logo.png" alt="yanel logo" id="header-logo"/></a>
+           <a href="{$yarep.back2realm}index.html"><img src="{$yarep.back2realm}app1/images/yanel-logo.png" alt="yanel logo" id="header-logo"/></a>
 <!--
-           <img src="{$yarep.back2realm}app/images/logo.gif"/>
+           <img src="{$yarep.back2realm}app1/images/logo.gif"/>
 -->
 <!--
             <xi:include href="yanelresource:/navigation/breadcrumb-{$content-language}.xml?path={$yanel.path}"/>
