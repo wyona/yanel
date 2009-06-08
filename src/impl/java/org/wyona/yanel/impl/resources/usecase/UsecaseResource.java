@@ -75,6 +75,7 @@ public class UsecaseResource extends BasicXMLResource {
             if (viewDescriptor.getType().equals(ConfigurableViewDescriptor.TYPE_JELLY)) {
                 InputStream xmlInputStream = getJellyXML(viewDescriptor);
                 view = getXMLView(viewID, xmlInputStream);
+            // TODO: Why is this commented? It would be useful in some cases if one could redirect directly to the original referer instead sending a DONE screen.
             /*} else if (viewDescriptor.getType().equals(ViewDescriptor.TYPE_REDIRECT)) {
                 String redirectURL = getRedirectURL(viewDescriptor);
                 UsecaseView view = new UsecaseView(viewDescriptor.getId(), UsecaseView.TYPE_REDIRECT);
