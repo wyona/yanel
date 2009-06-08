@@ -4,7 +4,7 @@
   <!-- TODO: Create/use a resource which selects the XSLT based on for example a session parameter, such that one can switch dynamically between app1 and app2 -->
   <yanel:rti name="file" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
-  <yanel:property name="src" value="/app/xslt/global.xsl"/>
+  <yanel:property name="src" value="/app1/xslt/global.xsl"/>
 <!--
   <yanel:property name="src" value="/app2/xslt/global.xsl"/>
 -->

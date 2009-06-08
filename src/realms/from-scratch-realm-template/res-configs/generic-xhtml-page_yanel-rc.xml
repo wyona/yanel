@@ -6,7 +6,7 @@
   <!-- NOTE: By calling the XSLT via another resource it allows to implement a dynamic layout switch :-) -->
   <yanel:property name="xslt" value="yanelresource:/my-global.xsl"/>
 <!--
-  <yanel:property name="xslt" value="/app/xslt/global.xsl"/>
+  <yanel:property name="xslt" value="/app1/xslt/global.xsl"/>
 -->
   <yanel:property name="mime-type" value="application/xhtml+xml"/>
 </yanel:resource-config>
