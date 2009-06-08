@@ -4,6 +4,6 @@
   <yanel:rti name="translation" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
   <yanel:property name="mime-type" value="application/xhtml+xml"/>
-  <yanel:property name="xslt" value="/app/xslt/translations.xsl"/>
+  <yanel:property name="xslt" value="/app1/xslt/translations.xsl"/>
   
 </yanel:resource-config>

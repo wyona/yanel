@@ -4,7 +4,7 @@
   <yanel:rti name="navigation" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
   <yanel:property name="mime-type" value="application/xhtml+xml"/>
-  <yanel:property name="xslt" value="/app/xslt/menu.xsl"/>
+  <yanel:property name="xslt" value="/app1/xslt/menu.xsl"/>
   
   <!-- based on the localization -->
   <yanel:custom-config xmlns:nr="http://www.wyona.org/yanel/resource/nav-resource/1.0">
