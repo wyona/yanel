@@ -5,25 +5,25 @@
      <views>
       <view id="default" type="jelly">
         <template>rthtdocs:/xinha.jelly</template>
-        <xslt>/app/xslt/global.xsl</xslt> <!-- Optional -->
+        <xslt>/app1/xslt/global.xsl</xslt> <!-- Optional -->
         <mime-type>text/html</mime-type>
       </view>
       <view id="fix-wellformness" type="jelly">
         <template>rthtdocs:/xinha-fix.jelly</template>
-        <xslt>/app/xslt/global.xsl</xslt>
+        <xslt>/app1/xslt/global.xsl</xslt>
         <mime-type>text/html</mime-type>
       </view>
       <view id="done" type="jelly">
         <template>rthtdocs:/xinha-status.jelly</template>
-        <xslt>/app/xslt/global.xsl</xslt>
+        <xslt>/app1/xslt/global.xsl</xslt>
       </view>
       <view id="cancel" type="jelly">
         <template>rthtdocs:/xinha-status.jelly</template>
-        <xslt>/app/xslt/global.xsl</xslt>
+        <xslt>/app1/xslt/global.xsl</xslt>
       </view>
       <view id="error" type="jelly">
         <template>rthtdocs:/xinha-status.jelly</template>
-        <xslt>/app/xslt/global.xsl</xslt>
+        <xslt>/app1/xslt/global.xsl</xslt>
       </view>
     </views>
   </yanel:custom-config>
