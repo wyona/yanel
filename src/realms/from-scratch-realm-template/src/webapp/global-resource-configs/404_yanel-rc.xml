@@ -6,8 +6,12 @@
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
       <view id="default">
-        <xslt>/app/xslt/404.xsl</xslt>
-        <xslt>/app/xslt/global.xsl</xslt>
+        <!-- TODO: Also retrieve 404.xsl via yanelresource protocol -->
+        <xslt>/app1/xslt/404.xsl</xslt>
+        <xslt>yanelresource:/my-global.xsl</xslt>
+<!--
+        <xslt>/app1/xslt/global.xsl</xslt>
+-->
         <mime-type>text/html</mime-type>
 <!--
         <mime-type>application/xml</mime-type>
