@@ -26,6 +26,7 @@
         <link media="screen" type="text/css" href="{$yarep.back2realm}app1/css/screen.css" rel="stylesheet"/>
         <link media="print" type="text/css" href="{$yarep.back2realm}app1/css/print.css" rel="stylesheet"/>
 
+        <!-- The following copy statement is copying for example header stuff from the content source, but also in the case of the TinyMCE or Xinha resource the important javascript and CSS links! -->
         <xsl:copy-of select="/xhtml:html/xhtml:head/*[name(.) != 'title']"/>
         <xsl:choose>
           <xsl:when test="/xhtml:html/xhtml:head/xhtml:link/@rel='neutron-introspection'">
