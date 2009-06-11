@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<resource-types xmlns="http://www.wyona.org/yanel/1.0">
+
+  <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
+
+  <resource-type src="@REALM_SRC_DIR@/res-types/layoutselector/" compile="true"/>
+</resource-types>
