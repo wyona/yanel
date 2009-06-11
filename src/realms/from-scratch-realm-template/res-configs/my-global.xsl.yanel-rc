@@ -1,12 +1,10 @@
 <?xml version="1.0"?>
 
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
-  <!-- TODO: Create/use a resource which selects the XSLT based on for example a session parameter, such that one can switch dynamically between app1 and app2 -->
-  <yanel:rti name="file" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+  <yanel:rti name="layoutselector" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
-  <yanel:property name="src" value="/app1/xslt/global.xsl"/>
-<!--
-  <yanel:property name="src" value="/app2/xslt/global.xsl"/>
--->
+  <yanel:property name="default-layout-version" value="1"/>
+  <yanel:property name="layout_name" value="welcome"/>
+  <yanel:property name="src" value="/app{$xslt-version}/xslt/global.xsl"/>
   <yanel:property name="mime-type" value="application/xml"/>
 </yanel:resource-config>
