@@ -120,6 +120,8 @@ public class PolicyManagerResource extends BasicXMLResource {
                     String identitiesURL = backToRealm + getPath().substring(1) + "?yanel.policy=update&amp;get=identities";
                     String policyURL = backToRealm + getPath().substring(1) + "?yanel.policy=update&amp;get=policy";
                     String saveURL = backToRealm + getPath().substring(1) + "?yanel.policy=update&amp;post=policy"; // This doesn't seem to work with all browsers!
+
+                    // TODO: Either make this configurable (for example via query string) or use the javascript back of the browser!
                     String cancelURL = backToRealm + getPath().substring(1);
 
                     sb.append("<?xml version=\"1.0\"?>");
