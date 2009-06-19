@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Wyona
+ * Copyright 2009 Wyona
  */
 
 package org.wyona.yanel.impl.resources.layoutselector;
@@ -47,19 +47,18 @@ public class LayoutSelector extends Resource implements ViewableV2 {
     private static Logger log = Logger.getLogger(LayoutSelector.class);
     private String uploadMimeType; 
     private String nodeVersionChecker ="";
-    
 
     /**
      * Constructor
-     * 
      */
     public LayoutSelector() {
     	try {
-    		nodeVersionChecker =  getRealm().getName() + ":" + getResourceConfigProperty("layout_name") + ":xslt-version";
-    	} catch(Exception ex) {
-    		log.error("error initializing template version checker session string");
+            nodeVersionChecker =  getRealm().getName() + ":" + getResourceConfigProperty("layout_name") + ":xslt-version";
+    	} catch(Exception e) {
+            log.error("error initializing template version checker session string");
+            log.error(e, e);
     	}
-    };
+    }
 
     /**
      *
