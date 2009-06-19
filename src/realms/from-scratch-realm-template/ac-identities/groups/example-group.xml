@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<group id="example-group" xmlns="http://www.wyona.org/security/1.0">
+  <name>Example Group</name>
+  <members>
+    <member id="lenya" type="user"/>
+    <member id="example-subgroup" type="group"/>
+  </members>
+</group>
