@@ -10,8 +10,9 @@ layout selector
 </description>
 
 <rtd>
-<!--
-  <property name="foo" default-value="bar"/>
--->
+  <property name="default-layout-version"/>
+  <property name="layout_name"/>
+  <property name="src"/>
+  <property name="mime-type"/>
 </rtd>
 </resource>
