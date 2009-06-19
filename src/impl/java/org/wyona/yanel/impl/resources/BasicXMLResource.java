@@ -254,13 +254,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             for (int i = 0; i < xsltPaths.length; i++) {
                 // TODO: Use resolver
                 if (xsltPaths[i].startsWith("file:")) {
-                    log.warn("Scheme: file (" + xsltPaths[i] + ")");
+                    log.info("Scheme: file (" + xsltPaths[i] + ")");
                     xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(new java.io.FileInputStream(xsltPaths[i].substring(5))));
                 } else if(xsltPaths[i].startsWith("rthtdocs:")) {
-                    log.warn("Scheme: rthtdocs (" + xsltPaths[i] + ")");
+                    log.info("Scheme: rthtdocs (" + xsltPaths[i] + ")");
                     xsltHandlers[i] = tf.newTransformerHandler(new org.wyona.yanel.core.source.RTHtdocsResolver(this).resolve(xsltPaths[i], null));
                 } else if(xsltPaths[i].startsWith("yanelresource:")) {
-                    log.warn("Scheme: yanelresource (" + xsltPaths[i] + ")");
+                    log.info("Scheme: yanelresource (" + xsltPaths[i] + ")");
                     xsltHandlers[i] = tf.newTransformerHandler(new org.wyona.yanel.core.source.ResourceResolver(this).resolve(xsltPaths[i], null));
                 } else {
                     if (xsltPaths[i].indexOf(":/") > 0) {
