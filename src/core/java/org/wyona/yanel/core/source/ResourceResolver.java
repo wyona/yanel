@@ -2,7 +2,7 @@ package org.wyona.yanel.core.source;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.wyona.yanel.core.Constants;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
@@ -31,7 +31,7 @@ import javax.xml.transform.stream.StreamSource;
  */
 public class ResourceResolver implements URIResolver {
 
-    private static Category log = Category.getInstance(ResourceResolver.class);
+    private static Logger log = Logger.getLogger(ResourceResolver.class);
     
     private static final String SCHEME = "yanelresource";
 
@@ -51,7 +51,7 @@ public class ResourceResolver implements URIResolver {
         }
         try {
             uri = uri.substring(prefix.length());
-            HashMap parameters = readParameters(uri);
+            HashMap<String, String> parameters = readParameters(uri);
             if (uri.indexOf("?")>-1) {
                 uri = uri.substring(0, uri.indexOf("?"));
             }
@@ -62,7 +62,7 @@ public class ResourceResolver implements URIResolver {
             targetResource.setParameters(parameters);
             
             // Check which if there is a view requested for the resource
-            String viewid = (String)parameters.get(Constants.Request.YANEL_RESOURCE_VIEWID);
+            String viewid = parameters.get(Constants.Request.YANEL_RESOURCE_VIEWID);
             
             if (ResourceAttributeHelper.hasAttributeImplemented(targetResource, "Viewable", "1")) {
                 String viewV1path = resource.getRealm().getMountPoint() + uri.substring(1);
@@ -88,8 +88,8 @@ public class ResourceResolver implements URIResolver {
         }
     }
     
-    protected HashMap readParameters(String uri) {
-        HashMap parameters = new HashMap();
+    protected HashMap<String, String> readParameters(String uri) {
+        HashMap<String, String> parameters = new HashMap<String, String>();
         int queryIndex = uri.indexOf("?"); 
         if (queryIndex > -1 && queryIndex < uri.length()) {
             String query = uri.substring(uri.indexOf("?") + 1);
@@ -97,8 +97,10 @@ public class ResourceResolver implements URIResolver {
             for (int i=0; i<paramPairs.length; i++) {
                 String[] tokens = paramPairs[i].split("=");
                 String name = tokens[0];
-                // TODO: accept empty value
-                String value = tokens[1];
+                String value = "";
+                if (tokens.length > 1) {
+                    value = tokens[1];
+                }
                 if (log.isDebugEnabled()) {
                     log.debug("adding parameter: name: " + name + " value: " + value);
                 }
