@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src/core/java"/>
 	<classpathentry kind="src" path="src/impl/java"/>
+	<classpathentry kind="src" path="src/neutron/java"/>
 	<classpathentry kind="src" path="src/webapp/src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="build/classes"/>
