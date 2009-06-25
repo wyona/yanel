@@ -9,6 +9,9 @@
 <!--
         <xslt>/xslt/namespaces.xsl</xslt>
 -->
+<!--
+        <xslt>/xslt/namespaces2.xsl</xslt>
+-->
         <mime-type>application/xml</mime-type>
         <serializer key="XML"/>
       </view>
