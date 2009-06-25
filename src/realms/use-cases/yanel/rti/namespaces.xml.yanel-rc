@@ -6,9 +6,7 @@
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
       <view id="default">
-<!--
         <xslt>/xslt/namespaces.xsl</xslt>
--->
 <!--
         <xslt>/xslt/namespaces2.xsl</xslt>
 -->
