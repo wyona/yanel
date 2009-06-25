@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="xml" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:custom-config>
+    <views xmlns="http://www.wyona.org/yanel/rti/1.0">
+      <view id="default">
+<!--
+        <xslt>/app1/xslt/hugo.xsl</xslt>
+-->
+        <mime-type>application/xml</mime-type>
+        <serializer key="XML"/>
+      </view>
+    </views>
+  </yanel:custom-config>
+</yanel:resource-config>

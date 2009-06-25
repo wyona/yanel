@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+
+<!--
+<hugo/>
+-->
+<foo:hugo xmlns:foo="http://foo.bar" foo:dummy="susi"/>
