@@ -17,9 +17,10 @@
   <xsl:param name="content-language" select="'CONTENT_LANGUAGE_IS_NULL'"/>
   
   <xsl:template match="/">
-    <susi:jesus xmlns:susi="http://susi">
-    <xsl:copy-of select="*"/>
-    </susi:jesus>
+    <yanel:root xmlns:yanel="http://www.wyona.org/yanel/1.0">
+      <xsl:copy-of select="*"/>
+      <yanel:hello>world</yanel:hello>
+    </yanel:root>
   </xsl:template>
   
 </xsl:stylesheet>
