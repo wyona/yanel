@@ -45,6 +45,9 @@ public class XMLSerializer extends AbstractSerializer {
         }
     }
 
+    /**
+     * Parse start element
+     */
     public void startElement(String namespaceURI, String localName, String qName, Attributes attrs) throws SAXException {
         handlePendingElement();
         String eName = ("".equals(qName)) ? localName : qName;
@@ -53,6 +56,9 @@ public class XMLSerializer extends AbstractSerializer {
             log.debug("element localName : " + localName);
             log.debug("element qName     : " + qName);
             log.debug("element nsURI     : " + namespaceURI);
+            for (int i = 0; i < attrs.getLength(); i++) {
+                log.debug("Attribute     : " + attrs.getQName(i) + ", " + attrs.getValue(i));
+            }
         }
         
         StringBuffer element = new StringBuffer();
