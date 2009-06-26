@@ -52,8 +52,6 @@ public class PolicyViewer {
                 if (contentItemId != null) sb.append("#" + contentItemId);
                 sb.append("</i>:</p>");
 
-                //sb.append("<p>(Policy Repository: "+pm.getPoliciesRepository().getName()+", "+pm.getPoliciesRepository().getConfigFile()+")</p>");
-
                 sb.append(getOrderByLink(orderedBy, showParents, showTabs));
                 sb.append("<p><table border=\"1\">");
                 sb.append("<tr><td>Path</td>" + getSplittedPath(pm, path, contentItemId) + "</tr>");
