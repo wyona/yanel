@@ -40,7 +40,7 @@
             Username:<xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-default"><input type="text" name="yanel.login.username" value="{/yanel:yanel-auth-screen/yanel:login-default/@yanel:username}"/></xsl:when><xsl:otherwise><input type="text" name="yanel.login.username"/></xsl:otherwise></xsl:choose>
             Password:<input type="password" name="yanel.login.password"/>
             <xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-default"><input type="checkbox" name="remember-my-login-name" checked="checked"/></xsl:when><xsl:otherwise><input type="checkbox" name="remember-my-login-name"/></xsl:otherwise></xsl:choose> Remember my login name (for 1 day (<a href="">More info</a>). Uncheck if on a shared computer!)
-            <input type="submit" value="Login"/>
+            <input type="submit" value="Login" name="regular-login"/>
           </form>
         <xsl:apply-templates select="/yanel:yanel-auth-screen/yanel:ssl"/>
 	<p>
@@ -48,7 +48,7 @@
 	<form method="POST">
           <xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-openid"><input type="text" name="yanel.login.openid" value="{/yanel:yanel-auth-screen/yanel:login-openid/@yanel:openid}"/></xsl:when><xsl:otherwise><input type="text" name="yanel.login.openid"/></xsl:otherwise></xsl:choose>
           <xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-openid"><input type="checkbox" name="remember-my-login-name" checked="checked"/></xsl:when><xsl:otherwise><input type="checkbox" name="remember-my-login-name"/></xsl:otherwise></xsl:choose> Remember my OpenID (for 1 day (<a href="">More info</a>). Uncheck if on a shared computer!)
-          <input type="submit" value="Login"/>
+          <input type="submit" value="Login" name="openid-login"/>
 	</form>
 	(For example: username.wordpress.com)
 	</p>
