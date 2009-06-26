@@ -67,8 +67,6 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
 
     protected static final String XMLNS_ATTR = "xmlns";
 
-    protected static final String POLICIES_SUFFIX = ".policy";
-
     protected static final String XMLNS = "http://www.wyona.org/security/1.0";
 
     protected static final String MIME_TYPE = "application/xhtml+xml; charset=UTF-8";
@@ -602,9 +600,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
             UserManager um = getRealm().getIdentityManager().getUserManager();
             um.removeUser(userId);
 
-            String userScreenPolicyPath = getPath() + POLICIES_SUFFIX;
-            Repository policiesRepo = getRealm().getPolicyManager().getPoliciesRepository();
-            policiesRepo.getNode(userScreenPolicyPath).delete();
+            getRealm().getPolicyManager().removePolicy(getPath());
 
             Repository rtiRepo = getRealm().getRTIRepository();
             String userScreenRCPath = PathUtil.getRCPath(getPath());
