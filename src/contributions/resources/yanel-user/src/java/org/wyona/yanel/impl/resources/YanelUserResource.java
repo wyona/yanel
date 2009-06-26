@@ -540,26 +540,6 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
     }
 
     /**
-     * Saves the user data access policies to the policies repository
-     */
-/*
-    private void saveUserPolicy(String userId) {
-        Configuration policyConfig = createPolicyConfiguration(userId);
-        DefaultConfigurationSerializer serializer = new DefaultConfigurationSerializer();
-
-        String policyPath = getPath() + POLICIES_SUFFIX;
-
-        try {
-            Repository policiesRepository = getRealm().getPolicyManager().getPoliciesRepository();
-            serializer.serialize(policiesRepository.getNode(policyPath).getOutputStream(),
-                    policyConfig);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-    }
-*/
-
-    /**
      * Validate the supplied user data. userName is optional
      */
     private boolean validateNewUserData(HttpServletRequest request)
