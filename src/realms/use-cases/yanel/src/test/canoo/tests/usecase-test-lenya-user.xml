@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE project SYSTEM "../dtd/Project.dtd">
 
-<project name="user-alice-test" default="test">
+<project name="user-lenya-test" default="test">
 
   <import file="../definitions.xml"/>
 

@@ -4,8 +4,7 @@ and therefore made be available for the tests (here the macro <fillParticipantDa
 -->
 <macrodef name="logout" description="Logout">
   <sequential>
-    <invoke description="Get the page: Logout from realm" 
-        url="${realm.prefix}?yanel.usecase=logout"/>
+    <invoke description="Get the page: Logout from realm" url="${realm.prefix}admin.html?yanel.usecase=logout"/>
     <verifyText description="Verify that text is contained in the page" text="Login"/>
   </sequential>
 </macrodef>

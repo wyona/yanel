@@ -5,6 +5,7 @@
     <!-- note: the order of the tests matters because some tests depend on others -->
 
     <ant antfile="exists-homepage.xml"/>
+    <ant antfile="usecase-test-login.xml"/>
 <!--
     <ant antfile="usecase-test-create-realm-from-scratch.xml"/>
 -->
