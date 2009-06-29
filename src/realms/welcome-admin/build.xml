@@ -24,7 +24,7 @@
   </target>
 
   <target name="compile" depends="init">
-    <echo>Compile java sources of Yanel website realm!</echo>
+    <echo>Compile java sources of Yanel welcome and admin realm!</echo>
 
     <mkdir dir="${realm.classes.dir}"/>
     <javac srcdir="${realm.java.dir}" destdir="${realm.classes.dir}"
