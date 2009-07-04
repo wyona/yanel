@@ -110,29 +110,37 @@ public class ResourceManager {
 
     /**
      * Creates a new resource object in the given realm and with the given path.
+     * The chain of responsibility is as follows: One-to-one mapping (RC and then deprecated RTI), RC map, file/node resource type
      *
      * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
      */
     public Resource getResource(Environment environment, Realm realm, String path) throws Exception {
+        // Check first if a one-to-one mapping exists
         if (realm.getRTIRepository().existsNode(PathUtil.getRCPath(path))) {
             ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getNode(PathUtil.getRCPath(path)));
             if (rc != null) return getResource(environment, realm, path, rc);
         }
 
+        // Fallback to deprecated RTI (one-to-one mapping)
         if (realm.getRTIRepository().existsNode(PathUtil.getRTIPath(path))) {
-            // Fallback to deprecated RTI
             log.warn("DEPRECATED: RTI should be replaced by ResourceConfiguration: " + realm + ", " + path);
             ResourceTypeIdentifier rti = getResourceTypeIdentifier(realm, path);
             ResourceTypeDefinition rtd = rtRegistry.getResourceTypeDefinition(rti.getUniversalName());
             return getResource(environment, realm, path, rtd, rti);
         } 
 
+        // Check on resource configuration map
         String rcPath = ResourceConfigurationMap.getRCPath(realm, path);
-        if (rcPath != null && realm.getRTIRepository().existsNode(rcPath)) {
-            ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getNode(ResourceConfigurationMap.getRCPath(realm, path)));
-            if (rc != null) return getResource(environment, realm, path, rc);
+        if (rcPath != null) {
+            if (realm.getRTIRepository().existsNode(rcPath)) {
+                ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getNode(ResourceConfigurationMap.getRCPath(realm, path)));
+                if (rc != null) return getResource(environment, realm, path, rc);
+            } else {
+                throw new Exception("Request did match within resource configuration map of realm '" + realm.getName() + "', but no such resource type configuration node exist: " + rcPath);
+            }
         } 
         
+        // Fallback to file/node resource
         return getResource(environment, realm, path, new ResourceConfiguration("file", "http://www.wyona.org/yanel/resource/1.0", null));
         
     }
