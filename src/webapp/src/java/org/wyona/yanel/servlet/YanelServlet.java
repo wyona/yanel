@@ -851,7 +851,7 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Resolve resource for a specific request
      */
     private Resource getResource(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
