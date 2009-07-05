@@ -17,14 +17,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  *
  */
 public class DefaultMenu extends Menu {
 
-    private static Category log = Category.getInstance(DefaultMenu.class);
+    private static Logger log = Logger.getLogger(DefaultMenu.class);
 
     /**
      * Get toolbar menus
