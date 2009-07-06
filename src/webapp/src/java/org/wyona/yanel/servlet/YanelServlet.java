@@ -2109,7 +2109,8 @@ public class YanelServlet extends HttpServlet {
         } else {
             log.warn("Delete has not been confirmed by client yet!");
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
-            StringBuffer sb = new StringBuffer("<html><body>Do you really want to delete this page? <a href=\"?" + YANEL_RESOURCE_USECASE + "=delete&confirmed\">YES</a>, <a href=\"\">no</a></body></html>");
+            response.setContentType("text/html" + "; charset=" + "UTF-8");
+            StringBuffer sb = new StringBuffer("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Do you really want to delete this page? <a href=\"?" + YANEL_RESOURCE_USECASE + "=delete&confirmed\">YES</a>, <a href=\"\">no</a></body></html>");
             PrintWriter w = response.getWriter();
             w.print(sb);
             return;
