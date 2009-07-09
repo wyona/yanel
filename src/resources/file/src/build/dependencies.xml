@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="wiki-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="node-resource-type-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
   <target name="dependencies" description="Dependencies">
     <!-- INFO: http://maven.apache.org/ant-tasks.html -->
