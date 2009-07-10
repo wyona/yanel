@@ -6,9 +6,7 @@
   <rti>yanel/config/rti-repository.xml</rti>
   <data>yanel/config/data-repository.xml</data>
   <ac-policies class="org.wyona.security.impl.PolicyManagerFactoryImplVersion2">yanel/config/ac-policies-repository.xml</ac-policies>
-<!--
-  <ac-identities/>
--->
+  <ac-identities>yanel/config/ac-identities-repository.xml</ac-identities>
 
   <menu class="org.wyona.yanel.servlet.menu.impl.WelcomeRealmMenu"/>
 </realm-config>
