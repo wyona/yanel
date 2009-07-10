@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<repository class="org.wyona.yarep.impl.repo.vfs.VirtualFileSystemRepository">
+  <name>Yanel Welcome and Admin Access Control Identities</name>
+
+  <content src="../ac-identities/data"/>
+  <meta src="../ac-identities/yarep-meta"/>
+  <search-index src="../ac-identities/search-index"/>
+</repository>
