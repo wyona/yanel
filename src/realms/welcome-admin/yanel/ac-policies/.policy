@@ -6,19 +6,14 @@
     <world permission="true"/>
   </usecase>
 
-  <usecase id="write">
-    <world permission="true"/>
-  </usecase>
-
   <usecase id="toolbar">
-    <world permission="true"/>
+    <user id="lenya" permission="true"/>
   </usecase>
 
   <usecase id="policy.read">
-    <world permission="true"/>
+    <user id="lenya" permission="true"/>
   </usecase>
 
-<!--
   <usecase id="open">
     <user id="lenya" permission="true"/>
   </usecase>
@@ -30,6 +25,5 @@
   <usecase id="create">
     <user id="lenya" permission="true"/>
   </usecase>
--->
 
 </policy>
