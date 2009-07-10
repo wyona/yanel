@@ -90,12 +90,18 @@ public class GlobalDataWebTest extends AbstractHtmlUnitTest {
         //TODO: test 304 handling
     }
 
+    /**
+     * Test globally available htdocs (located within src/webapp/htdocs/ or rather local/apache-tomcat-5.5.20/webapps/yanel/htdocs/)
+     */
     public void testHtdocsPages() throws Exception {
-        loadReservedHtmlPage("help.html"); //XXX: Is this page really used anymore? Most of the links here are broken...
-        /* XXX: should be not null: */ assertNull(response.getResponseHeaderValue("Last-Modified"));
+        loadReservedHtmlPage("help.html");
+        // TODO: should be not null?!
+        assertNull(response.getResponseHeaderValue("Last-Modified"));
         assertTitleContains("Help");
-        //assertTitleContains("Yanel");
-        clickLink("../index.html?yanel.toolbar=on");
+
+        loadReservedErrorPage("../index.html?yanel.toolbar=on", 401);
+        //clickLink("../index.html?yanel.toolbar=on");
+        //assertTitleContains("Login");
 
         loadReservedResource("yanel_toolbar_logo.png");
     }
