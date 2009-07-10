@@ -30,8 +30,17 @@
         <img src="img/yanel.png" alt="yanel" id="yanellogo"/>
         <img src="img/everything_is_content.png" alt="everything is content" id="everythingiscontent"/>
         <h1>Welcome to Yanel</h1>
-        <p> If you can see this, it means that the installation of Yanel
-          software on this system was successful. Thanks for using Yanel!</p>
+        <p>
+        If you can see this, it means that the installation of Yanel software on this system was successful. Thanks for using Yanel!
+        </p>
+
+        <p>
+        Certain links below are for security reasons protected. In order to login use the Username <b>lenya</b> and the Password <b>levi</b>.
+        <br/>
+        <br/>
+        <b>IMPORTANT:</b> If you are running Yanel within a publicly accessible environment, then please make sure to change at least the password of the user <a href="yanel/users/lenya.html">lenya</a>. More information on how to further <a href="yanel-website/en/documentation/security/overview.html">protect</a> this realm or even <a href="yanel-website/en/documentation/how-to-add-a-new-realm.html">remove</a> it completely can be found within the Yanel <a href="yanel-website/en/documentation/index.html">documentation</a>.
+        </p>
+
         <h2>Getting Started</h2>
         <p>
           <ul>
