@@ -829,8 +829,9 @@ public class YanelServlet extends HttpServlet {
                     log.debug("Resource has been deleted: " + res);
 
                     response.setStatus(HttpServletResponse.SC_OK);
+                    response.setContentType("text/html" + "; charset=" + "UTF-8");
                     String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(res.getPath());
-                    StringBuffer sb = new StringBuffer("<html><body>Page has been deleted! <a href=\"\">Check</a> or return to <a href=\"" + backToRealm + "\">Homepage</a>.</body></html>");
+                    StringBuffer sb = new StringBuffer("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Page has been deleted! <a href=\"\">Check</a> or return to <a href=\"" + backToRealm + "\">Homepage</a>.</body></html>");
                     PrintWriter w = response.getWriter();
                     w.print(sb);
                     return;
