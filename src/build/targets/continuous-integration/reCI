@@ -1,0 +1,63 @@
+#!/bin/sh
+
+if [ $# -ne 5 ]; then
+	echo "Usage: CI <HTTP port> <HTTPS port> <SHUTDOWN port> <AJP port> <Canoo webtest path>"
+	exit 2
+fi
+set -ex
+# NOTE: Each project should have different ports and can have a different Canoo version and hence these properties should be configurable
+HTTP_PORT=$1
+HTTPS_PORT=$2
+SHUTDOWN_PORT=$3
+AJP_PORT=$4
+WEBTEST_HOME_DIR=$5
+#WEBTEST_HOME_DIR=/home/michi/local/canoo-DEV_R_1721
+
+
+TOMCAT_HOME=../../local/apache-tomcat-5.5.20 #NOTE: Relative to tools/apache-tomcat/ directory
+
+YANEL_SOURCE_HOME=`dirname $0`/../../../..
+cd $YANEL_SOURCE_HOME
+
+./yanel.sh stop # this should always return 0 even when no server was already running (see script's end comment)
+
+./build.sh clean-all -DanswerDeleteLocalBuildProperties=yes -DanswerDeleteLocalConfigDir=NO -DanswerCleanTomcatClusterNode1=yes
+#./build.sh clean -Dforce-clean=true
+#TODO: use our own Maven local repo instead of the user's!
+
+./yanel.sh configure -Danswer=NO \
+ -DanswerReconfigureTomcat1=no \
+ -DanswerAskForCustomTomcatPath=NO
+#FIXME: we do not reconfigure Tomcat for SSL because Canoo tests fail with SSL activated! :/
+
+#BUILD_OPTS="-Dtomcat1.ssl.port=$HTTPS_PORT -Dtomcat1.http.port=$HTTP_PORT"
+BUILD_OPTS=
+#FIXME: we do not configure the ports used for switching back and forth to HTTPS from HTTP because Canoo tests fail with SSL activated! :/
+
+#TODO: delete then recreate a few resources from scratch:
+#./build.sh new-resource-type ...
+
+./build.sh $BUILD_OPTS -Danswer=YES #XXX HACK: endorsed lib management always uses the same variable to ask for user input
+
+# Patch Tomcat ports:
+tools/apache-ant/bin/ant -f tools/apache-tomcat/build.xml configure-host -Dtomcat.home.dir=$TOMCAT_HOME -Dhost=localhost -Dhost.HTTP.port=$HTTP_PORT -Dhost.HTTPS.port=$HTTPS_PORT -Dhost.SHUTDOWN.port=$SHUTDOWN_PORT -Dhost.AJP.port=$AJP_PORT
+
+./yanel.sh start
+
+cat > src/test/htmlunit/local.htmlunit-properties.xml <<EOF #FIXME: do this in a portable way
+<config>
+  <htmlunit>
+    <debugLevel>4</debugLevel>
+    <baseUrl>http://localhost:$HTTP_PORT/yanel/</baseUrl>
+    <reservedPrefix>yanel/</reservedPrefix>
+    <language>en</language>
+  </htmlunit>
+</config>
+EOF
+
+# Also see src/build/targets/test.xml
+./build.sh test -Dwebtest.home.dir=$WEBTEST_HOME_DIR -Dwebtest.config.host=localhost -Dwebtest.config.protocol=http -Dwebtest.config.port=$HTTP_PORT -Dheadless=
+#TODO: test the resources from scratch
+
+# Yanel is always stopped at the beginning of this script, so we do not need to do it here:
+#  this allows anyone to play with the servers between jobs.
