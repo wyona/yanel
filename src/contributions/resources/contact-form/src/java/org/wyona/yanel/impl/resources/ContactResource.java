@@ -20,8 +20,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import javax.servlet.http.HttpServletRequest;
@@ -32,13 +30,12 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
-import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yarep.core.NoSuchNodeException;
@@ -53,18 +50,16 @@ import org.wyona.yanel.core.util.PathUtil;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
-;
 
-/**
- *
- */
-public class ContactResource extends Resource implements ViewableV1, CreatableV2 {
+
+//XXX: This resource-type should rather be implemented with BasicXMLResource really...
+public class ContactResource extends Resource implements ViewableV1 {
 
     private static final String SMTP_HOST = "smtpHost";
     private static final String SMTP_PORT = "smtpPort";
     private static final String TO = "to";
     private static final String SUBJECT = "subject";
-    private static Category log = Category.getInstance(ContactResource.class);
+    private static Logger log = Logger.getLogger(ContactResource.class);
     private String smtpHost = "";
     private int smtpPort = 25;
     private String to = "";
@@ -72,36 +67,20 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
     private String defaultLanguage = "en";
     private String messageBundle = "contact-form";
 
-    private HashMap properties = new HashMap();
     private RepoPath rp = null;
     private Path path = null;
     private String language = null;
 
     private String defaultEmailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
 
-    /**
-     *
-     */
-    public ContactResource() {
-    }
-
-    /**
-     *
-     */
     public ViewDescriptor[] getViewDescriptors() {
         return null;
     }
 
-    /**
-     *
-     */
     public View getView(Path path, String viewId) {
         return null;
     }
 
-    /**
-     *
-     */
     public View getView(HttpServletRequest request, String viewId)
             throws Exception {
         path = new Path(request.getServletPath());
@@ -118,7 +97,6 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             language = defaultLanguage;
         }
         File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "contact-form.xml");
-        try {
 
             // create reader:
             XMLReader xmlReader = XMLReaderFactory.createXMLReader();
@@ -131,12 +109,7 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             TransformerHandler xsltHandler1 = tf.newTransformerHandler(getBodyXSLTStreamSource());
             Transformer transformer = xsltHandler1.getTransformer();
 
-            boolean submit = false;
-            Enumeration enumeration = request.getParameterNames();
-            while(enumeration.hasMoreElements()){
-                if(enumeration.nextElement().toString().equals("email"))
-                    submit = true;
-            }
+            boolean submit = request.getParameter("email") != null;
             if(submit) {
                 if (request.getParameter("spamblock_hidden") == null || request.getParameter("spamblock_input") == null) {
                     throw new Exception("there is no spamblock implemented in the form.");
@@ -194,80 +167,10 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
             defaultView.setMimeType(getMimeType());
             defaultView.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
             return defaultView;
-
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw e;
-        }
     }
 
-    /**
-    *
-    */
-   public String getPropertyType(String propertyName){
-       //TODO not implemented yet
-       return null;
-   }
-
-   /**
-    * Creates the resource
-    */
-   public void create(HttpServletRequest request){
-       log.warn("Not implemented yet!");
-   }
-
-   /**
-    * Creates RTI properties
-    */
-   public HashMap createRTIProperties(HttpServletRequest request){
-       HashMap map = new HashMap();
-       // TODO: Do not hardcode xslt ...
-       map.put("#xslt", "/xslt/global.xsl");
-       // TODO: Make mime-type configurable (depending on global XSLT) ...
-       map.put("mime-type", "application/xhtml+xml");
-       map.put("smtpHost",request.getParameter("rp.smtpHost"));
-       map.put("smtpPort",request.getParameter("rp.smtpPort"));
-       map.put("to",request.getParameter("rp.to"));
-       map.put("subject", request.getParameter("rp.subject"));
-
-       return map;
-   }
-
-   public String getCreateName(String suggestedName) {
-       return suggestedName;
-   }
-   /**
-     *
-     */
-   public String[] getPropertyNames() {
-       String[] propertyNames = (String[])properties.keySet().toArray(new String[properties.keySet().size()]);
-       return propertyNames;
-   }
-
-   /**
-    *
-    */
-   public void setProperty(String name, Object value){
-       properties.put(name, value);
-   }
-
-   /**
-    *
-    */
-   public Object getProperty(String name){
-       Object property = properties.get(name);
-       return property;
-   }
-
-
-
-    /**
-     *
-     * @param request
-     * @param transformer
-     */
     private void sendMail(Transformer transformer) throws Exception {
-        String email = getRequest().getParameter("email");
+        String email = getEnvironment().getRequest().getParameter("email");
         if(email == null || ("").equals(email)) {
             transformer.setParameter("error", "emailNotSet");
         } else if(!validateEmail(email)) {
@@ -294,11 +197,11 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
 
             String content = "";
             if (contact.getCompany() != null) content = content + "Company: " + contact.getCompany() + "\n";
-	    if (contact.getFirstName() != null) content = content + "Firstname: " + contact.getFirstName() + "\n";
-	    if (contact.getLastName() != null) content = content + "Lastname: " + contact.getLastName() + "\n";
-	    if (contact.getAddress() != null) content = content + "Address: " + contact.getAddress() + "\n";
-	    if (contact.getCity() != null) content = content + "City: " + contact.getCity() + "\n";
-	    if (contact.getEmail() != null) content = content + "E-Mail: " + contact.getEmail() + "\n" + "\n";
+            if (contact.getFirstName() != null) content = content + "Firstname: " + contact.getFirstName() + "\n";
+            if (contact.getLastName() != null) content = content + "Lastname: " + contact.getLastName() + "\n";
+            if (contact.getAddress() != null) content = content + "Address: " + contact.getAddress() + "\n";
+            if (contact.getCity() != null) content = content + "City: " + contact.getCity() + "\n";
+            if (contact.getEmail() != null) content = content + "E-Mail: " + contact.getEmail() + "\n" + "\n";
             if (contact.message != null) content = content + "Message:\n" + contact.message;
 
             if(smtpHost != null && smtpPort != 0 && to != null) {
@@ -367,17 +270,10 @@ public class ContactResource extends Resource implements ViewableV1, CreatableV2
         return "application/xhtml+xml";
     }
 
-   /**
-    *
-    * @return
-    */
    protected RepositoryFactory getRepositoryFactory() {
        return yanel.getRepositoryFactory(org.wyona.yanel.core.map.Realm.DEFAULT_REPOSITORY_FACTORY_BEAN_ID);
    }
 
-    /**
-     *
-     */
     private String getEmailRegEx() throws Exception {
         if (getResourceConfigProperty("email-validation-regex") != null) return getResourceConfigProperty("email-validation-regex");
         return defaultEmailRegEx;
