@@ -173,8 +173,7 @@ class YanelHTMLUI {
      * @param view
      * @throws Exception
      */
-    void mergeToolbarWithContent(HttpServletRequest request, HttpServletResponse response, 
-            Resource resource, View view) throws Exception {
+    void mergeToolbarWithContent(HttpServletRequest request, HttpServletResponse response, Resource resource, View view) throws Exception {
 
         final int INSIDE_TAG = 0;
         final int OUTSIDE_TAG = 1;
@@ -226,6 +225,7 @@ class YanelHTMLUI {
                             writer.write(toolbarString, 0, toolbarString.length());
                             String headEndTag = "</head>";
                             writer.write(headEndTag, 0, headEndTag.length());
+                            headExists = true;
                         }
 
                         if (bodycount == 0) {
@@ -257,6 +257,10 @@ class YanelHTMLUI {
         writer.flush();
         writer.close();
         reader.close();
+
+        if (!headExists) {
+            log.warn("Does not seem to be a (X)HTML document: " + request.getRequestURL());
+        }
     }
     
     /**
