@@ -1901,7 +1901,7 @@ public class YanelServlet extends HttpServlet {
                         log.error("DEBUG: Exception to the rule. Yanel resource usecase is not null: " + request.getParameter(YANEL_RESOURCE_USECASE));
                     }
                 } else {
-                    log.debug("No HTML related mime type: " + mimeType);
+                    log.info("No HTML related mime type: " + mimeType);
                 }
             } else {
                 log.debug("Toolbar is turned off.");
