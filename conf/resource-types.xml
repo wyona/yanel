@@ -10,9 +10,10 @@
 
 <!-- NOTE: Do not use relative paths to reference resource types, because the paths are not being resolved re the location of (local.)resource-types.xml -->
 
-<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2009051900">
+<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2009072300">
 
   <changes>
+    <change version="2009070800">forgotpw resource type added</change>
     <change version="2009051900">copy-dir-name attribute to all resources added</change>
     <change version="2009042700">welcome realm resources commented, because already contained by welcome realm itself</change>
     <change version="2009041500">lookup resource type added</change>
@@ -30,6 +31,7 @@
   </changes>
 
   <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/forgotpw/" compile="true" copy-dir-name="yanel-forgotpw"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/lookup/" compile="true" copy-dir-name="yanel-lookup"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/tinymce/" compile="true" copy-dir-name="yanel-tinymce"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/image/" compile="true" copy-dir-name="yanel-image"/>
