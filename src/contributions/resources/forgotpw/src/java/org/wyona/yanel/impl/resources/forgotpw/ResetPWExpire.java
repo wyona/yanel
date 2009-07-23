@@ -16,7 +16,7 @@
 package org.wyona.yanel.impl.resources.forgotpw;
 
     public class ResetPWExpire {
-        private String;
+        private String userId;
         private long dateTime;
         private String guid;
         private String email;
