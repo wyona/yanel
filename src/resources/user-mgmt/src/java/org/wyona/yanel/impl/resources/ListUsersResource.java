@@ -31,7 +31,7 @@ public class ListUsersResource extends UsecaseResource {
     public User[] getUsers() throws UsecaseException {
         UserManager userManager = getRealm().getIdentityManager().getUserManager();
         try {
-            return userManager.getUsers();
+            return userManager.getUsers(true);
         } catch (AccessManagementException e) {
             throw new UsecaseException(e.toString(), e);
         }
