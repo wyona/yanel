@@ -1,4 +1,4 @@
-                                                                                                                        /*
+/*
  * Copyright 2009 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -112,7 +112,7 @@ public class ForgotPassword extends BasicXMLResource {
             if(!strVal.equals("success")) {
                 statusElement.setTextContent(strVal);
             } else {
-                statusElement.setTextContent("Password change was successful. Please check your email.");
+                statusElement.setTextContent("<p>Password change request was successful.</p><p>Please check your email for further instructions on how to complete your request.</p>");
             }
         } else if (request.getParameter("pwresetid") != null && !request.getParameter("pwresetid").equals("") && !action.equals(SUBMITNEWPW)){
             User usr = findRepoUser(request.getParameter("pwresetid"), totalValidHrs);
@@ -251,13 +251,15 @@ public class ForgotPassword extends BasicXMLResource {
                     ResetPWExpire pwexp = new ResetPWExpire(userList[i].getID(), new Date().getTime(), guid, userList[i].getEmail());
                     Map<String, ResetPWExpire> pwHM = getOblivionMap(getEnvironment().getRequest());
                     pwHM.put(pwexp.getGuid(), pwexp);
+                    // TODO: Use proxy settings
+                    //String emailStr = "Please go to the following URL to reset password: <https://192.168.1.69:8443/yanel" + request.getServletPath().toString() + "?pwresetid=" + guid + ">.";
                     String emailStr = "Please go to the following URL to reset password: <" + request.getRequestURL().toString() + "?pwresetid=" + guid + ">.";
                     log.debug(emailStr);
                     String emailServer = getResourceConfigProperty("smtpHost");
                     int port = Integer.parseInt(getResourceConfigProperty("smtpPort"));
                     String from = getResourceConfigProperty("smtpFrom");
                     String to =  userList[i].getEmail();
-                    SendMail.send(emailServer, port, from, to, "password reset reset needs your confirmation", emailStr);
+                    SendMail.send(emailServer, port, from, to, "Password change request needs your confirmation", emailStr);
                     String xmlStrVal = generateXML(pwexp);
 
 
