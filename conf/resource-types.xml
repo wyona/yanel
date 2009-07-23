@@ -31,7 +31,6 @@
   </changes>
 
   <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
-  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/forgotpw/" compile="true" copy-dir-name="yanel-forgotpw"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/lookup/" compile="true" copy-dir-name="yanel-lookup"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/tinymce/" compile="true" copy-dir-name="yanel-tinymce"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/image/" compile="true" copy-dir-name="yanel-image"/>
@@ -57,6 +56,8 @@
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/atom/" compile="true" copy-dir-name="yanel-atom"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/atom-entry/" compile="true" copy-dir-name="yanel-atom-entry"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/contact-form/" compile="true" copy-dir-name="yanel-contact-form"/>
+  <!-- Please note forgotpw depends on contact-form -->
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/forgotpw/" compile="true" copy-dir-name="yanel-forgotpw"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/wiki/" compile="true" copy-dir-name="yanel-wiki"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/zip/" compile="true" copy-dir-name="yanel-zip"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/calendar/" compile="true" copy-dir-name="yanel-calendar"/>
