@@ -1693,6 +1693,37 @@ public class YanelServlet extends HttpServlet {
         return false;
     }
 
+    private ResourceConfiguration getYanelResourceConfiguration(String pathPrefix, Environment environment, Realm realm, String path) throws Exception {
+        HttpServletRequest request = environment.getRequest();
+        java.util.Map<String, String> properties = new HashMap<String, String>();
+
+        final String usersPathPrefix = pathPrefix + "users/";
+        final String userListPagePath = pathPrefix + "user-mgmt/list-users.html";
+        final String dataRepoSitetreePagePath = pathPrefix + DATA_REPOSITORY_SITETREE_HTML;
+
+        if (path.startsWith(usersPathPrefix)) {
+            final String userName = path.substring(usersPathPrefix.length(), path.length() - ".html".length());
+            properties.put("user", userName);
+            return new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
+        } else if (path.equals(userListPagePath)) {
+            log.warn("TODO: Implementation not finished yet!");
+            return null;
+        /*
+        } else if (path.equals(groupsPathPrefix)) {
+            final String groupName = path.substring(groupsPathPrefix.length(), path.length());
+            if (groupName.equals("")) {
+                ResourceConfiguration rc = new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
+            }
+            log.warn("TODO: Implementation not finished yet!");
+            properties.put("user", userName);
+            return new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
+        */
+        } else if (path.equals(dataRepoSitetreePagePath)) {
+            return getGlobalResourceConfiguration("data-repo-sitetree_yanel-rc.xml", getRealm(request));
+        }
+        return null;
+    }
+
     /**
      * Get global data located below reserved prefix
      */
@@ -1702,38 +1733,32 @@ public class YanelServlet extends HttpServlet {
         java.util.Map<String, String> properties = new HashMap<String, String>();
 
         final String pathPrefix = "/" + reservedPrefix + "/";
-        final String usersPathPrefix = pathPrefix + "users/";
-        final String userListPagePath = pathPrefix + "user-mgmt/list-users.html";
         final String aboutPagePath = pathPrefix + "about.html";
-        final String dataRepoSitetreePagePath = pathPrefix + DATA_REPOSITORY_SITETREE_HTML;
         final String resourceTypesPathPrefix = pathPrefix + "resource-types/";
 
         //XXX REFACTORME: in the cases where we simply use a resource-type's view
         // we should implement org.wyona.yanel.core.api.ResourceTypeMatcherV1 ( cf. http://lists.wyona.org/pipermail/yanel-development/2009-June/003749.html )
-        if (path.startsWith(usersPathPrefix)) {
-            final String userName = path.substring(usersPathPrefix.length(), path.length() - ".html".length());
-            properties.put("user", userName);
-            ResourceConfiguration rc = new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
+
+        Realm realm;
+        Environment environment = getEnvironment(request, response);
+        ResourceConfiguration rc;
+        try {
+            realm = getRealm(request);
+            rc = getYanelResourceConfiguration(pathPrefix, environment , realm, path);
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
+        if (rc != null) {
             if (generateResponseFromRTview(request, response, rc, path)) return;
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
             return;
-        } else if (path.equals(userListPagePath)) {
-            log.warn("TODO: Implementation not finished yet!");
-        } else if (path.equals(aboutPagePath)) {
+        }else if (path.equals(aboutPagePath)) {
             //XXX REFACTORME: we should define an "about" resource-type instead!
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             response.setHeader("Content-Type", "text/html");
             PrintWriter w = response.getWriter();
             w.print(About.toHTML(yanelInstance.getVersion(), yanelInstance.getRevision()));
             return;
-        } else if (path.equals(dataRepoSitetreePagePath)) {
-            ResourceConfiguration rc;
-            try {
-                rc = getGlobalResourceConfiguration("data-repo-sitetree_yanel-rc.xml", getRealm(request));
-            } catch (Exception e) {
-                throw new ServletException(e);
-            }
-            if (generateResponseFromRTview(request, response, rc, path)) return;
         } else if (path.startsWith(resourceTypesPathPrefix)) {
             final String[] namespaceURI_and_rest = path.substring(resourceTypesPathPrefix.length()).split("::", 2);
             final String namespaceURI = namespaceURI_and_rest[0];
@@ -1744,10 +1769,9 @@ public class YanelServlet extends HttpServlet {
             // The request (see resource.getPath()) seems to replace 'http://' or 'http%3a%2f%2f' by 'http:/', so let's change this back
             final String namespace = ! decoded_namespaceURI.equals(namespaceURI) ? decoded_namespaceURI : namespaceURI.replaceAll("http:/", "http://");
 
+            rc = new ResourceConfiguration(name, namespace, properties);
             try {
-                Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
-                ResourceConfiguration rc = new ResourceConfiguration(name, namespace, properties);
-                Resource resourceOfPrefix = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
+                Resource resourceOfPrefix = yanelInstance.getResourceManager().getResource(environment, realm, path, rc);
                 String htdocsPath;
                 if (name_and_rest[1].startsWith(reservedPrefix + "/")) {
                     htdocsPath =  "rtyanelhtdocs:" + name_and_rest[1].substring(reservedPrefix.length()).replace('/', File.separatorChar);
