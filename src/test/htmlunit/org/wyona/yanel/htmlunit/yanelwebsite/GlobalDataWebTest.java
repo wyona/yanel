@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Wyona
+ * Copyright 2008, 2009 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -55,8 +55,7 @@ public class GlobalDataWebTest extends AbstractHtmlUnitTest {
         //XXX: IMHO ( see http://lists.wyona.org/pipermail/yanel-development/2008-December/002514.html ) this should instead redirect to a login page or at least fail gracefully:
         loadReservedErrorPage("users/dummy.html", 500);
 
-        loadReservedResource("user-mgmt/list-users.html");
-        assertEquals(0, response.getResponseBody().length);
+        loadReservedResource("user-mgmt/list-users.html", 404);
     }
 
     public void testDataRepoSitetreePage() throws Exception {
