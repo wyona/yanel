@@ -2,6 +2,7 @@ package org.wyona.yanel.servlet;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -76,6 +77,7 @@ import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -130,9 +132,7 @@ public class YanelServlet extends HttpServlet {
 
     public static final String DATA_REPOSITORY_SITETREE_HTML = "data-repository-sitetree.html";
     
-    /**
-     *
-     */
+    @Override
     public void init(ServletConfig config) throws ServletException {
         servletContextRealPath = config.getServletContext().getRealPath("/");
 
@@ -164,7 +164,8 @@ public class YanelServlet extends HttpServlet {
     /**
      * Dispatch requests
      */
-    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String httpAcceptMediaTypes = request.getHeader("Accept");
         String httpAcceptLanguage = request.getHeader("Accept-Language");
 
@@ -228,9 +229,10 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * HTTP GET implementation.
      */
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(true);
         Resource resource = getResource(request, response);
         
@@ -631,9 +633,10 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * HTTP POST implementation.
      */
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String transition = request.getParameter(YANEL_RESOURCE_WORKFLOW_TRANSITION);
         if (transition != null) {
             executeWorkflowTransition(request,
@@ -753,9 +756,10 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * HTTP PUT implementation
+     * HTTP PUT implementation.
      */
-    public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // TODO: Reuse code doPost resp. share code with doPut
 
         String value = request.getParameter(YANEL_RESOURCE_USECASE);
@@ -818,9 +822,10 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * HTTP DELETE implementation
+     * HTTP DELETE implementation.
      */
-    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             Resource res = getResource(request, response);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
@@ -1191,10 +1196,12 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
+     * WebDAV PROPFIND implementation.
+     *
      * Also see https://svn.apache.org/repos/asf/tomcat/container/branches/tc5.0.x/catalina/src/share/org/apache/catalina/servlets/WebdavServlet.java
      * Also maybe interesting http://sourceforge.net/projects/openharmonise
      */
-    public void doPropfind(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void doPropfind(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Resource resource = getResource(request, response);
         //Node node = resource.getRealm().getSitetree().getNode(resource.getPath());
         Node node = sitetree.getNode(resource.getRealm(),resource.getPath());
@@ -1304,9 +1311,10 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * HTTP OPTIONS implementation.
      */
-    public void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setHeader("DAV", "1");
         // TODO: Is there anything else to do?!
     }
@@ -1315,7 +1323,7 @@ public class YanelServlet extends HttpServlet {
      * Authentication
      * @return null when authentication successful or has already been authenticated, otherwise return response generated by web authenticator
      */
-    public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             // TODO/TBD: In the case of HTTP-BASIC/DIGEST one needs to check authentication with every request
 	    // TODO: enhance API with flag, e.g. session-based="true/false"
@@ -1349,7 +1357,7 @@ public class YanelServlet extends HttpServlet {
      * Do logout
      * @return null for a regular logout and a Neutron response if auth scheme is Neutron
      */
-    public HttpServletResponse doLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private HttpServletResponse doLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             if (yanelUI.isToolbarEnabled(request)) {
                 // TODO: Check if WORLD has access to the toolbar
@@ -1404,7 +1412,7 @@ public class YanelServlet extends HttpServlet {
     /**
      * Do create a new resource
      */
-    public HttpServletResponse doCreate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private HttpServletResponse doCreate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.error("Not implemented yet!");
         return null;
     }
@@ -1426,7 +1434,7 @@ public class YanelServlet extends HttpServlet {
     /**
      * Intercept InputStream and log content ...
      */
-    public InputStream intercept(InputStream in) throws IOException {
+    private InputStream intercept(InputStream in) throws IOException {
         java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
         byte[] buf = new byte[8192];
         int bytesR;
@@ -1662,13 +1670,36 @@ public class YanelServlet extends HttpServlet {
 */
     }
 
+    private Realm getRealm(HttpServletRequest request) throws Exception {
+        Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
+        return realm;
+    }
+
+    private boolean generateResponseFromRTview(HttpServletRequest request, HttpServletResponse response, ResourceConfiguration rc, String path) throws ServletException {
+        String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
+        if (request.getParameter("yanel.format") != null) { // backwards compatible
+            viewId = request.getParameter("yanel.format");
+        }
+        try {
+            Realm realm = getRealm(request);
+            Resource resource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
+            View view = ((ViewableV2) resource).getView(viewId);
+            if (view != null) {
+                if (generateResponse(view, resource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return true;
+            }
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
+        return false;
+    }
+
     /**
      * Get global data located below reserved prefix
      */
     private void getGlobalData(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Resource resource = getResource(request, response);
         String path = resource.getPath();
-        String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
+        java.util.Map<String, String> properties = new HashMap<String, String>();
 
         final String pathPrefix = "/" + reservedPrefix + "/";
         final String usersPathPrefix = pathPrefix + "users/";
@@ -1677,46 +1708,32 @@ public class YanelServlet extends HttpServlet {
         final String dataRepoSitetreePagePath = pathPrefix + DATA_REPOSITORY_SITETREE_HTML;
         final String resourceTypesPathPrefix = pathPrefix + "resource-types/";
 
+        //XXX REFACTORME: in the cases where we simply use a resource-type's view
+        // we should implement org.wyona.yanel.core.api.ResourceTypeMatcherV1 ( cf. http://lists.wyona.org/pipermail/yanel-development/2009-June/003749.html )
         if (path.startsWith(usersPathPrefix)) {
             final String userName = path.substring(usersPathPrefix.length(), path.length() - ".html".length());
-
-            try {
-                java.util.Map<String, String> properties = new HashMap<String, String>();
-                properties.put("user", userName);
-                ResourceConfiguration rc = new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
-                Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
-                Resource yanelUserResource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
-                View view = ((ViewableV2) yanelUserResource).getView(viewId);
-                if (view != null) {
-                    if (generateResponse(view, yanelUserResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
-                }
-            } catch (Exception e) {
-                throw new ServletException(e);
-            }
-
+            properties.put("user", userName);
+            ResourceConfiguration rc = new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
+            if (generateResponseFromRTview(request, response, rc, path)) return;
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
             return;
         } else if (path.equals(userListPagePath)) {
             log.warn("TODO: Implementation not finished yet!");
         } else if (path.equals(aboutPagePath)) {
+            //XXX REFACTORME: we should define an "about" resource-type instead!
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             response.setHeader("Content-Type", "text/html");
             PrintWriter w = response.getWriter();
             w.print(About.toHTML(yanelInstance.getVersion(), yanelInstance.getRevision()));
             return;
         } else if (path.equals(dataRepoSitetreePagePath)) {
+            ResourceConfiguration rc;
             try {
-                Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
-                File drsResConfigFile = getGlobalResourceConfiguration("data-repo-sitetree_yanel-rc.xml", realm);
-                ResourceConfiguration rc = new ResourceConfiguration(new java.io.FileInputStream(drsResConfigFile));
-                Resource sitetreeResource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
-                View view = ((ViewableV2) sitetreeResource).getView(viewId);
-                if (view != null) {
-                    if (generateResponse(view, sitetreeResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
-                }
+                rc = getGlobalResourceConfiguration("data-repo-sitetree_yanel-rc.xml", getRealm(request));
             } catch (Exception e) {
                 throw new ServletException(e);
             }
+            if (generateResponseFromRTview(request, response, rc, path)) return;
         } else if (path.startsWith(resourceTypesPathPrefix)) {
             final String[] namespaceURI_and_rest = path.substring(resourceTypesPathPrefix.length()).split("::", 2);
             final String namespaceURI = namespaceURI_and_rest[0];
@@ -1728,7 +1745,6 @@ public class YanelServlet extends HttpServlet {
             final String namespace = ! decoded_namespaceURI.equals(namespaceURI) ? decoded_namespaceURI : namespaceURI.replaceAll("http:/", "http://");
 
             try {
-                java.util.Map<String, String> properties = new HashMap<String, String>();
                 Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
                 ResourceConfiguration rc = new ResourceConfiguration(name, namespace, properties);
                 Resource resourceOfPrefix = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
@@ -1970,9 +1986,7 @@ public class YanelServlet extends HttpServlet {
             }
     }
 
-    /**
-     *
-     */
+    @Override
     public void destroy() {
         super.destroy();
         yanelInstance.destroy();
@@ -2082,12 +2096,8 @@ public class YanelServlet extends HttpServlet {
             Realm realm = map.getRealm(request.getServletPath());
             String path = map.getPath(realm, request.getServletPath());
             
-            File pmrcGlobalFile = getGlobalResourceConfiguration("policy-manager_yanel-rc.xml", realm);
-            Resource policyManagerResource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, path, new ResourceConfiguration(new java.io.FileInputStream(pmrcGlobalFile)));
-            View view = ((ViewableV2) policyManagerResource).getView(viewId);
-            if (view != null) {
-                if (generateResponse(view, policyManagerResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
-            }
+            ResourceConfiguration rc= getGlobalResourceConfiguration("policy-manager_yanel-rc.xml", realm);
+            if (generateResponseFromRTview(request, response, rc, path)) return;
             log.error("Something went terribly wrong!");
             response.getWriter().print("Something went terribly wrong!");
             return;
@@ -2121,7 +2131,7 @@ public class YanelServlet extends HttpServlet {
     /**
      *
      */
-    private File getGlobalResourceConfiguration(String resConfigName, Realm realm) {
+    private ResourceConfiguration getGlobalResourceConfiguration(String resConfigName, Realm realm) {
         // TODO: Introduce a repository for the Yanel webapp
         File realmDir = new File(realm.getConfigFile().getParent());
         File globalResConfigFile = org.wyona.commons.io.FileUtil.file(realmDir.getAbsolutePath(), "src" + File.separator + "webapp" + File.separator + "global-resource-configs/" + resConfigName);
@@ -2129,7 +2139,21 @@ public class YanelServlet extends HttpServlet {
             // Fallback to global configuration
             globalResConfigFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "global-resource-configs/" + resConfigName);
         }
-        return globalResConfigFile;
+        InputStream is;
+        try {
+            is = new java.io.FileInputStream(globalResConfigFile);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        ResourceConfiguration rc;
+        try {
+            rc = new ResourceConfiguration(is);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
+        return rc;
     }
 
     /**
@@ -2162,18 +2186,10 @@ public class YanelServlet extends HttpServlet {
         response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
         try {
             Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
-            File pnfResConfigFile = getGlobalResourceConfiguration("404_yanel-rc.xml", realm);
-            ResourceConfiguration rc = new ResourceConfiguration(new java.io.FileInputStream(pnfResConfigFile));
             String path = getResource(request, response).getPath();
-            Resource pageNotFoundResource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
-            String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
-            if (request.getParameter("yanel.format") != null) { // backwards compatible
-                viewId = request.getParameter("yanel.format");
-            }
-            View view = ((ViewableV2) pageNotFoundResource).getView(viewId);
-            if (view != null) {
-                if (generateResponse(view, pageNotFoundResource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return;
-            }
+
+            ResourceConfiguration rc = getGlobalResourceConfiguration("404_yanel-rc.xml", realm);
+            if (generateResponseFromRTview(request, response, rc, path)) return;
             log.error("404 seems to be broken!");
             return;
         } catch (Exception e) {
