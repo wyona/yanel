@@ -55,7 +55,7 @@ public class GlobalDataWebTest extends AbstractHtmlUnitTest {
         //XXX: IMHO ( see http://lists.wyona.org/pipermail/yanel-development/2008-December/002514.html ) this should instead redirect to a login page or at least fail gracefully:
         loadReservedErrorPage("users/dummy.html", 500);
 
-        loadReservedResource("user-mgmt/list-users.html", 404);
+        loadReservedErrorPage("user-mgmt/list-users.html", 404);
     }
 
     public void testDataRepoSitetreePage() throws Exception {
