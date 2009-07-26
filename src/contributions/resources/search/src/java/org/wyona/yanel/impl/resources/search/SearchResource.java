@@ -34,7 +34,7 @@ public class SearchResource extends BasicXMLResource {
             org.wyona.yarep.core.Node[] nodes = getRealm().getRepository().search(query);
             if (nodes != null && nodes.length > 0) {
                 //sb.append("<provider source-name=\"" + "Wyona-FOAF" + "\" source-domain=\"" + "http://foaf.wyona.org" + "\" numberOfResults=\"" + pNodes.length + "\">");
-                sb.append("<y:results provider=\"google\"/>");
+                sb.append("<y:results provider=\"google\">");
                 for (int i = 0; i < nodes.length; i++) {
                     sb.append("<result repo-path=\""+nodes[i].getPath()+"\">");
                     sb.append("</result>");
