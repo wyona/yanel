@@ -6,6 +6,9 @@
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
       <view id="default">
+<!--
+        <xslt>file:/Users/michaelwechner/src/wyona/public/yanel/trunk/src/contributions/resources/search/htdocs/results2xhtml.xsl</xslt>
+-->
         <xslt>rthtdocs:/results2xhtml.xsl</xslt>
         <xslt>yanelresource:/my-global.xsl</xslt>
         <mime-type>text/html</mime-type>
