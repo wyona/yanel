@@ -1,0 +1,3 @@
+<project name="yanel-search-resource-type">
+  <import file="${yanel.source.home}/src/build/resource-types/resource-type.build.xml"/>
+</project>
