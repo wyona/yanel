@@ -10,9 +10,10 @@
 
 <!-- NOTE: Do not use relative paths to reference resource types, because the paths are not being resolved re the location of (local.)resource-types.xml -->
 
-<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2009072300">
+<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2009072600">
 
   <changes>
+    <change version="2009072600">search resource type added</change>
     <change version="2009070800">forgotpw resource type added</change>
     <change version="2009051900">copy-dir-name attribute to all resources added</change>
     <change version="2009042700">welcome realm resources commented, because already contained by welcome realm itself</change>
@@ -31,6 +32,8 @@
   </changes>
 
   <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/search/" compile="true" copy-dir-name="yanel-search"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/nutch/" compile="true" copy-dir-name="yanel-nutch"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/lookup/" compile="true" copy-dir-name="yanel-lookup"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/tinymce/" compile="true" copy-dir-name="yanel-tinymce"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/image/" compile="true" copy-dir-name="yanel-image"/>
@@ -62,7 +65,6 @@
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/zip/" compile="true" copy-dir-name="yanel-zip"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/calendar/" compile="true" copy-dir-name="yanel-calendar"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/resource-creator/" compile="true" copy-dir-name="yanel-resource-creator"/>
-  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/nutch/" compile="true" copy-dir-name="yanel-nutch"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/davcollection/" compile="true" copy-dir-name="yanel-davcollection"/>
 
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/pdf/" compile="true" copy-dir-name="yanel-pdf"/>
