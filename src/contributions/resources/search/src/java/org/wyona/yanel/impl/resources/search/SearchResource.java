@@ -36,8 +36,8 @@ public class SearchResource extends BasicXMLResource {
                 //sb.append("<provider source-name=\"" + "Wyona-FOAF" + "\" source-domain=\"" + "http://foaf.wyona.org" + "\" numberOfResults=\"" + pNodes.length + "\">");
                 sb.append("<y:results provider=\"google\">");
                 for (int i = 0; i < nodes.length; i++) {
-                    sb.append("<result repo-path=\""+nodes[i].getPath()+"\">");
-                    sb.append("</result>");
+                    sb.append("<y:result repo-path=\""+nodes[i].getPath()+"\">");
+                    sb.append("</y:result>");
                 }
                 sb.append("</y:results>");
             }
