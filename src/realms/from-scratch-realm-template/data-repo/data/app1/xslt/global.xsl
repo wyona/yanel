@@ -86,6 +86,16 @@ Content Language: <xsl:value-of select="$content-language"/>
               <a href="?yanel.toolbar=on">Toolbar</a>
 -->
               Localization: <xsl:value-of select="$language"/>
+              <div>
+                <xsl:choose>
+                <xsl:when test="$content-language = 'de'">
+                  <form action="{$yarep.back2realm}de/suche.html" method="GET"><input type="text" name="q"/><input type="submit" value="Suche"/></form>
+                </xsl:when>
+                <xsl:otherwise>
+                  <form action="{$yarep.back2realm}en/search.html" method="GET"><input type="text" name="q"/><input type="submit" value="Search"/></form>
+                </xsl:otherwise>
+              </xsl:choose>
+              </div>
             </div>
           </div>
           <!-- END of header -->
