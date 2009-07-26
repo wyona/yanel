@@ -24,6 +24,9 @@
 <xsl:when test="$content-language = 'fr'">
 La page que vous venez d'appeler n'existe pas (ou plus)
 </xsl:when>
+<xsl:when test="$content-language = 'en'">
+Page not found
+</xsl:when>
 <xsl:otherwise>
 Diese Seite existiert nicht (mehr)
 </xsl:otherwise>
@@ -36,6 +39,15 @@ Diese Seite existiert nicht (mehr)
 <h2>La page que vous venez d'appeler n'existe pas (ou plus)</h2>
 <p>
 Veuillez utiliser la navigation pour atteindre la domaine souhaitée.
+</p>
+</xsl:when>
+<xsl:when test="$content-language = 'en'">
+<h2>Page not found</h2>
+<p>
+We're sorry, the page you've requested does not exist at this address.
+</p>
+<p>
+Please use the navigation in order to find the appropriate content.
 </p>
 </xsl:when>
 <xsl:otherwise>
