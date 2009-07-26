@@ -46,18 +46,11 @@ public class LayoutSelector extends Resource implements ViewableV2 {
     
     private static Logger log = Logger.getLogger(LayoutSelector.class);
     private String uploadMimeType; 
-    private String nodeVersionChecker ="";
 
     /**
      * Constructor
      */
     public LayoutSelector() {
-    	try {
-            nodeVersionChecker =  getRealm().getName() + ":" + getResourceConfigProperty("layout_name") + ":xslt-version";
-    	} catch(Exception e) {
-            log.error("error initializing template version checker session string");
-            log.error(e, e);
-    	}
     }
 
     /**
@@ -69,12 +62,8 @@ public class LayoutSelector extends Resource implements ViewableV2 {
 
     public View getView(String viewId, String revisionName) throws Exception {
         View view = new View();
-        //try {
-        	view.setInputStream(getNode(nodeVersionChecker).getRevision(revisionName).getInputStream());
-        //} catch(Exception ex) {
-        //	log.error("unable to set input stream");
-        //	throw(new Exception(ex));
-        //}
+
+        view.setInputStream(getNode(getSessionVariable()).getRevision(revisionName).getInputStream());
         view.setMimeType(getMimeType(viewId));
         view.setEncoding(getResourceConfigProperty("encoding"));
 
@@ -86,17 +75,24 @@ public class LayoutSelector extends Resource implements ViewableV2 {
      */
     public View getView(String viewId) throws Exception {
         View view = new View();
-        //try {
-        view.setInputStream(getNode(nodeVersionChecker).getInputStream());
-        //} catch(Exception ex) {
-        //	log.error("unable to set input stream");
-        //	throw(new Exception(ex));
-        //}
+        view.setInputStream(getNode(getSessionVariable()).getInputStream());
         view.setMimeType(getMimeType(viewId));
         view.setEncoding(getResourceConfigProperty("encoding"));
 
         return view;
     }
+
+    private String getSessionVariable() {
+        String nodeVersionChecker ="";
+       	try {
+       	        nodeVersionChecker =  getRealm().getName() + ":" + getResourceConfigProperty("unique-session-key") + ":xslt-version";
+            log.debug("nodeVersionCheck :" + nodeVersionChecker);
+        	} catch(Exception e) {
+                log.error("error initializing template version checker" + e, e);
+        	}
+          return nodeVersionChecker;
+    }  
+  
 
     /**
      *
@@ -131,7 +127,7 @@ public class LayoutSelector extends Resource implements ViewableV2 {
      *
      */
     public InputStream getInputStream() throws Exception {
-        return getNode(nodeVersionChecker).getInputStream();
+        return getNode(getSessionVariable()).getInputStream();
     }
 
     /**
@@ -152,7 +148,7 @@ public class LayoutSelector extends Resource implements ViewableV2 {
             log.error("TODO: Use getNode() method!");
             getRealm().getRepository().getNode(new org.wyona.commons.io.Path(getPath()).getParent().toString()).addNode(new org.wyona.commons.io.Path(getPath()).getName().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
         }
-        return getNode(nodeVersionChecker).getOutputStream();
+        return getNode(getSessionVariable()).getOutputStream();
     }
 
     /**
@@ -166,7 +162,7 @@ public class LayoutSelector extends Resource implements ViewableV2 {
      *
      */
     public long getLastModified() throws Exception {
-       Node node = getNode(nodeVersionChecker);
+       Node node = getNode(getSessionVariable());
        long lastModified;
        if (node.isResource()) {
            lastModified = node.getLastModified();
@@ -182,7 +178,7 @@ public class LayoutSelector extends Resource implements ViewableV2 {
      */
     public boolean delete() throws Exception {
         log.warn("TODO: Check if this node is referenced by other nodes!");
-        getNode(nodeVersionChecker).delete();
+        getNode(getSessionVariable()).delete();
         return true;
     }
 
@@ -190,7 +186,7 @@ public class LayoutSelector extends Resource implements ViewableV2 {
      * @see org.wyona.yanel.core.api.attributes.VersionableV2#getRevisions()
      */
     public RevisionInformation[] getRevisions() throws Exception {
-        Revision[] revisions = getNode(nodeVersionChecker).getRevisions();
+        Revision[] revisions = getNode(getSessionVariable()).getRevisions();
 
         if (revisions != null) {
             RevisionInformation[] revisionInfos = new RevisionInformation[revisions.length];
@@ -203,55 +199,31 @@ public class LayoutSelector extends Resource implements ViewableV2 {
             }
             return revisionInfos;
         }
-        log.warn("Node '" + getNode(nodeVersionChecker).getPath() + "' has no revisions!");
+        log.warn("Node '" + getNode(getSessionVariable()).getPath() + "' has no revisions!");
         return null;
     }
 
     public void checkin(String comment) throws Exception {
-        Node node = getNode(nodeVersionChecker);
+        Node node = getNode(getSessionVariable());
         node.checkin(comment);
-        /*
-        if (node.isCheckedOut()) {
-            String checkoutUserID = node.getCheckoutUserID();
-            if (checkoutUserID.equals(userID)) {
-                node.checkin();
-            } else {
-                throw new Exception("Resource is checked out by another user: " + checkoutUserID);
-            }
-        } else {
-            throw new Exception("Resource is not checked out.");
-        }
-        */
     }
 
     public void checkout(String userID) throws Exception {
-        Node node = getNode(nodeVersionChecker);
+        Node node = getNode(getSessionVariable());
         node.checkout(userID);
-        /*
-        if (node.isCheckedOut()) {
-            String checkoutUserID = node.getCheckoutUserID();
-            if (checkoutUserID.equals(userID)) {
-                log.warn("Resource " + getPath() + " is already checked out by this user: " + checkoutUserID);
-            } else {
-                throw new Exception("Resource is already checked out by another user: " + checkoutUserID);
-            }
-        } else {
-            node.checkout(userID);
-        }
-        */
     }
 
     /**
      * Cancel checkout or rather release the lock
      */
     public void cancelCheckout() throws Exception {
-        Node node = getNode(nodeVersionChecker);
+        Node node = getNode(getSessionVariable());
         log.warn("Release the lock of '" + node.getPath() + "'");
         node.cancelCheckout();
     }
 
     public void restore(String revisionName) throws Exception {
-        getNode(nodeVersionChecker).restore(revisionName);
+        getNode(getSessionVariable()).restore(revisionName);
     }
 
     public Date getCheckoutDate() throws Exception {
@@ -262,12 +234,12 @@ public class LayoutSelector extends Resource implements ViewableV2 {
     }
 
     public String getCheckoutUserID() throws Exception {
-        Node node = getNode(nodeVersionChecker);
+        Node node = getNode(getSessionVariable());
         return node.getCheckoutUserID();
     }
 
     public boolean isCheckedOut() throws Exception {
-        Node node = getNode(nodeVersionChecker);
+        Node node = getNode(getSessionVariable());
         return node.isCheckedOut();
     }
 
@@ -279,7 +251,7 @@ public class LayoutSelector extends Resource implements ViewableV2 {
      *
      */
     public long getSize() throws Exception {
-        Node node = getNode(nodeVersionChecker);
+        Node node = getNode(getSessionVariable());
         long size;
         if (node.isResource()) {
             size = node.getSize();

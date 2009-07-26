@@ -4,7 +4,7 @@
   <yanel:rti name="layoutselector" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
   <yanel:property name="default-layout-version" value="1"/>
-  <yanel:property name="layout_name" value="welcome"/>
+  <yanel:property name="unique-session-key" value="111222333"/>
   <yanel:property name="src" value="/app{$xslt-version}/xslt/global.xsl"/>
   <yanel:property name="mime-type" value="application/xml"/>
 </yanel:resource-config>
