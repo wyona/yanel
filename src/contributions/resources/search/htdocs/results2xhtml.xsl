@@ -31,10 +31,35 @@
       </head>
       <body>
 
-<p>Provider: <xsl:value-of select="/y:search/y:results/@provider"/></p>
+        <h1>Search</h1>
+
+        <form>
+          Your Search <input type="text" name="q" value="{/y:search/y:query}"/> <input type="submit" value="Search"/>
+        </form>
+
+        <hr/>
+
+        <xsl:apply-templates select="/y:search/y:results"/>
+        <xsl:if test="not(/y:search/y:results)">
+<p>
+         Your search - <xsl:value-of select="/y:search/y:query"/> - did not match any documents
+</p>
+        </xsl:if>
 
       </body>
     </html>
+  </xsl:template>
+
+  <xsl:template match="y:results">
+    <h2>All Results</h2>
+<p>Provider: <xsl:value-of select="@provider"/></p>
+    <ul>
+    <xsl:apply-templates select="y:result"/>
+    </ul>
+  </xsl:template>
+
+  <xsl:template match="y:result">
+    <li><a href="{$yarep.back2realm}{@repo-path}"><xsl:value-of select="@repo-path"/></a></li>
   </xsl:template>
   
   <xsl:template match="@*|node()" priority="-1">
