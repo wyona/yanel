@@ -130,8 +130,6 @@ public class YanelServlet extends HttpServlet {
     
     private static final String CONTENT_TYPE_XHTML = "xhtml";
 
-    public static final String DATA_REPOSITORY_SITETREE_HTML = "data-repository-sitetree.html";
-    
     @Override
     public void init(ServletConfig config) throws ServletException {
         servletContextRealPath = config.getServletContext().getRealPath("/");
@@ -1697,29 +1695,29 @@ public class YanelServlet extends HttpServlet {
         HttpServletRequest request = environment.getRequest();
         java.util.Map<String, String> properties = new HashMap<String, String>();
 
-        final String usersPathPrefix = pathPrefix + "users/";
-        final String userListPagePath = pathPrefix + "user-mgmt/list-users.html";
-        final String dataRepoSitetreePagePath = pathPrefix + DATA_REPOSITORY_SITETREE_HTML;
+        //XXX: maybe we should use a configuration file instead!
+        java.util.Map<String, String> globalRCmap = new HashMap<String, String>();
+        globalRCmap.put("data-repository-sitetree.html", "data-repo-sitetree_yanel-rc.xml");
+        final String admin = "admin/";
+        globalRCmap.put(admin + "list-groups.html", "user-mgmt/list-groups_yanel-rc.xml");
+        globalRCmap.put(admin + "list-users.html", "user-mgmt/list-users_yanel-rc.xml");
+        globalRCmap.put(admin + "delete-group.html", "user-mgmt/delete-group_yanel-rc.xml");
+        globalRCmap.put(admin + "create-group.html", "user-mgmt/create-group_yanel-rc.xml");
+        globalRCmap.put(admin + "delete-user.html", "user-mgmt/delete-user_yanel-rc.xml");
+        globalRCmap.put(admin + "update-user.html", "user-mgmt/update-user_yanel-rc.xml");
+        globalRCmap.put(admin + "create-user.html", "user-mgmt/create-user_yanel-rc.xml");
+        globalRCmap.put(admin + "update-user-admin.html", "user-mgmt/update-user-admin_yanel-rc.xml");
 
+        String pathSuffix = path.substring(pathPrefix.length());
+        String globalRCfilename = globalRCmap.get(pathSuffix);
+
+        final String usersPathPrefix = pathPrefix + "users/";
         if (path.startsWith(usersPathPrefix)) {
             final String userName = path.substring(usersPathPrefix.length(), path.length() - ".html".length());
             properties.put("user", userName);
             return new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
-        } else if (path.equals(userListPagePath)) {
-            log.warn("TODO: Implementation not finished yet!");
-            return null;
-        /*
-        } else if (path.equals(groupsPathPrefix)) {
-            final String groupName = path.substring(groupsPathPrefix.length(), path.length());
-            if (groupName.equals("")) {
-                ResourceConfiguration rc = new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
-            }
-            log.warn("TODO: Implementation not finished yet!");
-            properties.put("user", userName);
-            return new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
-        */
-        } else if (path.equals(dataRepoSitetreePagePath)) {
-            return getGlobalResourceConfiguration("data-repo-sitetree_yanel-rc.xml", getRealm(request));
+        } else if (globalRCfilename != null) {
+            return getGlobalResourceConfiguration(globalRCfilename, getRealm(request));
         }
         return null;
     }

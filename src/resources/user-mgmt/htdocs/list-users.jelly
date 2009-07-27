@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+      <h1>Users</h1>
+      <table border="1">
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th colspan="3">Actions</th>
+        </tr>
+        <j:forEach var="user" items="${resource.getUsers()}">
+          <tr>
+            <td>${user.getID()}</td>
+            <td>${user.getName()}</td>
+            <td>${user.getEmail()}</td>
+            <td><a href="update-user.html?userID=${user.getID()}">Edit</a></td>
+            <td><a href="update-user-admin.html?userID=${user.getID()}">Admin</a></td>
+            <td><a href="delete-user.html?userID=${user.getID()}">Delete</a></td>
+          </tr>
+        </j:forEach>
+      </table>
+      <a href="create-user.html">Create new user</a>
+    </body>
+  </html>
+</j:jelly>

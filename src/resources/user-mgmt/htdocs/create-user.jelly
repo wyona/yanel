@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+      <h1>Create User</h1>
+      <p>${resource.getErrorMessages()}</p>
+      <form action="">
+        <label for="userID">User ID:</label>
+        <input type="text" id="userID" name="userID" value="${resource.getParameterAsString('userID')}"/>
+        <br/>
+        Name: <input type="text" name="name" value="${resource.getParameterAsString('name')}"/>
+        <br/>
+        Email: <input type="text" name="email" value="${resource.getParameterAsString('email')}"/>
+        <br/>
+        Password: <input type="password" name="password1"/>
+        <br/>
+        Password: <input type="password" name="password2"/>
+        <br/>
+        <input type="submit" name="submit" value="Ok"/>
+        <input type="submit" name="cancel" value="Cancel"/>
+      </form>
+    </body>
+  </html>
+</j:jelly>
