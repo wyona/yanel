@@ -50,7 +50,8 @@ abstract public class Menu {
         sb.append("<li><a href=\"?yanel.policy=update\">Edit Access Policy</a></li>");
         sb.append("</ul>");
         sb.append("</li>");
-        //sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/user-mgmt/list-users.html\">User Management</a></li>");
+        sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-users.html\">User Management</a></li>");
+        sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-groups.html\">Group Management</a></li>");
         sb.append("<li><a href=\"?yanel.toolbar=off\">Turn off toolbar</a></li>");
         Identity identity = getIdentity(request, map);
         if (identity != null) {
