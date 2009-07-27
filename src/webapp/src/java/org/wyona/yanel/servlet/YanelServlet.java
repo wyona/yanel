@@ -154,7 +154,7 @@ public class YanelServlet extends HttpServlet {
 
             yanelUI = new YanelHTMLUI(map, reservedPrefix);
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);
         }
     }
@@ -164,6 +164,8 @@ public class YanelServlet extends HttpServlet {
      */
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+      // do not add code here outside the try-catch block, it's our..
+      try { // ..last chance to log all Yanel servlet thread exceptions
         String httpAcceptMediaTypes = request.getHeader("Accept");
         String httpAcceptLanguage = request.getHeader("Accept-Language");
 
@@ -224,6 +226,14 @@ public class YanelServlet extends HttpServlet {
             log.error("No such method implemented: " + method);
             response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
         }
+      } catch (ServletException e) {
+          log.error(e.getMessage(), e);
+          throw new ServletException(e.getMessage(), e);
+      } catch (IOException e) {
+          log.error(e.getMessage(), e);
+          throw new IOException(e.getMessage());
+      }// this was our last chance to log all Yanel servlet thread exceptions so..
+      // do not add code here outside the try-catch block
     }
 
     /**
@@ -249,7 +259,7 @@ public class YanelServlet extends HttpServlet {
         // Check for requests refered by WebDAV
         String yanelWebDAV = request.getParameter("yanel.webdav");
         if(yanelWebDAV != null && yanelWebDAV.equals("propfind1")) {
-            log.error("DEBUG: WebDAV client (" + request.getHeader("User-Agent") + ") requests to \"edit\" a resource: " + resource.getRealm() + ", " + resource.getPath());
+            log.info("WebDAV client (" + request.getHeader("User-Agent") + ") requests to \"edit\" a resource: " + resource.getRealm() + ", " + resource.getPath());
             //return;
         }
         
@@ -266,8 +276,7 @@ public class YanelServlet extends HttpServlet {
                             try {
                                 versionable.cancelCheckout();
                             } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                                throw new ServletException("Releasing the lock of '" + resource.getPath() + "' failed because of: " + e.getMessage(), e);
+                                throw new ServletException("Releasing the lock of <" + resource.getPath() + "> failed because of: " + e.getMessage(), e);
                             }
                         } else {
                             String eMessage = "Releasing the lock of '" + resource.getPath() + "' failed because checkout user '" + checkoutUserID + "' and session user '" + userID + "' are not the same!";
@@ -287,7 +296,6 @@ public class YanelServlet extends HttpServlet {
                 return;
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);
         }
     }
@@ -323,9 +331,8 @@ public class YanelServlet extends HttpServlet {
         org.w3c.dom.Document doc = null;
         try {
             doc = getDocument(NAMESPACE, "yanel");
-        } catch(Exception e) {
-            log.error(e.getMessage(), e);
-            throw new ServletException(e.getMessage());
+        } catch (Exception e) {
+            throw new ServletException(e.getMessage(), e);
         }
 
         Element rootElement = doc.getDocumentElement();
@@ -371,13 +378,14 @@ public class YanelServlet extends HttpServlet {
                     String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
                     try {
                         view = ((ViewableV1) res).getView(request, viewId);
-                    } catch(org.wyona.yarep.core.NoSuchNodeException e) {
-                        do404(request, response, doc, e.getMessage());
+                    } catch (org.wyona.yarep.core.NoSuchNodeException e) {
+                        String message = e.getMessage();
+                        log.error(message, e);
+                        do404(request, response, doc, message);
                         return;
-                    } catch(Exception e) {
-                        log.error(e.getMessage(), e);
-                        String message = e.toString();
-                        log.error(e.getMessage(), e);
+                    } catch (Exception e) {
+                        String message = e.getMessage();
+                        log.error(message, e);
                         Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
                         exceptionElement.appendChild(doc.createTextNode(message));
                         exceptionElement.setAttributeNS(NAMESPACE, "status", "500");
@@ -435,14 +443,14 @@ public class YanelServlet extends HttpServlet {
                         } else {
                             view = ((ViewableV2) res).getView(viewId);
                         }
-                    } catch(org.wyona.yarep.core.NoSuchNodeException e) {
-                        String message = "" + e;
-                        log.warn(message);
+                    } catch (org.wyona.yarep.core.NoSuchNodeException e) {
+                        String message = e.getMessage();
+                        log.warn(message, e);
                         do404(request, response, doc, message);
                         return;
-                    } catch(org.wyona.yanel.core.ResourceNotFoundException e) {
-                        String message = "" + e;
-                        log.warn(message);
+                    } catch (org.wyona.yanel.core.ResourceNotFoundException e) {
+                        String message = e.getMessage();
+                        log.warn(message, e);
                         do404(request, response, doc, message);
                         return;
                     }
@@ -574,17 +582,17 @@ public class YanelServlet extends HttpServlet {
                 } else {
                         Element resourceIsNullElement = (Element) rootElement.appendChild(doc.createElement("resource-is-null"));
                 }
-        } catch(org.wyona.yarep.core.NoSuchNodeException e) {
-            String message = "" + e;
-            log.warn(e, e);
+        } catch (org.wyona.yarep.core.NoSuchNodeException e) {
+            String message = e.getMessage();
+            log.warn(message, e);
             do404(request, response, doc, message);
             return;
-        } catch(org.wyona.yanel.core.ResourceNotFoundException e) {
-            String message = "" + e;
-            log.warn(e, e);
+        } catch (org.wyona.yanel.core.ResourceNotFoundException e) {
+            String message = e.getMessage();
+            log.warn(message, e);
             do404(request, response, doc, message);
             return;
-        } catch(Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             String message = e.toString() + "\n\n" + getStackTrace(e);
             //String message = e.toString();
@@ -670,7 +678,7 @@ public class YanelServlet extends HttpServlet {
                     Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
                     String newEntryPath = yanelInstance.getMap().getPath(realm, request.getServletPath() + "/" + new java.util.Date().getTime() + ".xml");
 
-                    log.error("DEBUG: Realm and Path of new Atom entry: " + realm + " " + newEntryPath);
+                    log.debug("Realm and Path of new Atom entry: " + realm + " " + newEntryPath);
                     Resource atomEntryResource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, newEntryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new ResourceTypeIdentifier(atomEntryUniversalName, null));
                     
                     ((ModifiableV2)atomEntryResource).write(in);
@@ -690,8 +698,7 @@ public class YanelServlet extends HttpServlet {
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_CREATED);
                     return;
                 } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                    throw new IOException(e.getMessage());
+                    throw new ServletException(e.getMessage(), e);
                 }
             }
 
@@ -745,7 +752,6 @@ public class YanelServlet extends HttpServlet {
 
             } catch (WorkflowException e) {
                 // TODO: Implement response if transition has failed ...
-                log.error(e, e);
                 throw new ServletException(e.getMessage(), e);
             }
         } else {
@@ -785,7 +791,7 @@ public class YanelServlet extends HttpServlet {
                     Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
                     String entryPath = yanelInstance.getMap().getPath(realm, request.getServletPath());
 
-                    log.error("DEBUG: Realm and Path of new Atom entry: " + realm + " " + entryPath);
+                    log.debug("Realm and Path of new Atom entry: " + realm + " " + entryPath);
 
                     Resource atomEntryResource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, entryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new ResourceTypeIdentifier(atomEntryUniversalName, null));
                     
@@ -807,8 +813,7 @@ public class YanelServlet extends HttpServlet {
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
                     return;
                 } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                    throw new IOException(e.getMessage());
+                    throw new ServletException(e.getMessage(), e);
                 }
             } else {
                 Resource resource = getResource(request, response);
@@ -849,8 +854,7 @@ public class YanelServlet extends HttpServlet {
                 return;
             }
         } catch (Exception e) {
-            log.error("Could not delete resource with URL " + request.getRequestURL() + " " + e.getMessage(), e);
-            throw new ServletException(e.getMessage(), e);
+            throw new ServletException("Could not delete resource with URL <" + request.getRequestURL() + ">: " + e.getMessage(), e);
         }
     }
 
@@ -866,11 +870,8 @@ public class YanelServlet extends HttpServlet {
             Resource res = yanelInstance.getResourceManager().getResource(getEnvironment(httpRequest, httpResponse), realm, path);
             
             return res;
-        } catch(Exception e) {
-            String errorMsg = "Could not get resource for request: " + request.getServletPath() + 
-                    ": " + e.getMessage();
-            log.error(errorMsg, e);
-            throw new ServletException(errorMsg, e);
+        } catch (Exception e) {
+            throw new ServletException("Could not get resource for request <" + request.getServletPath() + ">: " + e.getMessage(), e);
         }
     }
 
@@ -921,7 +922,6 @@ public class YanelServlet extends HttpServlet {
                 }
 
             } catch (Exception e) {
-                log.error(e.getMessage(), e);
                 throw new ServletException(e.getMessage(), e);
             }
         }
@@ -966,7 +966,7 @@ public class YanelServlet extends HttpServlet {
                     //org.w3c.dom.Document document = parser.parse(new ByteArrayInputStream(memBuffer));
                 } catch (org.xml.sax.SAXException e) {
                     String eMessage = "Data is not well-formed: " + e.getMessage();
-                    log.warn(eMessage);
+                    log.warn(eMessage, e);
                     response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     PrintWriter w = response.getWriter();
@@ -977,7 +977,7 @@ public class YanelServlet extends HttpServlet {
                     response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     PrintWriter w = response.getWriter();
-                    w.print(XMLExceptionV1.getDefaultException(XMLExceptionV1.DATA_NOT_WELL_FORMED, "" + e));
+                    w.print(XMLExceptionV1.getDefaultException(XMLExceptionV1.DATA_NOT_WELL_FORMED, e.getMessage()));
                     return;
                 }
 
@@ -1002,7 +1002,6 @@ public class YanelServlet extends HttpServlet {
                     ((ModifiableV2) res).write(in);
                 }
             } catch (Exception e) {
-                log.error(e.getMessage(), e);
                 throw new ServletException(e.getMessage(), e);
             }
         } else {
@@ -1024,9 +1023,7 @@ public class YanelServlet extends HttpServlet {
                 try {
                     versionable.checkin("updated");
                 } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                    throw new ServletException("Could not check in resource: " + resource.getPath() 
-                            + " " + e.getMessage(), e);
+                    throw new ServletException("Could not check in resource <" + resource.getPath() + ">: " + e.getMessage(), e);
                 }
             }
         }
@@ -1049,8 +1046,7 @@ public class YanelServlet extends HttpServlet {
             realm = map.getRealm(request.getServletPath());
             path = map.getPath(realm, request.getServletPath());
         } catch (Exception e) {
-            log.error(e, e);
-            throw new ServletException(e.getMessage());
+            throw new ServletException(e.getMessage(), e);
         }
 
         // Check Authorization
@@ -1060,7 +1056,6 @@ public class YanelServlet extends HttpServlet {
             authorized = realm.getPolicyManager().authorize(path, identity, usecase);
             if (log.isDebugEnabled()) log.debug("Check authorization result: " + authorized);
         } catch (Exception e) {
-            log.error(e, e);
             throw new ServletException(e.getMessage(), e);
         }
 
@@ -1093,7 +1088,7 @@ public class YanelServlet extends HttpServlet {
                         response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY);
                         return response;
                     } catch (Exception e) {
-                        log.error(e);
+                        log.error(e.getMessage(), e);
                     }
                 } else {
                     log.warn("SSL does not seem to be configured!");
@@ -1113,7 +1108,7 @@ public class YanelServlet extends HttpServlet {
                 try {
                     log.warn("Authentication was successful for user: " + getIdentity(request, map).getUsername());
                 } catch (Exception e) {
-                    log.error(e, e);
+                    log.error(e.getMessage(), e);
                 }
 
                 URL url = new URL(getRequestURLQS(request, null, false).toString());
@@ -1188,7 +1183,7 @@ public class YanelServlet extends HttpServlet {
 
             return urlQS;
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
             return null;
         }
     }
@@ -1444,7 +1439,7 @@ public class YanelServlet extends HttpServlet {
         // http://www-128.ibm.com/developerworks/java/library/j-io1/
         byte[] memBuffer = baos.toByteArray();
 
-        log.error("DEBUG: InputStream: " + baos);
+        log.debug("InputStream: " + baos);
 
         return new java.io.ByteArrayInputStream(memBuffer);
     }
@@ -1497,8 +1492,7 @@ public class YanelServlet extends HttpServlet {
                 transformer.transform(new DOMSource(doc), new SAXResult(xsltTransformer));
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new ServletException(e.getMessage());
+            throw new ServletException(e.getMessage(), e);
         }
     }
 
@@ -1627,7 +1621,6 @@ public class YanelServlet extends HttpServlet {
 */
                     }
                 } catch (Exception e) {
-                    log.error(e.getMessage(), e);
                     throw new ServletException(e.getMessage(), e);
                 }
             } else if (authorizationHeader.toUpperCase().startsWith("DIGEST")) {
@@ -1744,7 +1737,7 @@ public class YanelServlet extends HttpServlet {
             realm = getRealm(request);
             rc = getYanelResourceConfiguration(pathPrefix, environment , realm, path);
         } catch (Exception e) {
-            throw new ServletException(e);
+            throw new ServletException(e.getMessage(), e);
         }
         if (rc != null) {
             if (generateResponseFromRTview(request, response, rc, path)) return;
@@ -1820,7 +1813,7 @@ public class YanelServlet extends HttpServlet {
                     return;
                 }
             } catch (Exception e) {
-                throw new ServletException(e);
+                throw new ServletException(e.getMessage(), e);
             }
         } else {
             File globalFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "htdocs" + File.separator + path.substring(pathPrefix.length()));
@@ -1924,8 +1917,8 @@ public class YanelServlet extends HttpServlet {
                                     log.warn("Toolbar authorization denied (Realm: '" + realm.getName() + "', User: '" + identity.getUsername() + "', Path: '" + path + "')!");
                                 }
                             } catch (Exception e) {
-                                log.error(e, e);
-                                String message = "Error merging toolbar into content: " + e.toString();
+                                String message = "Error merging toolbar into content: " + e.getMessage();
+                                log.error(message, e);
                                 Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
                                 exceptionElement.appendChild(doc.createTextNode(message));
                                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -1936,7 +1929,7 @@ public class YanelServlet extends HttpServlet {
                             log.info("Toolbar has been disabled. Please check web.xml!");
                         }
                     } else {
-                        log.error("DEBUG: Exception to the rule. Yanel resource usecase is not null: " + request.getParameter(YANEL_RESOURCE_USECASE));
+                        log.warn("Exception to the rule. Yanel resource usecase is not null: " + request.getParameter(YANEL_RESOURCE_USECASE));
                     }
                 } else {
                     log.info("No HTML related mime type: " + mimeType);
@@ -2124,8 +2117,7 @@ public class YanelServlet extends HttpServlet {
             response.getWriter().print("Something went terribly wrong!");
             return;
         } catch(Exception e) {
-            log.error(e, e);
-            throw new ServletException(e.getMessage());
+            throw new ServletException(e.getMessage(), e);
         }
     }
 
@@ -2215,7 +2207,7 @@ public class YanelServlet extends HttpServlet {
             log.error("404 seems to be broken!");
             return;
         } catch (Exception e) {
-            log.error(e, e);
+            log.error(e.getMessage(), e);
             return;
         }
     }
