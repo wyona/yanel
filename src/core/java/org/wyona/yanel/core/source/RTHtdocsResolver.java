@@ -28,15 +28,19 @@ public class RTHtdocsResolver implements URIResolver {
 
     private static Logger log = Logger.getLogger(RTHtdocsResolver.class);
     private static final String SCHEME = "rthtdocs";
+    private static final String PATH_PREFIX = "htdocs";
     private Resource resource;
     
     public RTHtdocsResolver(Resource resource) {
         this.resource = resource;
     }
 
+    protected String getScheme() { return SCHEME; }
+    protected String getPathPrefix() { return PATH_PREFIX; }
+
     public Source resolve(String href, String base) throws SourceException {
-        String prefix = SCHEME + ":";
-        // only accept 'rthtdocs:' URIs
+        String prefix = getScheme() + ":";
+        // only accept '<scheme>:' URIs
         if (href == null || !href.startsWith(prefix)) {
             return null;
         }
@@ -52,8 +56,10 @@ public class RTHtdocsResolver implements URIResolver {
             if (log.isDebugEnabled()) {
                 log.debug("Package: " + packageName);
             }
-            
-            URL url = resource.getClass().getClassLoader().getResource(packageName.replace('.','/') + "/htdocs" + path);
+            URL url = resource.getClass().getClassLoader().getResource(packageName.replace('.','/') + "/" + getPathPrefix() + path);
+            if (url == null) {
+                log.error("Path " + getPathPrefix() + path + " does not seem to be contained within package " + packageName + " of resource " + resource.getResourceTypeUniversalName());
+            }
             InputStream in = url.openStream();
             YanelStreamSource source = new YanelStreamSource(in);
             URLConnection uc = url.openConnection();
@@ -61,15 +67,19 @@ public class RTHtdocsResolver implements URIResolver {
             source.setLastModified(resourceLastModifier);
             return source;
         } catch (Exception e) {
+            File resourceConfigDir = resource.getRTD().getConfigFile().getParentFile();
+            log.info("Fallback to resource config location: " + resourceConfigDir);
             try {
-                File resourceFile = new File(resource.getRTD().getConfigFile().getParentFile().getAbsolutePath() + "/htdocs" + path.replace('/', File.separatorChar));
+                File resourceFile = new File(resourceConfigDir.getAbsolutePath() + "/" + getPathPrefix() + path.replace('/', File.separatorChar));
                 InputStream in = new java.io.FileInputStream(resourceFile);
                 YanelStreamSource source = new YanelStreamSource(in);
-                long resourceLastModifier = resourceFile.lastModified();
-                source.setLastModified(resourceLastModifier);
+                long resourceLastModified = resourceFile.lastModified();
+                source.setLastModified(resourceLastModified);
                 return source;
             } catch (Exception ex) {
-                String errorMsg = "Could not resolve URI: " + path + ": " + e.toString();
+                //FIXME(?): ex is never logged or thrown
+                // but the previously caught e is used instead?!?
+                String errorMsg = "Could not resolve URI: " + path + " (" + resourceConfigDir + ")" + ": " + e.toString();
                 log.error(errorMsg, e);
                 throw new SourceException(errorMsg, e);
             }
