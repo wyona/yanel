@@ -51,7 +51,7 @@
   </target>
 
   <target name="install-cmdl-jar" description="Install Yanel command line JAR" depends="compile-cmdl-classes">
-    <yanel:install-jar id="cmdl"/>
+    <yanel:install-jar id="cmdl" sources-dir="${yanel.source.home}/src/core/java"/>
   </target>
 
   <target name="compile-cmdl" depends="compile-cmdl-classes, install-cmdl-jar"/>

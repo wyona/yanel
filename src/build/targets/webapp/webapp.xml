@@ -186,7 +186,7 @@
   </target>
 
   <target name="install-webapp-jar" description="Install Yanel webapp JAR" depends="compile-webapp-classes">
-    <yanel:install-jar id="webapp" package-dir="servlet"/>
+    <yanel:install-jar id="webapp" package-dir="servlet" sources-dir="${yanel.source.home}/src/webapp/src/java"/>
   </target>
 
   <target name="compile-webapp" depends="compile-webapp-classes, install-webapp-jar"/>

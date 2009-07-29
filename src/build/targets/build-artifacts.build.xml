@@ -7,6 +7,7 @@
    <attribute name="id"/>
    <attribute name="package-dir" default="@{id}"/>
    <attribute name="classes-dir" default="${classes.dir}"/>
+   <attribute name="sources-dir" default="${yanel.source.home}/src/@{package-dir}/java"/>
    <element name="jar-elements" optional="true" implicit="true"/>
    <sequential>
 
@@ -23,10 +24,19 @@
       <replacetoken>@VERSION@</replacetoken>
     </replace>
 
+    <mkdir dir="${yanel.source.home}/build/lib"/>
+    <jar destfile="${yanel.source.home}/build/lib/yanel-@{id}-${yanel.version}-r${yanel.revision}-sources.jar"
+      basedir="@{sources-dir}"
+      includes="org/wyona/yanel/@{package-dir}/**"
+    >
+      <jar-elements/>
+    </jar>
+
     <artifact:pom id="@{id}.project" file="${yanel.source.home}/build/lib/pom-@{id}.xml"/>
 
     <artifact:install file="${yanel.source.home}/build/lib/yanel-@{id}-${yanel.version}-r${yanel.revision}.jar">
       <pom refid="@{id}.project"/>
+      <attach file="${yanel.source.home}/build/lib/yanel-@{id}-${yanel.version}-r${yanel.revision}-sources.jar" classifier="sources"/>
     </artifact:install>
 
    </sequential>
@@ -37,6 +47,7 @@
    <attribute name="id"/>
    <attribute name="package-dir" default="@{id}"/>
    <attribute name="classes-dir" default="${classes.dir}"/>
+   <attribute name="sources-dir" default="${yanel.source.home}/src/@{package-dir}/java"/>
    <element name="jar-elements" optional="true" implicit="true"/>
    <sequential>
 
@@ -53,10 +64,19 @@
       <replacetoken>@VERSION@</replacetoken>
     </replace>
 
+    <mkdir dir="${yanel.source.home}/build/lib"/>
+    <jar destfile="${yanel.source.home}/build/lib/wyona-@{id}-${yanel.version}-r${yanel.revision}-sources.jar"
+      basedir="@{sources-dir}"
+      includes="org/wyona/@{package-dir}/**"
+    >
+      <jar-elements/>
+    </jar>
+
     <artifact:pom id="@{id}.project" file="${yanel.source.home}/build/lib/pom-@{id}.xml"/>
 
     <artifact:install file="${yanel.source.home}/build/lib/wyona-@{id}-${yanel.version}-r${yanel.revision}.jar">
       <pom refid="@{id}.project"/>
+      <attach file="${yanel.source.home}/build/lib/wyona-@{id}-${yanel.version}-r${yanel.revision}-sources.jar" classifier="sources"/>
     </artifact:install>
 
    </sequential>

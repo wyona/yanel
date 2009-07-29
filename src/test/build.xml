@@ -112,9 +112,13 @@
 
   <target name="install-jar" description="Install Yanel test JAR" depends="compile-classes">
     <yanel:install-jar id="test"
+     sources-dir="${yanel.build.dir}"
      classes-dir="${yanel.build.dir}" package-dir="foo"><!--: these attributes have dummy values, we only use the elements here: -->
       <fileset dir="${junit.build.dir}" includes="org/wyona/yanel/junit/**"/>
       <fileset dir="${htmlunit.build.dir}" includes="org/wyona/yanel/htmlunit/**"/>
+      <!--HACK: all JARs will get everything -->
+      <fileset dir="${junit.src.dir}" includes="org/wyona/yanel/junit/**"/>
+      <fileset dir="${htmlunit.src.dir}" includes="org/wyona/yanel/htmlunit/**"/>
     </yanel:install-jar>
   </target>
 
