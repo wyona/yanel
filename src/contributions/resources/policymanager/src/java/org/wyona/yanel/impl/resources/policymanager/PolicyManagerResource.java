@@ -18,7 +18,10 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,6 +41,7 @@ public class PolicyManagerResource extends BasicXMLResource {
     /**
      * See src/webapp/global-resource-configs/policy-manager_yanel-rc.xml or realm specific
      */
+    @Override
     public View getView(String viewId) throws Exception {
         String policyRequestPara = getEnvironment().getRequest().getParameter("yanel.policy");
         if (policyRequestPara.equals("update")) {
@@ -56,10 +60,8 @@ public class PolicyManagerResource extends BasicXMLResource {
         
         return getXMLView(viewId, getContentXML(viewId));
     }
-    
-    /**
-     *
-     */
+
+    @Override
     protected InputStream getContentXML(String viewId) throws Exception {
         // For example ?policy-path=/foo/bar.html
         String policyPath = request.getParameter(PARAMETER_EDIT_PATH);
@@ -81,21 +83,21 @@ public class PolicyManagerResource extends BasicXMLResource {
                 // Either order by usecases or identities
                 String orderedByParam = request.getParameter("orderedBy");
                 int orderedBy = 0;
-                if (orderedByParam != null) orderedBy = new java.lang.Integer(orderedByParam).intValue();
+                if (orderedByParam != null) orderedBy = new Integer(orderedByParam).intValue();
                 // Either show parent policies or do not show them
                 boolean showParents = false;
                 String showParentsParam = request.getParameter("showParents");
-                if (showParentsParam != null) showParents = new java.lang.Boolean(showParentsParam).booleanValue();
+                if (showParentsParam != null) showParents = new Boolean(showParentsParam).booleanValue();
 
                 // Either show tabs or do not show them
                 boolean showTabs = true;
                 String showTabsParam = request.getParameter("showTabs");
-                if (showTabsParam != null) showTabs = new java.lang.Boolean(showTabsParam).booleanValue();
+                if (showTabsParam != null) showTabs = new Boolean(showTabsParam).booleanValue();
 
                 boolean showAbbreviatedLabels = false;
                 if (getResourceConfigProperty("show-abbreviated-labels") != null) showAbbreviatedLabels = Boolean.valueOf(getResourceConfigProperty("show-abbreviated-labels"));
                 sb.append(PolicyViewer.getXHTMLView(getRealm().getPolicyManager(), getRealm().getIdentityManager().getGroupManager(), getPath(), null, orderedBy, showParents, showTabs, showAbbreviatedLabels));
-	    } else if (policyUsecase.equals("update")) {
+            } else if (policyUsecase.equals("update")) {
                 String getXML = request.getParameter("get");
                 String postXML = request.getParameter("post");
                 if (getXML != null && getXML.equals("identities")) {
@@ -128,11 +130,11 @@ public class PolicyManagerResource extends BasicXMLResource {
                     sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
                     sb.append("<head>");
                     sb.append("<title>Update Access Policy</title>");
-		    sb.append("<meta name=\"generator\" content=\"" + this.getClass().getName() + "\"/>");
+                    sb.append("<meta name=\"generator\" content=\"" + this.getClass().getName() + "\"/>");
 
-	            sb.append("<link rel=\"stylesheet\" href=\"" + PathUtil.getResourcesHtdocsPath(this) + "js/accesspolicyeditor/style.css\" type=\"text/css\"/>");
+                    sb.append("<link rel=\"stylesheet\" href=\"" + PathUtil.getResourcesHtdocsPathURLencoded(this) + "js/accesspolicyeditor/style.css\" type=\"text/css\"/>");
 
-                    sb.append("<script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"" + policyURL + "\", \"cancel-url\": \"" + cancelURL + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" +  PathUtil.getResourcesHtdocsPath(this) + "js/accesspolicyeditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script>");
+                    sb.append("<script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"" + policyURL + "\", \"cancel-url\": \"" + cancelURL + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" +  PathUtil.getResourcesHtdocsPathURLencoded(this) + "js/accesspolicyeditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script>");
 
                     sb.append("</head>");
                     sb.append("<body><h1>Update Access Policy</h1><p><div id=\"access-policy-editor-hook\"></div></p></body></html>");
@@ -193,11 +195,11 @@ public class PolicyManagerResource extends BasicXMLResource {
         return sb.toString();
     }
     
-    public class ItemIDComparator implements Comparator {
-        public int compare(Object o1, Object o2) {
+    public class ItemIDComparator implements Comparator<Item> {
+        public int compare(Item item1, Item item2) {
             try {
-                String id1 = ((Item)o1).getID();
-                String id2 = ((Item)o2).getID();
+                String id1 = item1.getID();
+                String id2 = item2.getID();
                 return id1.compareToIgnoreCase(id2);
             } catch (AccessManagementException e) {
                 throw new RuntimeException(e.getMessage(), e);
@@ -234,10 +236,11 @@ public class PolicyManagerResource extends BasicXMLResource {
 
     /**
      * Get users (TODO: Move this code into the security package)
+     * XXX(?) REFACTORME this method seems suspiciously similar to {@link #getPolicyGroups(Policy)}...
      */
     static public StringBuffer getPolicyIdentities(Policy p) {
-        Vector world = new Vector();
-        java.util.HashMap users = new java.util.HashMap();
+        List<String> world = new LinkedList<String>();
+        Map<String, List<String>> users = new HashMap<String, List<String>>();
         org.wyona.security.core.UsecasePolicy[] up = p.getUsecasePolicies();
         if (up != null && up.length > 0) {
             for (int i = 0; i < up.length; i++) {
@@ -248,11 +251,11 @@ public class PolicyManagerResource extends BasicXMLResource {
                     if (idps[j].getIdentity().isWorld()) {
                         world.add(up[i].getName());
                     } else {
-                        Vector userRights;
-                        if ((userRights = (Vector) users.get(idps[j].getIdentity().getUsername())) != null) {
+                        List<String> userRights;
+                        if ((userRights = users.get(idps[j].getIdentity().getUsername())) != null) {
                             log.debug("User has already been added: " + idps[j].getIdentity().getUsername());
                         } else {
-                            userRights = new Vector();
+                            userRights = new LinkedList<String>();
                             users.put(idps[j].getIdentity().getUsername(), userRights);
                         }
                         if (idps[j].getPermission()) {
@@ -268,14 +271,12 @@ public class PolicyManagerResource extends BasicXMLResource {
         StringBuffer sb = new StringBuffer();
         //sb.append("<li>WORLD (" + getCommaSeparatedList(world) + ")</li>");
 
-        java.util.Iterator userIterator = users.keySet().iterator();
-        while (userIterator.hasNext()) {
-            String userName = (String) userIterator.next();
+        for (String userName : users.keySet()) {
             sb.append("<user id=\""+userName+"\">");
-            Vector rights = (Vector) users.get(userName);
-            for (int k = 0; k < rights.size(); k++) {
+            List<String> rights = users.get(userName);
+            for (String right : rights) {
                 // TODO: Do not hardcode permission
-                sb.append("<right id=\"" + (String) rights.elementAt(k) + "\" permission=\"true\"/>");
+                sb.append("<right id=\"" + right + "\" permission=\"true\"/>");
             }
             sb.append("</user>");
         }
@@ -284,19 +285,20 @@ public class PolicyManagerResource extends BasicXMLResource {
 
     /**
      * Get groups (TODO: Move this code into the security package)
+     * XXX(?) REFACTORME this method seems suspiciously similar to {@link #getPolicyIdentities(Policy)}...
      */
     static public StringBuffer getPolicyGroups(Policy p) {
-        java.util.HashMap groups = new java.util.HashMap();
+        Map<String, List<String>> groups = new HashMap<String, List<String>>();
         org.wyona.security.core.UsecasePolicy[] up = p.getUsecasePolicies();
         if (up != null && up.length > 0) {
             for (int i = 0; i < up.length; i++) {
                 org.wyona.security.core.GroupPolicy[] ids = up[i].getGroupPolicies();
                 for (int j = 0; j < ids.length; j++) {
-                    Vector groupRights;
-                    if ((groupRights = (Vector) groups.get(ids[j].getId())) != null) {
+                    List<String> groupRights;
+                    if ((groupRights = groups.get(ids[j].getId())) != null) {
                         log.debug("Group has already been added: " + ids[j].getId());
                     } else {
-                        groupRights = new Vector();
+                        groupRights = new LinkedList<String>();
                         groups.put(ids[j].getId(), groupRights);
                     }
                     if (ids[j].getPermission()) {
@@ -310,14 +312,12 @@ public class PolicyManagerResource extends BasicXMLResource {
 
         StringBuffer sb = new StringBuffer();
 
-        java.util.Iterator userIterator = groups.keySet().iterator();
-        while (userIterator.hasNext()) {
-            String userName = (String) userIterator.next();
+        for (String userName : groups.keySet()) {
             sb.append("<group id=\""+userName+"\">");
-            Vector rights = (Vector) groups.get(userName);
-            for (int k = 0; k < rights.size(); k++) {
+            List<String> rights = groups.get(userName);
+            for (String right : rights) {
                 //TODO: Do not hardcode permission!
-                sb.append("<right id=\"" + (String) rights.elementAt(k) + "\" permission=\"true\"/>");
+                sb.append("<right id=\"" + right + "\" permission=\"true\"/>");
             }
             sb.append("</group>");
         }
