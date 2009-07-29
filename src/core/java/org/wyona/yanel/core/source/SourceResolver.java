@@ -6,7 +6,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.wyona.yanel.core.Resource;
 import org.wyona.commons.io.PathUtil;
 
@@ -18,19 +18,16 @@ import org.wyona.commons.io.PathUtil;
  */
 public class SourceResolver implements URIResolver {
 
-    private static Category log = Category.getInstance(SourceResolver.class);
+    private static final Logger log = Logger.getLogger(SourceResolver.class);
     
-    private HashMap resolvers;
+    private HashMap<String, URIResolver> resolvers;
     private Resource resource;
     
     public SourceResolver(Resource resource) {
         this.resource = resource;
-        this.resolvers = new HashMap();
+        this.resolvers = new HashMap<String, URIResolver>();
     }
     
-    /**
-     *
-     */
     public Source resolve(String uri, String base) throws SourceException {
         if (log.isDebugEnabled()) {
             log.debug("URI to be resolved: " + uri);
@@ -75,13 +72,10 @@ public class SourceResolver implements URIResolver {
         throw new SourceException("No resolver could be loaded for scheme: " + uriScheme);
     }
     
-    /**
-     *
-     */
     private URIResolver getResolver(String scheme) {
         URIResolver resolver = null;
         if (this.resolvers.containsKey(scheme)) {
-            resolver = (URIResolver)this.resolvers.get(scheme);
+            resolver = this.resolvers.get(scheme);
         } else {
             if (scheme.equals("yanelresource")) {
                 resolver = new ResourceResolver(this.resource);
@@ -98,6 +92,9 @@ public class SourceResolver implements URIResolver {
                 this.resolvers.put(scheme, resolver);
             } else if (scheme.equals("rtyanelhtdocs")) {
                 resolver = new RTYanelHtdocsResolver(this.resource);
+                this.resolvers.put(scheme, resolver);
+            } else if (scheme.equals("yanelhtdocs")) {
+                resolver = new YanelHtdocsResolver(this.resource);
                 this.resolvers.put(scheme, resolver);
             }
         }

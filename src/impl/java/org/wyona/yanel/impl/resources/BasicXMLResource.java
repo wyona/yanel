@@ -252,24 +252,26 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             Repository repo = getRealm().getRepository();
             TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPaths.length];
             for (int i = 0; i < xsltPaths.length; i++) {
-                // TODO: Use resolver
+                String xsltPath = xsltPaths[i];
+                int schemeEndIndex = xsltPath.indexOf(':');
                 if (xsltPaths[i].startsWith("file:")) {
+                    // TODO: Handle "file:" in SourceResolver
                     log.info("Scheme: file (" + xsltPaths[i] + ")");
                     xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(new java.io.FileInputStream(xsltPaths[i].substring(5))));
-                } else if(xsltPaths[i].startsWith("rthtdocs:")) {
-                    log.info("Scheme: rthtdocs (" + xsltPaths[i] + ")");
-                    xsltHandlers[i] = tf.newTransformerHandler(new org.wyona.yanel.core.source.RTHtdocsResolver(this).resolve(xsltPaths[i], null));
-                } else if(xsltPaths[i].startsWith("yanelresource:")) {
-                    log.info("Scheme: yanelresource (" + xsltPaths[i] + ")");
-                    xsltHandlers[i] = tf.newTransformerHandler(new org.wyona.yanel.core.source.ResourceResolver(this).resolve(xsltPaths[i], null));
-                } else {
-                    if (xsltPaths[i].indexOf(":/") > 0) {
+                } else if (schemeEndIndex >= 0) {
+                    String scheme = xsltPath.substring(0, schemeEndIndex);
+                    log.info("Scheme: " + scheme + " (" + xsltPath + ")");
+                    xsltHandlers[i] = tf.newTransformerHandler(uriResolver.resolve(xsltPath, null));
+                    /*XXX BACKWARD-COMPATIBILITY from now on we
+                        throw new SourceException("No resolver could be loaded for scheme: " + scheme);
+                    instead of simply only doing
                         log.error("No such protocol implemented: " + xsltPaths[i].substring(0, xsltPaths[i].indexOf(":/")));
-                    } else {
+                    and then probably also throwing some other exception anyway... 
+                    */
+                } else {
                         if (log.isDebugEnabled()) {
                             log.debug("Default Content repository will be used!");
                         }
-                    }
                     xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPaths[i]).getInputStream(), "yanelrepo:" + xsltPaths[i]));
                 }
                 xsltHandlers[i].getTransformer().setURIResolver(uriResolver);

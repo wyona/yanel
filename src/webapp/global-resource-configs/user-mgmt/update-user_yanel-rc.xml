@@ -3,7 +3,7 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="update-user" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
-  <yanel:property name="xslt" value="/xslt/usecase.xsl"/>
+  <yanel:property name="xslt" value="yanelhtdocs:/html.xslt"/>
   <yanel:property name="allowEditGroups" value="false"/>
   <yanel:property name="verifyPassword" value="true"/>
   
