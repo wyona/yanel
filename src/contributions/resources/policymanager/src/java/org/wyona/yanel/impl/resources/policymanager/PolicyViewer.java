@@ -42,15 +42,15 @@ public class PolicyViewer {
             sb.append("<link type=\"text/css\" href=\"" + backToRootPath(path) + "yanel/yanel-css/view-access-policy.css\" rel=\"stylesheet\"/>");
             sb.append("</head>");
             sb.append("<body>");
-	    if(showParents) {
+            if(showParents) {
+                sb.append("<h1>Access Policies for Path (and its parents) <i>" + path);
+                if (contentItemId != null) sb.append("#" + contentItemId);
+                sb.append("</i>:</h1>");
+
                 // Show also all parent policies
                 if (showTabs) {
                     sb.append("<p><a href=\"?yanel.policy=read&amp;orderedBy=" + orderedBy + "&amp;showParents=false\">Node Policy</a> | Parent Policies</p>");
                 }
-
-                sb.append("<p>Access Policies for Path (and its parents) <i>" + path);
-                if (contentItemId != null) sb.append("#" + contentItemId);
-                sb.append("</i>:</p>");
 
                 sb.append(getOrderByLink(orderedBy, showParents, showTabs));
                 sb.append("<p><table border=\"1\">");
@@ -63,14 +63,14 @@ public class PolicyViewer {
                 sb.append("<tr valign=\"top\"><td>Aggregated Policy</td>" + getPoliciesAsXHTML(pm, gm, path, contentItemId, aggregate, orderedBy, showAbbreviatedLabels) + "</tr>");
                 sb.append("</table></p>");
             } else {
+                sb.append("<div id=\"path-sentence\"><h1>Aggregated Access Policy for Path <i>" + path);
+                if (contentItemId != null) sb.append("#" + contentItemId);
+                sb.append("</i>:</h1></div>");
+
                 // Show policy of this node only
                 if (showTabs) {
                     sb.append("<p>Node Policy | <a href=\"?yanel.policy=read&amp;orderedBy=" + orderedBy + "&amp;showParents=true\">Parent Policies</a></p>");
                 }
-
-                sb.append("<div id=\"path-sentence\"><p>Aggregated Access Policy for Path <i>" + path);
-                if (contentItemId != null) sb.append("#" + contentItemId);
-                sb.append("</i>:</p></div>");
 
                 sb.append(getOrderByLink(orderedBy, showParents, showTabs));
                 boolean aggregate = true;

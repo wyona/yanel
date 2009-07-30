@@ -129,7 +129,7 @@ public class PolicyManagerResource extends BasicXMLResource {
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
                     sb.append("<head>");
-                    sb.append("<title>Update Access Policy</title>");
+                    sb.append("<title>Edit Access Policy</title>");
                     sb.append("<meta name=\"generator\" content=\"" + this.getClass().getName() + "\"/>");
 
                     sb.append("<link rel=\"stylesheet\" href=\"" + PathUtil.getResourcesHtdocsPathURLencoded(this) + "js/accesspolicyeditor/style.css\" type=\"text/css\"/>");
@@ -137,7 +137,7 @@ public class PolicyManagerResource extends BasicXMLResource {
                     sb.append("<script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"" + policyURL + "\", \"cancel-url\": \"" + cancelURL + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" +  PathUtil.getResourcesHtdocsPathURLencoded(this) + "js/accesspolicyeditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script>");
 
                     sb.append("</head>");
-                    sb.append("<body><h1>Update Access Policy</h1><p><div id=\"access-policy-editor-hook\"></div></p></body></html>");
+                    sb.append("<body><h1>Edit Access Policy</h1><p><div id=\"access-policy-editor-hook\"></div></p></body></html>");
                 }
             } else {
                 //response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
