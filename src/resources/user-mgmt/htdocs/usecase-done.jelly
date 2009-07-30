@@ -2,7 +2,7 @@
 <j:jelly xmlns:j="jelly:core">
   <html xmlns="http://www.w3.org/1999/xhtml">
     <body>
-      <h1>Usecase done</h1>
+      <h1>Operation done</h1>
       <p>${resource.getErrorMessages()}</p>
       <p>${resource.getInfoMessages()}</p>
 

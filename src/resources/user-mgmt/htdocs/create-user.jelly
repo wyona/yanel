@@ -14,9 +14,9 @@
         <br/>
         Password: <input type="password" name="password1"/>
         <br/>
-        Password: <input type="password" name="password2"/>
+        Confirm password: <input type="password" name="password2"/>
         <br/>
-        <input type="submit" name="submit" value="Ok"/>
+        <input type="submit" name="submit" value="Create"/>
         <input type="submit" name="cancel" value="Cancel"/>
       </form>
     </body>

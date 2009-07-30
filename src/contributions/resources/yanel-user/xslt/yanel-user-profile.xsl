@@ -27,21 +27,20 @@
       <xsl:choose>
         <xsl:when test="contains('true',$deletion)">
           <head>
-            <title></title>
             <link type="text/css" href="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-css/global.css" rel="stylesheet"></link>
           </head>
-          <body>	    
+          <body>
             <xsl:call-template name="show-message"/>
           </body>
         </xsl:when>
         <xsl:otherwise>
           <head>
-            <title>Change user profile</title>
+            <title>Edit user profile</title>
             <link type="text/css" href="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-css/global.css" rel="stylesheet"></link>
           </head>
-          <body>        
+          <body>
             <table id="bodytable" cellpadding="0" cellspacing="0"><tr><td id="title">
-              Change user profile of <xsl:value-of select="$userId"/>
+              Edit user profile of <xsl:value-of select="$userId"/>
             </td><td id="logo"><img src="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-img/yanel_header.png"/></td></tr><tr><td colspan="2" valign="top" width="100%"><div id="content">
             <h1> 
               User Profile of <xsl:value-of select="$userId"/>
@@ -61,13 +60,13 @@
       <p>
         <table cellpadding="0" cellspacing="0" border="0">
           <tr>
-            <td>Enter current password:</td>
+            <td>Current password:</td>
             <td>
               <input type="password" name="oldPassword"/>
             </td>
           </tr>
           <tr>
-            <td>Enter new password:</td>
+            <td>New password:</td>
             <td>
               <input type="password" name="newPassword"/>
             </td>
@@ -80,14 +79,14 @@
           </tr>
           <tr>
             <td colspan="2">
-              <input type="submit" name="submitPassword" value="Change Password"/>
+              <input type="submit" name="submitPassword" value="Apply"/>
             </td>
           </tr>
         </table>
       </p>
     </form>
 
-    <h2>Change Profile</h2>
+    <h2>Change Identity</h2>
     <form name="user-profile-form" method="post" action="#">
       <p>
         <table>
@@ -104,6 +103,18 @@
             </td>
           </tr>
           <tr>
+            <td colspan="2">
+              <input type="submit" name="submitProfile" value="Apply"/>
+            </td>
+          </tr>
+        </table>
+      </p>
+    </form>
+
+    <h2>Account info</h2>
+      <p>
+        <table>
+          <tr>
             <td>Language:</td>
             <td><xsl:value-of select="$user-profile-language"/></td>
           </tr>
@@ -115,14 +126,8 @@
             <td>Description:</td>
             <td><xsl:value-of select="$description"/></td>
           </tr>
-          <tr>
-            <td colspan="2">
-              <input type="submit" name="submitProfile" value="Change Profile"/>
-            </td>
-          </tr>
         </table>
       </p>
-    </form>
 
     <h2>Groups</h2>
     Groups which this user belongs to: <xsl:value-of select="$userGroupsString"/>

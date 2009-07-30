@@ -2,7 +2,7 @@
 <j:jelly xmlns:j="jelly:core">
   <html xmlns="http://www.w3.org/1999/xhtml">
     <body>
-      <h1>Update User: ${resource.getParameterAsString('userID')}</h1>
+      <h1>Edit User: ${resource.getParameterAsString('userID')}</h1>
       <p>${resource.getErrorMessages()}</p>
       <form action="" >
         <input type="hidden" name="userID" value="${resource.getParameterAsString('userID')}"/>
@@ -15,7 +15,7 @@
         <br/>
         New Password: <input type="password" name="password1"/>
         <br/>
-        New Password: <input type="password" name="password2"/>
+        Confirm new password: <input type="password" name="password2"/>
         <br/>
         
         Group Affiliation:
@@ -37,7 +37,7 @@
           </j:forEach>
         </table>
 
-        <input type="submit" name="submit" value="Ok"/>
+        <input type="submit" name="submit" value="Submit"/>
         <input type="submit" name="cancel" value="Cancel"/>
       </form>
     </body>
