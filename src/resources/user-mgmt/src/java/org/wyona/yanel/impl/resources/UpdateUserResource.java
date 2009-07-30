@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2007-2009 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.wyona.yanel.impl.resources;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.api.Group;
 import org.wyona.security.core.api.GroupManager;
@@ -38,7 +38,7 @@ import org.wyona.yanel.impl.resources.usecase.UsecaseException;
  */
 public class UpdateUserResource extends ExecutableUsecaseResource {
 
-    private static Category log = Category.getInstance(UpdateUserResource.class);
+	private static final Logger log = Logger.getLogger(UpdateUserResource.class);
     
     private static final String PARAM_USER_ID = "userID";
     private static final String PARAM_NAME = "name";
@@ -52,10 +52,12 @@ public class UpdateUserResource extends ExecutableUsecaseResource {
     private static final String PROPERTY_ALLOW_EDIT_GROUPS = "allowEditGroups";
     private static final String PROPERTY_VERIFY_PASSWORD = "verifyPassword";
 
+    @Override
     public void cancel() {
         // don't do anything
     }
 
+    @Override
     protected void init() throws UsecaseException {
         super.init();
         try {
@@ -77,6 +79,7 @@ public class UpdateUserResource extends ExecutableUsecaseResource {
         }
     }
     
+    @Override
     public void execute() throws UsecaseException {
         String name = getParameterAsString(PARAM_NAME);
         String email = getParameterAsString(PARAM_EMAIL);
@@ -122,14 +125,13 @@ public class UpdateUserResource extends ExecutableUsecaseResource {
             user.save();
             addInfoMessage("User " + user.getID() + " (" + name + ") updated successfully.");
         } catch (AccessManagementException e) {
-            log.error(e, e);
             throw new UsecaseException(e.getMessage(), e);
         } catch (Exception e) {
-            log.error(e, e);
             throw new UsecaseException(e.getMessage(), e);
         }
     }
 
+    @Override
     public boolean checkPreconditions() throws UsecaseException {
         String name = getParameterAsString(PARAM_NAME);
         String email = getParameterAsString(PARAM_EMAIL);

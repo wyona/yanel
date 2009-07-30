@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2007-2009 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,19 +16,16 @@
 
 package org.wyona.yanel.impl.resources;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.api.UserManager;
 import org.wyona.yanel.impl.resources.usecase.ExecutableUsecaseResource;
 import org.wyona.yanel.impl.resources.usecase.UsecaseException;
 
 
-/**
- *
- */
 public class CreateUserResource extends ExecutableUsecaseResource {
 
-    private static Category log = Category.getInstance(CreateUserResource.class);
+    private static final Logger log = Logger.getLogger(CreateUserResource.class);
 
     private static final String PARAM_USER_ID = "userID";
     private static final String PARAM_NAME = "name";
@@ -36,6 +33,7 @@ public class CreateUserResource extends ExecutableUsecaseResource {
     private static final String PARAM_PASSWORD1 = "password1";
     private static final String PARAM_PASSWORD2 = "password2";
 
+    @Override
     public void execute() throws UsecaseException {
         UserManager userManager = getRealm().getIdentityManager().getUserManager();
         String id = getParameterAsString(PARAM_USER_ID);
@@ -49,11 +47,11 @@ public class CreateUserResource extends ExecutableUsecaseResource {
             userManager.createUser(id, name, email, password);
             addInfoMessage("User " + id + " (" + name + ") created successfully.");
         } catch (AccessManagementException e) {
-            log.error(e, e);
             throw new UsecaseException(e.getMessage(), e);
         }
     }
 
+    @Override
     public boolean checkPreconditions() throws UsecaseException {
         String id = getParameterAsString(PARAM_USER_ID);
         String name = getParameterAsString(PARAM_NAME);

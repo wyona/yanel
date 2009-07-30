@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2007-2009 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.wyona.yanel.impl.resources;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.api.GroupManager;
 import org.wyona.yanel.impl.resources.usecase.ExecutableUsecaseResource;
@@ -28,11 +28,12 @@ import org.wyona.yanel.impl.resources.usecase.UsecaseException;
  */
 public class CreateGroupResource extends ExecutableUsecaseResource {
 
-    private static Category log = Category.getInstance(CreateGroupResource.class);
+    private static final Logger log = Logger.getLogger(CreateGroupResource.class);
 
     private static final String PARAM_GROUP_ID = "groupID";
     private static final String PARAM_NAME = "name";
 
+    @Override
     public void execute() throws UsecaseException {
         GroupManager groupManager = getRealm().getIdentityManager().getGroupManager();
         String id = getParameterAsString(PARAM_GROUP_ID);
@@ -44,11 +45,11 @@ public class CreateGroupResource extends ExecutableUsecaseResource {
             groupManager.createGroup(id, name);
             addInfoMessage("Group " + id + " (" + name + ") created successfully.");
         } catch (AccessManagementException e) {
-            log.error(e, e);
             throw new UsecaseException(e.getMessage(), e);
         }
     }
 
+    @Override
     public boolean checkPreconditions() throws UsecaseException {
         String id = getParameterAsString(PARAM_GROUP_ID);
         String name = getParameterAsString(PARAM_NAME);
