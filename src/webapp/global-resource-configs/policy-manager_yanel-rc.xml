@@ -6,10 +6,12 @@
   <yanel:custom-config>
     <views>
       <view id="default" type="XML"> <!-- default view shows the policies -->
+        <xslt>yanelhtdocs:/html.xslt</xslt>
         <!-- <xslt>/xslt/global.xsl</xslt> -->
         <mime-type>text/html</mime-type> <!-- IE browser has trouble with application/xhtml+xml -->
       </view>
       <view id="editor" type="XML">
+        <xslt>yanelhtdocs:/html.xslt</xslt>
         <mime-type>text/html</mime-type> <!-- browsers have trouble with application/xhtml+xml re javascript of GWT -->
         <!-- <xslt>/xslt/global.xsl</xslt> -->
       </view>
