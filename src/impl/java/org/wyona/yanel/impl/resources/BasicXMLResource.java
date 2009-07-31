@@ -132,7 +132,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      */
     public ViewDescriptor[] getViewDescriptors() {
         if (this.viewDescriptors != null) {
-            return (ViewDescriptor[])this.viewDescriptors.values().toArray(new ViewDescriptor[this.viewDescriptors.size()]);
+            return this.viewDescriptors.values().toArray(new ViewDescriptor[this.viewDescriptors.size()]);
         }
         try {
             this.viewDescriptors = new HashMap<String, ViewDescriptor>();
@@ -148,7 +148,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                     viewDescriptor.configure(viewConfigs[i]);
                     this.viewDescriptors.put(id, viewDescriptor);
                 }
-                return (ViewDescriptor[])this.viewDescriptors.values().toArray(new ViewDescriptor[this.viewDescriptors.size()]);
+                return this.viewDescriptors.values().toArray(new ViewDescriptor[this.viewDescriptors.size()]);
             }
             // no custom config
             ConfigurableViewDescriptor[] vd = new ConfigurableViewDescriptor[2];
@@ -211,9 +211,6 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         return -1;
     }
 
-    /**
-     *
-     */
     public View getXMLView(String viewId, InputStream xmlInputStream) throws Exception {
         View view = new View();
         if (viewId == null) {
@@ -224,12 +221,31 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         view.setMimeType(mimeType);
 
         StringWriter errorWriter = new StringWriter();
+
         try {
             if (viewId != null && viewId.equals(SOURCE_VIEW_ID)) {
                 view.setInputStream(xmlInputStream);
                 return view;
             }
 
+            // write result into view:
+            view.setInputStream(getTransformedInputStream(xmlInputStream, viewDescriptor, errorWriter));
+            return view;
+        } catch(Exception e) {
+            log.error(e + " (" + getPath() + ", " + getRealm() + ")", e);
+            String errorMsg;
+            String transformationError = errorWriter.toString();
+            if (transformationError != null) {
+                errorMsg = "Transformation error:\n" + transformationError; 
+                log.error(errorMsg);
+            } else {
+                errorMsg = e.getMessage();
+            }
+            throw new Exception(errorMsg);
+        }
+    }
+
+    private InputStream getTransformedInputStream(InputStream xmlInputStream, ConfigurableViewDescriptor viewDescriptor, StringWriter errorWriter) throws Exception {
             // create reader:
             XMLReader xmlReader = XMLReaderFactory.createXMLReader();
             CatalogResolver catalogResolver = new CatalogResolver();
@@ -309,22 +325,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             // execute pipeline:
             xmlReader.parse(new InputSource(xmlInputStream));
 
-            // write result into view:
-            view.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
-            return view;
-        } catch(Exception e) {
-            log.error(e + " (" + getPath() + ", " + getRealm() + ")", e);
-            String errorMsg;
-            String transformationError = errorWriter.toString();
-            if (transformationError != null) {
-                errorMsg = "Transformation error:\n" + transformationError; 
-                log.error(errorMsg);
-            } else {
-                errorMsg = e.getMessage();
-            }
-            throw new Exception(errorMsg);
-        }
-
+            return new ByteArrayInputStream(baos.toByteArray());
     }
 
     /**
@@ -392,7 +393,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             catalogues.add(realmCatalogue);
         }
         catalogues.add("global");
-        return (String [])catalogues.toArray(new String[catalogues.size()]);
+        return catalogues.toArray(new String[catalogues.size()]);
     }
 
     /**
