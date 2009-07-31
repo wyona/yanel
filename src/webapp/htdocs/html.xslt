@@ -23,7 +23,9 @@
       <body>
         <table cellspacing="0" cellpadding="0" id="bodytable">
           <tr>
-            <td id="title"></td>
+            <td id="title">
+              <xsl:copy-of select="/xhtml:html/xhtml:body//xhtml:h1[1]"/>
+            </td>
             <td id="logo">
               <img src="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-img/yanel_header.png"/>
             </td>
@@ -43,6 +45,8 @@
       </body>
     </html>
   </xsl:template>
+
+  <xsl:template match="xhtml:h1"/>
 
   <xsl:template match="xhtml:title">
      <xsl:call-template name="yanel:add-page-title"/>
