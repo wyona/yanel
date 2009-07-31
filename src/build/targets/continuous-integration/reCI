@@ -1,4 +1,10 @@
 #!/bin/sh
+# This variant of the "CI" script should only have one single difference:
+#  the server is not stopped at the end, but at the start, to make it available between each script invocation for testing purposes.
+
+# should allow Yanel to keep running past the end of Hudson jobs,
+# disabled because of http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6893 unfortunately:
+#BUILD_ID=dontKillMe
 
 if [ $# -ne 5 ]; then
 	echo "Usage: CI <HTTP port> <HTTPS port> <SHUTDOWN port> <AJP port> <Canoo webtest path>"
