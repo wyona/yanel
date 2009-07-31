@@ -1691,6 +1691,7 @@ public class YanelServlet extends HttpServlet {
         //XXX: maybe we should use a configuration file instead!
         java.util.Map<String, String> globalRCmap = new HashMap<String, String>();
         globalRCmap.put("data-repository-sitetree.html", "data-repo-sitetree_yanel-rc.xml");
+        globalRCmap.put("user-forgot-pw.html", "user-forgot-pw_yanel-rc.xml");
         final String admin = "admin/";
         globalRCmap.put(admin + "list-groups.html", "user-mgmt/list-groups_yanel-rc.xml");
         globalRCmap.put(admin + "list-users.html", "user-mgmt/list-users_yanel-rc.xml");

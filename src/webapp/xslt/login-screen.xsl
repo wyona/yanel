@@ -17,7 +17,7 @@
   <xsl:template match="/">
     <html>
       <head>
-        <title>Yanel - Login</title>
+        <title>Login - Yanel</title>
         <link rel="stylesheet" href="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-css/global.css" type="text/css"/>
       </head>
       <body>
@@ -38,7 +38,7 @@
         <xsl:apply-templates select="/yanel:yanel-auth-screen/yanel:message"/>
           <form method="POST">
             Username:<xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-default"><input type="text" name="yanel.login.username" value="{/yanel:yanel-auth-screen/yanel:login-default/@yanel:username}"/></xsl:when><xsl:otherwise><input type="text" name="yanel.login.username"/></xsl:otherwise></xsl:choose>
-            Password:<input type="password" name="yanel.login.password"/>
+            Password:<input type="password" name="yanel.login.password"/> (<a href="{$yanel.back2realm}{$yanel.reservedPrefix}/user-forgot-pw.html">I forgot my password!</a>)
             <xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-default"><input type="checkbox" name="remember-my-login-name" checked="checked"/></xsl:when><xsl:otherwise><input type="checkbox" name="remember-my-login-name"/></xsl:otherwise></xsl:choose> Remember my login name (for 1 day (<a href="">More info</a>). Uncheck if on a shared computer!)
             <input type="submit" value="Login" name="regular-login"/>
           </form>
