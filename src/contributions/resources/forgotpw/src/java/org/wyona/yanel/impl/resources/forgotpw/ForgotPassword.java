@@ -112,7 +112,7 @@ public class ForgotPassword extends BasicXMLResource {
             if(!strVal.equals("success")) {
                 statusElement.setTextContent(strVal);
             } else {
-                statusElement.setTextContent("<p>Password change request was successful.</p><p>Please check your email for further instructions on how to complete your request.</p>");
+                statusElement.setTextContent("Password change request was successful. Please check your email for further instructions on how to complete your request.");
             }
         } else if (request.getParameter("pwresetid") != null && !request.getParameter("pwresetid").equals("") && !action.equals(SUBMITNEWPW)){
             User usr = findRepoUser(request.getParameter("pwresetid"), totalValidHrs);
@@ -259,7 +259,7 @@ public class ForgotPassword extends BasicXMLResource {
                     int port = Integer.parseInt(getResourceConfigProperty("smtpPort"));
                     String from = getResourceConfigProperty("smtpFrom");
                     String to =  userList[i].getEmail();
-                    SendMail.send(emailServer, port, from, to, "Password change request needs your confirmation", emailStr);
+                    SendMail.send(emailServer, port, from, to, "password change request needs your confirmation", emailStr);
                     String xmlStrVal = generateXML(pwexp);
 
 
