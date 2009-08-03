@@ -31,6 +31,7 @@ public class SearchResource extends BasicXMLResource {
         String query = getRequest().getParameter("q");
         if (query != null) {
             sb.append("<y:query>" + query + "</y:query>");
+            try {
             org.wyona.yarep.core.Node[] nodes = getRealm().getRepository().getSearcher().search(query);
             if (nodes != null && nodes.length > 0) {
                 //sb.append("<provider source-name=\"" + "Wyona-FOAF" + "\" source-domain=\"" + "http://foaf.wyona.org" + "\" numberOfResults=\"" + pNodes.length + "\">");
@@ -40,6 +41,10 @@ public class SearchResource extends BasicXMLResource {
                     sb.append("</y:result>");
                 }
                 sb.append("</y:results>");
+            }
+            } catch(org.wyona.yarep.core.search.SearchException e) {
+                log.error(e, e);
+                sb.append("<y:exception>" + e.getMessage() + "</y:exception>");
             }
         }
         sb.append("</y:search>");

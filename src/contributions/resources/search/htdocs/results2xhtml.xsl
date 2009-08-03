@@ -39,8 +39,9 @@
 
         <hr/>
 
+        <xsl:apply-templates select="/y:search/y:exception"/>
         <xsl:apply-templates select="/y:search/y:results"/>
-        <xsl:if test="not(/y:search/y:results)">
+        <xsl:if test="not(/y:search/y:results) and not(/y:search/y:exception)">
 <p>
          Your search - <xsl:value-of select="/y:search/y:query"/> - did not match any documents
 </p>
@@ -60,6 +61,13 @@
 
   <xsl:template match="y:result">
     <li><a href="{$yarep.back2realm}{@repo-path}"><xsl:value-of select="@repo-path"/></a></li>
+  </xsl:template>
+
+  <xsl:template match="y:exception">
+    <h2><font color="red">Exception:</font></h2>
+    <p>
+    <xsl:value-of select="."/>
+    </p>
   </xsl:template>
   
   <xsl:template match="@*|node()" priority="-1">
