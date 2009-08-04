@@ -32,16 +32,14 @@ public class SearchResource extends BasicXMLResource {
         if (query != null) {
             sb.append("<y:query>" + query + "</y:query>");
             try {
-            org.wyona.yarep.core.Node[] nodes = getRealm().getRepository().getSearcher().search(query);
-            if (nodes != null && nodes.length > 0) {
-                //sb.append("<provider source-name=\"" + "Wyona-FOAF" + "\" source-domain=\"" + "http://foaf.wyona.org" + "\" numberOfResults=\"" + pNodes.length + "\">");
+                Result[] results = getLocalResults(query);
                 sb.append("<y:results provider=\"google\">");
-                for (int i = 0; i < nodes.length; i++) {
-                    sb.append("<y:result repo-path=\""+nodes[i].getPath()+"\">");
+                for (int i = 0; i < results.length; i++) {
+                    sb.append("<y:result url=\"" + results[i].getURL() + "\">");
+                    sb.append("  <y:title>" + results[i].getTitle() + "</y:title>");
                     sb.append("</y:result>");
                 }
                 sb.append("</y:results>");
-            }
             } catch(org.wyona.yarep.core.search.SearchException e) {
                 log.error(e, e);
                 sb.append("<y:exception>" + e.getMessage() + "</y:exception>");
@@ -49,5 +47,21 @@ public class SearchResource extends BasicXMLResource {
         }
         sb.append("</y:search>");
         return new ByteArrayInputStream(sb.toString().getBytes());
+    }
+
+    /**
+     *
+     */
+    private Result[] getLocalResults(String query) throws Exception {
+        org.wyona.yarep.core.Node[] nodes = getRealm().getRepository().getSearcher().search(query);
+        if (nodes != null && nodes.length > 0) {
+            Result[] results = new Result[nodes.length];
+            for (int i = 0; i < nodes.length; i++) {
+                results[i] = new Result(nodes[i].getPath(), "TODO");
+            }
+            return results;
+        } else {
+            return new Result[0];
+        }
     }
 }

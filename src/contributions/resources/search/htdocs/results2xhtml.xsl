@@ -52,7 +52,7 @@
   </xsl:template>
 
   <xsl:template match="y:results">
-    <h2>All Results</h2>
+    <h2>All Results (<a href="?q={../y:query}&amp;yanel.resource.viewid=xml">as XML</a>)</h2>
 <p>Provider: <xsl:value-of select="@provider"/></p>
     <ul>
     <xsl:apply-templates select="y:result"/>
@@ -60,7 +60,7 @@
   </xsl:template>
 
   <xsl:template match="y:result">
-    <li><a href="{$yarep.back2realm}{@repo-path}"><xsl:value-of select="@repo-path"/></a></li>
+    <li><a href="{$yarep.back2realm}{@url}"><xsl:value-of select="@url"/></a></li>
   </xsl:template>
 
   <xsl:template match="y:exception">
