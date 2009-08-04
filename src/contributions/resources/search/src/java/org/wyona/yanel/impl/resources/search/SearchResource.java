@@ -11,6 +11,9 @@ import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 
+import org.wyona.meguni.parser.Parser;
+import org.wyona.meguni.util.ResultSet;
+
 /**
  * Search resource
  */
@@ -38,12 +41,9 @@ public class SearchResource extends BasicXMLResource {
                     if (provider.equals("yanel")) {
                         results = getLocalResults(query);
                     } else if (provider.equals("google")) {
-                        log.warn("Provider '" + provider + "' not implemented yet!");
-                        results = new Result[0];
-                        log.warn("Provider '" + provider + "' not implemented yet!");
+                        results = getGoogleResults(query);
                     } else if (provider.equals("bing")) {
-                        results = new Result[0];
-                        log.warn("Provider '" + provider + "' not implemented yet!");
+                        results = getMSNResults(query);
                     } else {
                         results = getLocalResults(query);
                         log.warn("No such provider: " + provider);
@@ -54,7 +54,7 @@ public class SearchResource extends BasicXMLResource {
                     log.warn("No search provider specified!");
                 }
 
-                sb.append("<y:provider>" + provider + "</y:provider>");
+                sb.append("<y:provider id=\"" + provider + "\">" + provider + "</y:provider>");
 
                 if (results != null && results.length > 0) {
                     sb.append("<y:results>");
@@ -87,6 +87,47 @@ public class SearchResource extends BasicXMLResource {
             Result[] results = new Result[nodes.length];
             for (int i = 0; i < nodes.length; i++) {
                 results[i] = new Result(nodes[i].getPath(), null, null, nodes[i].getMimeType());
+            }
+            return results;
+        } else {
+            return new Result[0];
+        }
+    }
+
+    /**
+     *
+     */
+    private Result[] getGoogleResults(String query) throws Exception {
+        String className = getResourceConfigProperty("parser");
+        if (className == null) className = "org.wyona.meguni.parser.impl.GoogleParser";
+        //if (className == null) className = "org.wyona.meguni.parser.impl.MSNParser";
+        Parser parser = (Parser) Class.forName(className).newInstance();
+        ResultSet rs = parser.parse(query);
+
+        if (rs != null && rs.size() > 0) {
+            Result[] results = new Result[rs.size()];
+            for (int i = 0; i < rs.size(); i++) {
+                results[i] = new Result(rs.get(i).url.toString(), null, null, null);
+            }
+            return results;
+        } else {
+            return new Result[0];
+        }
+    }
+
+    /**
+     *
+     */
+    private Result[] getMSNResults(String query) throws Exception {
+        String className = getResourceConfigProperty("parser");
+        if (className == null) className = "org.wyona.meguni.parser.impl.MSNParser";
+        Parser parser = (Parser) Class.forName(className).newInstance();
+        ResultSet rs = parser.parse(query);
+
+        if (rs != null && rs.size() > 0) {
+            Result[] results = new Result[rs.size()];
+            for (int i = 0; i < rs.size(); i++) {
+                results[i] = new Result(rs.get(i).url.toString(), null, null, null);
             }
             return results;
         } else {
