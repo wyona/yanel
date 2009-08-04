@@ -4,6 +4,7 @@
 
 package org.wyona.yanel.impl.resources.search;
 
+import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
 
 import java.io.ByteArrayInputStream;
@@ -14,12 +15,36 @@ import org.apache.log4j.Logger;
 import org.wyona.meguni.parser.Parser;
 import org.wyona.meguni.util.ResultSet;
 
+import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.ConfigurationUtil;
+
 /**
  * Search resource
  */
 public class SearchResource extends BasicXMLResource {
     
     private static Logger log = Logger.getLogger(SearchResource.class);
+
+    /**
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(String)
+     */
+    public View getView(String viewId) throws Exception {
+        String provider = getRequest().getParameter("provider");
+        if (provider != null && !provider.equals("yanel")) {
+            ExternalSearchProvider esp = getExternalSearchProvider(provider);
+            if (esp != null) {
+                View view = new View();
+                view.setResponse(false); // this resource writes the response itself
+
+                javax.servlet.http.HttpServletResponse response = getResponse();
+                response.setStatus(307);
+                String query = getRequest().getParameter("q");
+                response.setHeader("Location", esp.getURL() + query);
+                return view;
+            }
+        }
+        return super.getView(viewId);
+    }
     
     /*
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -136,9 +161,49 @@ public class SearchResource extends BasicXMLResource {
     }
 
     /**
-     * @see ViewableV2#exists()
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#exists()
      */
-    public boolean exists() {
+    public boolean exists() throws Exception {
         return true;
+    }
+
+    /**
+     *
+     */
+    private ExternalSearchProvider getExternalSearchProvider(String providerId) throws Exception {
+        org.w3c.dom.Document customConfigDoc = getConfiguration().getCustomConfiguration();
+        if (customConfigDoc != null) {
+            Configuration config = ConfigurationUtil.toConfiguration(customConfigDoc.getDocumentElement());
+            Configuration externalSearchProvidersConfig = config.getChild("external-search-providers");
+            Configuration[] searchProviders = externalSearchProvidersConfig.getChildren("provider");
+            for (int i = 0; i < searchProviders.length; i++) {
+                if (searchProviders[i].getAttribute("id").equals(providerId)) {
+                    return new ExternalSearchProvider(providerId, searchProviders[i].getAttribute("url"), null);
+                }
+            }
+        }
+        return null;
+    }
+}
+
+/**
+ *
+ */
+class ExternalSearchProvider {
+
+    private String url;
+    
+    /**
+     *
+     */
+    public ExternalSearchProvider(String id, String url, String label) {
+        this.url = url;
+    }
+
+    /**
+     *
+     */
+    public String getURL() {
+        return url;
     }
 }
