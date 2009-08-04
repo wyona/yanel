@@ -34,17 +34,16 @@
         <h1>Search</h1>
 
         <form>
-          Your Search <input type="text" name="q" value="{/y:search/y:query}"/> <input type="submit" value="Search"/>
+          Search <input type="text" name="q" value="{/y:search/y:query}"/> with <select name="provider"><option value="google">Google</option><option value="bing">bing</option><option value="yanel" selected="true">IMS</option></select> &#160; <input type="submit" value="Search"/>
         </form>
 
         <hr/>
 
         <xsl:apply-templates select="/y:search/y:exception"/>
+        <p>Search results provider: <xsl:value-of select="/y:search/y:provider"/></p>
         <xsl:apply-templates select="/y:search/y:results"/>
         <xsl:if test="not(/y:search/y:results) and not(/y:search/y:exception)">
-<p>
-         Your search - <xsl:value-of select="/y:search/y:query"/> - did not match any documents
-</p>
+          <p>Your search - <xsl:value-of select="/y:search/y:query"/> - did not match any documents</p>
         </xsl:if>
 
       </body>
@@ -53,7 +52,6 @@
 
   <xsl:template match="y:results">
     <h2>All Results (<a href="?q={../y:query}&amp;yanel.resource.viewid=xml">as XML</a>)</h2>
-<p>Provider: <xsl:value-of select="@provider"/></p>
     <ul>
     <xsl:apply-templates select="y:result"/>
     </ul>
