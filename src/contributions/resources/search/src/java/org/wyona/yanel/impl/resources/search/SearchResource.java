@@ -80,9 +80,9 @@ public class SearchResource extends BasicXMLResource {
                 Result[] results;
                 if (provider.equals(DEFAULT_PROVIDER)) {
                     results = getLocalResults(query);
-                } else if (provider.equals("google")) {
+                } else if (provider.equals("yanelproxy-google")) {
                     results = getGoogleResults(query);
-                } else if (provider.equals("bing")) {
+                } else if (provider.equals("yanelproxy-msn")) {
                     results = getMSNResults(query);
                 } else {
                     results = new Result[0];

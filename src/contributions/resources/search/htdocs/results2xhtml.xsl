@@ -34,7 +34,7 @@
         <h1>Search</h1>
 
         <form>
-          Search <input type="text" name="q" value="{/y:search/y:query}"/> with <select name="provider"><option value="google">Google</option><option value="bing">bing</option><option value="yanel" selected="true">Yanel</option></select> &#160; <input type="submit" value="Search"/>
+          Search <input type="text" name="q" value="{/y:search/y:query}"/> with <select name="provider"><option value="google">Google</option><option value="bing">bing</option><option value="yanel" selected="true">Yanel</option><option value="yanelproxy-google">Google (Yanel Proxy)</option><option value="yanelproxy-msn">MSN (Yanel Proxy)</option></select> &#160; <input type="submit" value="Search"/>
         </form>
 
         <hr/>
