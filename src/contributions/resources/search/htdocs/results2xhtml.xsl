@@ -40,9 +40,10 @@
         <hr/>
 
         <xsl:apply-templates select="/y:search/y:exception"/>
+        <xsl:apply-templates select="/y:search/y:no-query"/>
         <p>Search results provider: <xsl:value-of select="/y:search/y:provider"/></p>
         <xsl:apply-templates select="/y:search/y:results"/>
-        <xsl:if test="not(/y:search/y:results) and not(/y:search/y:exception)">
+        <xsl:if test="not(/y:search/y:results) and not(/y:search/y:exception) and not(/y:search/y:no-query)">
           <p>Your search - <xsl:value-of select="/y:search/y:query"/> - did not match any documents</p>
         </xsl:if>
 
@@ -65,6 +66,13 @@
     <h2><font color="red">Exception:</font></h2>
     <p>
     <xsl:value-of select="."/>
+    </p>
+  </xsl:template>
+
+  <xsl:template match="y:no-query">
+    <h2><font color="red">Warning:</font></h2>
+    <p>
+    No query was specified! Please make sure to enter a search term.
     </p>
   </xsl:template>
   
