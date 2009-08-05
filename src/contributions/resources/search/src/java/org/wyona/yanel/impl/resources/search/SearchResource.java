@@ -122,7 +122,7 @@ public class SearchResource extends BasicXMLResource {
     }
 
     /**
-     *
+     * @param query Search terms
      */
     private Result[] getLocalResults(String query) throws Exception {
         if (query != null && query.length() > 0) {
@@ -130,7 +130,8 @@ public class SearchResource extends BasicXMLResource {
             if (nodes != null && nodes.length > 0) {
                 Result[] results = new Result[nodes.length];
                 for (int i = 0; i < nodes.length; i++) {
-                    results[i] = new Result(nodes[i].getPath(), "TODO: title", "TODO: excerpt", nodes[i].getMimeType(), null);
+                    // TODO: Check access policy if user is actually allowed to see this result
+                    results[i] = new Result(nodes[i].getPath(), getTitle(nodes[i].getPath(), nodes[i].getInputStream(), nodes[i].getMimeType()), "TODO: excerpt", nodes[i].getMimeType(), null);
                     //results[i] = new Result(nodes[i].getPath(), null, null, nodes[i].getMimeType(), null);
                 }
                 return results;
@@ -185,6 +186,35 @@ public class SearchResource extends BasicXMLResource {
                     return new ExternalSearchProvider(providerId, searchProviders[i].getAttribute("url"), null);
                 }
             }
+        }
+        return null;
+    }
+
+    /**
+     *
+     */
+    private String getTitle(String path, InputStream in, String mimeType) throws Exception {
+        log.warn("DEBUG: Get title of node: " + path);
+        if (mimeType != null) {
+            // TODO: Allow local tika config (or use one of data repository)
+            org.apache.tika.parser.Parser parser = org.apache.tika.config.TikaConfig.getDefaultConfig().getParser(mimeType);
+            //org.apache.tika.parser.Parser parser = config.getTikaConfig().getParser(mimeType);
+            if (parser != null) {
+                try {
+                    java.io.StringWriter writer = new java.io.StringWriter();
+                    // NOTE: The tika meta data must not be null, hence we just declare something
+                    org.apache.tika.metadata.Metadata tikaMetaData = new org.apache.tika.metadata.Metadata();
+                    tikaMetaData.set("yarep:path", path);
+                    parser.parse(in, new org.apache.tika.sax.WriteOutContentHandler(writer), tikaMetaData);
+                    log.warn("DEBUG: Title: " + writer.toString());
+                } catch (Exception e) {
+                    log.error(e, e);
+                }
+            } else {
+                log.error("Tika parser is null!");
+            }
+        } else {
+            log.warn("Node '" + path + "' has no content type and hence will not be parsed re title");
         }
         return null;
     }
