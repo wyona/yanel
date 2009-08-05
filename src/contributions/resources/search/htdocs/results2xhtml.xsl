@@ -60,7 +60,7 @@
 
   <xsl:template match="y:result">
     <li>
-      <a href="{$yarep.back2realm}{@url}"><xsl:choose><xsl:when test="y:title"><xsl:value-of select="y:title"/></xsl:when><xsl:otherwise><xsl:value-of select="@url"/></xsl:otherwise></xsl:choose></a>
+      <a><xsl:attribute name="href"><xsl:choose><xsl:when test="starts-with(@url, 'http')"><xsl:value-of select="@url"/></xsl:when><xsl:otherwise><xsl:value-of select="$yarep.back2realm"/><xsl:value-of select="@url"/></xsl:otherwise></xsl:choose></xsl:attribute><xsl:choose><xsl:when test="y:title"><xsl:value-of select="y:title"/></xsl:when><xsl:otherwise><xsl:value-of select="@url"/></xsl:otherwise></xsl:choose></a>
     </li>
   </xsl:template>
 
