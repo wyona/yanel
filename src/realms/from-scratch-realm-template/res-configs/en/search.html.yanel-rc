@@ -18,5 +18,10 @@
         <mime-type>application/xml</mime-type>
       </view>
     </views>
+
+    <external-search-providers>
+      <provider id="google" url="http://www.google.com/search?q=">Google</provider>
+      <provider id="bing" url="http://www.bing.com/search?q=">bing</provider>
+    </external-search-providers>
   </yanel:custom-config>
 </yanel:resource-config>
