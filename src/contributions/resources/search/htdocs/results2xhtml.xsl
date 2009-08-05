@@ -52,7 +52,7 @@
   </xsl:template>
 
   <xsl:template match="y:results">
-    <h2>All Results (<a href="?q={../y:query}&amp;yanel.resource.viewid=xml">as XML</a>)</h2>
+    <h2>All Results (<a href="?q={../y:query}&amp;provider={../y:provider}&amp;yanel.resource.viewid=xml">as XML</a>)</h2>
     <ul>
     <xsl:apply-templates select="y:result"/>
     </ul>
