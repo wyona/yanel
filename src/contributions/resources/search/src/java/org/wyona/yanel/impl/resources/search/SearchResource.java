@@ -132,7 +132,6 @@ public class SearchResource extends BasicXMLResource {
                 for (int i = 0; i < nodes.length; i++) {
                     // TODO: Check access policy if user is actually allowed to see this result
                     results[i] = new Result(nodes[i].getPath(), getTitle(nodes[i].getPath(), nodes[i].getInputStream(), nodes[i].getMimeType()), "TODO: excerpt", nodes[i].getMimeType(), null);
-                    //results[i] = new Result(nodes[i].getPath(), null, null, nodes[i].getMimeType(), null);
                 }
                 return results;
             } else {
@@ -191,7 +190,10 @@ public class SearchResource extends BasicXMLResource {
     }
 
     /**
-     *
+     * Get title of node
+     * @param path Node path
+     * @param in Node content as InputStream
+     * @param mimeType Node content type
      */
     private String getTitle(String path, InputStream in, String mimeType) throws Exception {
         log.warn("DEBUG: Get title of node: " + path);
@@ -205,7 +207,8 @@ public class SearchResource extends BasicXMLResource {
                     // NOTE: The tika meta data must not be null, hence we just declare something
                     org.apache.tika.metadata.Metadata tikaMetaData = new org.apache.tika.metadata.Metadata();
                     tikaMetaData.set("yarep:path", path);
-                    parser.parse(in, new org.apache.tika.sax.WriteOutContentHandler(writer), tikaMetaData);
+                    parser.parse(in, new org.apache.tika.sax.BodyContentHandler(writer), tikaMetaData);
+                    //parser.parse(in, new org.apache.tika.sax.WriteOutContentHandler(writer), tikaMetaData);
                     log.warn("DEBUG: Title: " + writer.toString());
                 } catch (Exception e) {
                     log.error(e, e);
