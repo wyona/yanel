@@ -207,9 +207,11 @@ public class SearchResource extends BasicXMLResource {
                     // NOTE: The tika meta data must not be null, hence we just declare something
                     org.apache.tika.metadata.Metadata tikaMetaData = new org.apache.tika.metadata.Metadata();
                     tikaMetaData.set("yarep:path", path);
-                    parser.parse(in, new org.apache.tika.sax.BodyContentHandler(writer), tikaMetaData);
+                    parser.parse(in, new TitleContentHandler(writer), tikaMetaData);
+                    //parser.parse(in, new org.apache.tika.sax.BodyContentHandler(writer), tikaMetaData);
                     //parser.parse(in, new org.apache.tika.sax.WriteOutContentHandler(writer), tikaMetaData);
                     log.warn("DEBUG: Title: " + writer.toString());
+                    return writer.toString();
                 } catch (Exception e) {
                     log.error(e, e);
                 }
