@@ -196,7 +196,7 @@ public class SearchResource extends BasicXMLResource {
      * @param mimeType Node content type
      */
     private String getTitle(String path, InputStream in, String mimeType) throws Exception {
-        log.warn("DEBUG: Get title of node: " + path);
+        log.debug("Get title of node: " + path);
         if (mimeType != null) {
             // TODO: Allow local tika config (or use one of data repository)
             org.apache.tika.parser.Parser parser = org.apache.tika.config.TikaConfig.getDefaultConfig().getParser(mimeType);
@@ -210,7 +210,7 @@ public class SearchResource extends BasicXMLResource {
                     parser.parse(in, new TitleContentHandler(writer), tikaMetaData);
                     //parser.parse(in, new org.apache.tika.sax.BodyContentHandler(writer), tikaMetaData);
                     //parser.parse(in, new org.apache.tika.sax.WriteOutContentHandler(writer), tikaMetaData);
-                    log.warn("DEBUG: Title: " + writer.toString());
+                    log.debug("debug: Title: " + writer.toString());
                     return writer.toString();
                 } catch (Exception e) {
                     log.error(e, e);
