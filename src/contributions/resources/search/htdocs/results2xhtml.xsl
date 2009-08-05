@@ -59,7 +59,9 @@
   </xsl:template>
 
   <xsl:template match="y:result">
-    <li><a href="{$yarep.back2realm}{@url}"><xsl:value-of select="@url"/></a></li>
+    <li>
+      <a href="{$yarep.back2realm}{@url}"><xsl:choose><xsl:when test="y:title"><xsl:value-of select="y:title"/></xsl:when><xsl:otherwise><xsl:value-of select="@url"/></xsl:otherwise></xsl:choose></a>
+    </li>
   </xsl:template>
 
   <xsl:template match="y:exception">
