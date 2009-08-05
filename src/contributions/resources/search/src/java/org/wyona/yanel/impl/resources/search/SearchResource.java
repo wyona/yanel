@@ -28,13 +28,14 @@ public class SearchResource extends BasicXMLResource {
     private static String PROVIDER_NAME = "provider";
     private static String QUERY_NAME = "q";
     private static String DOMAIN_NAME = "domain";
+    private static String DEFAULT_PROVIDER = "yanel";
 
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(String)
      */
     public View getView(String viewId) throws Exception {
         String provider = getRequest().getParameter(PROVIDER_NAME);
-        if (provider != null && !provider.equals("yanel")) {
+        if (provider != null && !provider.equals(DEFAULT_PROVIDER)) {
             ExternalSearchProvider esp = getExternalSearchProvider(provider);
             if (esp != null) {
                 View view = new View();
@@ -65,30 +66,30 @@ public class SearchResource extends BasicXMLResource {
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<y:search xmlns:y=\"http://www.wyona.org/yanel/search/1.0\">");
 
-        String query = getRequest().getParameter(QUERY_NAME);
         String provider = getRequest().getParameter(PROVIDER_NAME);
+        if (provider == null) {
+            provider = DEFAULT_PROVIDER;
+            log.warn("No search provider specified! Default provider will be used: " + provider);
+        }
+        sb.append("<y:provider id=\"" + provider + "\">" + provider + "</y:provider>");
+
+        String query = getRequest().getParameter(QUERY_NAME);
         if (query != null && query.length() > 0) {
             sb.append("<y:query>" + query + "</y:query>");
             try {
                 Result[] results;
-                if (provider != null) {
-                    if (provider.equals("yanel")) {
-                        results = getLocalResults(query);
-                    } else if (provider.equals("google")) {
-                        results = getGoogleResults(query);
-                    } else if (provider.equals("bing")) {
-                        results = getMSNResults(query);
-                    } else {
-                        results = getLocalResults(query);
-                        log.warn("No such provider: " + provider);
-                    }
-                } else {
+                if (provider.equals(DEFAULT_PROVIDER)) {
                     results = getLocalResults(query);
-                    provider = "yanel";
-                    log.warn("No search provider specified!");
+                } else if (provider.equals("google")) {
+                    results = getGoogleResults(query);
+                } else if (provider.equals("bing")) {
+                    results = getMSNResults(query);
+                } else {
+                    results = new Result[0];
+                    String eMessage = "No such provider: " + provider;
+                    log.warn(eMessage);
+                    sb.append("<y:exception>" + eMessage + "</y:exception>");
                 }
-
-                sb.append("<y:provider id=\"" + provider + "\">" + provider + "</y:provider>");
 
                 if (results != null && results.length > 0) {
                     sb.append("<y:results>");
