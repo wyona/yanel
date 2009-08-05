@@ -210,8 +210,11 @@ public class SearchResource extends BasicXMLResource {
                     parser.parse(in, new TitleContentHandler(writer), tikaMetaData);
                     //parser.parse(in, new org.apache.tika.sax.BodyContentHandler(writer), tikaMetaData);
                     //parser.parse(in, new org.apache.tika.sax.WriteOutContentHandler(writer), tikaMetaData);
-                    log.debug("debug: Title: " + writer.toString());
-                    return writer.toString();
+                    String title = writer.toString().trim();
+                    log.debug("debug: Title: " + title);
+                    if (title.length() > 0) {
+                        return writer.toString();
+                    }
                 } catch (Exception e) {
                     log.error(e, e);
                 }
