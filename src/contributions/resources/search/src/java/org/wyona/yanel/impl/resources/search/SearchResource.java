@@ -25,11 +25,15 @@ public class SearchResource extends BasicXMLResource {
     
     private static Logger log = Logger.getLogger(SearchResource.class);
 
+    private static String PROVIDER_NAME = "provider";
+    private static String QUERY_NAME = "q";
+    private static String DOMAIN_NAME = "domain";
+
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(String)
      */
     public View getView(String viewId) throws Exception {
-        String provider = getRequest().getParameter("provider");
+        String provider = getRequest().getParameter(PROVIDER_NAME);
         if (provider != null && !provider.equals("yanel")) {
             ExternalSearchProvider esp = getExternalSearchProvider(provider);
             if (esp != null) {
@@ -38,8 +42,13 @@ public class SearchResource extends BasicXMLResource {
 
                 javax.servlet.http.HttpServletResponse response = getResponse();
                 response.setStatus(307);
-                String query = getRequest().getParameter("q");
-                response.setHeader("Location", esp.getURL() + query);
+
+                String query = getRequest().getParameter(QUERY_NAME);
+                String domain = getRequest().getParameter(DOMAIN_NAME);
+                String site="";
+                if (domain != null) site = "+site:" + domain; // TODO: This will work for Google and bing, but is this true for all search engines?
+                response.setHeader("Location", esp.getURL() + query + site);
+
                 return view;
             }
         }
@@ -56,9 +65,9 @@ public class SearchResource extends BasicXMLResource {
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<y:search xmlns:y=\"http://www.wyona.org/yanel/search/1.0\">");
 
-        String query = getRequest().getParameter("q");
-        String provider = getRequest().getParameter("provider");
-        if (query != null) {
+        String query = getRequest().getParameter(QUERY_NAME);
+        String provider = getRequest().getParameter(PROVIDER_NAME);
+        if (query != null && query.length() > 0) {
             sb.append("<y:query>" + query + "</y:query>");
             try {
                 Result[] results;
@@ -98,6 +107,8 @@ public class SearchResource extends BasicXMLResource {
                 log.error(e, e);
                 sb.append("<y:exception>" + e.getMessage() + "</y:exception>");
             }
+        } else {
+            sb.append("<y:no-query/>");
         }
         sb.append("</y:search>");
         return new ByteArrayInputStream(sb.toString().getBytes());
@@ -107,16 +118,21 @@ public class SearchResource extends BasicXMLResource {
      *
      */
     private Result[] getLocalResults(String query) throws Exception {
-        org.wyona.yarep.core.Node[] nodes = getRealm().getRepository().getSearcher().search(query);
-        if (nodes != null && nodes.length > 0) {
-            Result[] results = new Result[nodes.length];
-            for (int i = 0; i < nodes.length; i++) {
-                results[i] = new Result(nodes[i].getPath(), null, null, nodes[i].getMimeType());
+        if (query != null && query.length() > 0) {
+            org.wyona.yarep.core.Node[] nodes = getRealm().getRepository().getSearcher().search(query);
+            if (nodes != null && nodes.length > 0) {
+                Result[] results = new Result[nodes.length];
+                for (int i = 0; i < nodes.length; i++) {
+                    results[i] = new Result(nodes[i].getPath(), null, null, nodes[i].getMimeType());
+                }
+                return results;
+            } else {
+               log.info("Nothing found for query: " + query);
+                return new Result[0];
             }
-            return results;
-        } else {
-            return new Result[0];
         }
+        log.warn("No query specified!");
+        return new Result[0];
     }
 
     /**
