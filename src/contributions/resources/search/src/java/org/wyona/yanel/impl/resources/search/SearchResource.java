@@ -96,6 +96,7 @@ public class SearchResource extends BasicXMLResource {
                     for (int i = 0; i < results.length; i++) {
                         sb.append("<y:result url=\"" + results[i].getURL() + "\">");
                         if (results[i].getTitle() != null) {
+                            // TODO: Somehow the CDATA vanishes (maybe because of the serializer ...)
                             sb.append("  <y:title><![CDATA[" + results[i].getTitle() + "]]></y:title>");
                         } else {
                             sb.append("  <y:no-title/>");
@@ -152,8 +153,8 @@ public class SearchResource extends BasicXMLResource {
         if (rs != null && rs.size() > 0) {
             Result[] results = new Result[rs.size()];
             for (int i = 0; i < rs.size(); i++) {
-                log.warn("DEBUG: Title: " + rs.get(i).title);
-                log.warn("DEBUG: Excerpt: " + rs.get(i).excerpt);
+                //log.warn("DEBUG: Title: " + rs.get(i).title);
+                //log.warn("DEBUG: Excerpt: " + rs.get(i).excerpt);
                 results[i] = new Result(rs.get(i).url.toString(), null, null, null, null);
                 //results[i] = new Result(rs.get(i).url.toString(), rs.get(i).title, rs.get(i).excerpt, null, null);
             }
