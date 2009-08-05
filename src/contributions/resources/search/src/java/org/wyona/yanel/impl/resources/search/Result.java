@@ -1,5 +1,7 @@
 package org.wyona.yanel.impl.resources.search;
 
+import java.util.Date;
+
 /**
  *
  */
@@ -9,15 +11,17 @@ public class Result {
     private String title;
     private String desc;
     private String contentType;
+    private Date lastModified;
 
     /**
      * @param desc Description
      */
-    public Result(String url, String title, String desc, String contentType) {
+    public Result(String url, String title, String desc, String contentType, Date lastModified) {
         this.url = url;
         this.title = title;
         this.desc = desc;
         this.contentType = contentType;
+        this.lastModified = lastModified;
     }
 
     /**
@@ -46,5 +50,12 @@ public class Result {
      */
      public String getContentType() {
          return contentType;
+     }
+
+    /**
+     * Get last modified date
+     */
+     public Date getLastModified() {
+         return lastModified;
      }
 }

@@ -81,9 +81,9 @@ public class SearchResource extends BasicXMLResource {
                 if (provider.equals(DEFAULT_PROVIDER)) {
                     results = getLocalResults(query);
                 } else if (provider.equals("yanelproxy-google")) {
-                    results = getGoogleResults(query);
+                    results = getProxyResults(query, "org.wyona.meguni.parser.impl.GoogleParser");
                 } else if (provider.equals("yanelproxy-msn")) {
-                    results = getMSNResults(query);
+                    results = getProxyResults(query, "org.wyona.meguni.parser.impl.MSNParser");
                 } else {
                     results = new Result[0];
                     String eMessage = "No such provider: " + provider;
@@ -96,9 +96,14 @@ public class SearchResource extends BasicXMLResource {
                     for (int i = 0; i < results.length; i++) {
                         sb.append("<y:result url=\"" + results[i].getURL() + "\">");
                         if (results[i].getTitle() != null) {
-                            sb.append("  <y:title>" + results[i].getTitle() + "</y:title>");
+                            sb.append("  <y:title><![CDATA[" + results[i].getTitle() + "]]></y:title>");
                         } else {
                             sb.append("  <y:no-title/>");
+                        }
+                        if (results[i].getDescription() != null) {
+                            sb.append("  <y:excerpt><![CDATA[" + results[i].getDescription() + "]]></y:excerpt>");
+                        } else {
+                            sb.append("  <y:no-excerpt/>");
                         }
                         sb.append("</y:result>");
                     }
@@ -124,7 +129,8 @@ public class SearchResource extends BasicXMLResource {
             if (nodes != null && nodes.length > 0) {
                 Result[] results = new Result[nodes.length];
                 for (int i = 0; i < nodes.length; i++) {
-                    results[i] = new Result(nodes[i].getPath(), null, null, nodes[i].getMimeType());
+                    results[i] = new Result(nodes[i].getPath(), "TODO: title", "TODO: excerpt", nodes[i].getMimeType(), null);
+                    //results[i] = new Result(nodes[i].getPath(), null, null, nodes[i].getMimeType(), null);
                 }
                 return results;
             } else {
@@ -139,37 +145,17 @@ public class SearchResource extends BasicXMLResource {
     /**
      *
      */
-    private Result[] getGoogleResults(String query) throws Exception {
-        String className = getResourceConfigProperty("parser");
-        if (className == null) className = "org.wyona.meguni.parser.impl.GoogleParser";
-        //if (className == null) className = "org.wyona.meguni.parser.impl.MSNParser";
-        Parser parser = (Parser) Class.forName(className).newInstance();
+    private Result[] getProxyResults(String query, String parserClassName) throws Exception {
+        Parser parser = (Parser) Class.forName(parserClassName).newInstance();
         ResultSet rs = parser.parse(query);
 
         if (rs != null && rs.size() > 0) {
             Result[] results = new Result[rs.size()];
             for (int i = 0; i < rs.size(); i++) {
-                results[i] = new Result(rs.get(i).url.toString(), null, null, null);
-            }
-            return results;
-        } else {
-            return new Result[0];
-        }
-    }
-
-    /**
-     *
-     */
-    private Result[] getMSNResults(String query) throws Exception {
-        String className = getResourceConfigProperty("parser");
-        if (className == null) className = "org.wyona.meguni.parser.impl.MSNParser";
-        Parser parser = (Parser) Class.forName(className).newInstance();
-        ResultSet rs = parser.parse(query);
-
-        if (rs != null && rs.size() > 0) {
-            Result[] results = new Result[rs.size()];
-            for (int i = 0; i < rs.size(); i++) {
-                results[i] = new Result(rs.get(i).url.toString(), null, null, null);
+                log.warn("DEBUG: Title: " + rs.get(i).title);
+                log.warn("DEBUG: Excerpt: " + rs.get(i).excerpt);
+                results[i] = new Result(rs.get(i).url.toString(), null, null, null, null);
+                //results[i] = new Result(rs.get(i).url.toString(), rs.get(i).title, rs.get(i).excerpt, null, null);
             }
             return results;
         } else {
