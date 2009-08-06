@@ -19,6 +19,8 @@ public class XHTMLBeanContentHandler implements ContentHandler {
 
     private XHTMLBean xhtmlBean;
     private boolean insideTitle = false;
+    private boolean insideMeta = false;
+    private boolean insidePara = false;
 
     /**
      * @param xhtmlBean XHTMLBean to set various content
@@ -41,25 +43,36 @@ public class XHTMLBeanContentHandler implements ContentHandler {
 	  log.warn("Hello from endDocument()!"); 
 	}
 
-    public void startPrefixMapping (String prefix, String uri)
-	throws SAXException {  
-	  log.warn("Hello from startPrefixMapping()!"); 
-	}
+    /**
+     *
+     */
+    public void startPrefixMapping (String prefix, String uri) throws SAXException {  
+        log.warn("Prefix: " + prefix);
+        log.warn("uri: " + uri);
+    }
 
-    public void endPrefixMapping (String prefix)
-	throws SAXException  {  
-	  log.warn("Hello from endPrefixMapping()!"); 
-	}
+    /**
+     *
+     */
+    public void endPrefixMapping (String prefix) throws SAXException  {  
+        log.warn("Prefix: " + prefix);
+    }
 
     /**
      *
      */
     public void startElement (String uri, String localName, String qName, Attributes atts) throws SAXException {  
-        log.warn("Local name: " + localName); 
-        log.warn("qName: " + qName); 
-        log.warn("uri: " + uri); 
+        log.warn("Local name: " + localName);
+        log.warn("qName: " + qName);
+        log.warn("uri: " + uri);
         if (localName.equals("title")) {
             insideTitle = true;
+        }
+        if (localName.equals("meta")) {
+            insideMeta = true;
+        }
+        if (localName.equals("p")) {
+            insidePara = true;
         }
     }
 
@@ -71,14 +84,28 @@ public class XHTMLBeanContentHandler implements ContentHandler {
         if (localName.equals("title")) {
             insideTitle = false;
         }
+        if (localName.equals("meta")) {
+            insideMeta = false;
+        }
+        if (localName.equals("p")) {
+            insidePara = false;
+        }
     }
 
     /**
      *
      */
     public void characters (char ch[], int start, int length) throws SAXException {  
-        if (insideTitle) xhtmlBean.setTitle(new String(ch));
-        log.warn("" + ch);
+        if (insideTitle) {
+            xhtmlBean.setTitle(new String(ch));
+            log.warn("DEBUG: Title: " + new String(ch));
+        }
+        if (insideMeta) {
+            log.warn("DEBUG: Meta: " + new String(ch));
+        }
+        if (insidePara) {
+            log.warn("DEBUG: Paragraph: " + new String(ch));
+        }
     }
 
     public void ignorableWhitespace (char ch[], int start, int length)
