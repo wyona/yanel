@@ -30,8 +30,8 @@ public class TitleContentHandler extends ContentHandlerDecorator {
     /**
      * The XPath matcher used to select the XHTML title contents.
      */
-    private static final Matcher MATCHER =
-        PARSER.parse("/xhtml:html/xhtml:head/xhtml:title/descendant:node()");
+    //private static final Matcher MATCHER = PARSER.parse("/xhtml:html/xhtml:head/xhtml:title/descendant:node()");
+    private static final Matcher MATCHER = PARSER.parse("/html/head/title/descendant:node()");
 
     /**
      * Creates a content handler that passes all XHTML title events to the
