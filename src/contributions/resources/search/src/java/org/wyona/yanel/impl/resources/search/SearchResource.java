@@ -97,6 +97,7 @@ public class SearchResource extends BasicXMLResource {
                         sb.append("<y:result url=\"" + results[i].getURL() + "\">");
                         if (results[i].getTitle() != null) {
                             // TODO: Somehow the CDATA vanishes (maybe because of the serializer ...)
+                            //sb.append("  <y:title>" + results[i].getTitle() + "</y:title>");
                             sb.append("  <y:title><![CDATA[" + results[i].getTitle() + "]]></y:title>");
                         } else {
                             sb.append("  <y:no-title/>");
@@ -196,36 +197,40 @@ public class SearchResource extends BasicXMLResource {
      * @param mimeType Node content type
      */
     private String getTitle(String path, InputStream in, String mimeType) throws Exception {
-        log.warn("DEBUG: Get title of node: " + path);
+        log.debug("Get title of node: " + path);
         if (mimeType != null) {
 
             // NOTE: Please also see src/impl/java/org/wyona/yarep/impl/search/lucene/LuceneConfig.java
             org.apache.tika.config.TikaConfig tikaConfig;
             java.io.File localTikaConfigFile = new java.io.File(getRealm().getRepository().getConfigFile().getParent(), "tika-config.xml");
             if (localTikaConfigFile.isFile()) {
-                log.warn("DEBUG: Use local tika config: " + localTikaConfigFile);
+                log.info("Use local tika config: " + localTikaConfigFile);
                 tikaConfig = new org.apache.tika.config.TikaConfig(localTikaConfigFile);
             } else {
-                log.warn("DEBUG: Use default tika config.");
+                log.info("Use default tika config.");
                 tikaConfig = org.apache.tika.config.TikaConfig.getDefaultConfig();
             }
 
             org.apache.tika.parser.Parser parser = tikaConfig.getParser(mimeType);
             if (parser != null) {
                 try {
-                    java.io.StringWriter writer = new java.io.StringWriter();
                     // NOTE: The tika meta data must not be null, hence we just declare something
                     org.apache.tika.metadata.Metadata tikaMetaData = new org.apache.tika.metadata.Metadata();
                     tikaMetaData.set("yarep:path", path);
+
+                    XHTMLBean xhtmlBean = new XHTMLBean();
+                    parser.parse(in, new XHTMLBeanContentHandler(xhtmlBean), tikaMetaData);
                     //parser.parse(in, new DebugContentHandler(), tikaMetaData);
-                    parser.parse(in, new TitleContentHandler(writer), tikaMetaData);
+
+                    //java.io.StringWriter writer = new java.io.StringWriter();
+                    //parser.parse(in, new TitleContentHandler(writer), tikaMetaData);
                     //parser.parse(in, new org.apache.tika.sax.BodyContentHandler(writer), tikaMetaData);
                     //parser.parse(in, new org.apache.tika.sax.WriteOutContentHandler(writer), tikaMetaData);
-                    //String title = "TODO: Hello World!";
-                    String title = writer.toString().trim();
-                    log.warn("DEBUG: Title: '" + title + "'");
-                    if (title.length() > 0) {
-                        return writer.toString();
+                    //String title = writer.toString().trim();
+
+                    String title = xhtmlBean.getTitle();
+                    if (title != null && title.length() > 0) {
+                        return title;
                     }
                 } catch (Exception e) {
                     log.error(e, e);
