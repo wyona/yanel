@@ -196,11 +196,21 @@ public class SearchResource extends BasicXMLResource {
      * @param mimeType Node content type
      */
     private String getTitle(String path, InputStream in, String mimeType) throws Exception {
-        log.debug("Get title of node: " + path);
+        log.warn("DEBUG: Get title of node: " + path);
         if (mimeType != null) {
-            // TODO: Allow local tika config (or use one of data repository)
-            org.apache.tika.parser.Parser parser = org.apache.tika.config.TikaConfig.getDefaultConfig().getParser(mimeType);
-            //org.apache.tika.parser.Parser parser = config.getTikaConfig().getParser(mimeType);
+
+            // NOTE: Please also see src/impl/java/org/wyona/yarep/impl/search/lucene/LuceneConfig.java
+            org.apache.tika.config.TikaConfig tikaConfig;
+            java.io.File localTikaConfigFile = new java.io.File(getRealm().getRepository().getConfigFile().getParent(), "tika-config.xml");
+            if (localTikaConfigFile.isFile()) {
+                log.warn("DEBUG: Use local tika config: " + localTikaConfigFile);
+                tikaConfig = new org.apache.tika.config.TikaConfig(localTikaConfigFile);
+            } else {
+                log.warn("DEBUG: Use default tika config.");
+                tikaConfig = org.apache.tika.config.TikaConfig.getDefaultConfig();
+            }
+
+            org.apache.tika.parser.Parser parser = tikaConfig.getParser(mimeType);
             if (parser != null) {
                 try {
                     java.io.StringWriter writer = new java.io.StringWriter();
@@ -211,7 +221,7 @@ public class SearchResource extends BasicXMLResource {
                     //parser.parse(in, new org.apache.tika.sax.BodyContentHandler(writer), tikaMetaData);
                     //parser.parse(in, new org.apache.tika.sax.WriteOutContentHandler(writer), tikaMetaData);
                     String title = writer.toString().trim();
-                    log.debug("debug: Title: " + title);
+                    log.warn("DEBUG: Title: '" + title + "'");
                     if (title.length() > 0) {
                         return writer.toString();
                     }
