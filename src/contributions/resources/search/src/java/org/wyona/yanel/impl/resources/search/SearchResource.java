@@ -228,6 +228,8 @@ public class SearchResource extends BasicXMLResource {
                     //parser.parse(in, new org.apache.tika.sax.WriteOutContentHandler(writer), tikaMetaData);
                     //String title = writer.toString().trim();
 
+                    log.warn("DEBUG: Keywords: " + tikaMetaData.get(org.apache.tika.metadata.Metadata.KEYWORDS));
+
                     String title = xhtmlBean.getTitle();
                     if (title != null && title.length() > 0) {
                         return title;
