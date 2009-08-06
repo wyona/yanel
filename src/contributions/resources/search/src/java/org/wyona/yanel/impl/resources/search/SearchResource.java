@@ -219,7 +219,7 @@ public class SearchResource extends BasicXMLResource {
                     log.error(e, e);
                 }
             } else {
-                log.error("Tika parser is null!");
+                log.warn("Tika parser is null! Mime type '" + mimeType + "' did probably not match any configured parser.");
             }
         } else {
             log.warn("Node '" + path + "' has no content type and hence will not be parsed re title");
