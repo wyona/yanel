@@ -12,7 +12,7 @@
       <rc:resource-type name="xml" namespace="http://www.wyona.org/yanel/resource/1.0">
         <rc:property name="xslt" value="/xslt/global.xsl"/>
         <rc:property name="mime-type" value="application/xhtml+xml"/>
-        <rc:display-name>XML page</rc:display-name>
+        <rc:display-name>XHTML page</rc:display-name>
       </rc:resource-type>
     </rc:resource-types>
   </yanel:custom-config>
