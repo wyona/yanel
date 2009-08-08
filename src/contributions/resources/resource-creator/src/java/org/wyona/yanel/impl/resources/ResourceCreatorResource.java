@@ -250,7 +250,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         }
         sb.append("<br/><input type=\"button\" name=\"Cancel\" value=\"Cancel\" onclick=\"location.href='" + getReferer() + "'\"/>");
         sb.append("<input type=\"hidden\" name=\"referer\" value=\"" + getReferer() + "\"/>");
-        sb.append("<input type=\"submit\" value=\"Next\"/>");
+        sb.append("<input type=\"submit\" name=\"Next\" value=\"Next\"/>");
         sb.append("</form>");
     }
 
