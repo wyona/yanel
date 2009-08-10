@@ -39,522 +39,170 @@ import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
-import org.apache.log4j.Logger;
-
 /**
- *
+ * Realm interface
  */
-public class Realm {
+public interface Realm {
 
     public static String DEFAULT_REPOSITORY_FACTORY_BEAN_ID = "DefaultRepositoryFactory";
-
-    private static Logger log = Logger.getLogger(Realm.class);
-
-    private String name;
-    private String id;
-    private String mountPoint;
-    private String defaultLanguage;
-    private Repository repository;
-    private Repository rtiRepository;
-    private PolicyManager privatePolicyManager;
-    private IdentityManager privateIdentityManager;
-    private WebAuthenticator privateWebAuthenticator;
-    private TranslationManager translationManager;
-    private LanguageHandler languageHandler;
-    private Sitetree repoNavigation;
-    private File configFile;
-    private File rootDir;
-    private String[] languages;
-    private String i18nCatalogue;
-
-    private boolean proxySet = false;
-    private String proxyHostName;
-    private int proxyPort = -1;
-    private int proxySSLPort = -1;
-    private String proxyPrefix;
 
     /**
      * Init realm
      */
-    public Realm(String name, String id, String mountPoint, File configFile) throws Exception {
-        // TODO: Get realm name from config if name is null (see method configure())!
-        this.name = name;
-
-        this.id = id;
-        this.mountPoint = mountPoint;
-        this.configFile = configFile;
-
-        log.info("Init realm: " + id + ", " + mountPoint + ", " + configFile);
-
-        proxySet = false;
-
-        if (configFile != null) {
-            DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder(true);
-            Configuration config;
-            try {
-                config = builder.buildFromFile(configFile);
-                configure(config);
-            } catch (SAXException e) {
-                // TODO: CascadingSAXException cse = new CascadingSAXException(e);
-                String errorMsg = "Could not read config file: " + configFile + ": " + e.getMessage();
-                log.error(errorMsg, e);
-                throw new Exception(errorMsg, e);
-            } catch (Exception e) {
-                String errorMsg = "Could not configure realm [" + id + "] with config file: " +
-                        configFile + ": " + e.toString();
-                throw new Exception(errorMsg, e);
-            }
-        }
-    }
+    //public Realm(String name, String id, String mountPoint, File configFile) throws Exception;
 
     /**
      * Configure realm based on configuration
      */
-    protected void configure(Configuration config) throws Exception {
-        Yanel yanel = Yanel.getInstance();
-	File repoConfig = null;
-
-        // Set name if not already set by yanel realms registration config
-        Configuration nameConfigElement = config.getChild("name", false);
-        if (name == null && nameConfigElement != null) {
-            name = nameConfigElement.getValue();
-        }
-
-
-        // Set PolicyManager for this realm
-        Configuration repoConfigElement = config.getChild("ac-policies", false);
-        if (repoConfigElement != null) {
-            PolicyManagerFactory pmFactory = null;
-            PolicyManager policyManager = null;
-            try {
-                String customPolicyManagerFactoryImplClassName = repoConfigElement.getAttribute("class");
-                pmFactory = (PolicyManagerFactory) Class.forName(customPolicyManagerFactoryImplClassName).newInstance();
-                policyManager = pmFactory.newPolicyManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "policy-manager-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
-            } catch (ConfigurationException e) {
-                pmFactory = yanel.getPolicyManagerFactory("PolicyManagerFactory");
-                log.info("Default PolicyManager will be used for realm: " + getName());
-                repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
-                RepositoryFactory policiesRepoFactory = yanel.getRepositoryFactory("ACPoliciesRepositoryFactory");
-                Repository policiesRepo = policiesRepoFactory.newRepository(getID(), repoConfig);
-                policyManager = pmFactory.newPolicyManager(policiesRepo);
-            }
-            setPolicyManager(policyManager);
-        }
-
-
-        // Set IdentityManager for this realm
-        repoConfigElement = config.getChild("ac-identities", false);
-        if (repoConfigElement != null) {
-
-            IdentityManagerFactory imFactory = null;
-            IdentityManager identityManager = null;
-            try {
-            	String customIdentityManagerFactoryImplClassName = repoConfigElement.getAttribute("class");
-                log.debug("Set custom identity manager " + customIdentityManagerFactoryImplClassName + " for realm: " + getName());
-            	imFactory = (IdentityManagerFactory) Class.forName(customIdentityManagerFactoryImplClassName).newInstance();
-                identityManager = imFactory.newIdentityManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "identity-manager-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
-                log.debug("Custom identity manager " + identityManager.getClass().getName() + " has been set for realm: " + getName());
-            } catch (ConfigurationException e) {
-            	imFactory = yanel.getIdentityManagerFactory("IdentityManagerFactory");
-            	log.info("Default IdentityManager will be used for realm: " + getName());
-            	repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
-                RepositoryFactory identitiesRepoFactory = yanel.getRepositoryFactory("ACIdentitiesRepositoryFactory");
-                Repository identitiesRepo = identitiesRepoFactory.newRepository(getID(), repoConfig);
-                identityManager = imFactory.newIdentityManager(identitiesRepo);
-            }
-            setIdentityManager(identityManager);
-        }
-
-        // Set WebAuthenticator for this realm
-        Configuration waConfigElement = config.getChild("web-authenticator", false);
-        WebAuthenticator wa = null;
-        if (waConfigElement != null) {
-            try {
-            	String customWebAuthenticatorImplClassName = waConfigElement.getAttribute("class");
-            	wa = (WebAuthenticator) Class.forName(customWebAuthenticatorImplClassName).newInstance();
-                wa.init(ConfigurationUtil.getCustomConfiguration(waConfigElement, "web-authenticator-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
-                log.info("Custom WebAuthenticator (" + customWebAuthenticatorImplClassName + ") will be used!");
-            } catch (ConfigurationException e) {
-                log.error(e, e);
-                log.warn("Default WebAuthenticator will be used!");
-                wa = getDefaultWebAuthenticator();
-                wa.init(null, new RealmConfigPathResolver(this));
-            }
-        } else {
-            wa = getDefaultWebAuthenticator();
-            wa.init(null, new RealmConfigPathResolver(this));
-        }
-        setWebAuthenticator(wa);
-
-
-
-        RepositoryFactory repoFactory = yanel.getRepositoryFactory(DEFAULT_REPOSITORY_FACTORY_BEAN_ID);
-        RepositoryFactory rtiRepoFactory = yanel.getRepositoryFactory("RTIRepositoryFactory");
-        RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory("ExtraRepositoryFactory");
-
-        String repoConfigSrc = config.getChild("data", false).getValue();
-        repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigSrc));
-        log.info("Set data repository: " + getID() + ", " + repoConfig);
-        setRepository(repoFactory.newRepository(getID(), repoConfig));
-
-        repoConfigSrc = config.getChild("rti", false).getValue();
-        repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigSrc));
-        setRTIRepository(rtiRepoFactory.newRepository(getID(), repoConfig));
-
-
-
-
-        Configuration configElement = config.getChild("default-language", false);
-        if (configElement != null) {
-            setDefaultLanguage(configElement.getValue());
-        } else {
-            //Maintain backwards compatibility with realms
-            setDefaultLanguage("en");
-        }
-
-        Configuration languagesElement = config.getChild("languages", false);
-        ArrayList languages = new ArrayList();
-        if (languagesElement != null) {
-            Configuration[] langElements = languagesElement.getChildren("language");
-            for (int i = 0; i < langElements.length; i++) {
-                String language = langElements[i].getValue();
-                languages.add(language);
-            }
-        }
-        setLanguages((String[])languages.toArray(new String[languages.size()]));
-
-        configElement = config.getChild("translation-manager", false);
-        TranslationManager translationManager = null;
-        if (configElement != null) {
-            String className = configElement.getAttribute("class");
-            translationManager = (TranslationManager)Class.forName(className).newInstance();
-        } else {
-            translationManager = new DefaultTranslationManager();
-        }
-        translationManager.init(this);
-        setTranslationManager(translationManager);
-
-        configElement = config.getChild("language-handler", false);
-        LanguageHandler languageHandler = null;
-        if (configElement != null) {
-            String className = configElement.getAttribute("class");
-            languageHandler = (LanguageHandler)Class.forName(className).newInstance();
-        } else {
-            languageHandler = (LanguageHandler)Class.forName("org.wyona.yanel.impl.DefaultLanguageHandler").newInstance();
-        }
-        setLanguageHandler(languageHandler);
-
-
-        Configuration rootDirConfig = config.getChild("root-dir", false);
-        if (rootDirConfig != null) {
-            setRootDir(FileUtil.resolve(getConfigFile(), new File(rootDirConfig.getValue())));
-        }
-
-        Configuration reposElement = config.getChild("yarep-repositories", false);
-        if (reposElement != null) {
-            Configuration[] repoElements = reposElement.getChildren("repository");
-            for (int i = 0; i < repoElements.length; i++) {
-                String id = repoElements[i].getAttribute("id");
-                String repoConfigPath = repoElements[i].getAttribute("config");
-                repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigPath));
-                extraRepoFactory.newRepository(id, repoConfig);
-            }
-        }
-        
-        // Set i18n catalogue
-        configElement = config.getChild("i18n-catalogue", false);
-        if (configElement != null) {
-            this.i18nCatalogue = configElement.getValue();
-        }
-
-        // Set repo-navigation
-        configElement = config.getChild("repo-navigation", false);
-        if (configElement != null) {
-            try {
-                String customRepoNavigationImplClassName = configElement.getAttribute("class");
-                repoNavigation = (Sitetree) Class.forName(customRepoNavigationImplClassName).newInstance();
-                repoNavigation.init(ConfigurationUtil.getCustomConfiguration(configElement, "repo-navigation-config", "http://www.wyona.org/yanel/realm/1.0"), new RealmConfigPathResolver(this));
-                log.info("Custom repo navigation implementation will be used for realm: " + getName());
-            } catch (ConfigurationException e) {
-                log.error(e, e);
-                repoNavigation = yanel.getSitetreeImpl("repo-navigation");
-                log.warn("Default repo navigation implementation will be used for realm: " + getName());
-            }
-        } else {
-            log.info("Default repo navigation implementation will be used for realm: " + getName());
-            repoNavigation = yanel.getSitetreeImpl("repo-navigation");
-        }
-    }
+    //protected void configure(Configuration config) throws Exception;
 
     /**
      * Name of realm
      */
-    public String getName() {
-        return name;
-    }
+    public String getName();
 
     /**
      * Id of realm
      */
-    public String getID() {
-        return id;
-    }
+    public String getID();
 
     /**
      * Mount point of realm
      */
-    public String getMountPoint() {
-        return mountPoint;
-    }
+    public String getMountPoint();
 
     /**
      * Configuration file of realm.
      */
-    public File getConfigFile() {
-        return configFile;
-    }
+    public File getConfigFile();
 
     /**
      *
      */
-    public void setProxy(String hostName, int port, int sslPort, String prefix) {
-        proxySet = true;
-        proxyHostName = hostName;
-        proxyPort = port;
-        proxySSLPort = sslPort;
-        proxyPrefix = prefix;
-    }
+    public void setProxy(String hostName, int port, int sslPort, String prefix);
 
     /**
      *
      */
-    public boolean isProxySet() {
-        return proxySet;
-    }
+    public boolean isProxySet();
 
     /**
      *
      */
-    public String getProxyHostName() {
-        return proxyHostName;
-    }
+    public String getProxyHostName();
 
     /**
      *
      */
-    public int getProxyPort() {
-        return proxyPort;
-    }
+    public int getProxyPort();
 
     /**
      *
      */
-    public int getProxySSLPort() {
-        return proxySSLPort;
-    }
+    public int getProxySSLPort();
 
     /**
      *
      */
-    public String getProxyPrefix() {
-        return proxyPrefix;
-    }
+    public String getProxyPrefix();
 
     /**
      *
      */
-    public String toString() {
-        String descr = "Name: " + name + ", ID: " + id + ", Mount-Point: " + mountPoint;
-        if (isProxySet()) {
-            if (proxyHostName != null) {
-                descr = descr + ", Reverse Proxy Host Name: " + proxyHostName;
-            }
-            if (proxyPort >= 0) {
-                descr = descr + ", Reverse Proxy Port: " + proxyPort;
-            } else {
-                descr = descr + ", Reverse Proxy Port is set to default 80 (resp. -1)";
-            }
-            if (proxySSLPort >= 0) {
-                descr = descr + ", Reverse Proxy SSL Port: " + proxySSLPort;
-            } else {
-                descr = descr + ", Reverse Proxy SSL Port is set to default 443 (resp. -1)";
-            }
-            if (proxyPrefix != null) {
-               descr = descr + ", Reverse Proxy Prefix: " + proxyPrefix;
-            }
-        } else {
-            descr = descr + ", No reverse proxy set";
-        }
-        return descr;
-    }
+    public String toString();
 
     /**
      * Get data repository of realm
      */
-    public Repository getRepository() throws Exception {
-        return repository;
-    }
+    public Repository getRepository() throws Exception;
 
-    public void setRepository(Repository repository) throws Exception {
-        this.repository = repository;
-    }
+    public void setRepository(Repository repository) throws Exception;
 
     /**
      * Get RTI (Resource Type Identifier) repository of realm
      */
-    public Repository getRTIRepository() throws Exception {
-        return rtiRepository;
-    }
+    public Repository getRTIRepository() throws Exception;
 
-    public void setRTIRepository(Repository repository) throws Exception {
-        this.rtiRepository = repository;
-    }
+    public void setRTIRepository(Repository repository) throws Exception;
 
     /**
      *
      */
-    public WebAuthenticator getWebAuthenticator() {
-        return privateWebAuthenticator;
-    }
+    public WebAuthenticator getWebAuthenticator();
+
     /**
      *
      */
-    public void setWebAuthenticator(WebAuthenticator wa) {
-        privateWebAuthenticator = wa;
-    }
+    public void setWebAuthenticator(WebAuthenticator wa);
 
-    public IdentityManager getIdentityManager() {
-        return privateIdentityManager;
-    }
+    public IdentityManager getIdentityManager();
 
-    public void setIdentityManager(IdentityManager identityManager) {
-        this.privateIdentityManager = identityManager;
-    }
+    public void setIdentityManager(IdentityManager identityManager);
 
     /**
      * Get policy manager
      */
-    public PolicyManager getPolicyManager() {
-        return privatePolicyManager;
-    }
+    public PolicyManager getPolicyManager();
 
-    public void setPolicyManager(PolicyManager policyManager) {
-        this.privatePolicyManager = policyManager;
-    }
+    public void setPolicyManager(PolicyManager policyManager);
 
     /**
      * Get repository navigation
      */
-    public Sitetree getRepoNavigation() {
-        return repoNavigation;
-    }
+    public Sitetree getRepoNavigation();
 
     /**
      * Get default language of this realm re content
      */
-    public String getDefaultLanguage() {
-        return defaultLanguage;
-    }
+    public String getDefaultLanguage();
 
-    public void setDefaultLanguage(String language) {
-        this.defaultLanguage = language;
-    }
+    public void setDefaultLanguage(String language);
 
     /**
      * Please note that the root-dir element is optional
      * @deprecated
      */
-    public File getRootDir() {
-        log.warn("TODO: Try to avoid using the getRootDir() method because this method is deprecated!");
-        return this.rootDir;
-    }
+    public File getRootDir();
 
-    public void setRootDir(File rootDir) {
-        this.rootDir = rootDir;
-    }
+    public void setRootDir(File rootDir);
 
     /**
      * Please note that the menu element is optional
      */
-    public String getMenuClass() {
-        try {
-            Configuration realmConfig = new DefaultConfigurationBuilder().buildFromFile(getConfigFile());
-            Configuration menuClassConfig = realmConfig.getChild("menu", false);
-            if (menuClassConfig != null) {
-                return menuClassConfig.getAttribute("class");
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        return null;
-    }
+    public String getMenuClass();
 
     /**
      * Gets a list of all languages supported by this realm.
      * @return list of languages. may be empty.
      */
-    public String[] getLanguages() {
-        return languages;
-    }
+    public String[] getLanguages();
 
-    public void setLanguages(String[] languages) {
-        //TODO: the cast should not be necessary. but under strange circumstances build fails without.
-        this.languages = (String[]) languages.clone();
-    }
+    public void setLanguages(String[] languages);
 
-    public TranslationManager getTranslationManager() {
-        //log.debug("Translation Manager: " + translationManager.getClass().getName());
-        return translationManager;
-    }
+    public TranslationManager getTranslationManager();
 
-    public void setTranslationManager(TranslationManager translationManager) {
-        this.translationManager = translationManager;
-    }
+    public void setTranslationManager(TranslationManager translationManager);
 
-    public Repository getRepository(String id) throws Exception {
-        Yanel yanel = Yanel.getInstance();
-        RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory("ExtraRepositoryFactory");
-        if (extraRepoFactory.exists(id)) {
-            return extraRepoFactory.newRepository(id);
-        } 
-        return null;
-    }
+    public Repository getRepository(String id) throws Exception;
 
-    public LanguageHandler getLanguageHandler() {
-        return languageHandler;
-    }
+    public LanguageHandler getLanguageHandler();
 
-    public void setLanguageHandler(LanguageHandler languageHandler) {
-        this.languageHandler = languageHandler;
-    }
+    public void setLanguageHandler(LanguageHandler languageHandler);
 
     /**
      *
      */
-    public void destroy() throws Exception {
-        log.warn("Shutdown realm: " + getName());
-        getRepository().close();
-        getRTIRepository().close();
-        // TODO: close ac-identities and ac-policies repository?
-    }
+    public void destroy() throws Exception;
 
     /**
      * Get Default WebAuthenticator
      */
-    private WebAuthenticator getDefaultWebAuthenticator() throws Exception {
-        // TODO: Get this setting from spring config
-        String defaultWebAuthenticatorImplClassName = "org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl";
-        return (WebAuthenticator) Class.forName(defaultWebAuthenticatorImplClassName).newInstance();
-    }
+    //private WebAuthenticator getDefaultWebAuthenticator() throws Exception;
     
     /**
      * Gets the value of the i18n-catalogue config element.
      * This value normally is a URI pointing to an i18n message catalogue. 
      * @return i18n catalogue
      */
-    public String getI18nCatalogue() {
-        return this.i18nCatalogue;
-    }
-
-
+    public String getI18nCatalogue();
 }

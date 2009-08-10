@@ -238,10 +238,10 @@ public class RealmManager {
                         realm = (Realm) ct.newInstance(values);
                     } catch(ClassNotFoundException e) {
                         log.error("Class not found: " + e.getMessage() + ". Fallback to default realm implementation!");
-                        realm = new Realm(rcc[i].getLabel(), realmId, mountPoint, realmConfigFile);
+                        realm = new RealmDefaultImpl(rcc[i].getLabel(), realmId, mountPoint, realmConfigFile);
                     } catch(Exception e) {
                         log.info("Default realm implementation will be used.");
-                        realm = new Realm(rcc[i].getLabel(), realmId, mountPoint, realmConfigFile);
+                        realm = new RealmDefaultImpl(rcc[i].getLabel(), realmId, mountPoint, realmConfigFile);
                     }
                     
                     ReverseProxyConfig rpc = rcc[i].getReverseProxyConfig();
