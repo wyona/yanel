@@ -70,6 +70,8 @@ public class ForgotPassword extends BasicXMLResource {
     private static final String NAMESPACE = "http://www.wyona.org/yanel/1.0";
     private static final long  DEFAULT_TOTAL_VALID_HRS = 24L;
 
+    private static final String SMTP_HOST_PROPERTY_NAME = "smtpHost";
+
     /**
      * This is the main method that handles all view request. The first time the request
      * is made to enter the data.
@@ -134,10 +136,23 @@ public class ForgotPassword extends BasicXMLResource {
             }
         } else {
             log.debug("default handler");
-            Element requestElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "requestemail"));
+            String smtpEmailServer = getResourceConfigProperty(SMTP_HOST_PROPERTY_NAME);
+            if (smtpEmailServer != null) {
+                rootElement.appendChild(adoc.createElementNS(NAMESPACE, "requestemail"));
+            } else {
+                Element exceptionElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "exception"));
+                String resConfigFilename = "global-resource-configs/user-forgot-pw_yanel-rc.xml";
+                if (getConfiguration().getNode() != null) {
+                    resConfigFilename = getConfiguration().getNode().getPath(); 
+                }
+                exceptionElement.setTextContent("SMTP host has not been configured yet. Please make sure to configure the various smtp properties at: " + resConfigFilename);
+            }
         }
     }
 
+    /**
+     *
+     */
     private User findRepoUser(String usrGuid, long duration_hour) throws Exception {
         User upUser = null;
         Map<String, ResetPWExpire> pwHM = getOblivionMap(getEnvironment().getRequest());
@@ -255,7 +270,7 @@ public class ForgotPassword extends BasicXMLResource {
                     //String emailStr = "Please go to the following URL to reset password: <https://192.168.1.69:8443/yanel" + request.getServletPath().toString() + "?pwresetid=" + guid + ">.";
                     String emailStr = "Please go to the following URL to reset password: <" + request.getRequestURL().toString() + "?pwresetid=" + guid + ">.";
                     log.debug(emailStr);
-                    String emailServer = getResourceConfigProperty("smtpHost");
+                    String emailServer = getResourceConfigProperty(SMTP_HOST_PROPERTY_NAME);
                     int port = Integer.parseInt(getResourceConfigProperty("smtpPort"));
                     String from = getResourceConfigProperty("smtpFrom");
                     String to =  userList[i].getEmail();
