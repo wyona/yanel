@@ -20,12 +20,18 @@
               I forgot my password!
             </h1>
 
+            <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:exception"/>
             <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:requestemail"/>
             <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:requestnewpw"/>
             <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:show-message"/>
 
           </body>
     </html>
+  </xsl:template>
+
+  <xsl:template match="yanel:exception" >
+    <h2><font color="red">Exception</font></h2>
+    <p><xsl:value-of select="."/></p>
   </xsl:template>
 
   <xsl:template match="yanel:requestemail" >
