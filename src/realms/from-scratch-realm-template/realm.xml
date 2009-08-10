@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 
 <realm-config xmlns="http://www.wyona.org/yanel/realm/1.0">
+<!--
+<realm-config class="org.wyona.yanel.impl.map.FOAFRealm" xmlns="http://www.wyona.org/yanel/realm/1.0">
+-->
   <name>Yanel From Scratch Realm</name>
 
   <rti>config/rti-repository.xml</rti>
