@@ -1,16 +1,28 @@
 <?xml version="1.0"?>
+
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="forgotpw" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
   <yanel:property name="change-password-requests-path" value="change-password-requests"/>
   <yanel:property name="num-hrs-valid" value="1"/>
 
-  <!--Override this for your setup (cf. http://svn.wyona.com/repos/public/yanel/trunk/src/webapp/global-resource-configs/README.txt for rationale): -->
+  <!-- Override/Uncomment the smtp properties below for your custom setup (cf. http://svn.wyona.com/repos/public/yanel/trunk/src/webapp/global-resource-configs/README.txt for rationale): -->
+<!--
   <yanel:property name="smtpHost" value="mail.wyona.com"/>
   <yanel:property name="smtpPort" value="25"/>
   <yanel:property name="smtpFrom" value="test@wyona.com"/>
+-->
 
-  <yanel:property name="xslt" value="rthtdocs:/forgotpw.xsl"/>
-  <yanel:property name="xslt" value="yanelhtdocs:/html.xslt"/>
-  <yanel:property name="mime-type" value="application/xhtml+xml"/>
+  <yanel:custom-config>
+    <views>
+      <view id="default" type="XML">
+        <xslt>rthtdocs:/forgotpw.xsl</xslt>
+        <xslt>yanelhtdocs:/html.xslt</xslt>
+        <mime-type>application/xhtml+xml</mime-type>
+      </view>
+      <view id="xml" type="XML">
+        <mime-type>application/xml</mime-type>
+      </view>
+    </views>
+  </yanel:custom-config>
 </yanel:resource-config>
