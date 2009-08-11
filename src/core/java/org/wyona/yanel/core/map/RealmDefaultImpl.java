@@ -47,6 +47,7 @@ import org.apache.log4j.Logger;
 public class RealmDefaultImpl implements Realm {
 
     public static String DEFAULT_REPOSITORY_FACTORY_BEAN_ID = "DefaultRepositoryFactory";
+    private static String EXTRA_REPOSITORY_FACTORY_BEAN_ID = "ExtraRepositoryFactory";
 
     private static Logger log = Logger.getLogger(RealmDefaultImpl.class);
 
@@ -190,7 +191,7 @@ public class RealmDefaultImpl implements Realm {
 
         RepositoryFactory repoFactory = yanel.getRepositoryFactory(DEFAULT_REPOSITORY_FACTORY_BEAN_ID);
         RepositoryFactory rtiRepoFactory = yanel.getRepositoryFactory("RTIRepositoryFactory");
-        RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory("ExtraRepositoryFactory");
+        RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory(EXTRA_REPOSITORY_FACTORY_BEAN_ID);
 
         String repoConfigSrc = config.getChild("data", false).getValue();
         repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigSrc));
@@ -513,7 +514,7 @@ public class RealmDefaultImpl implements Realm {
 
     public Repository getRepository(String id) throws Exception {
         Yanel yanel = Yanel.getInstance();
-        RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory("ExtraRepositoryFactory");
+        RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory(EXTRA_REPOSITORY_FACTORY_BEAN_ID);
         if (extraRepoFactory.exists(id)) {
             return extraRepoFactory.newRepository(id);
         } 
