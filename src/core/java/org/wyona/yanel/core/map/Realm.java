@@ -47,16 +47,6 @@ public interface Realm {
     public static String DEFAULT_REPOSITORY_FACTORY_BEAN_ID = "DefaultRepositoryFactory";
 
     /**
-     * Init realm
-     */
-    //public Realm(String name, String id, String mountPoint, File configFile) throws Exception;
-
-    /**
-     * Configure realm based on configuration
-     */
-    //protected void configure(Configuration config) throws Exception;
-
-    /**
      * Name of realm
      */
     public String getName();
@@ -105,11 +95,6 @@ public interface Realm {
      *
      */
     public String getProxyPrefix();
-
-    /**
-     *
-     */
-    public String toString();
 
     /**
      * Get data repository of realm
@@ -194,11 +179,6 @@ public interface Realm {
      */
     public void destroy() throws Exception;
 
-    /**
-     * Get Default WebAuthenticator
-     */
-    //private WebAuthenticator getDefaultWebAuthenticator() throws Exception;
-    
     /**
      * Gets the value of the i18n-catalogue config element.
      * This value normally is a URI pointing to an i18n message catalogue. 
