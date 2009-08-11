@@ -2,6 +2,8 @@
 
 <project name="yanel-resource" default="compile">
 
+  <!-- TODO: Check this build code for resource specific build instructions and possibly replace it with the generic import of resource-type.build.xml (src/resources/file/build.xml) -->
+
   <!-- For example set within build.sh ... -->
   <property name="yanel.home" value="${yanel.source.home}"/>
   <!-- See yanel.home ... -->
