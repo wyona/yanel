@@ -46,7 +46,7 @@ import java.io.InputStreamReader;
 import org.apache.log4j.Category;
 
 /**
- * 
+ * ODT resource which allows to see XML or XHTML version of ODT (see examples at http://127.0.0.1:8080/yanel/test/use-cases/)
  */
 public class ODTResource extends Resource implements ViewableV2, ModifiableV2 {
 
@@ -156,20 +156,6 @@ public class ODTResource extends Resource implements ViewableV2, ModifiableV2 {
     /**
      * 
      */
-    public Reader getReader(Path path) {
-        try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
-                    getRepositoryFactory());
-            return rp.getRepo().getReader(new org.wyona.yarep.core.Path(rp.getPath().toString()));
-        } catch (Exception e) {
-            log.error(e);
-        }
-        return null;
-    }
-
-    /**
-     * 
-     */
     public Reader getReader(Topic topic) {
         log.error("Not implemented yet!");
         return null;
@@ -189,25 +175,6 @@ public class ODTResource extends Resource implements ViewableV2, ModifiableV2 {
     public Writer getWriter(Topic topic) {
         log.error("Not implemented yet!");
         return null;
-    }
-
-    /**
-     * 
-     */
-    public OutputStream getOutputStream(Path path) {
-        try {
-            RepoPath rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()),
-                    getRepositoryFactory());
-            return rp.getRepo().getOutputStream(new org.wyona.yarep.core.Path(rp.getPath()
-                    .toString()));
-        } catch (Exception e) {
-            log.error(e);
-        }
-        return null;
-    }
-
-    protected RepositoryFactory getRepositoryFactory() {
-        return yanel.getRepositoryFactory(org.wyona.yanel.core.map.Realm.DEFAULT_REPOSITORY_FACTORY_BEAN_ID);
     }
 
     /**
