@@ -41,6 +41,7 @@ import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
 /**
  * Realm interface
+ * Please make sure to implement a constructor like Realm(String, String, String, File), because RealmManager does instantiate such a constructor dynamically
  */
 public interface Realm {
 
@@ -166,6 +167,10 @@ public interface Realm {
 
     public void setTranslationManager(TranslationManager translationManager);
 
+    /**
+     * Get repository from additional repository config (see http://www.yanel.org/en/documentation/realm/realm-configuration.html#yarep-repos)
+     * @param id Repository id
+     */
     public Repository getRepository(String id) throws Exception;
 
     public LanguageHandler getLanguageHandler();
