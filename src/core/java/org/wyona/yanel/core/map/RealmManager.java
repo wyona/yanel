@@ -198,7 +198,7 @@ public class RealmManager {
         
         try {
             log.debug("Get default repo factory ...");
-            RepositoryFactory defaultRepoFactory = yanel.getRepositoryFactory(Realm.DEFAULT_REPOSITORY_FACTORY_BEAN_ID);
+            RepositoryFactory defaultRepoFactory = yanel.getRepositoryFactory(RealmDefaultImpl.DEFAULT_REPOSITORY_FACTORY_BEAN_ID);
             defaultRepoFactory.reset();
             log.debug("Get default repo factory DONE.");
 

@@ -44,8 +44,6 @@ import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
  */
 public interface Realm {
 
-    public static String DEFAULT_REPOSITORY_FACTORY_BEAN_ID = "DefaultRepositoryFactory";
-
     /**
      * Name of realm
      */
