@@ -659,14 +659,6 @@ public class NutchResource extends Resource implements ViewableV1 {
     }
     
     /**
-     * 
-     * @return Repository factory
-     */
-    protected RepositoryFactory getRepositoryFactory() {
-        return yanel.getRepositoryFactory(org.wyona.yanel.core.map.Realm.DEFAULT_REPOSITORY_FACTORY_BEAN_ID);
-    }
-    
-    /**
      * this method will display the input stream for debugging purposes
      * @param inputStream
      */
