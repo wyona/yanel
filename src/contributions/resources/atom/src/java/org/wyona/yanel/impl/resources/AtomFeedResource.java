@@ -404,9 +404,4 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
     String getEntriesURL(String path) {
         return getProperty(path, "entries-url", null);
     }
-    
-    protected RepositoryFactory getRepositoryFactory() {
-        return yanel.getRepositoryFactory(org.wyona.yanel.core.map.Realm.DEFAULT_REPOSITORY_FACTORY_BEAN_ID);
-    }
-    
 }
