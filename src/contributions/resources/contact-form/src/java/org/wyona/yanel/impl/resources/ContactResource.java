@@ -67,7 +67,6 @@ public class ContactResource extends Resource implements ViewableV1 {
     private String defaultLanguage = "en";
     private String messageBundle = "contact-form";
 
-    private RepoPath rp = null;
     private Path path = null;
     private String language = null;
 
@@ -81,11 +80,11 @@ public class ContactResource extends Resource implements ViewableV1 {
         return null;
     }
 
-    public View getView(HttpServletRequest request, String viewId)
-            throws Exception {
+    /**
+     *
+     */
+    public View getView(HttpServletRequest request, String viewId) throws Exception {
         path = new Path(request.getServletPath());
-        rp = new org.wyona.yarep.util.YarepUtil().getRepositoryPath(new org.wyona.yarep.core.Path(path.toString()), getRepositoryFactory());
-        rp.getRepo();
         try {
             language = request.getParameter("yanel.meta.language");
         } catch(Exception e) {
@@ -269,10 +268,6 @@ public class ContactResource extends Resource implements ViewableV1 {
 
         return "application/xhtml+xml";
     }
-
-   protected RepositoryFactory getRepositoryFactory() {
-       return yanel.getRepositoryFactory(org.wyona.yanel.core.map.Realm.DEFAULT_REPOSITORY_FACTORY_BEAN_ID);
-   }
 
     private String getEmailRegEx() throws Exception {
         if (getResourceConfigProperty("email-validation-regex") != null) return getResourceConfigProperty("email-validation-regex");
