@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<workflow xmlns="http://www.wyona.org/yanel/workflow/1.0">
+
+  <!-- IMPORTANT: Please see access policies, whereas in particular ac-policies/.policy -->
+
+  <states>
+    <state id="draft" initial="true"/>
+    <state id="review"/>
+    <state id="approved"/>
+  </states>
+
+  <transitions>
+    <transition id="submit" from="draft" to="review">
+      <condition class="org.wyona.yanel.impl.workflow.RoleCondition">workflow.write</condition>
+      <description xml:lang="en">Submit for Review</description>
+      <description xml:lang="de">Zu überprüfen</description>
+    </transition>
+
+    <transition id="reject" from="review" to="draft">
+      <condition class="org.wyona.yanel.impl.workflow.RoleCondition">workflow.approve</condition>
+      <description xml:lang="en">Reject</description>
+      <description xml:lang="de">Zurückweisen</description>
+    </transition>
+
+    <!-- See also ac-policies/.policy re workflow.approve -->
+    <transition id="approve-only" from="review" to="approved">
+      <condition class="org.wyona.yanel.impl.workflow.RoleCondition">workflow.approve</condition>
+      <description xml:lang="en">Approve</description>
+      <description xml:lang="de">Freigeben</description>
+    </transition>
+
+    <transition id="cancel-approve" from="approved" to="draft">
+      <condition class="org.wyona.yanel.impl.workflow.RoleCondition">workflow.approve</condition>
+      <condition class="org.wyona.yanel.impl.workflow.RevisionNotEqualsCondition">live-revision</condition>
+      <description xml:lang="en">Cancel Approve</description>
+      <description xml:lang="de">Freigabe zurücknehmen</description>
+    </transition>
+    
+    <!-- NOTE: Either the content has never been published but is approved or it was once published before -->
+    <transition id="republish" from="approved" to="approved">
+      <condition class="org.wyona.yanel.impl.workflow.RoleCondition">workflow.publish</condition>
+      <condition class="org.wyona.yanel.impl.workflow.RevisionNotEqualsCondition">live-revision</condition>
+      <action class="org.wyona.yanel.impl.workflow.SetRevisionAction">live-revision</action>
+      <action class="org.wyona.yanel.impl.workflow.PublishAction"/>
+      <description xml:lang="en">(Re-)Publish</description>
+      <description xml:lang="de">(Re-)Publizieren</description>
+    </transition>
+
+    <!-- See also ac-policies/.policy re workflow.publish -->
+    <transition id="approve" from="review" to="approved">
+      <condition class="org.wyona.yanel.impl.workflow.RoleCondition">workflow.publish</condition>
+      <action class="org.wyona.yanel.impl.workflow.SetRevisionAction">live-revision</action>
+      <action class="org.wyona.yanel.impl.workflow.PublishAction"/>
+      <description xml:lang="en">Approve and Publish</description>
+      <description xml:lang="de">Freigeben und Publizieren</description>
+    </transition>
+
+    <transition id="publish" from="draft" to="approved">
+      <condition class="org.wyona.yanel.impl.workflow.RoleCondition">workflow.publish</condition>
+      <action class="org.wyona.yanel.impl.workflow.SetRevisionAction">live-revision</action>
+      <action class="org.wyona.yanel.impl.workflow.PublishAction"/>
+      <description xml:lang="en">Publish without Review</description>
+      <description xml:lang="de">Direkt publizieren</description>
+    </transition>
+
+<!-- TODO: Is this implementation finished? -->
+    <transition id="deactivate" from="approved" to="approved">
+      <condition class="org.wyona.yanel.impl.workflow.RoleCondition">workflow.approve</condition>
+      <condition class="org.wyona.yanel.impl.workflow.RevisionEqualsCondition">live-revision</condition>
+      <action class="org.wyona.yanel.impl.workflow.RemoveVariableAction">live-revision</action>
+      <action class="org.wyona.yanel.impl.workflow.DeactivateAction"/>
+      <description xml:lang="en">Deactivate</description>
+      <description xml:lang="de">Depublizieren</description>
+    </transition>
+
+  </transitions>
+
+</workflow>
