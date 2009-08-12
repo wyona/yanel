@@ -92,10 +92,17 @@ public class DefaultMenu extends Menu {
                             } else {
                                 sb.append("<li>");
                             }
-                            sb.append("R: " + revisions[i].getName() + " ("+revisions[i].getDate()+"), WS: " + wfState + " (" + ((WorkflowableV1)resource).getWorkflowDate(revisions[i].getName()) + ")&#160;&#160;&#160;");
+
+                            String liveMarker = "";
+                            //log.debug("Live status: " + WorkflowHelper.getLiveRevision(resource));
+                            if (revisions[i].getName().equals(WorkflowHelper.getLiveRevision(resource))) {
+                                liveMarker = " (LIVE)";
+                            }
+                            sb.append("R: " + revisions[i].getName() + " ("+revisions[i].getDate()+"), WS: " + wfState + liveMarker + " (" + ((WorkflowableV1)resource).getWorkflowDate(revisions[i].getName()) + ")&#160;&#160;&#160;");
                             if (transitions.length > 0) {
                                 sb.append("<ul>");
                                 for (int j = 0; j < transitions.length; j++) {
+                                    // TODO: &yanel.resource.workflow.transition.output=xhtml
                                     sb.append("<li><a href=\"?yanel.resource.workflow.transition=" + transitions[j].getID() + "&amp;yanel.resource.revision=" + revisions[i].getName() + "\">Transition: " + transitions[j].getDescription("en") + "</a></li>");
                                 }
                                 sb.append("</ul>");
