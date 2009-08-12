@@ -47,4 +47,16 @@
 -->
   </usecase>
 
+  <usecase id="workflow.write">
+    <group id="example-group" permission="true"/>
+  </usecase>
+
+  <usecase id="workflow.approve">
+    <group id="example-group" permission="true"/>
+  </usecase>
+
+  <usecase id="workflow.publish">
+    <group id="example-group" permission="true"/>
+  </usecase>
+
 </policy>
