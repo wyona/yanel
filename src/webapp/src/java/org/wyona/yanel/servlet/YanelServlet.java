@@ -737,12 +737,14 @@ public class YanelServlet extends HttpServlet {
 
                 if (outputFormat != null && CONTENT_TYPE_XHTML.equals(outputFormat.toLowerCase())) {
                     response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
-                    sb = new StringBuilder("<html><body><p>The action " + transition
+                    sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body><p>The action " + transition
                                          + " has been performed.</p><p>Return to <a href=\"" 
                                          + request.getHeader(HTTP_REFERRER)
                                          + "\">the page</a>.</p></body></html>");
 
                 } else {
+                    log.warn("No output format query string parameter '" + YANEL_RESOURCE_WORKFLOW_TRANSITION_OUTPUT + "' has been specified.");
+                    response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     sb = new StringBuilder("<?xml version=\"1.0\"?>");
                     sb.append(workflowable.getWorkflowIntrospection());
                 }
