@@ -37,6 +37,7 @@ Y:
 cd \
 
 call yanel build %_YANEL_LBP% bin-snapshot
+::TODO: check %ERRORLEVEL% to assert that the snapshots were successfully built!
 
 :Windows_needed
 
@@ -62,8 +63,10 @@ echo INFO: Yanel %_YANEL_ID% built successfully!
 ::::
 :: run the installer:
 
-echo INFO: Starting Yanel Windows installer (a new window will open)
-build\bin-snapshots\wyona-yanel-%_YANEL_ID%-bin-win\install-Wyona-Yanel-%_YANEL_ID%.exe
+echo INFO: Starting Yanel Windows installer (it will continue running in the background after this script ends)
+build\bin-snapshots\wyona-yanel-%_YANEL_ID%-bin-win\install-Wyona-Yanel-%_YANEL_ID%.exe /S
+::TODO: do something to assert that Yanel was successfully installed:
+:: /S makes the installer run in the background!!! :/
 goto end
 
 
