@@ -41,12 +41,7 @@ public class UsecaseResource extends BasicXMLResource {
 
     private static Logger log = Logger.getLogger(UsecaseResource.class);
 
-    /**
-     *
-     */
-    public UsecaseResource() {
-    }
-
+    @Override
     public View getView(String viewID) throws Exception {
         init();
         return processUsecase(viewID);
@@ -112,6 +107,7 @@ public class UsecaseResource extends BasicXMLResource {
     protected InputStream getJellyXML(ConfigurableViewDescriptor viewDescriptor) throws UsecaseException {
         try {
             String viewTemplate = viewDescriptor.getTemplate();
+            if (log.isDebugEnabled()) log.debug("viewTemplate: "+viewTemplate);
             Repository repo = this.getRealm().getRepository();
             
             JellyContext jellyContext = new JellyContext();
@@ -129,21 +125,35 @@ public class UsecaseResource extends BasicXMLResource {
             // problem: it breaks backwards compatibility
             //XMLOutput jellyOutput = XMLOutput.createXMLOutput(jellyResultStream, true);
             XMLOutput jellyOutput = XMLOutput.createXMLOutput(jellyResultStream);
-            
+            InputStream templateInputStream;
+            String templatePublicId;
+            String templateSystemId;
             if (viewTemplate.startsWith("/")) {
                 if (log.isDebugEnabled()) log.debug("Accessing view template directly from the repo (no protocol specified). View Template: " + viewTemplate);
                 // for backwards compatibility. when not using a protocol
-                jellyContext.runScript(new InputSource(repo.getNode(viewTemplate).getInputStream()), jellyOutput);
+                templateInputStream = repo.getNode(viewTemplate).getInputStream();
+                templatePublicId = "yanelrepo:"+viewTemplate;
+                /*XXX HACK the following does not work: Jelly wants URLs => protocol must be registered by the JVM!
+                templateSystemId = "yanelrepo:"+viewTemplate;
+                */
+                templateSystemId = "file:///yanelrepo"+viewTemplate;
+
             } else {
                 if (log.isDebugEnabled()) log.debug("Accessing view template through the source-resolver (protocol specified). View Template: " + viewTemplate);
                 SourceResolver resolver = new SourceResolver(this);
                 Source templateSource = resolver.resolve(viewTemplate, null);
-                InputStream templateInputStream = ((StreamSource)templateSource).getInputStream();
-                
-                jellyContext.runScript(new InputSource(templateInputStream), jellyOutput);
+                templateInputStream = ((StreamSource)templateSource).getInputStream();
+                templatePublicId = templateSource.getSystemId();
+                /*XXX HACK the following does not work: Jelly wants URLs => protocol must be registered by the JVM!
+                templateSystemId = templateSource.getSystemId();
+                */
+                templateSystemId = "file:///"+viewTemplate.replaceFirst(":", "/");
             }
-            
-            
+            InputSource inputSource = new InputSource(templateInputStream);
+            inputSource.setPublicId(templatePublicId);
+            inputSource.setSystemId(templateSystemId);
+            jellyContext.runScript(inputSource, jellyOutput);
+            //XXX should we close templateInputStream here?!?
             
             jellyOutput.flush();
             byte[] result = jellyResultStream.toByteArray();
@@ -168,6 +178,7 @@ public class UsecaseResource extends BasicXMLResource {
         return null;
     }
     
+    @Override
     public boolean exists() throws Exception {
         return true;
     }
