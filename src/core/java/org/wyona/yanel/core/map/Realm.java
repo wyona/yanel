@@ -41,7 +41,8 @@ import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
 /**
  * Realm interface
- * Please make sure to implement a constructor like Realm(String, String, String, File), because RealmManager does instantiate such a constructor dynamically
+ *
+ * Please make sure to implement a constructor like Realm(String name, String id, String mountPoint, File configFile), because RealmManager does instantiate such a constructor dynamically
  */
 public interface Realm {
 
