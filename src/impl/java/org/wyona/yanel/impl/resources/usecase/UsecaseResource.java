@@ -34,9 +34,6 @@ import org.wyona.yanel.impl.resources.BasicXMLResource;
 import org.wyona.yarep.core.Repository;
 import org.xml.sax.InputSource;
 
-/**
- *
- */
 public class UsecaseResource extends BasicXMLResource {
 
     private static Logger log = Logger.getLogger(UsecaseResource.class);
@@ -68,7 +65,16 @@ public class UsecaseResource extends BasicXMLResource {
             }
             
             if (viewDescriptor.getType().equals(ConfigurableViewDescriptor.TYPE_JELLY)) {
-                InputStream xmlInputStream = getJellyXML(viewDescriptor);
+                String viewTemplateURI = viewDescriptor.getTemplate();
+                InputStream xmlInputStream = getJellyTextInputStream(viewID, viewTemplateURI);
+                view = getXMLView(viewID, xmlInputStream);
+            } else if (viewDescriptor.getType().equals(ConfigurableViewDescriptor.TYPE_JELLY_XML)) {
+                String viewTemplateURI = viewDescriptor.getTemplate();
+                InputStream xmlInputStream = getJellyXMLInputStream(viewID, viewTemplateURI);
+                view = getXMLView(viewID, xmlInputStream);
+            } else if (viewDescriptor.getType().equals(ConfigurableViewDescriptor.TYPE_JELLY_TEXT)) {
+                String viewTemplateURI = viewDescriptor.getTemplate();
+                InputStream xmlInputStream = getJellyTextInputStream(viewID, viewTemplateURI);
                 view = getXMLView(viewID, xmlInputStream);
             // TODO: Why is this commented? It would be useful in some cases if one could redirect directly to the original referer instead sending a DONE screen.
             /*} else if (viewDescriptor.getType().equals(ViewDescriptor.TYPE_REDIRECT)) {
@@ -103,10 +109,21 @@ public class UsecaseResource extends BasicXMLResource {
 
     /**
      * Generate jelly view
+     * @deprecated Use {@link #getJelly(String, boolean)} instead.
      */
+    @Deprecated
     protected InputStream getJellyXML(ConfigurableViewDescriptor viewDescriptor) throws UsecaseException {
+        String viewTemplateURI = viewDescriptor.getTemplate();
+        String viewID = viewDescriptor.getId();
+        return getJellyInputStream(viewID, viewTemplateURI, false);
+    }
+
+    /**
+     * Generate jelly view.
+     */
+    private InputStream getJellyInputStream(String viewID, String viewTemplate, boolean XMLoutput) throws UsecaseException {
         try {
-            String viewTemplate = viewDescriptor.getTemplate();
+
             if (log.isDebugEnabled()) log.debug("viewTemplate: "+viewTemplate);
             Repository repo = this.getRealm().getRepository();
             
@@ -120,11 +137,7 @@ public class UsecaseResource extends BasicXMLResource {
             //jellyContext.setVariable("request", request);
 
             ByteArrayOutputStream jellyResultStream = new ByteArrayOutputStream();
-            // TODO: should enable xml escaping, see bug:
-            // http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5964
-            // problem: it breaks backwards compatibility
-            //XMLOutput jellyOutput = XMLOutput.createXMLOutput(jellyResultStream, true);
-            XMLOutput jellyOutput = XMLOutput.createXMLOutput(jellyResultStream);
+            XMLOutput jellyOutput = XMLOutput.createXMLOutput(jellyResultStream, XMLoutput);
             InputStream templateInputStream;
             String templatePublicId;
             String templateSystemId;
@@ -160,12 +173,20 @@ public class UsecaseResource extends BasicXMLResource {
             //System.out.println(new String(result, "utf-8"));
             return new ByteArrayInputStream(result);
         } catch (Exception e) {
-            String errorMsg = "Error creating 'jelly' view '" + viewDescriptor.getId() + "' of usecase resource: " + getName() + ": " + e;
+            String errorMsg = "Error creating 'jelly' view '" + viewID + "' of usecase resource: " + getName() + ": " + e;
             log.error(errorMsg, e);
             throw new UsecaseException(errorMsg, e);
         }
     }
         
+    private InputStream getJellyTextInputStream(String viewID, String viewTemplateURI) throws UsecaseException {
+                return getJellyInputStream(viewID, viewTemplateURI, false);
+    }
+
+    private InputStream getJellyXMLInputStream(String viewID, String viewTemplateURI) throws UsecaseException {
+                return getJellyInputStream(viewID, viewTemplateURI, true);
+    }
+
     protected String getRedirectURL(ConfigurableViewDescriptor viewDescriptor) {
         return viewDescriptor.getRedirectURL();
     }

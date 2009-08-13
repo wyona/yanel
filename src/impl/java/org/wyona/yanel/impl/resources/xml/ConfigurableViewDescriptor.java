@@ -20,12 +20,15 @@ import java.util.Properties;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationException;
+import org.apache.log4j.Logger;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 public class ConfigurableViewDescriptor extends ViewDescriptor {
     
     public static final String TYPE_XML = "xml";
     public static final String TYPE_JELLY = "jelly";
+    public static final String TYPE_JELLY_XML = "jelly-XML";
+    public static final String TYPE_JELLY_TEXT = "jelly-text";
     public static final String TYPE_REDIRECT = "redirect";
     public static final String TYPE_CUSTOM = "custom";
     
@@ -36,6 +39,8 @@ public class ConfigurableViewDescriptor extends ViewDescriptor {
     protected String serializerKey;
     protected Properties serializerProperties;
     protected HashMap httpHeaders;
+
+    private static final Logger log = Logger.getLogger(ConfigurableViewDescriptor.class);
 
     public ConfigurableViewDescriptor(String id) {
         super(id);
@@ -82,6 +87,11 @@ public class ConfigurableViewDescriptor extends ViewDescriptor {
         }
         
         if (type.equals(TYPE_JELLY)) {
+            template = config.getChild("template").getValue();
+            /*TODO send a message to yanel-usage@ that we now will log what follows at the warn level and only then do it*/
+            log.info("'"+TYPE_JELLY+"' view-type is deprecated, please use '"+TYPE_JELLY_XML+"' or '"+TYPE_JELLY_TEXT+"' instead (see http://lists.wyona.org/pipermail/yanel-development/2009-May/003567.html for rationale).");
+        }
+        if (type.equals(TYPE_JELLY_XML) || type.equals(TYPE_JELLY_TEXT)) {
             template = config.getChild("template").getValue();
         }
         if (type.equals(TYPE_REDIRECT)) {
