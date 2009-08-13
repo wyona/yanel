@@ -22,7 +22,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
+
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.ResourceTypeRegistry;
@@ -34,11 +35,11 @@ import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yarep.core.Repository;
 
 /**
- * 
+ * Show all realms registered within Yanel instance
  */
 public class ShowRealms extends Resource implements ViewableV2 {
 
-    private static Category log = Category.getInstance(ShowRealms.class);
+    private static Logger log = Logger.getLogger(ShowRealms.class);
 
     /**
      * 
@@ -71,18 +72,19 @@ public class ShowRealms extends Resource implements ViewableV2 {
         
         Realm[] realms = yanel.getRealmConfiguration().getRealms();
         for (int i = 0; i < realms.length; i++) {
-            if (realm instanceof org.wyona.yanel.core.map.RealmWithConfigurationExceptionImpl) {
+            if (realms[i] instanceof org.wyona.yanel.core.map.RealmWithConfigurationExceptionImpl) {
+                String eMessage = ((org.wyona.yanel.core.map.RealmWithConfigurationExceptionImpl) realms[i]).getConfigurationException().getMessage();
+                log.error("Realm '" + realms[i].getID() + "' has thrown a configuration exception: " + eMessage);
                 sb.append("<realm>");
-                sb.append("<name>" + "WARNING: Configuration Exception" + "</name>");
-                sb.append("<id>" + realms[i].getID() + "</id>");
-                sb.append("<mountpoint>" + realms[i].getMountPoint() + "</mountpoint>");
-                //sb.append("<description>" + realms[i].getDescription() + "</description>");
+                sb.append("  <name>" + "WARNING: Configuration Exception '" + eMessage + "' for realm " + realms[i].getID() + "</name>");
+                sb.append("  <id>" + realms[i].getID() + "</id>");
+                sb.append("  <mountpoint>" + realms[i].getMountPoint() + "</mountpoint>");
                 sb.append("</realm>");
             } else {
                 sb.append("<realm>");
-                sb.append("<name>" + realms[i].getName() + "</name>");
-                sb.append("<id>" + realms[i].getID() + "</id>");
-                sb.append("<mountpoint>" + realms[i].getMountPoint() + "</mountpoint>");
+                sb.append("  <name>" + realms[i].getName() + "</name>");
+                sb.append("  <id>" + realms[i].getID() + "</id>");
+                sb.append("  <mountpoint>" + realms[i].getMountPoint() + "</mountpoint>");
                 //sb.append("<description>" + realms[i].getDescription() + "</description>");
                 sb.append("</realm>");
             }
@@ -189,8 +191,7 @@ public class ShowRealms extends Resource implements ViewableV2 {
     } 
   
     public boolean exists() throws Exception {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
     
     public long getSize() throws Exception {
