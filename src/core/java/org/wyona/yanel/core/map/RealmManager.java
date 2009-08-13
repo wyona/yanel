@@ -222,10 +222,10 @@ public class RealmManager {
                     realmConfigFile = new File(realmConfigFile, REALM_DEFAULT_CONFIG_NAME);
                 }
 
+                Realm realm;
                 try {
-                    log.info("Reading realm config file for [" + realmId + "]: " + realmConfigFile);
+                    log.info("Reading realm configuration file for [" + realmId + "]: " + realmConfigFile);
                     Configuration realmConfig = builder.buildFromFile(realmConfigFile);
-                    Realm realm;
                     try {
                         String customRealmImplClassName = realmConfig.getAttribute("class");
                         Class[] classArgs = new Class[]{String.class, String.class, String.class, File.class};
@@ -252,25 +252,25 @@ public class RealmManager {
                         log.debug("Prefix value: " + prefixValue);
                         realm.setProxy(rpc.getHostName(), proxyPort, proxySSLPort, prefixValue);
                     }
-                    
-                    log.info("Realm: " + realm);
-                    
-                    hm.put(realmId, realm);
-                    if (rcc[i].isRoot()) {
-                        log.debug("Root realm found: " + realm.getID());
-                        if (rootRealm == null) {
-                            log.debug("Root realm set: " + realm.getID());
-                            rootRealm = realm;
-                        } else {
-                            log.error("Root realm has already been set: " + realmId);
-                        }
-                    }
                 } catch (Exception e) {
                     String errorMsg = "Error setting up realm [" + realmId + "]: " + realmConfigFile + ": " + e;
                     log.error(errorMsg, e);
                     // NOTE: Do not throw an exception, because otherwise all other realms are not being loaded either
-                    // TODO/TBD: Maybe one should enhance Realm by a method such as setStatus() and getStatus() in order to check if a realm has been registered successfully or not!
                     //throw new ConfigurationException(errorMsg, e);
+                    realm = new RealmWithConfigurationExceptionImpl(realmId, realmId, mountPoint, realmConfigFile, e);
+                    //realm = new RealmWithConfigurationExceptionImpl(rcc[i].getLabel(), realmId, mountPoint, realmConfigFile, e);
+                }
+                    
+                log.info("Realm: " + realm);
+                hm.put(realmId, realm);
+                if (rcc[i].isRoot()) {
+                    log.debug("Root realm found: " + realm.getID());
+                    if (rootRealm == null) {
+                        log.debug("Root realm set: " + realm.getID());
+                        rootRealm = realm;
+                    } else {
+                        log.error("Root realm has already been set: " + realmId);
+                    }
                 }
             }
         } catch (Exception e) {

@@ -54,6 +54,11 @@ public class RealmWithConfigurationExceptionImpl implements Realm {
     private String name;
     private String id;
     private String mountPoint;
+    private File configFile;
+    private Exception configurationException;
+
+
+
     private String defaultLanguage;
     private Repository repository;
     private Repository rtiRepository;
@@ -63,7 +68,6 @@ public class RealmWithConfigurationExceptionImpl implements Realm {
     private TranslationManager translationManager;
     private LanguageHandler languageHandler;
     private Sitetree repoNavigation;
-    private File configFile;
     private File rootDir;
     private String[] languages;
     private String i18nCatalogue;
@@ -82,6 +86,7 @@ public class RealmWithConfigurationExceptionImpl implements Realm {
         this.id = id;
         this.mountPoint = mountPoint;
         this.configFile = configFile;
+        this.configurationException = configurationException;
     }
 
     /**
