@@ -82,7 +82,13 @@ public class RealmWithConfigurationExceptionImpl implements Realm {
      * Init realm
      */
     public RealmWithConfigurationExceptionImpl(String name, String id, String mountPoint, File configFile, Exception configurationException) throws Exception {
-        this.name = name;
+        if (name != null) {
+            this.name = name;
+        } else {
+            log.warn("No name was set within yanel realms config for realm with id: " + id);
+            this.name = id;
+        }
+        this.name = this.name + " (Configuration exception!)";
         this.id = id;
         this.mountPoint = mountPoint;
         this.configFile = configFile;
@@ -90,7 +96,7 @@ public class RealmWithConfigurationExceptionImpl implements Realm {
     }
 
     /**
-     * Name of realm
+     * @see Realm#geName()
      */
     public String getName() {
         return name;
