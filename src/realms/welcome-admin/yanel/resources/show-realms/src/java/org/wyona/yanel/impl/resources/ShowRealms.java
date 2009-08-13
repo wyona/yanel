@@ -71,12 +71,21 @@ public class ShowRealms extends Resource implements ViewableV2 {
         
         Realm[] realms = yanel.getRealmConfiguration().getRealms();
         for (int i = 0; i < realms.length; i++) {
-            sb.append("<realm>");
-            sb.append("<name>" + realms[i].getName() + "</name>");
-            sb.append("<id>" + realms[i].getID() + "</id>");
-            sb.append("<mountpoint>" + realms[i].getMountPoint() + "</mountpoint>");
-            //sb.append("<description>" + realms[i].getDescription() + "</description>");
-            sb.append("</realm>");
+            if (realm instanceof org.wyona.yanel.core.map.RealmWithConfigurationExceptionImpl) {
+                sb.append("<realm>");
+                sb.append("<name>" + "WARNING: Configuration Exception" + "</name>");
+                sb.append("<id>" + realms[i].getID() + "</id>");
+                sb.append("<mountpoint>" + realms[i].getMountPoint() + "</mountpoint>");
+                //sb.append("<description>" + realms[i].getDescription() + "</description>");
+                sb.append("</realm>");
+            } else {
+                sb.append("<realm>");
+                sb.append("<name>" + realms[i].getName() + "</name>");
+                sb.append("<id>" + realms[i].getID() + "</id>");
+                sb.append("<mountpoint>" + realms[i].getMountPoint() + "</mountpoint>");
+                //sb.append("<description>" + realms[i].getDescription() + "</description>");
+                sb.append("</realm>");
+            }
         }
         
         sb.append("</realms>");
