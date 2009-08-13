@@ -80,7 +80,12 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
         value += "<li>Revision name: " + this.revisionInfo.getName() + "</li>";
         value += "<li>Creation date of revision: " + formatDate(this.revisionInfo.getDate()) + "</li>";
         value += "<li>Author: " + this.revisionInfo.getUser() + "</li>";
-        value += "<li>Comment: " + this.revisionInfo.getComment() + "</li>";
+
+        String comment = this.revisionInfo.getComment();
+        if (comment != null && comment.length() > 0) {
+            value += "<li>Comment: " + comment + "</li>";
+        }
+
         if (workflowableRes != null) {
             try {
                 String wfState = workflowableRes.getWorkflowState(revisionInfo.getName());
@@ -139,10 +144,10 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
     }
 
     /**
-     *
+     * Format date (Example: Wed, 4 July 2009, 16:25:17 CEST)
      */
     private String formatDate(java.util.Date date) {
-        java.text.DateFormat df = new java.text.SimpleDateFormat();
+        java.text.DateFormat df = new java.text.SimpleDateFormat("EEE, d MMM yyyy, HH:mm:ss z");
         return df.format(date);
     }
 }
