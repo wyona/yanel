@@ -56,7 +56,13 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
                 workflowableRes = (WorkflowableV1) this.resource;
                 String state = workflowableRes.getWorkflowState(revisionInfo.getName());
 
-                value += " (" + formatDate(this.revisionInfo.getDate()) + ", " + state + ")" + NBSP + "<ul><li class=\"haschild\">Workflow";
+                String liveMarker = "";
+                //log.debug("Live status: " + WorkflowHelper.getLiveRevision(resource));
+                if (revisionInfo.getName().equals(WorkflowHelper.getLiveRevision(resource))) {
+                    liveMarker = " (LIVE)";
+                }
+
+                value += " (" + formatDate(this.revisionInfo.getDate()) + ", " + state + liveMarker + ")" + NBSP + "<ul><li class=\"haschild\">Workflow";
             
                 ITransitionMenuContent x = new TransitionMenuContentImpl(getResource(), state, getRevisionInfo().getName(), getMenuLanguageCode());
                 RevisionTransitionsMenuContent rt = new RevisionTransitions(getResource(), getRevisionInfo().getName(), getMenuLanguageCode(), x);

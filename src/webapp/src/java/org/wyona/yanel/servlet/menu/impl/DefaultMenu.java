@@ -125,28 +125,7 @@ public class DefaultMenu extends Menu {
         }
 
 
-        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
-            RevisionInformation[] revisions = ((VersionableV2) resource).getRevisions();
-            if (revisions !=  null && revisions.length > 0) {
-                sb.append("<li class=\"haschild\">Revisions&#160;&#160;&#160;<ul>");
-                for (int i = revisions.length -1; i >= 0; i--) {
-                    boolean mostRecent = false;
-                    boolean oldestRevision = false;
-                    if (i == revisions.length - 1) mostRecent = true;
-                    if (i == 0) oldestRevision = true;
-                    sb.append((new RevisionInformationMenuItem(resource,
-                                                               revisions[i],
-                                                               resource.getRequestedLanguage())).toHTML(mostRecent, oldestRevision));
-                }
-                sb.append("</ul></li>");
-            } else {
-                sb.append("<li>No revisions yet</li>");
-            }
-        } else {
-            log.warn("This resource does not implement interface VersionableV2!");
-        }
-
-
+        sb.append(new RevisionsWorkflowMenuItem().getMenuItem(resource));
 
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
             sb.append("<li><a href=\"?yanel.resource.usecase=delete\">Delete this page</a></li>");
