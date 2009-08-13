@@ -70,14 +70,14 @@ public class DefaultMenu extends Menu {
      * Get generic file menu
      */
     public String getFileMenu(Resource resource) throws Exception {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">File</div>");
         sb.append("<ul>");
         sb.append("<li><a href=\"create-new-page.html\">Create new page</a></li>");
 
-
-
+        sb.append(new RevisionsWorkflowMenuItem().getMenuItem(resource));
+/*
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Workflowable", "1")) {
             Workflow wf = WorkflowHelper.getWorkflow(resource);
             if (wf != null) {
@@ -123,9 +123,7 @@ public class DefaultMenu extends Menu {
                 sb.append("<li>Workflowable, but no Workflow associated with resource yet!</li>");
             }
         }
-
-
-        sb.append(new RevisionsWorkflowMenuItem().getMenuItem(resource));
+*/
 
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
             sb.append("<li><a href=\"?yanel.resource.usecase=delete\">Delete this page</a></li>");
