@@ -216,6 +216,7 @@ public class RealmManager {
             for (int i = 0;i < rcc.length; i++) {
                 String mountPoint = rcc[i].getMountPoint();
                 String realmId = rcc[i].getID();
+                String realmLabel = rcc[i].getLabel();
                 
                 File realmConfigFile = resolveFile(rcc[i].getUnresolvedConfigurationFile(), realmsConfigFile);
                 if (realmConfigFile.isDirectory()) {
@@ -230,7 +231,7 @@ public class RealmManager {
                         String customRealmImplClassName = realmConfig.getAttribute("class");
                         Class[] classArgs = new Class[]{String.class, String.class, String.class, File.class};
                         Object[] values = new Object[4];
-                        values[0] = rcc[i].getLabel();
+                        values[0] = realmLabel;
                         values[1] = realmId;
                         values[2] = mountPoint;
                         values[3] = realmConfigFile;
@@ -238,10 +239,10 @@ public class RealmManager {
                         realm = (Realm) ct.newInstance(values);
                     } catch(ClassNotFoundException e) {
                         log.error("Class not found: " + e.getMessage() + ". Fallback to default realm implementation!");
-                        realm = new RealmDefaultImpl(rcc[i].getLabel(), realmId, mountPoint, realmConfigFile);
+                        realm = new RealmDefaultImpl(realmLabel, realmId, mountPoint, realmConfigFile);
                     } catch(Exception e) {
                         log.info("Default realm implementation will be used.");
-                        realm = new RealmDefaultImpl(rcc[i].getLabel(), realmId, mountPoint, realmConfigFile);
+                        realm = new RealmDefaultImpl(realmLabel, realmId, mountPoint, realmConfigFile);
                     }
                     
                     ReverseProxyConfig rpc = rcc[i].getReverseProxyConfig();
@@ -257,8 +258,7 @@ public class RealmManager {
                     log.error(errorMsg, e);
                     // NOTE: Do not throw an exception, because otherwise all other realms are not being loaded either
                     //throw new ConfigurationException(errorMsg, e);
-                    realm = new RealmWithConfigurationExceptionImpl(realmId, realmId, mountPoint, realmConfigFile, e);
-                    //realm = new RealmWithConfigurationExceptionImpl(rcc[i].getLabel(), realmId, mountPoint, realmConfigFile, e);
+                    realm = new RealmWithConfigurationExceptionImpl(realmLabel, realmId, mountPoint, realmConfigFile, e);
                 }
                     
                 log.info("Realm: " + realm);
