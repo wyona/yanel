@@ -88,11 +88,18 @@ public class RealmWithConfigurationExceptionImpl implements Realm {
             log.warn("No name was set within yanel realms config for realm with id: " + id);
             this.name = id;
         }
-        this.name = this.name + " (Configuration exception!)";
+        this.name = this.name;
         this.id = id;
         this.mountPoint = mountPoint;
         this.configFile = configFile;
         this.configurationException = configurationException;
+    }
+
+    /**
+     * Get configuration exception
+     */
+    public Exception getConfigurationException() {
+        return configurationException;
     }
 
     /**
