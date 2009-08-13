@@ -64,7 +64,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 
     /**
-     * Generates view
+     * @see org.wyona.yanel.core.api.attributes.VersionableV2#getView(String, String)
      */
     public View getView(String viewId, String revisionName) throws Exception {
         Repository repo = getRealm().getRepository();
@@ -242,6 +242,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         return revisionInfos;
     }
 
+    /**
+     * @see org.wyona.yanel.core.api.attributes.VersionableV2#checkin()
+     */
     public void checkin(String comment) throws Exception {
         Node node = getRealm().getRepository().getNode(getPath());
         Revision revision = node.checkin(comment);
