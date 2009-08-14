@@ -87,6 +87,7 @@ Section -post SEC0001
     ExecShell "open" '"$INSTDIR\start.bat"' 0 SW_SHOWMINIMIZED
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
     SetOutPath $INSTDIR
+    IfSilent +2
     WriteUninstaller $INSTDIR\uninstall.exe
     Sleep 12000
     ExecShell "open" '"http://localhost:8080/"' 0 SW_SHOWNORMAL    
