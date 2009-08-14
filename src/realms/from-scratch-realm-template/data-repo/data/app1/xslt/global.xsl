@@ -107,6 +107,10 @@ Content Language: <xsl:value-of select="$content-language"/>
             <div id="body" style="width: 440px;">
               <xsl:apply-templates select="/xhtml:html/xhtml:body/*"/>
             </div>
+
+            <div id="footer">
+              Copyright &#169; 2009 Wyona &#160;&#160;&#160;&#160;&#160;&#160;<a href="?yanel.toolbar=on" rel="nofollow">Toolbar</a>
+            </div>
           </div>
         </div>
       </body>
