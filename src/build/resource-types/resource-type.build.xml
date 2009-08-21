@@ -92,6 +92,7 @@
     <mkdir dir="${resource.classes.dir}"/>
     <javac srcdir="${resource.java.dir}" destdir="${resource.classes.dir}"
       classpathref="classpath"
+      encoding="${javac.encoding}"
       debug="true"
     />
     <!-- Replace dot by forward slash -->

@@ -46,6 +46,7 @@
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${yanel.source.home}/src/core/java/org/wyona/yanel/cmdl" destdir="${classes.dir}"
       debug="true"
+      encoding="${javac.encoding}"
       classpathref="classpath.cmdl"
     />
   </target>

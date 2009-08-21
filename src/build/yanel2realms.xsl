@@ -9,6 +9,7 @@
 
 <xsl:param name="servlet.context.prefix" select="'NULL_servlet_context_prefix'"/>
 <xsl:param name="yanel.source.version" select="'NULL_yanel_source_version'"/>
+<xsl:param name="yanel.source.home" select="'NULL_yanel_source_home'"/>
 <xsl:param name="maven.url" select="'NULL_maven_url'"/>
 
 <xsl:template match="/">
@@ -52,6 +53,7 @@
     <echo>Build realm with id "<xsl:value-of select="@id"/>"</echo>
     <ant inheritAll="false" antfile="{yanel:config/@src}/build.xml" target="compile">
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
+      <property name="yanel.source.home" value="{$yanel.source.home}"/>
       <property name="maven.url" value="{$maven.url}"/>
     </ant>
   </target>

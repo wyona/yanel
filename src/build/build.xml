@@ -122,6 +122,7 @@
       destdir="${classes.dir}"
       source="${source.java.version}"
       target="${target.java.version}"
+      encoding="${javac.encoding}"
       debug="true">
       <classpath refid="classpath.compile"/>
     </javac>
@@ -140,6 +141,7 @@
       destdir="${classes.dir}"
       source="${source.java.version}"
       target="${target.java.version}"
+      encoding="${javac.encoding}"
       debug="true">
       <classpath refid="classpath.compile"/>
     </javac>
@@ -154,7 +156,10 @@
 
   <target name="compile-impl-classes" description="Compile Java classes of Yanel implementation" depends="init, compile-core">
     <mkdir dir="${classes.dir}"/>
-    <javac srcdir="${yanel.source.home}/src/impl/java/org/wyona/yanel/impl" destdir="${classes.dir}" debug="true">
+    <javac srcdir="${yanel.source.home}/src/impl/java/org/wyona/yanel/impl"
+      destdir="${classes.dir}"
+      encoding="${javac.encoding}"
+      debug="true">
       <classpath refid="classpath.compile"/>
     </javac>
   </target>

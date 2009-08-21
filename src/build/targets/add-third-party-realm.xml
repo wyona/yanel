@@ -13,6 +13,7 @@
 
   <target name="build-add-realm-task" depends="init, compile-core">
     <javac srcdir="${yanel.source.home}/src/build/java"
+           encoding="${javac.encoding}"
            destdir="${yanel.source.home}/build/classes"
     />
   </target>
