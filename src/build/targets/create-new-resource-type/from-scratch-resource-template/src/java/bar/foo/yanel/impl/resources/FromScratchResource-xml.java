@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Wyona
+ * Copyright 2009 Wyona
  */
 
 package bar.foo.yanel.impl.resources;
@@ -29,7 +29,7 @@ public class FromScratchResource extends BasicXMLResource {
         if (log.isDebugEnabled()) {
             log.debug("requested viewId: " + viewId);
         }
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<root>");
  
         sb.append("</root>");
