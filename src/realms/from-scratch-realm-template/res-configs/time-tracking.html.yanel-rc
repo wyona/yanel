@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="timetracker" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:custom-config>
+    <views xmlns="http://www.wyona.org/yanel/rti/1.0">
+      <view id="default">
+        <xslt>file:/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/timetracker/htdocs/create-entry.xsl</xslt>
+        <mime-type>application/xhtml+xml</mime-type>
+        <serializer key="HTML_TRANSITIONAL">
+          <indent>no</indent>
+        </serializer>
+      </view>
+      <view id="xml">
+        <mime-type>application/xml</mime-type>
+        <serializer key="XML">
+          <indent>yes</indent>
+        </serializer>
+      </view>
+    </views>
+  </yanel:custom-config>
+</yanel:resource-config>
