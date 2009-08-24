@@ -37,15 +37,20 @@ public class PolicyViewer {
         try {
             StringBuffer sb = new StringBuffer("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
             sb.append("<head>");
-            sb.append("<title>Access Policy: " + path + "</title>");
+        if(showParents) {
+            sb.append("<title>Access Policies: " + path + "</title>");
+        } else {
+            sb.append("<title>Aggregated Access Policy: " + path + "</title>");
+        }
             // TODO: Calculate back path ...
             sb.append("<link type=\"text/css\" href=\"" + backToRootPath(path) + "yanel/yanel-css/view-access-policy.css\" rel=\"stylesheet\"/>");
             sb.append("</head>");
             sb.append("<body>");
             if(showParents) {
-                sb.append("<h1>Access Policies for Path (and its parents) <i>" + path);
+                sb.append("<h1>Access Policies</h1>");
+                sb.append("<p>Access Policies for path (and its parents) <em>" + path);
                 if (contentItemId != null) sb.append("#" + contentItemId);
-                sb.append("</i>:</h1>");
+                sb.append("</em>:</p>");
 
                 // Show also all parent policies
                 if (showTabs) {
@@ -63,9 +68,10 @@ public class PolicyViewer {
                 sb.append("<tr valign=\"top\"><td>Aggregated Policy</td>" + getPoliciesAsXHTML(pm, gm, path, contentItemId, aggregate, orderedBy, showAbbreviatedLabels) + "</tr>");
                 sb.append("</table></p>");
             } else {
-                sb.append("<div id=\"path-sentence\"><h1>Aggregated Access Policy for Path <i>" + path);
+                sb.append("<h1>Aggregated Access Policy</h1>");
+                sb.append("<div id=\"path-sentence\"><p>Aggregated Access Policy for path <em>" + path);
                 if (contentItemId != null) sb.append("#" + contentItemId);
-                sb.append("</i>:</h1></div>");
+                sb.append("</em>:</p></div>");
 
                 // Show policy of this node only
                 if (showTabs) {
