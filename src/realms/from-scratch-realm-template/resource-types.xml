@@ -4,8 +4,11 @@
 
   <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
 
-  <resource-type src="@REALM_SRC_DIR@/res-types/layoutselector/" compile="true"/>
+  <resource-type src="@REALM_SRC_DIR@/res-types/layoutselector/" compile="true" copy-dir-name="fsr-layoutselector"/>
 <!--
   <resource-type src="/home/michi/src/wyona/public/yanel/contributions/resources/xopus3/" compile="true"/>
+-->
+<!--
+  <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/timetracker/" compile="true"/>
 -->
 </resource-types>
