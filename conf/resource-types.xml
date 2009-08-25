@@ -4,9 +4,7 @@
 
 <!-- NOTE: The attribute "copy-dir-name" is optional and if set (and also if the global build parameter 'copy.resource-type-configs.to.webapp' within src/build/local.build.properties is set to true), then the resource will be copied into the webapp from where it will be referenced, which is useful in the case of binary releases -->
 
-<!-- NOTE: The attribute "package" is optional and if set, then all the relevant files (resource.xml, classes, etc.) are contained within a jar file, which will be copied to and loaded from WEB-INF/lib -->
-
-<!-- TODO: Is the "src" attribute required if a "package" is specified and set within the maven dependencies? -->
+<!-- NOTE: Instead the 'src' attribute one can set the 'package' attribute, whereas if set, then Yanel assumes that all the relevant files (resource.xml, classes, yanel-htdocs, etc.) are contained within a jar file, which will be copied to and loaded from WEB-INF/lib. The 'package' attribute is normally used if a resource is referenced dynamically via Maven. -->
 
 <!-- NOTE: Do not use relative paths to reference resource types, because the paths are not being resolved re the location of (local.)resource-types.xml -->
 
@@ -45,7 +43,7 @@
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/data-repo-sitetree/" compile="true" copy-dir-name="yanel-data-repo-sitetree"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/navigation/" compile="true" copy-dir-name="yanel-navigation"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/translation/" compile="true" copy-dir-name="yanel-translation"/>
-  <resource-type package="org.wyona.yanel.impl.resources.node" src="@YANEL_SRC_DIR@/src/resources/file/" compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/file/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/directory/" compile="true" copy-dir-name="yanel-collection"/>
 
   <!-- TODO: Move this to the welcome realm?! -->
@@ -71,6 +69,6 @@
 
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/pdf/" compile="true" copy-dir-name="yanel-pdf"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/yanel-user/" compile="true" copy-dir-name="yanel-yanel-user"/>
-  <resource-type package="org.wyona.yanel.impl.resources.redirect" src="@YANEL_SRC_DIR@/src/contributions/resources/redirect/" compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/redirect/" compile="true"/>
 
 </resource-types>
