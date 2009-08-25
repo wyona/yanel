@@ -110,10 +110,22 @@
              replace=""
              global="true"
              casesensitive="false" />
+
     <!--<echo>Package directory: ${new.resource.java.class.fs.path}</echo>-->
-    <copy todir="${resource.classes.dir}/${new.resource.java.class.fs.path}">
-      <fileset dir="${resource.home.dir}" includes="resource*.xml,htdocs/**,yanel-htdocs/**"/><!--NOTE: only the "user-mgmt" resource-type folder contains several "resource-*.xml" files, all other resource-types only have one "resource.xml" (as of revision 41802 at least) -->
-    </copy>
+
+    <!-- Copy configs etc. into jar file only in the case of a binary release -->
+    <if>
+      <istrue value="${copy.resource-type-configs.to.webapp}"/>
+      <then>
+      <copy todir="${resource.classes.dir}/${new.resource.java.class.fs.path}">
+        <fileset dir="${resource.home.dir}" includes="resource*.xml,htdocs/**,yanel-htdocs/**"/><!--NOTE: only the "user-mgmt" resource-type folder contains several "resource-*.xml" files, all other resource-types only have one "resource.xml" (as of revision 41802 at least) -->
+      </copy>
+      </then>
+      <else>
+        <echo>Configs etc. will not be copied into jar!</echo>
+      </else>
+    </if>
+
     <mkdir dir="${resource.lib.dir}"/>
     <jar destfile="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}.jar"
       basedir="${resource.classes.dir}"
