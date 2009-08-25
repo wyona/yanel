@@ -38,7 +38,7 @@
 
     <antcall target="prepare-realms-config"/>
     <antcall target="prepare-global-resource-types-config"/>
-    <merge-resource-types-configs realmsconfigfile="${classes.dir}/realms.xml" globalresourcetypesconfigfile="${classes.dir}/resource-types.xml"/>
+    <merge-resource-types-configs realmsconfigfile="${classes.dir}/realms.xml" globalresourcetypesconfigfile="${classes.dir}/resource-types.xml" isbinaryrelease="${copy.resource-type-configs.to.webapp}"/>
     <antcall target="generate-resources-build-file"/>
   </target>
 

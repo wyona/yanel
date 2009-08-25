@@ -9,6 +9,7 @@ import org.apache.tools.ant.types.Path;
 
 import java.io.File;
 
+import org.wyona.yanel.core.ResourceTypeDefinition;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.map.RealmContextConfig;
 import org.wyona.yanel.core.map.RealmManagerConfig;
@@ -29,6 +30,7 @@ public class MergeResourceTypesConfigsTask extends Task {
 
     private Path realmsConfigFile;
     private Path globalResourceTypesConfigFile;
+    private boolean isBinaryRelease;
 
     /**
      *
@@ -60,17 +62,24 @@ public class MergeResourceTypesConfigsTask extends Task {
     }
 
     /**
-     *
+     * Ant file task attribute realmsconfigfile
      */
     public void setRealmsConfigFile(Path realmsConfigFile) {
         this.realmsConfigFile = realmsConfigFile;
     }
 
     /**
-     *
+     * Ant file task attribute globalresourcetypesconfigfile
      */
     public void setGlobalResourceTypesConfigFile(Path globalResourceTypesConfigFile) {
         this.globalResourceTypesConfigFile = globalResourceTypesConfigFile;
+    }
+
+    /**
+     * Ant file task attribute isbinaryrelease
+     */
+    public void setIsBinaryRelease(boolean isBinaryRelease) {
+        this.isBinaryRelease = isBinaryRelease;
     }
 
     /**
@@ -125,6 +134,16 @@ public class MergeResourceTypesConfigsTask extends Task {
                         String copyDirNameAttr = resourceTypeElements[i].getAttribute("copy-dir-name");
                         if (copyDirNameAttr != null && !copyDirNameAttr.equals("")) {
                             rtElement.setAttribute("copy-dir-name", copyDirNameAttr);
+                            log("WARN: copy-dir-name attribute is deprecated (Resource '" + srcAttr + "')!");
+                            log.warn("copy-dir-name attribute is deprecated!");
+                        }
+                        if (isBinaryRelease) {
+                            //log("DEBUG: This is a binary release! (Resource: " + srcAttr + ")");
+                            //log.warn("DEBUG: This is a binary release!");
+                            if (copyDirNameAttr.equals("") && packageAttr.equals("")) {
+                                log("INFO: Insert the package name of the resource '" + srcAttr + "' automatically.");
+                                rtElement.setAttribute("package", getJavaPackageOfResourceType(srcAttr));
+                            }
                         }
                         rootElement.appendChild(rtElement);
                     }
@@ -147,5 +166,14 @@ public class MergeResourceTypesConfigsTask extends Task {
         Element[] elements = XMLHelper.getElements(rootElement, "resource-type", "src", src);
         if (elements.length > 0) return true;
         return false;
+    }
+
+    /**
+     * @param resourceHomePath Source directory of resource type
+     */
+    private String getJavaPackageOfResourceType(String resourceHomePath) throws Exception {
+        String classname = new ResourceTypeDefinition(new File(resourceHomePath, "resource.xml")).getResourceTypeClassname();
+        //return Class.forName(classname).getPackage().getName(); // NOTE: This doesn't work, because java classloader check
+        return classname.substring(0, classname.lastIndexOf(".")); // NOTE: This doesn't work in the case of ...
     }
 }
