@@ -36,17 +36,22 @@ public class MergeResourceTypesConfigsTask extends Task {
      *
      */
     public void execute() throws BuildException {
-        log.info("Merge ...");
+
         log("INFO: Realms config file: " + realmsConfigFile);
-        log("INFO: Global resource-types config directory: " + globalResourceTypesConfigFile);
         File realmsConfig = new File(realmsConfigFile.toString());
+
+        log("INFO: Global resource-types config directory: " + globalResourceTypesConfigFile);
         File globalResourceTypesConfig = new File(globalResourceTypesConfigFile.toString());
+
+        // TODO: Insert the package name automatically if binary release and no package and copy-dir-name specified
+
         RealmManagerConfig realmManagerConfig = new RealmManagerConfig();
         try {
             RealmContextConfig[] realmContextConfigs;
             if (realmsConfig.isFile()) {
                 realmContextConfigs = realmManagerConfig.getRealmContextConfigs(realmsConfig);
 
+                log.info("Merge ...");
                 log("Number of realms: " + realmContextConfigs.length);
                 for (int i = 0; i < realmContextConfigs.length; i++) {
                     log("Realm context config: " + realmContextConfigs[i]);
