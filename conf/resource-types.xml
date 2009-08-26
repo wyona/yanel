@@ -8,9 +8,10 @@
 
 <!-- NOTE: Do not use relative paths to reference resource types, because the paths are not being resolved re the location of (local.)resource-types.xml -->
 
-<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2009072600">
+<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2009082500">
 
   <changes>
+    <change version="2009082500">package attribute removed from xml and node/file resources</change>
     <change version="2009072600">search resource type added</change>
     <change version="2009070800">forgotpw resource type added</change>
     <change version="2009051900">copy-dir-name attribute to all resources added</change>
