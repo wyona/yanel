@@ -39,7 +39,7 @@ public class SourceResolver implements URIResolver {
         //int colonIndex = uri.indexOf(":/");
         String uriScheme = "";
         if (colonIndex <= 0) {//Check for scheme in URI, if true, then URI has no scheme
-            //log.error("DEBUG: URI has no scheme: " + uri);
+        	if (log.isDebugEnabled()) log.debug("URI <" + uri + "> has no scheme.");
             if (base != null) {
                 int colBaseIndex = base.indexOf(":");
                 //int colBaseIndex = base.indexOf(":/");
@@ -48,14 +48,14 @@ public class SourceResolver implements URIResolver {
                 }
                 uriScheme = base.substring(0, colBaseIndex);
                 uri = PathUtil.concat(base,uri);                
-                //log.error("DEBUG: Use scheme of base: " + uriScheme + ", " + uri);
+                if (log.isDebugEnabled()) log.debug("Base URI <" + uri + "> has scheme \"" + uriScheme + "\".");
             } else {
                 log.error("Neither scheme for URI nor base specified for URI: " + uri);
                 throw new SourceException("invalid url syntax (missing scheme): " + uri);//no scheme found in uri and base
             }
         } else {//uri contains scheme
             uriScheme = uri.substring(0, colonIndex);
-            //log.error("DEBUG: URI has scheme: " + uriScheme + ", " + uri);
+            if (log.isDebugEnabled()) log.debug("URI <" + uri + "> has scheme \"" + uriScheme + "\".");
         }
 
         URIResolver resolver = getResolver(uriScheme);
