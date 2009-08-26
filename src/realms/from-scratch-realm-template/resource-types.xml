@@ -11,4 +11,7 @@
 <!--
   <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/timetracker/" compile="true"/>
 -->
+
+  <!-- Library is loaded via Maven, see src/realms/welcome-admin/src/build/dependencies.xml -->
+  <resource-type package="org.wyona.yanel.impl.resources.example" compile="true"/>
 </resource-types>
