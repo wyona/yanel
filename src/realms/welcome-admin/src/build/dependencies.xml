@@ -20,7 +20,8 @@
     <!-- Additional libraries needed for runtime -->
     <artifact:dependencies pathId="maven2.realm.classpath" filesetId="maven2.realm.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
-      <!-- No realm specific libs yet -->
+      <!-- Used by the from scratch realm, see src/realms/from-scratch-realm-template/res-configs/time.html.yanel-rc -->
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-resource-example-world-time" version="1.0-dev-r44371"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
