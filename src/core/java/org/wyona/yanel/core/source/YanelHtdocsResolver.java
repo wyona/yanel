@@ -42,7 +42,7 @@ public class YanelHtdocsResolver implements URIResolver {
 
         //XXX HACK: we have no other way to have access to this directory from the Yanel environment alone:
         String localFilePath = request.getRealPath("/" + PATH_PREFIX + path);
-        log.fatal("localFilePath: "+localFilePath);
+        if (log.isDebugEnabled()) log.debug("localFilePath: "+localFilePath);
         File resourceFile = new File(localFilePath);
         //return new YanelStreamSource(resourceFile);
         InputStream in;
@@ -57,9 +57,9 @@ public class YanelHtdocsResolver implements URIResolver {
         return source;
         /*TODO REMOVEME does not work with HTTPS, credential problems...
         StringBuffer sb = request.getRequestURL();
-        log.fatal("sb: "+sb);
+        if (log.isDebugEnabled()) log.debug("sb: "+sb);
         String globalHtdocsPath = PathUtil.getGlobalHtdocsPath(resource);
-        log.fatal("globalHtdocsPath: "+globalHtdocsPath);
+        if (log.isDebugEnabled()) log.debug("globalHtdocsPath: "+globalHtdocsPath);
         try {
             URL url = new URL(sb.toString() + globalHtdocsPath + path);
             if (log.isDebugEnabled()) log.debug("Resolve: " + url.toString());
