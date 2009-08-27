@@ -266,9 +266,7 @@ public class ForgotPassword extends BasicXMLResource {
                     ResetPWExpire pwexp = new ResetPWExpire(userList[i].getID(), new Date().getTime(), guid, userList[i].getEmail());
                     Map<String, ResetPWExpire> pwHM = getOblivionMap(getEnvironment().getRequest());
                     pwHM.put(pwexp.getGuid(), pwexp);
-                    // TODO: Use proxy settings
-                    //String emailStr = "Please go to the following URL to reset password: <https://192.168.1.69:8443/yanel" + request.getServletPath().toString() + "?pwresetid=" + guid + ">.";
-                    String emailStr = "Please go to the following URL to reset password: <" + request.getRequestURL().toString() + "?pwresetid=" + guid + ">.";
+                    String emailStr = "Please go to the following URL to reset password: <" + getURL() + "?pwresetid=" + guid + ">.";
                     log.debug(emailStr);
                     String emailServer = getResourceConfigProperty(SMTP_HOST_PROPERTY_NAME);
                     int port = Integer.parseInt(getResourceConfigProperty("smtpPort"));
@@ -358,7 +356,22 @@ public class ForgotPassword extends BasicXMLResource {
 
     @Override
     public boolean exists() throws Exception {
-        log.warn("Not implemented yet!");
         return true;
+    }
+
+    /**
+     * Get forgot password URL which will be sent via E-Mail (also see YanelServlet#getRequestURLQS(HttpServletRequest, String, boolean))
+     */
+    public String getURL() throws Exception {
+        // TODO: Use proxy settings
+        //https://192.168.1.69:8443/yanel" + request.getServletPath().toString()
+        java.net.URL url = new java.net.URL(request.getRequestURL().toString());
+        org.wyona.yanel.core.map.Realm realm = getRealm();
+        if (realm.isProxySet()) {
+            log.warn("DEBUG: Proxy host name: " + realm.getProxyHostName());
+        } else {
+            log.warn("No proxy set.");
+        }
+        return url.toString();
     }
 }
