@@ -16,9 +16,7 @@
             <title>I forgot my password!</title>
           </head>
           <body>
-            <h1>
-              I forgot my password!
-            </h1>
+            <h1>I forgot my password!</h1>
 
             <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:exception"/>
             <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:requestemail"/>
@@ -35,19 +33,19 @@
   </xsl:template>
 
   <xsl:template match="yanel:requestemail" >
-    <h2>Get a new password by E-mail</h2>
+    <h2>Get a new password by E-Mail</h2>
     <form name="forgotpw-form" method="post" action="#">
       <p>
         <table cellpadding="0" cellspacing="0" border="0">
           <tr>
-            <td>Email address:</td>
+            <td>Your E-Mail address:</td>
             <td>
               <input type="text" name="email"/>
             </td>
           </tr>
           <tr>
             <td colspan="2">
-              <input type="submit" name="submitForgotPW" value="Send Email"/>
+              <input type="submit" name="submitForgotPW" value="Send E-Mail"/>
             </td>
           </tr>
         </table>
