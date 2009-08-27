@@ -76,6 +76,19 @@ fi
   echo "INFO: Building Yanel..."
   $OUR_ANT "$@"
 
-else
+elif [ "$1" = "cmdl" ]; then
   $OUR_ANT run-yanel-cmdl -Dyanel.path=$1
+else
+  echo "----------------------------------------------"
+  echo ""
+  echo "WARNING: No such command '$1' implemented!"
+  echo ""
+  echo "The following commands exist:"
+  echo ""
+  echo "start        - Startup yanel webapp"
+  echo "stop         - Shutdown yanel webapp"
+  echo "cmdl         - Use yanel on the command line"
+  echo "start-jetty  - TODO"
+  echo "configure    - TODO"
+  echo "build        - TODO"
 fi
