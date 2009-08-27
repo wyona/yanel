@@ -27,7 +27,7 @@ public class SourceResolver implements URIResolver {
         this.resource = resource;
         this.resolvers = new HashMap<String, URIResolver>();
     }
-    
+
     public Source resolve(String uri, String base) throws SourceException {
         if (log.isDebugEnabled()) {
             log.debug("URI to be resolved: " + uri);
@@ -39,7 +39,7 @@ public class SourceResolver implements URIResolver {
         //int colonIndex = uri.indexOf(":/");
         String uriScheme = "";
         if (colonIndex <= 0) {//Check for scheme in URI, if true, then URI has no scheme
-        	if (log.isDebugEnabled()) log.debug("URI <" + uri + "> has no scheme.");
+            if (log.isDebugEnabled()) log.debug("URI <" + uri + "> has no scheme.");
             if (base != null) {
                 int colBaseIndex = base.indexOf(":");
                 //int colBaseIndex = base.indexOf(":/");
@@ -48,20 +48,19 @@ public class SourceResolver implements URIResolver {
                 }
                 uriScheme = base.substring(0, colBaseIndex);
                 uri = PathUtil.concat(base,uri);                
-                if (log.isDebugEnabled()) log.debug("Base URI <" + uri + "> has scheme \"" + uriScheme + "\".");
+                if (log.isDebugEnabled()) log.debug("Base URI <" + base + "> has scheme \"" + uriScheme + "\".");
             } else {
                 log.error("Neither scheme for URI nor base specified for URI: " + uri);
                 throw new SourceException("invalid url syntax (missing scheme): " + uri);//no scheme found in uri and base
             }
         } else {//uri contains scheme
             uriScheme = uri.substring(0, colonIndex);
-            if (log.isDebugEnabled()) log.debug("URI <" + uri + "> has scheme \"" + uriScheme + "\".");
         }
+        if (log.isDebugEnabled()) log.debug("URI <" + uri + "> has scheme \"" + uriScheme + "\".");
 
         URIResolver resolver = getResolver(uriScheme);
         if (resolver != null) {
             try {
-                // TODO: What shall be used as base?!
                 Source s = resolver.resolve(uri, base);
                 s.setSystemId(uri);
                 return s;
