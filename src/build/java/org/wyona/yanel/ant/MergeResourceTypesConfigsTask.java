@@ -32,6 +32,8 @@ public class MergeResourceTypesConfigsTask extends Task {
     private Path globalResourceTypesConfigFile;
     private boolean isBinaryRelease;
 
+    private String NAMESPACE = "http://www.wyona.org/yanel/1.0";
+
     /**
      *
      */
@@ -43,7 +45,9 @@ public class MergeResourceTypesConfigsTask extends Task {
         log("INFO: Global resource-types config directory: " + globalResourceTypesConfigFile);
         File globalResourceTypesConfig = new File(globalResourceTypesConfigFile.toString());
 
-        // TODO: Insert the package name automatically if binary release and no package and copy-dir-name specified
+        if (isBinaryRelease) {
+            insertPackageAttribute(globalResourceTypesConfig);
+        }
 
         RealmManagerConfig realmManagerConfig = new RealmManagerConfig();
         try {
@@ -111,8 +115,7 @@ public class MergeResourceTypesConfigsTask extends Task {
                 Element rootElement = globalDoc.getDocumentElement();
                 rootElement.appendChild(globalDoc.createComment("Realm specific resource-types (" + resourceTypesConfigOfRealm + "):")); // Only formatting
 
-                String namespace = "http://www.wyona.org/yanel/1.0";
-                Element[] resourceTypeElements = XMLHelper.getChildElements(realmDoc.getDocumentElement(), "resource-type", namespace);
+                Element[] resourceTypeElements = XMLHelper.getChildElements(realmDoc.getDocumentElement(), "resource-type", NAMESPACE);
                 for (int i = 0; i < resourceTypeElements.length; i++) {
                     String srcAttr = resourceTypeElements[i].getAttribute("src");
                     if (srcAttr != null) {
@@ -122,7 +125,7 @@ public class MergeResourceTypesConfigsTask extends Task {
                     // TODO: Check for duplicated resource-types also based re package attribute!
                     if (!resourceTypeExists(srcAttr, rootElement)) {
                         rootElement.appendChild(globalDoc.createTextNode("\n  ")); // Only formatting
-                        Element rtElement = globalDoc.createElementNS(namespace, "resource-type");
+                        Element rtElement = globalDoc.createElementNS(NAMESPACE, "resource-type");
                         //Element rtElement = globalDoc.createElementNS(namespace, "todo");
 
                         if (srcAttr != null && !srcAttr.equals("")) {
@@ -180,5 +183,30 @@ public class MergeResourceTypesConfigsTask extends Task {
         String classname = new ResourceTypeDefinition(new File(resourceHomePath, "resource.xml")).getResourceTypeClassname();
         //return Class.forName(classname).getPackage().getName(); // NOTE: This doesn't work, because java classloader check
         return classname.substring(0, classname.lastIndexOf(".")); // NOTE: This doesn't work in the case of ...
+    }
+
+    /**
+     * Insert package attributes automatically if binary release and no copy-dir-name attribute exists
+     * @param globalResourceTypesConfig Copied resource types configuration file (see build/classes/resource-types.xml)
+     */
+    private void insertPackageAttribute(File globalResourceTypesConfig) {
+        log.warn("DEBUG: Patch file: " + globalResourceTypesConfig);
+        try {
+            Document doc = XMLHelper.readDocument(new java.io.FileInputStream(globalResourceTypesConfig));
+            Element[] resourceTypeElements = XMLHelper.getChildElements(doc.getDocumentElement(), "resource-type", NAMESPACE);
+            for (int i = 0; i < resourceTypeElements.length; i++) {
+                if (!resourceTypeElements[i].hasAttribute("copy-dir-name")) {
+                    if (!resourceTypeElements[i].hasAttribute("package")) {
+                        String srcAttr = resourceTypeElements[i].getAttribute("src");
+                        log.warn("DEBUG: Set package automatically for resource type: " + srcAttr);
+                        resourceTypeElements[i].setAttribute("package", getJavaPackageOfResourceType(srcAttr));
+                    }
+                }
+            }
+            log.warn("DEBUG: Overwrite file: " + globalResourceTypesConfig);
+            XMLHelper.writeDocument(doc, new java.io.FileOutputStream(globalResourceTypesConfig));
+        } catch(Exception e) {
+            log.error(e, e);
+        }
     }
 }
