@@ -47,8 +47,10 @@ public abstract class RTabstractResolver implements URIResolver {
             }
             URL url = resource.getClass().getClassLoader().getResource(packageName.replace('.','/') + "/" + getPathPrefix() + path);
             if (url == null) {
-                log.error("Path " + getPathPrefix() + path + " does not seem to be contained within package " + packageName + " of resource " + resource.getResourceTypeUniversalName());
+                log.warn("Path " + getPathPrefix() + path + " does not seem to be contained within package " + packageName + " of resource " + resource.getResourceTypeUniversalName());
             }
+
+            // If url == null, then url.openStream() will throw an exception and the fallback will be used within the catch below (TODO: Refactor ...)
             InputStream in = url.openStream();
             YanelStreamSource source = new YanelStreamSource(in);
             URLConnection uc = url.openConnection();
@@ -57,7 +59,7 @@ public abstract class RTabstractResolver implements URIResolver {
             return source;
         } catch (Exception e) {
             File resourceConfigDir = resource.getRTD().getConfigFile().getParentFile();
-            log.info("Fallback to resource config location: " + resourceConfigDir);
+            log.warn("Fallback to resource config location: " + resourceConfigDir);
             try {
                 File resourceFile = new File(resourceConfigDir.getAbsolutePath() + "/" + getPathPrefix() + path.replace('/', File.separatorChar));
                 InputStream in = new java.io.FileInputStream(resourceFile);
