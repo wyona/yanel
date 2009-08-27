@@ -272,7 +272,7 @@ public class ForgotPassword extends BasicXMLResource {
                     int port = Integer.parseInt(getResourceConfigProperty("smtpPort"));
                     String from = getResourceConfigProperty("smtpFrom");
                     String to =  userList[i].getEmail();
-                    SendMail.send(emailServer, port, from, to, "password change request needs your confirmation", emailStr);
+                    SendMail.send(emailServer, port, from, to, "Reset password request needs your confirmation", emailStr);
                     String xmlStrVal = generateXML(pwexp);
 
 
