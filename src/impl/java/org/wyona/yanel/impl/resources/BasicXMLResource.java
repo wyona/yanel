@@ -273,11 +273,11 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 if (xsltPaths[i].startsWith("file:")) {
                     // TODO: Handle "file:" in SourceResolver
                     log.info("Scheme: file (" + xsltPaths[i] + ")");
-                    xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(new java.io.FileInputStream(xsltPaths[i].substring(5))));
+                    xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(new java.io.FileInputStream(xsltPaths[i].substring(5)), xsltPaths[i]));
                 } else if (schemeEndIndex >= 0) {
                     String scheme = xsltPath.substring(0, schemeEndIndex);
                     log.info("Scheme: " + scheme + " (" + xsltPath + ")");
-                    xsltHandlers[i] = tf.newTransformerHandler(uriResolver.resolve(xsltPath, null));
+                    xsltHandlers[i] = tf.newTransformerHandler(uriResolver.resolve(xsltPath, xsltPath));
                     /*XXX BACKWARD-COMPATIBILITY from now on we
                         throw new SourceException("No resolver could be loaded for scheme: " + scheme);
                     instead of simply only doing
