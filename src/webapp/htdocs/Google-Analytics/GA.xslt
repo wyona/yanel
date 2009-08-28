@@ -57,6 +57,14 @@ document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.
 <script type="text/javascript"><xsl:text>
 var pageTracker = _gat._getTracker("</xsl:text><xsl:value-of select="$GA-key"/><xsl:text>");
 pageTracker._trackPageview();
+<!--TODO?(performance) move that into a separate JS file: -->
+function Yanel_requestURIFromFQURL(HTMLAelement) {
+  var FQURL = HTMLAelement.href<!--alert('FQURL: ' + FQURL);-->;
+  var i = FQURL.indexOf('://');<!--alert('i: ' + i);-->
+  i = FQURL.indexOf('/', i + 3);<!--alert('i: ' + i);-->
+  var filename = FQURL.substring(i);<!--alert('filename: ' + filename); return false;-->
+  return filename;
+}
 </xsl:text></script>
 </xsl:template>
 
@@ -66,11 +74,11 @@ pageTracker._trackPageview();
   <xsl:copy>
     <xsl:apply-templates select="@*[name()!='onclick']"/>
     <xsl:attribute name="onclick">
-      <xsl:text>pageTracker._trackPageview(</xsl:text>
+      <xsl:text>pageTracker._trackPageview(<!----></xsl:text>
       <xsl:call-template name="yanel-xsl:GA-asset-filename-JSexpr-from-URL">
         <xsl:with-param name="URL" select="$URL"/>
       </xsl:call-template>
-      <xsl:text>);</xsl:text>
+      <xsl:text>)<!---->;</xsl:text>
       <xsl:value-of select="@onclick"/>
     </xsl:attribute>
     <xsl:apply-templates select="node()"/>
@@ -80,17 +88,7 @@ pageTracker._trackPageview();
 
 <xsl:template name="yanel-xsl:GA-asset-filename-JSexpr-from-URL">
   <xsl:param name="URL"/>
-  <xsl:text>'</xsl:text>
-  <xsl:call-template name="yanel-xsl:GA-asset-filename-from-URL">
-    <xsl:with-param name="URL" select="$URL"/>
-  </xsl:call-template>
-  <xsl:text>'</xsl:text>
-</xsl:template>
-
-
-<xsl:template name="yanel-xsl:GA-asset-filename-from-URL">
-  <xsl:param name="URL"/>
-  <xsl:value-of select="substring-after($URL, '://')"/><!--TODO: make it works with relative URLs as well!!! -->
+  <xsl:text>Yanel_requestURIFromFQURL(this<!--, '</xsl:text><xsl:value-of select="$URL"/><xsl:text>'-->)</xsl:text>
 </xsl:template>
 
 
