@@ -9,11 +9,30 @@
 <xsl:variable name="non-asset-URL-suffix" select="'.html'"/>
 
 
-<xsl:template match="xhtml:a">
-  <xsl:param name="URL" select="@href"/>
+<xsl:template name="yanel-xsl:is-asset-URL">
+  <xsl:param name="URL"/>
   <xsl:choose>
+    <xsl:when test="starts-with($URL, 'http://') or starts-with($URL, 'https://')">
+      <!-- do not track assets on full-qualified (presumably other than the current) domains -->
+      <!--TODO(?) check the realm URL in case someone wants to use the full URL? -->
+    </xsl:when>
     <!--FIXME HACK: find a better method to differentiate document assets from pages: -->
     <xsl:when test="substring($URL, string-length($URL) - string-length($non-asset-URL-suffix)) != $non-asset-URL-suffix"><!--ends-with($URL, $non-asset-URL-suffix)...-->
+      <xsl:text>yes</xsl:text>
+    </xsl:when>
+  </xsl:choose>
+</xsl:template>
+
+
+<xsl:template match="xhtml:a">
+  <xsl:param name="URL" select="@href"/>
+  <xsl:variable name="is-asset">
+    <xsl:call-template name="yanel-xsl:is-asset-URL">
+      <xsl:with-param name="URL" select="$URL"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:choose>
+    <xsl:when test="$is-asset = 'yes'">
       <xsl:call-template name="yanel-xsl:put-GA-asset-onclick-handler">
         <xsl:with-param name="URL" select="$URL"/>
       </xsl:call-template>
@@ -45,17 +64,27 @@ pageTracker._trackPageview();
 <xsl:template name="yanel-xsl:put-GA-asset-onclick-handler">
   <xsl:param name="URL"/>
   <xsl:copy>
-    <xsl:apply-templates select="@*[name()='onclick']"/>
+    <xsl:apply-templates select="@*[name()!='onclick']"/>
     <xsl:attribute name="onclick">
-      <xsl:text>pageTracker._trackPageview('</xsl:text>
-      <xsl:call-template name="yanel-xsl:GA-asset-filename-from-URL">
+      <xsl:text>pageTracker._trackPageview(</xsl:text>
+      <xsl:call-template name="yanel-xsl:GA-asset-filename-JSexpr-from-URL">
         <xsl:with-param name="URL" select="$URL"/>
       </xsl:call-template>
-      <xsl:text>');</xsl:text>
+      <xsl:text>);</xsl:text>
       <xsl:value-of select="@onclick"/>
     </xsl:attribute>
     <xsl:apply-templates select="node()"/>
   </xsl:copy>
+</xsl:template>
+
+
+<xsl:template name="yanel-xsl:GA-asset-filename-JSexpr-from-URL">
+  <xsl:param name="URL"/>
+  <xsl:text>'</xsl:text>
+  <xsl:call-template name="yanel-xsl:GA-asset-filename-from-URL">
+    <xsl:with-param name="URL" select="$URL"/>
+  </xsl:call-template>
+  <xsl:text>'</xsl:text>
 </xsl:template>
 
 
