@@ -4,6 +4,9 @@
   <yanel:rti name="xml" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
   <yanel:property name="mime-type" value="application/xhtml+xml"/>
+
   <yanel:property name="xslt" value="/xslt/global.xsl"/>
+  <!--yanel:property name="xslt" value="yanelhtdocs:/Google-Analytics/page-GA.xslt"/-->
+
   <yanel:property name="workflow-schema" value="/workflow/workflow-with-review.xml"/>
 </yanel:resource-config>
