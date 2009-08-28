@@ -1,11 +1,16 @@
 <?xml version="1.0"?>
+
 <!-- Everything common to most resource types. -->
+
 <project name="yanel-resource-type"
  xmlns:artifact="antlib:org.apache.maven.artifact.ant"
 >
-<!-- the default task seems not to be imported at least with Ant 1.6.5 or Ant 1.7.1
- default="compile"
+
+<!-- 
+     The default task config attribute (for example default="compile") seems not to be imported at least with Ant 1.6.5 or Ant 1.7.1
+     which means it needs to be set within each resource build.xml (see for example src/contributions/resources/forgotpw/build.xml)
 -->
+
   <dirname property="resource.home.dir" file="${ant.file}"/>
 
   <taskdef resource="net/sf/antcontrib/antlib.xml"/>
@@ -165,5 +170,12 @@
       <pom refid="maven.project.core"/>
       <attach file="build/lib/yanel-resource-${resource.name}-${resource.version}-sources.jar" classifier="sources"/>
     </artifact:install>
+  </target>
+
+  <!-- Deploy jar file for this resource into local webapp libs directory -->
+  <target name="deploy-jar" depends="compile">
+    <!-- TODO: Replace hardcoded tomcat path -->
+    <copy todir="/Users/michaelwechner/src/wyona/public/yanel/trunk/local/apache-tomcat-5.5.20/webapps/${servlet.context.prefix}/WEB-INF/lib" file="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}.jar">
+    </copy>
   </target>
 </project>
