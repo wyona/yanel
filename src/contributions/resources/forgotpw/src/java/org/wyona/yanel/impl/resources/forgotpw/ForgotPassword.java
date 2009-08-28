@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -363,12 +364,22 @@ public class ForgotPassword extends BasicXMLResource {
      * Get forgot password URL which will be sent via E-Mail (also see YanelServlet#getRequestURLQS(HttpServletRequest, String, boolean))
      */
     public String getURL() throws Exception {
-        // TODO: Use proxy settings
         //https://192.168.1.69:8443/yanel" + request.getServletPath().toString()
-        java.net.URL url = new java.net.URL(request.getRequestURL().toString());
+        URL url = new URL(request.getRequestURL().toString());
         org.wyona.yanel.core.map.Realm realm = getRealm();
         if (realm.isProxySet()) {
-            log.warn("DEBUG: Proxy host name: " + realm.getProxyHostName());
+            // TODO: Finish proxy settings replacement
+
+            String proxyHostName = realm.getProxyHostName();
+            log.warn("DEBUG: Proxy host name: " + proxyHostName);
+            if (proxyHostName != null) {
+                url = new URL(url.getProtocol(), proxyHostName, url.getPort(), url.getFile());
+            }
+
+            String proxyPrefix = realm.getProxyPrefix();
+            if (proxyPrefix != null) {
+                url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile().substring(proxyPrefix.length()));
+            }
         } else {
             log.warn("No proxy set.");
         }
