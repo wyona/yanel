@@ -104,6 +104,9 @@ public class ForgotPassword extends BasicXMLResource {
         return inputStream;
     }
 
+    /**
+     *
+     */
     private void processUserAction(HttpServletRequest request, Document adoc) throws Exception {
         String action = determineAction(request);
         log.debug("action performed: " + action);
