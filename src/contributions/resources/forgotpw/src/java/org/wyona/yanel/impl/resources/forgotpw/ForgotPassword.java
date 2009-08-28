@@ -376,6 +376,13 @@ public class ForgotPassword extends BasicXMLResource {
                 url = new URL(url.getProtocol(), proxyHostName, url.getPort(), url.getFile());
             }
 
+            int proxyPort = realm.getProxyPort();
+            if (proxyPort >= 0) {
+                url = new URL(url.getProtocol(), url.getHost(), proxyPort, url.getFile());
+            } else {
+                url = new URL(url.getProtocol(), url.getHost(), url.getDefaultPort(), url.getFile());
+            }
+
             String proxyPrefix = realm.getProxyPrefix();
             if (proxyPrefix != null) {
                 url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile().substring(proxyPrefix.length()));
