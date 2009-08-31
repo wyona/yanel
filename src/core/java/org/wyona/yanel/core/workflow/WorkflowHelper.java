@@ -47,6 +47,7 @@ public class WorkflowHelper {
     protected static final String LIVE_REVISION_PROPERTY = "live-revision";
     protected static final String WORKFLOW_DATE_PROPERTY = "workflow-date";
     protected static final String WORKFLOW_STATE_PROPERTY = "workflow-state";
+    protected static final String WORKFLOW_SCHEMA_PROPERTY_NAME = "workflow-schema";
 
     public static void doTransition(Resource resource, String transitionID, String revision) 
             throws WorkflowException {
@@ -166,8 +167,10 @@ public class WorkflowHelper {
      */
     public static boolean hasWorkflow(Resource resource) throws WorkflowException {
         try {
-            if (resource.getResourceConfigProperty("workflow-schema") != null) {
+            if (resource.getResourceConfigProperty(WORKFLOW_SCHEMA_PROPERTY_NAME) != null) {
                 return true;
+            } else {
+                log.warn("Resource configuration does not contain a '" + WORKFLOW_SCHEMA_PROPERTY_NAME + "' property!");
             }
         } catch (Exception e) {
             log.warn(e.getMessage());
@@ -180,7 +183,7 @@ public class WorkflowHelper {
      */
     public static Workflow getWorkflow(Resource resource) throws WorkflowException {
         try {
-            String workflowSchema = resource.getResourceConfigProperty("workflow-schema");
+            String workflowSchema = resource.getResourceConfigProperty(WORKFLOW_SCHEMA_PROPERTY_NAME);
             if (workflowSchema == null) {
                 return null;
             }
