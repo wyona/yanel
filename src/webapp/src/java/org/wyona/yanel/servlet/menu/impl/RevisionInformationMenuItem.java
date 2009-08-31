@@ -48,7 +48,7 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
      * Generate revision menu
      */
     private String getContent(boolean mostRecent, boolean oldestRevision) {
-        String value = "<li class=\"haschild\">" + this.revisionInfo.getName();
+        String value = "<li class=\"haschild\">" + formatDate(this.revisionInfo.getDate()) + " (" + this.revisionInfo.getName();
         
         WorkflowableV1 workflowableRes = null;
         try {
@@ -62,7 +62,7 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
                     liveMarker = " (LIVE)";
                 }
 
-                value += " (" + formatDate(this.revisionInfo.getDate()) + ", " + state + liveMarker + ")" + NBSP + "<ul><li class=\"haschild\">Workflow";
+                value += ", " + state + liveMarker + ")" + NBSP + "<ul><li class=\"haschild\">Workflow";
             
                 ITransitionMenuContent x = new TransitionMenuContentImpl(getResource(), state, getRevisionInfo().getName(), getMenuLanguageCode());
                 RevisionTransitionsMenuContent rt = new RevisionTransitions(getResource(), getRevisionInfo().getName(), getMenuLanguageCode(), x);
@@ -70,11 +70,18 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
                 value += rt.toHTML();
                 value += "</li>";
             } else {
-                value += " (" + formatDate(this.revisionInfo.getDate()) + ")" + NBSP + "<ul>";
+                value += ")" + NBSP + "<ul>";
+
+                if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Workflowable", "1")) {
+                    log.warn("Workflow interface 'WorkflowableV1' implemented, but does not seem to reference any workflow configuration!");
+                } else {
+                    log.warn("No workflow interface implemented!");
+                }
             }
         } catch (WorkflowException e) {
             log.error("Could not get workflow: " + e.getMessage(), e);
         }
+
         if (!mostRecent) value += "<li><a href=\"?yanel.resource.usecase=roll-back&amp;yanel.resource.revision=" + revisionInfo.getName() + "\">Revert to (roll back)</a></li>";
         value += "<li class=\"haschild\">Show more details" + NBSP + "<ul>";
         value += "<li>Revision name: " + this.revisionInfo.getName() + "</li>";
