@@ -4,17 +4,17 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.URIResolver;
 
 import org.apache.log4j.Logger;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.ResourceTypeDefinition;
+import org.wyona.yanel.core.Yanel;
 
 
-/**
- * TODO: support access to other resource types (e.g. rthtdocs:resourcTypeIdentifier:/foo/bar.xml) 
- */
 public abstract class RTabstractResolver implements URIResolver {
 
     private static Logger log = Logger.getLogger(RTabstractResolver.class);
@@ -37,17 +37,49 @@ public abstract class RTabstractResolver implements URIResolver {
         if (href.endsWith("/")){
             return null;
         }
-        String path = href.substring(prefix.length());
+        int prefixLength = prefix.length();
+        ClassLoader resourceClassLoader = resource.getClass().getClassLoader();
+
+        String path;
+        Class<?> clazz;
+        String name;
+        ResourceTypeDefinition rtd;
+
+        int RTendIndex = href.indexOf(":/", prefixLength);
+        if (RTendIndex == -1) {
+            path = href.substring(prefixLength);
+            clazz = resource.getClass();
+            name = resource.getResourceTypeUniversalName();
+            rtd = resource.getRTD();
+
+        } else {
+            path = href.substring(RTendIndex + 1);
+            String[] URLencodedNSURI_and_localName = href.substring(prefixLength, RTendIndex).split("::", 2);
+            try {
+                String NSURI = URLDecoder.decode(URLencodedNSURI_and_localName[0], "UTF-8");
+                String localName = URLencodedNSURI_and_localName[1];
+                String universalName = "<{" + NSURI + "}" + localName + "/>";
+                Yanel yanel = Yanel.getInstance();
+                rtd = yanel.getResourceTypeRegistry().getResourceTypeDefinition(universalName);
+                String className = rtd.getResourceTypeClassname();
+                clazz = resourceClassLoader.loadClass(className); //XXX(?): is this really the classloader we want to use? 
+                name = rtd.getResourceTypeUniversalName();
+            } catch (Exception e) {
+                String errorMsg = "Could not resolve URI: " + path + ": " + e.getMessage();
+                log.error(errorMsg, e);
+                throw new SourceException(errorMsg, e);
+            }
+        }
         try {
-            String fullyQualifiedName = resource.getClass().getName();
+            String fullyQualifiedName = clazz.getName();
             int lastDot = fullyQualifiedName.lastIndexOf ('.');
             String packageName = fullyQualifiedName.substring (0, lastDot);
             if (log.isDebugEnabled()) {
                 log.debug("Package: " + packageName);
             }
-            URL url = resource.getClass().getClassLoader().getResource(packageName.replace('.','/') + "/" + getPathPrefix() + path);
+            URL url = clazz.getClassLoader().getResource(packageName.replace('.','/') + "/" + getPathPrefix() + path);
             if (url == null) {
-                log.warn("Path " + getPathPrefix() + path + " does not seem to be contained within package " + packageName + " of resource " + resource.getResourceTypeUniversalName());
+                log.warn("Path " + getPathPrefix() + path + " does not seem to be contained within package " + packageName + " of resource " + name);
             }
 
             // If url == null, then url.openStream() will throw an exception and the fallback will be used within the catch below (TODO: Refactor ...)
@@ -58,7 +90,7 @@ public abstract class RTabstractResolver implements URIResolver {
             source.setLastModified(resourceLastModifier);
             return source;
         } catch (Exception e) {
-            File resourceConfigDir = resource.getRTD().getConfigFile().getParentFile();
+            File resourceConfigDir = rtd.getConfigFile().getParentFile();
             log.warn("Fallback to resource config location: " + resourceConfigDir);
             try {
                 File resourceFile = new File(resourceConfigDir.getAbsolutePath() + "/" + getPathPrefix() + path.replace('/', File.separatorChar));
