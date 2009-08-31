@@ -73,6 +73,8 @@ public class ForgotPassword extends BasicXMLResource {
 
     private static final String SMTP_HOST_PROPERTY_NAME = "smtpHost";
 
+    private static final String HOURS_VALID_PROPERTY_NAME = "num-hrs-valid";
+
     /**
      * This is the main method that handles all view request. The first time the request
      * is made to enter the data.
@@ -82,7 +84,7 @@ public class ForgotPassword extends BasicXMLResource {
         HttpServletRequest request = getEnvironment().getRequest();
 
         try {
-            String hrsValid = getResourceConfigProperty("num-hrs-valid");
+            String hrsValid = getResourceConfigProperty(HOURS_VALID_PROPERTY_NAME);
             if(hrsValid != null && !hrsValid.equals("")) {
                 totalValidHrs = Long.parseLong(hrsValid);
             } else {
@@ -270,13 +272,16 @@ public class ForgotPassword extends BasicXMLResource {
                     ResetPWExpire pwexp = new ResetPWExpire(userList[i].getID(), new Date().getTime(), guid, userList[i].getEmail());
                     Map<String, ResetPWExpire> pwHM = getOblivionMap(getEnvironment().getRequest());
                     pwHM.put(pwexp.getGuid(), pwexp);
-                    String emailStr = "Please go to the following URL to reset password: <" + getURL() + "?pwresetid=" + guid + ">.";
-                    log.debug(emailStr);
+                    String emailSubject = "Reset password request needs your confirmation";
+                    String emailBody = "Please go to the following URL to reset password: <" + getURL() + "?pwresetid=" + guid + ">.";
+                    String hrsValid = getResourceConfigProperty(HOURS_VALID_PROPERTY_NAME);
+                    emailBody = emailBody + "\n\nNOTE: This link is only available during the next " + hrsValid + " hours!";
+                    if (log.isDebugEnabled()) log.debug(emailBody);
                     String emailServer = getResourceConfigProperty(SMTP_HOST_PROPERTY_NAME);
                     int port = Integer.parseInt(getResourceConfigProperty("smtpPort"));
                     String from = getResourceConfigProperty("smtpFrom");
                     String to =  userList[i].getEmail();
-                    SendMail.send(emailServer, port, from, to, "Reset password request needs your confirmation", emailStr);
+                    SendMail.send(emailServer, port, from, to, emailSubject, emailBody);
                     String xmlStrVal = generateXML(pwexp);
 
 
