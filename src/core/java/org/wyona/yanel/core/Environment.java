@@ -37,11 +37,11 @@ public class Environment {
     private String rcp;
     
     public Environment(HttpServletRequest request, HttpServletResponse response, Identity identity, String stateOfView, String resourceContainerPath) {
-        this.request = request;
-        this.response = response;
-        this.identity = identity;
-        this.sov = stateOfView;
-        this.rcp = resourceContainerPath;
+        setRequest(request);
+        setResponse(response);
+        setIdentity(identity);
+        setStateOfView(stateOfView);
+        setResourceContainerPath(resourceContainerPath);
     }
 
     public Identity getIdentity() {
@@ -68,8 +68,12 @@ public class Environment {
      * Set state of view
      */
     public void setStateOfView(String state) {
-        if (StateOfView.LIVE.equals(state) || StateOfView.AUTHORING.equals(state)) {
-            log.warn("No such state '" + state + "' explicitely supported by Yanel!");
+        if (log.isDebugEnabled()) { // Do not enable this, because the string comparison below is time consuming
+            if (!(StateOfView.LIVE.equals(state) || StateOfView.AUTHORING.equals(state))) {
+                log.warn("No such state '" + state + "' explicitely supported by Yanel!");
+            } else {
+                log.debug("State of view: " + state);
+            }
         }
         this.sov = state;
     }
