@@ -18,13 +18,18 @@ package org.wyona.yanel.core;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.wyona.security.core.api.Identity;
+
+import org.apache.log4j.Logger;
 
 /**
  * The environment stores items which belong to the environment from which a resource
  * is called, i.e. the request, the response, the identity, the state of view, and the resource container path.
  */
 public class Environment {
+    private static Logger log = Logger.getLogger(Environment.class);
+
     private HttpServletRequest request;
     private HttpServletResponse response;
     private Identity identity;
@@ -50,10 +55,6 @@ public class Environment {
     public HttpServletResponse getResponse() {
         return response;
     }
-
-    public String getStateOfView() {
-        return sov;
-    }
     
     public String getResourceContainerPath() {
     	return rcp;
@@ -63,8 +64,21 @@ public class Environment {
         this.rcp = path;
     }
 
+    /**
+     * Set state of view
+     */
     public void setStateOfView(String state) {
+        if (StateOfView.LIVE.equals(state) || StateOfView.AUTHORING.equals(state)) {
+            log.warn("No such state '" + state + "' explicitely supported by Yanel!");
+        }
         this.sov = state;
+    }
+
+    /**
+     * Get state of view (LIVE, AUTHORING)
+     */
+    public String getStateOfView() {
+        return sov;
     }
 
     public void setIdentity(Identity identity) {
@@ -78,5 +92,4 @@ public class Environment {
     public void setResponse(HttpServletResponse response) {
         this.response = response;
     }
-
 }
