@@ -4,7 +4,7 @@
 >
 
 
-<xsl:import href="../commons/Id.xslt"/>
+<xsl:import href="../commons/identity-transformation.xsl"/>
 
 
 <xsl:include href="GA.xslt"/>
