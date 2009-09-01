@@ -12,7 +12,7 @@
       </condition>
     </fail>
 
-    <property name="snapshot.dir.unix" value="${build.dir}/bin-snapshots/wyona-yanel-${yanel.version}-r${yanel.revision}-bin"/>
+    <property name="snapshot.dir.unix" value="${build.dir}/bin-snapshots/wyona-yanel-${yanel.source.version}-bin"/>
     <fail message="Directory already exists: '${snapshot.dir.unix}'. Either delete this directory or use a different version/revision!">
       <condition>
         <available file="${snapshot.dir.unix}" type="dir"/>
@@ -20,7 +20,7 @@
     </fail>
     <mkdir dir="${snapshot.dir.unix}"/>
 
-    <property name="snapshot.dir.win" value="${build.dir}/bin-snapshots/wyona-yanel-${yanel.version}-r${yanel.revision}-bin-win"/>
+    <property name="snapshot.dir.win" value="${build.dir}/bin-snapshots/wyona-yanel-${yanel.source.version}-bin-win"/>
     <fail message="Directory already exists: '${snapshot.dir.win}'. Either delete this directory or use a different version/revision!">
       <condition>
         <available file="${snapshot.dir.win}" type="dir"/>
@@ -83,12 +83,12 @@
     <delete dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/webdav"/>
     
     <!-- Add context file -->
-    <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/Wyona-Yanel-webapp-${yanel.version}-r${yanel.revision}.xml"/>
-    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/Wyona-Yanel-webapp-${yanel.version}-r${yanel.revision}.xml" value="yanel-webapp-${yanel.version}-r${yanel.revision}">
+    <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/Wyona-Yanel-webapp-${yanel.source.version}.xml"/>
+    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/Wyona-Yanel-webapp-${yanel.source.version}.xml" value="yanel-webapp-${yanel.source.version}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace>
     <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml"/>
-    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml" value="yanel-webapp-${yanel.version}-r${yanel.revision}">
+    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml" value="yanel-webapp-${yanel.source.version}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace>
   </target>
@@ -151,7 +151,7 @@
     </replace>
 
     <copy file="${yanel.source.home}/src/binary-dist/log4j.properties" todir="${tmp.dir}/WEB-INF/classes" overwrite="true"/>
-    <replace file="${tmp.dir}/WEB-INF/classes/log4j.properties" value="yanel-webapp-${yanel.version}-r${yanel.revision}">
+    <replace file="${tmp.dir}/WEB-INF/classes/log4j.properties" value="yanel-webapp-${yanel.source.version}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace>
     <mkdir dir="${tmp.dir}/WEB-INF/logs"/>
@@ -174,7 +174,7 @@
     <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}">
       <fileset dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}" />
     </copy>
-    <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps/yanel-webapp-${yanel.version}-r${yanel.revision}">
+    <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps/yanel-webapp-${yanel.source.version}">
       <fileset dir="${tmp.dir}"/>
     </copy>
     <!-- <move file="${snapshot.dir.unix}/${servlet.context.prefix}.war" todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps"/> -->
@@ -192,19 +192,19 @@
     <copy file="${yanel.source.home}/src/binary-dist/windows/install.ico" todir="${snapshot.dir.win}"/>
     <copy file="${yanel.source.home}/src/binary-dist/windows/uninstall.ico" todir="${snapshot.dir.win}"/>
     <copy file="${yanel.source.home}/src/binary-dist/windows/install-yanel.nsi" todir="${snapshot.dir.win}"/>
-    <replace file="${snapshot.dir.win}/install-yanel.nsi" value="${yanel.version}-r${yanel.revision}">
+    <replace file="${snapshot.dir.win}/install-yanel.nsi" value="${yanel.source.version}">
       <replacetoken>@YANEL_VERSION@</replacetoken>
     </replace>
 
     <!-- Create ZIP file 
     <zip destfile="${snapshot.dir.unix}.zip">
-      <zipfileset dir="${snapshot.dir.unix}" prefix="wyona-yanel-${yanel.version}-r${yanel.revision}-bin" filemode="755"/>
+      <zipfileset dir="${snapshot.dir.unix}" prefix="wyona-yanel-${yanel.source.version}-bin" filemode="755"/>
     </zip>
     -->
   </target>
   
   <target name="bin-snapshot-unix">
-    <copy todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/yanel-webapp-${yanel.version}-r${yanel.revision}">
+    <copy todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/yanel-webapp-${yanel.source.version}">
       <fileset dir="${tmp.dir}"/>
     </copy>
 
@@ -219,7 +219,7 @@
 
     <!-- Create TGZ file -->
     <tar destfile="${snapshot.dir.unix}.tar.gz" compression="gzip" longfile="gnu"><!-- we need GNU tar, our filenames are too long and cannot reasonably be reduced to less than 100 characters -->
-      <tarfileset dir="${snapshot.dir.unix}" prefix="wyona-yanel-${yanel.version}-r${yanel.revision}-bin" mode="775"/>
+      <tarfileset dir="${snapshot.dir.unix}" prefix="wyona-yanel-${yanel.source.version}-bin" mode="775"/>
     </tar>
     <!--gzip src="${snapshot.dir.unix}.tar" destfile="${snapshot.dir.unix}.tar.gz"/>
     <delete file="${snapshot.dir.unix}.tar"/-->

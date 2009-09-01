@@ -170,7 +170,7 @@
     <copy file="${yanel.source.home}/src/build/resource-types/Eclipse-3.template.project" tofile="${yanel.source.home}/.project">
       <filterset>
         <filter token="RESOURCE_TYPE_NAME" value="yanel"/>
-        <filter token="YANEL_VERSION" value="${yanel.version}-r${yanel.revision}"/>
+        <filter token="YANEL_VERSION" value="${yanel.source.version}"/>
         <filter token="GENERATION_COMMAND" value="build eclipse"/>
       </filterset>
     </copy>

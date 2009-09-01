@@ -24,8 +24,6 @@
   <property name="webapp.classes.dir" value="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
   <property name="webapp.lib.dir" value="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib"/>
 
-  <property name="yanel.source.version" value="${yanel.version}-r${yanel.revision}"/>
-
 
   <import file="../build/targets/build-artifacts.build.xml"/>
   

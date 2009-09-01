@@ -40,7 +40,7 @@
     -->
     <xslt in="${yanel.source.home}/conf/realms.xml" out="../../build/build-realms.xml" style="yanel2realms.xsl" force="false">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
-      <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
+      <param name="yanel.source.version" expression="${yanel.source.version}"/>
       <param name="yanel.source.home" expression="${yanel.source.home}"/>
       <param name="maven.url" expression="${maven.url}"/>
     </xslt>
@@ -57,7 +57,7 @@
     -->
     <xslt in="${local.config.home}/local.realms.xml" out="../../build/build-realms.xml" style="yanel2realms.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
-      <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
+      <param name="yanel.source.version" expression="${yanel.source.version}"/>
       <param name="yanel.source.home" expression="${yanel.source.home}"/>
       <param name="maven.url" expression="${maven.url}"/>
     </xslt>

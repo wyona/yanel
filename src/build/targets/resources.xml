@@ -79,7 +79,7 @@
   <target name="generate-resources-build-file" description="Generate resources build file" depends="init">
     <xslt in="${classes.dir}/resource-types.xml" out="../../build/build-resource-types.xml" style="yanel2resources.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
-      <param name="yanel.source.version" expression="${yanel.version}-r${yanel.revision}"/>
+      <param name="yanel.source.version" expression="${yanel.source.version}"/>
       <param name="maven.url" expression="${maven.url}"/>
       <param name="yanel.source.home" expression="${yanel.source.home.forward.slashes}"/>
       <param name="copy.resource-type-configs.to.webapp" expression="${copy.resource-type-configs.to.webapp}"/>

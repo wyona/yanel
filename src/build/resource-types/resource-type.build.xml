@@ -81,7 +81,7 @@
     <copy file="${yanel.home}/src/build/resource-types/Eclipse-3.template.project" tofile="${resource.home.dir}/.project">
       <filterset>
         <filter token="RESOURCE_TYPE_NAME" value="${ant.project.name}"/>
-        <filter token="YANEL_VERSION" value="${yanel.version}-r${yanel.revision}"/>
+        <filter token="YANEL_VERSION" value="${yanel.source.version}"/>
         <filter token="GENERATION_COMMAND" value="build -f ${ant.file} eclipse"/>
         <filter token="YANEL_BUILD_CLASSES_DIR_LINK" value="${eclipse.yanel.build.classes.dir.link}"/>
         <filter token="YANEL_BUILD_CLASSES_DIR" value="${yanel.build.webapp.classes.dir}"/>

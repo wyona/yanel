@@ -4,7 +4,7 @@
   
   <target name="update-war" description="Create a war to update" depends="init, webapp">
     <delete dir="${build.dir}/update-war"/>
-    <property name="update.dir" value="${build.dir}/update-war/wyona-yanel-webapp-${yanel.version}-r${yanel.revision}"/>
+    <property name="update.dir" value="${build.dir}/update-war/wyona-yanel-webapp-${yanel.source.version}"/>
     <mkdir dir="${update.dir}"/>
     
    <copy todir="${update.dir}/${servlet.context.prefix}">
@@ -48,7 +48,7 @@
       <replacetoken>../src/realms/welcome-admin/yanel/resources</replacetoken>
     </replace>
     <copy file="${yanel.source.home}/src/binary-dist/log4j.properties" todir="${update.dir}/${servlet.context.prefix}/WEB-INF/classes" overwrite="true"/>
-    <replace file="${update.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="wyona-yanel-webapp-${yanel.version}-r${yanel.revision}">
+    <replace file="${update.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="wyona-yanel-webapp-${yanel.source.version}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace> 
     <mkdir dir="${update.dir}/${servlet.context.prefix}/WEB-INF/logs"/>
@@ -64,7 +64,7 @@
       <replacetoken>@INSTALLTYPE@</replacetoken>
     </replace>
     
-    <jar jarfile="${build.dir}/update-war/wyona-yanel-webapp-${yanel.version}-r${yanel.revision}.war" basedir="${update.dir}/${servlet.context.prefix}"/>
+    <jar jarfile="${build.dir}/update-war/wyona-yanel-webapp-${yanel.source.version}.war" basedir="${update.dir}/${servlet.context.prefix}"/>
     
     <delete dir="${update.dir}"/>
   </target>  
