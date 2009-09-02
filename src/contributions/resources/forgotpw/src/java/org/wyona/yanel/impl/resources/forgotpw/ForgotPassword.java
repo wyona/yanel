@@ -160,13 +160,17 @@ public class ForgotPassword extends BasicXMLResource {
      *
      */
     private User findRepoUser(String usrGuid, long duration_hour) throws Exception {
+        log.warn("DEBUG: Find user: " + usrGuid);
         User upUser = null;
         Map<String, ResetPWExpire> pwHM = getOblivionMap(getEnvironment().getRequest());
 
         ResetPWExpire resetObj = pwHM.get(usrGuid);
         if (resetObj == null) {
-            Node [] children = null;
-            children = getRealm().getRepository().getNode("nodePath").getNodes();
+            log.warn("DEBUG: Reset object is null!");
+
+            log.warn("TODO: Implementation not finished!");
+/*
+            Node[] children = getRealm().getRepository().getNode("nodePath").getNodes();
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = null;
             db = dbf.newDocumentBuilder();
@@ -184,6 +188,7 @@ public class ForgotPassword extends BasicXMLResource {
                     upUser = realm.getIdentityManager().getUserManager().getUser(userid);
                 }
             }
+*/
         }   else {
             boolean check = validGuid(resetObj.getDateTime(), duration_hour);
             if(check) {
@@ -236,6 +241,9 @@ public class ForgotPassword extends BasicXMLResource {
        return action;
    }
 
+   /**
+    *
+    */
    private Map<String, ResetPWExpire> getOblivionMap(HttpServletRequest request) throws Exception {
        javax.servlet.http.HttpSession session = request.getSession(true);
        Map<String, ResetPWExpire> pwHM = (Map<String, ResetPWExpire>) session.getAttribute("pwreset");
