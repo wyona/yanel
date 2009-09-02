@@ -174,7 +174,6 @@
 
   <!-- Deploy jar file for this resource into local webapp libs directory -->
   <target name="deploy-jar" depends="compile">
-    <!-- TODO: Replace hardcoded tomcat path -->
     <copy todir="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib" file="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}.jar">
     </copy>
   </target>
