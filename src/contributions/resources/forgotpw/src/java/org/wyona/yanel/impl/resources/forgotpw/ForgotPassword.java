@@ -59,13 +59,14 @@ import org.wyona.yarep.core.NodeType;
  *
  * {@value #SUBMITNEWPW}  is passed when the user enter the new password and submits the form.
  *
- * If the query string has pwresetid then we know that the user clicked on the link send via email.
+ * If the query string has pwresetid then we know that the user clicked on the link sent via email.
  */
 public class ForgotPassword extends BasicXMLResource {
 
     private static Logger log = Logger.getLogger(ForgotPassword.class);
     private long totalValidHrs;
 
+    private static final String PW_RESET_ID = "pwresetid";
     private static final String SUBMITFORGOTPASSWORD = "submitForgotPW";
     private static final String SUBMITNEWPW = "submitNewPW";
     private static final String NAMESPACE = "http://www.wyona.org/yanel/1.0";
@@ -122,15 +123,16 @@ public class ForgotPassword extends BasicXMLResource {
             } else {
                 statusElement.setTextContent("Password change request was successful. Please check your email for further instructions on how to complete your request.");
             }
-        } else if (request.getParameter("pwresetid") != null && !request.getParameter("pwresetid").equals("") && !action.equals(SUBMITNEWPW)){
-            User usr = findRepoUser(request.getParameter("pwresetid"), totalValidHrs);
+        } else if (request.getParameter(PW_RESET_ID) != null && !request.getParameter(PW_RESET_ID).equals("") && !action.equals(SUBMITNEWPW)){
+            String guid = request.getParameter(PW_RESET_ID);
+            User usr = getUserForRequest(guid, totalValidHrs);
             if(usr == null) {
                 Element statusElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message"));
-                statusElement.setTextContent("Unable to find forgot password request. Please try again.");
+                statusElement.setTextContent("Unable to find forgot password request with request ID '" + guid + "'. Maybe request ID has a typo or request has expired. Please try again.");
             } else {
                 Element requestpwElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "requestnewpw"));
                 Element guidElement = (Element) requestpwElement.appendChild(adoc.createElementNS(NAMESPACE, "guid"));
-                guidElement.setTextContent(request.getParameter("pwresetid"));
+                guidElement.setTextContent(guid);
             }
         } else if(action.equals(SUBMITNEWPW)) {
             String retStr = updatePassword(request);
@@ -157,52 +159,44 @@ public class ForgotPassword extends BasicXMLResource {
     }
 
     /**
-     *
+     * Get user for a specific request ID
+     * @param requestID Request ID
      */
-    private User findRepoUser(String usrGuid, long duration_hour) throws Exception {
-        log.warn("DEBUG: Find user: " + usrGuid);
-        User upUser = null;
-        Map<String, ResetPWExpire> pwHM = getOblivionMap(getEnvironment().getRequest());
+    private User getUserForRequest(String requestID, long duration_hour) throws Exception {
+        log.warn("DEBUG: Find user for request with ID: " + requestID);
+        if (getRealm().getRepository().existsNode(getPersistentRequestPath(requestID))) {
+            Node requestNode = getRealm().getRepository().getNode(getPersistentRequestPath(requestID));
 
-        ResetPWExpire resetObj = pwHM.get(usrGuid);
-        if (resetObj == null) {
-            log.warn("DEBUG: Reset object is null!");
-
-            log.warn("TODO: Implementation not finished!");
-/*
-            Node[] children = getRealm().getRepository().getNode("nodePath").getNodes();
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = null;
             db = dbf.newDocumentBuilder();
+            Document doc = db.parse(requestNode.getInputStream());
+            Element rootElem = doc.getDocumentElement();
+            String userid = rootElem.getAttribute("id");
 
-            for(int i=0; i< children.length; i++) {
-                Document doc = null;
-                doc = db.parse(children[i].getInputStream());
-                Element userElem = doc.getElementById("user");
-                String userid = userElem.getAttribute("id");
-                String guid = getTextValue(userElem, "guid");
-                long savedDateTime = getLongValue(userElem, "starttime");
-                String email = getTextValue(userElem, "email");
+            Element requestTimeElem = org.wyona.commons.xml.XMLHelper.getChildElements(rootElem, "request-time", null)[0];
+            long savedDateTime = new Long(requestTimeElem.getAttribute("millis")).longValue();
+            log.warn("Request time: " + savedDateTime);
+            if(isExpired(savedDateTime, duration_hour)) {
+                log.warn("Request is expired");
+                return null;
+            }
 
-                if(guid.equals(usrGuid) && validGuid(savedDateTime, duration_hour)) {
-                    upUser = realm.getIdentityManager().getUserManager().getUser(userid);
-                }
-            }
-*/
-        }   else {
-            boolean check = validGuid(resetObj.getDateTime(), duration_hour);
-            if(check) {
-                upUser = realm.getIdentityManager().getUserManager().getUser(resetObj.getUserId());
-            }
+            return realm.getIdentityManager().getUserManager().getUser(userid);
+        } else {
+            log.warn("No such request ID: " + requestID);
+            return null;
         }
-        return upUser;
     }
 
-    private boolean validGuid(long starDT, long duration_hour) throws Exception {
+    /**
+     * Check if request is expired
+     */
+    private boolean isExpired(long starDT, long duration_hour) throws Exception {
         long currentDT = new Date().getTime();
         long expireTime= starDT + duration_hour * Timer.ONE_HOUR;
 
-        return (expireTime>currentDT);
+        return (expireTime < currentDT);
     }
 
     private String getTextValue(Element ele, String tagName) throws Exception {
@@ -216,10 +210,6 @@ public class ForgotPassword extends BasicXMLResource {
         return textVal;
     }
 
-
-    private long getLongValue(Element ele, String tagName) throws Exception {
-        return Long.parseLong(getTextValue(ele,tagName));
-    }
 
     /* Determine the requested view: defaultView, submitProfile,
     * submitPassword,submitGroup, submitDelete
@@ -241,87 +231,57 @@ public class ForgotPassword extends BasicXMLResource {
        return action;
    }
 
-   /**
-    *
-    */
-   private Map<String, ResetPWExpire> getOblivionMap(HttpServletRequest request) throws Exception {
-       javax.servlet.http.HttpSession session = request.getSession(true);
-       Map<String, ResetPWExpire> pwHM = (Map<String, ResetPWExpire>) session.getAttribute("pwreset");
-       if (pwHM == null) {
-           pwHM = new HashMap<String, ResetPWExpire>();
-           session.setAttribute("pwreset", pwHM);
-       }
-       return pwHM;
-   }
-
     /**
      * Updates the user profile
      *
-     * @param request
-     *            The request containing the data to update
-     * @param transformer
+     * @param request The request containing the data to update
      */
     private String processForgotPW(HttpServletRequest request) throws Exception {
         String email = request.getParameter("email");
-        String retStr = "";
         if (email == null || ("").equals(email)) {
-            retStr = "E-mail address is empty.";
+            return "E-mail address is empty.";
         } else if (! EmailValidator.getInstance().isValid(email)) {
-            retStr = email + " is not a valid E-mail address.";
+            return email + " is not a valid E-mail address.";
         } else {
             User[] userList = realm.getIdentityManager().getUserManager().getUsers(true);
-            boolean userFnd = false;
             for(int i=0; i< userList.length; i++) {
                 if (userList[i].getEmail().equals(email)) {
-                    userFnd = true;
-                    UUID ranUUid = UUID.randomUUID();
-                    String guid = ranUUid.toString();
+                    String guid = UUID.randomUUID().toString();
 
                     ResetPWExpire pwexp = new ResetPWExpire(userList[i].getID(), new Date().getTime(), guid, userList[i].getEmail());
-                    Map<String, ResetPWExpire> pwHM = getOblivionMap(getEnvironment().getRequest());
-                    pwHM.put(pwexp.getGuid(), pwexp);
-                    String emailSubject = "Reset password request needs your confirmation";
-                    String emailBody = "Please go to the following URL to reset password: <" + getURL() + "?pwresetid=" + guid + ">.";
-                    String hrsValid = getResourceConfigProperty(HOURS_VALID_PROPERTY_NAME);
-                    emailBody = emailBody + "\n\nNOTE: This link is only available during the next " + hrsValid + " hours!";
-                    if (log.isDebugEnabled()) log.debug(emailBody);
-                    String emailServer = getResourceConfigProperty(SMTP_HOST_PROPERTY_NAME);
-                    int port = Integer.parseInt(getResourceConfigProperty("smtpPort"));
-                    String from = getResourceConfigProperty("smtpFrom");
-                    String to =  userList[i].getEmail();
-                    SendMail.send(emailServer, port, from, to, emailSubject, emailBody);
-                    String xmlStrVal = generateXML(pwexp);
 
+                    sendEmail(guid, userList[i].getEmail());
 
-                    String fileName = pwexp.getUserId() + ".xml";
-                    String filePath = "";
-                    filePath = File.separator + getResourceConfigProperty("change-password-requests-path") + File.separator + fileName;
-                    writeXMLOutput(filePath, xmlStrVal);
-                    retStr = "success";
-                    break;
+                    writeXMLOutput(getPersistentRequestPath(guid), generateXML(pwexp));
+                    //writeXMLOutput(getResetPasswordRequestsBasePath() + "/" + pwexp.getUserId() + ".xml", generateXML(pwexp));
+                    return "success";
                 }
             }
-            if(!userFnd) {
-                retStr = "Unable to find user based on the "+email+" E-mail address.";
-            }
+            return "Unable to find user based on the " + email + " E-mail address.";
         }
-        return retStr;
     }
 
+    /**
+     * Generate XML containing request information which will be saved persistently
+     */
     private String generateXML(ResetPWExpire resetObj) throws Exception {
         org.w3c.dom.Document adoc = org.wyona.commons.xml.XMLHelper.createDocument(NAMESPACE, "user");
         Element userElement = adoc.getDocumentElement();
+        userElement.setAttribute("id", resetObj.getUserId());
 
         Element emailElement = (Element) userElement.appendChild(adoc.createElement("email"));
         emailElement.setTextContent(resetObj.getEmail());
-        Element startTimeElement = (Element) userElement.appendChild(adoc.createElement("starttime"));
-        startTimeElement.setTextContent(Long.toString(resetObj.getDateTime()));
+
+        Element startTimeElement = (Element) userElement.appendChild(adoc.createElement("request-time"));
+        startTimeElement.setAttribute("millis", Long.toString(resetObj.getDateTime()));
+        java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        startTimeElement.setTextContent(dateFormat.format(resetObj.getDateTime()));
 
         Element guidElement = (Element) userElement.appendChild(adoc.createElement("guid"));
         guidElement.setTextContent(resetObj.getGuid());
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         TransformerFactory factory = TransformerFactory.newInstance();
         Transformer t = factory.newTransformer(); // identity transform
         DOMSource source = new DOMSource(adoc);
@@ -331,14 +291,19 @@ public class ForgotPassword extends BasicXMLResource {
         return baos.toString();
     }
 
-    private void writeXMLOutput(String path, String outputVal) throws Exception {
+    /**
+     * Write reset password request into Yarep node
+     * @param path Yarep node path
+     * @param content XML content
+     */
+    private void writeXMLOutput(String path, String content) throws Exception {
         Node fileToStore = null;
         if (getRealm().getRepository().existsNode(path)) {
             fileToStore = getRealm().getRepository().getNode(path);
         } else {
             fileToStore = getRealm().getRepository().getRootNode().addNode(path, NodeType.RESOURCE);
         }
-        InputStream in = new ByteArrayInputStream(outputVal.getBytes());
+        InputStream in = new ByteArrayInputStream(content.getBytes());
         OutputStream out = fileToStore.getOutputStream();
         byte buffer[] = new byte[8192];
         int bytesRead;
@@ -353,22 +318,23 @@ public class ForgotPassword extends BasicXMLResource {
      * Change user password.
      */
     private String updatePassword(HttpServletRequest request) throws Exception {
-        String retStr = "";
         String plainPassword = request.getParameter("newPassword");
         boolean confirmation = plainPassword.equals(request.getParameter("newPasswordConfirmation"));
         if (confirmation && !plainPassword.equals("")) {
-            User user = findRepoUser(request.getParameter("guid"), totalValidHrs);
+            String guid = request.getParameter("guid");
+            User user = getUserForRequest(guid, totalValidHrs);
             if(user !=null) {
                 user.setPassword(plainPassword);
                 user.save();
-                retStr = "success";
+                getRealm().getRepository().delete(new org.wyona.yarep.core.Path(getPersistentRequestPath(guid))); // DEPRECATED
+                //TODO: YarepUtil.deleteNode(getRealm().getRepository(), getPersistentRequestPath(guid));
+                return "success";
             } else {
-                retStr = "Unable to find user for password reset.";
+                return "Unable to find user for password reset.";
             }
         } else {
-            retStr = "Either no new password was supplied or the password supplied and its confirmation password do not match.";
+            return "Either no new password was supplied or the password supplied and its confirmation password do not match.";
         }
-        return retStr;
     }
 
     @Override
@@ -407,5 +373,48 @@ public class ForgotPassword extends BasicXMLResource {
             log.warn("No proxy set.");
         }
         return url.toString();
+    }
+
+    /**
+     * Get base path (collection path) where reset password requests will be saved permanently
+     */
+    private String getResetPasswordRequestsBasePath() throws Exception {
+        String configuredBasePath = getResourceConfigProperty("change-password-requests-path");
+        String basePath;
+        if (configuredBasePath != null) {
+            if (!configuredBasePath.startsWith("/")) {
+                basePath = "/" + configuredBasePath;
+            } else {
+                basePath = configuredBasePath;
+            }
+        } else {
+            String DEFAULT_BASE_PATH = "/reset-password-requests";
+            log.warn("No base path configured. Will use default value: " + DEFAULT_BASE_PATH);
+            basePath = DEFAULT_BASE_PATH;
+        }
+        return basePath;
+    }
+
+    /**
+     * Send email to user requesting to reset the password
+     */
+    private void sendEmail(String guid, String emailAddress) throws Exception {
+        String emailSubject = "Reset password request needs your confirmation";
+        String emailBody = "Please go to the following URL to reset password: <" + getURL() + "?" + PW_RESET_ID + "=" + guid + ">.";
+        String hrsValid = getResourceConfigProperty(HOURS_VALID_PROPERTY_NAME);
+        emailBody = emailBody + "\n\nNOTE: This link is only available during the next " + hrsValid + " hours!";
+        if (log.isDebugEnabled()) log.debug(emailBody);
+        String emailServer = getResourceConfigProperty(SMTP_HOST_PROPERTY_NAME);
+        int port = Integer.parseInt(getResourceConfigProperty("smtpPort"));
+        String from = getResourceConfigProperty("smtpFrom");
+        String to =  emailAddress;
+        SendMail.send(emailServer, port, from, to, emailSubject, emailBody);
+    }
+
+    /**
+     *
+     */
+    private String getPersistentRequestPath(String guid) throws Exception {
+        return getResetPasswordRequestsBasePath() + "/" + guid + ".xml";
     }
 }
