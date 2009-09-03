@@ -17,7 +17,7 @@
   <xsl:template match="/">
     <html>
       <head>
-        <title>Login - Yanel</title>
+        <title>Login to realm "<xsl:value-of select="/yanel:yanel-auth-screen/yanel:realm/@yanel:name"/>" - Yanel</title>
         <link rel="stylesheet" href="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-css/global.css" type="text/css"/>
       </head>
       <body>
