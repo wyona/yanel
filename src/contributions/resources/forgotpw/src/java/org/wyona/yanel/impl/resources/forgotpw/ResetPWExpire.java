@@ -15,28 +15,39 @@
  */
 package org.wyona.yanel.impl.resources.forgotpw;
 
-    public class ResetPWExpire {
-        private String userId;
-        private long dateTime;
-        private String guid;
-        private String email;
+/**
+ * Bean containing data of reset password request
+ */
+public class ResetPWExpire {
 
-        public ResetPWExpire(String userid, long datetime, String guid, String email) {
-          this.userId = userid;
-          this.dateTime = datetime;
-          this.guid = guid;
-          this.email = email;
-        }
-        public String getUserId() {
-            return userId;
-        }
-        public long getDateTime() {
-            return dateTime;
-        }
-        public String getGuid() {
-            return guid;
-        }
-        public String getEmail() {
-            return email;
-        }
+    private String userId;
+    private long dateTime;
+    private String guid;
+    private String email;
+
+    /**
+     *
+     */
+    public ResetPWExpire(String userid, long datetime, String guid, String email) {
+        this.userId = userid;
+        this.dateTime = datetime;
+        this.guid = guid;
+        this.email = email;
     }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public long getDateTime() {
+        return dateTime;
+    }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+}
