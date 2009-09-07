@@ -7,7 +7,7 @@
     </ul>
   </li>
   <li>Download the latest Apache <a href="http://httpd.apache.org/download.cgi">httpd 2.2.x</a> (e.g. httpd-2.2.8)</li>
-  <li>Install as proxy: ./configure --prefix=/usr/local/httpd-2.2.8 --enable-proxy --enable-proxy-http</li>
+  <li>Install as proxy: ./configure --prefix=/usr/local/httpd-2.2.8 --enable-proxy --enable-proxy-http --enable-proxy-balancer<br/></li>
   <li>make</li>
   <li>make install</li>
   <li>Configure virtual hosts within /usr/local/httpd-2.2.8/conf/extra/httpd-vhosts.conf</li><ul><li>A sample can be found at <a href="https://svn.wyona.org/repos/public/yanel/trunk/src/httpd-2.2.3/conf/extra/httpd-vhosts.conf">yanel/trunk/src/httpd-2.2.3/conf/extra/httpd-vhosts.conf</a>
