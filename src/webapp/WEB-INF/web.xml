@@ -39,11 +39,18 @@
      <param-value>xslt/login-screen.xsl</param-value>
     </init-param>
 
-    <!-- Enable resp. disable toolbar functionality. For security and performance reasons one might want to disable the toolbar functionality completely with this parameter -->
+    <!-- Enable/Disable toolbar functionality. For security and performance reasons one might want to disable the toolbar functionality completely with this parameter -->
     <init-param>
      <param-name>toolbar-master-switch</param-name>
      <param-value>on</param-value>
      <!--<param-value>off</param-value>-->
+    </init-param>
+
+    <!-- If a resource is workflowable, has a workflow, but is not live yet, then the most recent version shall be displayed in order to stay backwards compatible -->
+    <init-param>
+      <param-name>workflow.not-live.most-recent-version</param-name>
+      <param-value>true</param-value>
+      <!--<param-value>false</param-value>-->
     </init-param>
 
     <!-- Allow client-side caching of static htdocs content. Specify value in hours. -->

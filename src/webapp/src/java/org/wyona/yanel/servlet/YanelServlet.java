@@ -95,6 +95,7 @@ public class YanelServlet extends HttpServlet {
 
     private File xsltInfoAndException;
     private String xsltLoginScreenDefault;
+    private boolean displayMostRecentVersion = true;
 
     public static final String IDENTITY_MAP_KEY = "identity-map";
     private static final String TOOLBAR_USECASE = "toolbar"; //TODO is this the same as YanelAuthoringUI.TOOLBAR_KEY?
@@ -136,6 +137,7 @@ public class YanelServlet extends HttpServlet {
 
         xsltInfoAndException = org.wyona.commons.io.FileUtil.file(servletContextRealPath, config.getInitParameter("exception-and-info-screen-xslt"));
         xsltLoginScreenDefault = config.getInitParameter("login-screen-xslt");
+        displayMostRecentVersion = new Boolean(config.getInitParameter("workflow.not-live.most-recent-version")).booleanValue();
         try {
             yanelInstance = Yanel.getInstance();
             yanelInstance.init();
@@ -430,15 +432,18 @@ public class YanelServlet extends HttpServlet {
                             if (workflowable.isLive()) {
                                 view = workflowable.getLiveView(viewId);
                             } else {
-                                String message = "The viewable (V2) resource '" + res.getPath() + "' is WorkflowableV1, but has not been published yet. Instead the live version, the most recent version will be displayed!";
+                                String message = "The viewable (V2) resource '" + res.getPath() + "' is WorkflowableV1, but has not been published yet.";
                                 log.warn(message);
-                                view = ((ViewableV2) res).getView(viewId);
-
-                                // TODO: Maybe sending a 404 instead the most recent version should be configurable!
-                                /*
-                                do404(request, response, doc, message);
-                                return;
-                                */
+                                // TODO: Make this configurable per realm
+                                if (displayMostRecentVersion) {
+                                    log.warn("Instead the live version, the most recent version will be displayed!");
+                                    view = ((ViewableV2) res).getView(viewId);
+                                } else {
+                                    log.warn("Instead the live version, a 404 will be displayed!");
+                                    // TODO: Instead a 404 one might want to show a different kind of screen
+                                    do404(request, response, doc, message);
+                                    return;
+                                }
                             }
                         } else {
                             view = ((ViewableV2) res).getView(viewId);
