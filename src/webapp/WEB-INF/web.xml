@@ -49,7 +49,7 @@
     <!-- If a resource is workflowable, has a workflow, but is not live yet, then the most recent version shall be displayed in order to stay backwards compatible -->
     <init-param>
       <param-name>workflow.not-live.most-recent-version</param-name>
-      <param-value>true</param-value>
+      <param-value>true</param-value> <!--The default value needs to be true in order to stay backwards compatible -->
       <!--<param-value>false</param-value>-->
     </init-param>
 
