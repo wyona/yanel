@@ -172,20 +172,21 @@
   </target>
 
   <target name="source-snapshot" description="Create a source code snapshot" depends="init">
-    <fail message="No revision specified! Please configure property 'yanel.revision' within 'src/build/local.build.properties'.">
+    <fail message="No revision specified yet! Please configure property 'yanel.revision' within 'src/build/local.build.properties'.">
       <condition>
         <equals arg1="${yanel.revision}" arg2="REVISION"/>
       </condition>
     </fail>
+
     <property name="snapshot.dir" value="${build.dir}/source-snapshots/wyona-yanel-${yanel.source.version}-src"/>
     <fail message="Directory already exists: '${snapshot.dir}'. Either delete this directory or use a different version/revision!">
       <condition>
         <available file="${snapshot.dir}" type="dir"/>
       </condition>
     </fail>
-
-<!-- Start exporting from SVN -->
     <mkdir dir="${build.dir}/source-snapshots"/>
+
+<!-- Start exporting source code from Subversion -->
     <echo>Start exporting source from SVN, revision: ${yanel.revision}</echo>
     <svnant:svn username="anonymous" password="anonymous">
       <export
@@ -194,7 +195,7 @@
        destPath="${snapshot.dir}"
       />
     </svnant:svn>
-<!-- End exporting from SVN -->
+<!-- End exporting source code from SVN -->
 
     <replace file="${snapshot.dir}/src/build/build.properties" value="${yanel.revision}">
       <replacetoken>REVISION</replacetoken>
