@@ -186,12 +186,7 @@
 
 <!-- Start exporting from SVN -->
     <mkdir dir="${build.dir}/source-snapshots"/>
-    <!--exec executable="svn">
-      <arg value="export"/>
-      <arg value="-r${yanel.revision}"/>
-      <arg value="https://svn.wyona.com/repos/public/yanel/trunk"/>
-      <arg value="${snapshot.dir}"/>
-    </exec-->
+    <echo>Start exporting source from SVN, revision: ${yanel.revision}</echo>
     <svnant:svn username="anonymous" password="anonymous">
       <export
        revision="${yanel.revision}"
@@ -199,34 +194,7 @@
        destPath="${snapshot.dir}"
       />
     </svnant:svn>
-
 <!-- End exporting from SVN -->
-
-<!-- Start copying the local version -->
-<!--
-    <mkdir dir="${snapshot.dir}/src"/>
-    <copy file="${yanel.source.home}/README.txt" todir="${snapshot.dir}"/>
-    <copy file="${yanel.source.home}/configure.sh" todir="${snapshot.dir}"/>
-    <chmod file="${snapshot.dir}/configure.sh" perm="755"/>
-    <copy file="${yanel.source.home}/configure.bat" todir="${snapshot.dir}"/>
-    <copy file="${yanel.source.home}/build.sh" todir="${snapshot.dir}"/>
-    <chmod file="${snapshot.dir}/build.sh" perm="755"/>
-    <copy file="${yanel.source.home}/build.bat" todir="${snapshot.dir}"/>
-    <copy file="${yanel.source.home}/yanel.sh" todir="${snapshot.dir}"/>
-    <chmod file="${snapshot.dir}/yanel.sh" perm="755"/>
-    <copy file="${yanel.source.home}/yanel.bat" todir="${snapshot.dir}"/>
-    <copy todir="${snapshot.dir}/src">
-      <fileset dir="${yanel.source.home}/src" excludes="build/local.build.properties, contributions/resources/nutch/conf/nutch-local.xml"/>
-    </copy>
-    <copy todir="${snapshot.dir}/tools">
-      <fileset dir="${yanel.source.home}/tools" excludes="apache-tomcat/java-1.4/**"/>
-    </copy>
-    <chmod dir="${snapshot.dir}/tools/apache-ant-1.6.5/bin" perm="755" includes="*"/>
-    <copy todir="${snapshot.dir}/conf">
-      <fileset dir="${yanel.source.home}/conf" excludes="local/**"/>
-    </copy>
--->
-<!-- End copying the local version -->
 
     <replace file="${snapshot.dir}/src/build/build.properties" value="${yanel.revision}">
       <replacetoken>REVISION</replacetoken>
