@@ -172,11 +172,19 @@
   </target>
 
   <target name="source-snapshot" description="Create a source code snapshot" depends="init">
+
+    <!-- DOCU: http://subclipse.tigris.org/svnant/svn.html -->
+    <svnant:svn username="anonymous" password="anonymous">
+      <info target="http://svn.wyona.com/repos/public/yanel/trunk" verbose="false"/>
+    </svnant:svn>
+    <echo>Most recent revision on remote server: ${svn.info.rev}</echo>
+
     <fail message="No revision specified yet! Please configure property 'yanel.revision' within 'src/build/local.build.properties'.">
       <condition>
         <equals arg1="${yanel.revision}" arg2="REVISION"/>
       </condition>
     </fail>
+    <!-- TODO: Or use the most recent revision of remote server (see above: svn.info.rev) -->
 
     <property name="snapshot.dir" value="${build.dir}/source-snapshots/wyona-yanel-${yanel.source.version}-src"/>
     <fail message="Directory already exists: '${snapshot.dir}'. Either delete this directory or use a different version/revision!">
