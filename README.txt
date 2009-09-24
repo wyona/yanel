@@ -17,9 +17,9 @@
 
     1) Configure Yanel by running "configure"
  
-    After "configure" has finished, you may want to review the contents of 
-    ./src/build/local.build.properties to better understand the parameters
-    that "build" will use.
+       After "configure" has finished, you may want to review the contents of 
+       the file './src/build/local.build.properties' to better understand the parameters
+       which the "build" process will be using.
 
     2) Build Yanel by running "build"
 
@@ -27,7 +27,7 @@
     3.1) Run within Tomcat: "yanel start/stop" to start or stop Tomcat
     3.2) Run within Jetty: "yanel start-jetty" to start Jetty
     3.3) Run within Command Line: "yanel /hello/world.html"
-    3.4) Run continuous integration: "./src/build/targets/continuous-integration/CI"
+    3.4) Run continuous integration: "./src/build/targets/continuous-integration/reCI"
 
     4) Browse to http://127.0.0.1:8080/yanel/
 
