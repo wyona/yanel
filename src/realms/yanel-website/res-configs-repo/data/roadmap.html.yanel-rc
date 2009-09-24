@@ -10,6 +10,7 @@
   <yanel:property name="xslt" value="/xslt/roadmap-body.xsl"/>
   <yanel:property name="xslt" value="/xslt/global.xsl"/>
 
-
+<!-- TODO: Does not seem to work with workflow!
   <yanel:property name="workflow-schema" value="/workflow/workflow-with-review.xml"/>
+-->
 </yanel:resource-config>
