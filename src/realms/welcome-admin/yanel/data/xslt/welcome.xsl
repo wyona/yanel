@@ -47,16 +47,16 @@
             <li><a href="yanel-website/en/documentation/what-is-a-realm.html">What is a realm?</a></li>
             <li>Add a realm
 	      <ul>
-                <li><a href="add-realm-from-scratch.html">Create a realm from scratch.</a></li>
-                <li><a href="add-realm-from-existing-website.html">Import an existing website as a new realm.</a> resp. how one can do this <a href="yanel-website/en/documentation/import-existing-website-as-new-realm.html">manually</a>.</li>
-                <li><a href="yanel-website/en/documentation/how-to-add-a-new-realm.html">Add an existing third-party realm.</a></li>
+                <li>Create a realm <a href="add-realm-from-scratch.html">from scratch.</a></li>
+                <li><a href="add-realm-from-existing-website.html">Import an existing website</a> as a new realm or how one can do this <a href="yanel-website/en/documentation/import-existing-website-as-new-realm.html">manually</a>.</li>
+                <li>Add an existing <a href="yanel-website/en/documentation/how-to-add-a-new-realm.html">third-party realm.</a></li>
               </ul>
             </li>
             <li>More information can be found within the Yanel <a href="yanel-website/en/documentation/index.html">documentation</a>.</li>
             <li>Turn on <a href="?yanel.toolbar=on">toolbar</a> </li>
-            <li>Download <a href="http://www.yulup.org">Yulup</a></li>
             <li><a href="update-webapp.html">Find Updates</a></li>
             <li><a href="session-manager.html">Session Manager</a></li>
+            <li>Download <a href="http://www.yulup.org">Yulup</a> for editing web-pages independently of Yanel.</li>
 
 <!--
             <li>What is a resource resp. resource type?</li>
