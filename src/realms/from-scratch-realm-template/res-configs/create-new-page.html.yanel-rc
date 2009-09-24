@@ -23,6 +23,12 @@
         <rc:display-name>Asset (Upload File)</rc:display-name>
       </rc:resource-type>
 
+<!-- TODO: Does not seem to work
+      <rc:resource-type name="world-time" namespace="http://www.wyona.org/yanel/resource/1.0">
+        <rc:display-name>World Time Display</rc:display-name>
+      </rc:resource-type>
+-->
+
 <!--
       <rc:resource-type name="directory" namespace="http://www.wyona.org/yanel/resource/1.0">
         <rc:display-name>Folder</rc:display-name>
