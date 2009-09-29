@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="test" default="test"
- xmlns:yanel="http://www.wyona.org/yanel/1.0"
+ xmlns:wyona-tools="http://www.wyona.org/tools/1.0"
  xmlns:artifact="antlib:org.apache.maven.artifact.ant"
 >
   <dirname property="tests.home.dir" file="${ant.file}"/>
@@ -25,7 +25,7 @@
   <property name="webapp.lib.dir" value="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib"/>
 
 
-  <import file="../build/targets/build-artifacts.build.xml"/>
+  <import file="../../tools/apache-ant_extras/artifacts.build.xml"/>
   
   <target name="init" depends="dependencies">
     <!--XXX HACK: we should distinguish between the build classpath and the runtime classpath... -->
@@ -109,7 +109,10 @@
   </target>
 
   <target name="install-jar" description="Install Yanel test JAR" depends="compile-classes">
-    <yanel:install-jar id="test"
+    <wyona-tools:install-jar
+     source-home="${yanel.source.home}" version="${yanel.source.version}"
+     name="yanel-test" package-root-path="org/wyona/yanel/test"
+     id="test"
      sources-dir="${yanel.build.dir}"
      classes-dir="${yanel.build.dir}" package-dir="foo"><!--: these attributes have dummy values, we only use the elements here: -->
       <fileset dir="${junit.build.dir}" includes="org/wyona/yanel/junit/**"/>
@@ -117,7 +120,7 @@
       <!--HACK: all JARs will get everything -->
       <fileset dir="${junit.src.dir}" includes="org/wyona/yanel/junit/**"/>
       <fileset dir="${htmlunit.src.dir}" includes="org/wyona/yanel/htmlunit/**"/>
-    </yanel:install-jar>
+    </wyona-tools:install-jar>
   </target>
 
   <target name="build-resources" depends="init" description="Build tests of resources">
