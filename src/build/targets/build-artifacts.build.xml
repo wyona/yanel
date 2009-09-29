@@ -2,7 +2,10 @@
  xmlns:artifact="antlib:org.apache.maven.artifact.ant"
 >
 
+  <import file="${yanel.source.home}/tools/apache-ant_extras/artifacts.build.xml"/>
+
   <!-- Install a Yanel JAR: core, impl, webapp, cmdl, etc. -->
+  <!--TODO REFACTORME using macros of generic script above: -->
   <macrodef name="install-jar" uri="http://www.wyona.org/yanel/1.0">
    <attribute name="id"/>
    <attribute name="package-dir" default="@{id}"/>
@@ -37,46 +40,6 @@
     <artifact:install file="${yanel.source.home}/build/lib/yanel-@{id}-${yanel.source.version}.jar">
       <pom refid="@{id}.project"/>
       <attach file="${yanel.source.home}/build/lib/yanel-@{id}-${yanel.source.version}-sources.jar" classifier="sources"/>
-    </artifact:install>
-
-   </sequential>
-  </macrodef>
-
-  <!-- Install Neutron JAR -->
-  <macrodef name="install-wyona-jar" uri="http://www.wyona.org/yanel/1.0">
-   <attribute name="id"/>
-   <attribute name="package-dir" default="@{id}"/>
-   <attribute name="classes-dir" default="${classes.dir}"/>
-   <attribute name="sources-dir" default="${yanel.source.home}/src/@{package-dir}/java"/>
-   <element name="jar-elements" optional="true" implicit="true"/>
-   <sequential>
-
-    <mkdir dir="${yanel.source.home}/build/lib"/>
-    <jar destfile="${yanel.source.home}/build/lib/wyona-@{id}-${yanel.source.version}.jar"
-      basedir="@{classes-dir}"
-      includes="org/wyona/@{package-dir}/**"
-    >
-      <jar-elements/>
-    </jar>
-
-    <copy file="${yanel.source.home}/src/build/pom-@{id}.xml" todir="${yanel.source.home}/build/lib"/>
-    <replace file="${yanel.source.home}/build/lib/pom-@{id}.xml" value="${yanel.source.version}">
-      <replacetoken>@VERSION@</replacetoken>
-    </replace>
-
-    <mkdir dir="${yanel.source.home}/build/lib"/>
-    <jar destfile="${yanel.source.home}/build/lib/wyona-@{id}-${yanel.source.version}-sources.jar"
-      basedir="@{sources-dir}"
-      includes="org/wyona/@{package-dir}/**"
-    >
-      <jar-elements/>
-    </jar>
-
-    <artifact:pom id="@{id}.project" file="${yanel.source.home}/build/lib/pom-@{id}.xml"/>
-
-    <artifact:install file="${yanel.source.home}/build/lib/wyona-@{id}-${yanel.source.version}.jar">
-      <pom refid="@{id}.project"/>
-      <attach file="${yanel.source.home}/build/lib/wyona-@{id}-${yanel.source.version}-sources.jar" classifier="sources"/>
     </artifact:install>
 
    </sequential>

@@ -2,6 +2,7 @@
 
 <project name="yanel-main" default="deploy"
  xmlns:yanel="http://www.wyona.org/yanel/1.0"
+ xmlns:wyona-tools="http://www.wyona.org/tools/1.0"
  xmlns:svnant="antlib:org.tigris.subversion.svnant"
 >
 
@@ -148,7 +149,7 @@
   </target>
 
   <target name="install-neutron-jar" description="Install Neutron implementation JAR" depends="compile-neutron-classes">
-    <yanel:install-wyona-jar id="neutron"/>
+    <wyona-tools:install-jar source-home="${yanel.source.home}" version="${yanel.source.version}" id="neutron"/>
   </target>
 
   <target name="compile-neutron" depends="compile-neutron-classes, install-neutron-jar">
