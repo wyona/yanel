@@ -334,7 +334,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * @return serializer
      * @throws Exception
      */
-    protected Serializer createSerializer(ConfigurableViewDescriptor viewDescriptor) throws Exception {
+    private Serializer createSerializer(ConfigurableViewDescriptor viewDescriptor) throws Exception {
         Serializer serializer = null;
         String serializerKey = viewDescriptor.getSerializerKey();
         if (serializerKey != null) {
