@@ -1,6 +1,9 @@
 package org.wyona.yanel.core.serialization;
 
+import java.net.URL;
 import java.util.Properties;
+
+import org.apache.log4j.Logger;
 import org.apache.xml.serializer.Method;
 import org.apache.xml.serializer.OutputPropertiesFactory;
 import org.apache.xml.serializer.Serializer;
@@ -21,12 +24,15 @@ public class SerializerFactory {
     public static final String XML_KEY = "XML";
     public static final String TEXT_KEY = "TEXT";
 
+    private static final Logger log = Logger.getLogger(SerializerFactory.class);
+
     /**
      * @return HTML serializer with the format specified
      * */
     public static Serializer getSerializer(Properties format) {
         Serializer serializer = new HTMLSerializer();
         serializer.setOutputFormat(format);
+        if (log.isDebugEnabled()) debug(serializer.getClass());
         return serializer;
     }
     
@@ -77,6 +83,20 @@ public class SerializerFactory {
             serializer = new ToTextStream();
             serializer.setOutputFormat(format);
         }
+        if (log.isDebugEnabled()) debug(serializer.getClass());
         return serializer;
+    }
+
+    /**
+     * @see http://stackoverflow.com/questions/779650/where-on-the-file-system-was-my-java-class-loaded-from/779687#779687
+     */
+    private static void debug(Class<?> clazz) {
+        //String jarRelativeURLtext = "/org/apache/xml/serializer/Encodings.properties"; //HACK: any other resource always present in the JAR would do
+        //String jarRelativeURLtext = "/META-INF/MANIFEST.MF"; // does not work: picks up a seemingly random JAR
+        String jarRelativeURLtext = "/" + clazz.getName().replace('.', '/') + ".class";
+        URL jarEntryURL = clazz.getResource(jarRelativeURLtext);
+        String jarEntryURLtext = jarEntryURL.toExternalForm();
+        String jarURLtext = jarEntryURLtext.substring(0, jarEntryURLtext.lastIndexOf(jarRelativeURLtext));
+        log.debug("This "+clazz.getName()+" comes from <"+jarURLtext+">!");
     }
 }
