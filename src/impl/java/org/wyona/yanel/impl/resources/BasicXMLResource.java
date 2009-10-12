@@ -117,7 +117,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     protected HashMap<String, ViewDescriptor> viewDescriptors;
 
-    public ViewDescriptor getViewDescriptor(String viewId) {
+    protected ViewDescriptor getViewDescriptor(String viewId) {
         ViewDescriptor[] viewDescriptors = getViewDescriptors();
         for (int i = 0; i < viewDescriptors.length; i++) {
             if (viewDescriptors[i].getId().equals(viewId)) {
