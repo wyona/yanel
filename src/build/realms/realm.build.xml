@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+
+<!-- Everything common to most realms. -->
+
+<project name="yanel-realm"
+ xmlns:artifact="antlib:org.apache.maven.artifact.ant"
+>
+
+<!-- 
+     The default task config attribute (for example default="compile") seems not to be imported at least with Ant 1.6.5 or Ant 1.7.1
+     which means it needs to be set within each realm build.xml (see also smilar note in ../resource-types/resource-type.build.xml)
+-->
+
+  <dirname property="realm.home.dir" file="${ant.file}"/>
+
+  <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+
+  <!-- For example set within build.sh ... -->
+  <property name="yanel.home" value="${yanel.source.home}"/>
+  <property file="${yanel.home}/src/build/local.build.properties"/>
+  <property file="${yanel.home}/src/build/build.properties"/>
+
+  <import file="${realm.home.dir}/src/build/dependencies.xml"/>
+
+  <!-- Initialize build -->
+  <target name="init" depends="dependencies">
+    <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
+
+    <property file="${realm.home.dir}/src/build/local.build.properties"/>
+    <property file="${realm.home.dir}/src/build/build.properties"/>
+
+    <path id="classpath">
+      <pathelement path="${maven2.cp}"/>
+      <pathelement path="${maven2.realm.cp}"/>
+    </path>
+    <property name="realm.build.dir" value="${realm.home.dir}/build"/>
+    <property name="realm.classes.dir" value="${realm.build.dir}/classes"/>
+    <property name="realm.lib.dir" value="${realm.build.dir}/lib"/>
+    <property name="realm.java.dir" value="${realm.home.dir}/src/java"/>
+  </target>
+
+  <property name="eclipse.yanel.build.classes.dir.link" value="yanel-build-webapp-classes"/>
+  <property name="eclipse.classes.dir.link" value="cnode1-webapp-WEB-INF-classes"/>
+
+  <target name="eclipse:classpath" description="Update Eclipse's .classpath file" depends="init">
+    <artifact:dependencies pathId="Yanel.test.jars.classpath" filesetId="Yanel.test.jars.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-test" version="${yanel.source.version}"/>
+    </artifact:dependencies>
+    <echo level="verbose">Yanel test JARs classpath: ${toString:Yanel.test.jars.classpath}</echo>
+
+    <path id="eclipse.classpath">
+      <fileset refid="maven2.fileset"/>
+      <fileset refid="maven2.realm.fileset"/>
+      <fileset refid="Yanel.test.jars.fileset"/>
+    </path>
+    <condition property="eclipse.classes.dir" value="${eclipse.classes.dir.link}" else="">
+      <isset property="do.autopatch.cnode1.webapp.WEB-INF.classes"/>
+    </condition>
+    <condition property="eclipse.source.dirs" value="src/java:${eclipse.yanel.build.classes.dir.link}" else="">
+      <isset property="do.autopatch.cnode1.webapp.WEB-INF.classes"/>
+    </condition>
+    <ant dir="${yanel.home}/tools/eclipse.settings" target="update-classpath"
+     inheritAll="false" inheritRefs="false">
+      <reference torefid="classpath.ref" refid="eclipse.classpath"/>
+      <property name="classpath.dir" value="${realm.home.dir}"/>
+      <property name="classes.dir" value="${eclipse.classes.dir}"/>
+      <property name="source.dirs" value="${eclipse.source.dirs}"/>
+    </ant>
+    <echo><!--XXX -->WARNING (if you used -Ddo.autopatch.cnode1.webapp.WEB-INF.classes=foo to make Eclipse automatically patch the webapp's classes in place during compilation): the logs will show up in ${yanel.home}/build/log4j-cmdl.log and not in ${yanel.home}/build/log4j-cnode1.log (due to to way the build is currently set up).</echo>
+  </target>
+
+  <target name="eclipse" description="Generate all files needed to use the realm under Eclipse (WARNING: .project file will be overwritten!)" depends="eclipse:classpath">
+    <!--XXX HACK: we should generify this instead of stealing files from resource-types' build... -->
+    <copy file="${yanel.home}/src/build/resource-types/Eclipse-3.template.project" tofile="${realm.home.dir}/.project">
+      <filterset>
+        <filter token="RESOURCE_TYPE_NAME" value="${ant.project.name}"/>
+        <filter token="YANEL_VERSION" value="${yanel.source.version}"/>
+        <filter token="GENERATION_COMMAND" value="build -f ${ant.file} eclipse"/>
+        <filter token="YANEL_BUILD_CLASSES_DIR_LINK" value="${eclipse.yanel.build.classes.dir.link}"/>
+        <filter token="YANEL_BUILD_CLASSES_DIR" value="${yanel.build.webapp.classes.dir}"/>
+        <filter token="CLASSES_DIR_LINK" value="${eclipse.classes.dir.link}"/>
+        <filter token="CLASSES_DIR" value="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes"/><!--FIXME: this should not be Tomcat-specific... -->
+      </filterset>
+    </copy>
+    <echo>Eclipse project created: in Eclipse you can now import (as an existing project into your workspace) this realm with root directory set to ${realm.home.dir} and build it there!</echo>
+  </target>
+
+  <target name="compile" description="Compile Java classes" depends="init">
+
+    <mkdir dir="${realm.classes.dir}"/>
+    <javac srcdir="${realm.java.dir}" destdir="${realm.classes.dir}"
+      classpathref="classpath"
+      encoding="${javac.encoding}"
+      debug="true"
+    />
+
+    <mkdir dir="${realm.lib.dir}"/>
+    <jar destfile="${realm.lib.dir}/yanel-realm-${realm.name}-${realm.version}.jar"
+      basedir="${realm.classes.dir}"
+    />
+    <available property="realm.install.needed" file="src/build/pom.xml"/>
+    <antcall target="install-jar"/>
+  </target>
+
+  <target name="clean" depends="init">
+    <delete dir="${realm.build.dir}"/>
+  </target>
+
+  <target name="copy-dependencies" depends="init">
+    <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
+      <fileset refid="maven2.realm.fileset"/>
+      <mapper type="flatten"/>
+    </copy>
+  </target>
+
+  <!-- Place jar file for this realm into local maven repository -->
+  <target name="install-jar" if="realm.install.needed">
+    <copy file="src/build/pom.xml" tofile="build/lib/pom.xml"/>
+
+    <replace file="build/lib/pom.xml" value="${realm.version}">
+      <replacetoken>@VERSION@</replacetoken>
+    </replace>
+    <replace file="build/lib/pom.xml" value="${realm.name}">
+      <replacetoken>@NAME@</replacetoken>
+    </replace>
+
+    <jar destfile="${realm.lib.dir}/yanel-realm-${realm.name}-${realm.version}-sources.jar"
+      basedir="${realm.java.dir}"
+    />
+
+    <artifact:pom id="maven.project.core" file="build/lib/pom.xml"/>
+    <artifact:install file="build/lib/yanel-realm-${realm.name}-${realm.version}.jar">
+      <pom refid="maven.project.core"/>
+      <attach file="build/lib/yanel-realm-${realm.name}-${realm.version}-sources.jar" classifier="sources"/>
+    </artifact:install>
+  </target>
+
+  <!-- Deploy jar file for this realm into local webapp libs directory -->
+  <target name="deploy-jar" depends="compile">
+    <copy todir="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib" file="${realm.lib.dir}/yanel-realm-${realm.name}-${realm.version}.jar">
+    </copy>
+  </target>
+</project>

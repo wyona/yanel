@@ -40,12 +40,14 @@
   </target>
 
   <target name="deploy-libs" description="Deploy libs of realm" depends="init" if="lib-dir-of-realm-exists">
+    <!--FIXME call realm-specific task if available! -->
     <copy todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib">
       <fileset dir="${realm.lib.dir}"/>
     </copy>
   </target>
 
   <target name="clean" description="Clean realm" depends="init" if="build-dir-of-realm-exists">
+    <!--FIXME call realm-specific task if available! -->
     <delete dir="${realm.build.dir}"/>
   </target>
 

@@ -107,6 +107,7 @@
       <property name="build.dir" value="${{build.dir}}"/>
       <property name="servlet.context.prefix" value="{$servlet.context.prefix}"/>
       <property name="yanel.source.version" value="{$yanel.source.version}"/>
+      <property name="yanel.source.home" value="{$yanel.source.home}"/>
       <property name="maven.url" value="{$maven.url}"/>
     </ant>
 </target>
