@@ -61,6 +61,9 @@ public class PolicyManagerResource extends BasicXMLResource {
         return getXMLView(viewId, getContentXML(viewId));
     }
 
+    /**
+     *
+     */
     @Override
     protected InputStream getContentXML(String viewId) throws Exception {
         // For example ?policy-path=/foo/bar.html
@@ -114,7 +117,7 @@ public class PolicyManagerResource extends BasicXMLResource {
                     } catch(Exception e) {
                         log.error(e,e);
                         //response.setStatus(response.SC_NOT_IMPLEMENTED);
-                        log.warn("TODO: Fix HTTP status code: " + HttpServletResponse.SC_NOT_IMPLEMENTED);
+                        log.warn("TODO: Fix setting HTTP status code: " + HttpServletResponse.SC_NOT_IMPLEMENTED);
                         sb.append("<?xml version=\"1.0\"?><not-saved>" + e.getMessage() + "</not-saved>");
                     }
                 } else {
