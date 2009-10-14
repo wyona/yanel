@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 
 
 /**
- * 
+ * Resource which acts as interface for editing tools in order to update/edit access policies
  */
 public class PolicyManagerResource extends BasicXMLResource {
     
@@ -116,8 +116,7 @@ public class PolicyManagerResource extends BasicXMLResource {
                         sb.append("<?xml version=\"1.0\"?><saved/>");
                     } catch(Exception e) {
                         log.error(e,e);
-                        //response.setStatus(response.SC_NOT_IMPLEMENTED);
-                        log.warn("TODO: Fix setting HTTP status code: " + HttpServletResponse.SC_NOT_IMPLEMENTED);
+                        getEnvironment().getResponse().setStatus(response.SC_NOT_IMPLEMENTED);
                         sb.append("<?xml version=\"1.0\"?><not-saved>" + e.getMessage() + "</not-saved>");
                     }
                 } else {
@@ -144,7 +143,7 @@ public class PolicyManagerResource extends BasicXMLResource {
                 }
             } else {
                 //response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
-                //response.setStatus(response.SC_NOT_IMPLEMENTED);
+                getEnvironment().getResponse().setStatus(response.SC_NOT_IMPLEMENTED);
                 sb.append("<html><body>Policy usecase not implemented yet: " + policyUsecase + "</body></html>");
                 log.error("Policy usecase not implemented yet: " + policyUsecase);
             }
