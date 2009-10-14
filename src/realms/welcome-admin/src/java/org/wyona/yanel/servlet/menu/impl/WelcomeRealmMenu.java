@@ -23,7 +23,21 @@ public class WelcomeRealmMenu extends Menu {
 	sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">File</div>");
         sb.append("<ul>");
-        sb.append("<li class=\"haschild\">New Realm&#160;&#160;&#160;<ul><li><a href=\"" + backToRealm + "add-realm-from-scratch.html\">From Scratch</a></li><li><a href=\"" + backToRealm + "add-realm-from-existing-website.html\">From Existing Website</a></li></ul></li>");
+
+        org.wyona.security.core.api.PolicyManager pm = resource.getRealm().getPolicyManager();
+        sb.append("<li class=\"haschild\">New Realm&#160;&#160;&#160;<ul>");
+        if (pm.authorize("/add-realm-from-scratch.html", resource.getEnvironment().getIdentity(), new org.wyona.security.core.api.Usecase("view"))) {
+            sb.append("<li><a href=\"" + backToRealm + "add-realm-from-scratch.html\">From Scratch</a></li>");
+        } else {
+            sb.append("<li>From Scratch</li>");
+        }
+        if (pm.authorize("/add-realm-from-existing-website.html", resource.getEnvironment().getIdentity(), new org.wyona.security.core.api.Usecase("view"))) {
+            sb.append("<li><a href=\"" + backToRealm + "add-realm-from-existing-website.html\">From Existing Website</a></li>");
+        } else {
+            sb.append("<li>From Existing Website</li>");
+        }
+        sb.append("</ul></li>");
+
         sb.append("</ul>");
         sb.append("</li></ul>");
 
