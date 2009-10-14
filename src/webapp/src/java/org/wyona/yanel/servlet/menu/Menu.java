@@ -50,8 +50,20 @@ abstract public class Menu {
         sb.append("<li><a href=\"?yanel.policy=update\">Edit Access Policy</a></li>");
         sb.append("</ul>");
         sb.append("</li>");
-        sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-users.html\">User Management</a></li>");
-        sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-groups.html\">Group Management</a></li>");
+
+        org.wyona.security.core.api.PolicyManager pm = resource.getRealm().getPolicyManager();
+        if (pm.authorize("/" + reservedPrefix + "/admin/list-users.html", resource.getEnvironment().getIdentity(), new org.wyona.security.core.api.Usecase("view"))) {
+            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-users.html\">User Management</a></li>");
+        } else {
+            sb.append("<li>User Management</li>");
+        }
+
+        if (pm.authorize("/" + reservedPrefix + "/admin/list-groups.html", resource.getEnvironment().getIdentity(), new org.wyona.security.core.api.Usecase("view"))) {
+            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-groups.html\">Group Management</a></li>");
+        } else {
+            sb.append("<li>Group Management</li>");
+        }
+
         sb.append("<li><a href=\"?yanel.toolbar=off\">Turn off toolbar</a></li>");
         Identity identity = getIdentity(request, map);
         if (identity != null) {
