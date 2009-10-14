@@ -51,14 +51,13 @@ abstract public class Menu {
         sb.append("</ul>");
         sb.append("</li>");
 
-        org.wyona.security.core.api.PolicyManager pm = resource.getRealm().getPolicyManager();
-        if (pm.authorize("/" + reservedPrefix + "/admin/list-users.html", resource.getEnvironment().getIdentity(), new org.wyona.security.core.api.Usecase("view"))) {
+        if (isAuthorized("/" + reservedPrefix + "/admin/list-users.html", resource)) {
             sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-users.html\">User Management</a></li>");
         } else {
             sb.append("<li>User Management</li>");
         }
 
-        if (pm.authorize("/" + reservedPrefix + "/admin/list-groups.html", resource.getEnvironment().getIdentity(), new org.wyona.security.core.api.Usecase("view"))) {
+        if (isAuthorized("/" + reservedPrefix + "/admin/list-groups.html", resource)) {
             sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-groups.html\">Group Management</a></li>");
         } else {
             sb.append("<li>Group Management</li>");
@@ -110,5 +109,14 @@ abstract public class Menu {
             }
         }
         return null;
+    }
+
+    /**
+     * Check if user is authorized to access resource (IMPORTANT NOTE: Using isAuthorized() can lead to performance/scalabilty issues)
+     * @param path Resource path
+     */
+    private boolean isAuthorized(String path, Resource resource) throws Exception {
+        org.wyona.security.core.api.PolicyManager pm = resource.getRealm().getPolicyManager();
+        return pm.authorize(path, resource.getEnvironment().getIdentity(), new org.wyona.security.core.api.Usecase("view"));
     }
 }
