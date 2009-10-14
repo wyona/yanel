@@ -166,6 +166,7 @@ public class PolicyManagerResource extends BasicXMLResource {
 
         try {
             User[] users = um.getUsers();
+            //User[] users = um.getUsers(true); // TODO
             Arrays.sort(users, new ItemIDComparator());
             sb.append("<users>");
             for (int i = 0; i < users.length; i++) {
