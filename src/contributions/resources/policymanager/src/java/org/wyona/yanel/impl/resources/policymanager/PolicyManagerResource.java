@@ -165,8 +165,7 @@ public class PolicyManagerResource extends BasicXMLResource {
         sb.append("<access-control xmlns=\"http://www.wyona.org/security/1.0\">");
 
         try {
-            User[] users = um.getUsers();
-            //User[] users = um.getUsers(true); // TODO
+            User[] users = um.getUsers(true);
             Arrays.sort(users, new ItemIDComparator());
             sb.append("<users>");
             for (int i = 0; i < users.length; i++) {
