@@ -3,6 +3,8 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="policymanager" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
+  <yanel:property name="use-inherited-policies-upon-creation" value="false"/> <!-- For backwards (and security) resons the default value is false -->
+
   <yanel:custom-config>
     <views>
       <view id="default" type="XML"> <!-- default view shows the policies -->
