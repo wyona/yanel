@@ -125,8 +125,8 @@ public class PolicyManagerResource extends BasicXMLResource {
                     String policyURL = backToRealm + getPath().substring(1) + "?yanel.policy=update&amp;get=policy";
                     String saveURL = backToRealm + getPath().substring(1) + "?yanel.policy=update&amp;post=policy"; // This doesn't seem to work with all browsers!
 
-                    // TODO: Either make this configurable (for example via query string) or use the javascript back of the browser!
-                    String cancelURL = backToRealm + getPath().substring(1);
+                    String cancelURL = getReferer(backToRealm);
+                    log.warn("DEBUG: Cancel URL: " + cancelURL);
 
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
@@ -136,7 +136,8 @@ public class PolicyManagerResource extends BasicXMLResource {
 
                     sb.append("<link rel=\"stylesheet\" href=\"" + PathUtil.getResourcesHtdocsPath(this) + "js/accesspolicyeditor/style.css\" type=\"text/css\"/>");
 
-                    sb.append("<script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"" + policyURL + "\", \"cancel-url\": \"" + cancelURL + "\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" +  PathUtil.getResourcesHtdocsPath(this) + "js/accesspolicyeditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script>");
+                    // IMPORTANT: Please make sure that the value of 'cancel-url-base-equals-host-page-url' corresponds with getReferer()
+                    sb.append("<script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"" + policyURL + "\", \"cancel-url\": \"" + cancelURL + "\", \"cancel-url-base-equals-host-page-url\": \"false\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" +  PathUtil.getResourcesHtdocsPath(this) + "js/accesspolicyeditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script>");
 
                     sb.append("</head>");
                     sb.append("<body><h1>Edit Access Policy</h1><p><div id=\"access-policy-editor-hook\"></div></p></body></html>");
@@ -336,5 +337,39 @@ public class PolicyManagerResource extends BasicXMLResource {
     private void writePolicy(InputStream policyAsInputStream, PolicyManager pm, String path) throws Exception {
         Policy policy = new org.wyona.security.util.PolicyParser().parseXML(policyAsInputStream);
         pm.setPolicy(path, policy);
+    }
+
+    /**
+     * Get referer (also see org.wyona.yanel.impl.resources.ResourceCreatorResource#getReferer())
+     */
+    private String getReferer(String backToRealm) throws Exception {
+        // IMPORTANT: Please make sure that the below corresponds with 'cancel-url-base-equals-host-page-url'
+        String referer = getEnvironment().getRequest().getHeader("Referer");
+        if(referer != null) {
+            java.net.URL url = new java.net.URL(referer);
+            // TODO: Replace with proxy settings!
+            return replaceEntities(referer);
+            //return backToRealm  + replaceEntities(url.getFile() + "?" + url.getQuery());
+        } else {
+            log.warn("No referer found!");
+        }
+        return getPath().substring(1); // Absolute
+        //return backToRealm + getPath().substring(1); // Relative
+    }
+
+    /**
+     * Replaces some characters by their corresponding xml entities.
+     * This method escapes those characters which must not occur in an xml text node.
+     * @param string
+     * @return escaped string
+     */
+    private String replaceEntities(String str) {
+        // there may be some &amp; and some & mixed in the input, so first transform all
+        // &amp; to & and then transform all & back to &amp;
+        // this way we don't get double escaped &amp;amp;
+        str = str.replaceAll("&amp;", "&");
+        str = str.replaceAll("&", "&amp;");
+        str = str.replaceAll("<", "&lt;");
+        return str;
     }
 }
