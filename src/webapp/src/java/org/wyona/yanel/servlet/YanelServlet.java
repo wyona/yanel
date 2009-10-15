@@ -2119,7 +2119,7 @@ public class YanelServlet extends HttpServlet {
             Realm realm = map.getRealm(request.getServletPath());
             String path = map.getPath(realm, request.getServletPath());
             
-            ResourceConfiguration rc= getGlobalResourceConfiguration("policy-manager_yanel-rc.xml", realm);
+            ResourceConfiguration rc = getGlobalResourceConfiguration("policy-manager_yanel-rc.xml", realm);
             if (generateResponseFromRTview(request, response, rc, path)) return;
             log.error("Something went terribly wrong!");
             response.getWriter().print("Something went terribly wrong!");
@@ -2151,7 +2151,10 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
+     * Get resource configuration from global location of the realm or if not available there, then from global location of Yanel
      *
+     * @param resConfigName Filename of resource configuration
+     * @param realm Current realm
      */
     private ResourceConfiguration getGlobalResourceConfiguration(String resConfigName, Realm realm) {
         // TODO: Introduce a repository for the Yanel webapp
