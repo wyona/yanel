@@ -219,7 +219,11 @@ public class PolicyManagerResource extends BasicXMLResource {
         try {
             Policy policy = pm.getPolicy(path, false);
             if (policy == null) {
-                sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\" use-inherited-policies=\"false\">");
+                String useInheritedPolicies = "false"; // For backwards compatibility (and security) reasons we set it to false
+                if (getResourceConfigProperty("use-inherited-policies-upon-creation") != null) {
+                    useInheritedPolicies = getResourceConfigProperty("use-inherited-policies-upon-creation");
+                }
+                sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\" use-inherited-policies=\"" + useInheritedPolicies + "\">");
                 log.warn("No policy yet for path: " + path + " (Return empty policy)");
             } else {
                 sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\" use-inherited-policies=\"" + policy.useInheritedPolicies() + "\">");
