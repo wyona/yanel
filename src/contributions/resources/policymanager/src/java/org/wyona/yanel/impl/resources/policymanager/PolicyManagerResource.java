@@ -347,7 +347,9 @@ public class PolicyManagerResource extends BasicXMLResource {
         String referer = getEnvironment().getRequest().getHeader("Referer");
         if(referer != null) {
             java.net.URL url = new java.net.URL(referer);
-            // TODO: Replace with proxy settings!
+            String filenameQSWithoutLeadingSlash = url.getFile().substring(url.getFile().lastIndexOf("/") + 1);
+            log.warn("DEBUG: Manipulated referer: '" + filenameQSWithoutLeadingSlash + "'");
+            // IMPORTANT: The below might cause problems with certain reverse proxys, whereas with httpd and mod_proxy it seems to be fine. If this should be a problem, then either strip off the webapp and realm prefix, or use the host-page-url as base and submit a relative path using the filenameQSWithoutLeadingSlash
             return replaceEntities(referer);
             //return backToRealm  + replaceEntities(url.getFile() + "?" + url.getQuery());
         } else {
