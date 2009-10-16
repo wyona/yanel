@@ -112,7 +112,7 @@ public class PolicyManagerResource extends BasicXMLResource {
                 } else if (postXML != null && postXML.equals("policy")) {
                     //response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     try {
-                        writePolicy(getEnvironment().getRequest().getInputStream(), getRealm().getPolicyManager(), getPath());
+                        writePolicy(getEnvironment().getRequest().getInputStream(), getRealm().getPolicyManager(), getPath(), getRealm().getIdentityManager());
                         sb.append("<?xml version=\"1.0\"?><saved/>");
                     } catch(Exception e) {
                         log.error(e,e);
@@ -334,8 +334,8 @@ public class PolicyManagerResource extends BasicXMLResource {
     /**
      * Write/Save policy
      */
-    private void writePolicy(InputStream policyAsInputStream, PolicyManager pm, String path) throws Exception {
-        Policy policy = new org.wyona.security.util.PolicyParser().parseXML(policyAsInputStream);
+    private void writePolicy(InputStream policyAsInputStream, PolicyManager pm, String path, IdentityManager im) throws Exception {
+        Policy policy = new org.wyona.security.util.PolicyParser().parseXML(policyAsInputStream, im);
         pm.setPolicy(path, policy);
     }
 
