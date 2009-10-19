@@ -186,17 +186,18 @@ public class PolicyViewer {
             for (int i = 0; i < up.length; i++) {
                 sb.append("<li>Usecase: " + up[i].getName());
                 sb.append("<ol>");
-                Identity[] ids = up[i].getIdentities();
-                for (int j = 0; j < ids.length; j++) {
-                    if (ids[j].isWorld()) {
-                        sb.append("<li>WORLD</li>");
+                IdentityPolicy[] idps = up[i].getIdentityPolicies();
+                for (int j = 0; j < idps.length; j++) {
+                    Identity identity = idps[j].getIdentity();
+                    if (identity.isWorld()) {
+                        sb.append("<li>WORLD: Permission:&#160;" + idps[j].getPermission() + "</li>");
                     } else {
-                        sb.append("<li>" + getUserLabel(abbreviation) + ": " + ids[j].getUsername() + "</li>");
+                        sb.append("<li>" + getUserLabel(abbreviation) + ":&#160;" + identity.getUsername() + ",&#160;Permission:&#160;" + idps[j].getPermission() + "</li>");
                     }
                 }
                 GroupPolicy[] gps = up[i].getGroupPolicies();
                 for (int j = 0; j < gps.length; j++) {
-                    sb.append("<li>" + getGroupLabel(abbreviation) + ": " + gps[j].getId() + "</li>");
+                    sb.append("<li>" + getGroupLabel(abbreviation) + ":&#160;" + gps[j].getId() + ",&#160;Permission:&#160;" + gps[j].getPermission() + "</li>");
                 }
                 sb.append("</ol>");
                 sb.append("</li>");
