@@ -49,9 +49,6 @@ import org.openid4java.discovery.Identifier;
 import org.openid4java.message.AuthRequest;
 import org.openid4java.message.ParameterList;
 
-/**
- *
- */
 public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
     private static Category log = Category.getInstance(DefaultWebAuthenticatorImpl.class);
@@ -65,9 +62,6 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     private ConsumerManager manager;
     private boolean allowOpenIdUserCreation;
 
-    /**
-     *
-     */
     public void init(org.w3c.dom.Document configuration, javax.xml.transform.URIResolver resolver) throws Exception {
         // TODO: commented because there is a problem with this line 
         //manager = new ConsumerManager();
@@ -171,15 +165,28 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             } else {
                 if (log.isDebugEnabled()) log.debug("No form based authentication request.");
             }
-
-
-
-
             // Check for Neutron-Auth based authentication
             String yanelUsecase = request.getParameter("yanel.usecase");
             if(yanelUsecase != null && yanelUsecase.equals("neutron-auth")) {
                 log.debug("Neutron Authentication ...");
 
+                return handleNeutronAuthAuthenticationRequest(request, response, map, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort);
+            }
+            if (log.isDebugEnabled()) log.debug("No Neutron based authentication request.");
+
+            return getUnauthenticatedResponse(request, response, map, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new ServletException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * @see org.wyona.yanel.core.api.security.WebAuthenticator#doAuthenticate(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.wyona.yanel.core.map.Map, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    private static HttpServletResponse handleNeutronAuthAuthenticationRequest(HttpServletRequest request, HttpServletResponse response, Map map, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort) throws Exception {
+        Realm realm = map.getRealm(request.getServletPath());
+        HttpSession session = request.getSession(true);
                 String username = null;
                 String password = null;
                 String originalRequest = null;
@@ -302,15 +309,9 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 PrintWriter writer = response.getWriter();
                 writer.print(sb);
                 return response;
-            }
-            if (log.isDebugEnabled()) log.debug("No Neutron based authentication request.");
+    }
 
-
-            log.warn("No credentials specified yet!");
-
-
-            // Check if this is a neutron request, a Sunbird/Calendar request or just a common GET request
-            // Also see e-mail about recognizing a WebDAV request: http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
+    private static boolean challengeUsingNeutronAuth(HttpServletRequest request, HttpServletResponse response, Realm realm, String sslPort) throws Exception {
             String neutronVersions = request.getHeader("Neutron");
             String clientSupportedAuthScheme = request.getHeader("WWW-Authenticate");
             
@@ -323,11 +324,11 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 StringBuilder sb = new StringBuilder("");
                 sb.append("<?xml version=\"1.0\"?>");
                 sb.append("<exception xmlns=\"http://www.wyona.org/neutron/1.0\" type=\"authorization\">");
-                sb.append("<message>Authorization denied: " + getRequestURLQS(request, null, true, map) + "</message>");
+                sb.append("<message>Authorization denied: " + getRequestPatchedURL(request, null, true, realm) + "</message>");
                 sb.append("<authentication>");
-                sb.append("<original-request url=\"" + getRequestURLQS(request, null, true, map) + "\"/>");
+                sb.append("<original-request url=\"" + getRequestPatchedURL(request, null, true, realm) + "\"/>");
                 //TODO: Also support https ...
-                sb.append("<login url=\"" + getRequestURLQS(request, "yanel.usecase=neutron-auth", true, map) + "\" method=\"POST\">");
+                sb.append("<login url=\"" + getRequestPatchedURL(request, "yanel.usecase=neutron-auth", true, realm) + "\" method=\"POST\">");
                 sb.append("<form>");
                 sb.append("<message>Enter username and password for \"" + realm.getName() + "\" at \"" + realm.getMountPoint() + "\"</message>");
                 sb.append("<param description=\"Username\" name=\"username\"/>");
@@ -335,7 +336,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 sb.append("</form>");
                 sb.append("</login>");
                 // NOTE: Needs to be a full URL, because user might switch the server ...
-                sb.append("<logout url=\"" + getRequestURLQS(request, "yanel.usecase=logout", true, map) + "\" realm=\"" + realm.getName() + "\"/>");
+                sb.append("<logout url=\"" + getRequestPatchedURL(request, "yanel.usecase=logout", true, realm) + "\" realm=\"" + realm.getName() + "\"/>");
                 sb.append("</authentication>");
                 sb.append("</exception>");
 
@@ -345,6 +346,17 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 response.setHeader("WWW-Authenticate", "NEUTRON-AUTH");
                 PrintWriter w = response.getWriter();
                 w.print(sb);
+            return true;
+        }
+        return false;
+    }
+            
+    private HttpServletResponse getUnauthenticatedResponse(HttpServletRequest request, HttpServletResponse response, Map map, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort) throws Exception {
+        Realm realm = map.getRealm(request.getServletPath());
+            log.warn("No credentials specified yet!");
+            // Check if this is a neutron request, a Sunbird/Calendar request or just a common GET request
+            // Also see e-mail about recognizing a WebDAV request: http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
+            if (challengeUsingNeutronAuth(request, response, realm, sslPort)) {
             } else if (request.getRequestURI().endsWith(".ics")) {
                 log.warn("Somebody seems to ask for a Calendar (ICS) ...");
                 response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
@@ -358,10 +370,6 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             if (log.isDebugEnabled()) log.debug("TODO: Was this authentication request really necessary!");
             return null;
 */
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new ServletException(e.getMessage(), e);
-        }
     }
 
     /**
@@ -455,23 +463,36 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     /**
      * Patch request with proxy settings re realm configuration
      */
-    private String getRequestURLQS(HttpServletRequest request, String addQS, boolean xml, Map map) {
+    private static String getRequestURLQS(HttpServletRequest request, String addQS, boolean xml, Map map) {
         try {
             Realm realm = map.getRealm(request.getServletPath());
     
             // TODO: Handle this exception more gracefully!
             if (realm == null) log.error("No realm found for path " +request.getServletPath());
+            return getRequestPatchedURL(request, addQS, xml, realm);
+        } catch (Exception e) {
+            log.error(e);
+            return null;
+        }
+    }
 
+    /**
+     * XXX REFACTORME: Once the proxy settings exist independently from the Realm API, we should
+     *  extract this method and use a "proxy settings object" as parameter instead of a Realm.
+     */
+    private static String getRequestPatchedURL(HttpServletRequest request, String addQS, boolean xml, Realm realm) {
             String proxyHostName = realm.getProxyHostName();
             int proxyPort = realm.getProxyPort();
             String proxyPrefix = realm.getProxyPrefix();
-    
+        boolean isProxySet = realm.isProxySet();
+
+        try {
             URL url = null;
         
             url = new URL(request.getRequestURL().toString());
 
             //if(proxyHostName != null || proxyPort >= null || proxyPrefix != null) {
-            if(realm.isProxySet()) {
+            if(isProxySet) {
                 if (proxyHostName != null) {
                     url = new URL(url.getProtocol(), proxyHostName, url.getPort(), url.getFile());
                 }
@@ -588,7 +609,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     /**
      * Handle "remember my login"
      */
-    private boolean doRememberMyLoginName(HttpServletRequest request, HttpServletResponse response, String loginUsername, String openID) {
+    private static boolean doRememberMyLoginName(HttpServletRequest request, HttpServletResponse response, String loginUsername, String openID) {
         boolean rememberMyLoginName = false;
         if (request.getParameter("remember-my-login-name") != null) {
             log.error("DEBUG:Remember my login name: " + loginUsername + "," + openID);
