@@ -294,7 +294,7 @@ class YanelHTMLUI {
      * Get information such as realm name, user name, etc.
      */
     private String getInfo(Resource resource, HttpServletRequest request) throws Exception {
-        // TODO: i18n
+        String language = resource.getRequestedLanguage();
         StringBuilder buf = new StringBuilder();
         buf.append("<span id=\"yaneltoolbar_info\">");
         //buf.append("Version: " + yanel.getVersion() + "-r" + yanel.getRevision() + "&#160;&#160;");
@@ -302,19 +302,52 @@ class YanelHTMLUI {
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
             VersionableV2 versionableRes = (VersionableV2)resource;
             if (versionableRes.isCheckedOut()) {
-                buf.append("Page: <b>" + "Locked by " + versionableRes.getCheckoutUserID() + "</b>&#160;&#160;");
+                buf.append(getLabel("page", language) + ": <b>" + "Locked by " + versionableRes.getCheckoutUserID() + "</b>&#160;&#160;");
             }
         }
 
-        buf.append("Realm: <b>" + resource.getRealm().getName() + "</b>&#160;&#160;");
+        buf.append(getLabel("realm", language) + ": <b>" + resource.getRealm().getName() + "</b>&#160;&#160;");
 
         Identity identity = YanelServlet.getIdentity(request, map);
         if (identity != null && !identity.isWorld()) {
-            buf.append("User: <b>" + identity.getUsername() + "</b>");
+            buf.append(getLabel("user", language) + ": <b>" + identity.getUsername() + "</b>");
         } else {
-            buf.append("User: <b>Not signed in!</b>");
+            buf.append(getLabel("user", language) + ": <b>Not signed in!</b>");
         }
         buf.append("</span>");
         return buf.toString();
+    }
+
+    /**
+     * Get i18n (TODO: Replace this by something more generic)
+     *
+     * @param key I18n key
+     * @param language Language
+     */
+    private static String getLabel(String key, String language) {
+        if (language.equals("de")) {
+            if(key.equals("user")) {
+                return "Benutzer";
+            } else if(key.equals("page")) {
+                return "Seite";
+            } else {
+                log.warn("Key '" + key + "' not supported yet by requested language '" + language + "'. Fallback to english!");
+                return getLabel(key, "en");
+            }
+        } else if (language.equals("en")) {
+            if(key.equals("user")) {
+                return "User";
+            } else if(key.equals("page")) {
+                return "Page";
+            } else if(key.equals("realm")) {
+                return "Realm";
+            } else {
+                log.warn("Key '" + key + "' not supported yet!");
+                return key;
+            }
+        } else {
+            log.warn("Language '" + language + "' not supported yet. Fallback to english!");
+            return getLabel(key, "en");
+        }
     }
 }
