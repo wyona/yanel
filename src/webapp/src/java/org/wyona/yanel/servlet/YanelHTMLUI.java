@@ -11,9 +11,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.wyona.security.core.api.Identity;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.map.Map;
+import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
+
+/**
+ * Generates the Yanel toolbar
+ */
 class YanelHTMLUI {
 
     private static final String TOOLBAR_KEY = "toolbar";
@@ -128,22 +134,13 @@ class YanelHTMLUI {
         final Map map = this.map;
 
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("<div id=\"yaneltoolbar_headerwrap\">");
         buf.append("<div id=\"yaneltoolbar_menu\">");
         buf.append(getToolbarMenus(resource, request));
         buf.append("</div>");
         
-        buf.append("<span id=\"yaneltoolbar_info\">");
-        //buf.append("Version: " + yanel.getVersion() + "-r" + yanel.getRevision() + "&#160;&#160;");
-        buf.append("Realm: <b>" + resource.getRealm().getName() + "</b>&#160;&#160;");
-        Identity identity = YanelServlet.getIdentity(request, map);
-        if (identity != null && !identity.isWorld()) {
-            buf.append("User: <b>" + identity.getUsername() + "</b>");
-        } else {
-            buf.append("User: <b>Not signed in!</b>");
-        }
-        buf.append("</span>");
+        buf.append(getInfo(resource, request));
         
         buf.append("<span id=\"yaneltoolbar_logo\">");
         buf.append("<img src=\"" + backToRealm + reservedPrefix + "/yanel_toolbar_logo.png\"/>");
@@ -293,4 +290,31 @@ class YanelHTMLUI {
         return false;
     }
 
+    /**
+     * Get information such as realm name, user name, etc.
+     */
+    private String getInfo(Resource resource, HttpServletRequest request) throws Exception {
+        // TODO: i18n
+        StringBuilder buf = new StringBuilder();
+        buf.append("<span id=\"yaneltoolbar_info\">");
+        //buf.append("Version: " + yanel.getVersion() + "-r" + yanel.getRevision() + "&#160;&#160;");
+
+        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
+            VersionableV2 versionableRes = (VersionableV2)resource;
+            if (versionableRes.isCheckedOut()) {
+                buf.append("Page: <b>" + "Locked by " + versionableRes.getCheckoutUserID() + "</b>&#160;&#160;");
+            }
+        }
+
+        buf.append("Realm: <b>" + resource.getRealm().getName() + "</b>&#160;&#160;");
+
+        Identity identity = YanelServlet.getIdentity(request, map);
+        if (identity != null && !identity.isWorld()) {
+            buf.append("User: <b>" + identity.getUsername() + "</b>");
+        } else {
+            buf.append("User: <b>Not signed in!</b>");
+        }
+        buf.append("</span>");
+        return buf.toString();
+    }
 }
