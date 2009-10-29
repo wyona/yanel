@@ -128,6 +128,8 @@ public class YanelServlet extends HttpServlet {
     public static final String YANEL_RESOURCE_WORKFLOW_TRANSITION_OUTPUT = YANEL_RESOURCE_WORKFLOW_TRANSITION + ".output";
     public static final String VIEW_ID_PARAM_NAME = "yanel.resource.viewid";
     public static final String RESOURCE_META_ID_PARAM_NAME = "yanel.resource.meta";
+
+    public static final String RELEASE_LOCK = "release-lock";
     
     private static final String CONTENT_TYPE_XHTML = "xhtml";
 
@@ -267,8 +269,8 @@ public class YanelServlet extends HttpServlet {
         
         String value = request.getParameter(YANEL_RESOURCE_USECASE);
         try {
-            if (value != null && value.equals("release-lock")) {
-                log.debug("Release lock ...");
+            if (value != null && value.equals(RELEASE_LOCK)) {
+                log.warn("Try to release lock ...");
                 
                 if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
                     VersionableV2 versionable  = (VersionableV2)resource;
@@ -277,6 +279,7 @@ public class YanelServlet extends HttpServlet {
                         if (checkoutUserID.equals(userID)) {
                             try {
                                 versionable.cancelCheckout();
+                                log.warn("DEBUG: Lock has been released.");
                             } catch (Exception e) {
                                 throw new ServletException("Releasing the lock of <" + resource.getPath() + "> failed because of: " + e.getMessage(), e);
                             }
