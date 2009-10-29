@@ -302,7 +302,7 @@ class YanelHTMLUI {
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
             VersionableV2 versionableRes = (VersionableV2)resource;
             if (versionableRes.isCheckedOut()) {
-                buf.append(getLabel("page", language) + ": <b>" + "Locked by " + versionableRes.getCheckoutUserID() + "</b>&#160;&#160;");
+                buf.append(getLabel("page", language) + ": <b>" + "<a href=\"?" + YanelServlet.YANEL_RESOURCE_USECASE + "=" + YanelServlet.RELEASE_LOCK + "\">Locked by " + versionableRes.getCheckoutUserID() + "</a></b>&#160;&#160;");
             }
         }
 
