@@ -116,6 +116,8 @@ public class YanelServlet extends HttpServlet {
     private int cacheExpires = 0;
 
     private YanelHTMLUI yanelUI;
+
+    private boolean logBrowserHistory = false;
     
     public static final String DEFAULT_ENCODING = "UTF-8";
 
@@ -157,6 +159,9 @@ public class YanelServlet extends HttpServlet {
             }
 
             yanelUI = new YanelHTMLUI(map, reservedPrefix);
+
+            // TODO: Make this value configurable (also per realm or per individual user!)
+            logBrowserHistory = false;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);
@@ -189,6 +194,9 @@ public class YanelServlet extends HttpServlet {
         } else {
             if (log.isDebugEnabled()) log.debug("Access granted: " + request.getServletPath());
         }
+
+        // TODO: Only HTML pages and PDFs etc. should be logged, but no images, CSS, etc.
+        if(logBrowserHistory) logBrowserHistoryOfUser(request);
 
         // Check for requests re policies
         String policyRequestPara = request.getParameter(YANEL_ACCESS_POLICY_USECASE);
@@ -2328,5 +2336,12 @@ public class YanelServlet extends HttpServlet {
         } else {
             viewElement.appendChild(doc.createTextNode("No View Descriptors!"));
         }
+    }
+
+    /**
+     * Log browser history of each user
+     */
+    private void logBrowserHistoryOfUser(HttpServletRequest request) {
+        log.warn("DEBUG: Referer: " + request.getHeader(HTTP_REFERRER));
     }
 }
