@@ -135,7 +135,7 @@
     <jar destfile="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}.jar"
       basedir="${resource.classes.dir}"
     />
-    <available property="resource.install.needed" file="src/build/pom.xml"/>
+    <available property="resource.install.needed" file="${resource.home.dir}/src/build/pom.xml"/>
     <antcall target="install-jar"/>
   </target>
 
@@ -152,12 +152,12 @@
 
   <!-- Place jar file for this resource into local maven repository -->
   <target name="install-jar" if="resource.install.needed">
-    <copy file="src/build/pom.xml" tofile="build/lib/pom.xml"/>
+    <copy file="${resource.home.dir}/src/build/pom.xml" tofile="${resource.lib.dir}/pom.xml"/>
 
-    <replace file="build/lib/pom.xml" value="${resource.version}">
+    <replace file="${resource.lib.dir}/pom.xml" value="${resource.version}">
       <replacetoken>@VERSION@</replacetoken>
     </replace>
-    <replace file="build/lib/pom.xml" value="${resource.name}">
+    <replace file="${resource.lib.dir}/pom.xml" value="${resource.name}">
       <replacetoken>@NAME@</replacetoken>
     </replace>
 
@@ -165,11 +165,35 @@
       basedir="${resource.java.dir}"
     />
 
-    <artifact:pom id="maven.project.core" file="build/lib/pom.xml"/>
-    <artifact:install file="build/lib/yanel-resource-${resource.name}-${resource.version}.jar">
+    <artifact:pom id="maven.project.core" file="${resource.lib.dir}/pom.xml"/>
+    <artifact:install file="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}.jar">
       <pom refid="maven.project.core"/>
-      <attach file="build/lib/yanel-resource-${resource.name}-${resource.version}-sources.jar" classifier="sources"/>
+      <attach file="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}-sources.jar" classifier="sources"/>
     </artifact:install>
+  </target>
+
+  <target
+   description="Place jar file for this resource (and its associated sources jar file) into remote maven repository"
+   name="maven:deploy-jar" depends="init">
+    <property name="repository.url" value="scp://maven2.wyona.org/home/wyona/data1/data1/src/realms/maven2/data"/>
+    <property name="wyona.maven.repository.url" value="${repository.url}"/>
+    <property name="repository.username" value="wyona"/>
+    <property name="wyona.maven.repository.username" value="${repository.username}"/>
+
+    <!-- <artifact:install-provider artifactId="wagon-ssh" version="1.0-beta-2"/> -->
+    <artifact:install-provider artifactId="wagon-ssh" version="1.0-alpha-7"/>
+
+    <echo>Deploying to ${wyona.maven.repository.url}...</echo>
+
+    <artifact:pom id="maven.project.core" file="${resource.lib.dir}/pom.xml"/>
+
+    <artifact:deploy file="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}.jar">
+      <remoteRepository url="${wyona.maven.repository.url}">
+        <authentication username="${wyona.maven.repository.username}" privateKey="${user.home}/.ssh/id_dsa"/>
+      </remoteRepository>
+      <pom refid="maven.project.core"/>
+      <attach file="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}-sources.jar" classifier="sources"/>
+    </artifact:deploy>
   </target>
 
   <!-- Deploy jar file for this resource into local webapp libs directory -->
