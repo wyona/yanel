@@ -97,6 +97,8 @@
     <mkdir dir="${resource.classes.dir}"/>
     <javac srcdir="${resource.java.dir}" destdir="${resource.classes.dir}"
       classpathref="classpath"
+      source="${source.java.version}"
+      target="${target.java.version}"
       encoding="${javac.encoding}"
       debug="true"
     />
