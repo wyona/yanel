@@ -894,7 +894,7 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Get environment
+     * Get environment containing identity , client request, etc.
      */
     private Environment getEnvironment(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         Identity identity;
@@ -1589,10 +1589,10 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Gets the identity from the session associated with the given request.
-     * @param request
+     * Gets the identity from the session associated with the given request or via the 'Authorization' HTTP header in the case of BASIC or DIGEST
+     * @param request Client/Servlet request
      * @param map
-     * @return identity or null if there is no identity in the session for the current realm or if there is no session at all
+     * @return Identity if one exist, or otherwise an empty identity
      */
     static Identity getIdentity(HttpServletRequest request, Map map) throws Exception {
         Realm realm = map.getRealm(request.getServletPath());
@@ -2206,6 +2206,9 @@ public class YanelServlet extends HttpServlet {
      */
     private void do404(HttpServletRequest request, HttpServletResponse response, Document doc, String exceptionMessage) throws ServletException {
         // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
+        // Also see logBrowserHistory
+        //org.wyona.yarep.core.Node node = realm.getRepository().getNode("/yanel-logs/404.txt");
+
         String message = "No such node/resource exception: " + exceptionMessage;
         log.warn(message);
 
@@ -2342,6 +2345,32 @@ public class YanelServlet extends HttpServlet {
      * Log browser history of each user
      */
     private void logBrowserHistoryOfUser(HttpServletRequest request) {
-        log.warn("DEBUG: Referer: " + request.getHeader(HTTP_REFERRER));
+        // TBD: What about a cluster, performance/scalability? (also see Tomcat conf/server.xml <Valve className="AccessLogValve" and className="FastCommonAccessLogValve")
+        // See apache-tomcat-5.5.20/logs/localhost_access_log.2009-11-07.txt
+        // 127.0.0.1 - - [07/Nov/2009:01:24:09 +0100] "GET /yanel/from-scratch-realm/de/index.html HTTP/1.1" 200 4464
+        try {
+            // TBD/TODO: What if user has logged out, but still has a persistent cookie?!
+            //String userID = getEnvironment(request, response).getIdentity().getUsername();
+            Identity identity = getIdentity(request, map);
+            if (identity != null && identity.getUsername() != null) {
+                log.warn("DEBUG: Log browser history of user '"+identity.getUsername()+"'.");
+                Realm realm = map.getRealm(request.getServletPath());
+                User user = realm.getIdentityManager().getUserManager().getUser(identity.getUsername());
+                // The log should be attached to the user, because realms can share a UserManager, but the UserManager API has no mean to save such data, so how should we do this?
+                // What if realm ID is changing?
+                String logPath = "yanel-logs/browser-history/" + user.getID() + ".txt";
+                if (!realm.getRepository().existsNode(logPath)) {
+                    org.wyona.yarep.util.YarepUtil.addNodes(realm.getRepository(), logPath, org.wyona.yarep.core.NodeType.RESOURCE);
+                }
+                org.wyona.yarep.core.Node node = realm.getRepository().getNode("/yanel-logs/browser-history/" + user.getID() + ".txt");
+                // Stream into node (append log entry, see for example log4j)
+                // 127.0.0.1 - - [07/Nov/2009:01:24:09 +0100] "GET /yanel/from-scratch-realm/de/index.html HTTP/1.1" 200 4464
+            } else {
+                log.warn("DEBUG: Log browser history of anonynmous user");
+            }
+            //log.warn("DEBUG: Referer: " + request.getHeader(HTTP_REFERRER));
+        } catch(Exception e) { // Catch all exceptions, because we do not want to throw exceptions because of logging browser history
+            log.error(e, e);
+        }
     }
 }
