@@ -2345,7 +2345,7 @@ public class YanelServlet extends HttpServlet {
      * Log browser history of each user
      */
     private void logBrowserHistoryOfUser(HttpServletRequest request) {
-        // TBD: What about a cluster, performance/scalability? (also see Tomcat conf/server.xml <Valve className="AccessLogValve" and className="FastCommonAccessLogValve")
+        // TBD: What about a cluster, performance/scalability? See for example http://www.oreillynet.com/cs/user/view/cs_msg/17399 (also see Tomcat conf/server.xml <Valve className="AccessLogValve" and className="FastCommonAccessLogValve")
         // See apache-tomcat-5.5.20/logs/localhost_access_log.2009-11-07.txt
         // 127.0.0.1 - - [07/Nov/2009:01:24:09 +0100] "GET /yanel/from-scratch-realm/de/index.html HTTP/1.1" 200 4464
         try {
