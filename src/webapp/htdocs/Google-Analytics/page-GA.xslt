@@ -3,12 +3,8 @@
  xmlns:xhtml="http://www.w3.org/1999/xhtml"
 >
 
-
 <xsl:import href="../commons/identity-transformation.xsl"/>
-
-
 <xsl:include href="GA.xslt"/>
-
 
 <xsl:template match="xhtml:body">
   <xsl:copy>
@@ -17,6 +13,5 @@
     <xsl:apply-templates select="node()"/>
   </xsl:copy>
 </xsl:template>
-
 
 </xsl:transform>
