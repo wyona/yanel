@@ -5,9 +5,24 @@
 
   <yanel:property name="mime-type" value="application/xhtml+xml"/>
 
-  <yanel:property name="xslt" value="/xslt/global.xsl"/>
-  <!-- TODO: Overwrite GA-key -->
-  <!--yanel:property name="xslt" value="yanelhtdocs:/Google-Analytics/GA.xslt"/-->
-
   <yanel:property name="workflow-schema" value="/workflow/workflow-with-review.xml"/>
+
+  <yanel:custom-config>
+    <views xmlns="http://www.wyona.org/yanel/rti/1.0">
+      <view id="default">
+
+        <xslt>/xslt/global.xsl</xslt>
+        <xslt>/xslt/apply-google-analytics.xsl</xslt>
+        <mime-type>text/html</mime-type>
+        <serializer key="HTML_TRANSITIONAL">
+<!--
+          <indent>no</indent>
+-->
+        </serializer>
+      </view>
+      <view id="xml">
+        <mime-type>application/xml</mime-type>
+      </view>
+    </views>
+  </yanel:custom-config>
 </yanel:resource-config>
