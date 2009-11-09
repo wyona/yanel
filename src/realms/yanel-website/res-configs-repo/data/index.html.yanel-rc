@@ -5,4 +5,5 @@
 
   <yanel:property name="mime-type" value="application/xhtml+xml"/>
   <yanel:property name="xslt" value="/xslt/homepage.xsl"/>
+  <yanel:property name="xslt" value="/xslt/apply-google-analytics.xsl"/>
 </yanel:resource-config>
