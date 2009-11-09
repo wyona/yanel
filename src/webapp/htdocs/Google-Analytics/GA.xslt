@@ -1,13 +1,24 @@
+<?xml version="1.0"?>
+
 <xsl:transform version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:yanel-xsl="http://www.wyona.org/yanel/xsl/1.0"
  xmlns:xhtml="http://www.w3.org/1999/xhtml"
 >
 
-<xsl:param name="GA-key" select="'UA-xxxxxx-x'"/>
+<xsl:import href="../commons/identity-transformation.xsl"/>
 
+<!-- NOTE: Overwrite the GA-key parameter, for example by including this XSLT within another XSLT -->
+<xsl:param name="GA-key" select="'UA-xxxxxx-x'"/>
 
 <xsl:variable name="non-asset-URL-suffix" select="'.html'"/>
 
+<xsl:template match="xhtml:body">
+  <xsl:copy>
+    <xsl:apply-templates select="@*"/>
+    <xsl:call-template name="yanel-xsl:insert-GA-code"/>
+    <xsl:apply-templates select="node()"/>
+  </xsl:copy>
+</xsl:template>
 
 <xsl:template name="yanel-xsl:is-asset-URL">
   <xsl:param name="URL"/>
