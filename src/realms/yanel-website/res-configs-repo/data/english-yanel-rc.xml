@@ -6,7 +6,8 @@
   <yanel:property name="mime-type" value="application/xhtml+xml"/>
 
   <yanel:property name="xslt" value="/xslt/global.xsl"/>
-  <!--yanel:property name="xslt" value="yanelhtdocs:/Google-Analytics/page-GA.xslt"/-->
+  <!-- TODO: Overwrite GA-key -->
+  <!--yanel:property name="xslt" value="yanelhtdocs:/Google-Analytics/GA.xslt"/-->
 
   <yanel:property name="workflow-schema" value="/workflow/workflow-with-review.xml"/>
 </yanel:resource-config>
