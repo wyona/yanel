@@ -2,7 +2,10 @@
         port="${webtest.config.port}"
         protocol="${webtest.config.protocol}"
         basepath="${webtest.config.basepath}">
-  <header name="Accept-Language" value="en"/>
+
+<!-- See http://webtest.canoo.com/webtest/manual/config.html -->
+
+  <header name="Accept-Language" value="en"/> <!-- Use 'english' as browser language -->
 
 <!--
   <option name="JavaScriptEnabled" value="false"/>
