@@ -2326,6 +2326,14 @@ public class YanelServlet extends HttpServlet {
                 org.wyona.yarep.core.Node node = realm.getRepository().getNode("/yanel-logs/browser-history/" + user.getID() + ".txt");
                 // Stream into node (append log entry, see for example log4j)
                 // 127.0.0.1 - - [07/Nov/2009:01:24:09 +0100] "GET /yanel/from-scratch-realm/de/index.html HTTP/1.1" 200 4464
+/*
+                Differentiate between hits, pageviews (only html or also PDF, etc.?) and visits (also see http://www.ibm.com/developerworks/web/library/wa-mwt1/)
+                In order to log page-views one can use:
+                 - single-pixel method (advantage: also works if javascript is disabled)
+                 - JavaScript (similar to Google analytics)
+                 - Analyze mime type (advantage: no additional code/requests necessary)
+                 - Log analysis (no special tracking required)
+*/
             } else {
                 log.warn("DEBUG: Log browser history of anonynmous user");
             }
