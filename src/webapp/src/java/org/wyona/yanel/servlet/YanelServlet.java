@@ -922,8 +922,7 @@ public class YanelServlet extends HttpServlet {
         log.debug("Save data ...");
 
         Resource resource = getResource(request, response);
-        /*
-         -> commented because the current default repo implementation does not support versioning yet.
+        /* NOTE: Commented because the current default repo implementation does not support versioning yet.
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
             try {
                 // check the resource state:
@@ -947,62 +946,24 @@ public class YanelServlet extends HttpServlet {
 
         InputStream in = request.getInputStream();
 
-            // TODO: Should be delegated to resource type, e.g. <{http://...}xml/>!
-            // Check on well-formedness ...
-            String contentType = request.getContentType();
-            log.debug("Content-Type: " + contentType);
-            if (contentType !=  null && (contentType.indexOf("application/xml") >= 0 || contentType.indexOf("application/xhtml+xml") >= 0)) {
-                log.info("Check well-formedness ...");
-                javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
-                try {
-                    javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
-
-                    // TODO: Get log messages into log4j ...
-                    //parser.setErrorHandler(...);
-
-                    java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
-                    byte[] buf = new byte[8192];
-                    int bytesR;
-                    while ((bytesR = in.read(buf)) != -1) {
-                        baos.write(buf, 0, bytesR);
-                    }
-
-                    // Buffer within memory (TODO: Maybe replace with File-buffering ...)
-                    // http://www-128.ibm.com/developerworks/java/library/j-io1/
-                    byte[] memBuffer = baos.toByteArray();
-                    
-                    // NOTE: DOCTYPE is being resolved/retrieved (e.g. xhtml schema from w3.org) also
-                    //       if isValidating is set to false.
-                    //       Hence, for performance and network reasons we use a local catalog ...
-                    //       Also see http://www.xml.com/pub/a/2004/03/03/catalogs.html
-                    //       resp. http://xml.apache.org/commons/components/resolver/
-                    // TODO: What about a resolver factory?
-                    parser.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
-
-                    parser.parse(new ByteArrayInputStream(memBuffer));
-                    in = new ByteArrayInputStream(memBuffer);
-                    //org.w3c.dom.Document document = parser.parse(new ByteArrayInputStream(memBuffer));
-                } catch (org.xml.sax.SAXException e) {
-                    String eMessage = "Data is not well-formed: " + e.getMessage();
-                    log.warn(eMessage, e);
-                    response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
-                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    PrintWriter w = response.getWriter();
-                    w.print(XMLExceptionV1.getDefaultException(XMLExceptionV1.DATA_NOT_WELL_FORMED, eMessage));
-                    return;
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                    response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
-                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    PrintWriter w = response.getWriter();
-                    w.print(XMLExceptionV1.getDefaultException(XMLExceptionV1.DATA_NOT_WELL_FORMED, e.getMessage()));
-                    return;
-                }
-
-                log.info("Data seems to be well-formed :-)");
-            } else {
-                log.info("No well-formedness check required for content type: " + contentType);
+        // TODO: Should be delegated to resource type, e.g. <{http://...}xml/>!
+        // Check on well-formedness ...
+        String contentType = request.getContentType();
+        log.debug("Content-Type: " + contentType);
+        if (contentType !=  null && (contentType.indexOf("application/xml") >= 0 || contentType.indexOf("application/xhtml+xml") >= 0)) {
+            try {
+                in = isWellFormed(in);
+            } catch(Exception e) {
+                log.error(e, e);
+                response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                PrintWriter w = response.getWriter();
+                w.print(XMLExceptionV1.getDefaultException(XMLExceptionV1.DATA_NOT_WELL_FORMED, e.getMessage()));
+                return;
             }
+        } else {
+            log.info("No well-formedness check required for content type: " + contentType);
+        }
 
         // IMPORTANT TODO: Use ModifiableV2.write(InputStream in) such that resource can modify data during saving resp. check if getOutputStream is equals null and then use write ....
         OutputStream out = null;
@@ -2371,6 +2332,50 @@ public class YanelServlet extends HttpServlet {
             //log.warn("DEBUG: Referer: " + request.getHeader(HTTP_REFERRER));
         } catch(Exception e) { // Catch all exceptions, because we do not want to throw exceptions because of logging browser history
             log.error(e, e);
+        }
+    }
+
+    /**
+     * Check well-formedness of XML
+     * @param in XML as InputStream
+     */
+    private InputStream isWellFormed(InputStream in) throws Exception {
+        log.info("Check well-formedness ...");
+        javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
+        try {
+            javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
+
+                    // TODO: Get log messages into log4j ...
+                    //parser.setErrorHandler(...);
+
+                    java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
+                    byte[] buf = new byte[8192];
+                    int bytesR;
+                    while ((bytesR = in.read(buf)) != -1) {
+                        baos.write(buf, 0, bytesR);
+                    }
+
+                    // Buffer within memory (TODO: Maybe replace with File-buffering ...)
+                    // http://www-128.ibm.com/developerworks/java/library/j-io1/
+                    byte[] memBuffer = baos.toByteArray();
+                    
+                    // NOTE: DOCTYPE is being resolved/retrieved (e.g. xhtml schema from w3.org) also
+                    //       if isValidating is set to false.
+                    //       Hence, for performance and network reasons we use a local catalog ...
+                    //       Also see http://www.xml.com/pub/a/2004/03/03/catalogs.html
+                    //       resp. http://xml.apache.org/commons/components/resolver/
+                    // TODO: What about a resolver factory?
+                    parser.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
+
+            parser.parse(new ByteArrayInputStream(memBuffer));
+            in = new ByteArrayInputStream(memBuffer);
+            //org.w3c.dom.Document document = parser.parse(new ByteArrayInputStream(memBuffer));
+            log.info("Data seems to be well-formed :-)");
+            return in;
+        } catch (org.xml.sax.SAXException e) {
+            throw new Exception("The received data is not well-formed: " + e.getMessage());
+        } catch (Exception e) {
+            throw new Exception("The received data is either not well-formed or some other exception occured: " + e.getMessage());
         }
     }
 }
