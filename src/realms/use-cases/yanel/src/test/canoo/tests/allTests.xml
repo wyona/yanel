@@ -6,13 +6,11 @@
 
     <ant antfile="exists-homepage.xml"/>
     <ant antfile="usecase-test-login.xml"/>
+    <ant antfile="usecase-test-404.xml"/>
 <!--
     <ant antfile="usecase-test-create-realm-from-scratch.xml"/>
 -->
     <ant antfile="usecase-test-resource-documentation.xml"/>
-<!-- see comment/note within this test
-    <ant antfile="usecase-test-404.xml"/>
--->
     <ant antfile="usecase-test-create-resource.xml"/>
     <ant antfile="usecase-test-lenya-user.xml"/>
     <ant antfile="usecase-test-alice-user.xml"/>
