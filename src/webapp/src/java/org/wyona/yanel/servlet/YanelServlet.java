@@ -1626,18 +1626,6 @@ public class YanelServlet extends HttpServlet {
      */
     static public Document getDocument(String namespace, String localname) throws Exception {
         return org.wyona.commons.xml.XMLHelper.createDocument(namespace, localname);
-/*
-        javax.xml.parsers.DocumentBuilderFactory dbf= javax.xml.parsers.DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        javax.xml.parsers.DocumentBuilder parser = dbf.newDocumentBuilder();
-        org.w3c.dom.DOMImplementation impl = parser.getDOMImplementation();
-        org.w3c.dom.DocumentType doctype = null;
-        Document doc = impl.createDocument(namespace, localname, doctype);
-        if (namespace != null) {
-            doc.getDocumentElement().setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns", namespace);
-        }
-        return doc;
-*/
     }
 
     private Realm getRealm(HttpServletRequest request) throws Exception {
