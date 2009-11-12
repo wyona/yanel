@@ -26,22 +26,36 @@
     <xsl:when test="starts-with($URL, 'http://') or starts-with($URL, 'https://')">
       <!-- do not track assets on full-qualified (presumably other than the current) domains -->
       <!--TODO(?) check the realm URL in case someone wants to use the full URL? -->
+      <xsl:text>no</xsl:text>
     </xsl:when>
+
+    <!-- NOTE: At the moment the suffix is only compared with .html (see $non-asset-URL-suffix) -->
+    <!-- At the moment the following cases are not checked: .htm, foo-bar/, foo-bar -->
     <!--FIXME HACK: find a better method to differentiate document assets from pages: -->
-    <xsl:when test="substring($URL, string-length($URL) - string-length($non-asset-URL-suffix)) != $non-asset-URL-suffix"><!--ends-with($URL, $non-asset-URL-suffix)...-->
+    <xsl:when test="substring($URL, 1 + string-length($URL) - string-length($non-asset-URL-suffix)) != $non-asset-URL-suffix"><!-- Equals to expression: not(ends-with($URL, $non-asset-URL-suffix)) -->
       <xsl:text>yes</xsl:text>
     </xsl:when>
+
+    <xsl:otherwise>
+      <xsl:text>no</xsl:text>
+    </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
 
 
 <xsl:template match="xhtml:a">
   <xsl:param name="URL" select="@href"/>
+
+<!-- DEBUG: Output URL suffix
+  <xsl:attribute name="suffix"><xsl:value-of select="substring($URL, string-length($URL) - string-length($non-asset-URL-suffix) + 1)"/></xsl:attribute>
+-->
+
   <xsl:variable name="is-asset">
     <xsl:call-template name="yanel-xsl:is-asset-URL">
       <xsl:with-param name="URL" select="$URL"/>
     </xsl:call-template>
   </xsl:variable>
+
   <xsl:choose>
     <xsl:when test="$is-asset = 'yes'">
       <xsl:call-template name="yanel-xsl:put-GA-asset-onclick-handler">
@@ -82,8 +96,9 @@ function Yanel_requestURIFromFQURL(HTMLAelement) {
 
 <xsl:template name="yanel-xsl:put-GA-asset-onclick-handler">
   <xsl:param name="URL"/>
+
   <xsl:copy>
-    <xsl:apply-templates select="@*[name()!='onclick']"/>
+    <xsl:apply-templates select="@*[name() != 'onclick']"/>
     <xsl:attribute name="onclick">
       <xsl:text>pageTracker._trackPageview(<!----></xsl:text>
       <xsl:call-template name="yanel-xsl:GA-asset-filename-JSexpr-from-URL">
