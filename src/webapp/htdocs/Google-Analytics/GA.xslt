@@ -29,6 +29,11 @@
       <xsl:text>no</xsl:text>
     </xsl:when>
 
+    <!-- Equals to expression: ends-with($URL, '/') -->
+    <xsl:when test="substring($URL, string-length($URL)) = '/'">
+      <xsl:text>no</xsl:text>
+    </xsl:when>
+
     <!-- NOTE: At the moment the suffix is only compared with .html (see $non-asset-URL-suffix) -->
     <!-- At the moment the following cases are not checked: .htm, foo-bar/, foo-bar -->
     <!--FIXME HACK: find a better method to differentiate document assets from pages: -->
