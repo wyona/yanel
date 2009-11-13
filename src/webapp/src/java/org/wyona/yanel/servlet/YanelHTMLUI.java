@@ -143,7 +143,7 @@ class YanelHTMLUI {
         buf.append(getInfo(resource, request));
         
         buf.append("<span id=\"yaneltoolbar_logo\">");
-        buf.append("<img src=\"" + backToRealm + reservedPrefix + "/yanel_toolbar_logo.png\"/>");
+        buf.append("<a href=\"http://www.yanel.org\"><img src=\"" + backToRealm + reservedPrefix + "/yanel_toolbar_logo.png\" border=\"0\"/></a>");
         buf.append("</span>");
 
         buf.append("</div>");
