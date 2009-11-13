@@ -28,7 +28,7 @@ abstract public class Menu {
      * Aggregate all menus (used by YanelServlet). Overwrite this method if Yanel or Help menu not needed.
      */
     public String getAllMenus(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
-        return getYanelMenu(resource, request, map, reservedPrefix) + getMenus(resource, request, map, reservedPrefix) + getHelpMenu(resource, request, map, reservedPrefix);
+        return getYanelMenu(resource, request, map, reservedPrefix) + getMenus(resource, request, map, reservedPrefix) + getAdminMenu(resource, request, map, reservedPrefix) + getHelpMenu(resource, request, map, reservedPrefix);
     }
 
     /**
@@ -37,9 +37,34 @@ abstract public class Menu {
     public String getYanelMenu(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
 
-        StringBuffer sb= new StringBuffer();
+        StringBuilder sb= new StringBuilder();
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">Yanel</div><ul>");
+
+        sb.append("<li><a href=\"?yanel.toolbar=off\">Turn off toolbar</a></li>");
+        Identity identity = getIdentity(request, map);
+        if (identity != null) {
+            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/users/" + identity.getUsername() + ".html\">My profile</a></li>");
+            // TODO: Also consider additional query strings!
+            sb.append("<li><a href=\"?yanel.usecase=logout\"><img class=\"yaneltoolbar_menuicon\" src=\"" + backToRealm + reservedPrefix + "/yanel-img/icons/system-log-out.png\" border=\"0\"/>Logout</a></li>");
+        }
+        sb.append("</ul>");
+
+        sb.append("</li></ul>");
+
+        return sb.toString();
+    }
+
+    /**
+     * Get admin menu
+     */
+    public String getAdminMenu(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
+        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
+
+        StringBuilder sb= new StringBuilder();
+        sb.append("<ul><li>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">Admin</div><ul>");
+
         // View page info moved to getFileMenu() of default implementation
         //sb.append("<li><a href=\"?yanel.resource.meta\">View page info</a></li>");
         sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/data-repository-sitetree.html\">Browse Data Repository Sitetree</a></li>");
@@ -62,15 +87,9 @@ abstract public class Menu {
         } else {
             sb.append("<li>Group Management</li>");
         }
-
-        sb.append("<li><a href=\"?yanel.toolbar=off\">Turn off toolbar</a></li>");
-        Identity identity = getIdentity(request, map);
-        if (identity != null) {
-            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/users/" + identity.getUsername() + ".html\">My profile</a></li>");
-            // TODO: Also consider additional query strings!
-            sb.append("<li><a href=\"?yanel.usecase=logout\"><img class=\"yaneltoolbar_menuicon\" src=\"" + backToRealm + reservedPrefix + "/yanel-img/icons/system-log-out.png\" border=\"0\"/>Logout</a></li>");
-        }
+        sb.append("<li>About Realm</li>");
         sb.append("</ul>");
+
         sb.append("</li></ul>");
 
         return sb.toString();
