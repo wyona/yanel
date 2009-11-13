@@ -33,6 +33,8 @@ import org.apache.log4j.Logger;
  */
 public class PolicyManagerResource extends BasicXMLResource {
     
+    private static final String REFRESH_USERS_RC_PROPERTY_NAME = "always-get-fresh-users";
+
     private static Logger log = Logger.getLogger(PolicyManagerResource.class);
     
     private static String PARAMETER_EDIT_PATH = "policy-path";
@@ -116,7 +118,7 @@ public class PolicyManagerResource extends BasicXMLResource {
                         sb.append("<?xml version=\"1.0\"?><saved/>");
                     } catch(Exception e) {
                         log.error(e,e);
-                        getEnvironment().getResponse().setStatus(response.SC_NOT_IMPLEMENTED);
+                        getEnvironment().getResponse().setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
                         sb.append("<?xml version=\"1.0\"?><not-saved>" + e.getMessage() + "</not-saved>");
                     }
                 } else {
@@ -144,7 +146,7 @@ public class PolicyManagerResource extends BasicXMLResource {
                 }
             } else {
                 //response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
-                getEnvironment().getResponse().setStatus(response.SC_NOT_IMPLEMENTED);
+                getEnvironment().getResponse().setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
                 sb.append("<html><body>Policy usecase not implemented yet: " + policyUsecase + "</body></html>");
                 log.error("Policy usecase not implemented yet: " + policyUsecase);
             }
@@ -166,7 +168,14 @@ public class PolicyManagerResource extends BasicXMLResource {
         sb.append("<access-control xmlns=\"http://www.wyona.org/security/1.0\">");
 
         try {
-            User[] users = um.getUsers(true);
+            boolean refreshUsers = true; // correctness trumps speed!
+            String refreshUsersText = getResourceConfigProperty(REFRESH_USERS_RC_PROPERTY_NAME);
+            if (refreshUsersText != null && "false".equals(refreshUsersText)) {
+                refreshUsers = false;
+                log.warn("Users will not be loaded afresh!");
+            }
+
+            User[] users = refreshUsers ? um.getUsers(true) : um.getUsers();
             Arrays.sort(users, new ItemIDComparator());
             sb.append("<users>");
             for (int i = 0; i < users.length; i++) {
