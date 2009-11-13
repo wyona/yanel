@@ -41,6 +41,7 @@ abstract public class Menu {
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">Yanel</div><ul>");
 
+        sb.append("<li><a href=\"" + backToRealm + reservedPrefix+ "/about.html\">About Yanel</a></li>");
         sb.append("<li><a href=\"?yanel.toolbar=off\">Turn off toolbar</a></li>");
         Identity identity = getIdentity(request, map);
         if (identity != null) {
@@ -102,11 +103,11 @@ abstract public class Menu {
     public String getHelpMenu(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
 
-        StringBuffer sb= new StringBuffer();
+        StringBuilder sb= new StringBuilder();
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">Help</div>");
         sb.append("<ul>");
-        sb.append("<li><a href=\"" + backToRealm + reservedPrefix+ "/about.html\">About Yanel</a></li>");
+        sb.append("<li><a href=\"http://www.yanel.org/en/documentation/index.html\">Yanel Documentation</a></li>");
         sb.append("</ul>");
         sb.append("</li></ul>");
         return sb.toString();
