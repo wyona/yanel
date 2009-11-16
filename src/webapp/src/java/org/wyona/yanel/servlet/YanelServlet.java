@@ -1614,6 +1614,7 @@ public class YanelServlet extends HttpServlet {
         globalRCmap.put(admin + "list-users.html", "user-mgmt/list-users_yanel-rc.xml");
         globalRCmap.put(admin + "delete-group.html", "user-mgmt/delete-group_yanel-rc.xml");
         globalRCmap.put(admin + "create-group.html", "user-mgmt/create-group_yanel-rc.xml");
+        globalRCmap.put(admin + "view-group.html", "user-mgmt/view-group_yanel-rc.xml");
         globalRCmap.put(admin + "delete-user.html", "user-mgmt/delete-user_yanel-rc.xml");
         globalRCmap.put(admin + "update-user.html", "user-mgmt/update-user_yanel-rc.xml");
         globalRCmap.put(admin + "create-user.html", "user-mgmt/create-user_yanel-rc.xml");
