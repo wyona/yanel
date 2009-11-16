@@ -7,13 +7,14 @@
         <tr>
           <th>ID</th>
           <th>Name</th>
-          <th>Action</th>
+          <th colspan="2">Actions</th>
         </tr>
         <j:forEach var="group" items="${resource.getGroups()}">
           <tr>
             <td>${group.getID()}</td>
             <td>${group.getName()}</td>
             <td><a href="delete-group.html?groupID=${group.getID()}">Delete</a></td>
+            <td><a href="view-group.html?groupID=${group.getID()}">View</a></td>
           </tr>
         </j:forEach>
       </table>
