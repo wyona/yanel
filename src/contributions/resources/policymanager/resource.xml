@@ -11,5 +11,6 @@ Policy manager resource in order to view existing access policies
 
 <rtd>
   <property name="show-abbreviated-labels" default-value="false"/>
+  <property name="always-get-fresh-users" default-value="true"/> <!-- WARN: Performance/Scalability problem -->
 </rtd>
 </resource>
