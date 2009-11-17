@@ -14,10 +14,14 @@ import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
+
 /**
  *
  */
 abstract public class Menu {
+
+    private static Logger log = Logger.getLogger(Menu.class);
 
     /**
      * Get custom menus. Implement this method in order to introduce custom menus.
@@ -36,18 +40,19 @@ abstract public class Menu {
      */
     public String getYanelMenu(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
+        String language = resource.getRequestedLanguage();
 
         StringBuilder sb= new StringBuilder();
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">Yanel</div><ul>");
 
-        sb.append("<li><a href=\"" + backToRealm + reservedPrefix+ "/about.html\">About Yanel</a></li>");
-        sb.append("<li><a href=\"?yanel.toolbar=off\">Turn off toolbar</a></li>");
+        sb.append("<li><a href=\"" + backToRealm + reservedPrefix+ "/about.html\">" + getLabel("y:about-yanel", language) + "</a></li>");
+        sb.append("<li><a href=\"?yanel.toolbar=off\">" + getLabel("y:turn-off-toolbar", language) + "</a></li>");
         Identity identity = getIdentity(request, map);
         if (identity != null) {
-            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/users/" + identity.getUsername() + ".html\">My profile</a></li>");
+            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/users/" + identity.getUsername() + ".html\">" + getLabel("y:my-profile", language) + "</a></li>");
             // TODO: Also consider additional query strings!
-            sb.append("<li><a href=\"?yanel.usecase=logout\"><img class=\"yaneltoolbar_menuicon\" src=\"" + backToRealm + reservedPrefix + "/yanel-img/icons/system-log-out.png\" border=\"0\"/>Logout</a></li>");
+            sb.append("<li><a href=\"?yanel.usecase=logout\"><img class=\"yaneltoolbar_menuicon\" src=\"" + backToRealm + reservedPrefix + "/yanel-img/icons/system-log-out.png\" border=\"0\"/>" + getLabel("y:logout", language) + "</a></li>");
         }
         sb.append("</ul>");
 
@@ -61,6 +66,7 @@ abstract public class Menu {
      */
     public String getAdminMenu(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
+        String language = resource.getRequestedLanguage();
 
         StringBuilder sb= new StringBuilder();
         sb.append("<ul><li>");
@@ -78,9 +84,9 @@ abstract public class Menu {
         sb.append("</li>");
 
         if (isAuthorized("/" + reservedPrefix + "/admin/list-users.html", resource)) {
-            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-users.html\">User Management</a></li>");
+            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-users.html\">" + getLabel("y:user-management", language) + "</a></li>");
         } else {
-            sb.append("<li>User Management</li>");
+            sb.append("<li>" + getLabel("y:user-management", language) + "</li>");
         }
 
         if (isAuthorized("/" + reservedPrefix + "/admin/list-groups.html", resource)) {
@@ -102,10 +108,11 @@ abstract public class Menu {
      */
     public String getHelpMenu(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
+        String language = resource.getRequestedLanguage();
 
         StringBuilder sb= new StringBuilder();
         sb.append("<ul><li>");
-        sb.append("<div id=\"yaneltoolbar_menutitle\">Help</div>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:help", language) + "</div>");
         sb.append("<ul>");
         sb.append("<li><a href=\"http://www.yanel.org/en/documentation/index.html\">Yanel Documentation</a></li>");
         sb.append("</ul>");
@@ -138,5 +145,67 @@ abstract public class Menu {
     private boolean isAuthorized(String path, Resource resource) throws Exception {
         org.wyona.security.core.api.PolicyManager pm = resource.getRealm().getPolicyManager();
         return pm.authorize(path, resource.getEnvironment().getIdentity(), new org.wyona.security.core.api.Usecase("view"));
+    }
+
+    /**
+     * Get i18n (TODO: Replace this by something more generic)
+     *
+     * @param key I18n key
+     * @param language Language
+     */
+    private static String getLabel(String key, String language) {
+        if (language.equals("de")) {
+            if(key.equals("y:help")) {
+                return "Hilfe";
+            } else if(key.equals("y:about-yanel")) {
+                return "Ueber Yanel";
+            } else if(key.equals("y:turn-off-toolbar")) {
+                return "Toolbar deaktivieren";
+            } else if(key.equals("y:logout")) {
+                return "Abmelden";
+            } else if(key.equals("y:my-profile")) {
+                return "Mein Profil";
+            } else if(key.equals("y:user-management")) {
+                return "Benutzer Verwaltung";
+            } else {
+                log.warn("Key '" + key + "' not supported yet by requested language '" + language + "'. Fallback to english!");
+                return getLabel(key, "en");
+            }
+        } else if (language.equals("fr")) {
+            if(key.equals("y:help")) {
+                return "Aide";
+            } else if(key.equals("y:about-yanel")) {
+                return "A propos de Yanel";
+            } else if(key.equals("y:my-profile")) {
+                return "Mon profil";
+            } else if(key.equals("y:turn-off-toolbar")) {
+                return "Désactiver la barre d'outils";
+            } else if(key.equals("y:logout")) {
+                return "Déconnexion";
+            } else {
+                log.warn("Key '" + key + "' not supported yet by requested language '" + language + "'. Fallback to english!");
+                return getLabel(key, "en");
+            }
+        } else if (language.equals("en")) {
+            if(key.equals("y:help")) {
+                return "Help";
+            } else if(key.equals("y:about-yanel")) {
+                return "About Yanel";
+            } else if(key.equals("y:my-profile")) {
+                return "My profile";
+            } else if(key.equals("y:turn-off-toolbar")) {
+                return "Turn off toolbar";
+            } else if(key.equals("y:logout")) {
+                return "Logout";
+            } else if(key.equals("y:user-management")) {
+                return "User Management";
+            } else {
+                log.warn("Key '" + key + "' not supported yet!");
+                return key;
+            }
+        } else {
+            log.warn("Language '" + language + "' not supported yet. Fallback to english!");
+            return getLabel(key, "en");
+        }
     }
 }
