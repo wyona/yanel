@@ -50,7 +50,7 @@ public class CreateUserResource extends ExecutableUsecaseResource {
                 log.debug("creating user: " + id + " " + name + " " + email);
             }
             userManager.createUser(id, name, email, password);
-            addInfoMessage("User " + id + " (" + name + ") created successfully.");
+            addInfoMessage("User '" + id + "' (" + name + ") created successfully. (IMPORTANT: Please make sure to add user either to an existing group or to an access policy, because otherwise user will not have any explicite rights.)");
         } catch (AccessManagementException e) {
             throw new UsecaseException(e.getMessage(), e);
         }
