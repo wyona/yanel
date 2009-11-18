@@ -17,12 +17,17 @@
 package org.wyona.yanel.impl.resources;
 
 import org.apache.log4j.Logger;
+
 import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.api.UserManager;
 import org.wyona.yanel.impl.resources.usecase.ExecutableUsecaseResource;
 import org.wyona.yanel.impl.resources.usecase.UsecaseException;
 
+import java.util.regex.Pattern;
 
+/**
+ * Create new user
+ */
 public class CreateUserResource extends ExecutableUsecaseResource {
 
     private static final Logger log = Logger.getLogger(CreateUserResource.class);
@@ -59,9 +64,15 @@ public class CreateUserResource extends ExecutableUsecaseResource {
         String password1 = getParameterAsString(PARAM_PASSWORD1);
         String password2 = getParameterAsString(PARAM_PASSWORD2);
         
-        if (id == null || id.length()==0) {
+        if (id == null || id.length() == 0) {
             this.addError("Please enter a user ID.");
             return false;
+        } else {
+            Pattern pattern = Pattern.compile("[a-z0-9[-][_]]*");
+            if (!pattern.matcher(id).matches()) {
+                this.addError("Please enter a user ID containing only characters: 'a-z' or '0-9' or '-' or '_'!");
+                return false;
+            }
         }
         UserManager userManager = getRealm().getIdentityManager().getUserManager();
         try {
@@ -72,23 +83,30 @@ public class CreateUserResource extends ExecutableUsecaseResource {
         } catch (AccessManagementException e) {
             throw new UsecaseException(e.getMessage(), e);
         }
-        if (name == null || name.length()==0) {
+
+        if (name == null || name.length() == 0) {
             this.addError("Please enter a user name.");
             return false;
         }
-        if (email == null || email.length()==0) {
+
+        if (email == null || email.length() == 0) {
             this.addError("Please enter an email address.");
             return false;
+        } else if(email.indexOf("@") <= 0) { // TODO: Implement some more strict validation
+            this.addError("Please enter a valid email address!");
+            return false;
         }
-        if (password1 == null || password1.length() < 6) {
+
+        if (password1 == null || password1.length() < 6) { // TODO: Implement some more strict validation
             this.addError("Please enter a password with at least 6 characters.");
             return false;
         }
+
         if (!password1.equals(password2)) {
             this.addError("Passwords don't match.");
             return false;
         }
+
         return true;
     }
-
 }
