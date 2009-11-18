@@ -9,6 +9,7 @@
       <a href="list-users.html">Show list of users</a>
       <br/>
       <a href="list-groups.html">Show list of groups</a>
+      <br/>
     </body>
   </html>
 </j:jelly>
