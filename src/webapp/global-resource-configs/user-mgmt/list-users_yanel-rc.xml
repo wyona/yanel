@@ -7,7 +7,7 @@
   
   <yanel:custom-config>
     <views>
-      <view id="default" type="jelly">
+      <view id="default" type="jelly-XML">
         <template>rthtdocs:/list-users.jelly</template>
       </view>
     </views>
