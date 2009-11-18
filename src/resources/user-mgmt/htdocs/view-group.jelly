@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+      <h1>View Group: ${resource.getParameterAsString('groupID')}</h1>
+      <p>${resource.getErrorMessages()}</p>
+      <table>
+        <tr>
+          <td>ID:</td><td>&#160;</td><td>${resource.getParameterAsString('groupID')}</td>
+        </tr>
+        <tr>
+          <td>Name:</td><td></td><td>${resource.getGroup().getName()}</td>
+        </tr>
+        <tr>
+          <td>Members:</td>
+          <td></td>
+          <td>
+            <ul>
+              <li>TODO</li>
+            </ul>
+          </td>
+        </tr>
+      </table>
+    </body>
+  </html>
+</j:jelly>
