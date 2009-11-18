@@ -68,7 +68,7 @@ public class CreateUserResource extends ExecutableUsecaseResource {
             this.addError("Please enter a user ID.");
             return false;
         } else {
-            Pattern pattern = Pattern.compile("[a-z0-9[-][_]]*");
+            Pattern pattern = Pattern.compile("[a-z0-9[-][_][@]]*");
             if (!pattern.matcher(id).matches()) {
                 this.addError("Please enter a user ID containing only characters: 'a-z' or '0-9' or '-' or '_'!");
                 return false;
