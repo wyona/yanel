@@ -2,7 +2,7 @@
 <j:jelly xmlns:j="jelly:core">
   <html xmlns="http://www.w3.org/1999/xhtml">
     <body>
-      <h1>Update User: ${resource.getParameterAsString('userID')}</h1>
+      <h1>Update/Edit User: ${resource.getParameterAsString('userID')}</h1>
       <p>${resource.getErrorMessages()}</p>
       <form action="" >
         <input type="hidden" name="userID" value="${resource.getParameterAsString('userID')}"/>
