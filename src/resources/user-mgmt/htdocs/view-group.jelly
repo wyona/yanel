@@ -12,12 +12,21 @@
           <td>Name:</td><td></td><td>${resource.getGroup().getName()}</td>
         </tr>
         <tr>
-          <td>Members:</td>
+          <td valign="top">Members:</td>
           <td></td>
-          <td>
-            <ul>
-              <li>TODO</li>
-            </ul>
+          <td valign="top">
+            <j:choose>
+              <j:when test="${resource.getGroup().getMembers().size() > 0}">
+            <ol>
+              <j:forEach var="member" items="${resource.getGroup().getMembers()}">
+                <li>${member.getID()} (${member.getName()})</li>
+              </j:forEach>
+            </ol>
+              </j:when>
+              <j:otherwise>
+                No members yet!
+              </j:otherwise>
+            </j:choose>
           </td>
         </tr>
       </table>
