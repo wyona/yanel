@@ -13,7 +13,7 @@
         <br/>
         New Password: <input type="password" name="password1"/>
         <br/>
-        New Password: <input type="password" name="password2"/>
+        Confirm new Password: <input type="password" name="password2"/>
         <br/>
         
         Group Affiliation:
