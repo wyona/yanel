@@ -290,6 +290,14 @@ public class YanelServlet extends HttpServlet {
                             try {
                                 versionable.cancelCheckout();
                                 log.debug("Lock has been released.");
+
+                                response.setStatus(HttpServletResponse.SC_OK);
+                                response.setContentType("text/html" + "; charset=" + "UTF-8");
+                                String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
+                                StringBuilder sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Lock has been released! back to <a href=\""+backToRealm + resource.getPath() +"\">page</a>.</body></html>");
+                                PrintWriter w = response.getWriter();
+                                w.print(sb);
+                                return;
                             } catch (Exception e) {
                                 throw new ServletException("Releasing the lock of <" + resource.getPath() + "> failed because of: " + e.getMessage(), e);
                             }
