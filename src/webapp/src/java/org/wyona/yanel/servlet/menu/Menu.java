@@ -90,11 +90,11 @@ abstract public class Menu {
         }
 
         if (isAuthorized("/" + reservedPrefix + "/admin/list-groups.html", resource)) {
-            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-groups.html\">Group Management</a></li>");
+            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-groups.html\">"+ getLabel("y:group-management", language) + "</a></li>");
         } else {
-            sb.append("<li>Group Management</li>");
+            sb.append("<li>"+ getLabel("y:group-management", language) + "</li>");
         }
-        sb.append("<li>About Realm</li>");
+        sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/about-realm.html\">" + getLabel("y:about-realm", language) + "</a></li>");
         sb.append("</ul>");
 
         sb.append("</li></ul>");
@@ -159,6 +159,8 @@ abstract public class Menu {
                 return "Hilfe";
             } else if(key.equals("y:about-yanel")) {
                 return "Ueber Yanel";
+            } else if(key.equals("y:about-realm")) {
+                return "Ueber diesen Realm (bzw. Website)";
             } else if(key.equals("y:turn-off-toolbar")) {
                 return "Toolbar deaktivieren";
             } else if(key.equals("y:logout")) {
@@ -167,6 +169,8 @@ abstract public class Menu {
                 return "Mein Profil";
             } else if(key.equals("y:user-management")) {
                 return "Benutzer Verwaltung";
+            } else if(key.equals("y:group-management")) {
+                return "Gruppen Verwaltung";
             } else {
                 log.warn("Key '" + key + "' not supported yet by requested language '" + language + "'. Fallback to english!");
                 return getLabel(key, "en");
@@ -191,6 +195,8 @@ abstract public class Menu {
                 return "Help";
             } else if(key.equals("y:about-yanel")) {
                 return "About Yanel";
+            } else if(key.equals("y:about-realm")) {
+                return "About Realm";
             } else if(key.equals("y:my-profile")) {
                 return "My profile";
             } else if(key.equals("y:turn-off-toolbar")) {
@@ -199,6 +205,8 @@ abstract public class Menu {
                 return "Logout";
             } else if(key.equals("y:user-management")) {
                 return "User Management";
+            } else if(key.equals("y:group-management")) {
+                return "Group Management";
             } else {
                 log.warn("Key '" + key + "' not supported yet!");
                 return key;
