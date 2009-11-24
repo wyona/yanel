@@ -1651,7 +1651,8 @@ public class YanelServlet extends HttpServlet {
         java.util.Map<String, String> properties = new HashMap<String, String>();
 
         final String pathPrefix = "/" + reservedPrefix + "/";
-        final String aboutPagePath = pathPrefix + "about.html";
+        final String aboutPagePath = pathPrefix + "about.html"; // About Yanel
+        final String aboutRealmPagePath = pathPrefix + "about-realm.html"; // About realm
         final String resourceTypesPathPrefix = pathPrefix + "resource-types/";
 
         //XXX REFACTORME: in the cases where we simply use a resource-type's view
@@ -1670,12 +1671,19 @@ public class YanelServlet extends HttpServlet {
             if (generateResponseFromRTview(request, response, rc, path)) return;
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
             return;
-        }else if (path.equals(aboutPagePath)) {
+        } else if (path.equals(aboutPagePath)) {
             //XXX REFACTORME: we should define an "about" resource-type instead!
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             response.setHeader("Content-Type", "text/html");
             PrintWriter w = response.getWriter();
             w.print(About.toHTML(yanelInstance.getVersion(), yanelInstance.getRevision()));
+            return;
+        } else if (path.equals(aboutRealmPagePath)) {
+            //XXX REFACTORME: we should define an "about-realm" resource-type instead!
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+            response.setHeader("Content-Type", "text/html");
+            PrintWriter w = response.getWriter();
+            w.print(AboutRealm.toHTML(realm));
             return;
         } else if (path.startsWith(resourceTypesPathPrefix)) {
             final String[] namespaceURI_and_rest = path.substring(resourceTypesPathPrefix.length()).split("::", 2);
