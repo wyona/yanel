@@ -73,7 +73,7 @@ import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.Usecase;
 import org.wyona.security.core.api.User;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.apache.xalan.transformer.TransformerIdentityImpl;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
@@ -89,7 +89,8 @@ import org.w3c.dom.Element;
  */
 public class YanelServlet extends HttpServlet {
 
-    private static Category log = Category.getInstance(YanelServlet.class);
+    private static Logger log = Logger.getLogger(YanelServlet.class);
+    private static Logger logAccess = Logger.getLogger("Access");
 
     private Map map;
     private Yanel yanelInstance;
@@ -162,8 +163,8 @@ public class YanelServlet extends HttpServlet {
 
             yanelUI = new YanelHTMLUI(map, reservedPrefix);
 
-            // TODO: Make this value configurable (also per realm or per individual user!)
-            logBrowserHistory = false;
+            // TODO: Make this value configurable also per realm or per individual user!
+            logBrowserHistory = new Boolean(config.getInitParameter("log-access")).booleanValue();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);
@@ -2274,11 +2275,11 @@ public class YanelServlet extends HttpServlet {
                 User user = realm.getIdentityManager().getUserManager().getUser(identity.getUsername());
                 // The log should be attached to the user, because realms can share a UserManager, but the UserManager API has no mean to save such data, so how should we do this?
                 // What if realm ID is changing?
-                String logPath = "yanel-logs/browser-history/" + user.getID() + ".txt";
+                String logPath = "/yanel-logs/browser-history/" + user.getID() + ".txt";
                 if (!realm.getRepository().existsNode(logPath)) {
                     org.wyona.yarep.util.YarepUtil.addNodes(realm.getRepository(), logPath, org.wyona.yarep.core.NodeType.RESOURCE);
                 }
-                org.wyona.yarep.core.Node node = realm.getRepository().getNode("/yanel-logs/browser-history/" + user.getID() + ".txt");
+                org.wyona.yarep.core.Node node = realm.getRepository().getNode(logPath);
                 // Stream into node (append log entry, see for example log4j)
                 // 127.0.0.1 - - [07/Nov/2009:01:24:09 +0100] "GET /yanel/from-scratch-realm/de/index.html HTTP/1.1" 200 4464
 /*
@@ -2291,6 +2292,7 @@ public class YanelServlet extends HttpServlet {
 */
             } else {
                 log.warn("DEBUG: Log browser history of anonynmous user");
+                logAccess.info(request.getRequestURL());
             }
             //log.warn("DEBUG: Referer: " + request.getHeader(HTTP_REFERRER));
         } catch(Exception e) { // Catch all exceptions, because we do not want to throw exceptions because of logging browser history
