@@ -53,6 +53,13 @@
       <!--<param-value>false</param-value>-->
     </init-param>
 
+    <!-- Log access -->
+    <init-param>
+      <param-name>log-access</param-name>
+      <param-value>false</param-value> <!--The default value needs to be false because of performance/scalability reasons -->
+      <!--<param-value>true</param-value>-->
+    </init-param>
+
     <!-- Allow client-side caching of static htdocs content. Specify value in hours. -->
     <init-param>
      <param-name>static-content-cache-expires</param-name>
