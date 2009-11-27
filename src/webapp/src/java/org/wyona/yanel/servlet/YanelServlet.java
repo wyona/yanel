@@ -822,12 +822,12 @@ public class YanelServlet extends HttpServlet {
                     return;
                 } else {
                     log.warn("Resource could not be deleted: " + res);
-                    response.setStatus(response.SC_FORBIDDEN);
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     return;
                 }
             } else {
                 log.error("Resource '" + res + "' has interface ModifiableV2 not implemented." );
-                response.sendError(response.SC_NOT_IMPLEMENTED);
+                response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
                 return;
             }
         } catch (Exception e) {
@@ -1314,7 +1314,7 @@ public class YanelServlet extends HttpServlet {
 
                 // TODO: send some XML content, e.g. <logout-successful/>
                 response.setContentType("text/plain; charset=" + DEFAULT_ENCODING);
-                response.setStatus(response.SC_OK);
+                response.setStatus(HttpServletResponse.SC_OK);
                 PrintWriter writer = response.getWriter();
                 writer.print("Neutron Logout Successful!");
                 return response;
@@ -1610,39 +1610,6 @@ public class YanelServlet extends HttpServlet {
         return false;
     }
 
-    private ResourceConfiguration getYanelResourceConfiguration(String pathPrefix, Environment environment, Realm realm, String path) throws Exception {
-        HttpServletRequest request = environment.getRequest();
-        java.util.Map<String, String> properties = new HashMap<String, String>();
-
-        //XXX: maybe we should use a configuration file instead!
-        java.util.Map<String, String> globalRCmap = new HashMap<String, String>();
-        globalRCmap.put("data-repository-sitetree.html", "data-repo-sitetree_yanel-rc.xml");
-        globalRCmap.put("user-forgot-pw.html", "user-forgot-pw_yanel-rc.xml");
-        final String admin = "admin/";
-        globalRCmap.put(admin + "list-groups.html", "user-mgmt/list-groups_yanel-rc.xml");
-        globalRCmap.put(admin + "list-users.html", "user-mgmt/list-users_yanel-rc.xml");
-        globalRCmap.put(admin + "delete-group.html", "user-mgmt/delete-group_yanel-rc.xml");
-        globalRCmap.put(admin + "create-group.html", "user-mgmt/create-group_yanel-rc.xml");
-        globalRCmap.put(admin + "view-group.html", "user-mgmt/view-group_yanel-rc.xml");
-        globalRCmap.put(admin + "delete-user.html", "user-mgmt/delete-user_yanel-rc.xml");
-        globalRCmap.put(admin + "update-user.html", "user-mgmt/update-user_yanel-rc.xml");
-        globalRCmap.put(admin + "create-user.html", "user-mgmt/create-user_yanel-rc.xml");
-        globalRCmap.put(admin + "update-user-admin.html", "user-mgmt/update-user-admin_yanel-rc.xml");
-
-        String pathSuffix = path.substring(pathPrefix.length());
-        String globalRCfilename = globalRCmap.get(pathSuffix);
-
-        final String usersPathPrefix = pathPrefix + "users/";
-        if (path.startsWith(usersPathPrefix)) {
-            final String userName = path.substring(usersPathPrefix.length(), path.length() - ".html".length());
-            properties.put("user", userName);
-            return new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
-        } else if (globalRCfilename != null) {
-            return getGlobalResourceConfiguration(globalRCfilename, getRealm(request));
-        }
-        return null;
-    }
-
     /**
      * Get global data located below reserved prefix
      */
@@ -1662,9 +1629,10 @@ public class YanelServlet extends HttpServlet {
         Realm realm;
         Environment environment = getEnvironment(request, response);
         ResourceConfiguration rc;
+        YanelGlobalResourceTypeMatcher RTmatcher = new YanelGlobalResourceTypeMatcher(pathPrefix, servletContextRealPath);
         try {
             realm = getRealm(request);
-            rc = getYanelResourceConfiguration(pathPrefix, environment , realm, path);
+            rc = RTmatcher.getResourceConfiguration(environment, realm, path);
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);
         }
@@ -2077,7 +2045,7 @@ public class YanelServlet extends HttpServlet {
             return;
         }
     }
-
+    
     /**
      * Get resource configuration from global location of the realm or if not available there, then from global location of Yanel
      *
@@ -2085,28 +2053,7 @@ public class YanelServlet extends HttpServlet {
      * @param realm Current realm
      */
     private ResourceConfiguration getGlobalResourceConfiguration(String resConfigName, Realm realm) {
-        // TODO: Introduce a repository for the Yanel webapp
-        File realmDir = new File(realm.getConfigFile().getParent());
-        File globalResConfigFile = org.wyona.commons.io.FileUtil.file(realmDir.getAbsolutePath(), "src" + File.separator + "webapp" + File.separator + "global-resource-configs/" + resConfigName);
-        if (!globalResConfigFile.isFile()) {
-            // Fallback to global configuration
-            globalResConfigFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "global-resource-configs/" + resConfigName);
-        }
-        InputStream is;
-        try {
-            is = new java.io.FileInputStream(globalResConfigFile);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        ResourceConfiguration rc;
-        try {
-            rc = new ResourceConfiguration(is);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(is);
-        }
-        return rc;
+        return YanelGlobalResourceTypeMatcher.getGlobalResourceConfiguration(resConfigName, realm, servletContextRealPath);
     }
 
     /**
