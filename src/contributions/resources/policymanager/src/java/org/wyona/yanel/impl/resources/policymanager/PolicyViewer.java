@@ -65,7 +65,7 @@ public class PolicyViewer {
                 sb.append("<tr valign=\"top\"><td>Policy</td>" + getPoliciesAsXHTML(pm, gm, path, contentItemId, aggregate, orderedBy, showAbbreviatedLabels) + "</tr>");
 
                 aggregate = true;
-                sb.append("<tr valign=\"top\"><td>Aggregated Policy</td>" + getPoliciesAsXHTML(pm, gm, path, contentItemId, aggregate, orderedBy, showAbbreviatedLabels) + "</tr>");
+                sb.append("<tr valign=\"top\"><td>Aggregated/Resolved Policy</td>" + getPoliciesAsXHTML(pm, gm, path, contentItemId, aggregate, orderedBy, showAbbreviatedLabels) + "</tr>");
                 sb.append("</table></p>");
             } else {
                 sb.append("<h1>Aggregated Access Policy</h1>");
@@ -179,6 +179,7 @@ public class PolicyViewer {
      * Get policy as XHTML list ordered by usecases
      */
     static private StringBuffer getPolicyAsXHTMLListOrderedByUsecases(Policy p, boolean abbreviation) {
+        // TODO: Also display workflow transition IDs! (but how do we get these???)
         StringBuffer sb = new StringBuffer();
         UsecasePolicy[] up = p.getUsecasePolicies();
         if (up != null && up.length > 0) {
@@ -225,7 +226,11 @@ public class PolicyViewer {
                 IdentityPolicy[] idps = up[i].getIdentityPolicies();
                 for (int j = 0; j < idps.length; j++) {
                     if (idps[j].getIdentity().isWorld()) {
-                        worldRights.add(up[i].getName());
+                        if (!idps[j].getPermission()) {
+                            worldRights.add("<del>" + up[i].getName() + "</del>") ;
+                        } else {
+                            worldRights.add(up[i].getName());
+                        }
                     } else {
                         Vector userRights;
                         if ((userRights = (Vector) users.get(idps[j].getIdentity().getUsername())) != null) {
@@ -236,6 +241,8 @@ public class PolicyViewer {
                         }
                         if (idps[j].getPermission()) {
                             userRights.add(up[i].getName());
+                        } else {
+                            userRights.add("<del>" + up[i].getName() + "</del>");
                         }
                     }
                 }
@@ -251,6 +258,8 @@ public class PolicyViewer {
                     }
                     if (gps[j].getPermission()) {
                         groupRights.add(up[i].getName());
+                    } else {
+                        groupRights.add("<del>" + up[i].getName() + "</del>");
                     }
                 }
             }
@@ -266,21 +275,23 @@ public class PolicyViewer {
         }
 
         if (worldRights.size() > 0) {
-            sb.append("<li>WORLD (" + getCommaSeparatedList(worldRights, pm) + ")</li>");
+            sb.append("<li>WORLD (" + getRightsAsCommaSeparatedList(worldRights, pm) + ")</li>");
         }
 
         // Users
         java.util.Iterator userIterator = users.keySet().iterator();
         while (userIterator.hasNext()) {
             String userName = (String) userIterator.next();
-            sb.append("<li>" + getUserLabel(abbreviation) + ": " + userName + " (" + getCommaSeparatedList((Vector) users.get(userName), pm) + ")</li>");
+            Vector userRights = (Vector) users.get(userName);
+            sb.append("<li>" + getUserLabel(abbreviation) + ": " + userName + " (" + getRightsAsCommaSeparatedList(userRights, pm) + ")</li>");
         }
 
         //Groups 
         java.util.Iterator groupIterator = groups.keySet().iterator();
         while (groupIterator.hasNext()) {
             String groupName = (String) groupIterator.next();
-            String rights = getCommaSeparatedList((Vector) groups.get(groupName), pm);
+            Vector groupRights = (Vector) groups.get(groupName);
+            String rights = getRightsAsCommaSeparatedList(groupRights, pm);
             if (!dismantleGroups) {
                 sb.append("<li>" + getGroupLabel(abbreviation) + ": " + groupName + " (" + rights + ")</li>");
             } else {
@@ -320,15 +331,15 @@ public class PolicyViewer {
      * @param rights Rights
      * @param pm PolicyManager
      */
-    private static String getCommaSeparatedList(Vector rights, PolicyManager pm) {
+    private static String getRightsAsCommaSeparatedList(Vector rights, PolicyManager pm) {
         StringBuilder sb = new StringBuilder();
         try {
             String[] usecases = pm.getUsecases();
             for (int i = 0; i < usecases.length; i++) {
                 boolean noSuchRight = true;
                 for (int k = 0; k < rights.size(); k++) {
-                    if (usecases[i].equals((String) rights.elementAt(k))) {
-                        sb.append(usecases[i]);
+                    if (((String) rights.elementAt(k)).indexOf(usecases[i]) >= 0) { // NOTE: For example "view" or "<del>view</del>"
+                        sb.append((String) rights.elementAt(k));
                         noSuchRight = false;
                         break;
                     }
