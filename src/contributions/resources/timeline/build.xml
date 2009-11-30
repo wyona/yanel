@@ -1,5 +1,10 @@
 <?xml version="1.0"?>
 
+<project name="simile-timeline-resource" default="deploy-jar">
+  <import file="${yanel.source.home}/src/build/resource-types/resource-type.build.xml"/>
+</project>
+
+<!--
 <project name="yanel-resource" default="compile">
 
   <import file="src/build/dependencies.xml"/>
@@ -46,3 +51,4 @@
     </copy>
   </target>
 </project>
+-->

@@ -11,14 +11,14 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.util.PathUtil;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  *
  */
 public class TimelineResource extends Resource implements ViewableV2, IntrospectableV1 {
 
-    private static Category log = Category.getInstance(TimelineResource.class);
+    private static Logger log = Logger.getLogger(TimelineResource.class);
 
     /**
      *
@@ -31,6 +31,11 @@ public class TimelineResource extends Resource implements ViewableV2, Introspect
      */
     public boolean exists() {
         log.warn("Not really implemented yet! Needs to check if events XML exists.");
+        try {
+            log.warn("DEBUG: Path: " + getPath() + "/" + getResourceConfigProperty("href"));
+        } catch(Exception e) {
+            log.error(e, e);
+        }
         return true;
     }
 
@@ -41,7 +46,8 @@ public class TimelineResource extends Resource implements ViewableV2, Introspect
         if (viewId != null) {
             if (viewId.equals("xml")) return "application/xml";
         }
-        return "application/xhtml+xml";
+        //return "application/xhtml+xml";
+        return "text/html";
     }
 
     /**
@@ -80,30 +86,58 @@ public class TimelineResource extends Resource implements ViewableV2, Introspect
     }
 
     /**
-     *
+     * Generate XHTML
      */
-    private StringBuffer getXHTML() throws Exception {
-        //java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("MMM dd yyyy hh:mm:ss z");
-        //String todaysDate = sdf.format(new java.util.Date());
-        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("MMM dd yyyy");
-        String todaysDate = sdf.format(new java.util.Date()) + " 00:00:00 GMT";
+    private StringBuilder getXHTML() throws Exception {
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("MMM dd yyyy HH:mm:ss Z");
+        String date = sdf.format(new java.util.Date());
+        //java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("MMM dd yyyy");
+        //String date = sdf.format(new java.util.Date()) + " 00:00:00 GMT";
+        if (getResourceConfigProperty("date") != null) {
+            date = getResourceConfigProperty("date");
+        }
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("<?xml version=\"1.0\"?>");
 
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
         sb.append("<head>");
+        sb.append("<title>" + getResourceConfigProperty("title") + "</title>\n");
         if (getResourceConfigProperty("introspection-url") != null) {
             sb.append("<link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"" + getResourceConfigProperty("introspection-url") + "\"/>");
         } else {
             sb.append("<link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"?yanel.resource.usecase=introspection\"/>");
         }
         //sb.append("<script src=\"http://simile.mit.edu/timeline/api/timeline-api.js\" type=\"text/javascript\"></script>");
-        sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPathURLencoded(this) + "timeline-api.js\" type=\"text/javascript\"></script>");
+        //sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPathURLencoded(this) + "timeline-api.js\" type=\"text/javascript\"></script>");
+        sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPathURLencoded(this) + "timeline_2.3.0/timeline_js/timeline-api.js?bundle=true\" type=\"text/javascript\"></script>\n\n");
 
-        sb.append("<script type=\"text/javascript\">");
-        sb.append("var tl;");
+        sb.append("<script type=\"text/javascript\">\n");
 
+        sb.append("var eventSource = new Timeline.DefaultEventSource();\n");
+        sb.append("function onLoad() {\n");
+        sb.append("  var bandInfos = [");
+        sb.append("    Timeline.createBandInfo({");
+        sb.append("        eventSource:    eventSource,");
+        sb.append("        date:           \"" + date + "\",");
+        sb.append("        width:          \"70%\",");
+        sb.append("        intervalUnit:   Timeline.DateTime.MONTH,");
+        sb.append("        intervalPixels: 100");
+        sb.append("    }),");
+        sb.append("    Timeline.createBandInfo({");
+        //sb.append("showEventText:  false,");
+        //sb.append("        trackHeight:    0.5,");
+        //sb.append("        trackGap:       0.2,");
+        sb.append("        overview:       true,");
+        sb.append("        eventSource:    eventSource,");
+        sb.append("        date:           \"" + date + "\",");
+        sb.append("        width:          \"30%\",");
+        sb.append("        intervalUnit:   Timeline.DateTime.DECADE,"); 
+        sb.append("        intervalPixels: 200");
+        sb.append("    })");
+        sb.append("  ];");
+
+        sb.append("var tl;\n");
         sb.append("var resizeTimerID = null;");
         sb.append("function onResize() {");
         sb.append("    if (resizeTimerID == null) {");
@@ -113,45 +147,21 @@ public class TimelineResource extends Resource implements ViewableV2, Introspect
         sb.append("        }, 500);");
         sb.append("    }");
         sb.append("}");
-
-        sb.append("function onLoad() {");
-        sb.append("  var eventSource = new Timeline.DefaultEventSource();");
-        sb.append("  var bandInfos = [");
-        sb.append("    Timeline.createBandInfo({");
-        sb.append("        eventSource:    eventSource,");
-        sb.append("        date:           \"" + todaysDate + "\",");
-        sb.append("        width:          \"70%\",");
-        sb.append("        intervalUnit:   Timeline.DateTime.MONTH,");
-        sb.append("        intervalPixels: 100");
-        sb.append("    }),");
-        sb.append("    Timeline.createBandInfo({");
-        sb.append("showEventText:  false,");
-        sb.append("        trackHeight:    0.5,");
-        sb.append("        trackGap:       0.2,");
-
-        sb.append("        eventSource:    eventSource,");
-        sb.append("        date:           \"" + todaysDate + "\",");
-        sb.append("        width:          \"30%\",");
-        sb.append("        intervalUnit:   Timeline.DateTime.YEAR,"); 
-        sb.append("        intervalPixels: 200");
-        sb.append("    })");
-        sb.append("  ];");
         sb.append("  bandInfos[1].syncWith = 0;");
         sb.append("  bandInfos[1].highlight = true;");
   
         sb.append("  tl = Timeline.create(document.getElementById(\"my-timeline\"), bandInfos);");
         // TODO: Check first if a query string already exists!
         sb.append("  Timeline.loadXML(\"" + getResourceConfigProperty("href") + "?do-not-cache-timestamp=" + new java.util.Date().getTime() + "\", function(xml, url) { eventSource.loadXML(xml, url); });");
-        //sb.append("  Timeline.loadXML(\"" + getResourceConfigProperty("href") + "\", function(xml, url) { eventSource.loadXML(xml, url); });");
-        sb.append("}");
-        sb.append("</script>");
-        sb.append("<title>" + getResourceConfigProperty("title") + "</title>");
-        sb.append("</head>");
+        sb.append("}\n");
+
+        sb.append("</script>\n");
+        sb.append("</head>\n\n");
 
         sb.append("<body onload=\"onLoad();\" onresize=\"onResize();\">");
         sb.append("<h3>" + getResourceConfigProperty("title") + "</h3>");
-        sb.append("<p>Today's Date (server time): " + todaysDate + "</p>");
-        sb.append("<p>XML: <a href=\"" + getResourceConfigProperty("href") + "\">" + getResourceConfigProperty("href") + "</a></p>");
+        sb.append("<p>Start Date: " + date + "</p>");
+        sb.append("<p>XML: <a href=\"" + getResourceConfigProperty("href") + "?do-not-cache-timestamp=" + new java.util.Date().getTime() + "\">" + getResourceConfigProperty("href") + "</a></p>");
 
         String height = getResourceConfigProperty("height");
         if (height == null) height = "250px";
