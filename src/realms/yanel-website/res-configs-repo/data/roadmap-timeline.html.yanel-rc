@@ -6,5 +6,5 @@
   <yanel:property name="introspection-url" value="introspection-roadmap.xml"/>
   <yanel:property name="title" value="Timeline of Yanel Roadmap"/>
   <yanel:property name="href" value="roadmap-events.xml"/>
-  <yanel:property name="height" value="500px"/>
+  <yanel:property name="height" value="350px"/>
 </yanel:resource-config>
