@@ -15,7 +15,7 @@
  */
 package org.wyona.yanel.impl.workflow;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.Role;
 import org.wyona.security.core.api.Usecase;
@@ -26,11 +26,12 @@ import org.wyona.yanel.core.workflow.Workflow;
 import org.wyona.yanel.core.workflow.WorkflowException;
 
 /**
- * @deprecated Use UsecaseCondition instead
+ * @deprecated Use UsecaseCondition instead (whereas UsecaseCondition does not exist yet!)
  */
 public class RoleCondition implements Condition {
     
-    private static Category log = Category.getInstance(RoleCondition.class);
+    private static Logger log = Logger.getLogger(RoleCondition.class);
+    private String message;
     
     protected Role role;
 
@@ -60,7 +61,10 @@ public class RoleCondition implements Condition {
                 log.debug("   result   : " + authorized);
             }
 
-            if (!authorized) log.warn("User '" + identity.getUsername() + "' is not allowed to execute usecase (workflow transition) '" + role.getName() + "'");
+            if (!authorized) {
+                message = "User '" + identity.getUsername() + "' is not allowed to execute usecase (workflow transition) '" + role.getName() + "'";
+                log.warn(message);
+            }
 
             return authorized;
         } catch (Exception e) {
@@ -69,4 +73,10 @@ public class RoleCondition implements Condition {
         }
     }
 
+    /**
+     * @see org.wyona.yanel.core.workflow.Condition#getMessage()
+     */
+    public String getMessage() {
+        return message;
+    }
 }

@@ -26,6 +26,8 @@ public class RevisionNotEqualsCondition implements Condition {
 
     private static Logger log = Logger.getLogger(RevisionNotEqualsCondition.class);
 
+    private String message;
+
     protected String variable;
 
     public void setExpression(String expression) {
@@ -38,7 +40,17 @@ public class RevisionNotEqualsCondition implements Condition {
     public boolean isComplied(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException {
         String liveRevision = workflowable.getWorkflowVariable(variable);
         boolean complied = !revision.equals(liveRevision);
-        if (!complied) log.warn("The revision '" + revision + "' is the live revision.");
+        if (!complied) {
+            message = "The revision '" + revision + "' is the live revision.";
+            log.warn(message);
+        }
         return complied;
+    }
+
+    /**
+     * @see org.wyona.yanel.core.workflow.Condition#getMessage()
+     */
+    public String getMessage() {
+        return message;
     }
 }
