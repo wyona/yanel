@@ -14,7 +14,7 @@ import org.wyona.yanel.core.util.PathUtil;
 import org.apache.log4j.Logger;
 
 /**
- *
+ * Simile timeline resource
  */
 public class TimelineResource extends Resource implements ViewableV2, IntrospectableV1 {
 
@@ -46,7 +46,7 @@ public class TimelineResource extends Resource implements ViewableV2, Introspect
         if (viewId != null) {
             if (viewId.equals("xml")) return "application/xml";
         }
-        //return "application/xhtml+xml";
+        //return "application/xhtml+xml"; // NOTE: Timelime does not work for some reason using the xhtml mime type!
         return "text/html";
     }
 
@@ -104,12 +104,13 @@ public class TimelineResource extends Resource implements ViewableV2, Introspect
         sb.append("<head>");
         sb.append("<title>" + getResourceConfigProperty("title") + "</title>\n");
         if (getResourceConfigProperty("introspection-url") != null) {
-            sb.append("<link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"" + getResourceConfigProperty("introspection-url") + "\"/>");
+            sb.append("<link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"" + getResourceConfigProperty("introspection-url") + "\"/>\n");
         } else {
-            sb.append("<link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"?yanel.resource.usecase=introspection\"/>");
+            sb.append("<link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"?yanel.resource.usecase=introspection\"/>\n");
         }
-        //sb.append("<script src=\"http://simile.mit.edu/timeline/api/timeline-api.js\" type=\"text/javascript\"></script>");
-        //sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPathURLencoded(this) + "timeline-api.js\" type=\"text/javascript\"></script>");
+
+        // NOTE: %-encoded URL should actually be correct, but for some reason this does not work behind an apache httpd based reverse proxy without setting "AllowEncodedSlashes On" within VirtualHost (also see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6849)
+        //sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPath(this) + "timeline_2.3.0/timeline_js/timeline-api.js?bundle=true\" type=\"text/javascript\"></script>\n\n");
         sb.append("<script src=\"" + PathUtil.getResourcesHtdocsPathURLencoded(this) + "timeline_2.3.0/timeline_js/timeline-api.js?bundle=true\" type=\"text/javascript\"></script>\n\n");
 
         sb.append("<script type=\"text/javascript\">\n");
