@@ -728,8 +728,13 @@ public class YanelServlet extends HttpServlet {
                 w.print(sb);
 
             } catch (WorkflowException e) {
-                // TODO: Implement response if transition has failed ...
-                throw new ServletException(e.getMessage(), e);
+                log.error(e, e);
+                response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                PrintWriter w = response.getWriter();
+                // TODO: XMLExceptionV1 is part of Neutron and hence not really appropriate for this kind of exception
+                w.print(XMLExceptionV1.getDefaultException(XMLExceptionV1.AUTHORIZATION, e.getMessage()));
+                return;
             }
         } else {
             log.warn("Resource not workflowable: " + resource.getPath());
@@ -1971,9 +1976,11 @@ public class YanelServlet extends HttpServlet {
 
         String workflowTransitionValue = request.getParameter(YANEL_RESOURCE_WORKFLOW_TRANSITION);
         if (workflowTransitionValue != null) {
-            // TODO: How shall we protect workflow transitions?!
+            // TODO: At the moment the authorization of workflow transitions are checked within executeWorkflowTransition or rather workflowable.doTransition(transition, revision)
             log.warn("Workflow transition is currently handled as view usecase: " + workflowTransitionValue);
             usecase = new Usecase("view");
+            // TODO: Return workflow transition ID
+            //usecase = new Usecase(transitionID);
         }
 
         String toolbarValue = request.getParameter("yanel.toolbar");
