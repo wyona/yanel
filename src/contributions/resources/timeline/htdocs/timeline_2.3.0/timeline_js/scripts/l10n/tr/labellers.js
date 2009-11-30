@@ -3,6 +3,6 @@
  *==================================================
  */
 
-Timeline.GregorianDateLabeller.monthNames["en"] = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+Timeline.GregorianDateLabeller.monthNames["tr"] = [
+    "Ock", "Şbt", "Mrt", "Nsn", "Mys", "Hzr", "Tem", "Ağs", "Eyl", "Ekm", "Ksm", "Arl"
 ];
