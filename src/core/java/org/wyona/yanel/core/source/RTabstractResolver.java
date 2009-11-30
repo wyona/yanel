@@ -79,7 +79,7 @@ public abstract class RTabstractResolver implements URIResolver {
             }
             URL url = clazz.getClassLoader().getResource(packageName.replace('.','/') + "/" + getPathPrefix() + path);
             if (url == null) {
-                log.warn("Path " + getPathPrefix() + path + " does not seem to be contained within package " + packageName + " of resource " + name);
+                log.info("Path " + getPathPrefix() + path + " does not seem to be contained within package " + packageName + " of resource " + name + ". Check within resource config location ...");
             }
 
             // If url == null, then url.openStream() will throw an exception and the fallback will be used within the catch below (TODO: Refactor ...)
@@ -91,7 +91,7 @@ public abstract class RTabstractResolver implements URIResolver {
             return source;
         } catch (Exception e) {
             File resourceConfigDir = rtd.getConfigFile().getParentFile();
-            log.warn("Fallback to resource config location: " + resourceConfigDir);
+            log.info("Fallback to resource config location: " + resourceConfigDir);
             try {
                 File resourceFile = new File(resourceConfigDir.getAbsolutePath() + "/" + getPathPrefix() + path.replace('/', File.separatorChar));
                 InputStream in = new java.io.FileInputStream(resourceFile);
