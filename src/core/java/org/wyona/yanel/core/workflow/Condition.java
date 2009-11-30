@@ -23,7 +23,7 @@ import org.wyona.yanel.core.api.attributes.WorkflowableV1;
 public interface Condition {
 
     /**
-     * Check if condition is fullfilled or not (TODO: It would be nice if one could specify a reason if it is not fullfilled!)
+     * Check if condition is fullfilled or not
      */
     boolean isComplied(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException;
 
@@ -31,4 +31,9 @@ public interface Condition {
      *
      */
     void setExpression(String expression) throws WorkflowException;
+
+    /**
+     * Returns the detail message why this condition did not comply
+     */
+    public String getMessage();
 }
