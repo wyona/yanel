@@ -1,10 +1,35 @@
 <?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Created from template ...</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>
-<h1>Access Control Policies</h1><br/>One can block inherited policies for <b>all</b> usecases<br/> <p>
+<h1>Access Control Policies</h1>
+
+<h2>Inheritance of policies or usecases</h2>
+One can block inherited policies for <b>all</b> usecases<br/> <p>
 </p><pre>&lt;?xml version=&quot;1.0&quot;?&gt;<br/><br/>&lt;policy xmlns=&quot;http://www.wyona.org/security/1.0&quot; use-inherited-policies=&quot;false&quot;&gt;<br/><br/>  &lt;usecase id=&quot;view&quot;&gt;<br/>    &lt;!--&lt;world permission=&quot;false&quot;/&gt;--&gt;<br/>    &lt;user id=&quot;lenya&quot; permission=&quot;true&quot;/&gt;<br/>  &lt;/usecase&gt;<br/><br/>  &lt;usecase id=&quot;open&quot;&gt;<br/>    &lt;user id=&quot;lenya&quot; permission=&quot;true&quot;/&gt;<br/>  &lt;/usecase&gt;<br/><br/>  &lt;usecase id=&quot;write&quot;&gt;<br/>    &lt;user id=&quot;lenya&quot; permission=&quot;true&quot;/&gt;<br/>  &lt;/usecase&gt;<br/><br/>&lt;/policy&gt;<br/></pre>
 <p>
 or also for a particular usecase<br/>
 </p>
 <p>
 </p><pre>&lt;?xml version=&quot;1.0&quot;?&gt;<br/><br/>&lt;policy xmlns=&quot;http://www.wyona.org/security/1.0&quot;&gt;<br/><br/>  &lt;usecase id=&quot;view&quot; use-inherited-policies=&quot;false&quot;<br/>    &lt;!--&lt;world permission=&quot;false&quot;/&gt;--&gt;<br/>    &lt;user id=&quot;lenya&quot; permission=&quot;true&quot;/&gt;<br/>  &lt;/usecase&gt;<br/><br/>&lt;/policy&gt;<br/></pre>
+
+<h2>Default usecases</h2>
+<p>
+The defaul usecases are currently hard-coded within <code>org.wyona.yanel.servlet.YanelServlet</code> and <code>org.wyona.security.impl.PolicyManagerImplVersion2</code>
+</p>
+<ul>
+  <li><b>view:</b> Allows to access the resource generated content</li>
+  <li><b>yanel.resource.meta:</b> Allows to access the meta data of resource (e.g. resource type)</li>
+  <li><b>open:</b> Allows to access the source content of a resource</li>
+  <li><b>write:</b> Allows to write/save data to the source content of a resource</li>
+  <li><b>delete:</b> Allows to delete a resource</li>
+  <li><b>resource.create:</b> Allows to create a resource</li>
+  <li><b>toolbar:</b> Allows to access the Yanel toolbar</li>
+  <li><b>introspection:</b> Allows to access the Neutron introspection of a resource</li>
+  <li><b>policy.read:</b> Allows to view the access policy of a resource</li>
+  <li><b>policy.update:</b> Allows to modify the access policy of a resource</li>
+</ul>
+
+<h2>Custom usecases</h2>
+<p>
+For example workflow transitions!
+</p>
 </body>
 </html>
