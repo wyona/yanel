@@ -66,8 +66,7 @@ public class WorkflowHelper {
                 Condition[] conditions = transitions[i].getConditions();
                 for (int j = 0; j < conditions.length; j++) {
                     if (!conditions[j].isComplied(workflowable, workflow, revision)) {
-                        throw new WorkflowException("Workflow condition not complied for state " + 
-                                currentState + " and transition " + transitionID);
+                        throw new WorkflowException("Workflow condition not complied for state '" + currentState + "' and transition '" + transitionID + "': " + conditions[j].getMessage());
                     }
                 }
                 String newState = transitions[i].getDestinationState();
