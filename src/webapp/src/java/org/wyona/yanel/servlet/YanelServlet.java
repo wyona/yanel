@@ -120,7 +120,7 @@ public class YanelServlet extends HttpServlet {
 
     private YanelHTMLUI yanelUI;
 
-    private boolean logBrowserHistory = false;
+    private boolean logAccessEnabled = false;
     
     public static final String DEFAULT_ENCODING = "UTF-8";
 
@@ -164,7 +164,7 @@ public class YanelServlet extends HttpServlet {
             yanelUI = new YanelHTMLUI(map, reservedPrefix);
 
             // TODO: Make this value configurable also per realm or per individual user!
-            logBrowserHistory = new Boolean(config.getInitParameter("log-access")).booleanValue();
+            logAccessEnabled = new Boolean(config.getInitParameter("log-access")).booleanValue();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);
@@ -199,7 +199,7 @@ public class YanelServlet extends HttpServlet {
         }
 
         // TODO: Only HTML pages and PDFs etc. should be logged, but no images, CSS, etc.
-        if(logBrowserHistory) logBrowserHistoryOfUser(request);
+        if(logAccessEnabled) logAccess(request);
 
         // Check for requests re policies
         String policyRequestPara = request.getParameter(YANEL_ACCESS_POLICY_USECASE);
@@ -2077,7 +2077,7 @@ public class YanelServlet extends HttpServlet {
      */
     private void do404(HttpServletRequest request, HttpServletResponse response, Document doc, String exceptionMessage) throws ServletException {
         // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
-        // Also see logBrowserHistory
+        // Also see logAccess
         //org.wyona.yarep.core.Node node = realm.getRepository().getNode("/yanel-logs/404.txt");
 
         String message = "No such node/resource exception: " + exceptionMessage;
@@ -2215,7 +2215,7 @@ public class YanelServlet extends HttpServlet {
     /**
      * Log browser history of each user
      */
-    private void logBrowserHistoryOfUser(HttpServletRequest request) {
+    private void logAccess(HttpServletRequest request) {
         // TBD: What about a cluster, performance/scalability? See for example http://www.oreillynet.com/cs/user/view/cs_msg/17399 (also see Tomcat conf/server.xml <Valve className="AccessLogValve" and className="FastCommonAccessLogValve")
         // See apache-tomcat-5.5.20/logs/localhost_access_log.2009-11-07.txt
         // 127.0.0.1 - - [07/Nov/2009:01:24:09 +0100] "GET /yanel/from-scratch-realm/de/index.html HTTP/1.1" 200 4464
@@ -2245,8 +2245,11 @@ public class YanelServlet extends HttpServlet {
                  - Log analysis (no special tracking required)
 */
             } else {
-                log.warn("DEBUG: Log browser history of anonynmous user");
-                logAccess.info(request.getRequestURL());
+                // NOTE: Log access of anonymous user
+                String requestURL = request.getRequestURL().toString();
+                if (requestURL.endsWith("html")) { // TODO: Check the mime-type instead the suffix or use JavaScript or Pixel
+                    logAccess.info(requestURL);
+                }
             }
             //log.warn("DEBUG: Referer: " + request.getHeader(HTTP_REFERRER));
         } catch(Exception e) { // Catch all exceptions, because we do not want to throw exceptions because of logging browser history
