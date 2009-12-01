@@ -15,8 +15,6 @@ import org.wyona.yanel.core.workflow.WorkflowHelper;
  * Creates an html element wrapping the transition of a resource from a given state.
  * The element contains an appropriately formatted URL (i.e. GET request) as an
  * anchor if the transition is valid.
- * @author gary
- *
  */
 public class TransitionMenuContentImpl implements ITransitionMenuContent {
     private static Logger log = Logger.getLogger(TransitionMenuContentImpl.class);
@@ -32,7 +30,6 @@ public class TransitionMenuContentImpl implements ITransitionMenuContent {
     private String state;
     private String revision;
     private String isoMenuLang;
-    private Transition[] transitions;
     
     /**
      * ctor.
@@ -57,48 +54,42 @@ public class TransitionMenuContentImpl implements ITransitionMenuContent {
      * @return
      */
     public String getTransitionElement(final Transition t) {
-        String result = null;
-
+        log.warn("DEBUG: Transition: " + t.getID());
         try {
-            if (this.transitions == null) {
-                Workflow workflow = WorkflowHelper.getWorkflow(this.resource);
-                this.transitions = workflow.getLeavingTransitions(this.state);
-            }
+            Workflow workflow = WorkflowHelper.getWorkflow(this.resource);
+            Transition[] stateSpecificTransitions = workflow.getLeavingTransitions(this.state);
 
-            String label = "Exception: No label!";
+            String label = t.getID() + " (WARNING: No label!)";
             try {
                 label = t.getDescription(this.resource.getRequestedLanguage());
             } catch(Exception e) {
                 log.error(e, e);
             }
 
-            for (int i = 0; i < this.transitions.length; i++) {
-                if (transitionsMatch(this.transitions[i], t)) {
+            for (int i = 0; i < stateSpecificTransitions.length; i++) {
+                if (transitionsMatch(stateSpecificTransitions[i], t) && isComplied(t, workflow)) {
                     try {
-                        String url = getTransitionURL(this.transitions[i].getID());
-                        String anchor = new AnchorElement(label, url).toString();
-                        result = "<li>" + anchor + "</li>";
+                        String url = getTransitionURL(t.getID());
+                        log.warn("DEBUG: Active transition: " + label);
+                        return "<li>" + new AnchorElement(label, url).toString() + "</li>";
                     } catch (Exception e) {
-                        log.error("Could not get resource URL.", e);
+                        log.warn("Could not get transition URL!"); // TODO: Is this always the reason for an exception?!
+                        log.warn(e, e);
                     }
                 }
             }
-
-            if (result == null) {
-                result = "<li class='" + STYLE_INACTIVE + "'>" + label + "</li>";
-            }
-
-        } catch (WorkflowException e) {
-            log.error("Could not get workflow.", e);
+            log.warn("DEBUG: Inactive transition: " + label);
+            return "<li class='" + STYLE_INACTIVE + "'>" + label + "</li>";
+        } catch (Exception e) {
+            log.error(e, e);
+            return "<li class='" + STYLE_INACTIVE + "'>Exception: " + e.getMessage() + "</li>";
         }
-        
-        return result;
     }
 
     /**
-     * Two transitions match if they have the same description in the same language.
-     * @param t1 "left hand side"
-     * @param t2 "right hand side"
+     * Two transitions match if they have the same ID.
+     * @param t1 Transition 1
+     * @param t2 Transition 2
      * @return true if they match, else false
      */
     private boolean transitionsMatch(final Transition t1, final Transition t2) {
@@ -124,5 +115,18 @@ public class TransitionMenuContentImpl implements ITransitionMenuContent {
         url = url.replaceAll("//", "/");
 
         return url;
+    }
+
+    /**
+     * Also see org/wyona/yanel/core/workflow/WorkflowHelper#canDoTransition() or #getWorkflowIntrospection()
+     */
+    private boolean isComplied(Transition transition, Workflow workflow) throws Exception {
+        org.wyona.yanel.core.workflow.Condition[] conditions = transition.getConditions();
+        for (int k = 0; k < conditions.length; k++) {
+            if (!conditions[k].isComplied((org.wyona.yanel.core.api.attributes.WorkflowableV1) resource, workflow, revision)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
