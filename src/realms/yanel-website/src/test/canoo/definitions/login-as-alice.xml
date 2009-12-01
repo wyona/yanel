@@ -1,0 +1,14 @@
+<!-- Do NOT add an XML declaration! -->
+<macrodef name="login-as-alice" description="Login as user 'alice'">
+  <sequential>
+    <invoke description="Get the page: Login to realm" url="${realm.prefix}index.html?yanel.toolbar=on"/>
+    <verifyText description="Verify that text is contained in the page" text="Login"/>
+
+    <setInputField name="yanel.login.username" value="alice"/>
+    <setInputField name="yanel.login.password" value="levi"/>
+    <clickButton label="Login" fieldIndex="0"/>
+<!--
+    <clickButton name="Senden"/>
+-->
+  </sequential>
+</macrodef>

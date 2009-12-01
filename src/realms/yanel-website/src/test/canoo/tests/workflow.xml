@@ -33,11 +33,12 @@
        <verifyText description="cancel approve" text="Cancel Approve"/>
 
        <verifyText description="check submit link exists" text="../en/about.html?yanel.resource.workflow.transition=submit&amp;amp;yanel.resource.revision=1180700931944&amp;amp;yanel.resource.workflow.transition.output=xhtml"/>
+       <logout/>
 
-<!-- TODO: Login as "alice", because the user "lenya" is not authorized to execute the workflow transition "publish"
+       <login-as-alice/>
+       <invoke description="Get the page: " url="/${realm.prefix}en/about.html"/>
        <verifyText description="check publish link exists" text="../en/about.html?yanel.resource.workflow.transition=publish&amp;amp;yanel.resource.revision=1180700931944&amp;amp;yanel.resource.workflow.transition.output=xhtml"/>
--->
-
+       <logout/>
      </steps>
     </webtest>
   </target>
