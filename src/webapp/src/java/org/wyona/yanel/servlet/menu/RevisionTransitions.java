@@ -44,33 +44,31 @@ public class RevisionTransitions implements RevisionTransitionsMenuContent {
         this.menuItems = menuItems;
     }
 
-    private String getContent() {
-        String content = "";
+    /**
+     * @see org.wyona.yanel.servlet.menu.RevisionTransitionsMenuContent#toHTML()
+     */
+    public String toHTML() {
+        StringBuilder html = new StringBuilder("");
 
         try {
             Workflow workflow = WorkflowHelper.getWorkflow(this.resource);
             
             if (workflow != null) {
-                content = "<ul>";
-
-//                WorkflowableV1 workflowable = (WorkflowableV1) this.resource;
-//                String state = workflowable.getWorkflowState(revision);
+                html.append("<ul>");
 
                 Transition[] transitions = workflow.getTransitions();
-
                 for (int i = 0; i < transitions.length; i++) {
-                    content += menuItems.getTransitionElement(transitions[i]);
+                    html.append(menuItems.getTransitionElement(transitions[i]));
                 }
 
-                content += "</ul>";
+                html.append("</ul>");
             }
-            
         } catch (WorkflowException e) {
-            content = "";
+            html.append("<ul><li>Exception: " + e.getMessage() + "</li></ul>");
             log.error("Could not get workflow.", e);
         }
 
-        return content;
+        return html.toString();
     }
 
     /* (non-Javadoc)
@@ -86,12 +84,4 @@ public class RevisionTransitions implements RevisionTransitionsMenuContent {
     public Resource getResource() {
         return this.resource;
     }
-
-    /* (non-Javadoc)
-     * @see org.wyona.yanel.servlet.menu.RevisionTransitionsMenuContent#toHTML()
-     */
-    public String toHTML() {
-        return getContent();
-    }
-
 }
