@@ -136,6 +136,10 @@
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.file.forward.slashes}">
       <replacetoken>@LOG4J_FILE@</replacetoken>
     </replace>
+
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.dir.forward.slashes}">
+      <replacetoken>@LOG4J_DIR@</replacetoken>
+    </replace>
     <touch file="${log4j.file}"/>
   </target>
 

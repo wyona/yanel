@@ -81,8 +81,15 @@
     <property name="build.dir" location="${yanel.source.home}/build"/>
     <mkdir dir="${build.dir}"/>
     <property name="classes.dir" location="${build.dir}/classes"/>
+
     <property name="log4j.path" location="${build.dir}/logs"/>
     <mkdir dir="${log4j.path}"/>
+    <path id="log4j.dir.ref">
+      <pathelement location="${log4j.path}"/>
+    </path>
+    <pathconvert targetos="unix" property="log4j.dir.forward.slashes" refid="log4j.dir.ref">
+    </pathconvert>
+
     <property name="log4j.file" location="${log4j.path}/log4j-cmdl.log"/>
     <path id="log4j.file.ref">
       <pathelement location="${log4j.file}"/>
