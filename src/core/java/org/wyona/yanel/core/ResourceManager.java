@@ -28,7 +28,9 @@ import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yarep.core.NoSuchNodeException;
 
 /**
- *
+ * Service responsible for instantiating {@link Resource} objects for requests
+ *  given some initial resource-type-related configuration
+ *  and some context for the request.
  */
 public class ResourceManager {
 
@@ -36,44 +38,26 @@ public class ResourceManager {
     
     protected ResourceTypeRegistry rtRegistry;
     
-    /**
-     *
-     */
-    public ResourceManager() {
-    }
-    
     public void setResourceTypeRegistry(ResourceTypeRegistry registry) {
         this.rtRegistry = registry;
     }
 
     /**
      * Creates a new resource object in the given realm with the given path and the given type.
+     * @deprecated Use {@link #getResource(Environment, Realm, String, ResourceConfiguration)} instead,
+     *  or if you cannot then maybe
+     *  <code>getResource(environment, realm, path, new RTIbasedResourceConfiguration(rti))</code>
+     *  will suit your situation better.
      *
      * @param environment Environment which for example contains request and response
      * @param realm Realm where resource is living
      * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
-     * @param rtd Resource type definition
-     * @param rti Resource type identifier (deprecated and contains redudant information to resource type definition. What about properties?)
+     * @param rtd Resource type definition, should be not <samp>null</samp>
+     * @param rti Resource type identifier (deprecated and contains redundant information to resource type definition. What about properties?)
      */
+    @Deprecated
     public Resource getResource(Environment environment, Realm realm, String path, ResourceTypeDefinition rtd, ResourceTypeIdentifier rti) throws Exception {
-        String universalName = rtd.getResourceTypeUniversalName();
-        if (rtd != null) {
-            Resource resource = (Resource) Class.forName(rtd.getResourceTypeClassname()).newInstance();
-
-            resource.setRTD(rtd);
-            resource.setYanel(Yanel.getInstance());
-            resource.setRealm(realm);
-            resource.setPath(path);
-            resource.setRTI(rti);
-            resource.setEnvironment(environment);
-            
-            passParameters(resource, environment.getRequest());
-            
-            return resource;
-        } else {
-            log.error("No resource registered for rti: " + universalName);
-            return null;
-        }
+        return getResource(environment, realm, path, rtd, new RTIbasedResourceConfiguration(rti));
     }
 
     /**
@@ -83,8 +67,17 @@ public class ResourceManager {
      */
     public Resource getResource(Environment environment, Realm realm, String path, ResourceConfiguration rc) throws Exception {
         ResourceTypeDefinition rtd = rtRegistry.getResourceTypeDefinition(rc.getUniversalName());
-
         if (rtd != null) {
+            return getResource(environment, realm, path, rtd, rc);
+        }
+        log.error("Resource Type Definition cannot be determined for: " + realm + ", " + path + ", " + rc.getUniversalName());
+        return null;
+    }
+
+    /**
+     * @param rtd not <samp>null</samp>
+     */
+    private Resource getResource(Environment environment, Realm realm, String path, ResourceTypeDefinition rtd, ResourceConfiguration rc) throws Exception {
             try {
                 Resource resource = (Resource) Class.forName(rtd.getResourceTypeClassname()).newInstance();
 
@@ -93,6 +86,12 @@ public class ResourceManager {
                 resource.setRealm(realm);
                 resource.setPath(path);
                 resource.setConfiguration(rc);
+
+                // small hack to support old-style "RTI" resource-configuration objects:
+                if (rc instanceof RTIbasedResourceConfiguration) {
+                    resource.setRTI(((RTIbasedResourceConfiguration) rc).getRTI());
+                }
+
                 resource.setEnvironment(environment);
             
                 passParameters(resource, environment.getRequest());
@@ -102,10 +101,6 @@ public class ResourceManager {
                 log.error("Resource class not found for " + rtd.getResourceTypeUniversalName());
                 throw e;
             }
-        } else {
-            log.error("Resource Type Definition cannot be determined for: " + realm + ", " + path + ", " + rc.getUniversalName());
-            return null;
-        }
     }
 
     /**
@@ -125,8 +120,8 @@ public class ResourceManager {
         if (realm.getRTIRepository().existsNode(PathUtil.getRTIPath(path))) {
             log.warn("DEPRECATED: RTI should be replaced by ResourceConfiguration: " + realm + ", " + path);
             ResourceTypeIdentifier rti = getResourceTypeIdentifier(realm, path);
-            ResourceTypeDefinition rtd = rtRegistry.getResourceTypeDefinition(rti.getUniversalName());
-            return getResource(environment, realm, path, rtd, rti);
+            ResourceConfiguration rc = new RTIbasedResourceConfiguration(rti);
+            return getResource(environment, realm, path, rc);
         } 
 
         // Check on resource configuration map
