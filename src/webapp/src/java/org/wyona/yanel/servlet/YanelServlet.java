@@ -2224,7 +2224,6 @@ public class YanelServlet extends HttpServlet {
             //String userID = getEnvironment(request, response).getIdentity().getUsername();
             Identity identity = getIdentity(request, map);
             if (identity != null && identity.getUsername() != null) {
-                log.warn("DEBUG: Log browser history of user '"+identity.getUsername()+"'.");
                 Realm realm = map.getRealm(request.getServletPath());
                 User user = realm.getIdentityManager().getUserManager().getUser(identity.getUsername());
                 // The log should be attached to the user, because realms can share a UserManager, but the UserManager API has no mean to save such data, so how should we do this?
@@ -2244,6 +2243,10 @@ public class YanelServlet extends HttpServlet {
                  - Analyze mime type (advantage: no additional code/requests necessary)
                  - Log analysis (no special tracking required)
 */
+                String requestURL = request.getRequestURL().toString();
+                if (requestURL.endsWith("html")) { // TODO: Check the mime-type instead the suffix or use JavaScript or Pixel
+                    logAccess.info(requestURL + " " + realm.getID() + " " + identity.getUsername());
+                }
             } else {
                 // NOTE: Log access of anonymous user
                 String requestURL = request.getRequestURL().toString();
