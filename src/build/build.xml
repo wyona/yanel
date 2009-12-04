@@ -82,7 +82,6 @@
     <mkdir dir="${build.dir}"/>
     <property name="classes.dir" location="${build.dir}/classes"/>
 
-    <property name="log4j.path" location="${build.dir}/logs"/>
     <mkdir dir="${log4j.path}"/>
     <path id="log4j.dir.ref">
       <pathelement location="${log4j.path}"/>
