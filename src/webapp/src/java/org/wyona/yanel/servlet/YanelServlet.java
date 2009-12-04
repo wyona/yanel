@@ -91,6 +91,7 @@ public class YanelServlet extends HttpServlet {
 
     private static Logger log = Logger.getLogger(YanelServlet.class);
     private static Logger logAccess = Logger.getLogger("Access");
+    private static Logger log404 = Logger.getLogger("404");
 
     private Map map;
     private Yanel yanelInstance;
@@ -2076,8 +2077,7 @@ public class YanelServlet extends HttpServlet {
      *
      */
     private void do404(HttpServletRequest request, HttpServletResponse response, Document doc, String exceptionMessage) throws ServletException {
-        // TODO: Log all 404 within a dedicated file (with client info attached) such that an admin can react to it ...
-        // Also see logAccess
+        log404.info(request.getRequestURL().toString());
         //org.wyona.yarep.core.Node node = realm.getRepository().getNode("/yanel-logs/404.txt");
 
         String message = "No such node/resource exception: " + exceptionMessage;
