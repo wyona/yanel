@@ -2,10 +2,10 @@
 
 <project name="clean" default="clean" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
     
-    <target name="clean" description="Clean build" depends="init, clean-resources, clean-realms">
+  <target name="clean" description="Clean build" depends="init, clean-resources, clean-realms">
     <echo>INFO: Clean build</echo>
     <delete includeemptydirs="true">
-      <fileset dir="${build.dir}" excludes="logs/**, javadoc/**"/>
+      <fileset dir="${build.dir}" excludes="javadoc/**"/>
     </delete>
 
     <!-- Jetty target -->
