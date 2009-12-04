@@ -15,6 +15,7 @@ import java.util.Iterator;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -139,6 +140,8 @@ public class YanelServlet extends HttpServlet {
     
     private static final String CONTENT_TYPE_XHTML = "xhtml";
 
+    private static String ANALYTICS_COOKIE_NAME = "_yanel-analytics";
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         servletContextRealPath = config.getServletContext().getRealPath("/");
@@ -200,7 +203,7 @@ public class YanelServlet extends HttpServlet {
         }
 
         // TODO: Only HTML pages and PDFs etc. should be logged, but no images, CSS, etc.
-        if(logAccessEnabled) logAccess(request);
+        if(logAccessEnabled) doLogAccess(request, response);
 
         // Check for requests re policies
         String policyRequestPara = request.getParameter(YANEL_ACCESS_POLICY_USECASE);
@@ -2215,16 +2218,17 @@ public class YanelServlet extends HttpServlet {
     /**
      * Log browser history of each user
      */
-    private void logAccess(HttpServletRequest request) {
+    private void doLogAccess(HttpServletRequest request, HttpServletResponse response) {
+        Cookie cookie = getYanelAnalyticsCookie(request, response);
         // TBD: What about a cluster, performance/scalability? See for example http://www.oreillynet.com/cs/user/view/cs_msg/17399 (also see Tomcat conf/server.xml <Valve className="AccessLogValve" and className="FastCommonAccessLogValve")
         // See apache-tomcat-5.5.20/logs/localhost_access_log.2009-11-07.txt
         // 127.0.0.1 - - [07/Nov/2009:01:24:09 +0100] "GET /yanel/from-scratch-realm/de/index.html HTTP/1.1" 200 4464
         try {
+            Realm realm = map.getRealm(request.getServletPath());
             // TBD/TODO: What if user has logged out, but still has a persistent cookie?!
             //String userID = getEnvironment(request, response).getIdentity().getUsername();
             Identity identity = getIdentity(request, map);
             if (identity != null && identity.getUsername() != null) {
-                Realm realm = map.getRealm(request.getServletPath());
                 User user = realm.getIdentityManager().getUserManager().getUser(identity.getUsername());
                 // The log should be attached to the user, because realms can share a UserManager, but the UserManager API has no mean to save such data, so how should we do this?
                 // What if realm ID is changing?
@@ -2245,13 +2249,13 @@ public class YanelServlet extends HttpServlet {
 */
                 String requestURL = request.getRequestURL().toString();
                 if (requestURL.endsWith("html")) { // TODO: Check the mime-type instead the suffix or use JavaScript or Pixel
-                    logAccess.info(requestURL + " " + realm.getID() + " " + identity.getUsername());
+                    logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue() + " u:" + identity.getUsername());
                 }
             } else {
                 // NOTE: Log access of anonymous user
                 String requestURL = request.getRequestURL().toString();
                 if (requestURL.endsWith("html")) { // TODO: Check the mime-type instead the suffix or use JavaScript or Pixel
-                    logAccess.info(requestURL);
+                    logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue());
                 }
             }
             //log.warn("DEBUG: Referer: " + request.getHeader(HTTP_REFERRER));
@@ -2363,5 +2367,27 @@ public class YanelServlet extends HttpServlet {
         } else {
             Element notVersionableElement = (Element) resourceElement.appendChild(doc.createElement("not-versionable"));
         }
+    }
+
+    /**
+     * Set Yanel analytics cookie, which is persistent
+     * @param request Client request
+     */
+    private Cookie getYanelAnalyticsCookie(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (int i = 0; i < cookies.length; i++) {
+                if (cookies[i].getName().equals(ANALYTICS_COOKIE_NAME)) { // TODO: This code is not sufficient to make sure that only one cookie is being set, because Tomcat processes the requests in parallel and until the first cookie is registered, some more cookies might already be set!
+                    //log.debug("Has already a Yanel analytics cookie: " + cookies[i].getValue());
+                    return cookies[i];
+                } 
+            }
+        }
+
+        Cookie analyticsCookie = new Cookie(ANALYTICS_COOKIE_NAME, "YA-" + new java.util.Date().getTime()); // TODO: getTime() is not unique!
+        analyticsCookie.setMaxAge(31536000); // 1 year
+        //analyticsCookie.setMaxAge(86400); // 1 day
+        response.addCookie(analyticsCookie);
+        return analyticsCookie;
     }
 }
