@@ -21,6 +21,9 @@
     <replace file="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="1">
       <replacetoken>@CNODE_ID@</replacetoken>
     </replace>
+
+    <touch file="${log4j.path}/404-cnode1.log"/>
+
     <touch file="${log4j.path}/access-cnode1.log"/>
     <antcall target="enable-access-log"/>
 
@@ -100,6 +103,9 @@
     <replace file="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="2">
       <replacetoken>@CNODE_ID@</replacetoken>
     </replace>
+
+    <touch file="${log4j.path}/404-cnode2.log"/>
+
     <touch file="${log4j.path}/access-cnode2.log"/>
 
     <antcall target="patch-tomcat-cluster-node-2-ssl-port"/>
