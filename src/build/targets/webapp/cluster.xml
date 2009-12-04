@@ -22,6 +22,7 @@
       <replacetoken>@CNODE_ID@</replacetoken>
     </replace>
     <touch file="${log4j.path}/access-cnode1.log"/>
+    <antcall target="enable-access-log"/>
 
     <antcall target="patch-tomcat-cluster-node-1-ssl-port"/>
     
@@ -48,6 +49,16 @@
     <copy todir="${tomcat1.webapps.dir}/${servlet.context.prefix}">
       <fileset dir="${yanel.source.home}/build/webapps/${servlet.context.prefix}"/>
     </copy>
+  </target>
+
+  <target name="enable-access-log">
+    <echo>Enable access log</echo>
+    <xslt in="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"
+          out="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp"
+          style="enable-access-log.xsl">
+      <param name="log-access" expression="${log-access}"/>
+    </xslt>
+    <move file="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp" tofile="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"/>
   </target>
 
   <target name="patch-tomcat-cluster-node-1-ssl-port" if="property-tomcat1-ssl-port-is-set">
