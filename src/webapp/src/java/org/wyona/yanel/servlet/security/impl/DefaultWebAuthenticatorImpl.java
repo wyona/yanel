@@ -624,6 +624,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 log.warn("Neither default nor OpenID login!");
             }
             if (rememberLoginNameCookie != null) {
+                rememberLoginNameCookie.setPath(request.getContextPath());
                 rememberLoginNameCookie.setMaxAge(86400); // 1 day is 86400 seconds
                 response.addCookie(rememberLoginNameCookie);
             }
