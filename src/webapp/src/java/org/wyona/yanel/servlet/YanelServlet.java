@@ -2254,8 +2254,10 @@ public class YanelServlet extends HttpServlet {
                 String requestURL = request.getRequestURL().toString();
                 logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue() + " u:" + identity.getUsername());
             } else {
-                // NOTE: Log access of anonymous user
+                // INFO: Log access of anonymous user
                 String requestURL = request.getRequestURL().toString();
+                // TODO: Also log referer as entry point
+                logAccess.warn("TODO: Referer: " + request.getHeader("referer"));
                 logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue());
             }
             //log.warn("DEBUG: Referer: " + request.getHeader(HTTP_REFERRER));
@@ -2387,6 +2389,7 @@ public class YanelServlet extends HttpServlet {
         Cookie analyticsCookie = new Cookie(ANALYTICS_COOKIE_NAME, "YA-" + new java.util.Date().getTime()); // TODO: getTime() is not unique!
         analyticsCookie.setMaxAge(31536000); // 1 year
         //analyticsCookie.setMaxAge(86400); // 1 day
+        analyticsCookie.setPath(request.getContextPath());
         response.addCookie(analyticsCookie);
         return analyticsCookie;
     }
