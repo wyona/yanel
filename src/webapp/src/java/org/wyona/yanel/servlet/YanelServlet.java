@@ -202,8 +202,12 @@ public class YanelServlet extends HttpServlet {
             if (log.isDebugEnabled()) log.debug("Access granted: " + request.getServletPath());
         }
 
-        // TODO: Only HTML pages and PDFs etc. should be logged, but no images, CSS, etc.
-        if(logAccessEnabled) doLogAccess(request, response);
+        if(logAccessEnabled) {
+            // TODO: Only HTML pages and PDFs etc. should be logged, but no images, CSS, etc. Check the mime-type instead the suffix or use JavaScript or Pixel
+            if (request.getRequestURL().toString().endsWith("html")) {
+                doLogAccess(request, response);
+            }
+        }
 
         // Check for requests re policies
         String policyRequestPara = request.getParameter(YANEL_ACCESS_POLICY_USECASE);
@@ -2248,15 +2252,11 @@ public class YanelServlet extends HttpServlet {
                  - Log analysis (no special tracking required)
 */
                 String requestURL = request.getRequestURL().toString();
-                if (requestURL.endsWith("html")) { // TODO: Check the mime-type instead the suffix or use JavaScript or Pixel
-                    logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue() + " u:" + identity.getUsername());
-                }
+                logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue() + " u:" + identity.getUsername());
             } else {
                 // NOTE: Log access of anonymous user
                 String requestURL = request.getRequestURL().toString();
-                if (requestURL.endsWith("html")) { // TODO: Check the mime-type instead the suffix or use JavaScript or Pixel
-                    logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue());
-                }
+                logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue());
             }
             //log.warn("DEBUG: Referer: " + request.getHeader(HTTP_REFERRER));
         } catch(Exception e) { // Catch all exceptions, because we do not want to throw exceptions because of logging browser history
