@@ -100,7 +100,7 @@
     </replace>
     <touch file="${log4j.path}/log4j-cnode2.log"/>
 
-    <replace file="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="2">
+    <replace file="${tomcat2.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="2">
       <replacetoken>@CNODE_ID@</replacetoken>
     </replace>
 
