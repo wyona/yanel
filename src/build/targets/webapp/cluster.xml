@@ -25,7 +25,7 @@
     <touch file="${log4j.path}/404-cnode1.log"/>
 
     <touch file="${log4j.path}/access-cnode1.log"/>
-    <antcall target="enable-access-log"/>
+    <antcall target="enable-access-log-cnode1"/>
 
     <antcall target="patch-tomcat-cluster-node-1-ssl-port"/>
     
@@ -54,7 +54,7 @@
     </copy>
   </target>
 
-  <target name="enable-access-log">
+  <target name="enable-access-log-cnode1">
     <echo>Enable access log</echo>
     <xslt in="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"
           out="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp"
@@ -62,6 +62,16 @@
       <param name="log-access" expression="${log-access}"/>
     </xslt>
     <move file="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp" tofile="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"/>
+  </target>
+
+  <target name="enable-access-log-cnode2">
+    <echo>Enable access log</echo>
+    <xslt in="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"
+          out="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp"
+          style="enable-access-log.xsl">
+      <param name="log-access" expression="${log-access}"/>
+    </xslt>
+    <move file="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml.tmp" tofile="${tomcat2.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml"/>
   </target>
 
   <target name="patch-tomcat-cluster-node-1-ssl-port" if="property-tomcat1-ssl-port-is-set">
@@ -107,6 +117,7 @@
     <touch file="${log4j.path}/404-cnode2.log"/>
 
     <touch file="${log4j.path}/access-cnode2.log"/>
+    <antcall target="enable-access-log-cnode2"/>
 
     <antcall target="patch-tomcat-cluster-node-2-ssl-port"/>
 
