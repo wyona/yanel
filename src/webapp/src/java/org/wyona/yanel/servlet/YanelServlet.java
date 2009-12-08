@@ -2084,7 +2084,8 @@ public class YanelServlet extends HttpServlet {
      *
      */
     private void do404(HttpServletRequest request, HttpServletResponse response, Document doc, String exceptionMessage) throws ServletException {
-        log404.info(request.getRequestURL().toString());
+        log404.info("Referer: " + request.getHeader("referer"));
+        log404.warn(request.getRequestURL().toString());
         //org.wyona.yarep.core.Node node = realm.getRepository().getNode("/yanel-logs/404.txt");
 
         String message = "No such node/resource exception: " + exceptionMessage;
