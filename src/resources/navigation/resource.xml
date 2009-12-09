@@ -3,10 +3,10 @@
 <resource xmlns="http://www.wyona.org/yanel/1.0"
   name="navigation"
   namespace="http://www.wyona.org/yanel/resource/1.0"
-  class="org.wyona.yanel.impl.resources.NavigationResource"
+  class="org.wyona.yanel.impl.resources.navigation.NavigationResource"
   >
 <description>
-Navigation XML for building menu etc.
+Navigation resource (based on XML) for building menus etc.
 </description>
 
 <rtd>

@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.impl.resources;
+package org.wyona.yanel.impl.resources.navigation;
 
 import org.w3c.dom.Document;
 import org.wyona.yanel.core.Resource;
