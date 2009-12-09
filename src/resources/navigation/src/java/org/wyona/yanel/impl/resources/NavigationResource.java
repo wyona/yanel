@@ -26,7 +26,8 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.ResourceResolver;
-import org.wyona.yanel.core.transformation.I18nTransformer2;
+import org.wyona.yanel.core.source.SourceResolver;
+import org.wyona.yanel.core.transformation.I18nTransformer3;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 
@@ -48,6 +49,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
 
 import org.apache.log4j.Category;
 import org.apache.xml.resolver.tools.CatalogResolver;
@@ -177,8 +179,11 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
                     xsltHandlers[i].getTransformer().setParameter("activePath", activePath);
                 }
                 
+                SourceResolver uriResolver = new SourceResolver(this);
+
                 // create i18n transformer:
-                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage(), getRealm().getDefaultLanguage());
+                I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), getLanguage(), getRealm().getDefaultLanguage(), uriResolver);
+                //I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), getRequestedLanguage(), getRealm().getDefaultLanguage(), uriResolver);
                 i18nTransformer.setEntityResolver(catalogResolver);
                 
                 // create xinclude transformer:
@@ -419,5 +424,29 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
      */
     public void setProperty(String name, Object value) {
         log.warn("Not implemented yet!");
+    }
+
+    /**
+     * Gets the names of the i18n message catalogues used for the i18n transformation.
+     * Uses the following priorization:
+     * 1. rc config properties named 'i18n-catalogue'.
+     * 2. realm i18n-catalogue
+     * 3. 'global'
+     * @return i18n catalogue name
+     */
+    private String[] getI18NCatalogueNames() throws Exception {
+        ArrayList<String> catalogues = new ArrayList<String>();
+        String[] rcCatalogues = getResourceConfigProperties("i18n-catalogue");
+        if (rcCatalogues != null) {
+            for (int i = 0; i < rcCatalogues.length; i++) {
+                catalogues.add(rcCatalogues[i]);
+            }
+        }
+        String realmCatalogue = getRealm().getI18nCatalogue();
+        if (realmCatalogue != null) {
+            catalogues.add(realmCatalogue);
+        }
+        catalogues.add("global");
+        return catalogues.toArray(new String[catalogues.size()]);
     }
 }
