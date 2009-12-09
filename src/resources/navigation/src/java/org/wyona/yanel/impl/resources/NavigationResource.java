@@ -51,7 +51,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 
@@ -73,7 +73,7 @@ import org.apache.avalon.framework.configuration.ConfigurationUtil;
  */
 public class NavigationResource extends Resource implements ViewableV2, ModifiableV2 {
 
-    private static Category log = Category.getInstance(NavigationResource.class);
+    private static Logger log = Logger.getLogger(NavigationResource.class);
 
     /**
      *
@@ -182,8 +182,7 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
                 SourceResolver uriResolver = new SourceResolver(this);
 
                 // create i18n transformer:
-                I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), getLanguage(), getRealm().getDefaultLanguage(), uriResolver);
-                //I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), getRequestedLanguage(), getRealm().getDefaultLanguage(), uriResolver);
+                I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), language, getRealm().getDefaultLanguage(), uriResolver);
                 i18nTransformer.setEntityResolver(catalogResolver);
                 
                 // create xinclude transformer:
@@ -434,7 +433,7 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
      * 3. 'global'
      * @return i18n catalogue name
      */
-    private String[] getI18NCatalogueNames() throws Exception {
+    private String[] getI18NCatalogueNames() throws Exception { // TODO: Also see org.wyona.yanel.impl.resources/BasicXMLResource#getI18NCatalogueNames()
         ArrayList<String> catalogues = new ArrayList<String>();
         String[] rcCatalogues = getResourceConfigProperties("i18n-catalogue");
         if (rcCatalogues != null) {
