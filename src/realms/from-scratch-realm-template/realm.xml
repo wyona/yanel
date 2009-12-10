@@ -11,6 +11,16 @@
 
   <ac-policies class="org.wyona.security.impl.PolicyManagerFactoryImplVersion2">config/ac-policies-repository.xml</ac-policies>
 
+<!-- NOTE: Not implemented yet! But as a proposal to make the PolicyManager aware of realm specific usecases.
+  <ac-policies class="org.wyona.security.impl.PolicyManagerFactoryImplVersion2">
+    <security:config xmlns:security="http//www.wyona.org/security/policy/2.1">config/ac-policies-repository.xml</security:config>
+    <security:usecases xmlns:security="http//www.wyona.org/security/policy/2.1">
+      <security:usecase>workflow.approve</security:usecase>
+      <security:usecase>workflow.publish</security:usecase>
+    </security:usecases>
+  </ac-policies>
+-->
+
   <ac-identities>config/ac-identities-repository.xml</ac-identities>
 
 <!--
