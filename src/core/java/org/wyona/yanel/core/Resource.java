@@ -322,6 +322,4 @@ public abstract class Resource {
         this.request = environment.getRequest();
         this.response = environment.getResponse();
     }
-
-
 }
