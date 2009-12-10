@@ -2,7 +2,8 @@
 
 <project name="check-conf-version" default="check">
     
-  <target name="check-config-version" depends="init">
+<!-- INFO: The various antcall-targets are used individually at various places
+  <target name="check-configs-re-version" depends="init">
     <condition property="local.yanel.config.exists">
       <available file="${local.config.home}/local.yanel.xml" type="file"/>
     </condition> 
@@ -17,9 +18,13 @@
       <available file="${local.config.home}/local.resource-types.xml" type="file"/>
     </condition>
     <antcall target="check-config-version-resource-types-xml"/>
+
+    <condition property="local.log4j.config.exists">
+      <available file="${local.config.home}/local.log4j.properties" type="file"/>
+    </condition>
+    <antcall target="check-config-version-log4j-properties"/>
   </target>
-
-
+-->
 
   <target name="check-config-version-yanel-xml" if="local.yanel.config.exists">
     <echo>Check version of local.yanel.xml ...</echo>
@@ -29,6 +34,22 @@
       <equals arg1="${defaultconf.yanel.version}" arg2="${localconf.yanel.version}"/>
     </condition>
     <fail unless="local.yanel.properties.in.sync" message="It seems that your local.yanel.xml is out of date. Please compare your local.yanel.xml with the default configuration conf/yanel.xml and update accordingly."/>
+  </target>
+
+  <target name="check-config-version-log4j-properties" if="local.log4j.config.exists">
+    <echo>Check version of local.log4j.properties ...</echo>
+
+    <!-- TODO: Check if property actually exists or rather is set! -->
+    <property file="${local.config.home}/local.log4j.properties" prefix="local.log4j"/>
+    <property file="${yanel.source.home}/conf/log4j.properties"/>
+
+    <echo>Local log4j properties version: ${local.log4j.version.log4j.properties}</echo>
+    <echo>Source log4j properties version: ${version.log4j.properties}</echo>
+
+    <condition property="local.log4j.properties.in.sync">
+      <equals arg1="${local.log4j.version.log4j.properties}" arg2="${version.log4j.properties}"/>
+    </condition>
+    <fail unless="local.log4j.properties.in.sync" message="WARNING: It seems that your local.log4j.properties is out of date. Please compare your local.log4j.properties with the default configuration conf/log4j.properties (see changes within conf/log4j.properties) and update accordingly."/>
   </target>
 
   <target name="check-config-version-realms-xml" if="local.realms.config.exists">
