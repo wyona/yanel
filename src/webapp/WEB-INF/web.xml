@@ -60,6 +60,13 @@
       <!--<param-value>true</param-value>-->
     </init-param>
 
+    <!-- Scheduler -->
+    <init-param>
+      <param-name>scheduler</param-name>
+      <param-value>false</param-value>
+      <!--<param-value>true</param-value>-->
+    </init-param>
+
     <!-- Allow client-side caching of static htdocs content. Specify value in hours. -->
     <init-param>
      <param-name>static-content-cache-expires</param-name>
