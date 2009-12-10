@@ -85,6 +85,9 @@ import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import org.quartz.Scheduler;
+import org.quartz.impl.StdSchedulerFactory;
+
 /**
  * Main entry of Yanel webapp
  */
@@ -142,6 +145,8 @@ public class YanelServlet extends HttpServlet {
 
     private static String ANALYTICS_COOKIE_NAME = "_yanel-analytics";
 
+    private Scheduler scheduler;
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         servletContextRealPath = config.getServletContext().getRealPath("/");
@@ -169,6 +174,11 @@ public class YanelServlet extends HttpServlet {
 
             // TODO: Make this value configurable also per realm or per individual user!
             logAccessEnabled = new Boolean(config.getInitParameter("log-access")).booleanValue();
+
+            if (new Boolean(config.getInitParameter("scheduler")).booleanValue()) {
+                log.warn("Startup scheduler ...");
+                scheduler = StdSchedulerFactory.getDefaultScheduler();
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage(), e);
@@ -1921,7 +1931,18 @@ public class YanelServlet extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
+
         yanelInstance.destroy();
+
+        if (scheduler != null) {
+            try {
+                log.warn("Shutdown scheduler ...");
+                scheduler.shutdown();
+            } catch(Exception e) {
+                log.error(e, e);
+            }
+        }
+
         log.warn("Yanel webapp has been shut down.");
     }
 
