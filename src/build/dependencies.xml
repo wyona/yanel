@@ -92,6 +92,7 @@
       <dependency groupId="commons-beanutils" artifactId="commons-beanutils" version="1.6"/>
       <dependency groupId="commons-fileupload" artifactId="commons-fileupload" version="1.2"/>
       <dependency groupId="dom4j" artifactId="dom4j" version="1.5.2"/>
+      <dependency groupId="quartz" artifactId="quartz-all" version="1.6.6"/>
 
 
       <!-- OpenID joid impl -->
