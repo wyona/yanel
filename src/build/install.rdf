@@ -11,8 +11,8 @@
     <um:name>Wyona Yanel Webapp</um:name>
     <um:description>Content Management Software</um:description>
     <um:creator>Wyona</um:creator>
-    <um:homepageURL>http://yanel.wyona.org/</um:homepageURL>
-    <um:updateURL>http://yanel.wyona.org/downloads/update.rdf</um:updateURL>
+    <um:homepageURL>http://www.yanel.org/</um:homepageURL>
+    <um:updateURL>http://www.yanel.org/downloads/update.rdf</um:updateURL>
     <um:protectedFiles>
       <rdf:Seq>
        <rdf:li>WEB-INF/classes/yanel.xml</rdf:li>
