@@ -175,7 +175,12 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             log.error(e + " (" + getPath() + ", " + getRealm() + ")", e);
         }
 
-        view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
+        try {
+            view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
+        } catch(Exception e) {
+            view.setInputStream(new java.io.StringBufferInputStream("Exception: " + e.getMessage()));
+            log.error(e, e);
+        }
         return view;
     }
 
@@ -194,10 +199,10 @@ public class UpdateFinder extends Resource implements ViewableV2 {
     /**
      * Generate screen
      */
-    private String getScreen() {
+    private String getScreen() throws Exception {
         
-        StringBuffer body = new StringBuffer();
-        StringBuffer head = new StringBuffer();
+        StringBuilder body = new StringBuilder();
+        StringBuilder head = new StringBuilder();
         Enumeration<?> parameters = request.getParameterNames();
         if (!parameters.hasMoreElements()) {
             plainRequest(body);
@@ -259,7 +264,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
     /**
      *
      */
-    private void plainRequest(StringBuffer htmlBodyContent) {
+    private void plainRequest(StringBuilder htmlBodyContent) throws Exception {
 
         InstallInfo installInfo = null;
         try {
@@ -288,7 +293,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
 
         // show installed version
         htmlBodyContent.append("<p>");
-        htmlBodyContent.append("Your installed yanel is: " + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision());
+        htmlBodyContent.append("Your installed Yanel version is: <b>" + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision() + "</b>");
         htmlBodyContent.append("</p>");
 
         // TODO: implement getBestYanelWebapp() to get all yanel-webapp version which has an
@@ -300,12 +305,12 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             updatebleYanelVersions = getSuitableYanelUpdates(installInfo, updateInfo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            htmlBodyContent.append("<p>Could not get Updates. " + e.getMessage() + "</p>");
+            htmlBodyContent.append("<p>Could not get Updates because of exception: " + e.getMessage() + "</p>");
         }
 
         if (updatebleYanelVersions == null) {
             htmlBodyContent.append("<p>");
-            htmlBodyContent.append("No updates found.");
+            htmlBodyContent.append("No updates found for your version within <a href=\"" + installInfo.getUpdateURL() + "\">" + installInfo.getUpdateURL() + "</a>");
             htmlBodyContent.append("</p>");
         } else {
             Map<String, String> newestYanel =updatebleYanelVersions.get(updatebleYanelVersions.size() - 1);
@@ -354,13 +359,11 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         
         // show installed versions
         try {
-            htmlBodyContent.append("<p>");
-            htmlBodyContent.append("Installed versions:");
-            htmlBodyContent.append("</p>");
+            htmlBodyContent.append("<h3>Installed versions</h3>");
             TomcatContextHandler tomcatContextHandler = new TomcatContextHandler(request);
             Map<String, String> contextAndWebapp = tomcatContextHandler.getContextAndWebapp();
 
-            htmlBodyContent.append("<table class=\"sortable\">");
+            htmlBodyContent.append("<table class=\"sortable\" border=\"1\">");
             htmlBodyContent.append("<thead>");
             htmlBodyContent.append("<tr><th>Context</th><th>Webapp</th></tr>");
             htmlBodyContent.append("</thead>");
@@ -387,7 +390,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
     /**
      *
      */
-    private void getUpdateConfirmScreen(StringBuffer htmlBodyContent) {
+    private void getUpdateConfirmScreen(StringBuilder htmlBodyContent) {
         try {
             UpdateInfo updateInfo = getUpdateInfo();
             InstallInfo installInfo = getInstallInfo();
@@ -440,7 +443,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
     /**
      *
      */
-    private void getUpdateScreen(StringBuffer htmlBodyContent, StringBuffer head) {
+    private void getUpdateScreen(StringBuilder htmlBodyContent, StringBuilder head) {
         HttpSession session = request.getSession();
         try {
             String destDir = request.getSession().getServletContext().getRealPath(".") + File.separator + "..";
