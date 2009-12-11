@@ -109,7 +109,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
             }
 
             String[] xsltPath = getXSLTPath(getPath());
-            if (xsltPath != null) {
+            if (xsltPath != null && xsltPath.length > 0) {
 
                 // create reader:
                 XMLReader xmlReader = XMLReaderFactory.createXMLReader();
@@ -167,6 +167,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
                 view.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
                 return view;
             }
+
             log.debug("Mime-Type: " + mimeType);
             view.setInputStream(new java.io.StringBufferInputStream(getScreen()));
             return view;
