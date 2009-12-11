@@ -175,7 +175,7 @@ public class YanelServlet extends HttpServlet {
             // TODO: Make this value configurable also per realm or per individual user!
             logAccessEnabled = new Boolean(config.getInitParameter("log-access")).booleanValue();
 
-            if (new Boolean(config.getInitParameter("scheduler")).booleanValue()) {
+            if (yanelInstance.isSchedulerEnabled()) {
                 log.warn("Startup scheduler ...");
                 scheduler = StdSchedulerFactory.getDefaultScheduler();
             }
