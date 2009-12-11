@@ -13,11 +13,12 @@
   
   <xsl:template match="/">
     <yanel>
-      <xsl:comment> NOTE: This file has been generated automatically from conf/yanel.xml!</xsl:comment>
+      <xsl:comment> NOTE: This file has been generated automatically from conf/yanel.xml by src/build/yanel2properties.xsl</xsl:comment>
       <version version="{$yanel.version}" revision="{$yanel.revision}"/>
       <xsl:copy-of select="/yanel:yanel/yanel:realms-config"/>
       <xsl:copy-of select="/yanel:yanel/yanel:resource-types-config"/>
       <xsl:copy-of select="/yanel:yanel/yanel:reserved-prefix"/>
+      <xsl:copy-of select="/yanel:yanel/yanel:scheduler"/>
     </yanel>
   </xsl:template>
 
