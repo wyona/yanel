@@ -53,6 +53,7 @@ public class Yanel {
     private String version = null;
     private String revision = null;
     private String reservedPrefix = null;
+    private boolean schedulerEnabled;
 
     private static Logger log = Logger.getLogger(Yanel.class);
 
@@ -100,6 +101,13 @@ public class Yanel {
        version = versionConfig.getAttribute("version");
        revision = versionConfig.getAttribute("revision");
        reservedPrefix = config.getChild("reserved-prefix").getValue();
+
+       if (config.getChild("scheduler", false) != null) {
+           schedulerEnabled = config.getChild("scheduler").getAttributeAsBoolean("enabled");
+       } else {
+           log.warn("Scheduler not configured within configuration: " + configFile);
+           schedulerEnabled = false;
+       }
 
        isInitialized = true;
     }
@@ -227,5 +235,12 @@ public class Yanel {
      */
     public String getReservedPrefix() {
         return reservedPrefix;
+    }
+
+    /**
+     * Check if scheduler is enabled
+     */
+    public boolean isSchedulerEnabled() {
+        return schedulerEnabled;
     }
 }
