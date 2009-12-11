@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<yanel xmlns="http://www.wyona.org/yanel/1.0" version="2007061900">
+<yanel xmlns="http://www.wyona.org/yanel/1.0" version="2009101100">
   
   <!-- # Realms configuration -->
   <realms-config src="realms.xml"/>
@@ -10,5 +10,8 @@
   
   <!-- # Reserved-Prefix configuration -->
   <reserved-prefix>yanel</reserved-prefix>
+  
+  <!-- # Scheduler configuration -->
+  <scheduler enabled="true"/>
 
 </yanel>
