@@ -12,6 +12,6 @@
   <reserved-prefix>yanel</reserved-prefix>
   
   <!-- # Scheduler configuration -->
-  <scheduler enabled="true"/>
+  <scheduler enabled="false"/>
 
 </yanel>
