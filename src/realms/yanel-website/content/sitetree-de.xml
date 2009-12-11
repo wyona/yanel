@@ -10,7 +10,9 @@
   <node uuid="" href="license.html"><name>Lizenz</name></node>
   <node uuid="" href="en/getting-started/index.html"><name>Getting Started</name></node>
   <node uuid="" href="en/features.html"><name>Features</name></node>
+<!-- TODO: Publish more news ;-)
   <node uuid="" href="news/index.html"><name>Neuigkeiten</name></node>
+-->
   <node uuid="" href="en/documentation/index.html"><name>Dokumentation</name></node>
 </node>
 
