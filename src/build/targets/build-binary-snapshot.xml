@@ -82,7 +82,7 @@
     <delete dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/balancer"/>
     <delete dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/webdav"/>
     
-    <!-- Add context file -->
+    <!-- Add context files (ROOT and yanel specific, whereas both point to the same webapp) -->
     <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/Wyona-Yanel-webapp-${yanel.source.version}.xml"/>
     <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/Wyona-Yanel-webapp-${yanel.source.version}.xml" value="yanel-webapp-${yanel.source.version}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
@@ -91,6 +91,9 @@
     <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml" value="yanel-webapp-${yanel.source.version}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace>
+    <!-- Delete obsolete context files -->
+    <delete file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/host-manager.xml"/>
+    <delete file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/manager.xml"/>
   </target>
   
   <!-- Copy realms and resources -->
@@ -174,7 +177,8 @@
     <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}">
       <fileset dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}" />
     </copy>
-    <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps/yanel-webapp-${yanel.source.version}">
+    <mkdir dir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/yanel-webapps"/>
+    <copy todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/yanel-webapps/yanel-webapp-${yanel.source.version}">
       <fileset dir="${tmp.dir}"/>
     </copy>
     <!-- <move file="${snapshot.dir.unix}/${servlet.context.prefix}.war" todir="${snapshot.dir.win}/apache-tomcat-${tomcat.version}/webapps"/> -->
@@ -204,7 +208,8 @@
   </target>
   
   <target name="bin-snapshot-unix">
-    <copy todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/webapps/yanel-webapp-${yanel.source.version}">
+    <mkdir dir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/yanel-webapps"/>
+    <copy todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/yanel-webapps/yanel-webapp-${yanel.source.version}">
       <fileset dir="${tmp.dir}"/>
     </copy>
 
