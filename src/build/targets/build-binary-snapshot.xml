@@ -87,9 +87,15 @@
     <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/Wyona-Yanel-webapp-${yanel.source.version}.xml" value="yanel-webapp-${yanel.source.version}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
     </replace>
+    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/Wyona-Yanel-webapp-${yanel.source.version}.xml" value="yanel-webapps">
+      <replacetoken>@WEBAPPS_DIR@</replacetoken>
+    </replace>
     <copy file="${yanel.source.home}/src/binary-dist/tomcat-context.xml" tofile="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml"/>
     <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml" value="yanel-webapp-${yanel.source.version}">
       <replacetoken>@SERVLET_CONTEXT@</replacetoken>
+    </replace>
+    <replace file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/ROOT.xml" value="yanel-webapps">
+      <replacetoken>@WEBAPPS_DIR@</replacetoken>
     </replace>
     <!-- Delete obsolete context files -->
     <delete file="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/conf/Catalina/localhost/host-manager.xml"/>
