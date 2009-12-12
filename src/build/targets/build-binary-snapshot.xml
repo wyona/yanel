@@ -2,15 +2,20 @@
 
 <project name="build-binary-snapshot" default="bin-snapshot" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
   
-<!--
-  <target name="bin-snapshot" description="Create a binary snapshot" depends="init">
--->
-  <target name="bin-snapshot" description="Create a binary snapshot" depends="init, webapp">
+  <target name="bin-snapshot" description="Create a binary snapshot" depends="init, clean">
     <fail message="No SVN revision specified on which the binary snapshot shall be based on! Please configure property 'yanel.revision' within 'src/build/local.build.properties' and run build clean before you run build bin-snapshot.">
       <condition>
         <equals arg1="${yanel.revision}" arg2="REVISION"/>
       </condition>
     </fail>
+
+    <fail message="Please set property 'copy.resource-type-configs.to.webapp' to 'true' within 'src/build/local.build.properties' and run build clean before you run build bin-snapshot.">
+      <condition>
+        <equals arg1="${copy.resource-type-configs.to.webapp}" arg2="false"/>
+      </condition>
+    </fail>
+
+    <antcall target="webapp"/>
 
     <property name="snapshot.dir.unix" value="${build.dir}/bin-snapshots/wyona-yanel-${yanel.source.version}-bin"/>
     <fail message="Directory already exists: '${snapshot.dir.unix}'. Either delete this directory or use a different version/revision!">
