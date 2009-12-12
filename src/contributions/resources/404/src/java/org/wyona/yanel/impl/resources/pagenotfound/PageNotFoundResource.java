@@ -29,13 +29,18 @@ public class PageNotFoundResource extends BasicXMLResource {
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<y:yanel xmlns:y=\"http://www.wyona.org/yanel/1.0\" servlet-context-real-path=\"TBD\">");
         sb.append("<y:request y:servlet-path=\"" + getPath() + "\" y:uri=\"" + getPath() + "\">TBD</y:request>");
+        sb.append("<!--");
         sb.append("<y:session y:id=\"TBD\">TBD</y:session>");
+
+        // TODO: What is y:resource good for? y:realm makes sense though.
         sb.append("<y:resource>");
         sb.append("<y:config y:rti-name=\"TBD\" y:rti-namespace=\"TBD\"/>");
         sb.append("<y:realm/>");
         sb.append("<y:view/>");
         sb.append("<y:size/>");
         sb.append("</y:resource>");
+
+        sb.append("-->");
         sb.append("<y:exception y:status=\"404\">");
         sb.append("Resource not found exception: " + getPath());
         sb.append("</y:exception>");
