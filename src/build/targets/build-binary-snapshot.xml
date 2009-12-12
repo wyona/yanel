@@ -6,7 +6,7 @@
   <target name="bin-snapshot" description="Create a binary snapshot" depends="init">
 -->
   <target name="bin-snapshot" description="Create a binary snapshot" depends="init, webapp">
-    <fail message="No revision specified! Please configure property 'yanel.revision' within 'src/build/local.build.properties'.">
+    <fail message="No SVN revision specified on which the binary snapshot shall be based on! Please configure property 'yanel.revision' within 'src/build/local.build.properties' and run build clean before you run build bin-snapshot.">
       <condition>
         <equals arg1="${yanel.revision}" arg2="REVISION"/>
       </condition>
