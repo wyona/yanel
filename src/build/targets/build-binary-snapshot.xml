@@ -130,27 +130,6 @@
       <replacetoken>@REALMS_DIR@</replacetoken>
     </replace>
 
-    <copy file="${yanel.source.home}/conf/resource-types.xml" tofile="${tmp.dir}/WEB-INF/classes/resource-types.xml" overwrite="true"/>
-
-    <replace file="${tmp.dir}/WEB-INF/classes/resource-types.xml" value="../../resources">
-      <replacetoken>@YANEL_SRC_DIR@/src/resources</replacetoken>
-    </replace>
-    <replace file="${tmp.dir}/WEB-INF/classes/resource-types.xml" value="../../resources">
-      <replacetoken>@YANEL_SRC_DIR@/src/contributions/resources</replacetoken>
-    </replace>
-    <replace file="${tmp.dir}/WEB-INF/classes/resource-types.xml" value="../../resources">
-      <replacetoken>@YANEL_SRC_DIR@/src/realms/welcome-admin/yanel/resources</replacetoken>
-    </replace>
-
-    <copy todir="${tmp.dir}/resources">
-      <fileset dir="${yanel.source.home}/src/resources"/>
-    </copy>
-    <copy todir="${tmp.dir}/resources">
-      <fileset dir="${yanel.source.home}/src/contributions/resources"/>
-    </copy>
-    <copy todir="${tmp.dir}/resources">
-      <fileset dir="${yanel.source.home}/src/realms/welcome-admin/yanel/resources"/>
-    </copy>
     <xslt in="${yanel.source.home}/conf/yanel.xml" out="${tmp.dir}/WEB-INF/classes/yanel.properties" style="yanel2properties.xsl" force="true">
       <!--<param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>-->
     </xslt>
