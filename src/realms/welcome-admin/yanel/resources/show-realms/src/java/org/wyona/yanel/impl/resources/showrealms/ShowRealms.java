@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.impl.resources;
+package org.wyona.yanel.impl.resources.showrealms;
 
 import java.io.File;
 import javax.xml.transform.Transformer;
