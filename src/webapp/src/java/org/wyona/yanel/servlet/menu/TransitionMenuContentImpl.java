@@ -54,7 +54,7 @@ public class TransitionMenuContentImpl implements ITransitionMenuContent {
      * @return
      */
     public String getTransitionElement(final Transition t) {
-        log.warn("DEBUG: Transition: " + t.getID());
+        if(log.isDebugEnabled()) log.debug("Transition: " + t.getID());
         try {
             Workflow workflow = WorkflowHelper.getWorkflow(this.resource);
             Transition[] stateSpecificTransitions = workflow.getLeavingTransitions(this.state);
