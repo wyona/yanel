@@ -2,7 +2,7 @@
  * Copyright 2006 Wyona
  */
 
-package org.wyona.yanel.impl.resources;
+package org.wyona.yanel.impl.resources.rescreator;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
