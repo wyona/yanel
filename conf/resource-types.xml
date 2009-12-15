@@ -65,7 +65,7 @@
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/wiki/" compile="true" copy-dir-name="yanel-wiki"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/zip/" compile="true" copy-dir-name="yanel-zip"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/calendar/" compile="true" copy-dir-name="yanel-calendar"/>
-  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/resource-creator/" compile="true" copy-dir-name="yanel-resource-creator"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/resource-creator/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/davcollection/" compile="true" copy-dir-name="yanel-davcollection"/>
 
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/pdf/" compile="true" copy-dir-name="yanel-pdf"/>
