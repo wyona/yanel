@@ -29,8 +29,8 @@ import org.wyona.yarep.core.NoSuchNodeException;
 
 /**
  * Service responsible for instantiating {@link Resource} objects for requests
- *  given some initial resource-type-related configuration
- *  and some context for the request.
+ * given some initial resource-type-related configuration
+ * and some context for the request.
  */
 public class ResourceManager {
 
