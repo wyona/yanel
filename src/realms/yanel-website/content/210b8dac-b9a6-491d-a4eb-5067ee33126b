@@ -47,7 +47,8 @@ The i18n catalogue can be configured as follows
 <pre space="preserve">&lt;i18n-catalogue&gt;yanelrepo:/my-i18n-catalogue.xml&lt;/i18n-catalogue&gt;</pre>
 <p>More information on i18n can be found within the <a href="../i18n.html">i18n documentation</a>.</p>
 
-<a name="repo-navigation"/>
+<a name="repo-navigation">
+</a>
 <h2>Custom repository navigation</h2>
 <p>
 The custom repository navigation can be configured as follows
