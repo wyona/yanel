@@ -511,7 +511,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         if (parentNode != null) {
             String nodeName = org.wyona.commons.io.PathUtil.getName(newResource.getPath());
             String label = nodeName;
-            parentNode.appendChild(sitetree.createNode(nodeName, label));
+            parentNode.appendChild(sitetree.createNode(nodeName, label)); // Sitetree will be saved persistently automatically within appendChild(Node)
         } else {
             log.error("No such node with path: " + parentPath);
         }
