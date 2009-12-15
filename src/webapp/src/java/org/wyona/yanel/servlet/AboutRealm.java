@@ -16,6 +16,7 @@ public class AboutRealm {
         sb.append("<body><h1>About Realm</h1>");
         sb.append("<p>Name: " + realm.getName() + "</p>");
         sb.append("<p>Default language: " + realm.getDefaultLanguage() + "</p>");
+        sb.append("<p>Sitetree implementation: See repo-navigation within file <code>" + realm.getConfigFile() + "</code></p>");
         sb.append("</body>");
         sb.append("</html>");
         return sb.toString();
