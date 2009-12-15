@@ -81,9 +81,10 @@ public class NodeDOMImpl implements Node {
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.navigation.Node#isResource()
      */
     public boolean isResource() {
+        // TODO: Compare with isCollection()!
         org.w3c.dom.NodeList nl = element.getElementsByTagName("node");
         if (nl == null)
             return true;
@@ -93,9 +94,10 @@ public class NodeDOMImpl implements Node {
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.navigation.Node#isCollection()
      */
     public boolean isCollection() {
+        // TODO: It's possible that a node does not have any child nodes yet, but nevertheless should be treated as collection
         org.w3c.dom.NodeList nl = element.getElementsByTagName("node");
         if (nl != null) {
             if (nl.getLength() > 0) {
@@ -107,7 +109,7 @@ public class NodeDOMImpl implements Node {
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.navigation.Node#getChildren()
      */
     public Node[] getChildren() {
         org.w3c.dom.NodeList nl = element.getChildNodes();
