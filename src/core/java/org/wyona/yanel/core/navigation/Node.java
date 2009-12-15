@@ -46,17 +46,17 @@ public interface Node {
     public void removeChild(Node child);
 
     /**
-     *
+     * Check if node is a resource
      */
     public boolean isResource();
 
     /**
-     *
+     * Check if node is a collection
      */
     public boolean isCollection();
 
     /**
-     *
+     * Get all child nodes of this node
      */
     public Node[] getChildren();
 
