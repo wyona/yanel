@@ -31,7 +31,7 @@ public class NodeDOMImpl implements Node {
 
     private static Logger log = Logger.getLogger(NodeDOMImpl.class);
 
-    org.w3c.dom.Element element;
+    Element element;
     SitetreeDOMImpl sitetree;
 
     public NodeDOMImpl(org.w3c.dom.Element element, SitetreeDOMImpl sitetree) {
@@ -64,10 +64,18 @@ public class NodeDOMImpl implements Node {
     }
 
     /**
-     * @return new child
+     * @see org.wyona.yanel.core.navigation.Node#appendChild(Node, int)
      */
-    public Node appendChild(Node child) {
-        this.element.appendChild(((NodeDOMImpl) child).getElement());
+    public Node appendChild(Node child, int type) {
+        log.warn("TODO: Implement type ...");
+        Element childElement = (Element) this.element.appendChild(((NodeDOMImpl) child).getElement());
+        if (type == Node.COLLECTION) {
+            childElement.setAttribute("type", "collection");
+        } else if(type == Node.RESOURCE) {
+            childElement.setAttribute("type", "resource");
+        } else {
+            log.error("No such type: " + type);
+        }
         sitetree.save();
         return child;
     }

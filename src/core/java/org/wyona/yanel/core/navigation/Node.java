@@ -21,6 +21,9 @@ package org.wyona.yanel.core.navigation;
  */
 public interface Node {
 
+    public static int RESOURCE = 1;
+    public static int COLLECTION = 2;
+
     /**
      * @return new child
      */
@@ -38,8 +41,9 @@ public interface Node {
 
     /**
      * @return new child
+     * @param type Node type (collection, resource)
      */
-    public Node appendChild(Node child);
+    public Node appendChild(Node child, int type);
 
     /**
      */

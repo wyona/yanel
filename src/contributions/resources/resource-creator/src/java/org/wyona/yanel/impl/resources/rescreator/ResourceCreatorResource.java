@@ -313,7 +313,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
 
         if (getRequest().getParameter("create-new-folder") != null && !getRequest().getParameter("create-new-folder").equals("")) {
             try {
-                create(getRequest().getParameter("create-new-folder"), getRequest().getParameter("lookin"), "http://www.wyona.org/yanel/resource/1.0::directory");
+                create(getRequest().getParameter("create-new-folder"), getRequest().getParameter("lookin"), "http://www.wyona.org/yanel/resource/1.0::directory", org.wyona.yanel.core.navigation.Node.COLLECTION);
             } catch (Exception e) {
                 sb.append("<p>Could not create folder. Exception: " + e + "</p>");
                 log.error(e.getMessage(), e);
@@ -441,7 +441,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      * @return Path of new resource
      */
     private Path create() throws Exception {
-        return create(getRequest().getParameter("create-name"), getRequest().getParameter("lookin"), getRequest().getParameter("resource-type"));
+        return create(getRequest().getParameter("create-name"), getRequest().getParameter("lookin"), getRequest().getParameter("resource-type"), org.wyona.yanel.core.navigation.Node.RESOURCE); // NOTE/TODO: The directory resource for example should be created as COLLECTION, but how do we know that?
     }
 
     /**
@@ -451,7 +451,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      * @param String resourceType
      * @return Path of new resource
      */
-    private Path create(String createName, String lookinPath, String resourceType) throws Exception {
+    private Path create(String createName, String lookinPath, String resourceType, int type) throws Exception {
         if (resourceType == null) {
             log.error("No resource-type parameter specified!");
             return null;
@@ -489,7 +489,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 ((CreatableV2) newResource).create(request);
                 if (pathOfNewResource != null) {
                     createResourceConfiguration(newResource);
-                    addToSitetree(newResource);
+                    addToSitetree(newResource, type);
                 }
             } else {
                 throw new Exception("creation NOT successfull!");
@@ -504,14 +504,14 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     /**
      * Add to sitetree
      */
-    private void addToSitetree(Resource newResource) throws Exception {
+    private void addToSitetree(Resource newResource, int type) throws Exception {
         org.wyona.yanel.core.navigation.Sitetree sitetree = getRealm().getRepoNavigation();
         String parentPath = org.wyona.commons.io.PathUtil.getParent(newResource.getPath());
         org.wyona.yanel.core.navigation.Node parentNode = sitetree.getNode(getRealm(), parentPath);
         if (parentNode != null) {
             String nodeName = org.wyona.commons.io.PathUtil.getName(newResource.getPath());
             String label = nodeName;
-            parentNode.appendChild(sitetree.createNode(nodeName, label)); // Sitetree will be saved persistently automatically within appendChild(Node)
+            parentNode.appendChild(sitetree.createNode(nodeName, label), type); // Sitetree will be saved persistently automatically within appendChild(Node)
         } else {
             log.error("No such node with path: " + parentPath);
         }

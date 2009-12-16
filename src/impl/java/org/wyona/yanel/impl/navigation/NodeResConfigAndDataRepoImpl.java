@@ -66,9 +66,9 @@ public class NodeResConfigAndDataRepoImpl implements Node {
     }
 
     /**
-     * @return new child
+     * @see org.wyona.yanel.core.navigation.Node#appendChild(Node, int)
      */
-    public Node appendChild(Node child) {
+    public Node appendChild(Node child, int type) {
         log.warn("Not implemented yet!");
         return null;
     }
