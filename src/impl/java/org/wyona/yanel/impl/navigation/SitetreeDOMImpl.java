@@ -178,14 +178,13 @@ public class SitetreeDOMImpl implements Sitetree {
     }
 
     /**
-     *
+     * Save sitetree to file system (based on resolved source system id
      */
     public void save() {
         try {
-            org.apache.xml.serialize.XMLSerializer serializer = new org.apache.xml.serialize.XMLSerializer();
-            serializer.setOutputCharStream(new java.io.FileWriter(systemId));
-            serializer.serialize(sitetreeDoc);
-        log.warn("Sitetree has been written into persistent repository: " + systemId);
+            org.wyona.commons.xml.XMLHelper.writeDocument(sitetreeDoc, new java.io.FileOutputStream(systemId));
+            log.warn("Sitetree has been written into file system: " + systemId);
+            //log.warn("Sitetree has been written into persistent repository: " + systemId);
         } catch(Exception e) {
             log.error(e, e);
         }
