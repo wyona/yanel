@@ -78,7 +78,7 @@ public class TransitionMenuContentImpl implements ITransitionMenuContent {
                     }
                 }
             }
-            log.warn("DEBUG: Inactive transition: " + label);
+            log.debug("Inactive transition: " + label);
             return "<li class='" + STYLE_INACTIVE + "'>" + label + "</li>";
         } catch (Exception e) {
             log.error(e, e);
