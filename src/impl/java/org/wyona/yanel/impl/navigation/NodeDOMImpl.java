@@ -25,7 +25,8 @@ import org.w3c.dom.Element;
 import java.util.Vector;
 
 /**
- * Also see org.w3c.dom.Node
+ * DOM implementation of navigation/sitetree node (also see org.w3c.dom.Node)
+ * @see org.wyona.yanel.core.navigation.Node
  */
 public class NodeDOMImpl implements Node {
 
@@ -34,6 +35,12 @@ public class NodeDOMImpl implements Node {
     Element element;
     SitetreeDOMImpl sitetree;
 
+    private static String COLLECTION = "collection";
+    private static String RESOURCE = "resource";
+
+    /**
+     *
+     */
     public NodeDOMImpl(org.w3c.dom.Element element, SitetreeDOMImpl sitetree) {
         this.element = element;
         this.sitetree = sitetree;
@@ -70,9 +77,9 @@ public class NodeDOMImpl implements Node {
         log.warn("TODO: Implement type ...");
         Element childElement = (Element) this.element.appendChild(((NodeDOMImpl) child).getElement());
         if (type == Node.COLLECTION) {
-            childElement.setAttribute("type", "collection");
+            childElement.setAttribute("type", COLLECTION);
         } else if(type == Node.RESOURCE) {
-            childElement.setAttribute("type", "resource");
+            childElement.setAttribute("type", RESOURCE);
         } else {
             log.error("No such type: " + type);
         }
@@ -92,7 +99,9 @@ public class NodeDOMImpl implements Node {
      * @see org.wyona.yanel.core.navigation.Node#isResource()
      */
     public boolean isResource() {
-        // TODO: Compare with isCollection()!
+        if (element.hasAttribute("type") && element.getAttribute("type").equals(RESOURCE)) {
+            return true;
+        }
         org.w3c.dom.NodeList nl = element.getElementsByTagName("node");
         if (nl == null)
             return true;
@@ -105,7 +114,9 @@ public class NodeDOMImpl implements Node {
      * @see org.wyona.yanel.core.navigation.Node#isCollection()
      */
     public boolean isCollection() {
-        // TODO: It's possible that a node does not have any child nodes yet, but nevertheless should be treated as collection
+        if (element.hasAttribute("type") && element.getAttribute("type").equals(COLLECTION)) {
+            return true;
+        }
         org.w3c.dom.NodeList nl = element.getElementsByTagName("node");
         if (nl != null) {
             if (nl.getLength() > 0) {
