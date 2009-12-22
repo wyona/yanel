@@ -3,6 +3,7 @@ mime-type: application/xhtml+xml
 xslt: /xslt/global.xsl
 #xslt: /xslt/global.xsl
 
+subject: Yanel Website: I am interested in Yanel, please get in touch with me
 to: contact@wyona.com
 smtpHost: mail.wyona.com
 smtpPort: 25
