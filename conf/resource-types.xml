@@ -58,7 +58,7 @@
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/atom/" compile="true" copy-dir-name="yanel-atom"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/atom-entry/" compile="true" copy-dir-name="yanel-atom-entry"/>
 
-  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/contact-form/" compile="true" copy-dir-name="yanel-contact-form"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/contact-form/" compile="true"/>
   <!-- IMPORTANT: Please note that forgotpw depends on contact-form and hence the build order matters! -->
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/forgotpw/" compile="true"/>
 
