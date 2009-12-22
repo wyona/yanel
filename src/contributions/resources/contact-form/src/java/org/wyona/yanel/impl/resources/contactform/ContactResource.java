@@ -125,14 +125,6 @@ public class ContactResource extends Resource implements ViewableV1 {
                 }
             }
 
-            // create xslt transformer for global layout
-            TransformerHandler xsltHandler2 = tf.newTransformerHandler(getGlobalXSLTStreamSource(path));
-            transformer = xsltHandler2.getTransformer();
-            transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
-            transformer.setParameter("yanel.path", getPath());
-            transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
-            transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
-
             // create xinclude transformer:
             XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
             ResourceResolver resolver = new ResourceResolver(this);
@@ -152,8 +144,22 @@ public class ContactResource extends Resource implements ViewableV1 {
 
             // chain everything together (create a pipeline):
             xmlReader.setContentHandler(xsltHandler1);
-            xsltHandler1.setResult(new SAXResult(xsltHandler2));
-            xsltHandler2.setResult(new SAXResult(xIncludeTransformer));
+
+            // create xslt transformer for global layout
+            StreamSource globalStreamSource = getGlobalXSLTStreamSource();
+            if (globalStreamSource != null) {
+                TransformerHandler xsltHandlerGlobal = tf.newTransformerHandler(globalStreamSource);
+                transformer = xsltHandlerGlobal.getTransformer();
+                transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
+                transformer.setParameter("yanel.path", getPath());
+                transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
+                transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
+                xsltHandler1.setResult(new SAXResult(xsltHandlerGlobal));
+                xsltHandlerGlobal.setResult(new SAXResult(xIncludeTransformer));
+            } else {
+                xsltHandler1.setResult(new SAXResult(xIncludeTransformer));
+            }
+
             xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
             i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
             serializer.setOutputStream(baos);
@@ -236,16 +242,21 @@ public class ContactResource extends Resource implements ViewableV1 {
 
     /**
      * Get global XSLT
-     * @param path
      */
-    private StreamSource getGlobalXSLTStreamSource(Path path) throws NoSuchNodeException, RepositoryException, Exception {
+    private StreamSource getGlobalXSLTStreamSource() throws NoSuchNodeException, RepositoryException, Exception {
         String xsltPath = getResourceConfigProperty("xslt");
         if (xsltPath != null) {
             return new StreamSource(getRealm().getRepository().getNode(xsltPath).getInputStream());
         }
+
+        log.warn("No global XSLT has been set/configured.");
+        return null;
+
+/*
         File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "global.xsl");
         log.error("DEBUG: XSLT file: " + xsltFile);
         return new StreamSource(xsltFile);
+*/
     }
 
     /**
