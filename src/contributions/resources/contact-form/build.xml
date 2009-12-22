@@ -1,4 +1,6 @@
-<project name="yanel-contact-form-RT">
+<?xml version="1.0"?>
+
+<project name="yanel-resource-contact-form" default="deploy-jar">
   <import file="${yanel.source.home}/src/build/resource-types/resource-type.build.xml"/>
 
   <target name="copy-dependencies" depends="yanel-resource-type.copy-dependencies">
