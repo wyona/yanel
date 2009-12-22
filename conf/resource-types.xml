@@ -72,4 +72,21 @@
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/yanel-user/" compile="true" copy-dir-name="yanel-yanel-user"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/redirect/" compile="true"/>
 
+<!-- INFO: Third party resource types (TODO: Add to Hudson)
+  <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/archive-url/" compile="true"/>
+  <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/cortado-ogg-theora/" compile="true"/>
+  <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/flash-video/" compile="true"/>
+  <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/flow-player/" compile="true"/>
+  <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/gallery/" compile="true"/>
+  <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/soap/" compile="true"/>
+  <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/tape/" compile="true"/>
+  <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/timetracker/" compile="true"/>
+  <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/world-time/" compile="true"/>
+  <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/xopus3/" compile="true"/>
+  <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/yuirte/" compile="true"/>
+-->
+
+<!-- INFO: No resource type yet, but an xquery resource type would be quite nice though ;-)
+  <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/xquery/" compile="true"/>
+-->
 </resource-types>
