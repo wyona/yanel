@@ -6,21 +6,20 @@
   class="org.wyona.yanel.impl.resources.contactform.ContactResource"
   >
 <description>
-Contact Form for sending email
+Contact form for sending email
 </description>
 
 <rtd>
   <!-- Mandatory properties -->
-  <!-- TODO: Make "global" xslt optional -->
-  <property name="xslt"/>
   <!-- TODO: Allow more than one "to" -->
   <property name="to"/>
-  <property name="subject"/>
   <!-- NOTE: Please note that one needs to reload/restart Yanel in order to activate changes of host and port! -->
   <property name="smtpHost"/>
   <property name="smtpPort"/>
 
   <!-- Optional properties -->
+  <property name="subject"/>
+  <property name="xslt"/> <!-- Global XSLT -->
   <property name="mime-type"/>
   <property name="from"/>
   <property name="xslt-body"/>
