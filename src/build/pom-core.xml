@@ -47,12 +47,24 @@
       <artifactId>log4j</artifactId>
       <version>1.2.8</version>
     </dependency>
-    
+
     <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache</artifactId>
       <version>1.5.0</version>
+    </dependency>
+
+    <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4</version>
     </dependency>
   </dependencies>
 </project>
