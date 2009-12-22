@@ -197,11 +197,14 @@
   <xsl:template match="form" mode="thankYou">
     <table>
       <tr>
-        <td colspan="3" align="right" valign="top" class="contentfield"><i18n:message key="thankYou"/></td>
+        <td colspan="3" align="right" valign="top" class="contentfield"><i18n:message key="thankYou"/>&#160;<i18n:message key="inquiryContent"/></td>
       </tr>
+
+<!--
       <tr>
         <td colspan="3" align="right" valign="top" class="contentfield"><i18n:message key="inquiryContent"/></td>
       </tr>
+-->
       
       <tr>
         <td align="right" valign="top" class="contentfield"><i18n:message key="company"/>:&#0160;</td>
