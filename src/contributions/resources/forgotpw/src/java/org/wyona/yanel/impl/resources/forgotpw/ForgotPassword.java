@@ -47,7 +47,7 @@ import org.w3c.dom.NodeList;
 import org.wyona.commons.xml.XMLHelper;
 import org.wyona.security.core.api.User;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
-import org.wyona.yanel.impl.resources.SendMail;
+import org.wyona.yanel.impl.resources.contactform.SendMail;
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.NodeType;
 
