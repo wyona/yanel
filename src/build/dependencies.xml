@@ -45,6 +45,14 @@
       <dependency groupId="net.sf.ehcache" artifactId="ehcache" version="1.5.0"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
+      <dependency groupId="javax.activation" artifactId="activation" version="1.1"/>
+      <dependency groupId="javax.mail" artifactId="mail" version="1.4"/>
+<!-- See http://download.java.net/maven/2/javax/mail/mail/ (instead http://mirrors.ibiblio.org/pub/mirrors/maven2/javax/mail/mail/)
+      <dependency groupId="javax.activation" artifactId="activation" version="1.1.1"/>
+      <dependency groupId="javax.mail" artifactId="mail" version="1.4.3"/>
+-->
+
+      <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="0.2-dev-r45073"/>
 
       <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
