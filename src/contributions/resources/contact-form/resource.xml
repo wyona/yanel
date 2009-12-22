@@ -3,7 +3,7 @@
 <resource xmlns="http://www.wyona.org/yanel/1.0"
   name="contact-form"
   namespace="http://www.wyona.org/yanel/resource/1.0"
-  class="org.wyona.yanel.impl.resources.ContactResource"
+  class="org.wyona.yanel.impl.resources.contactform.ContactResource"
   >
 <description>
 Contact Form for sending email

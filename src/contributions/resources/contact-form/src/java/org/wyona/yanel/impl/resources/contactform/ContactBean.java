@@ -1,4 +1,4 @@
-package org.wyona.yanel.impl.resources;
+package org.wyona.yanel.impl.resources.contactform;
 
 import javax.servlet.http.HttpServletRequest;
 

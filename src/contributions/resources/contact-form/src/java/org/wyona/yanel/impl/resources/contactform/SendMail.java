@@ -1,4 +1,4 @@
-package org.wyona.yanel.impl.resources;
+package org.wyona.yanel.impl.resources.contactform;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;

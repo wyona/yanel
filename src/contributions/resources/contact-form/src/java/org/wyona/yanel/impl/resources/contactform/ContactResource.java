@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.wyona.yanel.impl.resources;
+package org.wyona.yanel.impl.resources.contactform;
 
 import java.io.File;
 import java.io.FileInputStream;
