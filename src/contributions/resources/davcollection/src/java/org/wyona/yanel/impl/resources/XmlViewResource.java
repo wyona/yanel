@@ -18,7 +18,7 @@ import org.xml.sax.SAXException;
 /**
  * Abstract class that can be extended for resources that generate an XML based View.
  * 
- * @author greg
+ * @author greg (Gregor Imboden)
  *      
  * TODO find a way to let the view directly implement the ContentHandler interface
  *      like generators in cocoon do.  
