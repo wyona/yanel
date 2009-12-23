@@ -212,13 +212,6 @@ public class YanelServlet extends HttpServlet {
                 if (log.isDebugEnabled()) log.debug("Access granted: " + request.getServletPath());
             }
 
-            if(logAccessEnabled) {
-                // TODO: Only HTML pages and PDFs etc. should be logged, but no images, CSS, etc. Check the mime-type instead the suffix or use JavaScript or Pixel
-                if (request.getRequestURL().toString().endsWith("html")) {
-                    doLogAccess(request, response);
-                }
-            }
-
             // Check for requests re policies
             String policyRequestPara = request.getParameter(YANEL_ACCESS_POLICY_USECASE);
             if (policyRequestPara != null) {
@@ -1429,6 +1422,7 @@ public class YanelServlet extends HttpServlet {
 */
             } else {
                 String mimeType = patchMimeType("application/xhtml+xml", request);
+                // TODO: doLogAccess
                 response.setContentType(mimeType + "; charset=" + DEFAULT_ENCODING);
                 
                 // create identity transformer which serves as a dom-to-sax transformer
@@ -1792,48 +1786,69 @@ public class YanelServlet extends HttpServlet {
 
         // Check if viewable resource has already created a response
         if (!view.isResponse()) {
-            if (view.getMimeType() != null) {
-                // TODO: Check mime type and log access
+            if(logAccessEnabled) {
+                if (view.getMimeType() != null) {
+                    if (view.getMimeType().indexOf("html") > 0 || view.getMimeType().indexOf("pdf") > 0) {
+                    //if (mimeType.equals("application/xhtml+xml") || mimeType.equals("text/html")) {
+                        doLogAccess(request, response);
+                    }
+                }
             }
             return response;
         }
             
-        // Set encoding
+        // Set mime type and encoding
+        String mimeType = view.getMimeType();
         if (view.getEncoding() != null) {
-            response.setContentType(patchMimeType(view.getMimeType(), request) + "; charset=" + view.getEncoding());
+            mimeType = patchMimeType(mimeType, request);
+            response.setContentType(mimeType + "; charset=" + view.getEncoding());
         } else if (res.getConfiguration() != null && res.getConfiguration().getEncoding() != null) {
-            response.setContentType(patchMimeType(view.getMimeType(), request) + "; charset=" + res.getConfiguration().getEncoding());
+            mimeType = patchMimeType(mimeType, request);
+            response.setContentType(mimeType + "; charset=" + res.getConfiguration().getEncoding());
         } else {
             // try to guess if we have to set the default encoding
-            String mimeType = view.getMimeType();
             if (mimeType != null && mimeType.startsWith("text") || 
                 mimeType.equals("application/xml") || 
                 mimeType.equals("application/xhtml+xml") || 
                 mimeType.equals("application/atom+xml") || 
                 mimeType.equals("application/x-javascript")) {
-                response.setContentType(patchMimeType(mimeType, request) + "; charset=" + DEFAULT_ENCODING);
+
+                mimeType = patchMimeType(mimeType, request);
+                response.setContentType(mimeType + "; charset=" + DEFAULT_ENCODING);
             } else {
                 // probably binary mime-type, don't set encoding
-                response.setContentType(patchMimeType(mimeType, request));
+                mimeType = patchMimeType(mimeType, request);
+                response.setContentType(mimeType);
             }
         }
-            
-            // Set HTTP headers:
-            HashMap<?, ?> headers = view.getHttpHeaders();
-            Iterator<?> iter = headers.keySet().iterator();
-            while (iter.hasNext()) {
-                String name = (String)iter.next();
-                String value = (String)headers.get(name);
-                if (log.isDebugEnabled()) {
-                    log.debug("set http header: " + name + ": " + value);
+
+
+        if(logAccessEnabled) {
+            if (mimeType != null) {
+                if (mimeType.indexOf("html") > 0) { // INFO: Only HTML pages and PDFs etc. should be logged, but no images, CSS, etc. Check the mime-type instead the suffix or use JavaScript or Pixel
+                //if (mimeType.equals("application/xhtml+xml") || mimeType.equals("text/html")) {
+                //if (request.getRequestURL().toString().endsWith("html")) {
+                    doLogAccess(request, response);
                 }
-                response.setHeader(name, value);
             }
+        }
+
+
+        // Set HTTP headers:
+        HashMap<?, ?> headers = view.getHttpHeaders();
+        Iterator<?> iter = headers.keySet().iterator();
+        while (iter.hasNext()) {
+            String name = (String)iter.next();
+            String value = (String)headers.get(name);
+            if (log.isDebugEnabled()) {
+                log.debug("set http header: " + name + ": " + value);
+            }
+            response.setHeader(name, value);
+        }
             
             // Possibly embed toolbar:
             // TODO: Check if user is authorized to actually see toolbar (Current flaw: Enabled Toolbar, Login, Toolbar is enabled, Logout, Toolbar is still visible!)
             if (yanelUI.isToolbarEnabled(request)) {
-                String mimeType = view.getMimeType();
                 if (mimeType != null && mimeType.indexOf("html") > 0) {
                     // TODO: What about other query strings or frames or TinyMCE?
                     if (request.getParameter(YANEL_RESOURCE_USECASE) == null) {
