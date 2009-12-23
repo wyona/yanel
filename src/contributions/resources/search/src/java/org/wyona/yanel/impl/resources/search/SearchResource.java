@@ -39,10 +39,10 @@ public class SearchResource extends BasicXMLResource {
             ExternalSearchProvider esp = getExternalSearchProvider(provider);
             if (esp != null) {
                 View view = new View();
-                view.setResponse(false); // this resource writes the response itself
+                view.setResponse(false); // this resource writes the response itself in order to do a server side redirect
 
                 javax.servlet.http.HttpServletResponse response = getResponse();
-                response.setStatus(307);
+                response.setStatus(307); // Temporary redirect (http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html)
 
                 String query = getRequest().getParameter(QUERY_NAME);
                 String domain = getRequest().getParameter(DOMAIN_NAME);
