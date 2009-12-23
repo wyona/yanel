@@ -100,7 +100,6 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
             log.error("DEBUG: ICS exists: " + new org.wyona.yarep.core.Path(getPath()));
             if(viewId == null) {
                 View view = new View();
-                //view.setResponse(false);
                 view.setMimeType(getMimeType(null));
                 view.setInputStream(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getPath())));
                 log.error("DEBUG: Return ICS!");
@@ -147,7 +146,6 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
             //response.getOutputStream();
 
             View view = new View();
-            //view.setResponse(false);
             view.setMimeType(getMimeType(viewId));
             view.setInputStream(new java.io.StringBufferInputStream(calendar.toString()));
             return view;
@@ -182,7 +180,6 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
             //response.getOutputStream();
 
             View view = new View();
-            //view.setResponse(false);
             view.setMimeType(getMimeType(null));
             view.setInputStream(new java.io.ByteArrayInputStream(out.toByteArray()));
             return view;
