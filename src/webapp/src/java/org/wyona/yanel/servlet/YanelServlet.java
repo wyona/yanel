@@ -190,83 +190,82 @@ public class YanelServlet extends HttpServlet {
      */
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-      // do not add code here outside the try-catch block, it's our..
-      try { // ..last chance to log all Yanel servlet thread exceptions
-        String httpAcceptMediaTypes = request.getHeader("Accept");
-        String httpAcceptLanguage = request.getHeader("Accept-Language");
+        // NOTE: Do not add code outside the try-catch block, because otherwise exceptions won't be logged
+        try {
+            String httpAcceptMediaTypes = request.getHeader("Accept");
+            String httpAcceptLanguage = request.getHeader("Accept-Language");
 
-        String yanelUsecase = request.getParameter(YANEL_USECASE);
-        if(yanelUsecase != null && yanelUsecase.equals("logout")) {
-            // Logout from Yanel
-            if(doLogout(request, response) != null) return;
-        } else if(yanelUsecase != null && yanelUsecase.equals("create")) {
-            // Create a new resource
-            if(doCreate(request, response) != null) return;
-        }
-
-        // Check authorization and if authorization failed, then try to authenticate
-        if(doAccessControl(request, response) != null) {
-            // Either redirect (after successful authentication) or access denied (and response will send the login screen)
-            return;
-        } else {
-            if (log.isDebugEnabled()) log.debug("Access granted: " + request.getServletPath());
-        }
-
-        if(logAccessEnabled) {
-            // TODO: Only HTML pages and PDFs etc. should be logged, but no images, CSS, etc. Check the mime-type instead the suffix or use JavaScript or Pixel
-            if (request.getRequestURL().toString().endsWith("html")) {
-                doLogAccess(request, response);
+            String yanelUsecase = request.getParameter(YANEL_USECASE);
+            if(yanelUsecase != null && yanelUsecase.equals("logout")) {
+                // INFO: Logout from Yanel
+                if(doLogout(request, response) != null) return;
+            } else if(yanelUsecase != null && yanelUsecase.equals("create")) {
+                // INFO: Create a new resource
+                if(doCreate(request, response) != null) return;
             }
-        }
 
-        // Check for requests re policies
-        String policyRequestPara = request.getParameter(YANEL_ACCESS_POLICY_USECASE);
-        if (policyRequestPara != null) {
-            doAccessPolicyRequest(request, response, policyRequestPara);
-            return;
-        }
+            // Check authorization and if authorization failed, then try to authenticate
+            if(doAccessControl(request, response) != null) {
+                // INFO: Either redirect (after successful authentication) or access denied (and response will send the login screen)
+                return;
+            } else {
+                if (log.isDebugEnabled()) log.debug("Access granted: " + request.getServletPath());
+            }
 
-        // Check for requests for global data
-        Resource resource = getResource(request, response);
-        String path = resource.getPath();
-        if (path.indexOf("/" + reservedPrefix + "/") == 0) {
-            getGlobalData(request, response);
-            return;
-        }
+            if(logAccessEnabled) {
+                // TODO: Only HTML pages and PDFs etc. should be logged, but no images, CSS, etc. Check the mime-type instead the suffix or use JavaScript or Pixel
+                if (request.getRequestURL().toString().endsWith("html")) {
+                    doLogAccess(request, response);
+                }
+            }
+
+            // Check for requests re policies
+            String policyRequestPara = request.getParameter(YANEL_ACCESS_POLICY_USECASE);
+            if (policyRequestPara != null) {
+                doAccessPolicyRequest(request, response, policyRequestPara);
+                return;
+            }
+
+            // Check for requests for global data
+            Resource resource = getResource(request, response);
+            String path = resource.getPath();
+            if (path.indexOf("/" + reservedPrefix + "/") == 0) {
+                getGlobalData(request, response);
+                return;
+            }
         
-        String value = request.getParameter(YANEL_RESOURCE_USECASE);
-        // Delete node
-        if (value != null && value.equals("delete")) {
-            handleDeleteUsecase(request, response);
-            return;
-        }
+            String value = request.getParameter(YANEL_RESOURCE_USECASE);
+            // Delete node
+            if (value != null && value.equals("delete")) {
+                handleDeleteUsecase(request, response);
+                return;
+            }
 
-        // Delegate ...
-        String method = request.getMethod();
-        if (method.equals(METHOD_PROPFIND)) {
-            doPropfind(request, response);
-        } else if (method.equals(METHOD_GET)) {
-            doGet(request, response);
-        } else if (method.equals(METHOD_POST)) {
-            doPost(request, response);
-        } else if (method.equals(METHOD_PUT)) {
-            doPut(request, response);
-        } else if (method.equals(METHOD_DELETE)) {
-            doDelete(request, response);
-        } else if (method.equals(METHOD_OPTIONS)) {
-            doOptions(request, response);
-        } else {
-            log.error("No such method implemented: " + method);
-            response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
-        }
-      } catch (ServletException e) {
-          log.error(e, e);
-          throw new ServletException(e.getMessage(), e);
-      } catch (IOException e) {
-          log.error(e.getMessage(), e);
-          throw new IOException(e.getMessage());
-      }// this was our last chance to log all Yanel servlet thread exceptions so..
-      // do not add code here outside the try-catch block
+            // Delegate ...
+            String method = request.getMethod();
+            if (method.equals(METHOD_PROPFIND)) {
+                doPropfind(request, response);
+            } else if (method.equals(METHOD_GET)) {
+                doGet(request, response);
+            } else if (method.equals(METHOD_POST)) {
+                doPost(request, response);
+            } else if (method.equals(METHOD_PUT)) {
+                doPut(request, response);
+          } else if (method.equals(METHOD_DELETE)) {
+                doDelete(request, response);
+            } else if (method.equals(METHOD_OPTIONS)) {
+                doOptions(request, response);
+            } else {
+                log.error("No such method implemented: " + method);
+                response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
+            }
+        } catch (ServletException e) {
+            log.error(e, e);
+            throw new ServletException(e.getMessage(), e);
+        } catch (IOException e) {
+            log.error(e, e);
+            throw new IOException(e.getMessage());
+        } // NOTE: This was our last chance to log an exception, hence do not add code outside the try-catch block
     }
 
     /**
@@ -1377,10 +1376,16 @@ public class YanelServlet extends HttpServlet {
      * See http://en.wikipedia.org/wiki/Criticisms_of_Internet_Explorer#XHTML
      */
     static public String patchMimeType(String mimeType, HttpServletRequest request) throws ServletException, IOException {
-        String httpAcceptMediaTypes = request.getHeader("Accept");
-        if (mimeType != null && mimeType.equals("application/xhtml+xml") && httpAcceptMediaTypes != null && httpAcceptMediaTypes.indexOf("application/xhtml+xml") < 0) {
-            log.info("Patch contentType with text/html because client (" + request.getHeader("User-Agent") + ") does not seem to understand application/xhtml+xml");
-            return "text/html";
+        if (mimeType != null) {
+            String httpAcceptMediaTypes = request.getHeader("Accept");
+            if (mimeType.equals("application/xhtml+xml") && httpAcceptMediaTypes != null && httpAcceptMediaTypes.indexOf("application/xhtml+xml") < 0) {
+                log.info("Patch contentType with text/html because client (" + request.getHeader("User-Agent") + ") does not seem to understand application/xhtml+xml");
+                return "text/html";
+            } else if (mimeType.equals("text/html")) {
+                log.warn("Mime type was originally already set to text/html for request: " + request.getServletPath());
+            }
+        } else {
+            log.warn("No mime type returned for request: " + request.getServletPath());
         }
         return mimeType;
     }
@@ -1780,35 +1785,38 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Generate response from a resource view
+     * Generate response from a resource view, whereas it will be checked first if the resource already wrote the response (if so, then just return)
      */
     private HttpServletResponse generateResponse(View view, Resource res, HttpServletRequest request, HttpServletResponse response, Document doc, long size, long lastModified) throws ServletException, IOException {
-            // Check if the view contains the response, otherwise assume that the resource wrote the response, and just return.
-            // TODO: There seem like no header fields are being set (e.g. Content-Length, ...). Please see below ...
+        // TODO: There seem like no header fields are being set (e.g. Content-Length, ...). Please see below ...
 
-
-            // Check if viewable resource has already created a response
-            if (!view.isResponse()) return response;
-            
-            // Set encoding
-            if (view.getEncoding() != null) {
-                response.setContentType(patchMimeType(view.getMimeType(), request) + "; charset=" + view.getEncoding());
-            } else if (res.getConfiguration() != null && res.getConfiguration().getEncoding() != null) {
-                response.setContentType(patchMimeType(view.getMimeType(), request) + "; charset=" + res.getConfiguration().getEncoding());
-            } else {
-                // try to guess if we have to set the default encoding
-                String mimeType = view.getMimeType();
-                if (mimeType != null && mimeType.startsWith("text") || 
-                    mimeType.equals("application/xml") || 
-                    mimeType.equals("application/xhtml+xml") || 
-                    mimeType.equals("application/atom+xml") || 
-                    mimeType.equals("application/x-javascript")) {
-                    response.setContentType(patchMimeType(mimeType, request) + "; charset=" + DEFAULT_ENCODING);
-                } else {
-                    // probably binary mime-type, don't set encoding
-                    response.setContentType(patchMimeType(mimeType, request));
-                }
+        // Check if viewable resource has already created a response
+        if (!view.isResponse()) {
+            if (view.getMimeType() != null) {
+                // TODO: Check mime type and log access
             }
+            return response;
+        }
+            
+        // Set encoding
+        if (view.getEncoding() != null) {
+            response.setContentType(patchMimeType(view.getMimeType(), request) + "; charset=" + view.getEncoding());
+        } else if (res.getConfiguration() != null && res.getConfiguration().getEncoding() != null) {
+            response.setContentType(patchMimeType(view.getMimeType(), request) + "; charset=" + res.getConfiguration().getEncoding());
+        } else {
+            // try to guess if we have to set the default encoding
+            String mimeType = view.getMimeType();
+            if (mimeType != null && mimeType.startsWith("text") || 
+                mimeType.equals("application/xml") || 
+                mimeType.equals("application/xhtml+xml") || 
+                mimeType.equals("application/atom+xml") || 
+                mimeType.equals("application/x-javascript")) {
+                response.setContentType(patchMimeType(mimeType, request) + "; charset=" + DEFAULT_ENCODING);
+            } else {
+                // probably binary mime-type, don't set encoding
+                response.setContentType(patchMimeType(mimeType, request));
+            }
+        }
             
             // Set HTTP headers:
             HashMap<?, ?> headers = view.getHttpHeaders();
