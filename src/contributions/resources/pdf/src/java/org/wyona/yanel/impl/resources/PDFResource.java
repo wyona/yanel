@@ -72,7 +72,7 @@ public class PDFResource extends Resource implements ViewableV2 {
 
         View defaultView = new View();
         defaultView.setMimeType(getMimeType(viewId));
-        defaultView.setResponse(false); // This resource writes directly into the response output stream
+        defaultView.setResponse(false); // This resource writes directly into the response output stream (because of memory it's better to stream large documents)
 
         try {
             String yanelPath = getDataPath();
