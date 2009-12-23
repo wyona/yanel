@@ -1792,7 +1792,6 @@ public class YanelServlet extends HttpServlet {
             if(logAccessEnabled) {
                 if (view.getMimeType() != null) {
                     if (view.getMimeType().indexOf("html") > 0 || view.getMimeType().indexOf("pdf") > 0) {
-                    //if (mimeType.equals("application/xhtml+xml") || mimeType.equals("text/html")) {
                         doLogAccess(request, response);
                     }
                 }
@@ -1828,9 +1827,7 @@ public class YanelServlet extends HttpServlet {
 
         if(logAccessEnabled) {
             if (mimeType != null) {
-                if (mimeType.indexOf("html") > 0) { // INFO: Only HTML pages and PDFs etc. should be logged, but no images, CSS, etc. Check the mime-type instead the suffix or use JavaScript or Pixel
-                //if (mimeType.equals("application/xhtml+xml") || mimeType.equals("text/html")) {
-                //if (request.getRequestURL().toString().endsWith("html")) {
+                if (mimeType.indexOf("html") > 0 || mimeType.indexOf("pdf") > 0) { // INFO: Only HTML pages and PDFs etc. should be logged, but no images, CSS, etc. Check the mime-type instead the suffix or use JavaScript or Pixel
                     doLogAccess(request, response);
                 }
             }
@@ -2299,14 +2296,14 @@ public class YanelServlet extends HttpServlet {
                  - Analyze mime type (advantage: no additional code/requests necessary)
                  - Log analysis (no special tracking required)
 */
+
                 String requestURL = request.getRequestURL().toString();
-                logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue() + " u:" + identity.getUsername());
+                logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue() + " u:" + identity.getUsername() + " ref:" + request.getHeader("referer") + " ua:" + request.getHeader("User-Agent")); // INFO: See a list of user agents at http://www.user-agents.org/
             } else {
                 // INFO: Log access of anonymous user
                 String requestURL = request.getRequestURL().toString();
                 // TODO: Also log referer as entry point
-                logAccess.warn("TODO: Referer: " + request.getHeader("referer"));
-                logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue());
+                logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue() + " ref:" + request.getHeader("referer") + " ua:" + request.getHeader("User-Agent"));
             }
             //log.warn("DEBUG: Referer: " + request.getHeader(HTTP_REFERRER));
         } catch(Exception e) { // Catch all exceptions, because we do not want to throw exceptions because of logging browser history
