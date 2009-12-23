@@ -1056,6 +1056,9 @@ public class YanelServlet extends HttpServlet {
                         - Or authentication failed and web authenticator is resending response to fetch again credentials");
                         - Or authentication was successful and web authenticator sends a redirect
                 */
+                if(logAccessEnabled) {
+                    doLogAccess(request, response);
+                }
                 return response;
             } else {
                 try {
