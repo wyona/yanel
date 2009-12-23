@@ -31,7 +31,7 @@
   </changes>
 
   <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
-  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/search/" compile="true" copy-dir-name="yanel-search"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/search/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/nutch/" compile="true" copy-dir-name="yanel-nutch"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/lookup/" compile="true" copy-dir-name="yanel-lookup"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/tinymce/" compile="true" copy-dir-name="yanel-tinymce"/>
