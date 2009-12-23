@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 /**
- *
+ * A resource type can return various views of the same object
  */
 public class View {
 
@@ -63,32 +63,31 @@ public class View {
     }
 
     /**
-     *
+     * Set content of response as InputStream
      */
     public void setInputStream(InputStream is) {
         this.is = is;
     }
 
     /**
-     *
+     * Get content of response as InputStream
      */
     public InputStream getInputStream() {
         return is;
     }
 
     /**
-     * Checks if this view will be used by Yanel to write the response.
-     * The default is true, and may be turned off for resources which want to 
-     * write the response themselves.
+     * Checks if this view contains the content of the response itself and if so, then Yanel can use getInputStream() to write the response.
+     * The default is true. If false, then it means the resource has written the response directly and getInputStream() should contain no data.
      */
     public boolean isResponse() {
         return isResponse;
     }
 
     /**
-     * Choose whether this view will be used by Yanel to write the response.
-     * The default is true, and may be turned off for resources which want to 
-     * write the response themselves.
+     * Set whether this view will be used or not by Yanel to write the response.
+     * Resources which want to write the response themselves should set this to false.
+     * If this method is not called, then isResponse() will return true as default, which assumes that this view contains the response.
      */
     public void setResponse(boolean isResponse) {
         this.isResponse = isResponse;
