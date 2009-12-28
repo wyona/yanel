@@ -466,8 +466,9 @@ public class YanelServlet extends HttpServlet {
                             } else {
                                 String message = "The viewable (V2) resource '" + res.getPath() + "' is WorkflowableV1, but has not been published yet.";
                                 log.warn(message);
-                                // TODO: Make this configurable per realm
+                                // TODO: Make this configurable per resource (or rather workflowable interface) or per realm?!
                                 if (displayMostRecentVersion) {
+                                    // INFO: Because of backwards compatibility the default should display the most recent version
                                     log.warn("Instead the live version, the most recent version will be displayed!");
                                     view = ((ViewableV2) res).getView(viewId);
                                 } else {
