@@ -1378,7 +1378,7 @@ public class YanelServlet extends HttpServlet {
                 log.info("Patch contentType with text/html because client (" + request.getHeader("User-Agent") + ") does not seem to understand application/xhtml+xml");
                 return "text/html";
             } else if (mimeType.equals("text/html")) {
-                log.warn("Mime type was originally already set to text/html for request: " + request.getServletPath());
+                log.info("Mime type was already set to text/html for request: " + request.getServletPath());
             }
         } else {
             log.warn("No mime type returned for request: " + request.getServletPath());
