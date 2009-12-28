@@ -66,15 +66,18 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 
 <body>
 
-<table id="bodytable" cellpadding="0" cellspacing="0">
+<table id="bodytable" cellpadding="0" cellspacing="0" border="0">
 <tr>
   <td colspan="2">
-    <h1 id="header">
+    <div id="header">
       <a href="{$yarep.back2realm}index.html">
         <img id="logo" src="{$yarep.back2realm}img/yanel.png"/>
       </a>
+<!-- TODO: Change the slogan to:
+      <span style="color: white;">&#160;&#160;everything is related content is everything<br/>&#160;</span>
+-->
       <img id="lead" src="{$yarep.back2realm}img/everything_is_content.png"/>
-    </h1>
+    </div>
   </td>
 </tr>
 
