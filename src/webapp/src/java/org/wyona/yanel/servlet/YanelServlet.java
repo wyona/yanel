@@ -1879,7 +1879,7 @@ public class YanelServlet extends HttpServlet {
                             log.info("Toolbar has been disabled. Please check web.xml!");
                         }
                     } else {
-                        log.warn("Exception to the rule. Yanel resource usecase is not null: " + request.getParameter(YANEL_RESOURCE_USECASE));
+                        log.warn("Yanel resource usecase is not null, but set to '" + request.getParameter(YANEL_RESOURCE_USECASE) + "' and hence Yanel toolbar is not displayed in order to avoid that users are leaving the usecase because they might click on some toolbar menu item.");
                     }
                 } else {
                     log.info("No HTML related mime type: " + mimeType);
