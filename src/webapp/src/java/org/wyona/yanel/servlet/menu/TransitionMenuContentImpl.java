@@ -70,7 +70,7 @@ public class TransitionMenuContentImpl implements ITransitionMenuContent {
                 if (transitionsMatch(stateSpecificTransitions[i], t) && isComplied(t, workflow)) {
                     try {
                         String url = getTransitionURL(t.getID());
-                        log.warn("DEBUG: Active transition: " + label);
+                        if (log.isDebugEnabled()) log.debug("Active transition: " + label);
                         return "<li>" + new AnchorElement(label, url).toString() + "</li>";
                     } catch (Exception e) {
                         log.warn("Could not get transition URL!"); // TODO: Is this always the reason for an exception?!
