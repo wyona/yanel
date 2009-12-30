@@ -18,14 +18,14 @@ package org.wyona.yanel.core.util;
 
 import org.wyona.yanel.core.Resource;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  *
  */
 public class ResourceAttributeHelper {
 
-    private static Category log = Category.getInstance(ResourceAttributeHelper.class);
+    private static Logger log = Logger.getLogger(ResourceAttributeHelper.class);
 
     /**
      * Check if a resource has a specific interface with a specific version implemented or not
