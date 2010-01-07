@@ -133,7 +133,7 @@ public class YanelServlet extends HttpServlet {
     public static final String YANEL_USECASE = "yanel.usecase";
     public static final String YANEL_RESOURCE = "yanel.resource";
     public static final String YANEL_RESOURCE_USECASE = YANEL_RESOURCE + ".usecase";
-    public static final String YANEL_RESOURCE_REVN = YANEL_RESOURCE + ".revision";
+    public static final String YANEL_RESOURCE_REVISION = YANEL_RESOURCE + ".revision";
     public static final String YANEL_RESOURCE_WORKFLOW_TRANSITION = YANEL_RESOURCE + ".workflow.transition";
     public static final String YANEL_RESOURCE_WORKFLOW_TRANSITION_OUTPUT = YANEL_RESOURCE_WORKFLOW_TRANSITION + ".output";
     public static final String VIEW_ID_PARAM_NAME = "yanel.resource.viewid";
@@ -276,7 +276,7 @@ public class YanelServlet extends HttpServlet {
         if (transition != null) {
             executeWorkflowTransition(request,
                                       response,
-                                      request.getParameter(YANEL_RESOURCE_REVN),
+                                      request.getParameter(YANEL_RESOURCE_REVISION),
                                       transition);
             return;
         }
@@ -321,7 +321,7 @@ public class YanelServlet extends HttpServlet {
                 return;
             } else if (value != null && value.equals("roll-back")) {
                 log.debug("Roll back ...");
-                org.wyona.yanel.core.util.VersioningUtil.rollBack(resource, request.getParameter(YANEL_RESOURCE_REVN), getIdentity(request, map).getUsername());
+                org.wyona.yanel.core.util.VersioningUtil.rollBack(resource, request.getParameter(YANEL_RESOURCE_REVISION), getIdentity(request, map).getUsername());
                 // TODO: Send confirmation screen
                 getContent(request, response);
                 return;
@@ -447,7 +447,7 @@ public class YanelServlet extends HttpServlet {
 
                     String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
                     try {
-                        String revisionName = request.getParameter(YANEL_RESOURCE_REVN);
+                        String revisionName = request.getParameter(YANEL_RESOURCE_REVISION);
                         // NOTE: Check also if usecase is not roll-back, because roll-back is also using the yanel.resource.revision
                         if (revisionName != null && ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2") && !isRollBack(request)) {
                             view = ((VersionableV2) res).getView(viewId, revisionName);
@@ -633,7 +633,7 @@ public class YanelServlet extends HttpServlet {
         if (transition != null) {
             executeWorkflowTransition(request,
                                       response,
-                                      request.getParameter(YANEL_RESOURCE_REVN),
+                                      request.getParameter(YANEL_RESOURCE_REVISION),
                                       transition);
             return;
         }
@@ -1047,6 +1047,8 @@ public class YanelServlet extends HttpServlet {
                 } else {
                     log.warn("SSL does not seem to be configured!");
                 }
+            } else {
+                log.info("This connection is via SSL.");
             }
 
             if(doAuthenticate(request, response) != null) {
