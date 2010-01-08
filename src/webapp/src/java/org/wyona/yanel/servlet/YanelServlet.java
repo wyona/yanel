@@ -1794,7 +1794,8 @@ public class YanelServlet extends HttpServlet {
         if (!view.isResponse()) {
             if(logAccessEnabled) {
                 if (view.getMimeType() != null) {
-                    if (view.getMimeType().indexOf("html") > 0 || view.getMimeType().indexOf("pdf") > 0) {
+                    // TODO: Add more mime types or rather make it configurable
+                    if (view.getMimeType().indexOf("html") > 0 || view.getMimeType().indexOf("pdf") > 0 || view.getMimeType().indexOf("video") >= 0) {
                         doLogAccess(request, response);
                     }
                 }
