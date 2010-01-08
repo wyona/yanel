@@ -30,6 +30,8 @@
       <dependency groupId="nekohtml" artifactId="nekohtml" version="0.9.5"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-impl" version="4.3"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
+
+      <!-- TODO: This might cause a conflict/ambiguity with the ant version located within the tools directory if running the junit tests -->
       <dependency groupId="ant" artifactId="ant" version="1.7.0"/>
       <dependency groupId="ant" artifactId="ant-launcher" version="1.7.0"/>
       <dependency groupId="ant" artifactId="ant-junit" version="1.7.0"/>
