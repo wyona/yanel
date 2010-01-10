@@ -189,6 +189,8 @@ public class YanelServlet extends HttpServlet {
                 Date endDate = null;
                 Trigger trigger = new SimpleTrigger("heartbeatTrigger", groupName, startDate, endDate, SimpleTrigger.REPEAT_INDEFINITELY, 60L * 1000L);
                 scheduler.scheduleJob(jobDetail, trigger);
+
+                scheduler.start();
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -1976,6 +1978,7 @@ public class YanelServlet extends HttpServlet {
             try {
                 log.warn("Shutdown scheduler ...");
                 scheduler.shutdown();
+                //scheduler.shutdown(true); // INFO: true means to wait until all jobs have completed
             } catch(Exception e) {
                 log.error(e, e);
             }
