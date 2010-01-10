@@ -128,7 +128,7 @@ public class ResourceManager {
         String rcPath = ResourceConfigurationMap.getRCPath(realm, path);
         if (rcPath != null) {
             if (realm.getRTIRepository().existsNode(rcPath)) {
-                ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getNode(ResourceConfigurationMap.getRCPath(realm, path)));
+                ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getNode(rcPath));
                 if (rc != null) return getResource(environment, realm, path, rc);
             } else {
                 throw new Exception("Request did match within resource configuration map of realm '" + realm.getName() + "', but no such resource type configuration node exist: " + rcPath);
