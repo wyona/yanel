@@ -183,6 +183,16 @@ public class YanelServlet extends HttpServlet {
                 log.warn("Startup scheduler ...");
                 scheduler = StdSchedulerFactory.getDefaultScheduler();
       
+                Realm[] realms = yanelInstance.getRealmConfiguration().getRealms();
+                for (int i = 0; i < realms.length; i++) {
+                    if (realms[i] instanceof org.wyona.yanel.core.map.RealmWithConfigurationExceptionImpl) {
+                        String eMessage = ((org.wyona.yanel.core.map.RealmWithConfigurationExceptionImpl) realms[i]).getConfigurationException().getMessage();
+                        log.error("Realm '" + realms[i].getID() + "' has thrown a configuration exception: " + eMessage);
+                    } else {
+                        log.warn("DEBUG: Realm scheduler config: " + realms[i].getRepository().getID());
+                    }
+                }
+
                 String groupName = "yanel";
                 JobDetail jobDetail = new JobDetail("heartbeatJob", groupName, org.wyona.yanel.servlet.HeartbeatJob.class);
                 Date startDate = new Date();
