@@ -17,6 +17,6 @@ public class HeartbeatJob implements Job {
      *
      */
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        log.warn("DEBUG: Heartbeat: " + new java.util.Date());
+        log.info("Heartbeat: " + new java.util.Date()); // TODO: Show statistics, e.g. uptime, etc.
     }
 }
