@@ -527,7 +527,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         if (rcPath != null) {
             if (realm.getRTIRepository().existsNode(rcPath)) {
                 ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getNode(rcPath));  
-                if (rc != null) {
+                if (rc != null && newResource.getRTD().getResourceTypeLocalName().equals(rc.getName()) && newResource.getRTD().getResourceTypeNamespace().equals(rc.getNamespace())) {
                     log.warn("Path of new resource '" + newResource.getPath() + "' matches within resource configuration map and hence no resource config will be created!");
                     return;
                 }
