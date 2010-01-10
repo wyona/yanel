@@ -521,7 +521,23 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      * Create resource configuration (yanel-rc)
      */
     private void createResourceConfiguration(Resource newResource) throws Exception {
-        StringBuffer rcContent = new StringBuffer("<?xml version=\"1.0\"?>\n\n");
+        // Check on resource configuration map first
+        org.wyona.yanel.core.map.Realm realm = newResource.getRealm();
+        String rcPath = org.wyona.yanel.core.ResourceConfigurationMap.getRCPath(realm, newResource.getPath());
+        if (rcPath != null) {
+            if (realm.getRTIRepository().existsNode(rcPath)) {
+                ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getNode(rcPath));  
+                if (rc != null) {
+                    log.warn("Path of new resource '" + newResource.getPath() + "' matches within resource configuration map and hence no resource config will be created!");
+                    return;
+                }
+            } else {
+                throw new Exception("Request did match within resource configuration map of realm '" + realm.getName() + "', but no such resource type configuration node exist: " + rcPath);
+            }
+        }
+
+        // Create resource config XML
+        StringBuilder rcContent = new StringBuilder("<?xml version=\"1.0\"?>\n\n");
         rcContent.append("<yanel:resource-config xmlns:yanel=\"http://www.wyona.org/yanel/rti/1.0\">\n");
         rcContent.append("<yanel:rti name=\"" + newResource.getRTD().getResourceTypeLocalName() + "\" namespace=\"" + newResource.getRTD().getResourceTypeNamespace() + "\"/>\n\n");
         java.util.HashMap rtiProperties = ((CreatableV2) newResource).createRTIProperties(request);
@@ -541,10 +557,12 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         } else {
             log.warn("No RTI properties: " + newResource.getPath());
         }
+        // TODO: Implement custom config, whereas first the Creatable interface needs to be enhanced.
         rcContent.append("</yanel:resource-config>");
 
 
-        org.wyona.yarep.core.Repository rcRepo = newResource.getRealm().getRTIRepository();
+        // Save resource config
+        org.wyona.yarep.core.Repository rcRepo = realm.getRTIRepository();
         org.wyona.commons.io.Path newRCPath = new org.wyona.commons.io.Path(PathUtil.getRCPath(newResource.getPath()));
         if (log.isDebugEnabled()) log.debug(newRCPath);
         org.wyona.yanel.core.util.YarepUtil.addNodes(rcRepo, newRCPath.toString(), org.wyona.yarep.core.NodeType.RESOURCE);
