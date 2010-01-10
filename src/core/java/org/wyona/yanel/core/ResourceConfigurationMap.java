@@ -44,8 +44,9 @@ public class ResourceConfigurationMap {
     private static Logger log = Logger.getLogger(ResourceConfigurationMap.class);
 
     /**
-     * @param realm
-     * @param path
+     * Get path of resource configuration which matched the path pattern within the resource configuration map
+     * @param realm Realm
+     * @param path Path of request
      * @return String which contains the path of a rc file
      */
     public static String getRCPath(Realm realm, String path) {
