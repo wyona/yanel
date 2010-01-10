@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -85,7 +86,10 @@ import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import org.quartz.JobDetail;
 import org.quartz.Scheduler;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
 /**
@@ -178,6 +182,13 @@ public class YanelServlet extends HttpServlet {
             if (yanelInstance.isSchedulerEnabled()) {
                 log.warn("Startup scheduler ...");
                 scheduler = StdSchedulerFactory.getDefaultScheduler();
+      
+                String groupName = "yanel";
+                JobDetail jobDetail = new JobDetail("heartbeatJob", groupName, org.wyona.yanel.servlet.HeartbeatJob.class);
+                Date startDate = new Date();
+                Date endDate = null;
+                Trigger trigger = new SimpleTrigger("heartbeatTrigger", groupName, startDate, endDate, SimpleTrigger.REPEAT_INDEFINITELY, 60L * 1000L);
+                scheduler.scheduleJob(jobDetail, trigger);
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -509,7 +520,7 @@ public class YanelServlet extends HttpServlet {
                 if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
                     lastModified = ((ModifiableV2) res).getLastModified();
                     Element lastModifiedElement = (Element) resourceElement.appendChild(doc.createElement("last-modified"));
-                    lastModifiedElement.appendChild(doc.createTextNode(new java.util.Date(lastModified).toString()));
+                    lastModifiedElement.appendChild(doc.createTextNode(new Date(lastModified).toString()));
                 } else {
                     Element noLastModifiedElement = (Element) resourceElement.appendChild(doc.createElement("no-last-modified"));
                 }
@@ -662,7 +673,7 @@ public class YanelServlet extends HttpServlet {
                 try {
                     String atomEntryUniversalName = "<{http://www.wyona.org/yanel/resource/1.0}atom-entry/>";
                     Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
-                    String newEntryPath = yanelInstance.getMap().getPath(realm, request.getServletPath() + "/" + new java.util.Date().getTime() + ".xml");
+                    String newEntryPath = yanelInstance.getMap().getPath(realm, request.getServletPath() + "/" + new Date().getTime() + ".xml");
 
                     log.debug("Realm and Path of new Atom entry: " + realm + " " + newEntryPath);
                     Resource atomEntryResource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, newEntryPath, new ResourceTypeRegistry().getResourceTypeDefinition(atomEntryUniversalName), new ResourceTypeIdentifier(atomEntryUniversalName, null));
@@ -2391,7 +2402,7 @@ public class YanelServlet extends HttpServlet {
             }
         }
 
-        Cookie analyticsCookie = new Cookie(ANALYTICS_COOKIE_NAME, "YA-" + new java.util.Date().getTime()); // TODO: getTime() is not unique!
+        Cookie analyticsCookie = new Cookie(ANALYTICS_COOKIE_NAME, "YA-" + new Date().getTime()); // TODO: getTime() is not unique!
         analyticsCookie.setMaxAge(31536000); // 1 year
         //analyticsCookie.setMaxAge(86400); // 1 day
         analyticsCookie.setPath(request.getContextPath());
