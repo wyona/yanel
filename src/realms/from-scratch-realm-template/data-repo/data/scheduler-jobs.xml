@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<scheduler xmlns:sch="http://www.wyona.org/yanel/scheduler/1.0">
+  <jobs>
+    <job class="org.wyona.yanel.servlet.HeartbeatJob" name="hearbeat">
+      <!--<trigger startDate="NOW">-->
+      <trigger startDate="2010.11.01T10:30:24">
+        <!--<repeat count="REPEAT_INDEFINITELY" interval="60000"/>-->
+        <repeat count="3" interval="60000"/>
+      </trigger>
+    </job>
+  </jobs>
+</scheduler>
