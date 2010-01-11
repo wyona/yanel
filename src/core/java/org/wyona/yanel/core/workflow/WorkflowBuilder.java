@@ -32,23 +32,12 @@ public class WorkflowBuilder {
 
     public Workflow buildWorkflow(InputStream stream) throws WorkflowException {
         try {
-            Document document = readDocument(stream);
+            Document document = org.wyona.commons.xml.XMLHelper.readDocument(stream);
             Workflow workflow = buildWorkflow(document);
             return workflow;
         } catch (Exception e) {
             throw new WorkflowException(e);
         }
-    }
-
-    /**
-     * Create DOM from input stream
-     */
-    private Document readDocument(InputStream stream) throws Exception {
-        return org.wyona.commons.xml.XMLHelper.readDocument(stream);
-/* NOTE: Obsolete, XMLHelper above instead
-        DocumentBuilder builder = createBuilder();
-        return builder.parse(stream);
-*/
     }
 
     /**
