@@ -189,7 +189,9 @@ public class YanelServlet extends HttpServlet {
                         String eMessage = ((org.wyona.yanel.core.map.RealmWithConfigurationExceptionImpl) realms[i]).getConfigurationException().getMessage();
                         log.error("Realm '" + realms[i].getID() + "' has thrown a configuration exception: " + eMessage);
                     } else {
-                        log.warn("DEBUG: Realm scheduler config: " + realms[i].getRepository().getID());
+                        if (realms[i].getRepository().existsNode("/scheduler-jobs.xml")) {
+                            log.warn("DEBUG: Scheduler jobs config found for realm: " + realms[i].getRepository().getID());
+                        }
                     }
                 }
 
