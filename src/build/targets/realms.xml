@@ -36,8 +36,7 @@
   </target>
 
   <target name="generate-realms-build-from-default" description="Generate realms build from default config" depends="init" unless="local.realms.config.exists">
-    <!-- Old way of building realms (TODO: remove it if the alternative way proves better):
-    -->
+    <!-- Old way of building realms (TODO: remove it if the alternative way proves better): -->
     <xslt in="${yanel.source.home}/conf/realms.xml" out="../../build/build-realms.xml" style="yanel2realms.xsl" force="false">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.source.version}"/>
@@ -45,16 +44,14 @@
       <param name="maven.url" expression="${maven.url}"/>
     </xslt>
 
-    <!-- Alternative way of building realms:
-    -->
-    <xslt in="${yanel.source.home}/conf/realms.xml" out="../../build/build-realms-v2.xml" style="realms2build.xsl" force="false">
+    <!-- Alternative way (NOT productive yet) of building realms: -->
+    <xslt in="${yanel.source.home}/conf/realms.xml" out="../../build/build-realms-v2.xml" style="realms2build_v2.xsl" force="false">
       <param name="local-build-realms-file" expression="${local.config.home}/local.realms.xml"/>
     </xslt>
   </target>
 
   <target name="generate-realms-build-from-local" description="Generate realms build from local config" depends="init" if="local.realms.config.exists">
-    <!-- Old way of building realms (TODO: remove it if the alternative way proves better):
-    -->
+    <!-- Old way of building realms (TODO: remove it if the alternative way proves better): -->
     <xslt in="${local.config.home}/local.realms.xml" out="../../build/build-realms.xml" style="yanel2realms.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.source.version}"/>
@@ -62,9 +59,8 @@
       <param name="maven.url" expression="${maven.url}"/>
     </xslt>
 
-    <!-- Alternative way of building realms:
-    -->
-    <xslt in="${yanel.source.home}/conf/realms.xml" out="../../build/build-realms-v2.xml" style="realms2build.xsl" force="false">
+    <!-- Alternative way (NOT productive yet) of building realms: -->
+    <xslt in="${yanel.source.home}/conf/realms.xml" out="../../build/build-realms-v2.xml" style="realms2build_v2.xsl" force="false">
       <param name="local-build-realms-file" expression="${local.config.home}/local.realms.xml"/>
     </xslt>
   </target>
