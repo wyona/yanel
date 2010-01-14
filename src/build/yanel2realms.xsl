@@ -116,6 +116,59 @@
 </xsl:template>
 
 <!-- INFO: Check if src ends-with xml -->
-<xsl:template name="get-realm-path"><xsl:param name="path"/><xsl:choose><xsl:when test="substring($path, string-length($path) - 2) = 'xml'">TODO-SUBSTRING-BEFORE-LAST-INDEX</xsl:when><xsl:otherwise><xsl:value-of select="$path"/></xsl:otherwise></xsl:choose></xsl:template>
+<xsl:template name="get-realm-path"><xsl:param name="path"/><xsl:choose><xsl:when test="substring($path, string-length($path) - 2) = 'xml'"><xsl:call-template name="substring-before-last"><xsl:with-param name="text"><xsl:value-of select="$path"/></xsl:with-param><xsl:with-param name="chars">/</xsl:with-param></xsl:call-template></xsl:when><xsl:otherwise><xsl:value-of select="$path"/></xsl:otherwise></xsl:choose></xsl:template>
+
+  <!-- Copy of http://xsltsl.sourceforge.net/ or rather http://prdownloads.sourceforge.net/xsltsl/xsltsl-1.2.1.zip -->
+  <xsl:template name="substring-before-last">
+    <xsl:param name="text"/>
+    <xsl:param name="chars"/>
+
+    <xsl:choose>
+
+      <xsl:when test="string-length($text) = 0"/>
+
+      <xsl:when test="string-length($chars) = 0">
+        <xsl:value-of select="$text"/>
+      </xsl:when>
+
+      <xsl:when test="contains($text, $chars)">
+        <xsl:call-template name="substring-before-last-aux">
+          <xsl:with-param name="text" select="$text"/>
+          <xsl:with-param name="chars" select="$chars"/>
+        </xsl:call-template>
+      </xsl:when>
+
+      <xsl:otherwise>
+        <xsl:value-of select="$text"/>
+      </xsl:otherwise>
+
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="substring-before-last-aux">
+    <xsl:param name="text"/>
+    <xsl:param name="chars"/>
+
+    <xsl:choose>
+      <xsl:when test="string-length($text) = 0"/>
+
+      <xsl:when test="contains($text, $chars)">
+        <xsl:variable name="after">
+          <xsl:call-template name="substring-before-last-aux">
+            <xsl:with-param name="text" select="substring-after($text, $chars)"/>
+            <xsl:with-param name="chars" select="$chars"/>
+          </xsl:call-template>
+        </xsl:variable>
+
+        <xsl:value-of select="substring-before($text, $chars)"/>
+        <xsl:if test="string-length($after) &gt; 0">
+          <xsl:value-of select="$chars"/>
+          <xsl:copy-of select="$after"/>
+        </xsl:if>
+      </xsl:when>
+
+      <xsl:otherwise/>
+    </xsl:choose>
+  </xsl:template>
 
 </xsl:stylesheet>
