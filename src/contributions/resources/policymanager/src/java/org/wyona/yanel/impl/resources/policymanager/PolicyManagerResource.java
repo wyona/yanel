@@ -136,10 +136,10 @@ public class PolicyManagerResource extends BasicXMLResource {
                     sb.append("<title>Edit Access Policy</title>");
                     sb.append("<meta name=\"generator\" content=\"" + this.getClass().getName() + "\"/>");
 
-                    sb.append("<link rel=\"stylesheet\" href=\"" + PathUtil.getResourcesHtdocsPath(this) + "js/accesspolicyeditor/style.css\" type=\"text/css\"/>");
+                    sb.append("<link rel=\"stylesheet\" href=\"" + PathUtil.getResourcesHtdocsPath(this) + "org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/style.css\" type=\"text/css\"/>");
 
                     // IMPORTANT: Please make sure that the value of 'cancel-url-base-equals-host-page-url' corresponds with getReferer()
-                    sb.append("<script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"" + policyURL + "\", \"cancel-url\": \"" + cancelURL + "\", \"cancel-url-base-equals-host-page-url\": \"false\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" +  PathUtil.getResourcesHtdocsPath(this) + "js/accesspolicyeditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script>");
+                    sb.append("<script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"" + policyURL + "\", \"cancel-url\": \"" + cancelURL + "\", \"cancel-url-base-equals-host-page-url\": \"false\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" +  PathUtil.getResourcesHtdocsPath(this) + "org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script>");
 
                     sb.append("</head>");
                     sb.append("<body><h1>Edit Access Policy</h1><p><div id=\"access-policy-editor-hook\"></div></p></body></html>");

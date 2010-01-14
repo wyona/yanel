@@ -67,13 +67,15 @@
     </path>
   </target>
 
-  <target name="clean" depends="yanel-resource-type.clean, init" description="Remove previous build">
+  <target name="clean" depends="yanel-resource-type.clean, gwt:clean"/>
+
+  <target name="gwt:clean" depends="init">
     <delete dir="${component.build.dir}/${module.name}"/>
   </target>
 
   <target name="compile" depends="yanel-resource-type.compile, gwt:compile" description="Compile Java classes and GWT files"/>
 
-  <target name="gwt:compile" depends="clean" description="Compile GWT files">
+  <target name="gwt:compile" depends="gwt:clean" description="Compile GWT files">
 
     <echo>Module name: ${module.name}</echo>
     <echo>Component build directory: ${component.build.dir}</echo>
