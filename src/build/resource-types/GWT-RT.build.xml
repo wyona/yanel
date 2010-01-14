@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+
+<!-- Everything common to resource types using Google Web Toolkit. -->
+<!--XXX maybe allow handling more than one GWT module per resource-type? -->
+
+<project name="yanel-GWT-resource-type"
+ xmlns:artifact="antlib:org.apache.maven.artifact.ant"
+>
+
+  <property name="yanel.home" value="${yanel.source.home}"/>
+  <import file="${yanel.home}/src/build/resource-types/resource-type.build.xml"/>
+
+  <property file="${resource.home.dir}/src/build/GWT.local.build.properties"/>
+  <property file="${resource.home.dir}/src/build/GWT.build.properties"/>
+  <property name="component.home.dir" value="${resource.home.dir}/src-gwt"/>
+
+  <condition property="platform" value="mac">
+    <os family="mac"/>
+  </condition>
+  <condition property="platform" value="windows" else="linux">
+    <os family="winnt"/>
+  </condition>
+
+  <condition property="gwt1">
+    <matches pattern="^1\." string="${gwt.version}"/>
+  </condition>
+
+  <condition property="gwt.outputdir.argname" value="out" else="war">
+    <istrue value="${gwt1}"/>
+  </condition>
+
+  <target name="gwt:dependencies" depends="dependencies" unless="gwt1">
+    <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
+
+    <artifact:dependencies pathId="gwt.compile.classpath" filesetId="gwt.compile.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="com.google.gwt" artifactId="gwt-user" version="${gwt.version}"/>
+      <dependency groupId="com.google.gwt" artifactId="gwt-dev" version="${gwt.version}"/>
+    </artifact:dependencies>
+  </target>
+
+  <target name="gwt1:dependencies" depends="dependencies" if="gwt1">
+    <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
+
+    <artifact:dependencies pathId="gwt.compile.classpath" filesetId="gwt.compile.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="com.google.gwt" artifactId="gwt-user" version="${gwt.version}"/>
+      <dependency groupId="com.google.gwt" artifactId="gwt-dev" version="${gwt.version}" classifier="${platform}"/>
+    </artifact:dependencies>
+  </target>
+
+ <!-- Initialize build properties -->
+  <target name="init" depends="gwt1:dependencies, gwt:dependencies, yanel-resource-type.init">
+    <!-- Read module and class name from component specific build.properties -->
+    <property file="${component.home.dir}/build.properties"/>
+
+    <property name="component.build.dir" value="${resource.home.dir}/htdocs"/>
+    <!--property name="component.resources.build.dir" value="${component.build.dir}"/--><!--/resources-->
+    <property name="component.java.dir" value="${component.home.dir}/java"/>
+		
+    <path id="google.compile.classpath">
+      <fileset refid="gwt.compile.fileset"/>
+      <pathelement path="${yanel.home}/src/build/resource-types/GWT-src-core-java" /><!--XXX HACK: handle submodules properly! -->
+      <pathelement path="${component.java.dir}/" />
+      <!-- TODO: make this configurable per project -->
+      <!--pathelement location="src/navigation-tree/lib/gwtext.jar"/-->
+    </path>
+  </target>
+
+  <target name="clean" depends="yanel-resource-type.clean, init" description="Remove previous build">
+    <delete dir="${component.build.dir}/${module.name}"/>
+  </target>
+
+  <target name="compile" depends="yanel-resource-type.compile, gwt:compile" description="Compile Java classes and GWT files"/>
+
+  <target name="gwt:compile" depends="clean" description="Compile GWT files">
+
+    <echo>Module name: ${module.name}</echo>
+    <echo>Component build directory: ${component.build.dir}</echo>
+
+    <condition property="gwt.compiler.classname" value="com.google.gwt.dev.GWTCompiler" else="com.google.gwt.dev.Compiler">
+      <istrue value="${gwt1}"/>
+    </condition>
+
+    <java classname="${gwt.compiler.classname}" fork="yes">
+      <classpath refid="google.compile.classpath" />
+      <jvmarg value="-Xmx256M"/>
+
+      <arg value="-${gwt.outputdir.argname}" />
+      <arg value="${component.build.dir}" />
+
+      <arg value="-style" />
+      <arg value="OBF" />
+      <!--arg value="PRETTY" /-->
+      <!--arg value="DETAILED" /-->
+
+      <arg value="${module.name}" />
+
+      <!--arg value="-help"/-->
+    </java>
+  </target>
+
+  <!--target name="gwt.jar" depends="init" description="Package compiled Javascript">
+    <jar destfile="${component.build.dir}/gwt-${gwt.version}-${module.name}-resources.jar"
+     basedir="${component.resources.build.dir}"
+    />
+  </target-->
+
+  <target name="gwt:hostmode" description="Opens your component in the gwt host mode browser"><!-- depends="clean"-->
+    <fail unless="hostmode.hostpage.name">
+      Could not read property "hostmode.hostpage.name".
+      If you want to use gwt.hostedmode set its value in your component's build.properties.
+      e.g. in ${component.home.dir}/build.properties add: hostmode.hostpage.name=NameOfYourTestFile.html
+     </fail>
+    <fail unless="gwt.home">
+      Could not read property "gwt.home".
+      If you want to use gwt.hostedmode set its value in your build.properties.
+      e.g. in build.properties add: gwt.home=/path/to/gwt-dir
+    </fail>
+    <condition property="gwt.runner.classname" value="com.google.gwt.dev.GWTShell" else="com.google.gwt.dev.DevMode">
+      <istrue value="${gwt1}"/>
+    </condition>
+    <java classname="${gwt.runner.classname}"
+      fork="true">
+      <classpath>
+        <fileset dir="${gwt.home}">
+          <include name="gwt-user.jar" />
+          <include name="gwt-dev-${platform}.jar" />
+        </fileset>
+        <path refid="gwt.compile.classpath" />
+      </classpath>
+      <arg line="-${gwt.outputdir.argname} ./www"/>
+      <arg line="${module.name}/${hostmode.hostpage.name}"/>
+      <!--arg value="-help"/-->
+    </java>
+  </target>
+</project>

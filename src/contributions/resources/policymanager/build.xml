@@ -1,5 +1,3 @@
-<?xml version="1.0"?>
-
-<project name="yanel-policymanager-resource" default="deploy-jar">
-  <import file="${yanel.source.home}/src/build/resource-types/resource-type.build.xml"/>
+<project name="yanel-policymanager-RT" default="deploy-jar">
+  <import file="${yanel.source.home}/src/build/resource-types/GWT-RT.build.xml"/>
 </project>
