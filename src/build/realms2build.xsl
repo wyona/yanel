@@ -33,7 +33,7 @@
       </xsl:choose>
     </xsl:variable>
     <pathelement location="{$absolute-directory-location}"/>
-  <xsl:message>found realm with id "<xsl:value-of select="@id"/>" located in <xsl:value-of select="$absolute-directory-location"/></xsl:message>
+    <xsl:message>Found realm with id "<xsl:value-of select="@id"/>" located in <xsl:value-of select="$absolute-directory-location"/></xsl:message>
 </xsl:for-each>
   </path>
 </project>
