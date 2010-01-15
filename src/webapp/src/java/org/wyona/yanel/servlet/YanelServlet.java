@@ -191,18 +191,20 @@ public class YanelServlet extends HttpServlet {
                     } else {
                         String schedulerJobsPath = "/scheduler-jobs.xml";
                         if (realms[i].getRepository().existsNode(schedulerJobsPath)) {
-                            log.warn("DEBUG: Scheduler jobs config found for realm: " + realms[i].getRepository().getID());
+                            log.debug("Scheduler jobs config found for realm: " + realms[i].getRepository().getID());
                             org.wyona.yanel.impl.scheduler.QuartzSchedulerUtil.schedule(scheduler, XMLHelper.readDocument(realms[i].getRepository().getNode(schedulerJobsPath).getInputStream()), realms[i].getRepository().getID());
                         }
                     }
                 }
 
+/* TODO: Make global scheduler jobs configurable
                 String groupName = "yanel";
                 JobDetail jobDetail = new JobDetail("heartbeatJob", groupName, org.wyona.yanel.servlet.HeartbeatJob.class);
                 Date startDate = new Date();
                 Date endDate = null;
                 Trigger trigger = new SimpleTrigger("heartbeatTrigger", groupName, startDate, endDate, SimpleTrigger.REPEAT_INDEFINITELY, 60L * 1000L);
                 scheduler.scheduleJob(jobDetail, trigger);
+*/
 
                 scheduler.start();
             }
