@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <scheduler xmlns:sch="http://www.wyona.org/yanel/scheduler/1.0">
-  <jobs>
+  <jobs enabled="true">
     <job class="org.wyona.yanel.servlet.HeartbeatJob" name="hearbeat">
       <!--<trigger startDate="NOW">-->
       <trigger startDate="2010.11.01T10:30:24">
