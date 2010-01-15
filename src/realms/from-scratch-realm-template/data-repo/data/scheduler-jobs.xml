@@ -2,11 +2,16 @@
 
 <scheduler xmlns:sch="http://www.wyona.org/yanel/scheduler/1.0">
   <jobs enabled="true">
-    <job class="org.wyona.yanel.servlet.HeartbeatJob" name="hearbeat">
-      <!--<trigger startDate="NOW">-->
-      <trigger startDate="2010.11.01T10:30:24">
+    <job class="org.wyona.yanel.servlet.HeartbeatJob" name="hearbeat1">
+      <trigger startDate="NOW">
         <!--<repeat count="REPEAT_INDEFINITELY" interval="60000"/>-->
         <repeat count="3" interval="60000"/>
+      </trigger>
+    </job>
+    <job class="org.wyona.yanel.servlet.HeartbeatJob" name="hearbeat2">
+      <trigger startDate="2010.11.15T10:30:15">
+        <!--<repeat count="REPEAT_INDEFINITELY" interval="60000"/>-->
+        <repeat count="5" interval="60000"/>
       </trigger>
     </job>
   </jobs>
