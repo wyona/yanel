@@ -192,7 +192,11 @@ public class YanelServlet extends HttpServlet {
                         String schedulerJobsPath = "/scheduler-jobs.xml";
                         if (realms[i].getRepository().existsNode(schedulerJobsPath)) {
                             log.debug("Scheduler jobs config found for realm: " + realms[i].getRepository().getID());
-                            org.wyona.yanel.impl.scheduler.QuartzSchedulerUtil.schedule(scheduler, XMLHelper.readDocument(realms[i].getRepository().getNode(schedulerJobsPath).getInputStream()), realms[i].getRepository().getID());
+                            try {
+                                org.wyona.yanel.impl.scheduler.QuartzSchedulerUtil.schedule(scheduler, XMLHelper.readDocument(realms[i].getRepository().getNode(schedulerJobsPath).getInputStream()), realms[i].getRepository().getID());
+                            } catch(Exception e) {
+                                log.error(e, e); // INFO: Log error, but otherwise ignore and keep going ...
+                            }
                         }
                     }
                 }
