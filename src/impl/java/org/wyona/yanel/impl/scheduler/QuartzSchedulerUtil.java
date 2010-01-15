@@ -49,10 +49,14 @@ public class QuartzSchedulerUtil {
             Date startDate = new Date();
             String startDateA = triggerElement.getAttribute("startDate");
             if (startDateA != null && startDateA.length() > 0) {
-                try {
-                    startDate = new java.text.SimpleDateFormat("yyyy.MM.dd'T'HH:mm:ss").parse(startDateA);
-                } catch(java.text.ParseException e) {
-                    log.error("Could not parse startDate: " + e.getMessage());
+                if (startDateA.equals("NOW")) {
+                    startDate = new Date();
+                } else {
+                    try {
+                        startDate = new java.text.SimpleDateFormat("yyyy.MM.dd'T'HH:mm:ss").parse(startDateA);
+                    } catch(java.text.ParseException e) {
+                        log.error("Could not parse startDate: " + e.getMessage() + " (Use NOW as start date)");
+                    }
                 }
             }
 
@@ -62,7 +66,7 @@ public class QuartzSchedulerUtil {
                 try {
                     endDate = new java.text.SimpleDateFormat("yyyy.MM.dd'T'HH:mm:ss").parse(endDateA);
                 } catch(java.text.ParseException e) {
-                    log.error("Could not parse endDate: " + e.getMessage());
+                    log.error("Could not parse endDate: " + e.getMessage() + " (No end date set)");
                 }
             }
 
