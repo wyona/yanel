@@ -41,10 +41,33 @@ public class QuartzSchedulerUtil {
         for (int i = 0; i < jobElements.getLength(); i++) {
             Element jobE = (Element) jobElements.item(i);
             log.info("Add job with class: " + jobE.getAttribute("class"));
-            JobDetail jobDetail = new JobDetail(jobE.getAttribute("name"), groupName, Class.forName(jobE.getAttribute("class")));
+            String jobName = jobE.getAttribute("name");
+            JobDetail jobDetail = new JobDetail(jobName, groupName, Class.forName(jobE.getAttribute("class")));
+
+            Element triggerElement = (Element) jobE.getElementsByTagName("trigger").item(0);
+
             Date startDate = new Date();
+            String startDateA = triggerElement.getAttribute("startDate");
+            if (startDateA != null && startDateA.length() > 0) {
+                try {
+                    startDate = new java.text.SimpleDateFormat("yyyy.MM.dd'T'HH:mm:ss").parse(startDateA);
+                } catch(java.text.ParseException e) {
+                    log.error("Could not parse startDate: " + e.getMessage());
+                }
+            }
+
             Date endDate = null;
-            Trigger trigger = new SimpleTrigger("heartbeatTrigger", groupName, startDate, endDate, SimpleTrigger.REPEAT_INDEFINITELY, 60L * 1000L);
+            String endDateA = triggerElement.getAttribute("endDate");
+            if (endDateA != null && endDateA.length() > 0) {
+                try {
+                    endDate = new java.text.SimpleDateFormat("yyyy.MM.dd'T'HH:mm:ss").parse(endDateA);
+                } catch(java.text.ParseException e) {
+                    log.error("Could not parse endDate: " + e.getMessage());
+                }
+            }
+
+            // TODO: Implement repeat count and interval
+            Trigger trigger = new SimpleTrigger(jobName + "Trigger", groupName, startDate, endDate, SimpleTrigger.REPEAT_INDEFINITELY, 60L * 1000L);
             scheduler.scheduleJob(jobDetail, trigger);
         }
     }
