@@ -71,7 +71,33 @@ public class QuartzSchedulerUtil {
             }
 
             // TODO: Implement repeat count and interval
-            Trigger trigger = new SimpleTrigger(jobName + "Trigger", groupName, startDate, endDate, SimpleTrigger.REPEAT_INDEFINITELY, 60L * 1000L);
+            Element repeatElement = (Element) triggerElement.getElementsByTagName("repeat").item(0);
+
+            int count = SimpleTrigger.REPEAT_INDEFINITELY;
+            long interval = 60000; // INFO: 60 seconds
+            if (repeatElement != null) {
+                String countA = repeatElement.getAttribute("count");
+                if (countA.equals("REPEAT_INDEFINITELY")) {
+                    count = SimpleTrigger.REPEAT_INDEFINITELY;
+                } else {
+                    try {
+                        count = Integer.parseInt(countA);
+                    } catch(NumberFormatException e) {
+                        log.error("Could not parse count: " + e.getMessage() + " (repeat indefinitely)");
+                        count = SimpleTrigger.REPEAT_INDEFINITELY;
+                    }
+                }
+
+                String intervalA = repeatElement.getAttribute("interval");
+                try {
+                    interval = Long.parseLong(intervalA);
+                } catch(NumberFormatException e) {
+                    log.error("Could not parse interval: " + e.getMessage() + " (60 seconds)");
+                    interval = 60000;
+                }
+            }
+
+            Trigger trigger = new SimpleTrigger(jobName + "Trigger", groupName, startDate, endDate, count, interval);
             scheduler.scheduleJob(jobDetail, trigger);
         }
     }
