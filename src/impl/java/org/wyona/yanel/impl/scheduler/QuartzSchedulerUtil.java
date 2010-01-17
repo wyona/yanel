@@ -13,6 +13,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import org.wyona.yanel.core.map.Realm;
+
 /**
  *
  */
@@ -24,10 +26,11 @@ public class QuartzSchedulerUtil {
      * Schedule jobs based on XML configuration
      * @param scheduler Scheduler
      * @param doc XML document containing jobs configuration
-     * @param groupName Group name, e.g. realm ID
+     * @param realm Realm
      */
-    public static void schedule(Scheduler scheduler, Document doc, String groupName) throws Exception {
-        log.info("Add jobs for group '" + groupName + "' to scheduler.");
+    public static void schedule(Scheduler scheduler, Document doc, Realm realm) throws Exception {
+        String groupName = realm.getID();
+        log.info("Add jobs for group/realm '" + groupName + "' to scheduler.");
 
         Element jobsElement = (Element) doc.getDocumentElement().getElementsByTagName("jobs").item(0);
         String enabled = jobsElement.getAttribute("enabled");
@@ -43,6 +46,7 @@ public class QuartzSchedulerUtil {
             log.info("Add job with class: " + jobE.getAttribute("class"));
             String jobName = jobE.getAttribute("name");
             JobDetail jobDetail = new JobDetail(jobName, groupName, Class.forName(jobE.getAttribute("class")));
+            jobDetail.getJobDataMap().put("realm", realm);
 
             Element triggerElement = (Element) jobE.getElementsByTagName("trigger").item(0);
 
