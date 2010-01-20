@@ -384,6 +384,7 @@ public class YanelServlet extends HttpServlet {
         if (ext.equals("pdf")) return "application/pdf";
         if (ext.equals("zip")) return "application/zip";
         if (ext.equals("htc")) return "text/x-component";
+        if (ext.equals("svg")) return "image/svg+xml";
         // TODO: add more mime types
         // TODO: and move to MimeTypeUtil
         return "application/octet-stream"; // default
