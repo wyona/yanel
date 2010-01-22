@@ -57,14 +57,17 @@
     <property name="component.build.dir" value="${resource.home.dir}/htdocs"/>
     <!--property name="component.resources.build.dir" value="${component.build.dir}"/--><!--/resources-->
     <property name="component.java.dir" value="${component.home.dir}/java"/>
-		
+    <!--echo message="${component.java.dir}"/-->
+
     <path id="google.compile.classpath">
       <fileset refid="gwt.compile.fileset"/>
+      <fileset refid="gwt-extras.compile.fileset"/>
       <pathelement path="${yanel.home}/src/build/resource-types/GWT-src-core-java" /><!--XXX HACK: handle submodules properly! -->
-      <pathelement path="${component.java.dir}/" />
+      <pathelement path="${component.java.dir}" />
       <!-- TODO: make this configurable per project -->
       <!--pathelement location="src/navigation-tree/lib/gwtext.jar"/-->
     </path>
+    <echo message="${toString:google.compile.classpath}"/>
   </target>
 
   <target name="clean" depends="yanel-resource-type.clean, gwt:clean"/>
@@ -96,6 +99,11 @@
       <!--arg value="PRETTY" /-->
       <!--arg value="DETAILED" /-->
 
+      <!--arg line="-localWorkers 2" /--><!-- GWT 1.7+ -->
+      <!--arg value="-validateOnly" /--><!-- GWT 1.7+ -->
+      <!--arg value="-compileReport" /--><!-- GWT 2+ -->
+      <!--arg value="-draftCompile" /--><!-- GWT 2+ -->
+
       <arg value="${module.name}" />
 
       <!--arg value="-help"/-->
@@ -108,7 +116,7 @@
     />
   </target-->
 
-  <target name="gwt:hostmode" description="Opens your component in the gwt host mode browser"><!-- depends="clean"-->
+  <target name="gwt:hostmode" description="Opens your component in the gwt host mode browser" depends="gwt:clean, gwt:prepare-devmode">
     <fail unless="hostmode.hostpage.name">
       Could not read property "hostmode.hostpage.name".
       If you want to use gwt.hostedmode set its value in your component's build.properties.
@@ -122,6 +130,7 @@
     <condition property="gwt.runner.classname" value="com.google.gwt.dev.GWTShell" else="com.google.gwt.dev.DevMode">
       <istrue value="${gwt1}"/>
     </condition>
+
     <java classname="${gwt.runner.classname}"
       fork="true">
       <classpath>
@@ -129,11 +138,34 @@
           <include name="gwt-user.jar" />
           <include name="gwt-dev-${platform}.jar" />
         </fileset>
-        <path refid="gwt.compile.classpath" />
+        <path refid="google.compile.classpath" />
       </classpath>
-      <arg line="-${gwt.outputdir.argname} ./www"/>
-      <arg line="${module.name}/${hostmode.hostpage.name}"/>
+      <!--arg value="-noserver"/-->
+      <arg line="-startupUrl ${module.name}/${hostmode.hostpage.name}"/>
+      <arg line="-${gwt.outputdir.argname} ${component.build.dir}" />
+      <arg line="${module.name}"/>
       <!--arg value="-help"/-->
     </java>
+  </target>
+
+  <target name="gwt:prepare-devmode" depends="init" unless="gwt1">
+    <mkdir dir="${component.build.dir}/WEB-INF/classes"/>
+    <javac srcdir="${component.java.dir}" includes="**" encoding="utf-8"
+        destdir="${component.build.dir}/WEB-INF/classes"
+        source="1.5" target="1.5" nowarn="true"
+        debug="true" debuglevel="lines,vars,source">
+      <classpath refid="google.compile.classpath"/>
+    </javac>
+    <copy todir="${component.build.dir}/WEB-INF/classes">
+      <fileset dir="${component.java.dir}" excludes="**/*.java"/>
+    </copy>
+    <!--artifact:dependencies pathId="gwt.devmode.classpath" filesetId="gwt.devmode.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="com.google.gwt" artifactId="gwt-servlet" version="${gwt.version}"/>
+      <dependency groupId="com.google.gwt" artifactId="gwt-servlet" version="${gwt.version}"/>
+    </artifact:dependencies>
+    <copy todir="${component.build.dir}/WEB-INF/lib">
+      <fileset dir="${gwt.devmode.fileset}"/>
+    </copy-->
   </target>
 </project>
