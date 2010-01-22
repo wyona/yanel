@@ -59,7 +59,10 @@
     <property name="component.java.dir" value="${component.home.dir}/java"/>
     <!--echo message="${component.java.dir}"/-->
 
-    <path id="google.compile.classpath">
+    <fileset id="gwt-extras.compile.fileset" dir="${resource.home.dir}/src-gwt" includes="*.jar"/>
+    <echo message="gwt-extras.compile.fileset: ${toString:gwt-extras.compile.fileset}"/>
+
+    <path id="gwt.compile.classpath">
       <fileset refid="gwt.compile.fileset"/>
       <fileset refid="gwt-extras.compile.fileset"/>
       <pathelement path="${yanel.home}/src/build/resource-types/GWT-src-core-java" /><!--XXX HACK: handle submodules properly! -->
@@ -67,7 +70,7 @@
       <!-- TODO: make this configurable per project -->
       <!--pathelement location="src/navigation-tree/lib/gwtext.jar"/-->
     </path>
-    <echo message="${toString:google.compile.classpath}"/>
+    <echo message="gwt.compile.classpath: ${toString:gwt.compile.classpath}"/>
   </target>
 
   <target name="clean" depends="yanel-resource-type.clean, gwt:clean"/>
@@ -88,7 +91,7 @@
     </condition>
 
     <java classname="${gwt.compiler.classname}" fork="yes">
-      <classpath refid="google.compile.classpath" />
+      <classpath refid="gwt.compile.classpath" />
       <jvmarg value="-Xmx256M"/>
 
       <arg value="-${gwt.outputdir.argname}" />
@@ -138,7 +141,7 @@
           <include name="gwt-user.jar" />
           <include name="gwt-dev-${platform}.jar" />
         </fileset>
-        <path refid="google.compile.classpath" />
+        <path refid="gwt.compile.classpath" />
       </classpath>
       <!--arg value="-noserver"/-->
       <arg line="-startupUrl ${module.name}/${hostmode.hostpage.name}"/>
@@ -154,7 +157,7 @@
         destdir="${component.build.dir}/WEB-INF/classes"
         source="1.5" target="1.5" nowarn="true"
         debug="true" debuglevel="lines,vars,source">
-      <classpath refid="google.compile.classpath"/>
+      <classpath refid="gwt.compile.classpath"/>
     </javac>
     <copy todir="${component.build.dir}/WEB-INF/classes">
       <fileset dir="${component.java.dir}" excludes="**/*.java"/>
