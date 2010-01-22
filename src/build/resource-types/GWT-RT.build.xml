@@ -120,11 +120,11 @@
   </target-->
 
   <target name="gwt:hostmode" description="Opens your component in the gwt host mode browser" depends="gwt:clean, gwt:prepare-devmode">
-    <fail unless="hostmode.hostpage.name">
+    <!--fail unless="hostmode.hostpage.name">
       Could not read property "hostmode.hostpage.name".
       If you want to use gwt.hostedmode set its value in your component's build.properties.
       e.g. in ${component.home.dir}/build.properties add: hostmode.hostpage.name=NameOfYourTestFile.html
-     </fail>
+     </fail-->
     <fail unless="gwt.home">
       Could not read property "gwt.home".
       If you want to use gwt.hostedmode set its value in your build.properties.
@@ -134,6 +134,9 @@
       <istrue value="${gwt1}"/>
     </condition>
 
+    <echo>
+      Do not forget to add ?gwt.codesvr=127.0.1.1:<!--XXX do not hardcode code server port: -->9997 at the end of the URLs you want to test!
+    </echo>
     <java classname="${gwt.runner.classname}"
       fork="true">
       <classpath>
@@ -143,8 +146,8 @@
         </fileset>
         <path refid="gwt.compile.classpath" />
       </classpath>
-      <!--arg value="-noserver"/-->
-      <arg line="-startupUrl ${module.name}/${hostmode.hostpage.name}"/>
+      <arg value="-noserver"/>
+      <!--arg line="-startupUrl ${module.name}-devMode/${hostmode.hostpage.name}"/-->
       <arg line="-${gwt.outputdir.argname} ${component.build.dir}" />
       <arg line="${module.name}"/>
       <!--arg value="-help"/-->
@@ -152,7 +155,7 @@
   </target>
 
   <target name="gwt:prepare-devmode" depends="init" unless="gwt1">
-    <mkdir dir="${component.build.dir}/WEB-INF/classes"/>
+    <!--mkdir dir="${component.build.dir}/WEB-INF/classes"/>
     <javac srcdir="${component.java.dir}" includes="**" encoding="utf-8"
         destdir="${component.build.dir}/WEB-INF/classes"
         source="1.5" target="1.5" nowarn="true"
@@ -161,7 +164,7 @@
     </javac>
     <copy todir="${component.build.dir}/WEB-INF/classes">
       <fileset dir="${component.java.dir}" excludes="**/*.java"/>
-    </copy>
+    </copy-->
     <!--artifact:dependencies pathId="gwt.devmode.classpath" filesetId="gwt.devmode.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
       <dependency groupId="com.google.gwt" artifactId="gwt-servlet" version="${gwt.version}"/>
