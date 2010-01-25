@@ -3,7 +3,7 @@
 <p>The source file can be found at src/webapp/WEB-INF-/web.xml</p>
 <p>Various webapp parameters can be configured:</p>
 <ul>
-<li>Log access</li>
+<li>Log access (whereas can be configured within src/build/local.build.properties: log-access property)</li>
 <li>Display most recent version if workflow is configured but page is not live</li>
 <li>Session timeout</li>
 </ul>
