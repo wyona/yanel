@@ -52,6 +52,7 @@
  <!-- Initialize build properties -->
   <target name="init" depends="gwt1:dependencies, gwt:dependencies, yanel-resource-type.init">
     <!-- Read module and class name from component specific build.properties -->
+    <property file="${component.home.dir}/local.build.properties"/>
     <property file="${component.home.dir}/build.properties"/>
 
     <property name="component.build.dir" value="${resource.home.dir}/htdocs"/>
@@ -90,7 +91,7 @@
       <istrue value="${gwt1}"/>
     </condition>
 
-    <java classname="${gwt.compiler.classname}" fork="yes">
+    <java classname="${gwt.compiler.classname}" fork="yes" failonerror="true">
       <classpath refid="gwt.compile.classpath" />
       <jvmarg value="-Xmx256M"/>
 
