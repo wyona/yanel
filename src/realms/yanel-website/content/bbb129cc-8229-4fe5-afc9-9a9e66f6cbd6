@@ -7,4 +7,5 @@
 <li>Display most recent version if workflow is configured but page is not live</li>
 <li>Session timeout</li>
 </ul>
+<p>In order to overwrite the default settings one can copy the original file to src/webapp/WEB-INF/local.web.xml and the Yanel build process will use this local file.</p>
 </body></html>
