@@ -33,6 +33,7 @@
         <exclude name="src/**"/>
       </fileset>
     </copy>
+    <copy file="${yanel.source.home}/src/webapp/WEB-INF/local.web.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/web.xml" overwrite="true" failonerror="false"/>
 
     <antcall target="copy-basic-webapp-libs"/>
 
