@@ -19,6 +19,7 @@
       <xsl:copy-of select="/yanel:yanel/yanel:resource-types-config"/>
       <xsl:copy-of select="/yanel:yanel/yanel:reserved-prefix"/>
       <xsl:copy-of select="/yanel:yanel/yanel:scheduler"/>
+      <xsl:copy-of select="/yanel:yanel/yanel:smtp"/>
     </yanel>
   </xsl:template>
 
