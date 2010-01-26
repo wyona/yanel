@@ -8,18 +8,37 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.log4j.Logger;
+
+/**
+ *
+ */
 public class SendMail {
+    private static Logger log = Logger.getLogger(SendMail.class);
+
     public static final String STATUS = "status";
     public static final String MESSAGE = "message";
     
-    public static void send(String smtpHost, int smtpPort, String from,
-            String to, String subject, String content) throws AddressException,
-            MessagingException {
+    /**
+     *
+     */
+    public static void send(String smtpHost, int smtpPort, String from, String to, String subject, String content) throws AddressException, MessagingException {
+
         // Create a mail session
-        java.util.Properties props = new java.util.Properties();
-        props.put("mail.smtp.host", smtpHost);
-        props.put("mail.smtp.port", "" + smtpPort);
-        Session session = Session.getDefaultInstance(props, null);
+        Session session = null;
+        if (smtpHost != null && smtpPort >= 0) {
+            java.util.Properties props = new java.util.Properties();
+            props.put("mail.smtp.host", smtpHost);
+            props.put("mail.smtp.port", "" + smtpPort);
+            session = Session.getInstance(props, null);
+            log.warn("Use specific mail session: " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
+        } else {
+            java.util.Properties props = new java.util.Properties();
+            props.put("mail.smtp.host", "mail.foo.bar"); // Dummy value
+            props.put("mail.smtp.port", "37"); // Dummy value
+            session = Session.getDefaultInstance(props, null);
+            log.warn("Use default mail session: " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
+        }
 
         // Construct the message
         Message msg = new MimeMessage(session);
