@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 
-<yanel xmlns="http://www.wyona.org/yanel/1.0" version="2009101100">
+<yanel xmlns="http://www.wyona.org/yanel/1.0" version="2010012600">
+
+  <changes>
+    <change version="20100126">smtp configuration added</change>
+  </changes>
   
   <!-- # Realms configuration -->
   <realms-config src="realms.xml"/>
@@ -13,5 +17,10 @@
   
   <!-- # Scheduler configuration -->
   <scheduler enabled="false"/>
+  
+  <!-- # Mail server configuration -->
+<!--
+  <smtp host="mail.foo.bar" port="25"/>
+-->
 
 </yanel>
