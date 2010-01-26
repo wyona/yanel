@@ -109,7 +109,7 @@ Content Language: <xsl:value-of select="$content-language"/>
             </div>
 
             <div id="footer">
-              Copyright &#169; 2009 Wyona &#160;&#160;&#160;&#160;&#160;&#160;<a href="?yanel.toolbar=on" rel="nofollow">Toolbar</a>
+              Copyright &#169; 2009 - 2010 Wyona &#160;&#160;&#160;&#160;&#160;&#160;<a href="?yanel.toolbar=on" rel="nofollow">Toolbar</a>
             </div>
           </div>
         </div>
