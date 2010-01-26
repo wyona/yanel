@@ -109,6 +109,19 @@ public class Yanel {
            schedulerEnabled = false;
        }
 
+       if (config.getChild("smtp", false) != null) {
+           String smtpHost = config.getChild("smtp").getAttribute("host");
+           String smtpPort = config.getChild("smtp").getAttribute("port");
+           java.util.Properties props = new java.util.Properties();
+           props.put("mail.smtp.host", smtpHost);
+           props.put("mail.smtp.port", smtpPort);
+           // http://java.sun.com/products/javamail/javadocs/javax/mail/Session.html
+           javax.mail.Session session = javax.mail.Session.getDefaultInstance(props, null);
+           log.info("Mailserver default session (available to all code executing in the same JVM): " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
+       } else {
+           log.warn("Mail server not configured within configuration: " + configFile);
+       }
+
        isInitialized = true;
     }
 
