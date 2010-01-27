@@ -174,6 +174,9 @@ public class ContactResource extends Resource implements ViewableV1 {
             return defaultView;
     }
 
+    /**
+     *
+     */
     private void sendMail(Transformer transformer) throws Exception {
         String email = getEnvironment().getRequest().getParameter("email");
         if(email == null || ("").equals(email)) {
@@ -183,14 +186,7 @@ public class ContactResource extends Resource implements ViewableV1 {
             transformer.setParameter("error", "emailNotValid");
         } else {
             contact = new ContactBean(request);
-            smtpHost = getResourceConfigProperty(SMTP_HOST);
-            try {
-                smtpPort = Integer.parseInt(getResourceConfigProperty(SMTP_PORT));
-            } catch(NumberFormatException nfe) {
-                log.error(nfe);
-                transformer.setParameter("error", "smtpPortNotCorrect");
-                smtpPort = 0;
-            }
+
             String subject = getResourceConfigProperty(SUBJECT);
             if (subject == null) subject = "Yanel Contact Resource: No subject specified";
             to = getResourceConfigProperty(TO);
@@ -209,22 +205,38 @@ public class ContactResource extends Resource implements ViewableV1 {
             if (contact.getEmail() != null) content = content + "E-Mail: " + contact.getEmail() + "\n" + "\n";
             if (contact.message != null) content = content + "Message:\n" + contact.message;
 
-            if(smtpHost != null && smtpPort != 0 && to != null) {
+
+            if(to != null) {
                 try {
-                    SendMail.send(smtpHost, smtpPort, from, to, subject, content);
-                    transformer.setParameter("sent", "true");
-                } catch(javax.mail.MessagingException me) {
-                    log.error("#" + me + "#");
-                    if(("" + me).startsWith("javax.mail.MessagingException: Unknown SMTP")) {
+                    smtpHost = getResourceConfigProperty(SMTP_HOST);
+                    String smtpPortAsString = getResourceConfigProperty(SMTP_PORT);
+                    if(smtpHost != null && smtpPortAsString != null) {
+                        try {
+                            smtpPort = Integer.parseInt(smtpPortAsString);
+                            SendMail.send(smtpHost, smtpPort, from, to, subject, content);
+                            transformer.setParameter("sent", "true");
+                        } catch(NumberFormatException nfe) {
+                            log.error(nfe);
+                            transformer.setParameter("error", "smtpPortNotCorrect");
+                            smtpPort = 0;
+                        }
+                    } else {
+                        // INFO: Use default settings of Yanel for smtp-host and smtp-port
+                        SendMail.send(null, -1, from, to, subject, content);
+                        transformer.setParameter("sent", "true");
+                    }
+                } catch(javax.mail.MessagingException e) {
+                    log.error(e, e);
+                    if(("" + e).startsWith("javax.mail.MessagingException: Unknown SMTP")) {
                         transformer.setParameter("error", "unknownHost");
-                    } else if(("" + me).startsWith("javax.mail.SendFailedException: Invalid Addresses")) {
+                    } else if(("" + e).startsWith("javax.mail.SendFailedException: Invalid Addresses")) {
                         transformer.setParameter("error", "invalidAddress");
                     } else {
                         transformer.setParameter("error", "couldNotSendMail");
                     }
                 }
             } else {
-                transformer.setParameter("error", "smtpConfigError");
+                transformer.setParameter("error", "smtpConfigError"); // INFO: Also see conf/contact-form_en.properties
             }
         }
     }
