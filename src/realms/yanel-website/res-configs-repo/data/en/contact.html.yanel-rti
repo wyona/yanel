@@ -5,5 +5,7 @@ xslt: /xslt/global.xsl
 
 subject: Yanel Website: I am interested in Yanel, please get in touch with me
 to: contact@wyona.com
-smtpHost: mail.wyona.com
-smtpPort: 25
+
+# Alternative smtp settings. If not set, then the default settings of Yanel will be used configured within yanel.xml
+#smtpHost: mail.wyona.com
+#smtpPort: 25
