@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="contact-form" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="xslt" value="/xslt/global.xsl"/>
+  <yanel:property name="mime-type" value="application/xhtml+xml"/>
+  <yanel:property name="subject" value="Yanel Website (yanel.org): I am interested in Yanel, please get in touch with me"/>
+  <yanel:property name="to" value="contact@wyona.com"/>
+
+  <!-- Alternative smtp settings. If not set, then the default settings of Yanel will be used configured within yanel.xml -->
+<!--
+  <yanel:property name="smtpHost" value="mail.wyona.com"/>
+  <yanel:property name="smtpPort" value="25"/>
+-->
+</yanel:resource-config>
