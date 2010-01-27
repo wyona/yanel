@@ -21,18 +21,36 @@ public class MailUtil {
 
     /**
      * @param from From address
-     * @param from To address
+     * @param to To address
      * @param subject Subject of email
      * @param content Body of email
      */
     public static void send(String from, String to, String subject, String content) throws AddressException, MessagingException {
-        send(null, -1, from, to, subject, content);
+        send(null, -1, from, null, to, subject, content);
+    }
+
+    /**
+     * @param from From address
+     * @param replyTo email address (if null, then no reply-to will be set)
+     * @param to To address
+     * @param subject Subject of email
+     * @param content Body of email
+     */
+    public static void send(String from, String replyTo, String to, String subject, String content) throws AddressException, MessagingException {
+        send(null, -1, from, replyTo, to, subject, content);
     }
 
     /**
      *
      */
     public static void send(String smtpHost, int smtpPort, String from, String to, String subject, String content) throws AddressException, MessagingException {
+        send(null, -1, from, null, to, subject, content);
+    }
+
+    /**
+     * @param replyTo email address (if null, then no reply-to will be set)
+     */
+    public static void send(String smtpHost, int smtpPort, String from, String replyTo, String to, String subject, String content) throws AddressException, MessagingException {
         // Create a mail session
         Session session = null;
         if (smtpHost != null && smtpPort >= 0) {
@@ -52,6 +70,11 @@ public class MailUtil {
         // Construct the message
         Message msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(from));
+        if (replyTo != null) {
+            InternetAddress[] replyToAddresses = new InternetAddress[1];
+            replyToAddresses[0] = new InternetAddress(replyTo);
+            msg.setReplyTo(replyToAddresses);
+        }
         msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
         msg.setSubject(subject);
         msg.setText(content);
