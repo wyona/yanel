@@ -103,9 +103,11 @@
       <!--arg value="PRETTY" /-->
       <!--arg value="DETAILED" /-->
 
-      <!--arg line="-localWorkers 2" /--><!-- GWT 1.7+ -->
+      <!--arg line="-localWorkers 2"/--><!-- GWT 1.7+ -->
       <!--arg value="-validateOnly" /--><!-- GWT 1.7+ -->
       <!--arg value="-compileReport" /--><!-- GWT 2+ -->
+      
+      <!-- To speed up compiling you might want to uncomment the draftCompile flag, but please keep it commented within productive environments -->
       <!--arg value="-draftCompile" /--><!-- GWT 2+ -->
 
       <arg value="${module.name}" />
