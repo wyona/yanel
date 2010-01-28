@@ -1,0 +1,15 @@
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="gwt-trials"
+  namespace="http://www.wyona.org/yanel/resource/1.0"
+  class="org.wyona.gwt.trials.yanel.TrialsResource"
+  >
+<description>
+A place to experiment with GWT features.
+</description>
+
+<rtd>
+<!--
+  <property name="foo" default-value="bar"/>
+-->
+</rtd>
+</resource>

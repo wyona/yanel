@@ -1,0 +1,3 @@
+<project name="yanel-GWT-trials-RT">
+  <import file="${yanel.source.home}/src/build/resource-types/GWT-RT.build.xml"/>
+</project>

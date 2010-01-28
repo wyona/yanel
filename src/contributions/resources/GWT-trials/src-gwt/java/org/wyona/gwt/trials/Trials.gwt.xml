@@ -1,0 +1,15 @@
+<module>
+  <inherits name='com.google.gwt.user.User'/>
+
+  <!--inherits name='com.google.gwt.gen2.logging.Logging-production'/-->
+
+  <!--inherits name='com.google.gwt.widgetideas.WidgetIdeas'/>
+  <inherits name='com.google.gwt.widgetideas.ScrollTable'/-->
+  <!--stylesheet src='ScrollTableDemo.css'/-->
+
+  <inherits name='com.google.gwt.gen2.table.Table'/>
+
+
+  <entry-point class="org.wyona.gwt.trials.client.ScrollTableTrial"/>
+
+</module>
