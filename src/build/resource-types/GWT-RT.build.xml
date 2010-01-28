@@ -114,6 +114,10 @@
 
       <!--arg value="-help"/-->
     </java>
+
+    <!-- Only necessary for GWT version 1.4 etc (GWT 2.0 does not seems to create such a directory) -->
+    <echo>Delete .gwt-cache Directory: ${resource.home.dir}</echo>
+    <delete dir="${resource.home.dir}/.gwt-cache" quiet="true"/>
   </target>
 
   <!--target name="gwt.jar" depends="init" description="Package compiled Javascript">
