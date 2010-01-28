@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>Untitled document</title>
+</head>
+<body>
+<h1>Google Web Toolkit integration</h1>
+<h2>Development</h2>
+<h3>Getting Started<br /></h3>
+<address>Each resource type can have its own GWT code, e.g.the policy manager resource type</address><address><br /></address><address>src/contributions/resources/policymanager/src-gwt</address>
+<p>One can build the GWT source by running the gwt:compile ant target, e.g.</p>
+<address>./build.sh -f src/contributions/resources/policymanager/build.xml gwt:compile</address>
+<p>whereas please make sure that the resource type build file imports the GWT-RT.build.xml file instead the regular file resource-type.build.xml</p>
+<p>The gwt:compile target compiles the GWT Java code to cross-browser Javascript code and saves it within the htdocs directory of the corresponding resource type, e.g.</p>
+<p>src/contributions/resources/policymanager/htdocs/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor</p>
+<p>whereas depending on the source a svn:ignore might be set and therefore changes won't be noticed.</p>
+<h3>Speeding up development</h3>
+<p>By default the GWT source compiled for all GWT-supported browsers, this can be overridden per resource type while developing.</p>
+<h2>Misc</h2>
+<ul>
+<li><a href="http://documentation.yanel.wyona.org/wiki/wiki/GWT">Yanel Wiki notes on GWT integration</a></li>
+</ul>
+</body>
+</html>
