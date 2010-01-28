@@ -14,8 +14,13 @@
 <p>The gwt:compile target compiles the GWT Java code to cross-browser Javascript code and saves it within the htdocs directory of the corresponding resource type, e.g.</p>
 <p>src/contributions/resources/policymanager/htdocs/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor</p>
 <p>whereas depending on the source a svn:ignore might be set and therefore changes won't be noticed.</p>
+<h3>Configuration of GWT version</h3>
+<p>The GWT version can be configured per resource type within src/build/GWT.build.properties, e.g.</p>
+<address>src/contributions/resources/policymanager/src/build/GWT.build.properties<br /></address>
 <h3>Speeding up development</h3>
-<p>By default the GWT source compiled for all GWT-supported browsers, this can be overridden per resource type while developing.</p>
+<p>By default the GWT source is compiled for all GWT-supported browsers. While developing this can be overridden per resource type within the module configuration (property user.agent), e.g.</p>
+<address>src-gwt/java/org/wyona/security/gwt/accesspolicyeditor/AccessPolicyEditor.gwt.xml<br /></address>
+<p>There are also some more flags within src/build/resource-types/GWT-RT.build.xml which can be set and help speeding up development, such as for example the -draftCompile fiag, but please be aware that these flags depend on the GWT version you are using (see above: Configuration of GWT version).</p>
 <h2>Misc</h2>
 <ul>
 <li><a href="http://documentation.yanel.wyona.org/wiki/wiki/GWT">Yanel Wiki notes on GWT integration</a></li>
