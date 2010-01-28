@@ -72,6 +72,11 @@
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/yanel-user/" compile="true" copy-dir-name="yanel-yanel-user"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/redirect/" compile="true"/>
 
+  <!-- Google Web Toolkit sandbox resource type -->
+<!--
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/GWT-sandbox/" compile="true"/>
+-->
+
 <!-- INFO: Third party resource types (TODO: Add to Hudson)
   <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/archive-url/" compile="true"/>
   <resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/cortado-ogg-theora/" compile="true"/>
