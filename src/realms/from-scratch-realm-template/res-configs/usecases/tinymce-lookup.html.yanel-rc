@@ -12,7 +12,7 @@
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
       <view id="default" type="jelly">
-        <template>/app1/jelly/tinymce-lookup.jelly</template>
+        <template>rthtdocs:/tinymce-lookup.jelly</template>
         <mime-type>text/html</mime-type>
       </view>
 
