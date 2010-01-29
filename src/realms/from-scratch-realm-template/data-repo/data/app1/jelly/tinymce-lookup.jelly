@@ -25,7 +25,7 @@
           }
           var FileBrowserDialogue = {
               mySubmit : function (path) {
-                  var URL = '${yanel.back2realm}' + path.slice(1);
+                  var URL = '${resource.getParameterAsString("yanel.target-back2realm")}' + path.slice(1);
                   var win = tinyMCEPopup.getWindowArg("window");
           
                   // insert information now
