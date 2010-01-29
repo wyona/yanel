@@ -54,10 +54,20 @@ table th {
     </table>
     <h2>Request Parameter</h2>
     <table border="1">
-      <tr><th>View ID</th><th>Name</th><th>Explanations</th></tr>
-      <tr><td>DEFAULT</td><td>edit-path</td><td>a data repository path. points to the document you want to edit</td></tr>
+      <tr><th>Name</th><th>Explanations</th></tr>
+      <tr><td>edit-path</td><td>(deprecated, use map matcher and matcher-extension instead)a data repository path. points to the document you want to edit</td></tr>
     </table>
-        
+    <h2>Resource Configuration</h2>
+    <table border="1">
+      <tr><th>Name</th><th>Explanations</th></tr>
+      <tr><td>matcher-extension</td><td>is removed from the requested path to get the content path. E.g. '.tinymce-edit.html' (see: Map Matcher)</td></tr>
+    </table>
+            
+    <h2>Map matcher</h2>
+    <pre>
+      &lt;matcher pattern="**.tinymce-edit.html" rcpath="/tinymce.html.yanel-rc"/>
+    </pre>
+    
     <h2>Examples</h2>
     <h3>.yanel-rc Example</h3>
 <pre>
@@ -167,7 +177,7 @@ Index: src/realms/yanel-website/src/java/org/wyona/yanel/servlet/menu/impl/Yanel
 +        sb.append("&lt;ul>&lt;li>Source editor&lt;/li>");
 +        sb.append("&lt;li>WYSIWYG editor&lt;/li>");
 +        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
-+            sb.append("&lt;li>&lt;a href=\"" + backToRealm + "usecases/tinymce.html?edit-path=" + resource.getPath() + "\">Edit page with tinyMCE&amp;#160;&amp;#160;&amp;#160;&lt;/a>&lt;/li>");
++            sb.append("&lt;li>&lt;a href=\"" + backToRealm + resource.getPath().substring(1) + "\">Edit page with tinyMCE&amp;#160;&amp;#160;&amp;#160;&lt;/a>&lt;/li>");
 +        } else {
 +            sb.append("&lt;li>&lt;a>Edit page with tinyMCE&amp;#160;&amp;#160;&amp;#160;&lt;/a>&lt;/li>");
 +        }
