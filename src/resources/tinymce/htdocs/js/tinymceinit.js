@@ -31,7 +31,7 @@ function yanelLookupResource(field_name, url, type, win) {
         // (PHP session ID is now included if there is one at all)
         cmsURL = cmsURL + "&type=" + type;
     }
-    cmsURL = cmsURL + "&yanel.toolbar=suppress";
+    cmsURL = cmsURL + "&yanel.target-back2realm=" + BACK2REALM + "&yanel.toolbar=suppress";
 
     tinyMCE.activeEditor.windowManager.open({
         file : cmsURL,
