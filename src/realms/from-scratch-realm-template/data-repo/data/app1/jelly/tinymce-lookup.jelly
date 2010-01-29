@@ -12,12 +12,17 @@
               "lookup-treepanel-height": "340", 
               "lookup-gridpanel-width": "240", 
               "lookup-gridpanel-height": "340", 
-              "lookup-root-node-label": "test",
+              "lookup-root-node-label": "Root",
               "lookup-hook": "lookupHook",
               "lookup-request-paramter-type": '${resource.getParameterAsString("type")}',
               "lookup-upload-action-url": "${yanel.back2realm}create-new-page.html",
               "lookup-upload-submit-button-label": "Upload",
               "lookup-upload-enabled": "true"
+              "lookup-create-folder-name-default": "Folder Name",
+              "lookup-create-folder-submit-label": "new Folder",
+              "lookup-current-path-label": "Current Path:",
+              "lookup-upload-enabled": "true",
+              "lookup-create-folder-enabled": "true"
           };
           // this methode is called by gwt
           function callback(path) {
@@ -53,12 +58,6 @@
         <link rel="stylesheet" href="${yanel.back2realm}${yanel.reservedPrefix}/yanel-css/global.css" type="text/css"/>
       </head>
       <body>
-<!--         <form action="${yanel.back2realm}create-new-page.html" enctype="multipart/form-data" method="post" >
-          <input type="hidden" name="resource-type" value="http://www.wyona.org/yanel/resource/1.0::file"/>
-          <input type="hidden" name="lookin" value="/"/>
-          <input type="file" name="rp.data"/>
-          <input type="submit" value="Upload" name="save"/>
-        </form> -->
         <script language="javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::lookup/js/org.wyona.yanel.navigation.gwt.lookuptree.LookupTree.nocache.js"></script>
         <div id="lookupHook"/>
         <iframe id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
