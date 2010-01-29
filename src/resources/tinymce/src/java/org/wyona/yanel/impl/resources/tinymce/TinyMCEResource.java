@@ -46,8 +46,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.xml.resolver.tools.CatalogResolver;
 
 
-import sun.util.logging.resources.logging;
-
 /**
  *
  */
@@ -60,6 +58,7 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
     private static final String PARAM_SUBMIT_TIDY = "submit-tidy";
     private static final String PARAM_SUBMIT_TIDY_SAVE = "submit-tidy-save";
     private static final String VIEW_FIX_WELLFORMNESS = "fix-wellformness";
+    private static final String CONFIG_PROPERTY_MATCHER_EXTENSION = "matcher-extension";    
     
     private String editorContent;
     private String resourceContent;
@@ -71,7 +70,19 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
      * @see org.wyona.yanel.impl.resources.usecase.UsecaseResource#init()
      */
     protected void init() throws UsecaseException {
-        editPath = getParameterAsString(PARAMETER_EDIT_PATH);
+        try {
+            String matcherExtension = getResourceConfigProperty(CONFIG_PROPERTY_MATCHER_EXTENSION);
+            if (matcherExtension != null && matcherExtension.length() > 0) {
+                editPath = getPath().substring(0, getPath().length() - matcherExtension.length());
+            } else {
+                log.warn("Could not get Resource Configuration Property 'matcher-extension'. Fallback to previous version ...");
+                editPath = getParameterAsString(PARAMETER_EDIT_PATH); 
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+            throw new UsecaseException(e.getMessage());
+        }
+
         if (editPath == null || editPath.equals("")) {
             addError("Could not get paramter edit-path. Don't know what to edit.");
             return;
