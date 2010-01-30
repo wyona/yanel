@@ -47,7 +47,6 @@ import org.w3c.dom.NodeList;
 import org.wyona.commons.xml.XMLHelper;
 import org.wyona.security.core.api.User;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
-import org.wyona.yanel.impl.resources.contactform.SendMail;
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.NodeType;
 
@@ -145,15 +144,25 @@ public class ForgotPassword extends BasicXMLResource {
         } else {
             log.debug("default handler");
             String smtpEmailServer = getResourceConfigProperty(SMTP_HOST_PROPERTY_NAME);
-            if (smtpEmailServer != null) {
-                rootElement.appendChild(adoc.createElementNS(NAMESPACE, "requestemail"));
+            if (smtpEmailServer != null || (getYanel().getSMTPHost() != null && getYanel().getSMTPPort() >= 0)) {
+                String from = getResourceConfigProperty("smtpFrom");
+                if (from != null) {
+                    rootElement.appendChild(adoc.createElementNS(NAMESPACE, "requestemail"));
+                } else {
+                    Element exceptionElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "exception"));
+                    String resConfigFilename = "global-resource-configs/user-forgot-pw_yanel-rc.xml";
+                    if (getConfiguration().getNode() != null) {
+                        resConfigFilename = getConfiguration().getNode().getPath(); 
+                    }
+                    exceptionElement.setTextContent("The FROM address has not been configured yet. Please make sure to configure the FROM address within: " + resConfigFilename);
+                }
             } else {
                 Element exceptionElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "exception"));
                 String resConfigFilename = "global-resource-configs/user-forgot-pw_yanel-rc.xml";
                 if (getConfiguration().getNode() != null) {
                     resConfigFilename = getConfiguration().getNode().getPath(); 
                 }
-                exceptionElement.setTextContent("SMTP host has not been configured yet. Please make sure to configure the various smtp properties at: " + resConfigFilename);
+                exceptionElement.setTextContent("SMTP host has not been configured yet. Please make sure to configure the various smtp properties at: " + resConfigFilename + " (Or within WEB-INF/classes/yanel.xml)");
             }
         }
     }
@@ -404,11 +413,16 @@ public class ForgotPassword extends BasicXMLResource {
         String hrsValid = getResourceConfigProperty(HOURS_VALID_PROPERTY_NAME);
         emailBody = emailBody + "\n\nNOTE: This link is only available during the next " + hrsValid + " hours!";
         if (log.isDebugEnabled()) log.debug(emailBody);
-        String emailServer = getResourceConfigProperty(SMTP_HOST_PROPERTY_NAME);
-        int port = Integer.parseInt(getResourceConfigProperty("smtpPort"));
         String from = getResourceConfigProperty("smtpFrom");
         String to =  emailAddress;
-        SendMail.send(emailServer, port, from, to, emailSubject, emailBody);
+
+        String emailServer = getResourceConfigProperty(SMTP_HOST_PROPERTY_NAME);
+        if (emailServer != null) {
+            int port = Integer.parseInt(getResourceConfigProperty("smtpPort"));
+            org.wyona.yanel.core.util.MailUtil.send(emailServer, port, from, to, emailSubject, emailBody);
+        } else {
+            org.wyona.yanel.core.util.MailUtil.send(from, to, emailSubject, emailBody);
+        }
     }
 
     /**
