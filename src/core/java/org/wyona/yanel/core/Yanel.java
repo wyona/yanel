@@ -50,6 +50,9 @@ public class Yanel {
 
     private static Yanel yanel = null;
 
+    private String smtpHost = null;
+    private int smtpPort = -1;
+
     private String version = null;
     private String revision = null;
     private String reservedPrefix = null;
@@ -110,14 +113,19 @@ public class Yanel {
        }
 
        if (config.getChild("smtp", false) != null) {
-           String smtpHost = config.getChild("smtp").getAttribute("host");
-           String smtpPort = config.getChild("smtp").getAttribute("port");
-           java.util.Properties props = new java.util.Properties();
-           props.put("mail.smtp.host", smtpHost);
-           props.put("mail.smtp.port", smtpPort);
-           // http://java.sun.com/products/javamail/javadocs/javax/mail/Session.html
-           javax.mail.Session session = javax.mail.Session.getDefaultInstance(props, null);
-           log.info("Mailserver default session (available to all code executing in the same JVM): " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
+           smtpHost = config.getChild("smtp").getAttribute("host");
+           String smtpPortSt = config.getChild("smtp").getAttribute("port");
+           try {
+               smtpPort = Integer.parseInt(smtpPortSt);
+               java.util.Properties props = new java.util.Properties();
+               props.put("mail.smtp.host", smtpHost);
+               props.put("mail.smtp.port", smtpPortSt);
+               // http://java.sun.com/products/javamail/javadocs/javax/mail/Session.html
+               javax.mail.Session session = javax.mail.Session.getDefaultInstance(props, null);
+               log.info("Mailserver default session (available to all code executing in the same JVM): " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
+           } catch(NumberFormatException e) {
+               log.warn("Mail server not configured, because SMTP port '" + smtpPortSt + "' does not seem to be a number! Check within configuration: " + configFile);
+           }
        } else {
            log.warn("Mail server not configured within configuration: " + configFile);
        }
@@ -241,6 +249,20 @@ public class Yanel {
      */
     public String getRevision() {
         return revision;
+    }
+
+    /**
+     * Get SMTP host
+     */
+    public String getSMTPHost() {
+        return smtpHost;
+    }
+
+    /**
+     * Get SMTP port
+     */
+    public int getSMTPPort() {
+        return smtpPort;
     }
 
     /**
