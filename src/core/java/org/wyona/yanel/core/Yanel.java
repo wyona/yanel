@@ -113,10 +113,10 @@ public class Yanel {
        }
 
        if (config.getChild("smtp", false) != null) {
-           smtpHost = config.getChild("smtp").getAttribute("host");
            String smtpPortSt = config.getChild("smtp").getAttribute("port");
            try {
                smtpPort = Integer.parseInt(smtpPortSt);
+               smtpHost = config.getChild("smtp").getAttribute("host");
                java.util.Properties props = new java.util.Properties();
                props.put("mail.smtp.host", smtpHost);
                props.put("mail.smtp.port", smtpPortSt);
