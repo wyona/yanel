@@ -4,12 +4,17 @@
 
 package org.wyona.yanel.impl.resources.policymanager;
 
+import org.wyona.commons.xml.XMLHelper;
 import org.wyona.security.core.api.AccessManagementException;
+import org.wyona.security.core.api.Group;
+import org.wyona.security.core.api.GroupManager;
+import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.Item;
 import org.wyona.security.core.api.Policy;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.User;
+import org.wyona.security.core.api.UserManager;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
@@ -17,6 +22,7 @@ import org.wyona.yanel.impl.resources.BasicXMLResource;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -156,13 +162,59 @@ public class PolicyManagerResource extends BasicXMLResource {
         }
         return new ByteArrayInputStream(sb.toString().getBytes("utf-8"));
     }
-    
+
+    /**
+     * Interface/template in order to get custom properties of user or group
+     */
+    public interface SecurityItemExtraPropertiesGetter<I extends Item> {
+
+        /**
+         * Get custom properties
+         * @param item User, group, host, etc.
+         */
+        Map<String, String> getExtraProperties(I item);
+    }
+
+    /**
+     * Default implementation of getter for user
+     */
+    protected SecurityItemExtraPropertiesGetter<User> getUserExtraPropertiesGetter() {
+        return userNoExtraPropertiesGetter; 
+    }
+
+    /**
+     * Default user properties which will be used by default implementation #getUserExtraPropertiesGetter
+     */
+    private static final SecurityItemExtraPropertiesGetter<User> userNoExtraPropertiesGetter = new SecurityItemExtraPropertiesGetter<User>() {
+        @Override
+        public Map<String, String> getExtraProperties(User item) {
+            return Collections.emptyMap();// no extra properties to add for standard Yanel users
+        }
+    }; 
+
+    /**
+     * Default implementation of getter for group
+     */
+    protected SecurityItemExtraPropertiesGetter<Group> getGroupExtraPropertiesGetter() {
+        return groupNoExtraPropertiesGetter; 
+    }
+
+    /**
+     * Default group properties which will be used by default implementation #getGroupExtraPropertiesGetter
+     */
+    private static final SecurityItemExtraPropertiesGetter<Group> groupNoExtraPropertiesGetter = new SecurityItemExtraPropertiesGetter<Group>() {
+        @Override
+        public Map<String, String> getExtraProperties(Group item) {
+            return Collections.emptyMap();// no extra properties to add for standard Yanel users
+        }
+    }; 
+
     /**
      *
      */
     private String getIdentitiesAndRightsAsXML(IdentityManager im, PolicyManager pm, String language) {
-        org.wyona.security.core.api.UserManager um = im.getUserManager();
-        org.wyona.security.core.api.GroupManager gm = im.getGroupManager();
+        UserManager um = im.getUserManager();
+        GroupManager gm = im.getGroupManager();
 
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
         sb.append("<access-control xmlns=\"http://www.wyona.org/security/1.0\">");
@@ -177,19 +229,11 @@ public class PolicyManagerResource extends BasicXMLResource {
 
             User[] users = refreshUsers ? um.getUsers(true) : um.getUsers();
             Arrays.sort(users, new ItemIDComparator());
-            sb.append("<users>");
-            for (int i = 0; i < users.length; i++) {
-                sb.append("<user id=\"" + users[i].getID() + "\">" + users[i].getName() + "</user>");
-            }
-            sb.append("</users>");
+            appendSecurityItemsAsXML(users, getUserExtraPropertiesGetter(), "user", sb);
 
-            org.wyona.security.core.api.Group[] groups = gm.getGroups();
+            Group[] groups = gm.getGroups();
             Arrays.sort(groups, new ItemIDComparator());
-            sb.append("<groups>");
-            for (int i = 0; i < groups.length; i++) {
-                sb.append("<group id=\"" + groups[i].getID() + "\">" + groups[i].getName() + "</group>");
-            }
-            sb.append("</groups>");
+            appendSecurityItemsAsXML(groups, getGroupExtraPropertiesGetter(), "group", sb);
 
             sb.append("<rights>");
             String[] rights = pm.getUsecases();
@@ -206,7 +250,53 @@ public class PolicyManagerResource extends BasicXMLResource {
         sb.append("</access-control>");
         return sb.toString();
     }
-    
+
+    /**
+     * Overwrite this method in order to get namespaces
+     */
+    protected Map<String, String> getExtraXMLnamespaceDeclarations() throws Exception {
+        return Collections.emptyMap();// no extra XML namespace declarations to add for standard Yanel groups
+    }
+
+    /**
+     * Get XML for all users or groups
+     * @param items Users or groups
+     * @param itemExtraPropertiesGetter Custom properties getter
+     * @param itemXMLelementQName Element name, either user or group
+     * @param a Appendable in order to write XML
+     */
+    private <I extends Item> void appendSecurityItemsAsXML(I[] items, SecurityItemExtraPropertiesGetter<I> itemExtraPropertiesGetter, String itemXMLelementQName, Appendable a) throws Exception {
+        log.warn("DEBUG: Users or Groups ...");
+        Map<String, String> extraXMLnamespaceDeclarations = getExtraXMLnamespaceDeclarations();
+        a.append("<"+itemXMLelementQName+"s ");
+        for (Map.Entry<String, String> declaration : extraXMLnamespaceDeclarations.entrySet()) {
+            a.append("xmlns:"+declaration.getKey());
+            a.append("=\""+declaration.getValue()+"\"");
+        }
+        a.append(">");
+        for (int i = 0; i < items.length; i++) {
+            I item = items[i];
+            log.warn("DEBUG: User/Group: " + item.getName());
+            appendSecurityItemAsXML(item, itemExtraPropertiesGetter.getExtraProperties(item), itemXMLelementQName, a);
+        }
+        a.append("</"+itemXMLelementQName+"s>");
+    }
+
+    /**
+     * Get XML for one user or one group
+     */
+    private void appendSecurityItemAsXML(Item item, Map<String, String> extraItemProperties, String itemXMLelementQName, Appendable a) throws Exception {
+        a.append("<"+itemXMLelementQName+" id=\"" + item.getID() + "\"");
+        for (Map.Entry<String, String> property : extraItemProperties.entrySet()) {
+            a.append(property.getKey());//XXX: the name should be safe, so don't escape it
+            a.append("=\""+XMLHelper.replaceEntities(property.getValue())+"\"");
+        }
+        a.append(">" + item.getName() + "</"+itemXMLelementQName+">");
+    }
+
+    /**
+     *
+     */
     public class ItemIDComparator implements Comparator<Item> {
         public int compare(Item item1, Item item2) {
             try {
