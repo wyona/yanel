@@ -14,8 +14,8 @@
 <!-- Build custom ant tasks -->
     <javac srcdir="${yanel.source.home}/src/build/java"
            encoding="${javac.encoding}"
-           source="1.5"
-           target="1.5"
+           source="1.6"
+           target="1.6"
            destdir="${classes.dir}">
       <classpath refid="classpath.compile"/>
     </javac>
