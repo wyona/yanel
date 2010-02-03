@@ -7,7 +7,7 @@
     Prerequisites
     -------------
 
-    Java Development Kit version 1.5 or higher (http://java.sun.com, e.g. J2SE SDK v 1.5.0_06)
+    Java Development Kit version 1.6 or higher (e.g. http://java.sun.com)
 
 
     Getting Started
