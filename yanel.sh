@@ -15,7 +15,7 @@ if [ "$JAVA_HOME" = "" ];then
   echo "                  export JAVA_HOME=$JAVA_HOME_MACOSX"
   echo "                  or"
   echo "                  setenv JAVA_HOME $JAVA_HOME_MACOSX"
-  echo "       Linux    : export JAVA_HOME=/usr/local/jdk-1.5.0 (whereas '/usr/local/jdk-1.5.0' is just an example path)"
+  echo "       Linux    : export JAVA_HOME=/usr/local/jdk-1.6.0 (whereas '/usr/local/jdk-1.6.0' is just an example path)"
   echo "       Windows  : Click Start, click 'My Computer', right click on window, select 'Properties', click the 'Advanced' tab, click 'Environment Variables'"
   echo ""
   if [ -d $JAVA_HOME_MACOSX ]; then
