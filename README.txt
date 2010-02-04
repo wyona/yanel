@@ -1,19 +1,42 @@
 
-
     YANEL  README
     =============
 
 
-    Prerequisites
-    -------------
+    Requirements and Prerequisites
+    ------------------------------
 
-    Java Development Kit version 1.6 or higher (e.g. http://java.sun.com)
+    Java Development Kit version 1.6 or higher (e.g. http://java.sun.com).
+
+    NOTES:
+
+       - Depending on your network connection, you might have to configure a proxy.
+         Please see below ("Proxy Configuration") for more details.
+
+       - Depending on the bandwidth of your network connection, building Yanel
+         might take a while because various libraries will be downloaded during the process.
+
+    
+    Quick Start
+    -----------
+
+    1) Build Yanel by running
+
+        UNIX: ./build.sh quick-start
+        Windows: build.bat quick-start
+
+    2) Start Yanel by running
+
+        UNIX: ./yanel.sh start
+        Windows: yanel.bat start
+
+    3) Browse to http://127.0.0.1:8080/yanel/
 
 
-    Getting Started
-    ---------------
+    Getting Started at Length
+    -------------------------
 
-    NOTE: You might have to configure a proxy. Please see below for more details
+    0) Clean a previous build by running "build clean-all"
 
     1) Configure Yanel by running "configure"
  
@@ -26,25 +49,21 @@
     3) Start using Yanel with one of the following options
     3.1) Run within Tomcat: "yanel start/stop" to start or stop Tomcat
     3.2) Run within Jetty: "yanel start-jetty" to start Jetty
-    3.3) Run within Command Line: "yanel /hello/world.html"
-    3.4) Run continuous integration: "./src/build/targets/continuous-integration/reCI"
+    3.3) Run from the Command Line: "yanel /hello/world.html"
 
     4) Browse to http://127.0.0.1:8080/yanel/
 
-    5) Run tests: "build test"
+    5) Run tests
+    5.1) Run junit and html unit tests: "build test"
+    5.2) Run continuous integration: "./src/build/targets/continuous-integration/reCI"
 
 
     More Information
     ----------------
 
-    http://www.yanel.org
+    Please refer your questions to the appropriate mailing list at
 
-
-    Add third-party realm
-    ---------------------
-
-    1) ./build.sh add-realm -Drealm-config=src/realms/from-scratch-realm-template/realm.xml
-    2) Restart Tomcat
+    http://www.yanel.org/mailing-lists.html
 
 
     Proxy Configuration
