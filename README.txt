@@ -51,5 +51,5 @@
     -------------------
 
     If your network connection requires you to use an HTTP proxy,
-    then set your proxy configuration in the file called "(local.)build.properties"
-    located in "src/build".
+    then set your proxy configuration (Properties proxy.host, proxy.port, proxy.user, proxy.pass)
+    in the file "src/build/(local.)build.properties".
