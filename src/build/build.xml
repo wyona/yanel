@@ -262,12 +262,19 @@
   </target>
 
   <target name="quick-start">
-    <echo>TODO: Quick Start</echo>
-<!--
-clean-all
-configure with Tomcat but without SSL
-build
--->
+    <echo>Quick Start</echo>
+    <property name="answerCleanTomcatClusterNode1" value="yes"/>
+    <property name="answerDeleteLocalBuildProperties" value="yes"/>
+    <property name="answerDeleteLocalConfigDir" value="NO"/>
+    <antcall target="clean-all"/>
+
+    <property name="answer" value="NO"/> <!-- No further configuration -->
+    <property name="answerReconfigureTomcat1" value="no"/> <!-- No SSL -->
+    <property name="answerAskForCustomTomcatPath" value="NO"/> <!-- No custom Tomcat -->
+    <antcall target="config"/>
+
+    <property name="answer" value="YES"/> <!-- add endorsed libs -->
+    <antcall target="deploy"/>
   </target>
 
 </project>
