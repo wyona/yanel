@@ -261,4 +261,13 @@
     <echo message="*****************************************************************"/>
   </target>
 
+  <target name="quick-start">
+    <echo>TODO: Quick Start</echo>
+<!--
+clean-all
+configure with Tomcat but without SSL
+build
+-->
+  </target>
+
 </project>
