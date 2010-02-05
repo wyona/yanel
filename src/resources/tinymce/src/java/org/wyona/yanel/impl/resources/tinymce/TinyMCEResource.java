@@ -47,7 +47,7 @@ import org.apache.xml.resolver.tools.CatalogResolver;
 
 
 /**
- *
+ * Resource to edit another modifiable resource with TinyMCE
  */
 public class TinyMCEResource extends ExecutableUsecaseResource {
     
@@ -408,13 +408,15 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
             if (isResToEditVersionableV2()) {
                 VersionableV2 versionable = (VersionableV2) getResToEdit();
                 if (versionable.isCheckedOut()) {
+                    log.warn("Resource '" + getResToEdit().getPath() + "' is checked-out.");
                     return true;
                 }
             }     
+            return false;
         } catch (Exception e) {
+            log.error(e, e);
             return false;
         }
-        return false;
     }
 
     
