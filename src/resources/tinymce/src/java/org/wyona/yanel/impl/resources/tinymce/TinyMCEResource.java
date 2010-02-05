@@ -178,16 +178,22 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
             return generateView(VIEW_DONE);
         }         
         contentToEdit = resourceContent;
+
+        // Checkout resource to be edited
         try {
-            if (isResToEditVersionableV2() && !isResToEditCheckedOut()) {
-                VersionableV2 versionable = (VersionableV2) getResToEdit();
-                if (!versionable.isCheckedOut()) {
-                    versionable.checkout(userID);
+            if (isResToEditVersionableV2()) {
+                if (!isResToEditCheckedOut()) {
+                    ((VersionableV2) getResToEdit()).checkout(userID);
+                } else {
+                    log.warn("Resource '" + getResToEdit().getPath() + "' is already checked out!");
                 }
+            } else {
+                log.warn("Resource '" + getResToEdit().getPath() + "' is not VersionableV2 and hence cannot be checked out!");
             }
         } catch (Exception e) {
             log.warn("Could not checkout resource: " + getResToEdit().getPath() + " " + e.getMessage());
         }
+
         return generateView(viewID); // this will show the default view if the param is not set
     }
     
@@ -230,6 +236,7 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
                     OutputStream os = ((ModifiableV2) resToEdit).getOutputStream();
                     IOUtils.write(content, os);
                     addInfoMessage("Succesfully saved resource " + resToEdit.getPath() + ". ");
+                    log.warn("DEBUG: Try to checkin resource: " + resToEdit.getPath());
                     if (isResToEditVersionableV2()) {
                         VersionableV2 versionable  = (VersionableV2)resToEdit;
                         try {
@@ -241,6 +248,8 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
                             addError(msg);
                             throw new UsecaseException(msg, e);
                         }
+                    } else {
+                        log.warn("Resource '" + getResToEdit().getPath() + "' is not VersionableV2 and hence cannot be checked out!");
                     }
                 } catch (Exception e) {
                     log.error("Exception: " + e);
@@ -377,6 +386,9 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
         return resToEdit;
     }
 
+    /**
+     * Check if resource is VersionableV2
+     */
     private boolean isResToEditVersionableV2() {
         try {
             if (ResourceAttributeHelper.hasAttributeImplemented(getResToEdit(), "Versionable", "2")) {
@@ -387,7 +399,10 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
         }
         return false;     
     }
-    
+
+    /**
+     * Check wheter resource is checked-out
+     */
     private boolean isResToEditCheckedOut()  {
         try {
             if (isResToEditVersionableV2()) {
