@@ -50,7 +50,7 @@ public class RevisionsWorkflowMenuItem {
                 sb.append("<li>No revisions yet</li>");
             }
         } else {
-            log.warn("This resource does not implement interface VersionableV2!");
+            log.warn("The resource '" + resource.getPath() + "' does not implement interface VersionableV2!");
         }
 
         return sb.toString();
