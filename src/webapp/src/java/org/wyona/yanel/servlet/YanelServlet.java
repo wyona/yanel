@@ -436,6 +436,14 @@ public class YanelServlet extends HttpServlet {
             Environment environment = getEnvironment(request, response);
             res = getResource(request, response);
             if (res != null) {
+
+                // START introspection generation
+                if (usecase != null && usecase.equals("introspection")) {
+                    sendIntrospectionAsResponse(res, doc, rootElement, request, response);
+                    return;
+                }
+                // END introspection generation
+
                 Element resourceElement = getResourceMetaData(res, doc, rootElement);
                 Element viewElement = (Element) resourceElement.appendChild(doc.createElement("view"));
                 if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
@@ -623,14 +631,6 @@ public class YanelServlet extends HttpServlet {
             return;
         }
         // END first try
-
-        // START introspection generation
-        if (usecase != null && usecase.equals("introspection")) {
-            sendIntrospectionAsResponse(res, doc, rootElement, request, response);
-            return;
-        }
-        // END introspection generation
-
 
         String meta = request.getParameter(RESOURCE_META_ID_PARAM_NAME);
         if (meta != null) {
@@ -2242,12 +2242,12 @@ public class YanelServlet extends HttpServlet {
     private void sendIntrospectionAsResponse(Resource res, Document doc, Element rootElement, HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Introspectable", "1")) {
-                String introspection = ((IntrospectableV1)res).getIntrospection();
                 response.setContentType("application/xml");
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
-                response.getWriter().print(introspection);
+                response.getWriter().print(((IntrospectableV1)res).getIntrospection());
             } else {
-                String message = "Resource is not introspectable.";
+                String message = "Resource '" + res.getPath() + "' is not introspectable!";
+                log.warn(message);
                 Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
                 exceptionElement.appendChild(doc.createTextNode(message));
                 setYanelOutput(request, response, doc);
