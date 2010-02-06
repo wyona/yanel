@@ -206,8 +206,8 @@ public abstract class Resource {
     }
     
     /**
-     * Gets the parameter with the given name.
-     * @param name
+     * Get the parameter with the given name.
+     * @param name Name of parameter
      * @return parameter object or null if no parameter with this name exists.
      */
     public Object getParameter(String name) {
@@ -215,9 +215,9 @@ public abstract class Resource {
     }
 
     /**
-     * Gets the parameter with the given name as a string.
+     * Get the parameter value with the given name as a string.
      * If the parameter is a string array, returns the first string.
-     * @param name
+     * @param name Name of parameter
      * @return parameter string or null if no parameter with this name exists.
      */
     public String getParameterAsString(String name) {
