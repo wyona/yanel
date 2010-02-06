@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
-<project name="webapp" default="deploy"
- xmlns:yanel="http://www.wyona.org/yanel/1.0"
->
+
+<project name="webapp" default="deploy-to-tomcat" xmlns:yanel="http://www.wyona.org/yanel/1.0">
    
-  <target name="deploy" description="Deploy war file" depends="init, webapp">
+  <target name="deploy-to-tomcat" description="Deploy war file" depends="init, webapp">
+    <echo>Deploy webapp: ${tomcat1.home.dir}</echo>
+
     <condition property="property-tomcat-cluster-node1-is-set">
       <isset property="tomcat1.home.dir"/>
     </condition>

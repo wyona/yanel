@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="yanel-main" default="deploy"
+<project name="yanel-main" default="deploy-to-tomcat"
  xmlns:yanel="http://www.wyona.org/yanel/1.0"
  xmlns:wyona-tools="http://www.wyona.org/tools/1.0"
  xmlns:svnant="antlib:org.tigris.subversion.svnant"
@@ -268,13 +268,13 @@
     <property name="answerDeleteLocalConfigDir" value="NO"/>
     <antcall target="clean-all"/>
 
-    <property name="answer" value="NO"/> <!-- No further configuration -->
+    <property name="answerContinueConfig" value="NO"/> <!-- No further configuration -->
     <property name="answerReconfigureTomcat1" value="no"/> <!-- No SSL -->
     <property name="answerAskForCustomTomcatPath" value="NO"/> <!-- No custom Tomcat -->
     <antcall target="config"/>
 
-    <property name="answer" value="YES"/> <!-- add endorsed libs -->
-    <antcall target="deploy"/>
+    <property name="answerCopyEndorsedJar" value="YES"/> <!-- add endorsed libs -->
+    <antcall target="deploy-to-tomcat"/>
   </target>
 
 </project>

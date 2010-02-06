@@ -42,10 +42,10 @@
 -->
 
     <antcall target="first-time-user-configuration-message"/>
-    <input message="Do you want to continue the configuration nevertheless? (yes/NO)" addproperty="answer" defaultvalue="NO"/>
+    <input message="Do you want to continue the configuration nevertheless? (yes/NO)" addproperty="answerContinueConfig" defaultvalue="NO"/>
 
     <condition property="yes.continue">
-      <equals arg1="yes" arg2="${answer}"/>
+      <equals arg1="yes" arg2="${answerContinueConfig}"/>
     </condition>
     <antcall target="configure-local"/>
   </target>
