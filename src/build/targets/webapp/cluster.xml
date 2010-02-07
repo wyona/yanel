@@ -5,6 +5,12 @@
 >
 
   <target name="deploy-to-tomcat-cluster-node1" if="property-tomcat-cluster-node1-is-set" description="Deploy webapp to Tomcat cluster node 1">
+    <echo>Deploy webapp to cluster node 1: ${tomcat1.home.dir}</echo>
+
+    <property name="tomcat1.webapps.dir" value="${tomcat1.home.dir}/webapps"/>
+    <property name="tomcat1.endorsed-libs.dir" value="${tomcat1.home.dir}/common/endorsed"/>
+    <!-- NOTE: In the case of Tomcat 4 this directory is work/Standalone/localhost ... -->
+    <property name="tomcat1.work.dir" value="${tomcat1.home.dir}/work/Catalina/localhost"/>
     <echo>Copy webapp (${tomcat1.webapps.dir}):</echo>
 
     <fail message="No such directory: ${tomcat1.webapps.dir}">
@@ -130,6 +136,12 @@
   
   
   <target name="deploy-to-tomcat-cluster-node2" if="property-tomcat-cluster-node2-is-set" description="Deploy webapp to Tomcat cluster node 2">
+    <echo>Deploy webapp to cluster node 2: ${tomcat2.home.dir}</echo>
+
+    <property name="tomcat2.webapps.dir" value="${tomcat2.home.dir}/webapps"/>
+    <property name="tomcat2.endorsed-libs.dir" value="${tomcat2.home.dir}/common/endorsed"/>
+    <!-- NOTE: In the case of Tomcat 4 this directory is work/Standalone/localhost ... -->
+    <property name="tomcat2.work.dir" value="${tomcat2.home.dir}/work/Catalina/localhost"/>
     <echo>Copy webapp (${tomcat2.webapps.dir}):</echo>
 
     <fail message="No such directory: ${tomcat2.webapps.dir}">

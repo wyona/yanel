@@ -11,6 +11,9 @@
     <!-- Jetty target -->
     <delete dir="${yanel.source.home}/src/build/target"/>
 
+    <property name="tomcat1.webapps.dir" value="${tomcat1.home.dir}/webapps"/>
+    <property name="tomcat2.webapps.dir" value="${tomcat2.home.dir}/webapps"/>
+
     <condition property="yes-delete-tomcat-cluster-node1">
       <and>
         <isset property="tomcat1.home.dir"/>
@@ -31,8 +34,8 @@
 
     <condition property="yes-delete-tomcat-cluster-node2">
       <and>
-        <isset property="tomcat1.home.dir"/>
-        <available file="${tomcat1.webapps.dir}/${servlet.context.prefix}" type="dir"/>
+        <isset property="tomcat2.home.dir"/>
+        <available file="${tomcat2.webapps.dir}/${servlet.context.prefix}" type="dir"/>
         <istrue value="${force-clean}"/>
       </and>
     </condition>
