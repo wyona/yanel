@@ -271,7 +271,7 @@
     <property name="answerContinueConfig" value="NO"/> <!-- No further configuration -->
     <property name="answerReconfigureTomcat1" value="no"/> <!-- No SSL -->
     <property name="answerAskForCustomTomcatPath" value="NO"/> <!-- No custom Tomcat -->
-    <antcall target="config"/>
+    <antcall target="config"/> <!-- IMPORTANT: The config target is reloading the file local.build.properties, but please be aware that only properties which have not been set yet can be set! -->
 
     <property name="answerCopyEndorsedJar" value="YES"/> <!-- add endorsed libs -->
     <antcall target="deploy-to-tomcat"/>
