@@ -3,12 +3,15 @@
 <project name="javadoc" default="generate-javadoc">
   <!-- Generate Javadoc (if not already done) -->
   <target name="generate-javadoc" depends="init">
-      <condition property="javadoc-does-not-exist-yet">
+
+    <!-- TODO: The javadoc-not-exists target throws an exception on Windows -->
+    <condition property="javadoc-does-not-exist-yet">
       <not>
         <available file="${build.dir}/javadoc/index-all.html" type="file"/>
       </not>
     </condition>
     <antcall target="javadoc-not-exists"/>
+
     <antcall target="javadoc-exists"/>
   </target>
   
