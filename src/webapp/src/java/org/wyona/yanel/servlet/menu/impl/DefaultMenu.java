@@ -80,57 +80,10 @@ public class DefaultMenu extends Menu {
         sb.append("<li><a href=\"create-new-page.html\">Create new page</a></li>");
 
         sb.append(new RevisionsWorkflowMenuItem().getMenuItem(resource));
-/*
-        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Workflowable", "1")) {
-            Workflow wf = WorkflowHelper.getWorkflow(resource);
-            if (wf != null) {
-                if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
-                    RevisionInformation[] revisions = ((VersionableV2)resource).getRevisions();
-                    if (revisions != null && revisions.length > 0) {
-                        sb.append("<li class=\"haschild\">Revisions and Workflow&#160;&#160;&#160;<ul>");
-                        for (int i = revisions.length - 1; i >= 0; i--) {
-                            String wfState = ((WorkflowableV1)resource).getWorkflowState(revisions[i].getName());
-                            if (wfState == null) wfState = wf.getInitialState();
-                            Transition[] transitions = wf.getLeavingTransitions(wfState);
-                            if (transitions.length > 0) {
-                                sb.append("<li class=\"haschild\">");
-                            } else {
-                                sb.append("<li>");
-                            }
-
-                            String liveMarker = "";
-                            //log.debug("Live status: " + WorkflowHelper.getLiveRevision(resource));
-                            if (revisions[i].getName().equals(WorkflowHelper.getLiveRevision(resource))) {
-                                liveMarker = " (LIVE)";
-                            }
-                            sb.append("R: " + revisions[i].getName() + " ("+revisions[i].getDate()+"), WS: " + wfState + liveMarker + " (" + ((WorkflowableV1)resource).getWorkflowDate(revisions[i].getName()) + ")&#160;&#160;&#160;");
-
-                            // TODO: Also show revisions which are not active
-                            if (transitions.length > 0) {
-                                sb.append("<ul>");
-                                for (int j = 0; j < transitions.length; j++) {
-                                    sb.append("<li><a href=\"?yanel.resource.workflow.transition=" + transitions[j].getID() + "&amp;yanel.resource.revision=" + revisions[i].getName() + "&amp;yanel.resource.workflow.transition.output=xhtml\">Transition: " + transitions[j].getDescription("en") + "</a></li>");
-                                }
-                                sb.append("</ul>");
-                            }
-                            sb.append("</li>");
-                        }
-                        sb.append("</ul></li>");
-                    } else {
-                        sb.append("<li>No revisions yet</li>");
-                    }
-                } else {
-                    log.warn("Does not implement interface VersionableV2!");
-                }
-            } else {
-                sb.append("<li>Workflowable, but no Workflow associated with resource yet!</li>");
-            }
-        }
-*/
-
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
             sb.append("<li><a href=\"?yanel.resource.usecase=delete\">Delete this page</a></li>");
         }
+        sb.append("<li><a href=\"?yanel.resource.meta\">" + getLabel("y:page-info", language) + "</a></li>");
         sb.append("</ul>");
         sb.append("</li></ul>");
 
