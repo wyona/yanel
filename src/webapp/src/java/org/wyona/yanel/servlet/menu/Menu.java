@@ -73,13 +73,21 @@ abstract public class Menu {
         sb.append("<div id=\"yaneltoolbar_menutitle\">Admin</div><ul>");
 
         // View page info moved to getFileMenu() of default implementation
-        //sb.append("<li><a href=\"?yanel.resource.meta\">View page info</a></li>");
         sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/data-repository-sitetree.html\">Browse Data Repository Sitetree</a></li>");
-        sb.append("<li class=\"haschild\">Page");
+        sb.append("<li class=\"haschild\">" + getLabel("y:permissions-management", language));
         sb.append("<ul>");
-        sb.append("<li><a href=\"?yanel.resource.meta\">Info</a></li>");
+        sb.append("<li class=\"haschild\">Root Page&#160;&#160;&#160;");
+        sb.append("<ul>");
+        sb.append("<li><a href=\"" + backToRealm + "?yanel.policy=read&amp;orderedBy=1&amp;showParents=false&amp;showTabs=true\">View Access Policy</a></li>");
+        sb.append("<li><a href=\"" + backToRealm + "?yanel.policy=update\">Edit Access Policy</a></li>");
+        sb.append("</ul>");
+        sb.append("</li>");
+        sb.append("<li class=\"haschild\">This Page&#160;&#160;&#160;");
+        sb.append("<ul>");
         sb.append("<li><a href=\"?yanel.policy=read&amp;orderedBy=1&amp;showParents=false&amp;showTabs=true\">View Access Policy</a></li>");
         sb.append("<li><a href=\"?yanel.policy=update\">Edit Access Policy</a></li>");
+        sb.append("</ul>");
+        sb.append("</li>");
         sb.append("</ul>");
         sb.append("</li>");
 
@@ -175,6 +183,10 @@ abstract public class Menu {
                 return "Benutzer Verwaltung";
             } else if(key.equals("y:group-management")) {
                 return "Gruppen Verwaltung";
+            } else if(key.equals("y:page-info")) {
+                return "Seiteninformationen anzeigen";
+            } else if(key.equals("y:permissions-management")) {
+                return "Rechteverwaltung";
             } else {
                 log.warn("Key '" + key + "' not supported yet by requested language '" + language + "'. Fallback to english!");
                 return getLabel(key, "en");
@@ -215,6 +227,10 @@ abstract public class Menu {
                 return "User Management";
             } else if(key.equals("y:group-management")) {
                 return "Group Management";
+            } else if(key.equals("y:page-info")) {
+                return "View Page Info";
+            } else if(key.equals("y:permissions-management")) {
+                return "Permissions Management";
             } else {
                 log.warn("Key '" + key + "' not supported yet!");
                 return key;
