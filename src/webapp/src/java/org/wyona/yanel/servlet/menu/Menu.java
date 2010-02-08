@@ -153,10 +153,14 @@ abstract public class Menu {
      * @param key I18n key
      * @param language Language
      */
-    private static String getLabel(String key, String language) {
+    protected static String getLabel(String key, String language) {
         if (language.equals("de")) {
             if(key.equals("y:help")) {
                 return "Hilfe";
+            } else if(key.equals("y:edit")) {
+                return "Bearbeiten";
+            } else if(key.equals("y:file")) {
+                return "Datei";
             } else if(key.equals("y:about-yanel")) {
                 return "Ueber Yanel";
             } else if(key.equals("y:about-realm")) {
@@ -193,6 +197,10 @@ abstract public class Menu {
         } else if (language.equals("en")) {
             if(key.equals("y:help")) {
                 return "Help";
+            } else if(key.equals("y:edit")) {
+                return "Edit";
+            } else if(key.equals("y:file")) {
+                return "File";
             } else if(key.equals("y:about-yanel")) {
                 return "About Yanel";
             } else if(key.equals("y:about-realm")) {

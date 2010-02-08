@@ -37,26 +37,28 @@ public class DefaultMenu extends Menu {
      * Get generic edit menu
      */
     public String getEditMenu(Resource resource) throws Exception {
+        String language = resource.getRequestedLanguage();
         StringBuilder sb = new StringBuilder();
         sb.append("<ul><li>");
-        sb.append("<div id=\"yaneltoolbar_menutitle\">Edit</div>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:edit", language) + "</div>");
         sb.append("<ul>");
 
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
         sb.append("<li class=\"haschild\">Open with&#160;&#160;&#160;");
-        sb.append("<ul><li>Source editor</li>");
+        sb.append("<ul>");
         sb.append("<li class=\"haschild\">WYSIWYG editor&#160;&#160;&#160;");
         sb.append("<ul>");
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
-            sb.append("<li><a href=\"" + backToRealm + "usecases/xinha.html?edit-path=" + resource.getPath() + "\">Edit page with Xinha&#160;&#160;&#160;</a></li>");
             sb.append("<li><a href=\"" + backToRealm + "usecases/tinymce.html?edit-path=" + resource.getPath() + "\">Edit page with tinyMCE&#160;&#160;&#160;</a></li>");
+            sb.append("<li><a href=\"" + backToRealm + "usecases/xinha.html?edit-path=" + resource.getPath() + "\">Edit page with Xinha&#160;&#160;&#160;</a></li>");
         } else {
-            sb.append("<li><a>Edit page with Xinha&#160;&#160;&#160;</a></li>");
             sb.append("<li>Edit page with tinyMCE&#160;&#160;&#160;</li>");
+            sb.append("<li><a>Edit page with Xinha&#160;&#160;&#160;</a></li>");
         }
         sb.append("<li><a href=\"http://www.yulup.org\">Edit page with Yulup&#160;&#160;&#160;</a></li>");
         sb.append("</ul>");
         sb.append("</li>");
+        sb.append("<li>Source editor</li>");
         sb.append("</ul>");
         sb.append("</li>");
 
@@ -70,9 +72,10 @@ public class DefaultMenu extends Menu {
      * Get generic file menu
      */
     public String getFileMenu(Resource resource) throws Exception {
+        String language = resource.getRequestedLanguage();
         StringBuilder sb = new StringBuilder();
         sb.append("<ul><li>");
-        sb.append("<div id=\"yaneltoolbar_menutitle\">File</div>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:file", language) + "</div>");
         sb.append("<ul>");
         sb.append("<li><a href=\"create-new-page.html\">Create new page</a></li>");
 

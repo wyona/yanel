@@ -30,26 +30,28 @@ public class DefaultMenuV2 extends DefaultMenu {
      * Implements the new tinymce suffix
      */
     public String getEditMenu(Resource resource) throws Exception {
+        String language = resource.getRequestedLanguage();
         StringBuilder sb = new StringBuilder();
         sb.append("<ul><li>");
-        sb.append("<div id=\"yaneltoolbar_menutitle\">Edit</div>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:edit", language) + "</div>");
         sb.append("<ul>");
 
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
         sb.append("<li class=\"haschild\">Open with&#160;&#160;&#160;");
-        sb.append("<ul><li>Source editor</li>");
+        sb.append("<ul>");
         sb.append("<li class=\"haschild\">WYSIWYG editor&#160;&#160;&#160;");
         sb.append("<ul>");
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
-            sb.append("<li><a href=\"" + backToRealm + "usecases/xinha.html?edit-path=" + resource.getPath() + "\">Edit page with Xinha&#160;&#160;&#160;</a></li>");
             sb.append("<li><a href=\"" + backToRealm + resource.getPath().substring(1) + ".tinymce-edit.html\">Edit page with tinyMCE&#160;&#160;&#160;</a></li>");
+            sb.append("<li><a href=\"" + backToRealm + "usecases/xinha.html?edit-path=" + resource.getPath() + "\">Edit page with Xinha&#160;&#160;&#160;</a></li>");
         } else {
-            sb.append("<li><a>Edit page with Xinha&#160;&#160;&#160;</a></li>");
             sb.append("<li>Edit page with tinyMCE&#160;&#160;&#160;</li>");
+            sb.append("<li><a>Edit page with Xinha&#160;&#160;&#160;</a></li>");
         }
         sb.append("<li><a href=\"http://www.yulup.org\">Edit page with Yulup&#160;&#160;&#160;</a></li>");
         sb.append("</ul>");
         sb.append("</li>");
+        sb.append("<li>Source editor</li>");
         sb.append("</ul>");
         sb.append("</li>");
 
