@@ -29,6 +29,20 @@
     </chmod>
     <delete dir="${yanel.source.home}/local/META-INF"/>
 
+    <input message="Are the ports 8080, 8005 and 8009 available? (YES/no)" addproperty="question.ports" defaultvalue="YES"/>
+    <if>
+      <equals arg1="${question.ports}" arg2="no"/>
+      <then>
+        <input message="WARNING: Please make sure to reconfigure the file '${default.tomcat.home.dir}/conf/server.xml' after this script has finished. Please hit return to continue." addproperty="confirm.reconfigure.server.xml"/>
+      </then>
+    </if>
+<!-- TODO: Make the ports configurable ...
+    <input message="Do you want to use 8080 as HTTP port? If so, then please just hit enter. If not, then please type another port and hit enter." addproperty="default.http.port" defaultvalue="8080"/>
+    <input message="Do you want to use 8005 as shutdown port? If so, then please just hit enter. If not, then please type another port and hit enter." addproperty="default.shutdown.port" defaultvalue="8005"/>
+    <input message="Do you want to use 8009 as AJP port? If so, then please just hit enter. If not, then please type another port and hit enter." addproperty="default.ajp.port" defaultvalue="8009"/>
+-->
+    <!-- INFO: SSL will be handled at some later stage -->
+
     <condition property="isJava1.4">
       <equals arg1="${ant.java.version}" arg2="1.4"/>
     </condition>

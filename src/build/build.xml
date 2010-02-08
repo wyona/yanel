@@ -269,6 +269,7 @@
     <antcall target="clean-all"/>
 
     <property name="answerContinueConfig" value="NO"/> <!-- No further configuration -->
+    <property name="question.ports" value="YES"/> <!-- Assume that all ports are available -->
     <property name="answerReconfigureTomcat1" value="no"/> <!-- No SSL -->
     <property name="answerAskForCustomTomcatPath" value="NO"/> <!-- No custom Tomcat -->
     <antcall target="config"/> <!-- IMPORTANT: The config target is reloading the file local.build.properties, but please be aware that only properties which have not been set yet can be set! -->

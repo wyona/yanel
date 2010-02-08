@@ -31,7 +31,8 @@ cd $YANEL_SOURCE_HOME
 #./build.sh clean -Dforce-clean=true
 #TODO: use our own Maven local repo instead of the user's!
 
-./yanel.sh configure -Danswer=NO \
+./yanel.sh configure -DanswerContinueConfig=NO \
+ -Dquestion.ports=YES \
  -DanswerReconfigureTomcat1=no \
  -DanswerAskForCustomTomcatPath=NO
 #FIXME: we do not reconfigure Tomcat for SSL because Canoo tests fail with SSL activated! :/
@@ -43,7 +44,7 @@ BUILD_OPTS=
 #TODO: delete then recreate a few resources from scratch:
 #./build.sh new-resource-type ...
 
-./build.sh $BUILD_OPTS -Danswer=YES #XXX HACK: endorsed lib management always uses the same variable to ask for user input
+./build.sh $BUILD_OPTS -DanswerCopyEndorsedJar=YES #XXX HACK: endorsed lib management always uses the same variable to ask for user input
 
 # Patch Tomcat ports:
 tools/apache-ant/bin/ant -f tools/apache-tomcat/build.xml configure-host -Dtomcat.home.dir=$TOMCAT_HOME -Dhost=localhost -Dhost.HTTP.port=$HTTP_PORT -Dhost.HTTPS.port=$HTTPS_PORT -Dhost.SHUTDOWN.port=$SHUTDOWN_PORT -Dhost.AJP.port=$AJP_PORT
