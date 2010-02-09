@@ -1019,6 +1019,8 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Check authorization and if not authorized then authenticate. Return null if authorization granted, otherwise return 401 and appropriate response such that client can provide credentials for authentication
+     *
+     * @return Null if access is granted and an authentication response if access is denied
      */
     private HttpServletResponse doAccessControl(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -1048,10 +1050,22 @@ public class YanelServlet extends HttpServlet {
         }
 
 
-        if(!authorized) {
-            // TODO: Implement HTTP BASIC/DIGEST response (see above)
+        if (authorized) {
+            if (identity != null && identity.getUsername() != null) {
+                if (identity.getUsername() != null) {
+                    log.warn("DEBUG: Access for user '" + identity.getUsername() + "' granted: " + getRequestURLQS(request, null, false));
+                    //response.setHeader("Cache-control", "no-cache"); // INFO: Do not cache content for users which are signed in (Also see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6465), but we currently do not use this because of performance reasons and because we have found another workaround re logout (see doLogout())
+                } else {
+                    log.warn("DEBUG: Access for anonymous user (aka WORLD) granted: " + getRequestURLQS(request, null, false));
+                }
+            } else {
+                log.warn("DEBUG: Access for anonymous user (aka WORLD) granted: " + getRequestURLQS(request, null, false));
+            }
+            return null; // INFO: Return null in order to indicate that access is granted
+        } else {
+            log.warn("Access denied: " + getRequestURLQS(request, null, false));
 
-            log.info("Access denied: " + getRequestURLQS(request, null, false));
+            // TODO: Implement HTTP BASIC/DIGEST response (see above)
 
             if(!request.isSecure()) {
                 if(sslPort != null) {
@@ -1118,9 +1132,6 @@ public class YanelServlet extends HttpServlet {
 
                 return response;
             }
-        } else {
-            log.info("Access granted: " + getRequestURLQS(request, null, false));
-            return null;
         }
     }
 
@@ -1376,18 +1387,15 @@ public class YanelServlet extends HttpServlet {
             }
 
             if (log.isDebugEnabled()) log.debug("Regular Logout Successful!");
-            //return null;
             URL url = new URL(getRequestURLQS(request, null, false).toString());
-            String urlWithoutLogoutQS = url.toString().substring(0, url.toString().lastIndexOf("?"));
-            log.warn("Redirect to original request: " + urlWithoutLogoutQS);
-
-            //response.sendRedirect(url.toString()); // 302
             // TODO: Just remove logout part from query string! (http://127.0.0.1:8080/yanel/test/use-cases/index.xhtml?yanel.resource.usecase=checkout&yanel.usecase=logout)
-            // TODO: Alternative solution: http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6465
+            //String urlWithoutLogoutQS = url.toString().substring(0, url.toString().lastIndexOf("?"));
+            // INFO: Append timestamp in order to workaround 301 redirect cache problem (Also see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6465)
+            String urlWithoutLogoutQS = url.toString().substring(0, url.toString().lastIndexOf("?")) + "?yanel.refresh=" + new Date().getTime();
+            log.warn("DEBUG: Redirect to original request: " + urlWithoutLogoutQS);
+ 
             response.setHeader("Location", urlWithoutLogoutQS.toString());
-            //response.setHeader("Location", url.toString());
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
-            //response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT); // 302
             return response;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -1571,9 +1579,9 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Gets the identity from the session associated with the given request or via the 'Authorization' HTTP header in the case of BASIC or DIGEST
+     * Gets the identity from the session associated with the given request (associated with a realm) or via the 'Authorization' HTTP header in the case of BASIC or DIGEST
      * @param request Client/Servlet request
-     * @param map
+     * @param map Map in order to determine realm
      * @return Identity if one exist, or otherwise an empty identity
      */
     static Identity getIdentity(HttpServletRequest request, Map map) throws Exception {
