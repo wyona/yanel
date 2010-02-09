@@ -1389,13 +1389,23 @@ public class YanelServlet extends HttpServlet {
             if (log.isDebugEnabled()) log.debug("Regular Logout Successful!");
             URL url = new URL(getRequestURLQS(request, null, false).toString());
             // TODO: Just remove logout part from query string! (http://127.0.0.1:8080/yanel/test/use-cases/index.xhtml?yanel.resource.usecase=checkout&yanel.usecase=logout)
-            //String urlWithoutLogoutQS = url.toString().substring(0, url.toString().lastIndexOf("?"));
+            String urlWithoutLogoutQS = url.toString().substring(0, url.toString().lastIndexOf("?"));
+
+/* INFO: The refresh tag also does not seem to force the client to reload the page itself (tested with Firefox 3)
+            response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
+            response.setStatus(HttpServletResponse.SC_OK);
+            PrintWriter writer = response.getWriter();
+            writer.print("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta http-equiv=\"refresh\" content=\"0;url=" + urlWithoutLogoutQS + "\"/></head><body></body></html>");
+*/
+
             // INFO: Append timestamp in order to workaround 301 redirect cache problem (Also see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6465)
-            String urlWithoutLogoutQS = url.toString().substring(0, url.toString().lastIndexOf("?")) + "?yanel.refresh=" + new Date().getTime();
+            // TODO: Check if url still has a query string (see above)
+            urlWithoutLogoutQS = urlWithoutLogoutQS + "?yanel.refresh=" + new Date().getTime();
             log.warn("DEBUG: Redirect to original request: " + urlWithoutLogoutQS);
  
             response.setHeader("Location", urlWithoutLogoutQS.toString());
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
+
             return response;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -2145,7 +2155,7 @@ public class YanelServlet extends HttpServlet {
             log.warn("Delete has not been confirmed by client yet!");
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             response.setContentType("text/html" + "; charset=" + "UTF-8");
-            StringBuffer sb = new StringBuffer("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Do you really want to delete this page? <a href=\"?" + YANEL_RESOURCE_USECASE + "=delete&confirmed\">YES</a>, <a href=\"" + request.getHeader("referer") + "\">no</a></body></html>");
+            StringBuilder sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Do you really want to delete this page? <a href=\"?" + YANEL_RESOURCE_USECASE + "=delete&confirmed\">YES</a>, <a href=\"" + request.getHeader("referer") + "\">no</a></body></html>");
             PrintWriter w = response.getWriter();
             w.print(sb);
             return;
