@@ -1053,13 +1053,13 @@ public class YanelServlet extends HttpServlet {
         if (authorized) {
             if (identity != null && identity.getUsername() != null) {
                 if (identity.getUsername() != null) {
-                    log.warn("DEBUG: Access for user '" + identity.getUsername() + "' granted: " + getRequestURLQS(request, null, false));
+                    if(log.isDebugEnabled()) log.debug("Access for user '" + identity.getUsername() + "' granted: " + getRequestURLQS(request, null, false));
                     //response.setHeader("Cache-control", "no-cache"); // INFO: Do not cache content for users which are signed in (Also see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6465), but we currently do not use this because of performance reasons and because we have found another workaround re logout (see doLogout())
                 } else {
-                    log.warn("DEBUG: Access for anonymous user (aka WORLD) granted: " + getRequestURLQS(request, null, false));
+                    if(log.isDebugEnabled()) log.debug("Access for anonymous user (aka WORLD) granted: " + getRequestURLQS(request, null, false));
                 }
             } else {
-                log.warn("DEBUG: Access for anonymous user (aka WORLD) granted: " + getRequestURLQS(request, null, false));
+                if(log.isDebugEnabled()) log.debug("Access for anonymous user (aka WORLD) granted: " + getRequestURLQS(request, null, false));
             }
             return null; // INFO: Return null in order to indicate that access is granted
         } else {
