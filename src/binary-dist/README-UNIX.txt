@@ -4,11 +4,11 @@
     =========
 
 
-    Prerequisites
-    -------------
+    Requirements and Prerequisites
+    ------------------------------
 
-    Java Development Kit version 1.5 or higher (http://java.sun.com, e.g. J2SE SDK v 1.5.0_15)
-    (NOTE: Please make sure to set JAVA_HOME after installing JDK, e.g. export JAVA_HOME=/usr/local/jdk1.5.0_15)
+    Java Development Kit version 1.6 or higher (e.g. http://java.sun.com)
+    (NOTE: Please make sure to set the JAVA_HOME environment variable after installing JDK)
 
 
     Getting Started
