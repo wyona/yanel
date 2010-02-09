@@ -14,7 +14,9 @@
          Please see below ("Proxy Configuration") for more details.
 
        - Depending on the bandwidth of your network connection, building Yanel
-         might take a while because various libraries will be downloaded during the process.
+         might take a while initially, because various libraries will be downloaded
+         during the process. These libraries will be saved at ~/.m2/repository/
+         whereas ~ denotes your home directory.
 
     
     Quick Start
