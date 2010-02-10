@@ -113,7 +113,11 @@ public class SearchResource extends BasicXMLResource {
                 }
             } catch(org.wyona.yarep.core.search.SearchException e) {
                 log.error(e, e);
-                sb.append("<y:exception>" + e.getMessage() + "</y:exception>");
+                if (e.getMessage().contains("no segments")) {
+                    sb.append("<y:exception>It seems that no search index exists yet.</y:exception>"); // INFO: Generally a search index will be created automagically when editing content.
+                } else {
+                    sb.append("<y:exception>" + e.getMessage() + "</y:exception>");
+                }
             }
         } else {
             sb.append("<y:no-query/>");
