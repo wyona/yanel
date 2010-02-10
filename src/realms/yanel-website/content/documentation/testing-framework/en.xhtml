@@ -15,23 +15,29 @@
 <h3>General information</h3>
 There are different kind of tests:
 <ul>
-<li>junit:    used to test specific functionality of certain java components/classes see <a href="http://junit.org/">http://junit.org/</a></li>
-<li>htmlunit: used to test the web pages (simulating user interaction) see <a href="http://htmlunit.sourceforge.net/">http://htmlunit.sourceforge.net/</a></li>
-<li>canoo: used to test the web pages (simulating user interaction) see <a href="http://webtest.canoo.com/">http://webtest.canoo.com</a></li>
+<li><b>junit</b>: To test specific functionality of certain java components/classes see <a href="http://junit.org/">http://junit.org/</a></li>
+<li><b>htmlunit</b>: To test the web pages (simulating user interaction) see <a href="http://htmlunit.sourceforge.net/">http://htmlunit.sourceforge.net/</a></li>
+<li><b>canoo</b>: To test the web pages (simulating user interaction) see <a href="http://webtest.canoo.com/">http://webtest.canoo.com</a></li>
 </ul>
 
 <h3>How to run the tests</h3>
 <p>
-It's necessary to build yanel before running the tests.
+It's necessary to build and start yanel before running the tests.
 </p>
 
 <p>
-If you want to run the htmlunit tests, you have to start tomcat and configure
-the host and url in <code>$YANEL_HOME/src/test/htmlunit/local.htmlunit-properties.xml</code>.
+<b>IMPORTANT:</b> If you want to run the htmlunit tests, you have to start tomcat and configure
+the host and url in
+<pre>
+$YANEL_HOME/src/test/htmlunit/local.htmlunit-properties.xml
+</pre>
 </p>
 
 <p>
-Then execute in $YANEL_HOME: ./build.sh test
+Then execute in $YANEL_HOME:
+<pre>
+./build.sh test
+</pre>
 </p>
 
 <p>
@@ -44,7 +50,10 @@ cd $YANEL_HOME
 </p>
 
 <p>
-NOTE: After compiling your resource with <code>./build.sh -f MY_RESOURCE/build.sh</code>, copy your newly generated lib to <code>build/webapps/yanel/WEB-INF/lib/</code>
+To run canoo webtests (including junit and htmlunit):
+<pre>
+./build.sh test -Dwebtest.home.dir=/usr/local/canoo-webtest-3.0-R_1758 -Dwebtest.config.host=localhost -Dwebtest.config.protocol=http -Dwebtest.config.port=8080 -Dheadless=
+</pre>
 </p>
 
 <p>
