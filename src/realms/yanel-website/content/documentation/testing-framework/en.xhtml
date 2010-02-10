@@ -22,7 +22,20 @@ There are different kind of tests:
 
 <h3>How to run the tests</h3>
 <p>
-It's necessary to build and start yanel before running the tests.
+After downloading the Yanel source (either via <a href="../../download/source-repository.html">SVN</a> or as <a href="../download/index.html">snapshot</a>) one can run the tests all at once (as we do it within <a href="http://195.226.6.72:8080">Hudson</a>) or
+run the various tests individually.
+</p>
+
+<p>
+If you want to run all at once (including build and start of Yanel), then execute the shell script
+<pre>
+./src/build/targets/continuous-integration/reCI 8080 8443 8005 8009 /home/michi/local/canoo-webtest-3.0-R_1758
+</pre>
+whereas please make sure to have <a href="http://webtest.canoo.com">Canoo webtests</a> installed.
+</p>
+
+<p>
+If you want to run the tests individually, then it's necessary to build and start yanel before running the tests.
 </p>
 
 <p>
@@ -57,14 +70,12 @@ To run canoo webtests (including junit and htmlunit):
 </p>
 
 <p>
-Some Canoo web-tests are located at
-
+whereas some Canoo web-tests are located at
 <pre>
 src/realms/use-cases/yanel/src/test/canoo/
 src/realms/yanel-website/src/test/canoo/
 </pre>
-
-See the README.txt files within these directories in order to run the Canoo web-tests.
+See the README.txt files within these directories in order to run the Canoo web-tests individually.
 </p>
 
 <h3>How to write tests</h3>
