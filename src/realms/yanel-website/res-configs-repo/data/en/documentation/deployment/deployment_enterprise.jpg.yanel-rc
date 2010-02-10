@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="svg" namespace="http://www.litwan.com/yanel/resource/1.0"/>
+
+    <yanel:property name="image-width" value="750"/>
+    <yanel:property name="jpg-quality" value="1"/>
+  
+    <yanel:custom-config>
+     <views>
+      <view id="default" type="custom">
+        <mime-type>image/svg+xml</mime-type>
+      </view>
+      <view id="svg" type="custom">
+        <mime-type>image/svg+xml</mime-type>
+      </view>
+      <view id="jpg" type="custom">
+        <mime-type>image/jpeg</mime-type>
+      </view>
+      <view id="png" type="custom">
+        <mime-type>image/png</mime-type>
+      </view>
+      <view id="html" type="jelly-XML">
+        <template>rthtdocs:/html.jelly</template>
+        <mime-type>text/html</mime-type>
+      </view>
+    </views>
+  </yanel:custom-config>  
+</yanel:resource-config>
