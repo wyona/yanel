@@ -676,7 +676,17 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         if (lookinPath != null) {
             node = sitetree.getNode(getRealm(), lookinPath);
         } else {
-            node = sitetree.getNode(getRealm(), getPath());
+            try {
+                if(getResourceConfigProperty("lookin") != null) {
+                    node = sitetree.getNode(getRealm(), getResourceConfigProperty("lookin"));
+                } else {
+                    node = sitetree.getNode(getRealm(), getPath());
+                    log.warn("No initial lookin path specified, hence use creator page path itself: " + getPath());
+                }
+            } catch (Exception e) {
+                log.error(e, e);
+                node = sitetree.getNode(getRealm(), getPath());
+            }
         }
 
         if (node != null) {
@@ -805,6 +815,9 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         return parentOfNewResource;
     }
 
+    /**
+     *
+     */
     private String getReferer() {
         if(request.getParameter("referer") != null) {
             return request.getParameter("referer");
