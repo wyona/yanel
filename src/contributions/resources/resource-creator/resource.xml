@@ -10,8 +10,6 @@ Allows to create new resources
 </description>
 
 <rtd>
-<!--
-  <property name="foo" default-value="bar"/>
--->
+  <property name="lookin"/> <!-- INFO: Initial look-in path, e.g. root of sitetree '/' -->
 </rtd>
 </resource>
