@@ -82,7 +82,7 @@
 
   <target name="compile" depends="yanel-resource-type.compile, gwt:compile" description="Compile Java classes and GWT files"/>
 
-  <target name="gwt:compile" depends="gwt:clean" description="Compile GWT files">
+  <target name="gwt:compile" depends="gwt:clean" description="Compile GWT files" unless="gwt.compile.skip">
 
     <echo>Module name: ${module.name}</echo>
     <echo>Component build directory: ${component.build.dir}</echo>
@@ -103,7 +103,7 @@
       <!--arg value="PRETTY" /-->
       <!--arg value="DETAILED" /-->
 
-      <!--arg line="-localWorkers 2"/--><!-- GWT 1.7+ -->
+      <!--arg line="-localWorkers 2" /--><!-- GWT 1.7+ -->
       <!--arg value="-validateOnly" /--><!-- GWT 1.7+ -->
       <!--arg value="-compileReport" /--><!-- GWT 2+ -->
       
