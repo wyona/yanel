@@ -444,7 +444,21 @@ public class PolicyManagerResource extends BasicXMLResource {
      */
     private void writePolicy(InputStream policyAsInputStream, PolicyManager pm, String path, IdentityManager im) throws Exception {
         Policy policy = new org.wyona.security.util.PolicyParser().parseXML(policyAsInputStream, im);
-        log.warn("TODO: Add WORLD permissionas (from existing policy), because policy editor does not support WORLD editing yet!");
+
+        // INFO: Add WORLD permissions, because policy editor does not support WORLD editing yet
+        Policy originalPolicy = pm.getPolicy(path, false);
+        if (originalPolicy != null) {
+            org.wyona.security.core.UsecasePolicy[] up = originalPolicy.getUsecasePolicies();
+            for (int i = 0; i < up.length; i++) {
+                Identity[] identities = up[i].getIdentities();
+                for (int k = 0; k < identities.length; k++) {
+                    if (identities[k].isWorld()) {
+                        log.warn("TODO: Add WORLD to usecase: " + up[i].getName());
+                    }
+                }
+            }
+        }
+
         pm.setPolicy(path, policy);
     }
 
