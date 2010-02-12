@@ -5,6 +5,7 @@
 package org.wyona.yanel.impl.resources.policymanager;
 
 import org.wyona.commons.xml.XMLHelper;
+import org.wyona.security.core.UsecasePolicy;
 import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.api.Group;
 import org.wyona.security.core.api.GroupManager;
@@ -354,7 +355,7 @@ public class PolicyManagerResource extends BasicXMLResource {
     static public StringBuffer getPolicyIdentities(Policy p) {
         List<String> world = new LinkedList<String>();
         Map<String, List<String>> users = new HashMap<String, List<String>>();
-        org.wyona.security.core.UsecasePolicy[] up = p.getUsecasePolicies();
+        UsecasePolicy[] up = p.getUsecasePolicies();
         if (up != null && up.length > 0) {
             for (int i = 0; i < up.length; i++) {
                 org.wyona.security.core.IdentityPolicy[] idps = up[i].getIdentityPolicies();
@@ -445,15 +446,22 @@ public class PolicyManagerResource extends BasicXMLResource {
     private void writePolicy(InputStream policyAsInputStream, PolicyManager pm, String path, IdentityManager im) throws Exception {
         Policy policy = new org.wyona.security.util.PolicyParser().parseXML(policyAsInputStream, im);
 
-        // INFO: Add WORLD permissions, because policy editor does not support WORLD editing yet
+        // INFO: Add WORLD permissions, because policy editor does not support WORLD editing yet. As soon as the policy editor supports WORLD editing, then this piece of code becomes obsolete
         Policy originalPolicy = pm.getPolicy(path, false);
         if (originalPolicy != null) {
             org.wyona.security.core.UsecasePolicy[] up = originalPolicy.getUsecasePolicies();
             for (int i = 0; i < up.length; i++) {
-                Identity[] identities = up[i].getIdentities();
-                for (int k = 0; k < identities.length; k++) {
-                    if (identities[k].isWorld()) {
-                        log.warn("TODO: Add WORLD to usecase: " + up[i].getName());
+                org.wyona.security.core.IdentityPolicy[] ip = up[i].getIdentityPolicies();
+                for (int k = 0; k < ip.length; k++) {
+                    if (ip[k].getIdentity().isWorld()) {
+                        log.warn("Add WORLD to usecase: " + up[i].getName());
+                        if (policy.getUsecasePolicy(up[i].getName()) != null) {
+                            policy.getUsecasePolicy(up[i].getName()).addIdentity(new Identity(), ip[k].getPermission());
+                        } else {
+                            UsecasePolicy newUP = new org.wyona.security.core.UsecasePolicy(up[i].getName());
+                            newUP.addIdentity(new Identity(), ip[k].getPermission());
+                            policy.addUsecasePolicy(newUP);
+                        }
                     }
                 }
             }
