@@ -136,7 +136,11 @@ public class PolicyManagerResource extends BasicXMLResource {
                     String cancelURL = getReferer(backToRealm);
                     log.warn("DEBUG: Cancel URL: " + cancelURL);
 
+                    // TODO: i18n
                     String title = "Edit Access Policy of Node '" + policyPath + "'";
+                    if (getRequestedLanguage().equals("de")) {
+                        title = "Bearbeiten der Zugriffsrechte des Node '" + policyPath + "'";
+                    }
 
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
@@ -147,7 +151,8 @@ public class PolicyManagerResource extends BasicXMLResource {
                     sb.append("<link rel=\"stylesheet\" href=\"" + PathUtil.getResourcesHtdocsPath(this) + "org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/style.css\" type=\"text/css\"/>");
 
                     // IMPORTANT: Please make sure that the value of 'cancel-url-base-equals-host-page-url' corresponds with getReferer()
-                    sb.append("<script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"" + policyURL + "\", \"cancel-url\": \"" + cancelURL + "\", \"cancel-url-base-equals-host-page-url\": \"false\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" +  PathUtil.getResourcesHtdocsPath(this) + "org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script>");
+                    // TODO: i18n-URL
+                    sb.append("<script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"" + policyURL + "\", \"cancel-url\": \"" + cancelURL + "\", \"cancel-url-base-equals-host-page-url\": \"false\", \"save-url\": \"" + saveURL + "\", \"language\": \"" + getRequestedLanguage() + "\", \"i18n-url\": \"" + "TODO-i18n-URL" + "\"};</script><script language=\"javascript\" src=\"" +  PathUtil.getResourcesHtdocsPath(this) + "org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script>");
 
                     sb.append("</head>");
                     sb.append("<body><h1>" + title + "</h1><p><div id=\"access-policy-editor-hook\"></div></p></body></html>");
