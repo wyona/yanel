@@ -136,10 +136,12 @@ public class PolicyManagerResource extends BasicXMLResource {
                     String cancelURL = getReferer(backToRealm);
                     log.warn("DEBUG: Cancel URL: " + cancelURL);
 
+                    String title = "Edit Access Policy of Node '" + policyPath + "'";
+
                     sb.append("<?xml version=\"1.0\"?>");
                     sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
                     sb.append("<head>");
-                    sb.append("<title>Edit Access Policy</title>");
+                    sb.append("<title>" + title + "</title>");
                     sb.append("<meta name=\"generator\" content=\"" + this.getClass().getName() + "\"/>");
 
                     sb.append("<link rel=\"stylesheet\" href=\"" + PathUtil.getResourcesHtdocsPath(this) + "org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/style.css\" type=\"text/css\"/>");
@@ -148,7 +150,7 @@ public class PolicyManagerResource extends BasicXMLResource {
                     sb.append("<script language=\"javascript\">var getURLs = {\"identities-url\": \"" + identitiesURL + "\", \"policy-url\": \"" + policyURL + "\", \"cancel-url\": \"" + cancelURL + "\", \"cancel-url-base-equals-host-page-url\": \"false\", \"save-url\": \"" + saveURL + "\"};</script><script language=\"javascript\" src=\"" +  PathUtil.getResourcesHtdocsPath(this) + "org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor.nocache.js\"></script>");
 
                     sb.append("</head>");
-                    sb.append("<body><h1>Edit Access Policy</h1><p><div id=\"access-policy-editor-hook\"></div></p></body></html>");
+                    sb.append("<body><h1>" + title + "</h1><p><div id=\"access-policy-editor-hook\"></div></p></body></html>");
                 }
             } else {
                 //response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
@@ -266,7 +268,7 @@ public class PolicyManagerResource extends BasicXMLResource {
      * @param a Appendable in order to write XML
      */
     private <I extends Item> void appendSecurityItemsAsXML(I[] items, SecurityItemExtraPropertiesGetter<I> itemExtraPropertiesGetter, String itemXMLelementQName, Appendable a) throws Exception {
-        log.warn("DEBUG: Users or Groups ...");
+        log.debug("Users or Groups ...");
         Map<String, String> extraXMLnamespaceDeclarations = getExtraXMLnamespaceDeclarations();
         a.append("<"+itemXMLelementQName+"s ");
         for (Map.Entry<String, String> declaration : extraXMLnamespaceDeclarations.entrySet()) {
@@ -276,7 +278,7 @@ public class PolicyManagerResource extends BasicXMLResource {
         a.append(">");
         for (int i = 0; i < items.length; i++) {
             I item = items[i];
-            log.warn("DEBUG: User/Group: " + item.getName());
+            log.debug("User/Group: " + item.getName());
             appendSecurityItemAsXML(item, itemExtraPropertiesGetter.getExtraProperties(item), itemXMLelementQName, a);
         }
         a.append("</"+itemXMLelementQName+"s>");
@@ -432,9 +434,12 @@ public class PolicyManagerResource extends BasicXMLResource {
 
     /**
      * Write/Save policy
+     * @param policyAsInputStream Policy as XML
+     * @param path Policy path
      */
     private void writePolicy(InputStream policyAsInputStream, PolicyManager pm, String path, IdentityManager im) throws Exception {
         Policy policy = new org.wyona.security.util.PolicyParser().parseXML(policyAsInputStream, im);
+        log.warn("TODO: Add WORLD permissionas (from existing policy), because policy editor does not support WORLD editing yet!");
         pm.setPolicy(path, policy);
     }
 
