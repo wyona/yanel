@@ -218,7 +218,7 @@ public class PolicyManagerResource extends BasicXMLResource {
     }; 
 
     /**
-     *
+     * Get users, groups and rights as XML
      */
     private String getIdentitiesAndRightsAsXML(IdentityManager im, PolicyManager pm, String language) {
         UserManager um = im.getUserManager();
@@ -228,14 +228,14 @@ public class PolicyManagerResource extends BasicXMLResource {
         sb.append("<access-control xmlns=\"http://www.wyona.org/security/1.0\">");
 
         try {
-            boolean refreshUsers = true; // correctness trumps speed!
+            boolean refreshUsers = true; // INFO: By default refresh all users, but please be aware that this can lead to severe performance issues, for example if used within a slow LDAP environment. Hence we make it configurable below.
             String refreshUsersText = getResourceConfigProperty(REFRESH_USERS_RC_PROPERTY_NAME);
             if (refreshUsersText != null && "false".equals(refreshUsersText)) {
                 refreshUsers = false;
                 log.warn("Users will not be loaded afresh!");
             }
 
-            User[] users = refreshUsers ? um.getUsers(true) : um.getUsers();
+            User[] users = um.getUsers(refreshUsers);
             Arrays.sort(users, new ItemIDComparator());
             appendSecurityItemsAsXML(users, getUserExtraPropertiesGetter(), "user", sb);
 
