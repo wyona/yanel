@@ -8,9 +8,10 @@
 
 <!-- NOTE: Do not use relative paths to reference resource types, because the paths are not being resolved re the location of (local.)resource-types.xml -->
 
-<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2009082500">
+<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2010021600">
 
   <changes>
+    <change version="2010021600">security-api resource type added</change>
     <change version="2009082500">package attribute removed from xml and node/file resources</change>
     <change version="2009072600">search resource type added</change>
     <change version="2009070800">forgotpw resource type added</change>
@@ -31,6 +32,7 @@
   </changes>
 
   <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/security-api/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/search/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/nutch/" compile="true" copy-dir-name="yanel-nutch"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/lookup/" compile="true" copy-dir-name="yanel-lookup"/>
