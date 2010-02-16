@@ -27,17 +27,22 @@ public class UserManagerResource extends BasicXMLResource {
         }
 
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
+        sb.append("<security-api>");
         String usecase = getEnvironment().getRequest().getParameter("yanel.usecase");
         if (usecase != null) {
             log.warn("DEBUG: Yanel usecase: " + usecase);
+            sb.append("<yanel-usecase>" + usecase + "</yanel-usecase>");
             if (usecase.equals("getusers")) {
-                sb.append("<yanel-usecase>" + usecase + "</yanel-usecase>");
+                sb.append(getUsersAsXML());
+            } else if (usecase.equals("getuser")) {
+                sb.append(getUserAsXML(getEnvironment().getRequest().getParameter("id")));
             } else {
-                sb.append("<no-such-yanel-usecase>" + usecase + "</no-such-yanel-usecase>");
+                sb.append("<no-such-yanel-usecase-implemented>" + usecase + "</no-such-yanel-usecase-implemented>");
             }
         } else {
             sb.append("<no-yanel-usecase/>");
         }
+        sb.append("</security-api>");
 
         return new ByteArrayInputStream(sb.toString().getBytes());
     }
@@ -48,5 +53,24 @@ public class UserManagerResource extends BasicXMLResource {
     public boolean exists() {
         log.warn("TODO: Implementation not finished yet!");
         return true;
+    }
+
+    /**
+     * Get all users
+     */
+    private StringBuilder getUsersAsXML() {
+        StringBuilder sb = new StringBuilder("<users>");
+        sb.append("</users>");
+        return sb;
+    }
+
+    /**
+     * Get a specific user
+     * @param id User ID
+     */
+    private StringBuilder getUserAsXML(String id) {
+        StringBuilder sb = new StringBuilder("<user id=\"" + id + "\">");
+        sb.append("</user>");
+        return sb;
     }
 }
