@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
 <!-- Everything common to resource types using Google Web Toolkit. -->
-<!--XXX maybe allow handling more than one GWT module per resource-type? -->
 
 <project name="yanel-GWT-resource-type"
  xmlns:artifact="antlib:org.apache.maven.artifact.ant"
@@ -72,19 +71,69 @@
       <!--pathelement location="src/navigation-tree/lib/gwtext.jar"/-->
     </path>
     <echo message="gwt.compile.classpath: ${toString:gwt.compile.classpath}"/>
+
+
+    <echo level="info">
+If you want to work only on one specific GWT module of this resource-type
+ please use -Dmodule.name=com.company.project.Module when invoking this build file.
+If you do not do that, all GWT modules detected in the resource-type directory will be acted upon.
+    </echo>
+
+    <fileset id="gwt.module.fileset" dir="${component.java.dir}">
+      <include name="**/*.gwt.xml"/>
+      <exclude name="**/*Local.gwt.xml"/>
+    </fileset>
+
+    <!-- Multiple module support:
+     compiling multiple modules (in one compiler invocation)
+     is apparently only supported as of GWT 1.5: cf. http://jira.codehaus.org/browse/MGWT-61
+     and development mode probably allows multiple modules only as of GWT 1.6:
+     to make things simple we only allow multiple modules for GWT 2
+     -->
+    <condition property="module.names" value="${module.name}">
+      <or>
+        <isset property="gwt1"/>
+        <isset property="module.name"/>
+      </or>
+    </condition>
+    <pathconvert property="module.names" refid="gwt.module.fileset" pathsep=" ">
+      <packagemapper from="${component.java.dir}/*.gwt.xml" to="*"/>
+    </pathconvert>
+    <!--echo>
+module.names: ${module.names}
+module.name: ${module.name}
+    </echo-->
+
+    <condition property="module.build.dir.includes" value="${module.name}/**">
+      <isset property="module.name"/>
+    </condition>
+    <pathconvert property="module.build.dir.includes" refid="gwt.module.fileset" pathsep=" ">
+     <chainedmapper>
+      <packagemapper from="${component.java.dir}/*.gwt.xml" to="*-"/>
+      <filtermapper>
+        <replacestring from="-" to="/**"/>
+      </filtermapper>
+     </chainedmapper>
+    </pathconvert>
   </target>
 
   <target name="clean" depends="yanel-resource-type.clean, gwt:clean"/>
 
   <target name="gwt:clean" depends="init">
-    <delete dir="${component.build.dir}/${module.name}"/>
+    <!--echo>
+component.build.dir: ${component.build.dir}
+module.build.dir.includes: ${module.build.dir.includes}
+    </echo-->
+    <delete includeemptydirs="true">
+      <fileset dir="${component.build.dir}" includes="${module.build.dir.includes}"/>
+    </delete>
   </target>
 
   <target name="compile" depends="yanel-resource-type.compile, gwt:compile" description="Compile Java classes and GWT files"/>
 
   <target name="gwt:compile" depends="gwt:clean" description="Compile GWT files" unless="gwt.compile.skip">
 
-    <echo>Module name: ${module.name}</echo>
+    <echo>Module names: ${module.names}</echo>
     <echo>Component build directory: ${component.build.dir}</echo>
 
     <condition property="gwt.compiler.classname" value="com.google.gwt.dev.GWTCompiler" else="com.google.gwt.dev.Compiler">
@@ -110,7 +159,7 @@
       <!-- To speed up compiling you might want to uncomment the draftCompile flag, but please keep it commented within productive environments -->
       <!--arg value="-draftCompile" /--><!-- GWT 2+ -->
 
-      <arg value="${module.name}" />
+      <arg line="${module.names}" />
 
       <!--arg value="-help"/-->
     </java>
@@ -156,7 +205,7 @@
       <arg value="-noserver"/>
       <!--arg line="-startupUrl ${module.name}-devMode/${hostmode.hostpage.name}"/-->
       <arg line="-${gwt.outputdir.argname} ${component.build.dir}" />
-      <arg line="${module.name}"/>
+      <arg line="${module.names}"/>
       <!--arg value="-help"/-->
     </java>
   </target>
