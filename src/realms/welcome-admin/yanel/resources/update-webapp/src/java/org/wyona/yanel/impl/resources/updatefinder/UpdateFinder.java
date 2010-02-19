@@ -285,7 +285,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         }
 
         if (!installInfo.getInstalltype().equals("bin-snapshot")) {
-            htmlBodyContent.append("<p>This Yanel was not installed from binary. You can only use the updater if you installed yanel from binary. Please use Subversion or get another source snapshot.</p><p><b>NOTE</b> for developers: In order to work on the Yanel Updater resource you might want to modify <a href=\"file://" + installInfo.getInstallRdfFilename() + "\">" + installInfo.getInstallRdfFilename() + "</a> by replacing the installtype \"source\" with \"bin-snapshot\" and also customize the version and revision!</p> <p>Also see the <a href=\"http://www.yanel.org/specification/update-dependency-manager.html\">Updater specification</a></p>");
+            htmlBodyContent.append("<p>This Yanel was not installed from binary. You can only use the updater if you installed yanel from binary. Please use Subversion or get another source snapshot.</p><p><b>NOTE</b> for developers: In order to work on the Yanel Updater resource you might want to modify <a href=\"file://" + installInfo.getInstallRdfFilename() + "\">" + installInfo.getInstallRdfFilename() + "</a> by replacing the installtype \"source\" with \"bin-snapshot\" and also customize the version and revision!</p> <p>Also see the <a href=\"yanel-website/specification/update-dependency-manager.html\">Updater specification</a></p>");
             return;
         }
 
