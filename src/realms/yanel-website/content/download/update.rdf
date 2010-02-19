@@ -1,5 +1,6 @@
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:um="http://www.wyona.org/update-manager/1.0#">
+<?xml version="1.0"?>
+
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:um="http://www.wyona.org/update-manager/1.0#">
 
   <rdf:Description rdf:about="urn:wyona:application:updates">
     <um:versions>
@@ -12,6 +13,11 @@
     </um:versions>
   </rdf:Description>  
   
+
+
+
+
+  <!-- Version: 1.0-dev-r22342 -->
   <rdf:Description rdf:about="urn:wyona:application:update:1.0-dev-r22342">
     <um:id>yanel-webapp@wyona.org</um:id>
     <um:version>1.0-dev-r22342</um:version>
@@ -38,6 +44,13 @@
     <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-jetty-update-1.0-dev-r22342.war</um:updateLink>
   </rdf:Description>
 
+
+
+
+
+
+
+  <!-- Version: 1.0-dev-r22343 -->
   <rdf:Description rdf:about="urn:wyona:application:update:1.0-dev-r22343">
     <um:id>yanel-webapp@wyona.org</um:id>
     <um:version>1.0-dev-r22343</um:version>
@@ -62,8 +75,16 @@
     <um:minVersion>5.0.0</um:minVersion>
     <um:maxVersion>5.5.*</um:maxVersion>
     <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-jetty-update-1.0-dev-r22343.war</um:updateLink>
-  </rdf:Description>  
+  </rdf:Description>
 
+
+
+
+
+
+
+
+  <!-- Version: 1.0-dev-r52343 -->
   <rdf:Description rdf:about="urn:wyona:application:update:1.0-dev-r52343">
     <um:id>yanel-webapp@wyona.org</um:id>
     <um:version>1.0-dev-r52343</um:version>
@@ -89,7 +110,14 @@
     <um:maxVersion>5.5.*</um:maxVersion>
     <um:updateLink>http://yanel.wyona.org/download/wyona-yanel-jetty-update-1.0-dev-r52343.war</um:updateLink>
   </rdf:Description>
-      
+
+
+
+
+
+
+
+  <!-- Version: 1.0-dev-r12343 -->
   <rdf:Description rdf:about="urn:wyona:application:update:1.0-dev-r12343">
     <um:id>yanel-webapp@wyona.org</um:id>
     <um:version>1.0-dev-r12343</um:version>
