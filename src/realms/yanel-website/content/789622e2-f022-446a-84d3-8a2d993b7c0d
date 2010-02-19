@@ -14,10 +14,16 @@ The update-manager reads the install.rdf (<a href="http://svn.wyona.com/repos/pu
 
 <p>The update.rdf describes the  updates (version, compatibility, the link where to get the particular update). The update-manager compares the current version (install.rdf) with the version provided by the update.rdf and displays all the version which the current Yanel could update to.</p>
 
-<p>The user can choose which version she wants to update to. the update-manager then does a backup of the current yanel [problem1] downloads the war of the update version, merges the changes in the config files [problem2] (which are listed in the install.rdf) into the downloaded update and deploys it. if the user is not happy with the updated version she could revert the update. the update-manager would deploy the backup again.</p>
+<p>The user can choose which version she wants to update to. The update-manager then does a backup of the current yanel [problem1] downloads the war of the update version, merges the changes in the config files [problem2] (which are listed in the install.rdf) into the downloaded update and deploys it. If the user is not happy with the updated version, then she can revert the update. The update-manager would deploy the backup again.</p>
 
 
-<b>Problems:</b><ul><li>[problem1] to backup the current version yanel should block all request while backuping tp prevent inconsistency<br/></li><li>[problem2] to allow a merge of the config all config files should be xml rather than property files</li><li>if the update would fail and break yanel, the update-manager would not be available anymore to manage the revert. maybe the update-manager should stay in a seperate servlet.</li><li>if the update-manager should handle every servlet container complexity will increase. maybe we should limit it to tomcat which comes with the binary version.</li></ul>
+<b>Problems:</b>
+<ul>
+  <li>[problem1] To backup the current version yanel should block all request while backuping to prevent inconsistency</li>
+  <li>[problem2] To allow a merge of the config all config files should be xml rather than property files</li>
+  <li>If the update would fail and break yanel, the update-manager would not be available anymore to manage the revert. Maybe the update-manager should stay in a separate servlet.</li>
+  <li>If the update-manager should handle every servlet container, then complexity will increase. Maybe we should limit it to tomcat which comes with the binary version.</li>
+</ul>
 
 <a name="proposal1">&#160;</a>
 <b>Proposals:</b>
