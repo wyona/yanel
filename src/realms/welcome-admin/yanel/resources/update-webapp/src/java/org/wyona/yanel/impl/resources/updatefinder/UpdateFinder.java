@@ -58,11 +58,12 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 
 /**
- * 
+ * Get updates for installed Yanel version
  */
 public class UpdateFinder extends Resource implements ViewableV2 {
 
     private static Logger log = Logger.getLogger(UpdateFinder.class);
+
     /**
      * 
      */
@@ -291,7 +292,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
 
         String idVersionRevisionCurrent = installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision();
 
-        // show installed version
+        // show productive version
         htmlBodyContent.append("<p>");
         htmlBodyContent.append("Your installed Yanel version is: <b>" + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision() + "</b>");
         htmlBodyContent.append("</p>");
