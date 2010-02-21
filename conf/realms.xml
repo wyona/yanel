@@ -3,6 +3,7 @@
 <realms xmlns="http://www.wyona.org/yanel/1.0" version="2009042800">
 
 <changes>
+  <change version="2010022100">Downloads realm containing update.rdf added (but has no impact on version attribute)</change>
   <change version="2010020400">Order changed (but has no impact on version attribute)</change>
   <change version="2009042800">Test realm config moved</change>
   <change version="2009020200">Use-cases realm config moved</change>
@@ -54,6 +55,12 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
 <realm id="javadoc" mount-point="/yanel-website/javadoc/">
   <config src="@REALMS_DIR@/javadoc/"/>
 </realm>
+
+<!--
+<realm id="yanel-downloads" mount-point="/yanel-website/downloads/">
+  <config src="/Users/michaelwechner/src/wyona/public/yanel/contributions/realms/downloads/"/>
+</realm>
+-->
 
 <!--
 <realm id="yulup-demo" mount-point="/yulup-demo/">
