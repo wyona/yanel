@@ -216,17 +216,21 @@ public class UpdateInfo {
         VersionComparator versionComparator = new VersionComparator();
         List<Map<String, String>> bestUpdater = getUpdateVersionsOf("type", "updater");
         if (bestUpdater == null) return null;
-        for (int i = 0; i < bestUpdater.size(); i++) {
+        for (int i = bestUpdater.size() - 1; i >= 0; i--) { // INFO: Start at the end, because otherwise remove(int) will lead to strange results
             Map<String, String> versionDetail = bestUpdater.get(i);
             log.warn("DEBUG: Updater MinRevision: " + versionDetail.get(TARGET_APPLICATION_MIN_REVISION));
             log.warn("DEBUG: Updater MaxRevision: " +versionDetail.get(TARGET_APPLICATION_MAX_REVISION));
-            if (versionComparator.compare( versionDetail.get(TARGET_APPLICATION_MIN_REVISION), yanelRevision) > 0 ) {
+            if (versionComparator.compare(versionDetail.get(TARGET_APPLICATION_MIN_REVISION), yanelRevision) > 0 ) {
                 bestUpdater.remove(i);
+                continue;
             }
             if (versionComparator.compare(versionDetail.get(TARGET_APPLICATION_MAX_REVISION), yanelRevision) < 0 ) {
                 bestUpdater.remove(i);
+                continue;
             }
+            log.warn("DEBUG: Workable updater: " + versionDetail.get("revision"));
         }
+
         Collections.sort(bestUpdater, new UpdateInfoVersionComparator());
         if (bestUpdater.size() < 1)  return null;
         return bestUpdater;
@@ -255,14 +259,14 @@ public class UpdateInfo {
             log.warn("DEBUG: Check update revision: " + updateRevision);
             if (versionComparator.compare(updatesVersionDetail.get(TARGET_APPLICATION_MIN_REVISION), yanelRevision) > 0 ) {
                 allUpdates.remove(i);
+                continue;
             }
             if (versionComparator.compare(updatesVersionDetail.get(TARGET_APPLICATION_MAX_REVISION), yanelRevision) < 0 ) {
                 allUpdates.remove(i);
+                continue;
             }
             log.warn("DEBUG: Workable update revision: " + updateRevision);
         }
-
-
 
         // Get all updaters which work for yanelRevision
         List<Map<String, String>> updaters = getUpdatersForYanelRevision(yanelRevision);
