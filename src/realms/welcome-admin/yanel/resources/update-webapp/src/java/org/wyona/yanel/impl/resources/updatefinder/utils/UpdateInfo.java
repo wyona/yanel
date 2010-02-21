@@ -218,6 +218,8 @@ public class UpdateInfo {
         if (bestUpdater == null) return null;
         for (int i = bestUpdater.size() - 1; i >= 0; i--) { // INFO: Start at the end, because otherwise remove(int) will lead to strange results
             Map<String, String> versionDetail = bestUpdater.get(i);
+            log.warn("DEBUG: Check updater: " + versionDetail.get("revision"));
+
             log.warn("DEBUG: Updater MinRevision: " + versionDetail.get(TARGET_APPLICATION_MIN_REVISION));
             log.warn("DEBUG: Updater MaxRevision: " +versionDetail.get(TARGET_APPLICATION_MAX_REVISION));
             if (versionComparator.compare(versionDetail.get(TARGET_APPLICATION_MIN_REVISION), yanelRevision) > 0 ) {
