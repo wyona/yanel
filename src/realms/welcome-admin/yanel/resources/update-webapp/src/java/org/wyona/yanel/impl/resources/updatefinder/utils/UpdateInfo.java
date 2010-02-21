@@ -207,17 +207,19 @@ public class UpdateInfo {
     }   */ 
 
     /**
-     * @return ArrayList with all updaters which are installable within the given YanelRevision. return null if non.
-     * @param String YanelRevision
+     * Get all updaters which are usable for a specific Yanel revision
+     * @param yanelRevision Revision of either productive or update revision
+     * @return List of all updaters which are usable for a specific Yanel revision. Return null if none is available.
      */
     public List<Map<String, String>> getUpdatersForYanelRevision(String yanelRevision) {
+        log.warn("DEBUG: Find an updater for revision: " + yanelRevision);
         VersionComparator versionComparator = new VersionComparator();
         List<Map<String, String>> bestUpdater = getUpdateVersionsOf("type", "updater");
         if (bestUpdater == null) return null;
         for (int i = 0; i < bestUpdater.size(); i++) {
             Map<String, String> versionDetail = bestUpdater.get(i);
-            log.error("DEBUG: Updater MinRevision: " + versionDetail.get(TARGET_APPLICATION_MIN_REVISION));
-            log.error("DEBUG: Updater MaxRevision: " +versionDetail.get(TARGET_APPLICATION_MAX_REVISION));
+            log.warn("DEBUG: Updater MinRevision: " + versionDetail.get(TARGET_APPLICATION_MIN_REVISION));
+            log.warn("DEBUG: Updater MaxRevision: " +versionDetail.get(TARGET_APPLICATION_MAX_REVISION));
             if (versionComparator.compare( versionDetail.get(TARGET_APPLICATION_MIN_REVISION), yanelRevision) > 0 ) {
                 bestUpdater.remove(i);
             }
@@ -231,27 +233,52 @@ public class UpdateInfo {
     }
 
     /**
-     * @return ArrayList with all yanelUpdates which are installable within the given YanelRevision. return null if non.
-     * @param String YanelRevision
+     * Get all updates for a specific revision
+     * @param yanelRevision Yanel revision of productive local webapp
+     * @return List of all updates which are installable for a specific Yanel revision. Return null if none is available.
      */
     public List<Map<String, String>> getYanelUpdatesForYanelRevision(String yanelRevision) {
-        // Get all updaters which work for a  specific yanel revision
-        List<Map<String, String>> updaters = getUpdatersForYanelRevision(yanelRevision);
-        if (updaters == null) return null;
+        log.warn("DEBUG: Find an update for revision: " + yanelRevision);
 
         // Get all updates
         List<Map<String, String>> allUpdates = getUpdateVersionsOf("type", "updates");
-        if (allUpdates == null) return null;
+        if (allUpdates == null) {
+            log.warn("No updates found for revision: " + yanelRevision);
+            return null;
+        } else {
+            log.warn("Number of updates found: " + allUpdates.size());
+        }
+        VersionComparator versionComparator = new VersionComparator();
+        for (int i = allUpdates.size() - 1; i >= 0; i--) { // INFO: Start at the end, because otherwise remove(int) will lead to strange results
+            Map<String, String> updatesVersionDetail = allUpdates.get(i);
+            String updateRevision = updatesVersionDetail.get("revision");
+            log.warn("DEBUG: Check update revision: " + updateRevision);
+            if (versionComparator.compare(updatesVersionDetail.get(TARGET_APPLICATION_MIN_REVISION), yanelRevision) > 0 ) {
+                allUpdates.remove(i);
+            }
+            if (versionComparator.compare(updatesVersionDetail.get(TARGET_APPLICATION_MAX_REVISION), yanelRevision) < 0 ) {
+                allUpdates.remove(i);
+            }
+            log.warn("DEBUG: Workable update revision: " + updateRevision);
+        }
+
+
+
+        // Get all updaters which work for yanelRevision
+        List<Map<String, String>> updaters = getUpdatersForYanelRevision(yanelRevision);
+        if (updaters == null) {
+            log.warn("No updaters found for revision: " + yanelRevision);
+            return null;
+        }
 
         // Match updates with updaters
-        VersionComparator versionComparator = new VersionComparator();
-        for (int i = 0; i < allUpdates.size(); i++) {
+        for (int i = 0; i < allUpdates.size(); i++) { // TODO: Reverse ... because otherwise remove will lead to strange results
             Map<String, String> updatesVersionDetail = allUpdates.get(i);
             String revision = updatesVersionDetail.get("revision");
             log.error("DEBUG: Update revision: " + revision);
             
             
-            for (int j = 0; j < updaters.size(); j++) {
+            for (int j = 0; j < updaters.size(); j++) { // TODO: Reverse ... because otherwise remove will lead to strange results
                 Map<String, String> updatersVersionDetail = updaters.get(j);
                 log.error("DEBUG: Updater revision: " + updatersVersionDetail.get("revision"));
                 if (versionComparator.compare(updatersVersionDetail.get(TARGET_APPLICATION_MIN_REVISION), revision) > 0 ) {
