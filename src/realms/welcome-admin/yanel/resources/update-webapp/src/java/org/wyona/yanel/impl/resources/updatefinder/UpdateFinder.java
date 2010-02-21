@@ -297,6 +297,12 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         htmlBodyContent.append("Your installed Yanel version is: <b>" + installInfo.getId() + "-v-" + installInfo.getVersion() + "-r-" + installInfo.getRevision() + "</b>");
         htmlBodyContent.append("</p>");
 
+        try {
+            int revisionAsInt = Integer.parseInt(installInfo.getRevision());
+        } catch(NumberFormatException e) {
+            htmlBodyContent.append("<p>Exception: Revision is not a number: " + installInfo.getRevision() + "</p>");
+        }
+
         // TODO: implement getBestYanelWebapp() to get all yanel-webapp version which has an
         // yanel-updater which fits the targetRevision requirement of the current yanel and is not
         // already installed.
