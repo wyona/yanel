@@ -7,12 +7,17 @@
     <um:id>wyona-yanel-webapp</um:id>
     <um:version>@VERSION@</um:version>
     <um:revision>@REVISION@</um:revision>
-    <um:installtype>@INSTALLTYPE@</um:installtype>
+    <um:installtype>@INSTALLTYPE@</um:installtype> <!-- INFO: Either 'source' or 'bin-snapshot' -->
     <um:name>Wyona Yanel Webapp</um:name>
     <um:description>Content Management Software</um:description>
     <um:creator>Wyona</um:creator>
     <um:homepageURL>http://www.yanel.org/</um:homepageURL>
+    
+    <!-- INFO: The document update.rdf is located within a sub-realm of the yanel-website realm (https://svn.wyona.com/repos/public/yanel/contributions/realms/downloads) -->
     <um:updateURL>http://www.yanel.org/downloads/update.rdf</um:updateURL>
+<!--
+    <um:updateURL>http://127.0.0.1:8080/yanel/yanel-website/downloads/update.rdf</um:updateURL>
+-->
     <um:protectedFiles>
       <rdf:Seq>
        <rdf:li>WEB-INF/classes/yanel.xml</rdf:li>
