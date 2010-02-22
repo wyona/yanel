@@ -21,6 +21,24 @@
 <p>By default the GWT source is compiled for all GWT-supported browsers. While developing this can be overridden per resource type within the module configuration (property user.agent), e.g.</p>
 <address>src-gwt/java/org/wyona/security/gwt/accesspolicyeditor/AccessPolicyEditor.gwt.xml<br /></address>
 <p>There are also some more flags within src/build/resource-types/GWT-RT.build.xml which can be set and help speeding up development, such as for example the -draftCompile fiag, but please be aware that these flags depend on the GWT version you are using (see above: Configuration of GWT version).</p>
+
+<p>
+Each src-gwt directory can contain an optional build properties file, e.g.
+
+<address>src/contributions/resources/policymanager/src-gwt/build.properties</address>
+</p>
+
+<p>
+containing the module names, e.g.
+
+<address>module.name=org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor</address>
+</p>
+
+<p>
+which helps to speed up development, because only this specific module will be compiled. But one
+can have several modules per src-gwt (*.gwt.xml) directory and if one wants to compile all at once,
+then one should remove such build.properties files.
+</p>
 <h2>Misc</h2>
 <ul>
 <li><a href="http://documentation.yanel.wyona.org/wiki/wiki/GWT">Yanel Wiki notes on GWT integration</a></li>
