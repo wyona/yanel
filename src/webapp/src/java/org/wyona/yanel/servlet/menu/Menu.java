@@ -66,7 +66,7 @@ abstract public class Menu {
      */
     public String getAdminMenu(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        String language = resource.getRequestedLanguage();
+        String userLanguage = getUserLanguage(resource);
 
         StringBuilder sb= new StringBuilder();
         sb.append("<ul><li>");
@@ -74,7 +74,7 @@ abstract public class Menu {
 
         // View page info moved to getFileMenu() of default implementation
         sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/data-repository-sitetree.html\">Browse Data Repository Sitetree</a></li>");
-        sb.append("<li class=\"haschild\">" + getLabel("y:permissions-management", language));
+        sb.append("<li class=\"haschild\">" + getLabel("y:permissions-management", userLanguage));
         sb.append("<ul>");
         sb.append("<li class=\"haschild\">Root Page&#160;&#160;&#160;");
         sb.append("<ul>");
@@ -92,17 +92,17 @@ abstract public class Menu {
         sb.append("</li>");
 
         if (isAuthorized("/" + reservedPrefix + "/admin/list-users.html", resource)) {
-            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-users.html\">" + getLabel("y:user-management", language) + "</a></li>");
+            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-users.html\">" + getLabel("y:user-management", userLanguage) + "</a></li>");
         } else {
-            sb.append("<li>" + getLabel("y:user-management", language) + "</li>");
+            sb.append("<li>" + getLabel("y:user-management", userLanguage) + "</li>");
         }
 
         if (isAuthorized("/" + reservedPrefix + "/admin/list-groups.html", resource)) {
-            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-groups.html\">"+ getLabel("y:group-management", language) + "</a></li>");
+            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/admin/list-groups.html\">"+ getLabel("y:group-management", userLanguage) + "</a></li>");
         } else {
-            sb.append("<li>"+ getLabel("y:group-management", language) + "</li>");
+            sb.append("<li>"+ getLabel("y:group-management", userLanguage) + "</li>");
         }
-        sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/about-realm.html\">" + getLabel("y:about-realm", language) + "</a></li>");
+        sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/about-realm.html\">" + getLabel("y:about-realm", userLanguage) + "</a></li>");
         sb.append("</ul>");
 
         sb.append("</li></ul>");
@@ -116,11 +116,11 @@ abstract public class Menu {
      */
     public String getHelpMenu(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        String language = resource.getRequestedLanguage();
+        String userLanguage = getUserLanguage(resource);
 
         StringBuilder sb= new StringBuilder();
         sb.append("<ul><li>");
-        sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:help", language) + "</div>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:help", userLanguage) + "</div>");
         sb.append("<ul>");
         sb.append("<li><a href=\"http://www.yanel.org/en/documentation/index.html\">Yanel Documentation</a></li>");
         sb.append("</ul>");
