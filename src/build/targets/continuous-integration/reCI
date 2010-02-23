@@ -6,8 +6,8 @@
 # disabled because of http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6893 unfortunately:
 #BUILD_ID=dontKillMe
 
-if [ $# -ne 5 ]; then
-	echo "Usage: CI <HTTP port> <HTTPS port> <SHUTDOWN port> <AJP port> <Canoo webtest path>"
+if [ $# -lt 4 ]; then
+	echo "Usage: CI <HTTP port> <HTTPS port> <SHUTDOWN port> <AJP port> [<Canoo webtest path>]"
 	exit 2
 fi
 set -ex
@@ -51,6 +51,8 @@ tools/apache-ant/bin/ant -f tools/apache-tomcat/build.xml configure-host -Dtomca
 
 ./yanel.sh start
 
+#XXX HACK: all the Yanel tests (including the HTTPUnit and JUnit ones) are only run if a Canoo WebTest installation directory was specified:
+ if [ -n "$WEBTEST_HOME_DIR" ]; then
 cat > src/test/htmlunit/local.htmlunit-properties.xml <<EOF #FIXME: do this in a portable way
 <config>
   <htmlunit>
@@ -65,6 +67,7 @@ EOF
 # Also see src/build/targets/test.xml
 ./build.sh test -Dwebtest.home.dir=$WEBTEST_HOME_DIR -Dwebtest.config.host=localhost -Dwebtest.config.protocol=http -Dwebtest.config.port=$HTTP_PORT -Dheadless=
 #TODO: test the resources from scratch
+ fi
 
 # Yanel is always stopped at the beginning of this script, so we do not need to do it here:
-#  this allows anyone to play with the servers between jobs.
+#  this may allow anyone to play with the servers between script invocations.
