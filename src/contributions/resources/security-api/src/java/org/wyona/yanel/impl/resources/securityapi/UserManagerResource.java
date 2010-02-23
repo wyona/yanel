@@ -10,6 +10,8 @@ import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.api.Group;
 import org.wyona.security.core.api.GroupManager;
 import org.wyona.security.core.api.Item;
+import org.wyona.security.core.api.User;
+import org.wyona.security.core.api.UserManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -46,6 +48,8 @@ public class UserManagerResource extends BasicXMLResource {
                 sb.append(getUserAsXML(getEnvironment().getRequest().getParameter("id")));
             } else if (usecase.equals("getgroups")) {
                 sb.append(getGroupsAsXML());
+            } else if (usecase.equals("getusers")) {
+                sb.append(getUsersAsXML());
             } else {
                 sb.append("<no-such-yanel-usecase-implemented>" + usecase + "</no-such-yanel-usecase-implemented>");
             }
@@ -70,15 +74,6 @@ public class UserManagerResource extends BasicXMLResource {
     }
 
     /**
-     * Get all users
-     */
-    private StringBuilder getUsersAsXML() {
-        StringBuilder sb = new StringBuilder("<users>");
-        sb.append("</users>");
-        return sb;
-    }
-
-    /**
      * Get a specific user
      * @param id User ID
      */
@@ -100,6 +95,21 @@ public class UserManagerResource extends BasicXMLResource {
         sb.append("<group id=\"" + groups[i].getID() + "\">" + groups[i].getName() + "</group>");
         }
         sb.append("</groups>");
+        return sb;
+    }
+
+    /**
+     * Get all users
+     */
+    private StringBuilder getUsersAsXML() throws Exception {
+        UserManager um = getRealm().getIdentityManager().getUserManager();
+        User[] users = um.getUsers();
+        Arrays.sort(users, new ItemIDComparator());
+        StringBuilder sb = new StringBuilder("<users>");
+        for (int i = 0; i < users.length; i++) {
+        sb.append("<user id=\"" + users[i].getID() + "\">" + users[i].getName() + "</user>");
+        }
+        sb.append("</users>");
         return sb;
     }
 
