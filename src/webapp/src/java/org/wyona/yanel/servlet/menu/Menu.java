@@ -40,7 +40,18 @@ abstract public class Menu {
      */
     public String getYanelMenu(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
+        Identity identity = resource.getEnvironment().getIdentity();
         String language = resource.getRequestedLanguage();
+        String userID = identity.getUsername();
+        if (userID != null) {
+            String userLanguage = resource.getRealm().getIdentityManager().getUserManager().getUser(userID).getLanguage();
+            if(userLanguage != null) {
+                language = userLanguage;
+                log.debug("Use user profile language: " + language);
+            } else {
+                log.debug("Use requested language: " + language);
+            }
+        }
 
         StringBuilder sb= new StringBuilder();
         sb.append("<ul><li>");
@@ -48,7 +59,6 @@ abstract public class Menu {
 
         sb.append("<li><a href=\"" + backToRealm + reservedPrefix+ "/about.html\">" + getLabel("y:about-yanel", language) + "</a></li>");
         sb.append("<li><a href=\"?yanel.toolbar=off\">" + getLabel("y:turn-off-toolbar", language) + "</a></li>");
-        Identity identity = getIdentity(request, map);
         if (identity != null) {
             sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/users/" + identity.getUsername() + ".html\">" + getLabel("y:my-profile", language) + "</a></li>");
             // TODO: Also consider additional query strings!
