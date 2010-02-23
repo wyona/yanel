@@ -10,7 +10,10 @@
       &config;
       <login/>
       <invoke description="Get the login page: " url="${realm.prefix}index.html?yanel.toolbar=on"/>
+      <verifyText description="Verify that text is contained in the page" text="Toolbar deaktivieren"/>
+<!-- INFO: Because the user 'lenya' has 'de' as profile language, the toolbar text will be in german
       <verifyText description="Verify that text is contained in the page" text="Turn off toolbar"/>
+-->
       <logout/>
       <invoke description="Get the login page: " url="${realm.prefix}index.html?yanel.toolbar=on"/>
       <verifyText description="Verify that text is contained in the page" text="Login"/>
