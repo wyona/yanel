@@ -28,10 +28,11 @@ public class YanelWebsiteMenu extends Menu {
      */
     public  String getMenus(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        StringBuffer sb= new StringBuffer();
+        String userLanguage = getUserLanguage(resource);
+        StringBuilder sb= new StringBuilder();
 
 	sb.append("<ul><li>");
-        sb.append("<div id=\"yaneltoolbar_menutitle\">File</div>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:file", userLanguage) + "</div>");
         sb.append("<ul>");
         sb.append("<li class=\"haschild\"><a href=\"" + backToRealm + "create-new-page.html\">New&#160;&#160;&#160;</a><ul><li><a href=\"" + backToRealm + "create-new-page.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Axml\">Standard page (XHTML)</a></li><li><a href=\"" + backToRealm + "create-new-page.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Awiki\">Wiki page</a></li><li><a href=\"" + backToRealm + "create-new-page.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Afile\">File</a></li></ul></li>");
 
@@ -60,7 +61,7 @@ public class YanelWebsiteMenu extends Menu {
         sb.append("</li></ul>");
 
         sb.append("<ul><li>");
-        sb.append("<div id=\"yaneltoolbar_menutitle\">Edit</div><ul>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:edit", userLanguage) + "</div><ul>");
         sb.append("<li class=\"haschild\">Open with&#160;&#160;&#160;");
         sb.append("<ul><li>Source editor</li>");
         sb.append("<li class=\"haschild\">WYSIWYG editor&#160;&#160;&#160;");
