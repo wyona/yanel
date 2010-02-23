@@ -294,7 +294,7 @@ class YanelHTMLUI {
      * Get information such as realm name, user name, etc.
      */
     private String getInfo(Resource resource, HttpServletRequest request) throws Exception {
-        String language = resource.getRequestedLanguage();
+        String userLanguage = getUserLanguage(resource);
         StringBuilder buf = new StringBuilder();
         buf.append("<span id=\"yaneltoolbar_info\">");
         //buf.append("Version: " + yanel.getVersion() + "-r" + yanel.getRevision() + "&#160;&#160;");
@@ -302,15 +302,15 @@ class YanelHTMLUI {
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
             VersionableV2 versionableRes = (VersionableV2)resource;
             if (versionableRes.isCheckedOut()) {
-                buf.append(getLabel("page", language) + ": <b>Locked by " + versionableRes.getCheckoutUserID() + "</b> (<a href=\"?" + YanelServlet.YANEL_RESOURCE_USECASE + "=" + YanelServlet.RELEASE_LOCK + "\">unlock</a>)&#160;&#160;");
+                buf.append(getLabel("page", userLanguage) + ": <b>Locked by " + versionableRes.getCheckoutUserID() + "</b> (<a href=\"?" + YanelServlet.YANEL_RESOURCE_USECASE + "=" + YanelServlet.RELEASE_LOCK + "\">unlock</a>)&#160;&#160;");
             }
         }
 
         Identity identity = YanelServlet.getIdentity(request, map);
         if (identity != null && !identity.isWorld()) {
-            buf.append(getLabel("user", language) + ": <b>" + identity.getUsername() + "</b>");
+            buf.append(getLabel("user", userLanguage) + ": <b>" + identity.getUsername() + "</b>");
         } else {
-            buf.append(getLabel("user", language) + ": <b>Not signed in!</b>");
+            buf.append(getLabel("user", userLanguage) + ": <b>Not signed in!</b>");
         }
         buf.append("</span>");
         return buf.toString();
@@ -345,5 +345,24 @@ class YanelHTMLUI {
             log.warn("Language '" + language + "' not supported yet. Fallback to english!");
             return getLabel(key, "en");
         }
+    }
+
+    /**
+     * Get user language (order: profile, browser, ...) (Also see org/wyona/yanel/servlet/menu/Menu.java)
+     */
+    private String getUserLanguage(Resource resource) throws Exception {
+        Identity identity = resource.getEnvironment().getIdentity();
+        String language = resource.getRequestedLanguage();
+        String userID = identity.getUsername();
+        if (userID != null) {
+            String userLanguage = resource.getRealm().getIdentityManager().getUserManager().getUser(userID).getLanguage();
+            if(userLanguage != null) {
+                language = userLanguage;
+                log.debug("Use user profile language: " + language);
+            } else {
+                log.debug("Use requested language: " + language);
+            }
+        }
+        return language;
     }
 }
