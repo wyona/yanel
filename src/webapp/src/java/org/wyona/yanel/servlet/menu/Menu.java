@@ -40,29 +40,19 @@ abstract public class Menu {
      */
     public String getYanelMenu(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        Identity identity = resource.getEnvironment().getIdentity();
-        String language = resource.getRequestedLanguage();
-        String userID = identity.getUsername();
-        if (userID != null) {
-            String userLanguage = resource.getRealm().getIdentityManager().getUserManager().getUser(userID).getLanguage();
-            if(userLanguage != null) {
-                language = userLanguage;
-                log.debug("Use user profile language: " + language);
-            } else {
-                log.debug("Use requested language: " + language);
-            }
-        }
+        String userLanguage = getUserLanguage(resource);
 
         StringBuilder sb= new StringBuilder();
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">Yanel</div><ul>");
 
-        sb.append("<li><a href=\"" + backToRealm + reservedPrefix+ "/about.html\">" + getLabel("y:about-yanel", language) + "</a></li>");
-        sb.append("<li><a href=\"?yanel.toolbar=off\">" + getLabel("y:turn-off-toolbar", language) + "</a></li>");
+        sb.append("<li><a href=\"" + backToRealm + reservedPrefix+ "/about.html\">" + getLabel("y:about-yanel", userLanguage) + "</a></li>");
+        sb.append("<li><a href=\"?yanel.toolbar=off\">" + getLabel("y:turn-off-toolbar", userLanguage) + "</a></li>");
+        Identity identity = resource.getEnvironment().getIdentity();
         if (identity != null) {
-            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/users/" + identity.getUsername() + ".html\">" + getLabel("y:my-profile", language) + "</a></li>");
+            sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/users/" + identity.getUsername() + ".html\">" + getLabel("y:my-profile", userLanguage) + "</a></li>");
             // TODO: Also consider additional query strings!
-            sb.append("<li><a href=\"?yanel.usecase=logout\"><img class=\"yaneltoolbar_menuicon\" src=\"" + backToRealm + reservedPrefix + "/yanel-img/icons/system-log-out.png\" border=\"0\"/>" + getLabel("y:logout", language) + "</a></li>");
+            sb.append("<li><a href=\"?yanel.usecase=logout\"><img class=\"yaneltoolbar_menuicon\" src=\"" + backToRealm + reservedPrefix + "/yanel-img/icons/system-log-out.png\" border=\"0\"/>" + getLabel("y:logout", userLanguage) + "</a></li>");
         }
         sb.append("</ul>");
 
@@ -249,5 +239,24 @@ abstract public class Menu {
             log.warn("Language '" + language + "' not supported yet. Fallback to english!");
             return getLabel(key, "en");
         }
+    }
+
+    /**
+     * Get user language (order: profile, browser, ...)
+     */
+    protected String getUserLanguage(Resource resource) throws Exception {
+        Identity identity = resource.getEnvironment().getIdentity();
+        String language = resource.getRequestedLanguage();
+        String userID = identity.getUsername();
+        if (userID != null) {
+            String userLanguage = resource.getRealm().getIdentityManager().getUserManager().getUser(userID).getLanguage();
+            if(userLanguage != null) {
+                language = userLanguage;
+                log.debug("Use user profile language: " + language);
+            } else {
+                log.debug("Use requested language: " + language);
+            }
+        }
+        return language;
     }
 }
