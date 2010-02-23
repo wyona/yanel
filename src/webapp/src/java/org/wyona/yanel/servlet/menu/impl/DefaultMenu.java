@@ -37,10 +37,10 @@ public class DefaultMenu extends Menu {
      * Get generic edit menu
      */
     public String getEditMenu(Resource resource) throws Exception {
-        String language = resource.getRequestedLanguage();
+        String userLanguage = getUserLanguage(resource);
         StringBuilder sb = new StringBuilder();
         sb.append("<ul><li>");
-        sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:edit", language) + "</div>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:edit", userLanguage) + "</div>");
         sb.append("<ul>");
 
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
@@ -72,10 +72,10 @@ public class DefaultMenu extends Menu {
      * Get generic file menu
      */
     public String getFileMenu(Resource resource) throws Exception {
-        String language = resource.getRequestedLanguage();
+        String userLanguage = getUserLanguage(resource);
         StringBuilder sb = new StringBuilder();
         sb.append("<ul><li>");
-        sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:file", language) + "</div>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:file", userLanguage) + "</div>");
         sb.append("<ul>");
         sb.append("<li><a href=\"create-new-page.html\">Create new page</a></li>");
 
@@ -83,7 +83,7 @@ public class DefaultMenu extends Menu {
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
             sb.append("<li><a href=\"?yanel.resource.usecase=delete\">Delete this page</a></li>");
         }
-        sb.append("<li><a href=\"?yanel.resource.meta\">" + getLabel("y:page-info", language) + "</a></li>");
+        sb.append("<li><a href=\"?yanel.resource.meta\">" + getLabel("y:page-info", userLanguage) + "</a></li>");
         sb.append("</ul>");
         sb.append("</li></ul>");
 

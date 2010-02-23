@@ -30,10 +30,10 @@ public class DefaultMenuV2 extends DefaultMenu {
      * Implements the new tinymce suffix
      */
     public String getEditMenu(Resource resource) throws Exception {
-        String language = resource.getRequestedLanguage();
+        String userLanguage = getUserLanguage(resource);
         StringBuilder sb = new StringBuilder();
         sb.append("<ul><li>");
-        sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:edit", language) + "</div>");
+        sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:edit", userLanguage) + "</div>");
         sb.append("<ul>");
 
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
