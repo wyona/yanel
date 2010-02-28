@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<project name="Update Webapp Resource" default="test">
+
+  <import file="../definitions.xml"/>
+
+  <target name="test" depends="wt.defineMacros">
+
+    <webtest name="Update Webapp Resource">
+      &config;
+      <invoke description="Get the page: " url="/${realm.prefix}update-webapp.html"/>
+
+     <verifyText description="Verify that text is contained in the page" text="Yanel Updater"/>
+   </webtest>
+       
+  </target>
+
+</project>
