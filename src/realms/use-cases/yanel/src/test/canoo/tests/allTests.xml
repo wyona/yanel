@@ -18,6 +18,7 @@
     <ant antfile="usecase-test-hello.xml"/>
     <ant antfile="usecase-test-update-resource.xml"/>
     <ant antfile="usecase-test-viewtest.xml"/>
+    <ant antfile="usecase-test-timeline.xml"/>
     <ant antfile="usecase-test-update-webapp-resource.xml"/>
 
   </target>
