@@ -14,7 +14,7 @@
 
       <verifyText description="Verify that text is contained in the page" text="Sample Timeline"/>
 
-      <clickLink description="Follow the timeline XML" label="timeline.xml"/> <!-- TODO: Verify content of XML -->
+      <clickLink description="Follow the timeline XML" label="timeline.xml"/> <!-- TODO: Verify received content of XML instead invoking it below -->
       <invoke description="Get the XML of the timeline: " url="/${realm.prefix}timeline.xml"/>
       <verifyText description="Verify that text is contained in the XML" text="data"/>
     </webtest>
