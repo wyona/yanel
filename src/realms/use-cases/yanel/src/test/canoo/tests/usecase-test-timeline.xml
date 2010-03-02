@@ -12,8 +12,11 @@
       &config;
       <invoke description="Get the page: " url="/${realm.prefix}timeline.html"/>
 
-     <verifyText description="Verify that text is contained in the page" text="Sample Timeline"/>
-     <clickLink description="Follow the timeline XML" label="timeline.xml"/>
+      <verifyText description="Verify that text is contained in the page" text="Sample Timeline"/>
+
+      <clickLink description="Follow the timeline XML" label="timeline.xml"/> <!-- TODO: Verify content of XML -->
+      <invoke description="Get the XML of the timeline: " url="/${realm.prefix}timeline.xml"/>
+      <verifyText description="Verify that text is contained in the XML" text="data"/>
     </webtest>
        
   </target>
