@@ -13,6 +13,7 @@
       <invoke description="Get the page: " url="/${realm.prefix}timeline.html"/>
 
      <verifyText description="Verify that text is contained in the page" text="Sample Timeline"/>
+     <clickLink description="Follow the timeline XML" label="timeline.xml"/>
     </webtest>
        
   </target>
