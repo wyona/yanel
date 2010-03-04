@@ -17,7 +17,7 @@ There are different kind of tests:
 <ul>
 <li><b>junit</b>: To test specific functionality of certain java components/classes see <a href="http://junit.org/">http://junit.org/</a></li>
 <li><b>htmlunit</b>: To test the web pages (simulating user interaction) see <a href="http://htmlunit.sourceforge.net/">http://htmlunit.sourceforge.net/</a></li>
-<li><b>canoo</b>: To test the web pages (simulating user interaction) see <a href="http://webtest.canoo.com/">http://webtest.canoo.com</a></li>
+<li><b>Canoo</b>: To test the web pages (simulating user interaction) see <a href="http://webtest.canoo.com/">http://webtest.canoo.com</a></li>
 </ul>
 
 <h3>How to run the tests</h3>
@@ -63,19 +63,42 @@ cd $YANEL_HOME
 </p>
 
 <p>
-To run canoo webtests (including junit and htmlunit):
+To run Yanel specific Canoo webtests (including junit and htmlunit):
 <pre>
 ./build.sh test -Dwebtest.home.dir=/usr/local/canoo-webtest-3.0-R_1758 -Dwebtest.config.host=localhost -Dwebtest.config.protocol=http -Dwebtest.config.port=8080 -Dheadless=
 </pre>
 </p>
 
 <p>
-whereas some Canoo web-tests are located at
+whereas if the global property 'headless' is set, then also the Canoo property 'wt.headless' is set within src/build/targets/test.xml, which means no monitor is displayed and no browser is opened to display the Canoo results.
+</p>
+
+<p>
+Some Canoo web-tests are located at
 <pre>
 src/realms/use-cases/yanel/src/test/canoo/
 src/realms/yanel-website/src/test/canoo/
 </pre>
-See the README.txt files within these directories in order to run the Canoo web-tests individually.
+whereas also see the README.txt files within these directories.
+</p>
+
+<p>
+To run realm specific Canoo webtests
+<pre>
+./build.sh -f src/realms/yanel-website/src/test/canoo/build.xml
+</pre>
+or to run a specific target
+<pre>
+./build.sh -f src/realms/yanel-website/src/test/canoo/build.xml MY_TARGET_NAME
+</pre>
+</p>
+
+<p>
+whereas make sure to configure the properties within the realm first, e.g.
+<pre>
+src/realms/yanel-website/src/test/canoo/build.properties
+src/realms/yanel-website/src/test/canoo/local.build.properties
+</pre>
 </p>
 
 <h3>How to write tests</h3>
