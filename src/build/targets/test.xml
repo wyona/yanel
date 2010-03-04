@@ -17,10 +17,13 @@
       <propertyset>
         <propertyref prefix="webtest.config."/>
       </propertyset>
+
+      <!-- If the global headless property is set, then also set the Canoo property wt.headless -->
       <propertyset>
         <propertyref name="headless"/>
         <mapper type="glob" from="*" to="wt.*"/>
       </propertyset>
+
       <fileset dir="../.." includes="src/realms/**/canoo/build.xml"/>
     </subant>
   </target>
