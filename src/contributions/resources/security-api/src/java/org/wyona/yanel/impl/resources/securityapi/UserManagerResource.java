@@ -17,6 +17,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Map;
+import java.util.Collections;
 
 import org.apache.log4j.Logger;
 
@@ -48,8 +50,6 @@ public class UserManagerResource extends BasicXMLResource {
                 sb.append(getUserAsXML(getEnvironment().getRequest().getParameter("id")));
             } else if (usecase.equals("getgroups")) {
                 sb.append(getGroupsAsXML());
-            } else if (usecase.equals("getusers")) {
-                sb.append(getUsersAsXML());
             } else {
                 sb.append("<no-such-yanel-usecase-implemented>" + usecase + "</no-such-yanel-usecase-implemented>");
             }
@@ -92,7 +92,8 @@ public class UserManagerResource extends BasicXMLResource {
         Arrays.sort(groups, new ItemIDComparator());
         StringBuilder sb = new StringBuilder("<groups>");
         for (int i = 0; i < groups.length; i++) {
-        sb.append("<group id=\"" + groups[i].getID() + "\">" + groups[i].getName() + "</group>");
+            //getGroupExtraPropertiesGetter()
+            sb.append("<group id=\"" + groups[i].getID() + "\">" + groups[i].getName() + "</group>");
         }
         sb.append("</groups>");
         return sb;
@@ -105,9 +106,31 @@ public class UserManagerResource extends BasicXMLResource {
         UserManager um = getRealm().getIdentityManager().getUserManager();
         User[] users = um.getUsers();
         Arrays.sort(users, new ItemIDComparator());
-        StringBuilder sb = new StringBuilder("<users>");
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("<users");
+
+        // INFO: Add custom namespaces
+        Map<String, String> extraXMLnamespaceDeclarations = getExtraXMLnamespaceDeclarations();
+        for (Map.Entry<String, String> declaration : extraXMLnamespaceDeclarations.entrySet()) {
+            sb.append(" xmlns:" + declaration.getKey() + "=\"" + declaration.getValue() + "\"");
+        }
+
+        sb.append(">");
+
         for (int i = 0; i < users.length; i++) {
-        sb.append("<user id=\"" + users[i].getID() + "\">" + users[i].getName() + "</user>");
+            sb.append("<user id=\"" + users[i].getID() + "\"");
+            //sb.append(" expired=\"" + org.wyona.security.impl.util.UserUtil.isExpired(users[i]) + "\"");
+
+            // INFO: Add custom properties
+            SecurityItemExtraPropertiesGetter<User> itemExtraPropertiesGetter = getUserExtraPropertiesGetter();
+            Map<String, String> extraItemProperties = itemExtraPropertiesGetter.getExtraProperties(users[i]);
+            for (Map.Entry<String, String> property : extraItemProperties.entrySet()) {
+                sb.append(" " + property.getKey() + "=\"" + org.wyona.commons.xml.XMLHelper.replaceEntities(property.getValue()) + "\""); //INFO: The name should be safe, so don't escape it
+            }
+
+            sb.append(">" + users[i].getName() + "</user>");
         }
         sb.append("</users>");
         return sb;
@@ -126,5 +149,58 @@ public class UserManagerResource extends BasicXMLResource {
                 throw new RuntimeException(e.getMessage(), e);
             }
         }
+    }
+
+    /**
+     * Interface/template in order to get custom properties of user or group
+     */
+    public interface SecurityItemExtraPropertiesGetter<I extends Item> {
+
+        /**
+         * Get custom properties
+         * @param item User, group, host, etc.
+         */
+        Map<String, String> getExtraProperties(I item);
+    }
+
+    /**
+     * Default implementation of getter for user
+     */
+    protected SecurityItemExtraPropertiesGetter<User> getUserExtraPropertiesGetter() {
+        return userNoExtraPropertiesGetter;
+    }
+
+    /**
+     * Default user properties which will be used by default implementation #getUserExtraPropertiesGetter
+     */
+    private static final SecurityItemExtraPropertiesGetter<User> userNoExtraPropertiesGetter = new SecurityItemExtraPropertiesGetter<User>() {
+        @Override
+        public Map<String, String> getExtraProperties(User item) {
+            return Collections.emptyMap();// no extra properties to add for standard Yanel users
+        }
+    };
+
+    /**
+     * Default implementation of getter for group
+     */
+    protected SecurityItemExtraPropertiesGetter<Group> getGroupExtraPropertiesGetter() {
+        return groupNoExtraPropertiesGetter;
+    }
+
+    /**
+     * Default group properties which will be used by default implementation #getGroupExtraPropertiesGetter
+     */
+    private static final SecurityItemExtraPropertiesGetter<Group> groupNoExtraPropertiesGetter = new SecurityItemExtraPropertiesGetter<Group>() {
+        @Override
+        public Map<String, String> getExtraProperties(Group item) {
+            return Collections.emptyMap();// no extra properties to add for standard Yanel users
+        }
+    };
+
+    /**
+     * Overwrite this method in order to insert custom namespaces
+     */
+    protected Map<String, String> getExtraXMLnamespaceDeclarations() throws Exception {
+        return Collections.emptyMap(); // DEFAULT: No extra XML namespace declarations
     }
 }
