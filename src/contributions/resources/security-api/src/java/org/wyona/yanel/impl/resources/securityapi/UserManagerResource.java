@@ -90,10 +90,29 @@ public class UserManagerResource extends BasicXMLResource {
         GroupManager gm = getRealm().getIdentityManager().getGroupManager();
         Group[] groups = gm.getGroups();
         Arrays.sort(groups, new ItemIDComparator());
-        StringBuilder sb = new StringBuilder("<groups>");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<groups");
+
+        // INFO: Add custom namespaces
+        Map<String, String> extraXMLnamespaceDeclarations = getExtraXMLnamespaceDeclarations();
+        for (Map.Entry<String, String> declaration : extraXMLnamespaceDeclarations.entrySet()) {
+            sb.append(" xmlns:" + declaration.getKey() + "=\"" + declaration.getValue() + "\"");
+        }
+
+        sb.append(">");
+
         for (int i = 0; i < groups.length; i++) {
-            //getGroupExtraPropertiesGetter()
-            sb.append("<group id=\"" + groups[i].getID() + "\">" + groups[i].getName() + "</group>");
+            sb.append("<group id=\"" + groups[i].getID() + "\"");
+
+            // INFO: Add custom properties
+            SecurityItemExtraPropertiesGetter<Group> itemExtraPropertiesGetter = getGroupExtraPropertiesGetter();
+            Map<String, String> extraItemProperties = itemExtraPropertiesGetter.getExtraProperties(groups[i]);
+            for (Map.Entry<String, String> property : extraItemProperties.entrySet()) {
+                sb.append(" " + property.getKey() + "=\"" + org.wyona.commons.xml.XMLHelper.replaceEntities(property.getValue()) + "\""); //INFO: The name should be safe, so don't escape it
+            }
+
+            sb.append(">" + groups[i].getName() + "</group>");
         }
         sb.append("</groups>");
         return sb;
@@ -121,7 +140,7 @@ public class UserManagerResource extends BasicXMLResource {
 
         for (int i = 0; i < users.length; i++) {
             sb.append("<user id=\"" + users[i].getID() + "\"");
-            //sb.append(" expired=\"" + org.wyona.security.impl.util.UserUtil.isExpired(users[i]) + "\"");
+            //sb.append(" expired=\"" + org.wyona.security.impl.util.UserUtil.isExpired(users[i]) + "\""); // TODO: Update security library
 
             // INFO: Add custom properties
             SecurityItemExtraPropertiesGetter<User> itemExtraPropertiesGetter = getUserExtraPropertiesGetter();
