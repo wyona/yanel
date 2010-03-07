@@ -124,49 +124,36 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         if (eventsPath == null) {
             eventsPath = getPath();
         }
-        log.error("DEBUG: Generate calendar from XML based events: " + eventsPath);
+        log.warn("DEBUG: Generate calendar from XML based events: " + eventsPath);
 
         org.wyona.yarep.core.Path[] children = dataRepo.getChildren(new org.wyona.yarep.core.Path(eventsPath));
         //org.wyona.yarep.core.Path[] children = dataRepo.search("categories", categories);
 
-        StringBuffer calendar = new StringBuffer("<?xml version=\"1.0\"?>\n<calendar>");
-        for (int i = 0; i < children.length; i++) {
-            if (dataRepo.isResource(children[i])) {
-                InputStream in = dataRepo.getInputStream(children[i]);
-                java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
-                //StringBuffer event = new StringBuffer();
-
-                byte[] buffer = new byte[8192];
-                int bytesRead;
-                while ((bytesRead = in.read(buffer)) != -1) {
-                    //event.append(new String(buffer));
-                    baos.write(buffer, 0, bytesRead);
-                }
-
-                String event = baos.toString();
-                int endOfProcessingInstruction = event.indexOf("?>");
-                if (endOfProcessingInstruction > 0) {
-                    calendar.append(event.toString().substring(endOfProcessingInstruction + 2));
-                } else {
-                    log.error("No processing instruction: " + children[i]);
-                }
-            }
+        String calendarAsXML = getCalendarAsXML(children);
+        try {
+            org.wyona.commons.xml.XMLHelper.isWellFormed(new java.io.StringBufferInputStream(calendarAsXML));
+        } catch(Exception e) {
+            String errorMessage = "Calendar as XML is not well-formed!";
+            log.error(errorMessage);
+            View view = new View();
+            view.setMimeType("text/plain");
+            view.setInputStream(new java.io.StringBufferInputStream(errorMessage));
+            return view;
         }
-        calendar.append("</calendar>");
 
         if(viewId != null && viewId.equals("xml")) {
             //response.getOutputStream();
 
             View view = new View();
             view.setMimeType(getMimeType(viewId));
-            view.setInputStream(new java.io.StringBufferInputStream(calendar.toString()));
+            view.setInputStream(new java.io.StringBufferInputStream(calendarAsXML));
             return view;
         } else if (viewId != null && viewId.equals("xhtml")) {
             String xslt = getRTD().getConfigFile().getParent() + File.separator + "xslt" + File.separator + "xml2xhtml.xsl";
             java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
             try {
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(new File(xslt)));
-                transformer.transform(new StreamSource(new java.io.StringBufferInputStream(calendar.toString())), new StreamResult(out));
+                transformer.transform(new StreamSource(new java.io.StringBufferInputStream(calendarAsXML)), new StreamResult(out));
             } catch(Exception e) {
                 log.error(e.getMessage(), e);
             }
@@ -183,7 +170,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(new File(xslt)));
 
                 // TODO: This will cause encoding problems. See for instance http://skew.org/xml/tutorial/
-                transformer.transform(new StreamSource(new java.io.StringBufferInputStream(calendar.toString())), new StreamResult(out));
+                transformer.transform(new StreamSource(new java.io.StringBufferInputStream(calendarAsXML)), new StreamResult(out));
             } catch(Exception e) {
                 log.error(e.getMessage(), e);
                 throw new Exception(e);
@@ -378,5 +365,37 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
     public String[] getPropertyNames() {
         String[] props = {"classes", "categories"};
         return props;
+    }
+
+    /**
+     * Get calendar as XML string
+     */
+    private String getCalendarAsXML(org.wyona.yarep.core.Path[] children) throws Exception {
+        Repository dataRepo = getRealm().getRepository();
+        StringBuilder calendar = new StringBuilder("<?xml version=\"1.0\"?>\n<calendar>");
+        for (int i = 0; i < children.length; i++) {
+            if (dataRepo.isResource(children[i])) {
+                InputStream in = dataRepo.getInputStream(children[i]);
+                java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
+                //StringBuffer event = new StringBuffer();
+
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    //event.append(new String(buffer));
+                    baos.write(buffer, 0, bytesRead);
+                }
+
+                String event = baos.toString();
+                int endOfProcessingInstruction = event.indexOf("?>");
+                if (endOfProcessingInstruction > 0) {
+                    calendar.append(event.toString().substring(endOfProcessingInstruction + 2));
+                } else {
+                    log.error("No processing instruction: " + children[i]);
+                }
+            }
+        }
+        calendar.append("</calendar>");
+        return calendar.toString();
     }
 }
