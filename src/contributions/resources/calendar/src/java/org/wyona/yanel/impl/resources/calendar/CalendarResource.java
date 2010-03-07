@@ -11,9 +11,11 @@ import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
+import org.wyona.yarep.core.Repository;
+
 import org.wyona.yanel.impl.resources.calendar.CalendarEvent;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.InputStream;
@@ -34,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class CalendarResource extends Resource implements ViewableV2, ModifiableV2, CreatableV2 {
 
-    private static Category log = Category.getInstance(CalendarResource.class);
+    private static Logger log = Logger.getLogger(CalendarResource.class);
 
     /**
      *
@@ -77,11 +79,16 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
     }
 
     /**
-     *
+     * @see
      */
     public boolean exists() throws Exception {
-        log.warn("Not implemented yet!");
-        return false;
+        Repository dataRepo = getRealm().getRepository();
+        if (dataRepo.existsNode(getPath()) && dataRepo.isResource(new org.wyona.yarep.core.Path(getPath()))) {
+            return true;
+        } else {
+            log.warn("Not implemented yet!");
+            return false;
+        }
     }
 
     /**
@@ -92,17 +99,17 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         String categories = getResourceConfigProperty("categories");
         String classes = getResourceConfigProperty("classes");
         String userIds = getResourceConfigProperty("user-ids");
-        log.error("DEBUG: " + categories + " " + classes + " " + userIds);
+        log.debug("Categories, classes and user IDs: " + categories + " " + classes + " " + userIds);
 
-        org.wyona.yarep.core.Repository dataRepo = getRealm().getRepository();
+        Repository dataRepo = getRealm().getRepository();
 
-        if (dataRepo.exists(new org.wyona.yarep.core.Path(getPath())) && dataRepo.isResource(new org.wyona.yarep.core.Path(getPath()))) {
-            log.error("DEBUG: ICS exists: " + new org.wyona.yarep.core.Path(getPath()));
+        if (dataRepo.existsNode(getPath()) && dataRepo.isResource(new org.wyona.yarep.core.Path(getPath()))) {
+            log.warn("DEBUG: ICS exists: " + new org.wyona.yarep.core.Path(getPath()));
             if(viewId == null) {
                 View view = new View();
                 view.setMimeType(getMimeType(null));
-                view.setInputStream(dataRepo.getInputStream(new org.wyona.yarep.core.Path(getPath())));
-                log.error("DEBUG: Return ICS!");
+                view.setInputStream(dataRepo.getNode(getPath()).getInputStream());
+                log.warn("DEBUG: Return ICS!");
                 return view;
             }
         }
