@@ -45,11 +45,16 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
     }
 
     /**
-     *
+     * @see
      */
     public long getSize() throws Exception {
-        log.warn("Not implemented yet!");
-        return -1;
+        Repository dataRepo = getRealm().getRepository();
+        if (dataRepo.existsNode(getPath()) && dataRepo.isResource(new org.wyona.yarep.core.Path(getPath()))) {
+            return dataRepo.getNode(getPath()).getSize();
+        } else {
+            log.warn("Not implemented yet!");
+            return -1;
+        }
     }
 
     /**
@@ -194,7 +199,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
     }
 
     /**
-     *
+     * @see
      */
     public ViewDescriptor[] getViewDescriptors() {
         log.warn("Not implemented yet!");
@@ -210,11 +215,16 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
     }
 
     /**
-     *
+     * @see
      */
     public long getLastModified() throws Exception {
-        log.warn("Not implemented yet!");
-        return -1;
+        Repository dataRepo = getRealm().getRepository();
+        if (dataRepo.existsNode(getPath()) && dataRepo.isResource(new org.wyona.yarep.core.Path(getPath()))) {
+            return dataRepo.getNode(getPath()).getLastModified();
+        } else {
+            log.warn("Not implemented yet!");
+            return -1;
+        }
     }
 
     /**
