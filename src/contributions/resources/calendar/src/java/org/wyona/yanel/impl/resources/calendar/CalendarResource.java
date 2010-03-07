@@ -218,6 +218,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
      * Parse ICS and write events as XML into repository
      */
     public void write(InputStream in) throws Exception {
+        Repository dataRepo = getRealm().getRepository();
         java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(writeICS(in)));
         //java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(in));
         String line;
@@ -227,8 +228,12 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
             if (line.startsWith("BEGIN:VEVENT")) {
                 event = new CalendarEvent();
             } else if (line.startsWith("END:VEVENT")) {
-                //log.error("DEBUG: Write event " + event.getUID() + ", " + event.toXML());
-                Writer out = getRealm().getRepository().getWriter(new org.wyona.yarep.core.Path(getResourceConfigProperty("events-path") + "/" + event.getUID() + ".xml"));
+                String eventPath = getResourceConfigProperty("events-path") + "/" + event.getUID() + ".xml";
+                log.warn("DEBUG: Write event " + eventPath + ", " + event.toXML());
+                if (!dataRepo.existsNode(eventPath)) {
+                    org.wyona.yarep.util.YarepUtil.addNodes(dataRepo, eventPath, org.wyona.yarep.core.NodeType.RESOURCE);
+                }
+                Writer out = dataRepo.getWriter(new org.wyona.yarep.core.Path(getResourceConfigProperty("events-path") + "/" + event.getUID() + ".xml"));
                 out.write(event.toXML());
                 out.close();
                 event = null;
