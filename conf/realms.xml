@@ -18,6 +18,7 @@
 
 <!--
   NOTE: Don't remove the from-scratch-realm-template. It is needed by yanel to create new realms.
+  NOTE: The variable @REALMS_DIR@ is configured within src/build/build.properties#default.realms.dir
 -->
 <realm id="from-scratch-realm-template" mount-point="/from-scratch-realm/">
   <config src="@REALMS_DIR@/from-scratch-realm-template/"/>
