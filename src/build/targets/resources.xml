@@ -73,7 +73,7 @@
         <copy file="${yanel.source.home}/conf/realms.xml" tofile="${classes.dir}/realms.xml"/>
       </else>
     </if>
-    <replace file="${classes.dir}/realms.xml" value="${yanel.source.home.forward.slashes}/src/realms">
+    <replace file="${classes.dir}/realms.xml" value="${yanel.source.home.forward.slashes}/${default.realms.dir}">
       <replacetoken>@REALMS_DIR@</replacetoken>
     </replace>
   </target>

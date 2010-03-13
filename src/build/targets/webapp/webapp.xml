@@ -111,7 +111,7 @@
     </replace>
     <!-- /DEPRECATED -->
 
-    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" value="${yanel.source.home.forward.slashes}/src/realms">
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" value="${yanel.source.home.forward.slashes}/${default.realms.dir}">
       <replacetoken>@REALMS_DIR@</replacetoken>
     </replace>
 
