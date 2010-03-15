@@ -18,7 +18,8 @@ package org.wyona.yanel.core.workflow;
 import java.io.InputStream;
 import java.util.Date;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
+
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
@@ -42,7 +43,7 @@ import org.wyona.yarep.core.Revision;
  */
 public class WorkflowHelper {
     
-    private static Category log = Category.getInstance(WorkflowHelper.class);
+    private static Logger log = Logger.getLogger(WorkflowHelper.class);
 
     protected static final String LIVE_REVISION_PROPERTY = "live-revision";
     protected static final String WORKFLOW_DATE_PROPERTY = "workflow-date";
@@ -287,10 +288,15 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     }
 
     /**
-     *
+     * Get workflow variable value, e.g. value of live-revision
+     * @param name Name of workflow variable
      */
     public static String getWorkflowVariable(Node node, String name) throws WorkflowException {
         try {
+            if (!node.hasProperty(name)) {
+                log.warn("No such property: " + name);
+                return null;
+            }
             Property property = node.getProperty(name);
             if (property != null) {
                 return property.getString();
