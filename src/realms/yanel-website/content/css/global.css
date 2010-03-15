@@ -148,4 +148,8 @@ div.instructions li{
 div.instructions p.tutorial_context{
  font:11px/14px 'courier new', courier, monospace;
 }
- 
+
+pre {
+  white-space:pre-wrap;
+}
+
