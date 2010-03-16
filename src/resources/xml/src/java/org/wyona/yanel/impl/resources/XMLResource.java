@@ -248,11 +248,13 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     public void checkin(String comment) throws Exception {
         Node node = getRealm().getRepository().getNode(getPath());
         Revision revision = node.checkin(comment);
+
         // set initial workflow state and date:
         Workflow workflow = WorkflowHelper.getWorkflow(this);
-        if (workflow != null) {
+        if (workflow != null && revision != null) {
             setWorkflowState(workflow.getInitialState(), revision.getRevisionName());
         }
+
         /*
         if (node.isCheckedOut()) {
             String checkoutUserID = node.getCheckoutUserID();
