@@ -6,8 +6,12 @@
 
     </head>
     <body>
-      <p class="yanel-usecase-error">${resource.getErrorMessages()}</p>
-      <p>${resource.getInfoMessages()}</p>
+      <j:if test="${resource.getErrorMessages() != null}">
+        <p class="yanel-usecase-error"><span style="color: red;">Exception:</span> ${resource.getErrorMessages()}</p>
+      </j:if>
+      <j:if test="${resource.getInfoMessages() != null &amp;&amp; resource.getInfoMessages().length() > 0}">
+        <p>Info: ${resource.getInfoMessages()}</p>
+      </j:if>
       <j:choose>
         <j:when test="${resource.getEditPath() != null &amp;&amp; !resource.getEditPath().equals('')}">
           <div class="yui-skin-sam">
