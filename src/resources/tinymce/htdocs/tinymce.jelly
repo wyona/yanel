@@ -11,8 +11,12 @@
       <script language="javascript" type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/js/tinymceinit.js"></script>
     </head>
     <body>
-      <p class="yanel-usecase-error"><span style="color: red;">Exception:</span> ${resource.getErrorMessages()}</p>
-      <p>${resource.getInfoMessages()}</p>
+      <j:if test="${resource.getInfoMessages() != null &amp;&amp; resource.getInfoMessages().length() > 0}">
+        <p>Info: ${resource.getInfoMessages()}</p>
+      </j:if>
+      <j:if test="${resource.getErrorMessages() != null}">
+        <p class="yanel-usecase-error"><span style="color: red;">Exception:</span> ${resource.getErrorMessages()}</p>
+      </j:if>
       <j:choose>
         <j:when test="${resource.getEditPath() != null &amp;&amp; !resource.getEditPath().equals('')}">
           <form method="post" action="">
