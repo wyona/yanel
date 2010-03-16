@@ -70,6 +70,7 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
      * @see org.wyona.yanel.impl.resources.usecase.UsecaseResource#init()
      */
     protected void init() throws UsecaseException {
+        log.warn("DEBUG: Init resource ...");
         try {
             String matcherExtension = getResourceConfigProperty(CONFIG_PROPERTY_MATCHER_EXTENSION);
             if (matcherExtension != null && matcherExtension.length() > 0) {
@@ -86,7 +87,9 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
         if (editPath == null || editPath.equals("")) {
             addError("Could not get paramter edit-path. Don't know what to edit.");
             return;
+        } else {
         }
+
         try {
             resToEdit = getYanel().getResourceManager().getResource(getEnvironment(), getRealm(), editPath);
         } catch (Exception e) {
@@ -96,7 +99,11 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
             addError("Could not get Resource-Type to edit.");
             return;
         }
+        
+        log.warn("DEBUG: Edit path: " + editPath);
         editorContent = getParameterAsString(editPath); 
+        log.warn("DEBUG: Editor content: " + editorContent);
+
         if (ResourceAttributeHelper.hasAttributeImplemented(resToEdit, "Modifiable", "2")) {
             try {
                 InputStream is = ((ModifiableV2) resToEdit).getInputStream();
@@ -108,22 +115,22 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
         } else {
             addError("This resource can not be edited. ");
         }
-        
     }
     
     /* (non-Javadoc)
-     * @see org.wyona.yanel.impl.resources.usecase.ExecutableUsecaseResource#processUsecase(java.lang.String)
+     * @see org.wyona.yanel.impl.resources.usecase.UsecaseResource#processUsecase(java.lang.String)
      */
     protected View processUsecase(String viewID) throws UsecaseException {
-        String userID = getEnvironment().getIdentity().getUsername();
         String editorContent = getEditorContent();
-        String checkoutUserID = getResToEditCheckoutUserID();
         String resourceContent = getResourceContent();
         
         if (getParameter(PARAM_CANCEL) != null) {
+            log.warn("DEBUG: Name: " + PARAM_CANCEL + ", Value: " + getParameterAsString(PARAM_CANCEL));
             cancel();
+            log.warn("DEBUG: Original view ID: " + viewID + ", new view ID: " + VIEW_CANCEL);
             return generateView(VIEW_CANCEL);
-        } 
+        }
+
         if (hasErrors() || !checkPreconditions()) {
             String editPath =  getEditPath();
             String continuePath;
@@ -138,8 +145,13 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
             setParameter(PARAMETER_CONTINUE_PATH, continuePath);
             return generateView(VIEW_CANCEL);
         }
+
+        String userID = getEnvironment().getIdentity().getUsername();
+
+        log.warn("DEBUG: Check if content of '" + getResToEdit().getPath() + "' is already checked out");
         if (isResToEditCheckedOut() && !(getParameter(PARAM_SUBMIT) != null || getParameter(PARAM_SUBMIT_TIDY_SAVE) != null)) {
             addError("Resource is checked out ");
+            String checkoutUserID = getResToEditCheckoutUserID();
             if (checkoutUserID != null) {
                 if(checkoutUserID.equals(userID)) {
                     addError("by you (User: " + userID + ")! ");
@@ -149,8 +161,11 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
                 } else if (checkoutUserID.equals("null")) {
                     addError("by a not loged in user. ");
                 }
+            } else {
+                addError("by 'null'.");
             }
         }
+
         if (getParameter(PARAM_SUBMIT_TIDY) != null) {
             contentToEdit = tidy(editorContent);
             if(!isWellformed(IOUtils.toInputStream(contentToEdit))) {
@@ -159,24 +174,28 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
             }
             return generateView(DEFAULT_VIEW_ID);
         }
+
         if (getParameter(PARAM_SUBMIT_TIDY_SAVE) != null) {
             this.editorContent = tidy(editorContent);
             if(!isWellformed(IOUtils.toInputStream(this.editorContent))) {
                 contentToEdit = this.editorContent;
-                addError("Tidy seems to have a problem to make to content wellformed. Please fix it manually!");
+                addError("Tidy seems to have a problem to make the content wellformed. Please fix it manually!");
                 return generateView(VIEW_FIX_WELLFORMNESS);
             }
             execute();
             return generateView(VIEW_DONE);
         }
+
         if (editorContent != null && !isWellformed(IOUtils.toInputStream(editorContent))) {
             contentToEdit = getEditorContent();
             return generateView(VIEW_FIX_WELLFORMNESS);
-        } 
+        }
+
         if (getParameter(PARAM_SUBMIT) != null) {
             execute();
             return generateView(VIEW_DONE);
         }         
+
         contentToEdit = resourceContent;
 
         // Checkout resource to be edited
@@ -184,6 +203,7 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
             if (isResToEditVersionableV2()) {
                 if (!isResToEditCheckedOut()) {
                     ((VersionableV2) getResToEdit()).checkout(userID);
+                    log.warn("DEBUG: Resource '" + getResToEdit().getPath() + "' has been checked out.");
                 } else {
                     log.warn("Resource '" + getResToEdit().getPath() + "' is already checked out!");
                 }
@@ -240,8 +260,9 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
                     if (isResToEditVersionableV2()) {
                         VersionableV2 versionable  = (VersionableV2)resToEdit;
                         try {
+                            log.warn("DEBUG: Checkin: " + resToEdit.getPath());
                             versionable.checkin("Updated with tinyMCE");
-                            addInfoMessage("Succesfully checked in resource " + resToEdit.getPath() + ". ");
+                            addInfoMessage("Succesfully checked in resource '" + resToEdit.getPath() + "'.");
                         } catch (Exception e) {
                             String msg = "Could not check in resource: " + resToEdit.getPath() + " " + e.getMessage() + ". ";
                             log.error(msg, e);
@@ -274,8 +295,7 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
                 addInfoMessage("Released lock for: " + resToEdit.getPath() + ". ");
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-                addInfoMessage("Releasing of lock failed because of: " + resToEdit.getPath() 
-                        + " " + e.getMessage() + ". ");
+                addInfoMessage("Releasing of lock failed because of: " + resToEdit.getPath() + " " + e.getMessage() + ". ");
             }
         }
         setParameter(PARAMETER_CONTINUE_PATH, PathUtil.backToRealm(getPath()) + getEditPath().substring(1)); // allow jelly template to show link to new event
