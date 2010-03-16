@@ -1,3 +1,5 @@
-<project name="yanel-xml-resource">
+<?xml version="1.0"?>
+
+<project name="yanel-xml-resource" default="deploy-jar">
   <import file="${yanel.source.home}/src/build/resource-types/resource-type.build.xml"/>
 </project>
