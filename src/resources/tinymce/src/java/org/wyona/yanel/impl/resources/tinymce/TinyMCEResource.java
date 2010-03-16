@@ -248,38 +248,42 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
      * @see org.wyona.yanel.impl.resources.usecase.ExecutableUsecaseResource#execute()
      */
     public void execute() throws UsecaseException {
-        final String content = getEditorContent();
         final Resource resToEdit = getResToEdit();
-        if (log.isDebugEnabled()) log.debug("saving content: " + content);
-            if (ResourceAttributeHelper.hasAttributeImplemented(resToEdit, "Modifiable", "2")) {
-                try {
-                    OutputStream os = ((ModifiableV2) resToEdit).getOutputStream();
-                    IOUtils.write(content, os);
-                    addInfoMessage("Succesfully saved resource " + resToEdit.getPath() + ". ");
-                    log.warn("DEBUG: Try to checkin resource: " + resToEdit.getPath());
-                    if (isResToEditVersionableV2()) {
-                        VersionableV2 versionable  = (VersionableV2)resToEdit;
-                        try {
-                            log.warn("DEBUG: Checkin: " + resToEdit.getPath());
-                            versionable.checkin("Updated with tinyMCE");
-                            addInfoMessage("Succesfully checked in resource '" + resToEdit.getPath() + "'.");
-                        } catch (Exception e) {
-                            String msg = "Could not check in resource: " + resToEdit.getPath() + " " + e.getMessage() + ". ";
-                            log.error(msg, e);
-                            addError(msg);
-                            throw new UsecaseException(msg, e);
-                        }
-                    } else {
-                        log.warn("Resource '" + getResToEdit().getPath() + "' is not VersionableV2 and hence cannot be checked out!");
+        if (ResourceAttributeHelper.hasAttributeImplemented(resToEdit, "Modifiable", "2")) {
+            try {
+                final String content = getEditorContent();
+                if (log.isDebugEnabled()) log.debug("saving content: " + content);
+                log.warn("DEBUG: Saving content: " + content);
+                OutputStream os = ((ModifiableV2) resToEdit).getOutputStream();
+                IOUtils.write(content, os);
+                os.close();
+                addInfoMessage("Succesfully saved resource " + resToEdit.getPath() + ". ");
+
+
+                log.warn("DEBUG: Try to checkin resource: " + resToEdit.getPath());
+                if (isResToEditVersionableV2()) {
+                    VersionableV2 versionable  = (VersionableV2)resToEdit;
+                    try {
+                        log.warn("DEBUG: Checkin: " + resToEdit.getPath());
+                        versionable.checkin("Updated with tinyMCE");
+                        addInfoMessage("Succesfully checked in resource '" + resToEdit.getPath() + "'.");
+                    } catch (Exception e) {
+                        String msg = "Could not check in resource: " + resToEdit.getPath() + " " + e.getMessage() + ". ";
+                        log.error(msg, e);
+                        addError(msg);
+                        throw new UsecaseException(msg, e);
                     }
-                } catch (Exception e) {
-                    log.error("Exception: " + e);
-                    throw new UsecaseException(e.getMessage(), e);
+                } else {
+                    log.warn("Resource '" + getResToEdit().getPath() + "' is not VersionableV2 and hence cannot be checked out!");
                 }
-            } else {
-                addError("Could not save the document. ");
+            } catch (Exception e) {
+                log.error(e, e);
+                throw new UsecaseException(e.getMessage(), e);
             }
-            setParameter(PARAMETER_CONTINUE_PATH, PathUtil.backToRealm(getPath()) + getEditPath().substring(1)); // allow jelly template to show link to new event
+        } else {
+            addError("Could not save the document, because resource is not ModifiableV2!");
+        }
+        setParameter(PARAMETER_CONTINUE_PATH, PathUtil.backToRealm(getPath()) + getEditPath().substring(1)); // allow jelly template to show link to new event
     }
     
     /* (non-Javadoc)
