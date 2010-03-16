@@ -329,8 +329,11 @@ public class YanelServlet extends HttpServlet {
                 if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
                     VersionableV2 versionable  = (VersionableV2)resource;
                         String checkoutUserID = versionable.getCheckoutUserID(); 
-                        String userID = getEnvironment(request, response).getIdentity().getUsername();
-                        if (checkoutUserID.equals(userID)) {
+                        Identity identity = getEnvironment(request, response).getIdentity();
+                        String userID = identity.getUsername();
+                        Usecase usecase = new Usecase(RELEASE_LOCK);
+                        String path = resource.getPath();
+                        if (checkoutUserID.equals(userID) || resource.getRealm().getPolicyManager().authorize(path, identity, usecase)) {
                             try {
                                 versionable.cancelCheckout();
                                 log.debug("Lock has been released.");
@@ -346,12 +349,18 @@ public class YanelServlet extends HttpServlet {
                                 throw new ServletException("Releasing the lock of <" + resource.getPath() + "> failed because of: " + e.getMessage(), e);
                             }
                         } else {
-                            String eMessage = "Releasing the lock of '" + resource.getPath() + "' failed because checkout user '" + checkoutUserID + "' and session user '" + userID + "' are not the same!";
+                            String eMessage = "Releasing the lock of '" + resource.getPath() + "' failed because";
+                            if (checkoutUserID.equals(userID)) {
+                                eMessage = " user '" + userID + "' has no right to release her/his own lock!";
+                            } else {
+                                eMessage = " checkout user '" + checkoutUserID + "' and session user '" + userID + "' are not the same and session user '" + userID + "' has no right to release the lock of the checkout user '" + checkoutUserID + "'!";
+                            }
                             log.warn(eMessage);
                             throw new ServletException(eMessage);
                         }
+                } else {
+                    throw new ServletException("Resource '" + resource.getPath() + "' is not VersionableV2!");
                 }
-                return;
             } else if (value != null && value.equals("roll-back")) {
                 log.debug("Roll back ...");
                 org.wyona.yanel.core.util.VersioningUtil.rollBack(resource, request.getParameter(YANEL_RESOURCE_REVISION), getIdentity(request, map).getUsername());
