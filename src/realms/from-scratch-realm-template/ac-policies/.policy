@@ -30,6 +30,7 @@
 
   <usecase id="toolbar">
     <user id="lenya" permission="true"/>
+    <user id="alice" permission="true"/>
   </usecase>
 
   <usecase id="policy.read">
