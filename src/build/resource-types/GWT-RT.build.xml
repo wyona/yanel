@@ -76,12 +76,14 @@
     <echo level="info">
 If you want to work only on one specific GWT module of this resource-type
  please use -Dmodule.name=com.company.project.Module when invoking this build file.
-If you do not do that, all GWT modules detected in the resource-type directory will be acted upon.
+If you do not do that, all GWT modules detected with at least one entry point in the resource-type directory will be acted upon.
     </echo>
 
-    <fileset id="gwt.module.fileset" dir="${component.java.dir}">
-      <include name="**/*.gwt.xml"/>
-      <exclude name="**/*Local.gwt.xml"/>
+    <fileset id="gwt.module.fileset" dir="${component.java.dir}"
+     includes="**/*.gwt.xml"
+     excludes="**/*Local.gwt.xml"
+    >
+      <containsregexp expression="&lt;entry-point"/>
     </fileset>
 
     <!-- Multiple module support:
