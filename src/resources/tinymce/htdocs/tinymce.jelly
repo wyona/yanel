@@ -14,7 +14,7 @@
       <j:if test="${resource.getInfoMessages() != null &amp;&amp; resource.getInfoMessages().length() > 0}">
         <p>Info: ${resource.getInfoMessages()}</p>
       </j:if>
-      <j:if test="${resource.getErrorMessages() != null}">
+      <j:if test="${resource.getErrorMessages() != null &amp;&amp; resource.getErrorMessages().length() > 0}">
         <p class="yanel-usecase-error"><span style="color: red;">Exception:</span> ${resource.getErrorMessages()}</p>
       </j:if>
       <j:choose>
