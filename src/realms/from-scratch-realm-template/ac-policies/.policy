@@ -33,6 +33,10 @@
     <user id="alice" permission="true"/>
   </usecase>
 
+  <usecase id="release-lock">
+    <user id="alice" permission="true"/>
+  </usecase>
+
   <usecase id="policy.read">
     <user id="lenya" permission="true"/>
   </usecase>
