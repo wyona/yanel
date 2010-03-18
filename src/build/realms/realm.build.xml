@@ -39,6 +39,20 @@
     <property name="realm.java.dir" value="${realm.home.dir}/src/java"/>
   </target>
 
+  <target name="init:resource-types">
+    <xmlproperty file="${realm.home.dir}/resource-types.xml"
+     delimiter="${path.separator}"
+    />
+    <echo level="debug">resource-types.resource-type(src): ${resource-types.resource-type(src)}</echo>
+    <propertyregex property="resource-types.path"
+     input="${resource-types.resource-type(src)}"
+     defaultValue="${resource-types.resource-type(src)}"
+     regexp="@REALM_SRC_DIR@"
+     replace="${realm.home.dir}"
+     global="true" />
+    <echo level="verbose">resource-types.path: ${resource-types.path}</echo>
+  </target>
+
   <property name="eclipse.yanel.build.classes.dir.link" value="yanel-build-webapp-classes"/>
   <property name="eclipse.classes.dir.link" value="cnode1-webapp-WEB-INF-classes"/>
 
@@ -70,7 +84,14 @@
     <echo><!--XXX -->WARNING (if you used -Ddo.autopatch.cnode1.webapp.WEB-INF.classes=foo to make Eclipse automatically patch the webapp's classes in place during compilation): the logs will show up in ${yanel.home}/build/log4j-cmdl.log and not in ${yanel.home}/build/log4j-cnode1.log (due to to way the build is currently set up).</echo>
   </target>
 
-  <target name="eclipse" description="Generate all files needed to use the realm under Eclipse (WARNING: .project file will be overwritten!)" depends="eclipse:classpath">
+  <target name="eclipse:resource-types" depends="init:resource-types" unless="eclipse.realm-resource-types.skip">
+    <subant buildpath="${resource-types.path}" target="eclipse"
+     verbose="true"
+     failonerror="false"
+    />
+  </target>
+
+  <target name="eclipse" description="Generate all files needed to use the realm under Eclipse (WARNING: .project file(s) will be overwritten!)" depends="eclipse:classpath, eclipse:resource-types">
     <!--XXX HACK: we should generify this instead of stealing files from resource-types' build... -->
     <copy file="${yanel.home}/src/build/resource-types/Eclipse-3.template.project" tofile="${realm.home.dir}/.project">
       <filterset>
@@ -83,7 +104,7 @@
         <filter token="CLASSES_DIR" value="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes"/><!--FIXME: this should not be Tomcat-specific... -->
       </filterset>
     </copy>
-    <echo>Eclipse project created: in Eclipse you can now import (as an existing project into your workspace) this realm with root directory set to ${realm.home.dir} and build it there!</echo>
+    <echo level="info">Eclipse project created: in Eclipse you can now import (as an existing project into your workspace) this realm with root directory set to ${realm.home.dir} and build it there!</echo>
   </target>
 
   <target name="compile" description="Compile Java classes" depends="init">
