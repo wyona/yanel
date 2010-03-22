@@ -58,6 +58,9 @@ if [ "$1" = "start" ]; then
 elif [ "$1" = "stop" ]; then
   echo "INFO: Stopping Yanel..."
   $OUR_ANT stop-tomcat
+elif [ "$1" == "-debug" ] && [ "$2" == "start" ]; then
+  echo "INFO: Starting Yanel in debug mode..."
+  $OUR_ANT start-tomcat-debug
 elif [ "$1" = "start-jetty" ]; then
   echo "INFO: Starting Yanel on Jetty..."
   MAVEN=`which mvn`

@@ -53,4 +53,13 @@
     <move file="${server.file}" tofile="${server.old.file}"/>
     <move file="${server.new.file}" tofile="${server.file}"/>
   </target>
+
+  <target name="start-tomcat-debug" description="Start Yanel in debug mode" depends="init">
+    <echo level="info">Starting Yanel in debug mode ...</echo>
+    <chmod dir="${default.tomcat.home.dir}/bin" perm="755" includes="*"/>
+    <exec dir="${default.tomcat.home.dir}/bin" resolveexecutable="true" executable="catalina.sh" spawn="false">
+      <arg line="jpda start"/>
+    </exec>
+  </target>
+  
 </project>

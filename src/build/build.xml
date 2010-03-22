@@ -65,6 +65,7 @@
   <import file="targets/test.xml"/>
   <import file="targets/config.xml"/>
   <import file="targets/build-artifacts.build.xml"/>
+  <import file="../../tools/apache-tomcat/build.xml"/>
   
 
     
