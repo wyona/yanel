@@ -27,20 +27,25 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
- * Based on DOM, whereas persistance is done through the src configuration, for example within realm.xml
- * <repo-navigation class="org.wyona.yanel.impl.navigation.SitetreeDOMImpl">
- *   <src>data-repo/data/sitetree.xml</src>
- * </repo-navigation>
+ * Based on DOM, whereas persistance is done through the <code>src</code> configuration, for example within <code>realm.xml</code>
+ * <pre>
+ * &lt;repo-navigation class="org.wyona.yanel.impl.navigation.SitetreeDOMImpl">
+ *   &lt;src>data-repo/data/sitetree.xml&lt;/src>
+ * &lt;/repo-navigation>
+ * </pre>
  *
- * or .yanel-rc
+ * or <code>.yanel-rc</code>
  *
- * <yanel:custom-config>
- *   <s:repo-navigation xmlns:s="http://www.wyona.org/yanel/sitetree-dom-impl/1.0" class="org.wyona.yanel.impl.navigation.SitetreeDOMImpl">
- *     <s:src>yanelrepo:/sitetree.xml</s:src>
- *   </s:repo-navigation>
- * </yanel:custom-config>
+ * <pre>
+ * &lt;yanel:custom-config>
+ *   &lt;s:repo-navigation xmlns:s="http://www.wyona.org/yanel/sitetree-dom-impl/1.0" class="org.wyona.yanel.impl.navigation.SitetreeDOMImpl">
+ *     &lt;s:src>yanelrepo:/sitetree.xml&lt;/s:src>
+ *   &lt;/s:repo-navigation>
+ * &lt;/yanel:custom-config>
+ * </pre>
  *
- * Please note that the class org.wyona.yanel.core.map.Realm is using the RealmConfigPathResolver whereas that a resource might use a different resolver implementation!
+ * Please note that the class <code>org.wyona.yanel.core.map.Realm</code> 
+ * is using the <code>RealmConfigPathResolver</code> whereas that a resource might use a different resolver implementation!
  */
 public class SitetreeDOMImpl implements Sitetree {
 
@@ -178,7 +183,7 @@ public class SitetreeDOMImpl implements Sitetree {
     }
 
     /**
-     * Save sitetree to file system (based on resolved source system id
+     * Save sitetree to file system (based on resolved source system id)
      */
     public void save() {
         try {
