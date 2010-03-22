@@ -1,10 +1,9 @@
 /*
- * Copyright 2007 Wyona
+ * Copyright 2008-2010 Wyona
  */
 
 package org.wyona.yanel.impl.resources.policymanager;
 
-import org.wyona.commons.xml.XMLHelper;
 import org.wyona.security.core.UsecasePolicy;
 import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.api.Group;
@@ -23,7 +22,6 @@ import org.wyona.yanel.impl.resources.BasicXMLResource;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -89,7 +87,6 @@ public class PolicyManagerResource extends BasicXMLResource {
         
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(getPath());
         StringBuilder sb = new StringBuilder("");
-        try {
             if (policyUsecase.equals("read")) {
 
                 // Either order by usecases or identities
@@ -123,8 +120,8 @@ public class PolicyManagerResource extends BasicXMLResource {
                     try {
                         writePolicy(getEnvironment().getRequest().getInputStream(), getRealm().getPolicyManager(), getPath(), getRealm().getIdentityManager());
                         sb.append("<?xml version=\"1.0\"?><saved/>");
-                    } catch(Exception e) {
-                        log.error(e,e);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
                         getEnvironment().getResponse().setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
                         sb.append("<?xml version=\"1.0\"?><not-saved>" + e.getMessage() + "</not-saved>");
                     }
@@ -164,10 +161,6 @@ public class PolicyManagerResource extends BasicXMLResource {
                 sb.append("<html><body>Policy usecase not implemented yet: " + policyUsecase + "</body></html>");
                 log.error("Policy usecase not implemented yet: " + policyUsecase);
             }
-        } catch(Exception e) {
-            log.error(e, e);
-            throw new Exception(e.getMessage());
-        }
         return new ByteArrayInputStream(sb.toString().getBytes("utf-8"));
     }
 
@@ -206,7 +199,7 @@ public class PolicyManagerResource extends BasicXMLResource {
             }
             sb.append("</rights>");
         } catch (Exception e) {
-            log.error(e, e);
+            log.error(e.getMessage(), e);
             sb.append("<exception>" + e.getMessage() + "</exception>");
         }
         sb.append("</access-control>");
@@ -275,8 +268,8 @@ public class PolicyManagerResource extends BasicXMLResource {
                 sb.append(getPolicyIdentities(policy));
                 sb.append(getPolicyGroups(policy));
             }
-        } catch(Exception e) {
-            log.error(e, e);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
             sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\">");
             sb.append("<exception>" + e.getMessage() + "</exception>");
         }
