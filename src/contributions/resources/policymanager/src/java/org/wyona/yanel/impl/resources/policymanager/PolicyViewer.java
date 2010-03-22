@@ -11,7 +11,11 @@ import org.wyona.security.core.api.PolicyManager;
 
 import org.apache.log4j.Logger;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class to view policies (TODO: It would be good to refactor this by generating a more generic XML and then allow a custom XSLT to generate the actual XHTML)
@@ -59,7 +63,7 @@ public class PolicyViewer {
 
                 sb.append(getOrderByLink(orderedBy, showParents, showTabs));
                 sb.append("<p><table border=\"1\">");
-                sb.append("<tr><td>Path</td>" + getSplittedPath(pm, path, contentItemId) + "</tr>");
+                sb.append("<tr><td>Path</td>" + getSplittedPath(path, contentItemId) + "</tr>");
 
                 boolean aggregate = false;
                 sb.append("<tr valign=\"top\"><td>Policy</td>" + getPoliciesAsXHTML(pm, gm, path, contentItemId, aggregate, orderedBy, showAbbreviatedLabels) + "</tr>");
@@ -91,7 +95,7 @@ public class PolicyViewer {
             sb.append("</body></html>");
             return sb.toString();
         } catch(Exception e) {
-            log.error(e, e);
+            log.error(e.getMessage(), e);
             return "<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Exception: " + e.getMessage() + "</body></html>";
         }
     }
@@ -99,7 +103,7 @@ public class PolicyViewer {
     /**
      * Get splitted path
      */
-    static private StringBuffer getSplittedPath (PolicyManager pm, String path, String contentItemId) {
+    static private StringBuffer getSplittedPath(String path, String contentItemId) {
         String[] names = path.split("/");
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < names.length -1; i++) {
@@ -215,9 +219,9 @@ public class PolicyViewer {
      * @param dismantleGroups Show all members of a group instead the group itself
      */
     static private StringBuffer getPolicyAsXHTMLListOrderedByIdentities(Policy p, boolean dismantleGroups, PolicyManager pm, GroupManager gm, boolean abbreviation) {
-        Vector worldRights = new Vector();
-        java.util.HashMap users = new java.util.HashMap();
-        java.util.HashMap groups = new java.util.HashMap();
+        List<String> worldRights = new ArrayList<String>();
+        Map<String, List<String>> users = new HashMap<String, List<String>>();
+        Map<String, List<String>> groups = new HashMap<String, List<String>>();
 
         UsecasePolicy[] up = p.getUsecasePolicies();
         boolean noUsecasePolicies = false;
@@ -232,11 +236,11 @@ public class PolicyViewer {
                             worldRights.add(up[i].getName());
                         }
                     } else {
-                        Vector userRights;
-                        if ((userRights = (Vector) users.get(idps[j].getIdentity().getUsername())) != null) {
+                        List<String> userRights;
+                        if ((userRights = users.get(idps[j].getIdentity().getUsername())) != null) {
                             log.debug("User has already been added: " + idps[j].getIdentity().getUsername());
                         } else {
-                            userRights = new Vector();
+                            userRights = new ArrayList<String>();
                             users.put(idps[j].getIdentity().getUsername(), userRights);
                         }
                         if (idps[j].getPermission()) {
@@ -249,11 +253,11 @@ public class PolicyViewer {
 
                 GroupPolicy[] gps = up[i].getGroupPolicies();
                 for (int j = 0; j < gps.length; j++) {
-                    Vector groupRights;
-                    if ((groupRights = (Vector) groups.get(gps[j].getId())) != null) {
+                    List<String> groupRights;
+                    if ((groupRights = groups.get(gps[j].getId())) != null) {
                         log.debug("Group has already been added: " + gps[j].getId());
                     } else {
-                        groupRights = new Vector();
+                        groupRights = new ArrayList<String>();
                         groups.put(gps[j].getId(), groupRights);
                     }
                     if (gps[j].getPermission()) {
@@ -279,18 +283,18 @@ public class PolicyViewer {
         }
 
         // Users
-        java.util.Iterator userIterator = users.keySet().iterator();
+        Iterator<String> userIterator = users.keySet().iterator();
         while (userIterator.hasNext()) {
-            String userName = (String) userIterator.next();
-            Vector userRights = (Vector) users.get(userName);
+            String userName = userIterator.next();
+            List<String> userRights = users.get(userName);
             sb.append("<li>" + getUserLabel(abbreviation) + ": " + userName + " (" + getRightsAsCommaSeparatedList(userRights, pm) + ")</li>");
         }
 
         //Groups 
-        java.util.Iterator groupIterator = groups.keySet().iterator();
+        Iterator<String> groupIterator = groups.keySet().iterator();
         while (groupIterator.hasNext()) {
-            String groupName = (String) groupIterator.next();
-            Vector groupRights = (Vector) groups.get(groupName);
+            String groupName = groupIterator.next();
+            List<String> groupRights = groups.get(groupName);
             String rights = getRightsAsCommaSeparatedList(groupRights, pm);
             if (!dismantleGroups) {
                 sb.append("<li>" + getGroupLabel(abbreviation) + ": " + groupName + " (" + rights + ")</li>");
@@ -309,7 +313,7 @@ public class PolicyViewer {
                         }
                     }
                 } catch(Exception e) {
-                    log.error(e, e);
+                    log.error(e.getMessage(), e);
                     sb.append("<li>Exception when trying to dismantle group '" + groupName + "': " + e.getMessage() + "</li>");
                 }
             }
@@ -331,15 +335,16 @@ public class PolicyViewer {
      * @param rights Rights
      * @param pm PolicyManager
      */
-    private static String getRightsAsCommaSeparatedList(Vector rights, PolicyManager pm) {
+    private static String getRightsAsCommaSeparatedList(List<String> rights, PolicyManager pm) {
         StringBuilder sb = new StringBuilder();
         try {
             String[] usecases = pm.getUsecases();
             for (int i = 0; i < usecases.length; i++) {
                 boolean noSuchRight = true;
                 for (int k = 0; k < rights.size(); k++) {
-                    if (((String) rights.elementAt(k)).indexOf(usecases[i]) >= 0) { // NOTE: For example "view" or "<del>view</del>"
-                        sb.append((String) rights.elementAt(k));
+                    String right = rights.get(k);
+                    if (right.indexOf(usecases[i]) >= 0) { // NOTE: For example "view" or "<del>view</del>"
+                        sb.append(right);
                         noSuchRight = false;
                         break;
                     }
@@ -359,7 +364,7 @@ public class PolicyViewer {
       		}
 */
         } catch(Exception e) {
-            log.error(e, e);
+            log.error(e.getMessage(), e);
             sb.append(e.getMessage());
         }
         return sb.toString();
@@ -386,7 +391,7 @@ public class PolicyViewer {
      * @param aggregate If aggregate true, then the policy will be aggregated/merged with existing parent policies, otherwise only the node specific policy will be returned
      * @param back ../../../
      */
-    static private StringBuffer getPolicyAsXHTML(Policy policy, boolean aggregate, int orderedBy, String back, PolicyManager pm, GroupManager groupManager, boolean abbreviation) throws AuthorizationException {
+    static private StringBuffer getPolicyAsXHTML(Policy policy, boolean aggregate, int orderedBy, String back, PolicyManager pm, GroupManager groupManager, boolean abbreviation) {
         StringBuffer sb = new StringBuffer("<td>");
         if (policy != null) {
             String showUseInheritedPolicies = "";
