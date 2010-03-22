@@ -3,7 +3,7 @@
 <repository class="org.wyona.yarep.impl.repo.vfs.VirtualFileSystemRepository">
   <name>Yanel Welcome and Admin Access Control Identities</name>
 
-  <content src="../ac-identities/data"/>
-  <meta src="../ac-identities/yarep-meta"/>
-  <search-index src="../ac-identities/search-index"/>
+  <content src="../yanel/ac-identities/data"/>
+  <meta src="../yanel/ac-identities/yarep-meta"/>
+  <search-index src="../yanel/ac-identities/search-index"/>
 </repository>

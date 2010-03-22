@@ -3,9 +3,9 @@
 <repository>
   <name>Yanel Welcome and Admin RTI Repository</name>
 
-  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../rti"/>
+  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../yanel/rti"/>
 
   <storage class="org.wyona.yarep.core.impl.vfs.VFileSystemStorage">
-    <content src="../rti"/>
+    <content src="../yanel/rti"/>
   </storage>
 </repository>

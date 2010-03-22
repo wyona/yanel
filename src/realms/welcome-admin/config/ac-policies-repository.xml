@@ -3,9 +3,9 @@
 <repository>
   <name>Yanel Welcome and Admin Access Control Policies</name>
 
-  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../ac-policies"/>
+  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../yanel/ac-policies"/>
 
   <storage class="org.wyona.yarep.core.impl.vfs.VFileSystemStorage">
-    <content src="../ac-policies"/>
+    <content src="../yanel/ac-policies"/>
   </storage>
 </repository>

@@ -3,9 +3,9 @@
 <repository class="org.wyona.yarep.impl.DefaultRepository">
   <name>Yanel Welcome and Admin Data Repository</name>
 
-  <paths src="../data-paths" fallback="true"/>
+  <paths src="../yanel/data-paths" fallback="true"/>
 
   <storage class="org.wyona.yarep.core.impl.fs.FileSystemStorage">
-    <content src="../data"/>
+    <content src="../yanel/data"/>
   </storage>
 </repository>
