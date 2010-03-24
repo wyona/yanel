@@ -121,7 +121,7 @@ module.name: ${module.name}
 
   <target name="clean" depends="yanel-resource-type.clean, gwt:clean"/>
 
-  <target name="gwt:clean" depends="init">
+  <target name="gwt:clean" depends="init" unless="gwt.compile.skip">
     <!--echo>
 component.build.dir: ${component.build.dir}
 module.build.dir.includes: ${module.build.dir.includes}
