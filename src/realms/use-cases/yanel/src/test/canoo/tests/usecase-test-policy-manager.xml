@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<project name="Policy Manager Resource" default="test">
+
+  <import file="../definitions.xml"/>
+
+  <target name="test" depends="wt.defineMacros">
+
+    <webtest name="Policy Manager Resource">
+      &config;
+      <login/>
+
+      <invoke description="Get the policy editor page: " url="/${realm.prefix}?yanel.policy=update"/>
+
+      <verifyText description="Check policy path in page title:" text="Edit Access Policy of Node '/'"/>
+<!--FIXME looks like Canoo cannot execute GWT's Javascript, as the whole GWT root panel remains empty:
+      <verifyText description="Verify that text is contained in the page" text="Wyona Access Control Policy (GWT) Editor"/>
+-->
+
+      <invoke description="Get the policy viewer page: " url="/${realm.prefix}?yanel.policy=read"/>
+
+      <verifyText description="Check policy path in page title:" text="Aggregated Access Policy for path &lt;em&gt;/&lt;/em&gt;:"/>
+
+
+      <logout/>
+    </webtest>
+
+  </target>
+
+</project>
