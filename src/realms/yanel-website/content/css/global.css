@@ -135,7 +135,6 @@ div.language_choice{
 
 div.instructions pre{
   border: 1px dashed #AABBCC;
-  font:11px/14px 'courier new', courier, monospace; 
   padding:8px; 
   background:#F0F0F0;
   margin-right:  20px; 
@@ -146,10 +145,14 @@ div.instructions li{
 }
 
 div.instructions p.tutorial_context{
- font:11px/14px 'courier new', courier, monospace;
+ font:1em 'courier new', courier, monospace;
 }
 
 pre {
   white-space:pre-wrap;
+  font:1em 'courier new', courier, monospace;   
 }
 
+code {
+  font:1em 'courier new', courier, monospace; 
+}  

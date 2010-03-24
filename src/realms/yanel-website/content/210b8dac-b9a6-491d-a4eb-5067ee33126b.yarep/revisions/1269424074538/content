@@ -18,29 +18,30 @@
 <li><a href="#repo-navigation">Custom repository navigation implemenation</a> (optional)</li>
 </ul>
 <p>The realm configuration for each realm is done in the file <code>realm.xml</code> in its root directory. For an example, see <a href="http://svn.wyona.com/repos/public/yanel/trunk/src/realms/from-scratch-realm-template/realm.xml"><code>src/realms/from-scratch-realm-template/realm.xml</code></a>.</p>
-<div class="instructions"><a name="name"> </a>
+<div class="instructions">
+<p><a name="name"> </a></p>
 <h2>Name of the Realm</h2>
 <p>The name of the realm is configured as follows:</p>
 <pre>&lt;name&gt;The name of my realm&lt;/name&gt;</pre>
-<a name="realm-class"> </a>
+<p><a name="realm-class"> </a></p>
 <h2>Custom Implementation of the Realm</h2>
 <p>The implementation of the realm can be configured as follows:</p>
 <pre>&lt;realm-config class="org.wyona.yanel.impl.map.FOAFRealm" xmlns="http://www.wyona.org/yanel/realm/1.0"&gt;...&lt;/realm-config&gt;</pre>
 <p>whereas if the class attribute is not set, then the default implementation will be used.</p>
-<a name="rc-repo"> </a>
+<p><a name="rc-repo"></a></p>
 <h2>Resource Configurations Repository</h2>
 <p>The <a href="../resources/resource_type_configuration.html">resource configurations repository</a> is configured as follows:</p>
 <pre>&lt;rti&gt;config/rti-repository.xml&lt;/rti&gt;</pre>
-<a name="yarep-repos"> </a>
+<p><a name="yarep-repos"> </a></p>
 <h2>Additional Yarep based Repositories</h2>
 <p>Additional Yarep repositories can be configured as follows</p>
 <pre>&lt;yarep-repositories&gt;<br />  &lt;repository id="my-extra-repo" config="config/my-extra-repository.xml"/&gt;<br />&lt;/yarep-repositories&gt;<br /></pre>
-<a name="i18n"> </a>
+<p><a name="i18n"> </a></p>
 <h2>I18n Configuration</h2>
 <p>The i18n catalogue can be configured as follows</p>
 <pre>&lt;i18n-catalogue&gt;yanelrepo:/my-i18n-catalogue.xml&lt;/i18n-catalogue&gt;</pre>
 <p>More information on i18n can be found within the <a href="../i18n.html">i18n documentation</a>.</p>
-<a name="repo-navigation"> </a>
+<p><a name="repo-navigation"> </a></p>
 <h2>Custom Repository Navigation</h2>
 <p>The custom repository navigation can be configured as follows</p>
 <pre>&lt;repo-navigation class="foo.bar.yanel.impl.navigation.CustomSitetreeImpl"&gt;"Custom Configuration"&lt;/repo-navigation&gt;</pre>

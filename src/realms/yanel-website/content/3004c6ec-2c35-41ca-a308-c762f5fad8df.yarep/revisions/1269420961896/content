@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Resource Type Configuration Map</title>
+  </head>
+  <body>
+<h2>Resource Type Configuration Map</h2>
+<p>To configure a bunch of URLs in the same way, one can use a <em>resource type configuration map</em>, which is an XML file called <code>map.rc-map</code>. This file has to be in the repository which is configured as the <em>rti (resource type identifier)</em> repository in a realm (in the file <a href="../realm/realm-configuration.html"><code>realm.xml</code></a>).</p>
+<p>in this file one can define a wildcard matcher to select a group of URLs which points for every match to one <a href="resource_type_configuration.html">resource-type-configuration</a>.</p>
+</body>
+</html>
