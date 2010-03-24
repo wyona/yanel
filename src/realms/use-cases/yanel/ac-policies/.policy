@@ -31,4 +31,12 @@
     <user id="lenya" permission="true"/>
   </role>
 
+  <role id="policy.read">
+    <user id="lenya" permission="true"/>
+  </role>
+
+  <role id="policy.update">
+    <user id="lenya" permission="true"/>
+  </role>
+
 </policy>
