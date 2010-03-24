@@ -5,7 +5,7 @@
 
     <!-- note: the following tests can be run independently from any other using '-Dwt.testInWork=tests/usecase-test-<test-name>.xml':-->
 
-    <ant antfile="usecase-test-policy-manager.xml"/>
+    <ant antfile="usecase-test-policy-manager.xml"/><!--FIXME does not logout => change state => may influence following tests -->
 
 
     <!-- note: the order of all the tests below matters because some tests depend on others: -->
