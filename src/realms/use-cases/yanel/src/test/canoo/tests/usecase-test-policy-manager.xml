@@ -15,6 +15,12 @@
       <!-- Test policy viewer/manager -->
       <invoke description="Get the policy viewer page: " url="/${realm.prefix}?yanel.policy=read"/>
       <verifyText description="Check policy path in page title:" text="Aggregated Access Policy for path &lt;em&gt;/&lt;/em&gt;:"/>
+      <verifyText description="Check policy content:" text="Usecase: policy.read"/>
+      <verifyText description="Check policy content:" text="WORLD: Permission"/>
+
+      <!-- Test policy viewer/manager including parent policies-->
+      <invoke description="Get the policy viewer page: " url="/${realm.prefix}?yanel.policy=read&amp;orderedBy=0&amp;showParents=true"/>
+      <verifyText description="Check edit link:" text="Edit policy"/>
 
       <!-- Test policy editor -->
       <invoke description="Get the policy editor page: " url="/${realm.prefix}?yanel.policy=update"/>
