@@ -247,7 +247,7 @@ public class YanelServlet extends HttpServlet {
 
             // Check for requests re policies
             String policyRequestPara = request.getParameter(YANEL_ACCESS_POLICY_USECASE);
-            if (policyRequestPara != null) {
+            if (policyRequestPara != null || (yanelUsecase != null && yanelUsecase.equals("policy.read"))) {
                 doAccessPolicyRequest(request, response, policyRequestPara);
                 return;
             }
@@ -875,7 +875,7 @@ public class YanelServlet extends HttpServlet {
                     response.setStatus(HttpServletResponse.SC_OK);
                     response.setContentType("text/html" + "; charset=" + "UTF-8");
                     String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(res.getPath());
-                    StringBuilder sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Page has been deleted! <a href=\""+backToRealm + res.getPath() +"\">Check</a> or return to <a href=\"" + backToRealm + "\">Homepage</a>.</body></html>");
+                    StringBuilder sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Page has been deleted! <a href=\"" + backToRealm + res.getPath().substring(1) +"\">Check</a> or return to <a href=\"" + backToRealm + "\">Homepage</a>.</body></html>");
                     PrintWriter w = response.getWriter();
                     w.print(sb);
                     return;
