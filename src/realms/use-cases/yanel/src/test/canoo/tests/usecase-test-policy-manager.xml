@@ -15,8 +15,12 @@
       <invoke description="Get the policy editor page: " url="/${realm.prefix}?yanel.policy=update"/>
 
       <verifyText description="Check policy path in page title:" text="Edit Access Policy of Node '/'"/>
+
 <!--FIXME looks like Canoo cannot execute GWT's Javascript, as the whole GWT root panel remains empty:
-      <verifyText description="Verify that text is contained in the page" text="Wyona Access Control Policy (GWT) Editor"/>
+    <retry maxcount="10">
+      <sleep description="Wait a bit for GWT JS to initialize" seconds="1"/>
+      <verifyText description="Check policy editor name in page body" text="Wyona Access Control Policy (GWT) Editor"/>
+    </retry>
 -->
 
       <invoke description="Get the policy viewer page: " url="/${realm.prefix}?yanel.policy=read"/>
