@@ -50,7 +50,10 @@ public class PolicyManagerResource extends BasicXMLResource {
      */
     @Override
     public View getView(String viewId) throws Exception {
-        String policyRequestPara = getEnvironment().getRequest().getParameter("yanel.policy");
+        String policyRequestPara = getEnvironment().getRequest().getParameter(PARAMETER_USECASE);
+        if (policyRequestPara == null) {
+            policyRequestPara = "read";
+        }
         if (policyRequestPara.equals("update")) {
             String getXML = getEnvironment().getRequest().getParameter("get");
             String postXML = getEnvironment().getRequest().getParameter("post");
@@ -83,6 +86,8 @@ public class PolicyManagerResource extends BasicXMLResource {
         String policyUsecase = "read";
         if (request.getParameter(PARAMETER_USECASE) != null) {
             policyUsecase = request.getParameter(PARAMETER_USECASE);
+        } else {
+            log.warn("No usecase set, hence use default usecase: " + policyUsecase);
         }
         
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(getPath());
@@ -127,9 +132,9 @@ public class PolicyManagerResource extends BasicXMLResource {
                     }
                 } else {
                     //response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
-                    String identitiesURL = backToRealm + getPath().substring(1) + "?yanel.policy=update&amp;get=identities";
-                    String policyURL = backToRealm + getPath().substring(1) + "?yanel.policy=update&amp;get=policy";
-                    String saveURL = backToRealm + getPath().substring(1) + "?yanel.policy=update&amp;post=policy"; // This doesn't seem to work with all browsers!
+                    String identitiesURL = backToRealm + getPath().substring(1) + "?" + PARAMETER_USECASE + "=update&amp;get=identities";
+                    String policyURL = backToRealm + getPath().substring(1) + "?" + PARAMETER_USECASE + "=update&amp;get=policy";
+                    String saveURL = backToRealm + getPath().substring(1) + "?" + PARAMETER_USECASE +"=update&amp;post=policy"; // This doesn't seem to work with all browsers!
 
                     String cancelURL = getReferer(backToRealm);
                     log.warn("DEBUG: Cancel URL: " + cancelURL);
