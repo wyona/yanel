@@ -232,6 +232,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             view.setInputStream(getTransformedInputStream(xmlInputStream, viewDescriptor, errorWriter));
             return view;
         } catch(Exception e) {
+            log.error(e, e);
             log.error(e + " (" + getPath() + ", " + getRealm() + ")", e);
             String errorMsg;
             String transformationError = errorWriter.toString();
@@ -245,12 +246,17 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         }
     }
 
+    /**
+     * @param xmlInputStream XML as input stream
+     */
     private InputStream getTransformedInputStream(InputStream xmlInputStream, ConfigurableViewDescriptor viewDescriptor, StringWriter errorWriter) throws Exception {
-            // create reader:
-            XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-            CatalogResolver catalogResolver = new CatalogResolver();
-            xmlReader.setEntityResolver(catalogResolver);
-            xmlReader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
+        //log.debug("View descriptor: " + viewDescriptor.getId());
+
+        // create reader:
+        XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+        CatalogResolver catalogResolver = new CatalogResolver();
+        xmlReader.setEntityResolver(catalogResolver);
+        xmlReader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
 
             SourceResolver uriResolver = new SourceResolver(this);
             ListingErrorHandler errorListener = new ListingErrorHandler(new PrintWriter(errorWriter));
@@ -347,7 +353,11 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
             if (MimeTypeUtil.isHTML(mimeType) && !MimeTypeUtil.isXML(mimeType)) {
                 serializer = SerializerFactory.getSerializer(SerializerFactory.HTML_TRANSITIONAL);
-            } else if (MimeTypeUtil.isHTML(mimeType) && MimeTypeUtil.isXML(mimeType)){
+/* TODO: Implement XHTML_TRANSITIONAL
+            } else if (MimeTypeUtil.isHTML(mimeType) && MimeTypeUtil.isXML(mimeType)) { // TODO: ...
+                serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_TRANSITIONAL);
+*/
+            } else if (MimeTypeUtil.isHTML(mimeType) && MimeTypeUtil.isXML(mimeType)) {
                 serializer = SerializerFactory.getSerializer(SerializerFactory.XHTML_STRICT);
             } else if (MimeTypeUtil.isXML(mimeType)) {
                 serializer = SerializerFactory.getSerializer(SerializerFactory.XML);
