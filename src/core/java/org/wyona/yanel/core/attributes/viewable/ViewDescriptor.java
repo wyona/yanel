@@ -17,7 +17,7 @@
 package org.wyona.yanel.core.attributes.viewable;
 
 /**
- *
+ * Each view has an ID and a mime type. The view descriptor cointains these values.
  */
 public class ViewDescriptor {
 
