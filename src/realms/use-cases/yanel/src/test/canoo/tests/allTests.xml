@@ -4,12 +4,14 @@
   <target name="test" description="runs all the tests">
 
     <!-- NOTE: the following tests can be run independently from any other using '-Dwt.testInWork=tests/usecase-test-<test-name>.xml':-->
-    <!-- NOTE: the order of all the tests below matters because some tests depend on others: -->
 
     <ant antfile="usecase-test-policy-manager.xml"/>
+    <ant antfile="usecase-test-login.xml"/>
+
+
+    <!-- NOTE: the order of all the tests below may matter because some tests depend on others: -->
 
     <ant antfile="exists-homepage.xml"/>
-    <ant antfile="usecase-test-login.xml"/>
     <ant antfile="usecase-test-404.xml"/>
 <!--
     <ant antfile="usecase-test-create-realm-from-scratch.xml"/>
