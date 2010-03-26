@@ -10,6 +10,7 @@ import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.api.Group;
 import org.wyona.security.core.api.GroupManager;
 import org.wyona.security.core.api.Item;
+import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.User;
 import org.wyona.security.core.api.UserManager;
 
@@ -29,9 +30,7 @@ public class UserManagerResource extends BasicXMLResource {
     
     private static Logger log = Logger.getLogger(UserManagerResource.class);
     
-    /**
-     *
-     */
+    @Override
     protected InputStream getContentXML(String viewId) {
         if (log.isDebugEnabled()) {
             log.debug("requested viewId: " + viewId);
@@ -50,6 +49,11 @@ public class UserManagerResource extends BasicXMLResource {
                 sb.append(getUserAsXML(getEnvironment().getRequest().getParameter("id")));
             } else if (usecase.equals("getgroups")) {
                 sb.append(getGroupsAsXML());
+            } else if (usecase.equals("deletepolicy")) {
+                String path = getParameterAsString("path");
+                String recursivelyText = getParameterAsString("deep");
+                boolean recursively = "1".equals(recursivelyText);
+                deletePolicy(path, recursively);
             } else {
                 sb.append("<no-such-yanel-usecase-implemented>" + usecase + "</no-such-yanel-usecase-implemented>");
             }
@@ -65,9 +69,7 @@ public class UserManagerResource extends BasicXMLResource {
         return new ByteArrayInputStream(sb.toString().getBytes());
     }
 
-    /**
-     *
-     */
+    @Override
     public boolean exists() {
         log.warn("TODO: Implementation not finished yet!");
         return true;
@@ -116,6 +118,18 @@ public class UserManagerResource extends BasicXMLResource {
         }
         sb.append("</groups>");
         return sb;
+    }
+
+    /**
+     * Deletes a specific policy.
+     * @param id the policy ID
+     */
+    private void deletePolicy(String path, boolean recursively) throws Exception {
+        PolicyManager pm = getRealm().getPolicyManager();
+        if (recursively) {
+            log.warn("Recursively deletion of policies not yet implemented, only policy "+path+" will be deleted.");
+        }
+        pm.removePolicy(path);
     }
 
     /**
