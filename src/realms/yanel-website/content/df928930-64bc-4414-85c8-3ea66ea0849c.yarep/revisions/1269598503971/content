@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Rapid Development of Components</title>
+<title>Untitled document</title>
 </head>
 <body>
 <div class="instructions">
 <h1>Rapid Development of Components</h1>
-<p>When developing Yanel components, often there is no need to recompile everything once a total build has been done. Examples of components that can be built separately are <strong>webapp classes</strong>, <strong>resource classes</strong> and <strong>realms</strong>.</p>
+<p>When developing Yanel components, often there is no need to recompile everything once a total build has been done. Components that can be built separately are <strong>webapp classes</strong>, <strong>resource classes</strong> and <strong>realms</strong>.</p>
 <h2>Efficiently building webapp classes</h2>
 <p>Webapp classes are all classes that are under <code>{yanel.home}/src/webapp/src/java/org/wyona/yanel/servlet</code>. In order to build and test these classes efficiently, one can run:</p>
 <pre>{yanel.home}/build.sh compile-webapp copy-basic-webapp-libs copy-webapp-files-to-tomcat-cluster-node1</pre>
@@ -16,9 +16,9 @@
 <ul>
 <li><code>{yanel.home}/src/resources</code></li>
 <li><code>{yanel.home}/src/contributions/resources</code></li>
-<li><code>{yanel.home}/src/realms/welcome-admin/yanel/resources</code></li>
-<li><code>{yanel.home}/src/realms/from-scratch-realm-template/res-types</code></li>
-<li><code>{my.realm}/res-types</code></li>
+<li><code>{yanel.home}src/realms/welcome-admin/yanel/resources</code></li>
+<li><code>{yanel.home}src/realms/from-scratch-realm-template/res-types</code></li>
+<li><code>{my.realm}res-types</code></li>
 <li>etc...</li>
 </ul>
 <p>These classes all have their own <code>build.xml</code> files, so to compile them efficiently, one can run the build as</p>
