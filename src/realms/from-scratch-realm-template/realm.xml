@@ -7,6 +7,9 @@
   <name>Yanel From Scratch Realm</name>
 
   <rti>config/rti-repository.xml</rti>
+<!--
+  <data>config/jcr-data-repository-cnode1.xml</data>
+-->
   <data>config/vfs-data-repository.xml</data>
 
   <ac-policies class="org.wyona.security.impl.PolicyManagerFactoryImplVersion2">config/ac-policies-repository.xml</ac-policies>
@@ -22,6 +25,12 @@
 -->
 
   <ac-identities>config/ac-identities-repository.xml</ac-identities>
+<!--
+  <ac-identities class="org.wyona.security.impl.IdentityManagerFactoryImpl">config/ac-identities-repository.xml</ac-identities>
+-->
+<!--
+  <ac-identities class="org.wyona.security.impl.ldap.LDAPIdentityManagerFactoryImpl">config/ac-identities-repository.xml</ac-identities>
+-->
 
 <!--
   <web-authenticator class="org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl"/>
