@@ -2072,8 +2072,10 @@ public class YanelServlet extends HttpServlet {
             if (yanelUsecaseValue.equals("create")) {
                 log.debug("Create new resource ...");
                 usecase = new Usecase("resource.create");
+            } else if (yanelUsecaseValue.equals("policy.read")) {
+                usecase = new Usecase("policy.read");
             } else {
-                log.warn("No such usecase: " + yanelUsecaseValue);
+                log.warn("No such generic Yanel usecase: " + yanelUsecaseValue + " (maybe some custom usecase)");
             }
         }
 
@@ -2139,7 +2141,8 @@ public class YanelServlet extends HttpServlet {
             
             Realm realm = map.getRealm(request.getServletPath());
             String path = map.getPath(realm, request.getServletPath());
-            
+
+            // TODO: Introduce version 2 of policy manager
             ResourceConfiguration rc = getGlobalResourceConfiguration("policy-manager_yanel-rc.xml", realm);
             if (generateResponseFromRTview(request, response, rc, path)) return;
             log.error("Something went terribly wrong!");
