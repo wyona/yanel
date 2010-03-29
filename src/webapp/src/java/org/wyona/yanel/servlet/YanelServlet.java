@@ -247,8 +247,11 @@ public class YanelServlet extends HttpServlet {
 
             // Check for requests re policies
             String policyRequestPara = request.getParameter(YANEL_ACCESS_POLICY_USECASE);
-            if (policyRequestPara != null || (yanelUsecase != null && yanelUsecase.equals("policy.read"))) {
-                doAccessPolicyRequest(request, response, policyRequestPara);
+            if (policyRequestPara != null) {
+                doAccessPolicyRequest(request, response, 1);
+                return;
+            } else if (yanelUsecase != null && yanelUsecase.equals("policy.read")) {
+                doAccessPolicyRequest(request, response, 2);
                 return;
             }
 
@@ -2134,17 +2137,23 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Handle access policy requests (CRUD, whereas delete is not implemented yet!)
+     * @param version Version of policy manager implementation
      */
-    private void doAccessPolicyRequest(HttpServletRequest request, HttpServletResponse response, String usecase)  throws ServletException, IOException {
+    private void doAccessPolicyRequest(HttpServletRequest request, HttpServletResponse response, int version)  throws ServletException, IOException {
         try {
             String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
             
             Realm realm = map.getRealm(request.getServletPath());
-            String path = map.getPath(realm, request.getServletPath());
 
-            // TODO: Introduce version 2 of policy manager
-            ResourceConfiguration rc = getGlobalResourceConfiguration("policy-manager_yanel-rc.xml", realm);
+            ResourceConfiguration rc;
+            if (version ==  2) {
+                rc = getGlobalResourceConfiguration("policy-manager-v2_yanel-rc.xml", realm);
+            } else {
+                rc = getGlobalResourceConfiguration("policy-manager_yanel-rc.xml", realm);
+            }
+            String path = map.getPath(realm, request.getServletPath());
             if (generateResponseFromRTview(request, response, rc, path)) return;
+
             log.error("Something went terribly wrong!");
             response.getWriter().print("Something went terribly wrong!");
             return;
