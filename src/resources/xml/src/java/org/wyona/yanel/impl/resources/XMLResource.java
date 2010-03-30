@@ -351,6 +351,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             Writer writer = new java.io.OutputStreamWriter(newNode.getOutputStream());
 
             log.warn("TODO: Replace this hard-coded text by some template!");
+            String templatePath = request.getParameter("rp.template");
+            log.debug("Template path: " + templatePath);
+
             writer.write("<?xml version=\"1.0\"?>");
             writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
             writer.write("<head>");
