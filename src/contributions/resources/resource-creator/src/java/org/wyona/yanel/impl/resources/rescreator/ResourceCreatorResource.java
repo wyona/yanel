@@ -486,7 +486,10 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     pathOfNewResource = new Path(removeTooManySlashes(getParentOfNewResource(parent, lookinPath).toString()) + createName);
                     newResource.setPath(pathOfNewResource.toString());
                 }
+
+                log.debug("Create new resource ...");
                 ((CreatableV2) newResource).create(request);
+
                 if (pathOfNewResource != null) {
                     createResourceConfiguration(newResource);
                     addToSitetree(newResource, type);
