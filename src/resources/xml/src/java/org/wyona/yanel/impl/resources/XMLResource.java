@@ -335,21 +335,22 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
 
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.CreatableV2#create()
      */
     public void create(HttpServletRequest request) {
+        log.debug("Create XML resource ...");
         try {
-            // TODO: XHTML template should not be hardcoded!
-            Repository repo = getRealm().getRepository();
-
             String title = request.getParameter("rp.title");
             if (title == null || title.length() == 0) {
                 log.warn("No title has been specified!");
                 title = "No title has been specified!";
             }
 
+            Repository repo = getRealm().getRepository();
             Node newNode = org.wyona.yanel.core.util.YarepUtil.addNodes(repo, getPath().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
             Writer writer = new java.io.OutputStreamWriter(newNode.getOutputStream());
+
+            log.warn("TODO: Replace this hard-coded text by some template!");
             writer.write("<?xml version=\"1.0\"?>");
             writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
             writer.write("<head>");
