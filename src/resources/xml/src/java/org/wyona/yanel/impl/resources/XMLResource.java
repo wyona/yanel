@@ -31,7 +31,8 @@ import org.wyona.yanel.core.attributes.translatable.TranslationManager;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
-
+import org.wyona.yanel.core.source.SourceResolver;
+import org.wyona.yanel.core.source.YanelStreamSource;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 import org.wyona.yanel.core.workflow.Workflow;
 import org.wyona.yanel.core.workflow.WorkflowException;
@@ -42,6 +43,7 @@ import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.Revision;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.transform.Source;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -49,7 +51,9 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Date;
+
 import org.apache.log4j.Category;
+import org.apache.commons.io.IOUtils;
 
 /**
  *
@@ -338,7 +342,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * @see org.wyona.yanel.core.api.attributes.CreatableV2#create()
      */
     public void create(HttpServletRequest request) {
-        log.debug("Create XML resource ...");
+        if (log.isDebugEnabled()) log.debug("Create XML resource ...");
         try {
             String title = request.getParameter("rp.title");
             if (title == null || title.length() == 0) {
@@ -350,24 +354,36 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             Node newNode = org.wyona.yanel.core.util.YarepUtil.addNodes(repo, getPath().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
             Writer writer = new java.io.OutputStreamWriter(newNode.getOutputStream());
 
-            log.warn("TODO: Replace this hard-coded text by some template!");
             String templatePath = request.getParameter("rp.template");
-            log.debug("Template path: " + templatePath);
+            if (log.isDebugEnabled()) log.debug("Template path: " + templatePath);
 
-            writer.write("<?xml version=\"1.0\"?>");
-            writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-            writer.write("<head>");
-            writer.write("  <title>" + title + "</title>");
-            writer.write("  <link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"?yanel.resource.usecase=introspection\"/>");
-            writer.write("</head>");
-            writer.write("<body>");
-            writer.write("  <h1>" + title + "</h1>");
-            writer.write("  <p>Edit this text with <a href=\"http://www.yulup.org\">Yulup</a>!</p>");
-            writer.write("</body>");
-            writer.write("</html>");
-            writer.close();
+            if (templatePath != null) {
+                // read the custom template
+                SourceResolver resolver = new SourceResolver(this);
+                Source src = resolver.resolve(templatePath, null);
+                InputStream is = ((YanelStreamSource)src).getInputStream();
+                log.warn("TODO: Replace the hard-coded title!");
+                try {
+                    IOUtils.copy(is, writer);
+                } finally {
+                    writer.close();
+                }
+            } else {
+                writer.write("<?xml version=\"1.0\"?>");
+                writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+                writer.write("<head>");
+                writer.write("  <title>" + title + "</title>");
+                writer.write("  <link rel=\"neutron-introspection\" type=\"application/neutron+xml\" href=\"?yanel.resource.usecase=introspection\"/>");
+                writer.write("</head>");
+                writer.write("<body>");
+                writer.write("  <h1>" + title + "</h1>");
+                writer.write("  <p>Edit this text with <a href=\"http://www.yulup.org\">Yulup</a>!</p>");
+                writer.write("</body>");
+                writer.write("</html>");
+                writer.close();
+            }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error(e, e);
         }
     }
 
