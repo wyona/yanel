@@ -52,7 +52,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Date;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -60,7 +60,7 @@ import org.apache.commons.io.IOUtils;
  */
 public class XMLResource extends BasicXMLResource implements ModifiableV2, VersionableV2, CreatableV2, IntrospectableV1, TranslatableV1, WorkflowableV1 {
 
-    private static Category log = Category.getInstance(XMLResource.class);
+    private static Logger log = Logger.getLogger(XMLResource.class);
 
 
     public View getView(String viewId) throws Exception {
