@@ -269,7 +269,8 @@ public class RealmManager {
                         log.debug("Root realm set: " + realm.getID());
                         rootRealm = realm;
                     } else {
-                        log.error("Root realm has already been set: " + realmId);
+                        // TODO: In what cases does this happen?
+                        log.warn("Root realm has already been set: " + realmId);
                     }
                 }
             }
