@@ -64,8 +64,6 @@ public class PolicyManagerResource extends BasicXMLResource {
             } else {
                 viewId = "editor";
             }
-        } else {
-            viewId = "default"; // default is default anyway!
         }
         
         return getXMLView(viewId, getContentXML(viewId));
