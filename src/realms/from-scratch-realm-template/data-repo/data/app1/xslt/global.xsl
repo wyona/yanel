@@ -43,8 +43,51 @@
         <title>
           <xsl:value-of select="/xhtml:html/xhtml:head/xhtml:title"/>
         </title>
+
+        <!-- JQuery inclusion -->
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+        <!-- Loading the script for the edit button -->
+        <script type="text/javascript">
+            $(document).ready( function()
+            {
+                $("#loginZone").hover( function()
+                {
+                    $("#loginZoneLink").stop().animate({opacity: 1}, 1000, function()
+                    {
+                        $("#loginZoneLink").fadeIn();
+                    });
+                }
+                , function ()
+                {
+                    $("#loginZoneLink").stop().fadeOut();
+                });
+            });
+        </script>
+<style>
+#loginZone {
+/* Netscape 4, IE 4.x-5.0/Win and other lesser browsers will use this */
+  position: absolute;
+	right: 0;
+	top: 0;
+	height: 60px;
+	width: 60px;
+	z-index: 1000;
+}
+
+body > div#loginZone {
+/* used by Opera 5+, Netscape6+/Mozilla, Konqueror, Safari, OmniWeb 4.5+, iCab, ICEbrowser */
+  position: fixed;
+}
+
+</style>
       </head>
       <body>
+<div id="loginZone">
+  <div id="loginZoneLink" style="display: none; height: 60px; width: 60px;">
+    <a href="?yanel.toolbar=on" title="Login" alt="Login"><img style="position: absolute; right:5px; top:5px;" src="{$yarep.back2realm}app1/images/yulup.gif" height="92" width="230" border="0"/></a>
+  </div>
+</div>
+
 <xsl:comment>
 DEBUG:
 Localization: <xsl:value-of select="$language"/>
