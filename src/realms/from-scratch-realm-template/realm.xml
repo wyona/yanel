@@ -32,7 +32,7 @@
   <ac-identities class="org.wyona.security.impl.ldap.LDAPIdentityManagerFactoryImpl">
     <ldap:config xmlns:ldap="http://www.wyona.org/security/identity/1.0">
       <ldap:yarep-repo>config/ac-identities-repository.xml</ldap:yarep-repo>
-      <ldap:client-implementation class="org.wyona.security.impl.ldap.LDAPClientImpl"/>
+      <ldap:client-implementation>org.wyona.security.impl.ldap.LDAPClientImpl</ldap:client-implementation>
       <ldap:provider-url>ldap://127.0.0.1:10389</ldap:provider-url>
       <ldap:provider-urlDISABLED>ldap://192.168.200.109:389</ldap:provider-urlDISABLED>
       <ldap:security-authentication>simple</ldap:security-authentication>
