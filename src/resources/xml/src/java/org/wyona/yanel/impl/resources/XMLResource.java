@@ -42,6 +42,8 @@ import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.Revision;
 
+import org.wyona.commons.xml.XMLHelper;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.Source;
 
@@ -54,6 +56,10 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.io.IOUtils;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -352,23 +358,29 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
 
             Repository repo = getRealm().getRepository();
             Node newNode = org.wyona.yanel.core.util.YarepUtil.addNodes(repo, getPath().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
-            Writer writer = new java.io.OutputStreamWriter(newNode.getOutputStream());
 
             String templatePath = request.getParameter("rp.template");
             if (log.isDebugEnabled()) log.debug("Template path: " + templatePath);
 
             if (templatePath != null) {
-                // read the custom template
                 SourceResolver resolver = new SourceResolver(this);
                 Source src = resolver.resolve(templatePath, null);
                 InputStream is = ((YanelStreamSource)src).getInputStream();
-                log.warn("TODO: Replace the hard-coded title!");
-                try {
-                    IOUtils.copy(is, writer);
-                } finally {
-                    writer.close();
+                Document doc = XMLHelper.readDocument(is);
+                if (log.isDebugEnabled()) {
+                  log.debug("Template content: " + System.getProperty("line.separator") + XMLHelper.documentToString(doc, false, true, "iso-8859-1"));
                 }
+                
+                if (title != null) {
+                    replacePageTitle(doc, title);
+                }
+                    
+                 XMLHelper.writeDocument(doc, newNode.getOutputStream());
+                 if (log.isDebugEnabled()) {
+                   log.debug("Document content: " + System.getProperty("line.separator") + XMLHelper.documentToString(doc, false, true, "iso-8859-1"));
+                 }
             } else {
+                Writer writer = new java.io.OutputStreamWriter(newNode.getOutputStream());
                 writer.write("<?xml version=\"1.0\"?>");
                 writer.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
                 writer.write("<head>");
@@ -384,6 +396,33 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             }
         } catch (Exception e) {
             log.error(e, e);
+        }
+    }
+
+    /**
+     * Replace the page title (&lt;title&gt;) AND the main header (&lt;h1&gt;) in an XHTML document with another title
+     */
+    private void replacePageTitle(Document doc, String title) {
+        Element rootElement = doc.getDocumentElement();
+        if (log.isDebugEnabled()) log.debug("Root element: " + rootElement.getTagName());
+        if (log.isDebugEnabled()) log.debug("Title/Header to be set: " + title);
+
+        String[] nodes = {"title", "h1"};
+        for (String node : nodes) {
+            NodeList elements = rootElement.getElementsByTagName(node);
+            for (int i = 0; i < elements.getLength(); i++) {
+                elements.item(i).getFirstChild();
+                String elementName = ((Element)elements.item(i)).getFirstChild().getNodeName();
+                if (log.isDebugEnabled()) log.debug("Current Node: " + ((Element)elements.item(i)).getTagName() + "/" + elementName);
+                if (log.isDebugEnabled()) log.debug("Current (old) Value: " + ((Element)elements.item(i)).getFirstChild().getNodeValue());
+                if (log.isDebugEnabled()) log.debug("Setting Title/Header");
+                if (elementName == "#text") {
+                    ((Element)elements.item(i)).getFirstChild().setNodeValue(title);
+                } else {
+                  log.error("Title/Header not set!");
+                }
+                if (log.isDebugEnabled()) log.debug("Current (new) Value: " + ((Element)elements.item(i)).getFirstChild().getNodeValue());
+            }
         }
     }
 
