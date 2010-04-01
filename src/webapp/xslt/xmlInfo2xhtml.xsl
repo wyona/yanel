@@ -246,7 +246,17 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
   </xsl:template> 
 
   <xsl:template match="descriptor">
-    <br/>Descriptor (<xsl:value-of select="@yanel:id"/>): <a href="?yanel.resource.viewid={@yanel:id}"><xsl:value-of select="."/></a>
+    <p>
+      <xsl:text>Descriptor (</xsl:text>
+      <xsl:value-of select="@yanel:id"/>
+      <xsl:text>): </xsl:text>
+      <a href="?yanel.resource.viewid={@yanel:id}">
+        <xsl:value-of select="."/>
+        <xsl:if test=". = ''">
+          <em>unspecified</em>
+        </xsl:if>
+      </a>
+    </p>
   </xsl:template> 
 
 </xsl:stylesheet>
