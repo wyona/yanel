@@ -368,7 +368,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                 InputStream is = ((YanelStreamSource)src).getInputStream();
                 Document doc = XMLHelper.readDocument(is);
                 if (log.isDebugEnabled()) {
-                  log.debug("Template content: " + System.getProperty("line.separator") + XMLHelper.documentToString(doc, false, true, "iso-8859-1"));
+                  log.debug("Template content: " + System.getProperty("line.separator") + XMLHelper.documentToString(doc, false, true, null ));
                 }
                 
                 if (title != null) {
@@ -377,7 +377,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                     
                  XMLHelper.writeDocument(doc, newNode.getOutputStream());
                  if (log.isDebugEnabled()) {
-                   log.debug("Document content: " + System.getProperty("line.separator") + XMLHelper.documentToString(doc, false, true, "iso-8859-1"));
+                   log.debug("Document content: " + System.getProperty("line.separator") + XMLHelper.documentToString(doc, false, true, null));
                  }
             } else {
                 Writer writer = new java.io.OutputStreamWriter(newNode.getOutputStream());
