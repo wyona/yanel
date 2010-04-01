@@ -50,21 +50,21 @@
         <script type="text/javascript">
             $(document).ready( function()
             {
-                $("#loginZone").hover( function()
+                $("#yanelToolbarZone").hover( function()
                 {
-                    $("#loginZoneLink").stop().animate({opacity: 1}, 1000, function()
+                    $("#yanelToolbarZoneLink").stop().animate({opacity: 1}, 1000, function()
                     {
-                        $("#loginZoneLink").fadeIn();
+                        $("#yanelToolbarZoneLink").fadeIn();
                     });
                 }
                 , function ()
                 {
-                    $("#loginZoneLink").stop().fadeOut();
+                    $("#yanelToolbarZoneLink").stop().fadeOut();
                 });
             });
         </script>
 <style>
-#loginZone {
+#yanelToolbarZone {
 /* Netscape 4, IE 4.x-5.0/Win and other lesser browsers will use this */
   position: absolute;
 	right: 0;
@@ -74,7 +74,7 @@
 	z-index: 1000;
 }
 
-body > div#loginZone {
+body > div#yanelToolbarZone {
 /* used by Opera 5+, Netscape6+/Mozilla, Konqueror, Safari, OmniWeb 4.5+, iCab, ICEbrowser */
   position: fixed;
 }
@@ -82,8 +82,8 @@ body > div#loginZone {
 </style>
       </head>
       <body>
-<div id="loginZone">
-  <div id="loginZoneLink" style="display: none; height: 60px; width: 60px;">
+<div id="yanelToolbarZone">
+  <div id="yanelToolbarZoneLink" style="display: none; height: 60px; width: 60px;">
     <a href="?yanel.toolbar=on" title="Login" alt="Login"><img style="position: absolute; right:5px; top:5px;" src="{$yarep.back2realm}app1/images/yulup.gif" height="92" width="230" border="0"/></a>
   </div>
 </div>
