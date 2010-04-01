@@ -19,6 +19,7 @@
 <!--
         <rc:property name="workflow-schema" value="/workflow.xml"/>
 -->
+        <rc:property name="template" value="yanelrepo:/xhtml-page-template.html"/>
       </rc:resource-type>
 
       <rc:resource-type name="file" namespace="http://www.wyona.org/yanel/resource/1.0">
