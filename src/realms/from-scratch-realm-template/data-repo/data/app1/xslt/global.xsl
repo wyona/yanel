@@ -46,25 +46,9 @@
           <xsl:value-of select="/xhtml:html/xhtml:head/xhtml:title"/>
         </title>
 
-        <!-- JQuery inclusion -->
+        <!-- Yanel toolbar zone -->
         <script type="text/javascript" src="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-js/jquery/1.2.6/jquery.min.js"></script>
-        <!-- Loading the script for the edit button -->
-        <script type="text/javascript">
-            $(document).ready( function()
-            {
-                $("#yanelToolbarZone").hover( function()
-                {
-                    $("#yanelToolbarZoneLink").stop().animate({opacity: 1}, 1000, function()
-                    {
-                        $("#yanelToolbarZoneLink").fadeIn();
-                    });
-                }
-                , function ()
-                {
-                    $("#yanelToolbarZoneLink").stop().fadeOut();
-                });
-            });
-        </script>
+        <script type="text/javascript" src="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-js/toolbar-zone.js"></script>
 <style>
 #yanelToolbarZone {
 /* Netscape 4, IE 4.x-5.0/Win and other lesser browsers will use this */
