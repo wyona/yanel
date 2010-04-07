@@ -47,7 +47,7 @@
         </title>
 
         <!-- JQuery inclusion -->
-        <script type="text/javascript" src="{$yarep.back2realm}app1/js/jquery/1.2.6/jquery.min.js"></script>
+        <script type="text/javascript" src="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-js/jquery/1.2.6/jquery.min.js"></script>
         <!-- Loading the script for the edit button -->
         <script type="text/javascript">
             $(document).ready( function()
