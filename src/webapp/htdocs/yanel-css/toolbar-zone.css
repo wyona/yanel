@@ -1,0 +1,14 @@
+#yanelToolbarZone {
+/* Netscape 4, IE 4.x-5.0/Win and other lesser browsers will use this */
+  position: absolute;
+        right: 0;
+        top: 0;
+        height: 60px;
+        width: 60px;
+        z-index: 1000;
+}
+
+body > div#yanelToolbarZone {
+/* used by Opera 5+, Netscape6+/Mozilla, Konqueror, Safari, OmniWeb 4.5+, iCab, ICEbrowser */
+  position: fixed;
+}

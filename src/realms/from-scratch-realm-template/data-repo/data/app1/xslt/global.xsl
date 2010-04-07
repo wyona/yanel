@@ -49,22 +49,8 @@
         <!-- Yanel toolbar zone -->
         <script type="text/javascript" src="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-js/jquery/1.2.6/jquery.min.js"></script>
         <script type="text/javascript" src="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-js/toolbar-zone.js"></script>
-<style>
-#yanelToolbarZone {
-/* Netscape 4, IE 4.x-5.0/Win and other lesser browsers will use this */
-  position: absolute;
-	right: 0;
-	top: 0;
-	height: 60px;
-	width: 60px;
-	z-index: 1000;
-}
+        <link media="screen" type="text/css" href="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-css/toolbar-zone.css" rel="stylesheet"/>
 
-body > div#yanelToolbarZone {
-/* used by Opera 5+, Netscape6+/Mozilla, Konqueror, Safari, OmniWeb 4.5+, iCab, ICEbrowser */
-  position: fixed;
-}
-</style>
       </head>
       <body>
 <xsl:if test="$yanel.toolbar-status = 'off'">
