@@ -80,7 +80,6 @@ body > div#yanelToolbarZone {
 /* used by Opera 5+, Netscape6+/Mozilla, Konqueror, Safari, OmniWeb 4.5+, iCab, ICEbrowser */
   position: fixed;
 }
-
 </style>
       </head>
       <body>
