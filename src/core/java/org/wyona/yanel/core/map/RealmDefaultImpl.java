@@ -97,12 +97,12 @@ public class RealmDefaultImpl implements Realm {
                 configure(config);
             } catch (SAXException e) {
                 // TODO: CascadingSAXException cse = new CascadingSAXException(e);
+                log.error(e, e);
                 String errorMsg = "Could not read config file: " + configFile + ": " + e.getMessage();
-                log.error(errorMsg, e);
                 throw new Exception(errorMsg, e);
             } catch (Exception e) {
-                String errorMsg = "Could not configure realm [" + id + "] with config file: " +
-                        configFile + ": " + e.toString();
+                log.error(e, e);
+                String errorMsg = "Could not configure realm [" + id + "] with config file: " + configFile + ": " + e.toString();
                 throw new Exception(errorMsg, e);
             }
         }
