@@ -13,6 +13,7 @@
   <xsl:param name="yanel.back2context" select="'BACK2CONTEXT_IS_NULL'"/>
   <xsl:param name="yarep.back2realm" select="'BACK2REALM_IS_NULL'"/>
   <xsl:param name="yanel.toolbar-status" select="'TOOLBAR-STATUS_IS_NULL'"/>
+  <xsl:param name="yanel.reservedPrefix" select="'RESERVED-PREFIX_IS_NULL'"/>
   <xsl:variable name="name-without-suffix" select="substring-before($yanel.path.name, '.')"/>
   <xsl:param name="language" select="'LANGUAGE_IS_NULL'"/>
   <xsl:param name="content-language" select="'CONTENT_LANGUAGE_IS_NULL'"/>
@@ -86,7 +87,7 @@ body > div#yanelToolbarZone {
 <xsl:if test="$yanel.toolbar-status = 'off'">
 <div id="yanelToolbarZone">
   <div id="yanelToolbarZoneLink" style="display: none; height: 60px; width: 60px;">
-    <a href="?yanel.toolbar=on" title="Turn on Toolbar" alt="Turn on Toolbar"><img style="position: absolute; right:5px; top:5px;" src="{$yarep.back2realm}app1/images/yanel_kangaroo.png" height="48" width="109" border="0"/></a>
+    <a href="?yanel.toolbar=on" title="Turn on Toolbar" alt="Turn on Toolbar"><img style="position: absolute; right:5px; top:5px;" src="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-img/yanel_kangaroo.png" height="48" width="109" border="0"/></a>
   </div>
 </div>
 </xsl:if>
