@@ -61,12 +61,6 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     /**
      *
      */
-    public NodeResource() {
-    }
-
-    /**
-     *
-     */
     public ViewDescriptor[] getViewDescriptors() {
         return null;
     }
@@ -143,10 +137,10 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      */
     public OutputStream getOutputStream() throws Exception {
         log.error("TODO: Use existsNode() method!");
-        if (!getRealm().getRepository().existsNode(getPath())) {
+        if (!getRepository().existsNode(getPath())) {
             // TODO: create node recursively ...
             log.error("TODO: Use getNode() method!");
-            getRealm().getRepository().getNode(new org.wyona.commons.io.Path(getPath()).getParent().toString()).addNode(new org.wyona.commons.io.Path(getPath()).getName().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
+            getRepository().getNode(new org.wyona.commons.io.Path(getPath()).getParent().toString()).addNode(new org.wyona.commons.io.Path(getPath()).getName().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
         }
         return getNode().getOutputStream();
     }
@@ -195,7 +189,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
                 revisionInfos[i] = new RevisionInformation(revisions[i]);
             }
             if (revisions.length > 0) {
-                log.warn("Node \"" + getPath() + "\" does not seem to have any revisions! The repository \"" + getRealm().getRepository() + "\"  might not support revisions!");
+                log.warn("Node \"" + getPath() + "\" does not seem to have any revisions! The repository \"" + getRepository() + "\"  might not support revisions!");
             }
             return revisionInfos;
         }
@@ -268,7 +262,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     public boolean exists() throws Exception {
-        return getRealm().getRepository().existsNode(getPath());
+        return getRepository().existsNode(getPath());
     }
 
     /**
@@ -313,7 +307,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
      */
     public void create(HttpServletRequest request) {
         try {
-            Repository repo = getRealm().getRepository();
+            Repository repo = getRepository();
 
             if (request instanceof HttpRequest) {
                 HttpRequest yanelRequest = (HttpRequest)request;
@@ -322,7 +316,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
                     if (parameters.hasMoreElements()) {
                         String name = (String) parameters.nextElement();
 
-                        Node newNode = org.wyona.yanel.core.util.YarepUtil.addNodes(repo, getPath().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
+                        Node newNode = org.wyona.yarep.util.YarepUtil.addNodes(repo, getPath().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
                         OutputStream output = newNode.getOutputStream();
                         InputStream is = yanelRequest.getInputStream(name);
                         Streams.copy(is, output, true);
@@ -594,13 +588,23 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
                 path = getResourceConfigProperty("src");
             }
             try {
-                return getRealm().getRepository().getNode(path);
+                return getRepository().getNode(path);
             } catch (org.wyona.yarep.core.NoSuchNodeException e) {
                 throw new org.wyona.yanel.core.ResourceNotFoundException(path);
-                //throw new org.wyona.yanel.core.ResourceNotFoundException(path, getRealm(), getRealm().getRepository());
+                //throw new org.wyona.yanel.core.ResourceNotFoundException(path, getRealm(), getRepository());
             }
         } catch (Exception e) {
             throw new org.wyona.yanel.core.ResourceNotFoundException(e);
         }
+    }
+
+    private Repository getRepository() throws Exception {
+        String repositoryID = getResourceConfigProperty("content-repository-id");
+        if (log.isDebugEnabled()) log.debug("repositoryID: "+repositoryID); //FIXME
+        if (repositoryID == null) {
+            return getRealm().getRepository();
+        }
+        Repository repository = getRealm().getRepository(repositoryID);
+        return repository;
     }
 }
