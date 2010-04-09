@@ -90,9 +90,35 @@ table th {
     &lt;/yanel:resource-config>
 </pre>
 
-<p>
-Available serializers are HTML_TRANSITIONAL, XHTML_STRICT, XML, TEXT (whereas default is XHTML_STRICT). See in the yanel documentation (BasicXMLResource) for more info on <b>XSLT_Parameter, i18n, Protocol-Schemas and Custom views</b> or have a look at the source src/impl/java/org/wyona/yanel/impl/resources/BasicXMLResource.java for details.
-</p>
+<p>Available serializers are HTML_TRANSITIONAL, XHTML_STRICT, XML, TEXT 
+(whereas default is XHTML_STRICT). See in the yanel documentation (BasicXMLResource) 
+for more info on <b>XSLT_Parameter, i18n, Protocol-Schemas and Custom views</b> or 
+have a look at the source src/impl/java/org/wyona/yanel/impl/resources/BasicXMLResource.java 
+for details.</p>
     
+    <p><b>Resource creation</b></p>
+
+<pre>
+    &lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+      &lt;yanel:rti name="resource-creator" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+      &lt;yanel:property name="lookin" value="/path/to/creation/dir/"/>
+      &lt;yanel:custom-config>
+        &lt;rc:resource-types xmlns:rc="http://www.wyona.org/yanel/resource/resource-creator/1.0">
+          &lt;rc:resource-type name="xml" namespace="http://www.wyona.org/yanel/resource/1.0">
+            &lt;rc:display-name>New XHTML Page&lt;/rc:display-name>
+            &lt;rc:property name="mime-type" value="text/html"/>
+            &lt;rc:property name="source-mime-type" value="application/xhtml+xml"/>
+            &lt;rc:property name="template" value="yanelrepo:/path/to/my-template.html"/>
+          &lt;/rc:resource-type>
+        &lt;/rc:resource-types>
+      &lt;/yanel:custom-config>
+    &lt;/yanel:resource-config>
+</pre>
+
+<p>The template needs to be a well-formed XHTML document. If the property "template" is not defined, 
+a default template will be used. When creating the resource, 
+the user will be asked to enter a title, which will be set as the title of the new XHTML
+document.</p>
+
   </body>
 </html>
