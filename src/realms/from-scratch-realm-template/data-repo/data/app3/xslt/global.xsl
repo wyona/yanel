@@ -9,6 +9,7 @@
   exclude-result-prefixes="xhtml dc">
 
   <xsl:import href="header.xsl"/>
+  <xsl:import href="footer.xsl"/>
 
   <xsl:param name="yanel.path.name" select="'NAME_IS_NULL'"/>
   <xsl:param name="yanel.path" select="'PATH_IS_NULL'"/>
@@ -88,11 +89,9 @@
 
 
 <xsl:call-template name="header"/>
+<xsl:call-template name="footer"/>
 
-<div id="footer">
-			<ul class="footer-nav">				<li><a href="#">Site Map</a></li>				<li><a href="#">Impressum/Legal</a></li>				<li><a href="#">Privacy Policy</a></li>
-				<li class="contact">Contact: <address>Wyona AG, Hardstrasse 219, CH-8005 Zurich, +41 44 272 91 61</address></li>			</ul>
-		</div>	</div>
+</div>
 </body>
 </html>
 </xsl:template>
