@@ -1,0 +1,32 @@
+.header-box {
+	background:url('../images/none.gif');
+	filter:progid:dximagetransform.microsoft.alphaimageloader(src='images/bg-logo-box.png', sizingmethod='scale');
+}
+#main .main-t {
+	background:url('../images/none.gif');
+	filter:progid:dximagetransform.microsoft.alphaimageloader(src='images/bg-main-t.png', sizingmethod='crop');
+}
+#main .main-c {
+	background:url('../images/none.gif');
+	filter:progid:dximagetransform.microsoft.alphaimageloader(src='images/bg-main-c.png', sizingmethod='scale');
+}
+#main .main-b {
+	background:url('../images/none.gif');
+	filter:progid:dximagetransform.microsoft.alphaimageloader(src='images/bg-main-b.png', sizingmethod='crop');
+}
+#main.home .main-t {
+	background:url('../images/none.gif');
+	filter:progid:dximagetransform.microsoft.alphaimageloader(src='images/bg-home-t.png', sizingmethod='crop');
+}
+#main.home .main-c {
+	background:url('../images/none.gif');
+	filter:progid:dximagetransform.microsoft.alphaimageloader(src='images/bg-main-c.png', sizingmethod='scale');
+}
+.gallery-text .holder {
+	background:url('../images/none.gif');
+	filter:progid:dximagetransform.microsoft.alphaimageloader(src='images/bg-gallery.png', sizingmethod='scale');
+}
+.logo-gallery {
+	background:url('../images/none.gif');
+	filter:progid:dximagetransform.microsoft.alphaimageloader(src='images/logo-g1.png', sizingmethod='crop');
+}
