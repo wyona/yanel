@@ -149,13 +149,27 @@
 <strong class="logo"><a href="{$yarep.back2realm}">wyona</a></strong>
 
 <ul id="nav">
-  <li><a href="#">Products</a></li>
-  <li><a href="#">Services</a></li>
-  <li><a href="#">Solutions</a></li>
-  <li><a href="#">Impact</a></li>
-  <li><a href="#">Blog/News</a></li>
-  <li><a href="#">Resources</a></li>
-  <li><a href="ueber.html">About us</a></li>
+<!-- TODO: Use i18n (What about the links?) -->
+<xsl:choose>
+  <xsl:when test="$content-language = 'de'">
+    <li><a href="#">Produkte</a></li>
+    <li><a href="#">Dienstleistungen</a></li>
+    <li><a href="#">Solutions</a></li>
+    <li><a href="#">Impact</a></li>
+    <li><a href="#">Blog/News</a></li>
+    <li><a href="#">Resources</a></li>
+    <li><a href="ueber.html">Ueber uns</a></li>
+  </xsl:when>
+  <xsl:otherwise>
+    <li><a href="#">Products</a></li>
+    <li><a href="#">Services</a></li>
+    <li><a href="#">Solutions</a></li>
+    <li><a href="#">Impact</a></li>
+    <li><a href="#">Blog/News</a></li>
+    <li><a href="#">Resources</a></li>
+    <li><a href="about.html">About us</a></li>
+  </xsl:otherwise>
+</xsl:choose>
 </ul>
 
 </div>
