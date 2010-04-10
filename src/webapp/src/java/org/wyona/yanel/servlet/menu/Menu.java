@@ -185,6 +185,8 @@ abstract public class Menu {
                 return "Gruppen Verwaltung";
             } else if(key.equals("y:page-info")) {
                 return "Seiteninformationen anzeigen";
+            } else if(key.equals("y:create-new-page")) {
+                return "Neue Seite erstellen";
             } else if(key.equals("y:permissions-management")) {
                 return "Rechteverwaltung";
             } else {
@@ -229,6 +231,8 @@ abstract public class Menu {
                 return "Group Management";
             } else if(key.equals("y:page-info")) {
                 return "View Page Info";
+            } else if(key.equals("y:create-new-page")) {
+                return "Create new page";
             } else if(key.equals("y:permissions-management")) {
                 return "Permissions Management";
             } else {

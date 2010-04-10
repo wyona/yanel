@@ -77,7 +77,7 @@ public class DefaultMenu extends Menu {
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:file", userLanguage) + "</div>");
         sb.append("<ul>");
-        sb.append("<li><a href=\"create-new-page.html\">Create new page</a></li>");
+        sb.append("<li><a href=\"create-new-page.html\">" + getLabel("y:create-new-page", userLanguage) + "</a></li>");
 
         sb.append(new RevisionsWorkflowMenuItem().getMenuItem(resource));
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
