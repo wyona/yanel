@@ -35,8 +35,22 @@
     <script type="text/javascript" src="{$yarep.back2realm}app3/js/jquery-1.3.2.min.js"></script>
     <script type="text/javascript" src="{$yarep.back2realm}app3/js/jquery.galleryScroll.1.5.2.js"></script>
     <script type="text/javascript" src="{$yarep.back2realm}app3/js/carusel.js"></script>
+
+        <!-- Yanel toolbar zone -->
+<!-- NOTE: Since galleryScroll/carusel also needs jquery min, we do not have to include it again, in particular an older version
+        <script type="text/javascript" src="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-js/jquery/1.2.6/jquery.min.js"></script>
+-->
+        <script type="text/javascript" src="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-js/toolbar-zone.js"></script>
+        <link media="screen" type="text/css" href="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-css/toolbar-zone.css" rel="stylesheet"/>
   </head>
 <body>
+<xsl:if test="$yanel.toolbar-status = 'off'">
+<div id="yanelToolbarZone">
+  <div id="yanelToolbarZoneLink" style="display: none; height: 60px; width: 60px;">
+    <a href="?yanel.toolbar=on" title="Turn on Toolbar" alt="Turn on Toolbar"><img style="position: absolute; right:5px; top:5px;" src="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-img/yanel_kangaroo.png" height="48" width="109" border="0"/></a>
+  </div>
+</div>
+</xsl:if>
 	<div id="wrapper">
 		<div id="main" class="home">
 			<div class="main-t"></div>
