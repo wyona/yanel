@@ -25,10 +25,12 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>Wyona</title>
 	<link rel="stylesheet" type="text/css" href="{$yarep.back2realm}app3/css/all.css" media="all" />
+	<!--[if lt IE 7]><link rel="stylesheet" type="text/css" href="{$yarep.back2realm}app3/css/ie6.css" media="screen"/><![endif]-->
+
+        <!-- Javascript for gallery carusel -->
 	<script type="text/javascript" src="{$yarep.back2realm}app3/js/jquery-1.3.2.min.js"></script>
 	<script type="text/javascript" src="{$yarep.back2realm}app3/js/jquery.galleryScroll.1.5.2.js"></script>
 	<script type="text/javascript" src="{$yarep.back2realm}app3/js/carusel.js"></script>
-	<!--[if lt IE 7]><link rel="stylesheet" type="text/css" href="{$yarep.back2realm}app3/css/ie6.css" media="screen"/><![endif]-->
 </head>
 <body>
 	<div id="wrapper">
