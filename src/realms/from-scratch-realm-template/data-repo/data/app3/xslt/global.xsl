@@ -29,8 +29,20 @@
 	<title>Wyona</title>
 	<link rel="stylesheet" type="text/css" href="{$yarep.back2realm}app3/css/all.css" media="all" />
 	<!--[if lt IE 7]><link rel="stylesheet" type="text/css" href="{$yarep.back2realm}app3/css/ie6.css" media="screen"/><![endif]-->
+
+        <!-- Yanel toolbar zone -->
+        <script type="text/javascript" src="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-js/jquery/1.2.6/jquery.min.js"></script>
+        <script type="text/javascript" src="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-js/toolbar-zone.js"></script>
+        <link media="screen" type="text/css" href="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-css/toolbar-zone.css" rel="stylesheet"/>
 </head>
 <body>
+<xsl:if test="$yanel.toolbar-status = 'off'"><div id="yanelToolbarZone">
+  <div id="yanelToolbarZoneLink" style="display: none; height: 60px; width: 60px;">
+    <a href="?yanel.toolbar=on" title="Turn on Toolbar" alt="Turn on Toolbar"><img style="position: absolute; right:5px; top:5px;" src="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-img/yanel_kangaroo.png" height="48" width="109" border="0"/></a>
+  </div>
+</div>
+</xsl:if>
+
 	<div id="wrapper">
 		<div id="main">
 			<div class="main-t"></div>
