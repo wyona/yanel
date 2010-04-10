@@ -93,7 +93,7 @@
 			</div>
 			<div class="header-box">
 					<strong class="logo">
-						<a href="#">wyona</a>
+						<a href="{$yarep.back2realm}">wyona</a>
 					</strong>
 					<ul id="nav">						<li><a href="#">Products</a></li>						<li><a href="#">Services</a></li>
 						<li><a href="#">Solutions</a></li>						<li><a href="#">Impact</a></li>						<li><a href="#">Blog/News</a></li>						<li><a href="#">Resources</a></li>						<li><a href="#">About us</a></li>					</ul>
