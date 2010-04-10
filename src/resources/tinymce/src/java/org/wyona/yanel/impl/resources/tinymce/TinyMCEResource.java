@@ -110,7 +110,7 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
                 resourceContent = IOUtils.toString(is);
             } catch (Exception e) {
                 log.error(e, e);
-                addError("Could not get Resource-Type content.");
+                addError("Could not get Resource-Type content: " + e.getMessage());
             }
         } else {
             addError("This resource can not be edited. ");
