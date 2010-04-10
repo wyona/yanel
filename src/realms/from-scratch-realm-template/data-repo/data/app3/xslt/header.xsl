@@ -29,16 +29,36 @@
         </div>
         <input type="hidden" name="domains" value="wyona.com"/>
         <input type="hidden" name="sitesearch" value="wyona.com"/>
+
+<!-- TODO: See css/all.css or rather /images/bg-search.gif -->
+<xsl:choose>
+  <xsl:when test="$content-language = 'de'">
+        <input type="submit" value="Suchen" class="submit" />
+  </xsl:when>
+  <xsl:otherwise>
         <input type="submit" value="Search" class="submit" />
+  </xsl:otherwise>
+</xsl:choose>
       </fieldset>
     </form>
 
 <ul class="add-nav">
-  <li><a href="#">Contact</a></li>
-  <li><a href="#">Register</a></li>
-  <li><a href="#">Extranet</a></li>
-  <li><a href="#">RSS</a></li>
-  <li><a href="#">Follow us</a></li>
+<xsl:choose>
+  <xsl:when test="$content-language = 'de'">
+    <li><a href="#">Kontakt</a></li>
+    <li><a href="#">Registrieren</a></li>
+    <li><a href="#">Extranet</a></li>
+    <li><a href="#">RSS</a></li>
+    <li><a href="#">Twitter und Co</a></li>
+  </xsl:when>
+  <xsl:otherwise>
+    <li><a href="#">Contact</a></li>
+    <li><a href="#">Register</a></li>
+    <li><a href="#">Extranet</a></li>
+    <li><a href="#">RSS</a></li>
+    <li><a href="#">Follow us</a></li>
+  </xsl:otherwise>
+</xsl:choose>
 
 <!-- TODO: Also see /data-repo/data/app1/xslt/translations.xsl -->
 <xsl:choose>
