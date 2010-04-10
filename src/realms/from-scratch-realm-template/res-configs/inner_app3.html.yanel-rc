@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="xml" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="xslt" value="/app3/xslt/global.xsl"/>
+
+  <yanel:property name="mime-type" value="application/xhtml+xml"/>
+
+  <!-- NOTE: Workflow definition is located within app1 directory, even if a different layout is used! -->
+  <yanel:property name="workflow-schema" value="/app1/workflow/workflow-with-review.xml"/>
+</yanel:resource-config>
