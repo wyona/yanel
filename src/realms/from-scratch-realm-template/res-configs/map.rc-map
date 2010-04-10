@@ -3,7 +3,15 @@
 <rc-map>
   <!-- TODO: Actually Xopus should be served from the xopus resource, but because of a Xopus bug one needs to add it here! -->
   <matcher pattern="/Xopus**.html" rcpath="/node_yanel-rc.xml"/>
+
+<!--
+  <matcher pattern="/*/index.html" rcpath="/homepage_app3.html.yanel-rc"/>
+-->
+
   <matcher pattern="**.tinymce-edit.html" rcpath="/usecases/tinymce.html.yanel-rc"/>
   <matcher pattern="/**/create-new-page.html" rcpath="/create-new-page.html.yanel-rc"/>
+<!--
+  <matcher pattern="/**.html" rcpath="/inner_app3.html.yanel-rc"/>
+-->
   <matcher pattern="/**.html" rcpath="/generic-xhtml-page_yanel-rc.xml"/>
 </rc-map>
