@@ -49,15 +49,7 @@
 			<div class="main-c">
 				<div id="two-columns">
 					<div id="content">
-						<h1>Yanel Online Classifieds<br /> Edition</h1>
-						<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </p>
-						<div class="img-box">
-							<div class="holder">								<div class="frame">
-									<a href="#"><img src="{$yarep.back2realm}app3/images/img-1.jpg" alt="" width="310" height="300" /></a>
-								</div>							</div>
-						</div>
-						<p>Stet clita kasd gubergren, no sea akimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-
+<xsl:apply-templates select="/xhtml:html/xhtml:body/*"/>
 
 <!-- TODO: Where does 'back' link to?
 						<div class="page-info">
@@ -106,6 +98,12 @@
 </div>
 </body>
 </html>
+</xsl:template>
+
+<xsl:template match="@*|node()" priority="-1">
+  <xsl:copy>
+    <xsl:apply-templates select="@*|node()"/>
+  </xsl:copy>
 </xsl:template>
 
 </xsl:stylesheet>
