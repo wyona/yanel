@@ -8,6 +8,8 @@
   xmlns:dc="http://purl.org/dc/elements/1.1/"
   exclude-result-prefixes="xhtml dc">
 
+  <xsl:import href="header.xsl"/>
+
   <xsl:param name="yanel.path.name" select="'NAME_IS_NULL'"/>
   <xsl:param name="yanel.path" select="'PATH_IS_NULL'"/>
   <xsl:param name="yanel.back2context" select="'BACK2CONTEXT_IS_NULL'"/>
@@ -117,74 +119,7 @@
 			<div class="main-b"></div>
 		</div>
 
-
-
-
-<!-- START header -->
-<div id="header">
-  <div class="add-nav-box">
-    <form action="http://www.google.com/search" class="header-forms">
-      <fieldset>
-        <div class="text">
-          <input type="text" value="" name="q"/>
-        </div>
-        <input type="hidden" name="domains" value="wyona.com"/>
-        <input type="hidden" name="sitesearch" value="wyona.com"/>
-        <input type="submit" value="Search" class="submit" />
-      </fieldset>
-    </form>
-
-<ul class="add-nav">
-  <li><a href="#">Contact</a></li>
-  <li><a href="#">Register</a></li>
-  <li><a href="#">Extranet</a></li>
-  <li><a href="#">RSS</a></li>
-  <li><a href="#">Follow us</a></li>
-
-<!-- TODO: Also see /data-repo/data/app1/xslt/translations.xsl -->
-<xsl:choose>
-  <xsl:when test="$content-language = 'en'">
-  <li><a href="{$yarep.back2realm}de/index.html">DE</a></li>
-  </xsl:when>
-  <xsl:otherwise>
-  <li><a href="{$yarep.back2realm}en/index.html">EN</a></li>
-  </xsl:otherwise>
-</xsl:choose>
-</ul>
-</div>
-
-<div class="header-box">
-<strong class="logo"><a href="{$yarep.back2realm}">wyona</a></strong>
-
-<ul id="nav">
-<!-- TODO: Use i18n (What about the links?) -->
-<xsl:choose>
-  <xsl:when test="$content-language = 'de'">
-    <li><a href="#">Produkte</a></li>
-    <li><a href="#">Dienstleistungen</a></li>
-    <li><a href="#">Solutions</a></li>
-    <li><a href="#">Impact</a></li>
-    <li><a href="#">Blog/News</a></li>
-    <li><a href="#">Resources</a></li>
-    <li><a href="ueber.html">Ueber uns</a></li>
-  </xsl:when>
-  <xsl:otherwise>
-    <li><a href="#">Products</a></li>
-    <li><a href="#">Services</a></li>
-    <li><a href="#">Solutions</a></li>
-    <li><a href="#">Impact</a></li>
-    <li><a href="#">Blog/News</a></li>
-    <li><a href="#">Resources</a></li>
-    <li><a href="about.html">About us</a></li>
-  </xsl:otherwise>
-</xsl:choose>
-</ul>
-</div>
-</div>
-<!-- END header -->
-
-
-
+<xsl:call-template name="header"/>
 
 <div id="footer">
 			<ul class="footer-nav">				<li><a href="#">Site Map</a></li>				<li><a href="#">Impressum/Legal</a></li>				<li><a href="#">Privacy Policy</a></li>
