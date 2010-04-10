@@ -38,6 +38,7 @@
       <ldap:provider-urlDISABLED>ldap://192.168.200.109:389</ldap:provider-urlDISABLED>
       <ldap:security-authentication>simple</ldap:security-authentication>
       <ldap:security-protocolDISABLED>ssl</ldap:security-protocolDISABLED>
+      <ldap:use-ldap>true</ldap:use-ldap>
     </ldap:config>
   </ac-identities>
 -->
