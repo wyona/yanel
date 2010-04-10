@@ -59,16 +59,21 @@
 						</div>
 -->
 					</div>
-					<div class="aside">
-						<h2>More information</h2>
-						<ul class="aside-nav">
-							<li><a href="#">Yanel Online Classifieds Edition Product Sheet</a></li>
-							<li><a href="#">White Paper „The future of Online Media“</a></li>
-							<li><a href="#">Online Media Solutions</a></li>
-						</ul>
-					</div>
-				</div>
-				<div id="sidebar">
+
+  <!-- START: Related information -->
+  <div class="aside">
+    <h2>More information</h2> <!-- TODO: i18n -->
+      <ul class="aside-nav">
+        <xsl:copy-of select="/xhtml:html/xhtml:body/xhtml:div[@id='related']/xhtml:ul/xhtml:li"/>
+      </ul>
+  </div>
+  <!-- END: Related information -->
+</div>
+
+
+
+<!-- START: Left hand side navigation -->
+<div id="sidebar">
 					<ul class="accordion">
 						<li class="active"><a href="#">Yanel</a>
 							<ul>
@@ -98,6 +103,12 @@
 </div>
 </body>
 </html>
+</xsl:template>
+
+<xsl:template match="xhtml:div[@id='related']">
+<!--
+Ignore, because this info will be displayed within right column
+-->
 </xsl:template>
 
 <xsl:template match="@*|node()" priority="-1">
