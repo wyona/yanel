@@ -44,11 +44,15 @@
 								</div>							</div>
 						</div>
 						<p>Stet clita kasd gubergren, no sea akimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+
+
+<!-- TODO: Where does 'back' link to?
 						<div class="page-info">
 							<a href="#" class="back">back</a>
 							<a href="#" class="article">reccomend article</a>
 							<a href="#" class="print">print</a>
 						</div>
+-->
 					</div>
 					<div class="aside">
 						<h2>More information</h2>
