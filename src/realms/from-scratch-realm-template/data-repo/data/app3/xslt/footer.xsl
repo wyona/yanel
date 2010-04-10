@@ -27,14 +27,14 @@
     <li><a href="#">Site Map</a></li>
     <li><a href="#">Impressum</a></li>
     <li><a href="#">Datenschutz</a></li>
-    <li class="contact">Contact: <address>Wyona AG, Hardstrasse 219, CH-8005 Zurich, +41 44 272 91 61</address></li>
+    <li class="contact"><a href="">Kontakt: <address>Wyona AG, Hardstrasse 219, CH-8005 Zurich, +41 44 272 91 61</address></a></li>
     <li class="copyright">Copyright &#169; 2010 Wyona</li>
   </xsl:when>
   <xsl:otherwise>
     <li><a href="#">Site Map</a></li>
     <li><a href="#">Impressum/Legal</a></li>
     <li><a href="#">Privacy Policy</a></li>
-    <li class="contact">Contact: <address>Wyona AG, Hardstrasse 219, CH-8005 Zurich, +41 44 272 91 61</address></li>
+    <li class="contact"><a href="">Contact: <address>Wyona AG, Hardstrasse 219, CH-8005 Zurich, +41 44 272 91 61</address></a></li>
     <li class="copyright">Copyright &#169; 2010 Wyona</li>
   </xsl:otherwise>
 </xsl:choose>
