@@ -115,16 +115,24 @@
 				</div>
 			</div>
 			<div class="main-b"></div>
-		</div>		<div id="header">
-			<div class="add-nav-box">
-				<form action="#" class="header-forms">
-					<fieldset>
-						<div class="text">
-							<input type="text" value="" />
-						</div>
-						<input type="submit" value="Search" class="submit" />
-					</fieldset>
-				</form>
+		</div>
+
+
+
+
+<!-- START header -->
+<div id="header">
+  <div class="add-nav-box">
+    <form action="http://www.google.com/search" class="header-forms">
+      <fieldset>
+        <div class="text">
+          <input type="text" value="" name="q"/>
+        </div>
+        <input type="hidden" name="domains" value="wyona.com"/>
+        <input type="hidden" name="sitesearch" value="wyona.com"/>
+        <input type="submit" value="Search" class="submit" />
+      </fieldset>
+    </form>
 
 <ul class="add-nav">
   <li><a href="#">Contact</a></li>
@@ -171,9 +179,14 @@
   </xsl:otherwise>
 </xsl:choose>
 </ul>
-
 </div>
-		</div>		<div id="footer">
+</div>
+<!-- END header -->
+
+
+
+
+<div id="footer">
 			<ul class="footer-nav">				<li><a href="#">Site Map</a></li>				<li><a href="#">Impressum/Legal</a></li>				<li><a href="#">Privacy Policy</a></li>
 				<li class="contact">Contact: <address>Wyona AG, Hardstrasse 219, CH-8005 Zurich, +41 44 272 91 61</address></li>			</ul>
 		</div>	</div>
