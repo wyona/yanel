@@ -122,9 +122,16 @@
 <xsl:call-template name="header"/>
 
 <div id="footer">
-			<ul class="footer-nav">				<li><a href="#">Site Map</a></li>				<li><a href="#">Impressum/Legal</a></li>				<li><a href="#">Privacy Policy</a></li>
-				<li class="contact">Contact: <address>Wyona AG, Hardstrasse 219, CH-8005 Zurich, +41 44 272 91 61</address></li>			</ul>
-		</div>	</div>
+  <ul class="footer-nav">
+    <li><a href="#">Site Map</a></li>
+    <li><a href="#">Impressum/Legal</a></li>
+    <li><a href="#">Privacy Policy</a></li>
+    <li class="contact">Contact: <address>Wyona AG, Hardstrasse 219, CH-8005 Zurich, +41 44 272 91 61</address></li>
+    <li class="copyright">Copyright &#169; 2010 Wyona</li>
+  </ul>
+</div>
+
+</div>
 </body>
 </html>
 </xsl:template>
