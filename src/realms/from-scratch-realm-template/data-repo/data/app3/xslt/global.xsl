@@ -8,6 +8,8 @@
   xmlns:dc="http://purl.org/dc/elements/1.1/"
   exclude-result-prefixes="xhtml dc">
 
+  <xsl:import href="header.xsl"/>
+
   <xsl:param name="yanel.path.name" select="'NAME_IS_NULL'"/>
   <xsl:param name="yanel.path" select="'PATH_IS_NULL'"/>
   <xsl:param name="yanel.back2context" select="'BACK2CONTEXT_IS_NULL'"/>
@@ -78,27 +80,12 @@
 			</div>
 			<div class="main-b"></div>
 			
-		</div>		<div id="header">
-			<div class="add-nav-box">
-				<form action="#" class="header-forms">
-					<fieldset>
-						<div class="text">
-							<input type="text" value="" />
-						</div>
-						<input type="submit" value="Search" class="submit" />
-					</fieldset>
-				</form>
-				<ul class="add-nav">					<li><a href="#">Contact</a></li>					<li><a href="#">Register</a></li>
-					<li><a href="#">Extranet</a></li>					<li><a href="#">RSS</a></li>					<li><a href="#">Follow us</a></li>					<li><a href="#">DE</a></li>				</ul>
-			</div>
-			<div class="header-box">
-					<strong class="logo">
-						<a href="{$yarep.back2realm}">wyona</a>
-					</strong>
-					<ul id="nav">						<li><a href="#">Products</a></li>						<li><a href="#">Services</a></li>
-						<li><a href="#">Solutions</a></li>						<li><a href="#">Impact</a></li>						<li><a href="#">Blog/News</a></li>						<li><a href="#">Resources</a></li>						<li><a href="#">About us</a></li>					</ul>
-			</div>
-		</div>		<div id="footer">
+		</div>
+
+
+<xsl:call-template name="header"/>
+
+<div id="footer">
 			<ul class="footer-nav">				<li><a href="#">Site Map</a></li>				<li><a href="#">Impressum/Legal</a></li>				<li><a href="#">Privacy Policy</a></li>
 				<li class="contact">Contact: <address>Wyona AG, Hardstrasse 219, CH-8005 Zurich, +41 44 272 91 61</address></li>			</ul>
 		</div>	</div>
