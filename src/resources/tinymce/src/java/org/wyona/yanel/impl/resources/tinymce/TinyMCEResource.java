@@ -109,7 +109,7 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
                 InputStream is = ((ModifiableV2) resToEdit).getInputStream();
                 resourceContent = IOUtils.toString(is);
             } catch (Exception e) {
-                log.error("Exception: " + e);
+                log.error(e, e);
                 addError("Could not get Resource-Type content.");
             }
         } else {
