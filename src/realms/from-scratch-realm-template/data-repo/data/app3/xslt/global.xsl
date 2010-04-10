@@ -26,94 +26,58 @@
 	<title>Wyona</title>
 	<link rel="stylesheet" type="text/css" href="{$yarep.back2realm}app3/css/all.css" media="all" />
 	<!--[if lt IE 7]><link rel="stylesheet" type="text/css" href="{$yarep.back2realm}app3/css/ie6.css" media="screen"/><![endif]-->
-
-        <!-- Javascript for gallery carusel -->
-	<script type="text/javascript" src="{$yarep.back2realm}app3/js/jquery-1.3.2.min.js"></script>
-	<script type="text/javascript" src="{$yarep.back2realm}app3/js/jquery.galleryScroll.1.5.2.js"></script>
-	<script type="text/javascript" src="{$yarep.back2realm}app3/js/carusel.js"></script>
 </head>
 <body>
 	<div id="wrapper">
-		<div id="main" class="home">
+		<div id="main">
 			<div class="main-t"></div>
 			<div class="main-c">
-				<div class="main-content">
-					<div class="gallery">
-						<div class="g1">
-							<ul>
-								<li>
-									<a href="http://www.nzz.ch"><img src="{$yarep.back2realm}app3/images/img-2.jpg" alt="" width="788" height="202" /></a>
-									<div class="gallery-text">
-										<div class="holder">
-											<strong class="logo-gallery">globus savoir vivre</strong>
-											<a href="#" class="more">Globus.ch driving offline business <br /> through online channel <img src="{$yarep.back2realm}app3/images/arrow-6.gif" alt="" width="26" height="26" /></a>
-										</div>
-									</div>
-								</li>
-								<li>
-									<a href="http://www.wyona.com"><img src="{$yarep.back2realm}app3/images/img-2.jpg" alt="" width="788" height="202" /></a>
-								</li>
-								<li>
-									<a href="http://www.wyona.com"><img src="{$yarep.back2realm}app3/images/img-2.jpg" alt="" width="788" height="202" /></a>
-								</li>
-								<li>
-									<a href="http://www.wyona.com"><img src="{$yarep.back2realm}app3/images/img-2.jpg" alt="" width="788" height="202" /></a>
-								</li>
-								<li>
-									<a href="http://www.wyona.com"><img src="{$yarep.back2realm}app3/images/img-2.jpg" alt="" width="788" height="202" /></a>
-								</li>
-							</ul>
+				<div id="two-columns">
+					<div id="content">
+						<h1>Yanel Online Classifieds<br /> Edition</h1>
+						<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </p>
+						<div class="img-box">
+							<div class="holder">								<div class="frame">
+									<a href="#"><img src="{$yarep.back2realm}app3/images/img-1.jpg" alt="" width="310" height="300" /></a>
+								</div>							</div>
 						</div>
-						<a href="#" class="link-prev">prev</a>
-						<a href="#" class="link-next">next</a>
-						<div class="swicher">
-							
+						<p>Stet clita kasd gubergren, no sea akimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+						<div class="page-info">
+							<a href="#" class="back">back</a>
+							<a href="#" class="article">reccomend article</a>
+							<a href="#" class="print">print</a>
 						</div>
 					</div>
-					<div id="tree-columns">
-						<div class="content-box">
-							<div class="container">
-								<h1>Latest News and Opinions</h1>
-								<ul class="content-nav">									<li><a href="#">Wyona launches Yanel 2.1 and implements it for Tamedia<img src="{$yarep.back2realm}app3/images/arrow-7.gif" alt="" width="15" height="9" /></a></li>									<li><a href="#">Yanel Online Business Development Engine wins Venture 2010 award<img src="{$yarep.back2realm}app3/images/arrow-7.gif" alt="" width="15" height="9" /></a></li>									<li><a href="#">Why selecting a CMS is more than prioritizing features and functions<img src="{$yarep.back2realm}app3/images/arrow-7.gif" alt="" width="15" height="9" /></a></li>									<li><a href="#">Wyona implements Yanel Online Classifieds Platform for car4you<img src="{$yarep.back2realm}app3/images/arrow-7.gif" alt="" width="15" height="9" /></a></li>									<li><a href="#">Wyona with 240% growth in 2010<img src="{$yarep.back2realm}app3/images/arrow-7.gif" alt="" width="15" height="9" /></a></li>								</ul>
-							</div>
-							<div class="quotes-box">
-								<h2>Quotes</h2>
-								<blockquote>
-									<div>
-										<div class="holder">
-											<div class="frame">
-												<q>“Driving business online is all about qualified traffic and conversion”</q>
-											</div>
-										</div>
-										<cite>
-											<img src="{$yarep.back2realm}app3/images/img-3.jpg" alt="" width="69" height="69" />
-											<span>Andy Brügger, <br />Globus</span>
-										</cite>
-									</div>
-								</blockquote>
-								<blockquote>
-									<div>
-										<div class="holder">
-											<div class="frame">
-												<q>“Lorem ipsum dolor et samet massa maretima”</q>
-											</div>
-										</div>
-										<cite>
-											<img src="{$yarep.back2realm}app3/images/img-4.jpg" alt="" width="69" height="69" />
-											<span>David Zimmerli, <br />NAZ</span>
-										</cite>
-									</div>
-								</blockquote>
-							</div>
-						</div>
-						<div class="side-columns">
-							<h2>What would you like to do?</h2>
-							<ul class="user-action">								<li><img src="{$yarep.back2realm}app3/images/ico-source.gif" alt="" width="38" height="38" /><p><a href="#">I need advise around Open Source<img src="{$yarep.back2realm}app3/images/arrow-7.gif" alt="" width="15" height="9" /></a></p></li>								<li><img src="{$yarep.back2realm}app3/images/ico-support.gif" alt="" width="38" height="38" /><p><a href="#">I need technical support around Yanel or other Open Source technologies<img src="{$yarep.back2realm}app3/images/arrow-7.gif" alt="" width="15" height="9" /></a></p></li>								<li><img src="{$yarep.back2realm}app3/images/ico-integrator.gif" alt="" width="38" height="38" /><p><a href="#">I am looking for a System Integrator to help with my web application<img src="{$yarep.back2realm}app3/images/arrow-7.gif" alt="" width="15" height="9" /></a></p></li>								<li><img src="{$yarep.back2realm}app3/images/ico-cms.gif" alt="" width="38" height="38" /><p><a href="#">I am searching for a new Content Management System<img src="{$yarep.back2realm}app3/images/arrow-7.gif" alt="" width="15" height="9" /></a></p></li>								<li><img src="{$yarep.back2realm}app3/images/ico-channel.gif" alt="" width="38" height="38" /><p><a href="#">I want to improve the efficiency of my online channel and look for help<img src="{$yarep.back2realm}app3/images/arrow-7.gif" alt="" width="15" height="9" /></a></p></li>
+					<div class="aside">
+						<h2>More information</h2>
+						<ul class="aside-nav">
+							<li><a href="#">Yanel Online Classifieds Edition Product Sheet</a></li>
+							<li><a href="#">White Paper „The future of Online Media“</a></li>
+							<li><a href="#">Online Media Solutions</a></li>
+						</ul>
+					</div>
+				</div>
+				<div id="sidebar">
+					<ul class="accordion">
+						<li class="active"><a href="#">Yanel</a>
+							<ul>
+								<li><a href="#">What it is</a></li>
+								<li><a href="#">What our stake is</a></li>
+								<li><a href="#">What we do with it</a></li>
+								<li><a href="#">Further information</a></li>
 							</ul>
-						</div>					</div>
+						</li>
+						<li><a href="#">Yanel Editions</a></li>
+						<li><a href="#">Yulup</a></li>
+						<li><a href="#">Coocoon/Portal</a></li>
+						<li><a href="#">Lucene/Nutch</a></li>
+						<li><a href="#">Forrest</a></li>
+						<li><a href="#">JSR170/Jackrabbit</a></li>
+					</ul>
 				</div>
 			</div>
 			<div class="main-b"></div>
+			
 		</div>		<div id="header">
 			<div class="add-nav-box">
 				<form action="#" class="header-forms">
@@ -128,11 +92,11 @@
 					<li><a href="#">Extranet</a></li>					<li><a href="#">RSS</a></li>					<li><a href="#">Follow us</a></li>					<li><a href="#">DE</a></li>				</ul>
 			</div>
 			<div class="header-box">
-				<strong class="logo">
-					<a href="#">wyona</a>
-				</strong>
-				<ul id="nav">					<li><a href="#">Products</a></li>					<li><a href="#">Services</a></li>
-					<li><a href="#">Solutions</a></li>					<li><a href="#">Impact</a></li>					<li><a href="#">Blog/News</a></li>					<li><a href="#">Resources</a></li>					<li><a href="#">About us</a></li>				</ul>
+					<strong class="logo">
+						<a href="#">wyona</a>
+					</strong>
+					<ul id="nav">						<li><a href="#">Products</a></li>						<li><a href="#">Services</a></li>
+						<li><a href="#">Solutions</a></li>						<li><a href="#">Impact</a></li>						<li><a href="#">Blog/News</a></li>						<li><a href="#">Resources</a></li>						<li><a href="#">About us</a></li>					</ul>
 			</div>
 		</div>		<div id="footer">
 			<ul class="footer-nav">				<li><a href="#">Site Map</a></li>				<li><a href="#">Impressum/Legal</a></li>				<li><a href="#">Privacy Policy</a></li>
