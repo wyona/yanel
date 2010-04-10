@@ -300,6 +300,13 @@ form,fieldset{
 	display:inline;
 	font-weight:normal;
 }
+.footer-nav .copyright {
+	padding:0 0 0 22px;
+	background:none;
+	font-style:normal;
+	display:inline;
+	font-weight:normal;
+}
 /* home page css */
 #main.home {padding:115px 0 0;}
 #main.home .main-t {
