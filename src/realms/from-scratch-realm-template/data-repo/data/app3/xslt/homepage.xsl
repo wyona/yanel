@@ -125,16 +125,40 @@
 						<input type="submit" value="Search" class="submit" />
 					</fieldset>
 				</form>
-				<ul class="add-nav">					<li><a href="#">Contact</a></li>					<li><a href="#">Register</a></li>
-					<li><a href="#">Extranet</a></li>					<li><a href="#">RSS</a></li>					<li><a href="#">Follow us</a></li>					<li><a href="#">DE</a></li>				</ul>
-			</div>
-			<div class="header-box">
-				<strong class="logo">
-					<a href="{$yarep.back2realm}">wyona</a>
-				</strong>
-				<ul id="nav">					<li><a href="#">Products</a></li>					<li><a href="#">Services</a></li>
-					<li><a href="#">Solutions</a></li>					<li><a href="#">Impact</a></li>					<li><a href="#">Blog/News</a></li>					<li><a href="#">Resources</a></li>					<li><a href="#">About us</a></li>				</ul>
-			</div>
+
+<ul class="add-nav">
+  <li><a href="#">Contact</a></li>
+  <li><a href="#">Register</a></li>
+  <li><a href="#">Extranet</a></li>
+  <li><a href="#">RSS</a></li>
+  <li><a href="#">Follow us</a></li>
+
+<!-- TODO: Also see /data-repo/data/app1/xslt/translations.xsl -->
+<xsl:choose>
+  <xsl:when test="$content-language = 'en'">
+  <li><a href="{$yarep.back2realm}de/index.html">DE</a></li>
+  </xsl:when>
+  <xsl:otherwise>
+  <li><a href="{$yarep.back2realm}en/index.html">EN</a></li>
+  </xsl:otherwise>
+</xsl:choose>
+</ul>
+</div>
+
+<div class="header-box">
+<strong class="logo"><a href="{$yarep.back2realm}">wyona</a></strong>
+
+<ul id="nav">
+  <li><a href="#">Products</a></li>
+  <li><a href="#">Services</a></li>
+  <li><a href="#">Solutions</a></li>
+  <li><a href="#">Impact</a></li>
+  <li><a href="#">Blog/News</a></li>
+  <li><a href="#">Resources</a></li>
+  <li><a href="ueber.html">About us</a></li>
+</ul>
+
+</div>
 		</div>		<div id="footer">
 			<ul class="footer-nav">				<li><a href="#">Site Map</a></li>				<li><a href="#">Impressum/Legal</a></li>				<li><a href="#">Privacy Policy</a></li>
 				<li class="contact">Contact: <address>Wyona AG, Hardstrasse 219, CH-8005 Zurich, +41 44 272 91 61</address></li>			</ul>
