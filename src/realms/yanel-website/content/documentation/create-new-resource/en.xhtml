@@ -16,12 +16,12 @@
 <li>Next, it will ask you for a namespace for your resource. Insert a namespace, e.g. <code>http://myproject.org/yanel/resource/1.0</code></li>
 <li>Then, give a short description for your resource-type</li>
 <li>Now, it will ask you for a package name for the java class of your resource type. Type a package name, e.g. <code>org.wyona.yanel.impl.resources.mypackage</code></li>
-<li>Enter a java class name of this resource-type, e.g. <code>MyNewResource</code> </li>
+<li>Enter a java class name of this resource-type, e.g. <code>MyResource</code> </li>
 <li>Now choose the template for your java class. Type any one of the following: {empty | xml | usecase | examples}.</li>
 <li>Then, you will be asked if you want to implement interfaces in your java class. Type <code>yes</code> to implement interfaces.</li>
 <li>You will be asked for the different interfaces. Type yes for necessary interfaces. </li>
 <li>Now the newly created resource is available in the directory <code>$YANELHOME/src/contributions/resources</code> </li>
-<li>Your resource type directory now contains the following items:       
+<li>Your resource type directory now contains the following items:         
 <ul>
 <li><code>./yanel-htdocs/doc/index.html</code></li>
 <li><code>./yanel-htdocs/icons/scalable/rt-icon.svg</code></li>
@@ -32,7 +32,7 @@
 <li><code>./build.xml</code></li>
 <li><code>./src/build/dependencies.xml</code></li>
 <li><code>./src/build/build.properties</code></li>
-<li><code>./src/java/org/myproject/yanel/impl/resources/MyNewResource.java</code></li>
+<li><code>./src/java/org/myproject/yanel/impl/resources/MyResource.java</code></li>
 </ul>
 </li>
 </ul>
@@ -57,13 +57,19 @@
 </ul>
 <h2>Add Resource Type configuration</h2>
 <ul>
-<li>Yanel looks up the configuration for a requested URL, to determine what resource-type to use. The resource-type configuration files are located in the repository which is configured as the <em>rti</em> (resource type identifier) repository in a realm (e.g <code>$YANELHOME/src/realms/use-cases/yanel/rti/my-new-resource.html.yanel-rc)</code>.
+<li>Yanel looks up the configuration for a requested URL, to determine what resource-type to use. The resource-type configuration files are located in the repository which is configured as the <em>rti</em> (resource type identifier) repository in a realm (e.g <code>$YANELHOME/src/realms/use-cases/yanel/rti/my-resource.html.yanel-rc)</code>.
 <pre>&lt;?xml version="1.0"?&gt;<br />&lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0"&gt;<br />  &lt;yanel:rti name="hello-world" namespace="http://myproject.org/yanel/resource/1.0"/&gt;<br />&lt;/yanel:resource-config&gt;</pre>
 </li>
 </ul>
 <h2>Browse Resource</h2>
 <ul>
-<li>You can view the newly created resource by visiting <code>http://localhost:8080/yanel/test/use-cases/your-resource.html</code>. </li>
+<li>You can view the newly created resource by visiting <code>http://localhost:8080/yanel/test/use-cases/my-resource.html</code>. </li>
+</ul>
+<h2>Note for SVN</h2>
+<ul>
+<li>If you are using subversion for version control, note that the first time you build your new resource, the directory build will be created in the resource's home directory. To make svn ignore this directory, in the resource's home directory do: <br />
+<pre>svn propset svn:ignore build</pre>
+</li>
 </ul>
 </body>
 </html>
