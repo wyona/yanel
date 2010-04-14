@@ -84,19 +84,6 @@ public class Yanel {
        resourceManager = new ResourceManager();
        resourceManager.setResourceTypeRegistry(rtr);
        
-/* TODO: Why is this commented?
-       PolicyManager pm = (PolicyManager) yanel.getBeanFactory().getBean("policyManager");
-       IdentityManager im = (IdentityManager) yanel.getBeanFactory().getBean("identityManager");
-       
-       Realm[] realms = realmConfig.getRealms();
-       for (int i=0; i<realms.length; i++) {
-           pm.addPoliciesRepository(realms[i].getPoliciesRepository());
-           im.addIdentitiesRepository(realms[i].getIdentitiesRepository());
-       }
-
-       im = (IdentityManager) yanel.getBeanFactory().getBean("identityManager");
-*/
-
        File configFile = new File(Yanel.class.getClassLoader().getResource(DEFAULT_CONFIGURATION_FILE_XML).getFile());
        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
        Configuration config = builder.buildFromFile(configFile);
