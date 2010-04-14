@@ -63,7 +63,7 @@ class YanelGlobalResourceTypeMatcher {
         } else if (globalRCfilename != null) {
             return getGlobalResourceConfiguration(globalRCfilename, realm, globalRCsBasePath);
         } else {
-            log.error("No such global resource configuration for path: " + path);
+            log.debug("No such global resource configuration for path (nothing to worry about): " + path);
             return null;
         }
     }
