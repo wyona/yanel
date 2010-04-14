@@ -140,8 +140,7 @@ public class UserManagerResource extends BasicXMLResource {
 
         boolean refresh = true;
         if (getResourceConfigProperty("refresh-users") != null) {
-            refresh = Boolean.getBoolean(getResourceConfigProperty("refresh-users"));
-            log.warn("Refresh users: " + refresh);
+            refresh = new Boolean(getResourceConfigProperty("refresh-users")).booleanValue();
         } else {
             log.warn("No refresh user property set within resource configuration '" + getConfiguration().getNode() + "', hence will use true as default.");
         }
