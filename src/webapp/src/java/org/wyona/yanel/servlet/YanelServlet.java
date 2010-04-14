@@ -1684,11 +1684,17 @@ public class YanelServlet extends HttpServlet {
         return realm;
     }
 
+    /**
+     * Generate response using a resource configuration
+     * @param rc Resource configuration
+     */
     private boolean generateResponseFromRTview(HttpServletRequest request, HttpServletResponse response, ResourceConfiguration rc, String path) throws ServletException {
         String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
+
         if (request.getParameter("yanel.format") != null) { // backwards compatible
             viewId = request.getParameter("yanel.format");
         }
+
         try {
             Realm realm = getRealm(request);
             Resource resource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
@@ -1711,8 +1717,8 @@ public class YanelServlet extends HttpServlet {
         java.util.Map<String, String> properties = new HashMap<String, String>();
 
         final String pathPrefix = "/" + reservedPrefix + "/";
-        final String aboutPagePath = pathPrefix + "about.html"; // About Yanel
-        final String aboutRealmPagePath = pathPrefix + "about-realm.html"; // About realm
+        final String ABOUT_PAGE_PATH = pathPrefix + "about.html"; // About Yanel
+        final String ABOUT_REALM_PAGE_PATH = pathPrefix + "about-realm.html"; // About realm
         final String resourceTypesPathPrefix = pathPrefix + "resource-types/";
 
         //XXX REFACTORME: in the cases where we simply use a resource-type's view
@@ -1728,18 +1734,19 @@ public class YanelServlet extends HttpServlet {
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);
         }
+
         if (rc != null) {
             if (generateResponseFromRTview(request, response, rc, path)) return;
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
             return;
-        } else if (path.equals(aboutPagePath)) {
+        } else if (path.equals(ABOUT_PAGE_PATH)) {
             //XXX REFACTORME: we should define an "about" resource-type instead!
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             response.setHeader("Content-Type", "text/html");
             PrintWriter w = response.getWriter();
             w.print(About.toHTML(yanelInstance.getVersion(), yanelInstance.getRevision()));
             return;
-        } else if (path.equals(aboutRealmPagePath)) {
+        } else if (path.equals(ABOUT_REALM_PAGE_PATH)) {
             //XXX REFACTORME: we should define an "about-realm" resource-type instead!
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             response.setHeader("Content-Type", "text/html");
@@ -1840,7 +1847,10 @@ public class YanelServlet extends HttpServlet {
             }
         }
     }
-    
+ 
+    /**
+     * Set expire date within HTTP header
+     */
     private void setExpiresHeader(HttpServletResponse response, int hours) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR_OF_DAY, hours);
