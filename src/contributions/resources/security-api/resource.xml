@@ -10,8 +10,7 @@ Security API to read and write via XML
 </description>
 
 <rtd>
-<!--
-  <property name="foo" default-value="bar"/>
--->
+  <!-- INFO: Also see properties of BasicXMLResource -->
+  <property name="refresh-users" default-value="true"/>
 </rtd>
 </resource>
