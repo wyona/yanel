@@ -68,24 +68,25 @@ public class RealmManager {
 
     /**
      * Initializes realms
-     * @param yanelConfigurationFile Yanel configuration, something like yanel.xml or yanel.properties
+     * @param yanelConfigurationFilename Yanel configuration filename, either 'yanel.xml' or 'yanel.properties'
      */
-    public RealmManager(String yanelConfigurationFile) throws ConfigurationException {
-        log.debug("Yanel Configuration: " + yanelConfigurationFile);
-        File realmsConfigFile = getSetRealmsConfigFile(yanelConfigurationFile);
+    public RealmManager(String yanelConfigurationFilename) throws ConfigurationException {
+        log.debug("Yanel Configuration Filename: " + yanelConfigurationFilename);
+        File realmsConfigFile = getSetRealmsConfigFile(yanelConfigurationFilename);
         log.debug("Realms Configuration: " + realmsConfigFile);
         readRealms(realmsConfigFile);
     }
 
     /**
      * Get realms configuration file
-     * @param yanelConfigurationFile Yanel configuration, something like yanel.xml or yanel.properties
+     * @param yanelConfigurationFilename Yanel configuration filename, either 'yanel.xml' or 'yanel.properties'
      * @return Something like realms.xml
      */
-    public File getSetRealmsConfigFile(String yanelConfigurationFile) throws ConfigurationException {
-        YANEL_CONFIGURATION_FILE = yanelConfigurationFile;
+    private File getSetRealmsConfigFile(String yanelConfigurationFilename) throws ConfigurationException {
+        YANEL_CONFIGURATION_FILE = yanelConfigurationFilename;
 
         if (RealmManager.class.getClassLoader().getResource(YANEL_CONFIGURATION_FILE) == null) {
+            log.warn("No such configuration file '" + YANEL_CONFIGURATION_FILE + "' in classpath, hence use default filename: " + Yanel.DEFAULT_CONFIGURATION_FILE);
             YANEL_CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
         }
 
@@ -142,15 +143,19 @@ public class RealmManager {
                     throw new ConfigurationException("Could not load realms configuration file: " + propertiesURL);
                 }
             } else {
-                log.error(YANEL_CONFIGURATION_FILE + " has to be either .xml or .properties");
+                log.error(YANEL_CONFIGURATION_FILE + " has to be either '.xml' or '.properties'");
             }
         } else {
-            log.error("No such configuration file: " + RealmManager.class.getClassLoader().getResource(YANEL_CONFIGURATION_FILE));
+            log.error("No such configuration file in classpath: " + YANEL_CONFIGURATION_FILE);
         }
+
         if (realmsConfigFile == null) {
             throw new ConfigurationException("Realms configuration file could not be determined!");
         }
+
+        // INFO: Set private realms config file
         _realmsConfigFile = realmsConfigFile;
+
         return realmsConfigFile;
     }
 
