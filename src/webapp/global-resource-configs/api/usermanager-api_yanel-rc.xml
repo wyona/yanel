@@ -4,4 +4,6 @@
   <yanel:rti name="security-api" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
   <yanel:property name="mime-type" value="application/xml"/>
+  <yanel:property name="refresh-users" value="true"/>
+
 </yanel:resource-config>
