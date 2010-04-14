@@ -10,10 +10,14 @@ import org.wyona.yanel.core.Environment;
 import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.map.Realm;
 
+import org.apache.log4j.Logger;
+
 /**
  * Resource type matcher for all global resources
  */
 class YanelGlobalResourceTypeMatcher {
+
+    private static Logger log = Logger.getLogger(YanelGlobalResourceTypeMatcher.class);
 
     private String pathPrefix;
     private String globalRCsBasePath;
@@ -23,7 +27,11 @@ class YanelGlobalResourceTypeMatcher {
         this.globalRCsBasePath = globalRCsBasePath;
     }
 
+    /**
+     * Get global resource configuration
+     */
     public ResourceConfiguration getResourceConfiguration(Environment environment, Realm realm, String path) throws Exception {
+        log.debug("Get global resource config: " + path);
         java.util.Map<String, String> properties = new HashMap<String, String>();
 
         //XXX: maybe we should use a configuration file instead!
@@ -48,13 +56,16 @@ class YanelGlobalResourceTypeMatcher {
 
         final String usersPathPrefix = pathPrefix + "users/";
         if (path.startsWith(usersPathPrefix)) {
+            log.debug("Get generic yanel resource config ...");
             final String userName = path.substring(usersPathPrefix.length(), path.length() - ".html".length());
             properties.put("user", userName);
             return new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
         } else if (globalRCfilename != null) {
             return getGlobalResourceConfiguration(globalRCfilename, realm, globalRCsBasePath);
+        } else {
+            log.error("No such global resource configuration for path: " + path);
+            return null;
         }
-        return null;
     }
 
     /**
@@ -64,6 +75,8 @@ class YanelGlobalResourceTypeMatcher {
      * @param realm Current realm
      */
     static ResourceConfiguration getGlobalResourceConfiguration(String resConfigName, Realm realm, String globalRCsBasePath) {
+        log.debug("Get global resource config, whereas check within realm first ...");
+
         // TODO: Introduce a repository for the Yanel webapp
         File realmDir = new File(realm.getConfigFile().getParent());
         File globalResConfigFile = org.wyona.commons.io.FileUtil.file(realmDir.getAbsolutePath(), "src" + File.separator + "webapp" + File.separator + "global-resource-configs/" + resConfigName);
@@ -73,19 +86,18 @@ class YanelGlobalResourceTypeMatcher {
         }
         InputStream is;
         try {
+            log.debug("Read resource config: " + globalResConfigFile);
             is = new java.io.FileInputStream(globalResConfigFile);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        ResourceConfiguration rc;
         try {
-            rc = new ResourceConfiguration(is);
+            return new ResourceConfiguration(is);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
             IOUtils.closeQuietly(is);
         }
-        return rc;
     }
 
 }
