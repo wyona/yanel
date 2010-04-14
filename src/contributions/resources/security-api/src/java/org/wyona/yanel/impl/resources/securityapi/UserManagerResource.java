@@ -137,7 +137,16 @@ public class UserManagerResource extends BasicXMLResource {
      */
     private StringBuilder getUsersAsXML() throws Exception {
         UserManager um = getRealm().getIdentityManager().getUserManager();
-        User[] users = um.getUsers();
+
+        boolean refresh = true;
+        if (getResourceConfigProperty("refresh-users") != null) {
+            refresh = Boolean.getBoolean(getResourceConfigProperty("refresh-users"));
+            log.warn("Refresh users: " + refresh);
+        } else {
+            log.warn("No refresh user property set within resource configuration '" + getConfiguration().getNode() + "', hence will use true as default.");
+        }
+
+        User[] users = um.getUsers(refresh);
         Arrays.sort(users, new ItemIDComparator());
 
         StringBuilder sb = new StringBuilder();
