@@ -160,7 +160,7 @@ public class YanelServlet extends HttpServlet {
         displayMostRecentVersion = new Boolean(config.getInitParameter("workflow.not-live.most-recent-version")).booleanValue();
         try {
             yanelInstance = Yanel.getInstance();
-            yanelInstance.init();
+            yanelInstance.init(); // TODO: Tell Yanel about alternative directory to look for configuration files, e.g. (File) getServletContext().getAttribute("javax.servlet.context.tempdir")
             
             map = yanelInstance.getMapImpl("map");
 
