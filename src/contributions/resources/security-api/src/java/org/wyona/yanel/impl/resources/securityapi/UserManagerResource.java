@@ -163,6 +163,8 @@ public class UserManagerResource extends BasicXMLResource {
         for (int i = 0; i < users.length; i++) {
             sb.append("<user id=\"" + users[i].getID() + "\"");
             sb.append(" expired=\"" + org.wyona.security.impl.util.UserUtil.isExpired(users[i]) + "\"");
+            sb.append(" expiration-date=\"" + users[i].getExpirationDate() + "\"");
+            sb.append(" language=\"" + users[i].getLanguage() + "\"");
 
             // INFO: Add custom properties
             SecurityItemExtraPropertiesGetter<User> itemExtraPropertiesGetter = getUserExtraPropertiesGetter();
