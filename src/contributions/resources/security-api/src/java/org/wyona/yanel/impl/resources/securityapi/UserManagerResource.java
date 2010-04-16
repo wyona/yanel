@@ -14,12 +14,14 @@ import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.User;
 import org.wyona.security.core.api.UserManager;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.Collections;
 
 import org.apache.log4j.Logger;
 
@@ -166,7 +168,9 @@ public class UserManagerResource extends BasicXMLResource {
             sb.append(" expired=\"" + org.wyona.security.impl.util.UserUtil.isExpired(users[i]) + "\"");
 
             if (users[i].getExpirationDate() != null) {
-                sb.append(" expiration-date=\"" + users[i].getExpirationDate() + "\"");
+                //DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+                DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z"); // INFO: IETF standard
+                sb.append(" expiration-date=\"" + df.format(users[i].getExpirationDate()) + "\"");
             }
 
             if (users[i].getLanguage() != null) {
