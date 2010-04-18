@@ -154,6 +154,9 @@ public class ContactResource extends Resource implements ViewableV1 {
                 transformer.setParameter("yanel.path", getPath());
                 transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
                 transformer.setParameter("yarep.back2realm", PathUtil.backToRealm(getPath()));
+                transformer.setParameter("content-language", getContentLanguage());
+                transformer.setParameter("language", getRequestedLanguage());
+                transformer.setParameter("yanel.reservedPrefix", getYanel().getReservedPrefix());
                 xsltHandler1.setResult(new SAXResult(xsltHandlerGlobal));
                 xsltHandlerGlobal.setResult(new SAXResult(xIncludeTransformer));
             } else {
