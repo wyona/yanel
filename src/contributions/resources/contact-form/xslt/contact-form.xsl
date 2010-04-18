@@ -20,6 +20,8 @@
   
   <xsl:param name="sent" select="'false'"/>
 
+  <xsl:param name="content-language" select="'CONTENT_LANGUAGE_IS_NULL'"/>
+
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
