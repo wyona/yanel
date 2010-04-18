@@ -135,6 +135,7 @@ public class ContactResource extends Resource implements ViewableV1 {
                     if (request.getParameter("message") != null) transformer.setParameter("message", request.getParameter("message"));
                 }
             }
+            transformer.setParameter("content-language", getContentLanguage());
 
             // create xinclude transformer:
             XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
