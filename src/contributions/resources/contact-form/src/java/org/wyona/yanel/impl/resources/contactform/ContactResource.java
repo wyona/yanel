@@ -31,8 +31,11 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
+
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
+import org.apache.xml.utils.ListingErrorHandler;
+
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
@@ -43,10 +46,13 @@ import org.wyona.yarep.core.RepositoryException;
 import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.ResourceResolver;
+import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
-import org.wyona.yarep.util.RepoPath;
 import org.wyona.yanel.core.util.PathUtil;
+
+import org.wyona.yarep.util.RepoPath;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -104,6 +110,11 @@ public class ContactResource extends Resource implements ViewableV1 {
 
             // create Body xslt transformer:
             SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
+            SourceResolver uriResolver = new SourceResolver(this);
+            tf.setURIResolver(uriResolver);
+            java.io.StringWriter errorWriter = new java.io.StringWriter();
+            ListingErrorHandler errorListener = new ListingErrorHandler(new java.io.PrintWriter(errorWriter));
+            tf.setErrorListener(errorListener);
 
             TransformerHandler xsltHandler1 = tf.newTransformerHandler(getBodyXSLTStreamSource());
             Transformer transformer = xsltHandler1.getTransformer();
