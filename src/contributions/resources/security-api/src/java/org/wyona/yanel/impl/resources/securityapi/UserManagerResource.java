@@ -49,6 +49,8 @@ public class UserManagerResource extends BasicXMLResource {
                 sb.append(getUsersAsXML());
             } else if (usecase.equals("getuser")) {
                 sb.append(getUserAsXML(getEnvironment().getRequest().getParameter("id")));
+            } else if (usecase.equals("deleteuser")) {
+                deleteUser(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("getgroups")) {
                 sb.append(getGroupsAsXML());
             } else if (usecase.equals("deletepolicy")) {
@@ -85,6 +87,15 @@ public class UserManagerResource extends BasicXMLResource {
         StringBuilder sb = new StringBuilder("<user id=\"" + id + "\">");
         sb.append("</user>");
         return sb;
+    }
+
+    /**
+     * Delete a specific user
+     * @param id User ID
+     */
+    private void deleteUser(String id) throws AccessManagementException {
+        UserManager um = getRealm().getIdentityManager().getUserManager();
+        um.removeUser(id);
     }
 
     /**
