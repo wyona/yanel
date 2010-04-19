@@ -61,11 +61,13 @@ import org.xml.sax.helpers.XMLReaderFactory;
 //XXX: This resource-type should rather be implemented with BasicXMLResource really...
 public class ContactResource extends Resource implements ViewableV1 {
 
+    private static Logger log = Logger.getLogger(ContactResource.class);
+    private static Logger logAccess = Logger.getLogger(org.wyona.yanel.servlet.AccessLog.CATEGORY);
+
     private static final String SMTP_HOST = "smtpHost";
     private static final String SMTP_PORT = "smtpPort";
     private static final String TO = "to";
     private static final String SUBJECT = "subject";
-    private static Logger log = Logger.getLogger(ContactResource.class);
     private String smtpHost = "";
     private int smtpPort = 25;
     private String to = "";
@@ -125,7 +127,10 @@ public class ContactResource extends Resource implements ViewableV1 {
                     throw new Exception("there is no spamblock implemented in the form.");
                 }
                 if (request.getParameter("spamblock_hidden").equals("TRyAg41n") && request.getParameter("spamblock_input").equals("8989890")) {    
-                    sendMail(transformer);
+                    logAccess.info(org.wyona.yanel.servlet.AccessLog.getLogMessage(request, getRealm().getID()) + " e-mail:" + request.getParameter("email"));
+                    sendMail(transformer, org.wyona.yanel.servlet.AccessLog.getYanelAnalyticsCookie(request).getValue());
+
+
                     if (request.getParameter("company") != null) transformer.setParameter("company", request.getParameter("company"));
                     if (request.getParameter("firstName") != null) transformer.setParameter("firstName", request.getParameter("firstName"));
                     if (request.getParameter("lastName") != null) transformer.setParameter("lastName", request.getParameter("lastName"));
@@ -190,9 +195,12 @@ public class ContactResource extends Resource implements ViewableV1 {
     }
 
     /**
+     * Send E-Mail to administrator of this contact form
      *
+     * @param transformer Transformer to generate HTTP response, whereas various messages might be added (errors, warnings, etc.)
+     * @param cookieValue Yanel analytics cookie value in order to connect history with this e-mail
      */
-    private void sendMail(Transformer transformer) throws Exception {
+    private void sendMail(Transformer transformer, String cookieValue) throws Exception {
         String email = getEnvironment().getRequest().getParameter("email");
         if(email == null || ("").equals(email)) {
             transformer.setParameter("error", "emailNotSet");
@@ -217,8 +225,9 @@ public class ContactResource extends Resource implements ViewableV1 {
             if (contact.getLastName() != null) content = content + "Lastname: " + contact.getLastName() + "\n";
             if (contact.getAddress() != null) content = content + "Address: " + contact.getAddress() + "\n";
             if (contact.getCity() != null) content = content + "City: " + contact.getCity() + "\n";
-            if (contact.getEmail() != null) content = content + "E-Mail: " + contact.getEmail() + "\n" + "\n";
-            if (contact.message != null) content = content + "Message:\n" + contact.message;
+            if (contact.getEmail() != null) content = content + "E-Mail: " + contact.getEmail() + "\n\n";
+            if (contact.message != null) content = content + "Message:\n" + contact.message + "\n\n";
+            content = content + "Yanel-analytics-cookie: " + cookieValue;
 
 
             if(to != null) {
