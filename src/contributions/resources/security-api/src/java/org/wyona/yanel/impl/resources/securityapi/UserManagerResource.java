@@ -50,6 +50,7 @@ public class UserManagerResource extends BasicXMLResource {
             } else if (usecase.equals("getuser")) {
                 sb.append(getUserAsXML(getEnvironment().getRequest().getParameter("id")));
             } else if (usecase.equals("deleteuser")) {
+                log.warn("DEBUG: Delete user: " + getEnvironment().getRequest().getParameter("id"));
                 deleteUser(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("getgroups")) {
                 sb.append(getGroupsAsXML());
@@ -59,9 +60,11 @@ public class UserManagerResource extends BasicXMLResource {
                 boolean recursively = "1".equals(recursivelyText);
                 deletePolicy(path, recursively);
             } else {
+                log.warn("No such usecase implemented: " + usecase);
                 sb.append("<no-such-yanel-usecase-implemented>" + usecase + "</no-such-yanel-usecase-implemented>");
             }
         } else {
+            log.warn("No usecase specified!");
             sb.append("<no-yanel-usecase/>");
         }
         } catch(Exception e) {
