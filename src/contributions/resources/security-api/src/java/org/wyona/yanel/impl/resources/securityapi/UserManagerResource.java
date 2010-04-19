@@ -183,7 +183,7 @@ public class UserManagerResource extends BasicXMLResource {
 
             if (users[i].getExpirationDate() != null) {
                 //DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-                DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z"); // INFO: IETF standard
+                DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", java.util.Locale.ENGLISH); // INFO: IETF standard
                 sb.append(" expiration-date=\"" + df.format(users[i].getExpirationDate()) + "\"");
             }
 
