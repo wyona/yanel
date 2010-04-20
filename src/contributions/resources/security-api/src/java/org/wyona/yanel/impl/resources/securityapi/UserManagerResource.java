@@ -96,20 +96,31 @@ public class UserManagerResource extends BasicXMLResource {
 
     /**
      * Get a specific group
-     * @param id User ID
+     * @param id Group ID
      */
-    private StringBuilder getGroupAsXML(String id) {
-        //StringBuilder sb = new StringBuilder("<group id=\"" + id + "\">");
-        StringBuilder sb = new StringBuilder("<members xmlns=\"http://www.wyona.org/security/1.0\" id=\"" + id + "\">");
-        sb.append("<user id=\"kkb\"/>");
-        sb.append("<user id=\"ep\" naz-blocked=\"true\"/>");
+    private StringBuilder getGroupAsXML(String id) throws Exception {
+        GroupManager gm = getRealm().getIdentityManager().getGroupManager();
+        Group group = gm.getGroup(id);
+        Item[] members = group.getMembers();
+        StringBuilder sb = new StringBuilder("<group xmlns=\"http://www.wyona.org/security/1.0\" id=\"" + id + "\">");
+        sb.append("<members>");
+        for (int i = 0; i < members.length; i++) {
+            log.warn("DEBUG: Member: " + members[i].getID());
+            if (members[i] instanceof User) {
+                sb.append("<user id=\"" + members[i].getID() + "\"/>");
+            } else if (members[i] instanceof Group) {
+                sb.append("<group id=\"" + members[i].getID() + "\"/>");
+            } else {
+                log.warn("No such instance of member/item implemented: " + members[i].getID());
+            }
+        }
+/*
+        sb.append("<user id=\"ep\" naz-blocked=\"true\"/>"); // TODO: naz ...
         sb.append("<user id=\"fedpol_a\" naz-blocked=\"true\" naz-only-local=\"true\"/>");
         sb.append("<user id=\"dz\" naz-only-local=\"true\"/>");
-        sb.append("<group id=\"test_subgroup\"/>");
-        sb.append("<group id=\"test_group\"/>");
-        sb.append("<group id=\"hugo\"/>");
+*/
         sb.append("</members>");
-        //sb.append("</group>");
+        sb.append("</group>");
         return sb;
     }
 
