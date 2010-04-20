@@ -118,7 +118,18 @@ public class PolicyManagerResource extends BasicXMLResource {
 
                 if (viewId != null && viewId.equals("get-xml")) {
                     log.warn("DEBUG: Get XML version of policy ...");
-                    sb.append("<?xml version=\"1.0\"?><policy-viewer xmlns=\"http://www.wyona.org/security/1.0\"><usecases></usecases></policy-viewer>");
+                    sb.append("<?xml version=\"1.0\"?><policy-viewer xmlns=\"http://www.wyona.org/security/1.0\"><usecases><usecase id=\"r\">Read</usecase><usecase id=\"w\">Write</usecase></usecases>");
+                    sb.append("<policies>");
+                    sb.append("<node local-name=\"/\">");
+                    sb.append("<policy use-inherited-policies=\"true\">");
+                    sb.append("<usecase id=\"r\">");
+                    sb.append("<user id=\"test-user\" permission=\"false\" naz-blocked=\"true\" naz-permission-unlike-group=\"true\"/>");
+                    sb.append("<group id=\"test-group\" permission=\"true\" naz-permission-unlike-members=\"true\"/>");
+                    sb.append("</usecase>");
+                    sb.append("</policy>");
+                    sb.append("</node>");
+                    sb.append("</policies>");
+                    sb.append("</policy-viewer>");
                 } else {
                     log.warn("DEBUG: Get XHTML version of policy ...");
                     sb.append(PolicyViewer.getXHTMLView(getRealm().getPolicyManager(), getRealm().getIdentityManager().getGroupManager(), getPath(), null, orderedBy, showParents, showTabs, showAbbreviatedLabels));
