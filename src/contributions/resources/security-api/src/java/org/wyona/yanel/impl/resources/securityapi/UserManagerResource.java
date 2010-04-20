@@ -54,6 +54,8 @@ public class UserManagerResource extends BasicXMLResource {
                 deleteUser(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("getgroups")) {
                 sb.append(getGroupsAsXML());
+            } else if (usecase.equals("getgroup")) {
+                sb.append(getGroupAsXML(getEnvironment().getRequest().getParameter("id")));
             } else if (usecase.equals("deletepolicy")) {
                 String path = getParameterAsString("path");
                 String recursivelyText = getParameterAsString("deep");
@@ -89,6 +91,25 @@ public class UserManagerResource extends BasicXMLResource {
     private StringBuilder getUserAsXML(String id) {
         StringBuilder sb = new StringBuilder("<user id=\"" + id + "\">");
         sb.append("</user>");
+        return sb;
+    }
+
+    /**
+     * Get a specific group
+     * @param id User ID
+     */
+    private StringBuilder getGroupAsXML(String id) {
+        //StringBuilder sb = new StringBuilder("<group id=\"" + id + "\">");
+        StringBuilder sb = new StringBuilder("<members xmlns=\"http://www.wyona.org/security/1.0\" id=\"" + id + "\">");
+        sb.append("<user id=\"kkb\"/>");
+        sb.append("<user id=\"ep\" naz-blocked=\"true\"/>");
+        sb.append("<user id=\"fedpol_a\" naz-blocked=\"true\" naz-only-local=\"true\"/>");
+        sb.append("<user id=\"dz\" naz-only-local=\"true\"/>");
+        sb.append("<group id=\"test_subgroup\"/>");
+        sb.append("<group id=\"test_group\"/>");
+        sb.append("<group id=\"hugo\"/>");
+        sb.append("</members>");
+        //sb.append("</group>");
         return sb;
     }
 
