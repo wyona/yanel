@@ -74,12 +74,15 @@ public class PolicyManagerResource extends BasicXMLResource {
      */
     @Override
     protected InputStream getContentXML(String viewId) throws Exception {
+
         // For example ?policy-path=/foo/bar.html
         String policyPath = request.getParameter(PARAMETER_EDIT_PATH);
         if (policyPath == null) {
             log.info("No policy path specified (e.g. ?policy-path=/foo/bar.html). Request path used as default: " + getPath());
             policyPath = getPath();
         }
+
+
         // For example ?yanel.policy=read
         String policyUsecase = "read";
         if (request.getParameter(PARAMETER_USECASE) != null) {
@@ -89,7 +92,9 @@ public class PolicyManagerResource extends BasicXMLResource {
         }
         
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(getPath());
+
         StringBuilder sb = new StringBuilder("");
+
             if (policyUsecase.equals("read")) {
 
                 // Either order by usecases or identities
@@ -107,8 +112,17 @@ public class PolicyManagerResource extends BasicXMLResource {
                 if (showTabsParam != null) showTabs = new Boolean(showTabsParam).booleanValue();
 
                 boolean showAbbreviatedLabels = false;
-                if (getResourceConfigProperty("show-abbreviated-labels") != null) showAbbreviatedLabels = Boolean.valueOf(getResourceConfigProperty("show-abbreviated-labels"));
-                sb.append(PolicyViewer.getXHTMLView(getRealm().getPolicyManager(), getRealm().getIdentityManager().getGroupManager(), getPath(), null, orderedBy, showParents, showTabs, showAbbreviatedLabels));
+                if (getResourceConfigProperty("show-abbreviated-labels") != null) {
+                    showAbbreviatedLabels = Boolean.valueOf(getResourceConfigProperty("show-abbreviated-labels"));
+                }
+
+                if (viewId != null && viewId.equals("get-xml")) {
+                    log.warn("DEBUG: Get XML version of policy ...");
+                    sb.append("<?xml version=\"1.0\"?><policy-viewer xmlns=\"http://www.wyona.org/security/1.0\"><usecases></usecases></policy-viewer>");
+                } else {
+                    log.warn("DEBUG: Get XHTML version of policy ...");
+                    sb.append(PolicyViewer.getXHTMLView(getRealm().getPolicyManager(), getRealm().getIdentityManager().getGroupManager(), getPath(), null, orderedBy, showParents, showTabs, showAbbreviatedLabels));
+                }
             } else if (policyUsecase.equals("update")) {
                 String getXML = request.getParameter("get");
                 String postXML = request.getParameter("post");
