@@ -4,6 +4,8 @@
 
 package org.wyona.yanel.impl.resources.policymanager;
 
+import org.wyona.security.core.GroupPolicy;
+import org.wyona.security.core.IdentityPolicy;
 import org.wyona.security.core.UsecasePolicy;
 import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.api.Group;
@@ -353,7 +355,7 @@ public class PolicyManagerResource extends BasicXMLResource {
         org.wyona.security.core.UsecasePolicy[] up = p.getUsecasePolicies();
         if (up != null && up.length > 0) {
             for (int i = 0; i < up.length; i++) {
-                org.wyona.security.core.GroupPolicy[] ids = up[i].getGroupPolicies();
+                GroupPolicy[] ids = up[i].getGroupPolicies();
                 for (int j = 0; j < ids.length; j++) {
                     List<String> groupRights;
                     if ((groupRights = groups.get(ids[j].getId())) != null) {
@@ -461,33 +463,53 @@ public class PolicyManagerResource extends BasicXMLResource {
      * @param orderedBy Allows ordering by usecases or identities
      * @param showParents Show the policies of the parent nodes, which allows to figure out how the policy has been aggregated
      */
-    private StringBuilder getPoliciesAsXML(String path, String contentItemId, int orderedBy, boolean showParents) {
+    private StringBuilder getPoliciesAsXML(String path, String contentItemId, int orderedBy, boolean showParents) throws Exception {
+        log.warn("DEBUG: Get policies for path: " + path);
         StringBuilder sb = new StringBuilder();
-                    sb.append("<?xml version=\"1.0\"?><policy-viewer xmlns=\"http://www.wyona.org/security/1.0\"><usecases><usecase id=\"r\">Read</usecase><usecase id=\"w\">Write</usecase></usecases>");
-                    sb.append("<policies>");
 
-                    sb.append("<node local-name=\"/\">");
-                    sb.append("<policy use-inherited-policies=\"true\">");
-                    sb.append("<usecase id=\"r\">");
-                    sb.append("<user id=\"test-user\" permission=\"false\" naz-blocked=\"true\" naz-permission-unlike-group=\"true\"/>");
-                    sb.append("<group id=\"test-group\" permission=\"true\" naz-permission-unlike-members=\"true\"/>");
+        sb.append("<?xml version=\"1.0\"?><policy-viewer xmlns=\"http://www.wyona.org/security/1.0\">");
+
+        sb.append("<usecases><usecase id=\"r\">Read</usecase><usecase id=\"w\">Write</usecase></usecases>");
+
+        sb.append("<policies>");
+
+        String[] names = path.split("/");
+        StringBuilder currentPath = new StringBuilder();
+        for (int i = 0; i < names.length; i++) {
+            currentPath.append(names[i] + "/");
+            boolean aggregate = false;
+            Policy p = getRealm().getPolicyManager().getPolicy(currentPath.toString(), aggregate);
+
+            if (p != null) {
+                if (i == 0) {
+                    sb.append("<node local-name=\"" + "/" + "\">");
+                } else {
+                    sb.append("<node local-name=\"" + names[i] + "\">");
+                }
+                sb.append("<policy use-inherited-policies=\"" + p.useInheritedPolicies() + "\">");
+                UsecasePolicy[] up = p.getUsecasePolicies();
+                for (int k = 0; k < up.length; k++) {
+                    sb.append("<usecase id=\"" + up[k].getName() + "\">");
+                    // TODO: Use ItemPolicy and cast check in order to get the right order
+                    IdentityPolicy[] ip = up[k].getIdentityPolicies();
+                    for (int j = 0; j < ip.length; j++) {
+                        sb.append("<user id=\"" + ip[j].getId() + "\" permission=\"" + ip[j].getPermission() + "\" naz-blocked=\"true\" naz-permission-unlike-group=\"true\"/>"); // TODO: naz ...
+                    }
+                    GroupPolicy[] gp = up[k].getGroupPolicies();
+                    for (int j = 0; j < gp.length; j++) {
+                        sb.append("<group id=\"" + gp[j].getId() + "\" permission=\"" + gp[j].getPermission() + "\" naz-permission-unlike-members=\"true\"/>"); // TODO: naz ...
+                    }
                     sb.append("</usecase>");
-                    sb.append("</policy>");
-                    sb.append("</node>");
+                }
+                sb.append("</policy>");
+                sb.append("</node>");
+            } else {
+                sb.append("<node local-name=\"" + names[i] + "\"/>");
+            }
+        }
 
-                    sb.append("<node local-name=\"foo\"/>");
-
-                    sb.append("<node local-name=\"bar\">");
-                    sb.append("<policy use-inherited-policies=\"true\">");
-                    sb.append("<usecase id=\"w\">");
-                    sb.append("<user id=\"test-user\" permission=\"false\" naz-blocked=\"true\" naz-permission-unlike-group=\"true\"/>");
-                    sb.append("<group id=\"test-group\" permission=\"true\"/>");
-                    sb.append("</usecase>");
-                    sb.append("</policy>");
-                    sb.append("</node>");
-
-                    sb.append("</policies>");
-                    sb.append("</policy-viewer>");
+        sb.append("</policies>");
+        sb.append("</policy-viewer>");
         return sb;
     }
 }
