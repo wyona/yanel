@@ -118,18 +118,7 @@ public class PolicyManagerResource extends BasicXMLResource {
 
                 if (viewId != null && viewId.equals("get-xml")) {
                     log.warn("DEBUG: Get XML version of policy ...");
-                    sb.append("<?xml version=\"1.0\"?><policy-viewer xmlns=\"http://www.wyona.org/security/1.0\"><usecases><usecase id=\"r\">Read</usecase><usecase id=\"w\">Write</usecase></usecases>");
-                    sb.append("<policies>");
-                    sb.append("<node local-name=\"/\">");
-                    sb.append("<policy use-inherited-policies=\"true\">");
-                    sb.append("<usecase id=\"r\">");
-                    sb.append("<user id=\"test-user\" permission=\"false\" naz-blocked=\"true\" naz-permission-unlike-group=\"true\"/>");
-                    sb.append("<group id=\"test-group\" permission=\"true\" naz-permission-unlike-members=\"true\"/>");
-                    sb.append("</usecase>");
-                    sb.append("</policy>");
-                    sb.append("</node>");
-                    sb.append("</policies>");
-                    sb.append("</policy-viewer>");
+                    sb.append(getPoliciesAsXML(getPath(), null, orderedBy, showParents));
                 } else {
                     log.warn("DEBUG: Get XHTML version of policy ...");
                     sb.append(PolicyViewer.getXHTMLView(getRealm().getPolicyManager(), getRealm().getIdentityManager().getGroupManager(), getPath(), null, orderedBy, showParents, showTabs, showAbbreviatedLabels));
@@ -462,5 +451,43 @@ public class PolicyManagerResource extends BasicXMLResource {
         str = str.replaceAll("&", "&amp;");
         str = str.replaceAll("<", "&lt;");
         return str;
+    }
+
+    /**
+     * Get policies as XML
+     *
+     * @param path Content path which is associated with an access policy
+     * @param contentItemId Content Item ID which allows a unique association with an access policy and an item within the content
+     * @param orderedBy Allows ordering by usecases or identities
+     * @param showParents Show the policies of the parent nodes, which allows to figure out how the policy has been aggregated
+     */
+    private StringBuilder getPoliciesAsXML(String path, String contentItemId, int orderedBy, boolean showParents) {
+        StringBuilder sb = new StringBuilder();
+                    sb.append("<?xml version=\"1.0\"?><policy-viewer xmlns=\"http://www.wyona.org/security/1.0\"><usecases><usecase id=\"r\">Read</usecase><usecase id=\"w\">Write</usecase></usecases>");
+                    sb.append("<policies>");
+
+                    sb.append("<node local-name=\"/\">");
+                    sb.append("<policy use-inherited-policies=\"true\">");
+                    sb.append("<usecase id=\"r\">");
+                    sb.append("<user id=\"test-user\" permission=\"false\" naz-blocked=\"true\" naz-permission-unlike-group=\"true\"/>");
+                    sb.append("<group id=\"test-group\" permission=\"true\" naz-permission-unlike-members=\"true\"/>");
+                    sb.append("</usecase>");
+                    sb.append("</policy>");
+                    sb.append("</node>");
+
+                    sb.append("<node local-name=\"foo\"/>");
+
+                    sb.append("<node local-name=\"bar\">");
+                    sb.append("<policy use-inherited-policies=\"true\">");
+                    sb.append("<usecase id=\"w\">");
+                    sb.append("<user id=\"test-user\" permission=\"false\" naz-blocked=\"true\" naz-permission-unlike-group=\"true\"/>");
+                    sb.append("<group id=\"test-group\" permission=\"true\"/>");
+                    sb.append("</usecase>");
+                    sb.append("</policy>");
+                    sb.append("</node>");
+
+                    sb.append("</policies>");
+                    sb.append("</policy-viewer>");
+        return sb;
     }
 }
