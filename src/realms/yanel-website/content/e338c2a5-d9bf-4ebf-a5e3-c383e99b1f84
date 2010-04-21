@@ -21,9 +21,16 @@
   
   &lt;!-- # Reserved-Prefix configuration --&gt;
   &lt;reserved-prefix&gt;yanel&lt;/reserved-prefix&gt;
-<br />  &lt;!-- # Mail server configuration --&gt;<br />  &lt;smtp host="mail.foo.com" port="25"/&gt;<br /><br />&lt;/yanel&gt;</pre>
+
+  &lt;!-- # Scheduler configuration --&gt;
+  &lt;scheduler enabled="false"/&gt;
+
+  &lt;!-- # Mail server configuration --&gt;
+  &lt;smtp host="mail.foo.com" port="25"/&gt;
+
+&lt;/yanel&gt;</pre>
 <p><strong>Note 1:</strong> Normally, you should edit <code>conf/local/local.yanel.xml</code>, rather than <code>conf/yanel.xml</code>.</p>
-<p><strong>Note 2:</strong> After editing either of these configuration files, Yanel needs to be rebuilt.</p>
+<p><strong>Note 2:</strong> After editing either of these configuration files, Yanel needs to be rebuilt in order to overwrite <code>WEB-INF/classes/yanel.xml</code> (or alternatively one can edit this file directly and just restart Yanel instead).</p>
 </div>
 </body>
 </html>
