@@ -42,7 +42,7 @@ public class I18nTransformer2 extends AbstractTransformer {
     private StringBuffer textBuffer;
 
     public static final String NS_URI = "http://www.wyona.org/yanel/i18n/1.0";
-    
+
     public I18nTransformer2(String messages, String language, String defaultLanguage) {
         String[] messagesArray = new String[1];
         messagesArray[0] = messages;
@@ -52,7 +52,12 @@ public class I18nTransformer2 extends AbstractTransformer {
     public I18nTransformer2(String[] messagesArray, String language, String defaultLanguage) {
         this.messageBundles = getMessageBundles(messagesArray, language, defaultLanguage);
     }
-    
+
+    /**
+     * Get message bundle for a particular language
+     * @param language Language for which message bundle shall be retrieved
+     * @param defaultLanguage If no message bundle for language exists, then use message bundle of defaultLanguage
+     */
     protected ResourceBundle[] getMessageBundles(String[] messages, String language, String defaultLanguage) {
         Locale currentLocale = new Locale(language);
         Locale defaultLocale = new Locale(defaultLanguage);
@@ -61,6 +66,7 @@ public class I18nTransformer2 extends AbstractTransformer {
             try {
                 messageBundles[i] = ResourceBundle.getBundle(messages[i], currentLocale);
             } catch (MissingResourceException e) {
+                log.warn("No such language '" + language + "' available, hence use default language '" + defaultLanguage + "'!");
                 messageBundles[i] = ResourceBundle.getBundle(messages[i], defaultLocale);
             } 
         }
