@@ -554,15 +554,11 @@ public class PolicyManagerResource extends BasicXMLResource {
                     }
                     GroupPolicy[] gp = up[k].getGroupPolicies();
                     for (int j = 0; j < gp.length; j++) {
-                        Item[] members = getRealm().getIdentityManager().getGroupManager().getGroup(gp[j].getId()).getMembers();
-                        for (int i = 0; i < members.length; i++) {
-                            if (members[i] instanceof User) {
-                                sb.append("<user id=\"" + members[i].getID() + "\" permission=\"" + gp[j].getPermission() + "\" naz-permission-unlike-members=\"true\"/>"); // TODO: naz ...
-                            } else if (members[i] instanceof Group) {
-                                log.warn("Sub-group '" + members[i].getID() + "' of group '" + gp[j].getId() + "' needs to be resolved!");
-                            } else {
-                                log.warn("No such member type implemented!");
-                            }
+                        List resolvedGroups = new java.util.ArrayList();
+                        resolvedGroups.add(gp[j].getId());
+                        User[] groupUsers = resolveGroup(gp[j].getId(), resolvedGroups);
+                        for (int i = 0; i < groupUsers.length; i++) {
+                            sb.append("<user id=\"" + groupUsers[i].getID() + "\" permission=\"" + gp[j].getPermission() + "\" naz-permission-unlike-members=\"true\"/>"); // TODO: naz ...
                         }
                     }
                     sb.append("</usecase>");
@@ -577,4 +573,46 @@ public class PolicyManagerResource extends BasicXMLResource {
         sb.append("</policy-viewer>");
         return sb;
     }
+
+    /**
+     * Get all users of a particular group and its sub-groups
+     * @param groupdId Group ID
+     * @param resolvedGroupIDs Resolved group IDs in order to detect loops
+     */
+    private User[] resolveGroup(String groupId, List resolvedGroupIDs) throws Exception {
+        Item[] members = getRealm().getIdentityManager().getGroupManager().getGroup(groupId).getMembers();
+        List users = new java.util.ArrayList();
+        for (int i = 0; i < members.length; i++) {
+            if (members[i] instanceof User) {
+                users.add((User)members[i]);
+            } else if (members[i] instanceof Group) {
+                if (alreadyResolved(members[i].getID(), resolvedGroupIDs)) {
+                    log.warn("Loop detected for group '" + groupId + "' and sub-group '" + members[i].getID() + "'!");
+                } else {
+                    log.debug("Sub-group '" + members[i].getID() + "' of group '" + groupId + "' needs to be resolved!");
+                    resolvedGroupIDs.add(members[i].getID());
+                    User[] subGroupUsers = resolveGroup(members[i].getID(), resolvedGroupIDs);
+                    for (int j = 0;j < subGroupUsers.length; j++) {
+                        // TODO: Check if user already exists within parent group
+                        users.add(subGroupUsers[j]);
+                    }
+                }
+            } else {
+                log.warn("No such member type implemented (Member: '" + members[i].getID() + "', Group: '" + groupId + "')!");
+            }
+        }
+        return (User[])users.toArray(new User[users.size()]);
+    }
+
+    /**
+     * Check whether group has been resolved already
+     */
+     private boolean alreadyResolved(String groupId, List resolvedGroupIDs) {
+         for (int i = 0; i < resolvedGroupIDs.size(); i++) {
+             if (groupId.equals((String)resolvedGroupIDs.get(i))) {
+                 return true;
+             }
+         }
+         return false;
+     }
 }
