@@ -474,6 +474,7 @@ public class PolicyManagerResource extends BasicXMLResource {
 
         sb.append("<?xml version=\"1.0\"?><policy-viewer xmlns=\"http://www.wyona.org/security/1.0\">");
 
+        // TODO: ...
         sb.append("<usecases><usecase id=\"r\">Read</usecase><usecase id=\"w\">Write</usecase></usecases>");
 
         sb.append("<policies>");
@@ -527,11 +528,12 @@ public class PolicyManagerResource extends BasicXMLResource {
      * @param showParents Show the policies of the parent nodes, which allows to figure out how the policy has been aggregated
      */
     private StringBuilder getAggregatedPolicyAsXML(String path, String contentItemId, int orderedBy, boolean showParents) throws Exception {
-        log.warn("DEBUG: Get policies for path: " + path);
+        log.warn("DEBUG: Get aggregated policy for path: " + path);
         StringBuilder sb = new StringBuilder();
 
         sb.append("<?xml version=\"1.0\"?><policy-viewer xmlns=\"http://www.wyona.org/security/1.0\">");
 
+        // TODO: ...
         sb.append("<usecases><usecase id=\"r\">Read</usecase><usecase id=\"w\">Write</usecase></usecases>");
 
         sb.append("<policies>");
@@ -552,7 +554,16 @@ public class PolicyManagerResource extends BasicXMLResource {
                     }
                     GroupPolicy[] gp = up[k].getGroupPolicies();
                     for (int j = 0; j < gp.length; j++) {
-                        sb.append("<group id=\"" + gp[j].getId() + "\" permission=\"" + gp[j].getPermission() + "\" naz-permission-unlike-members=\"true\"/>"); // TODO: naz ...
+                        Item[] members = getRealm().getIdentityManager().getGroupManager().getGroup(gp[j].getId()).getMembers();
+                        for (int i = 0; i < members.length; i++) {
+                            if (members[i] instanceof User) {
+                                sb.append("<user id=\"" + members[i].getID() + "\" permission=\"" + gp[j].getPermission() + "\" naz-permission-unlike-members=\"true\"/>"); // TODO: naz ...
+                            } else if (members[i] instanceof Group) {
+                                log.warn("Sub-group '" + members[i].getID() + "' of group '" + gp[j].getId() + "' needs to be resolved!");
+                            } else {
+                                log.warn("No such member type implemented!");
+                            }
+                        }
                     }
                     sb.append("</usecase>");
                 }
