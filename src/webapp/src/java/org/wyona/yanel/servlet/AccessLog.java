@@ -48,7 +48,11 @@ public class AccessLog {
      */
     public static String getLogMessage(HttpServletRequest request, String realmID) {
         Cookie cookie = getYanelAnalyticsCookie(request);
-        return getLogMessage(request.getRequestURL().toString(), realmID, cookie.getValue(), request.getHeader("referer"), request.getHeader("User-Agent"));
+        String cookieValue = null;
+        if (cookie != null) {
+            cookieValue = cookie.getValue();
+        }
+        return getLogMessage(request.getRequestURL().toString(), realmID, cookieValue, request.getHeader("referer"), request.getHeader("User-Agent"));
     }
 
     /**
