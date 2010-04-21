@@ -16,6 +16,8 @@
   <xsl:param name="address" select="''"/>
   <xsl:param name="zipCity" select="''"/>
   <xsl:param name="message" select="''"/>
+
+  <!-- INFO: error i18 key, e.g. emailNotSet or emailNotValid, which is configured within src/contributions/resources/contact-form/conf/contact-form_LANGUAGE.properties -->
   <xsl:param name="error" select="''"/>
   
   <xsl:param name="sent" select="'false'"/>
