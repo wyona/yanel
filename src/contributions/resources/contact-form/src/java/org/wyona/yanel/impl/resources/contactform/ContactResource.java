@@ -118,7 +118,14 @@ public class ContactResource extends Resource implements ViewableV1 {
                 }
                 if (request.getParameter("spamblock_hidden").equals("TRyAg41n") && request.getParameter("spamblock_input").equals("8989890")) {    
                     logAccess.info(org.wyona.yanel.servlet.AccessLog.getLogMessage(request, getRealm().getID()) + " e-mail:" + request.getParameter("email"));
-                    sendMail(transformer, org.wyona.yanel.servlet.AccessLog.getYanelAnalyticsCookie(request).getValue());
+                    javax.servlet.http.Cookie cookie = org.wyona.yanel.servlet.AccessLog.getYanelAnalyticsCookie(request);
+                    String cookieValue = null;
+                    if (cookie != null) {
+                        cookieValue = cookie.getValue();
+                    } else {
+                        log.warn("No Yanel analytics cookie set yet!");
+                    }
+                    sendMail(transformer, cookieValue);
 
 
                     if (request.getParameter("company") != null) transformer.setParameter("company", request.getParameter("company"));
