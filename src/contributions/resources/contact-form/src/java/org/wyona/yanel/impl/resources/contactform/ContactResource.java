@@ -76,7 +76,6 @@ public class ContactResource extends Resource implements ViewableV1 {
     private String messageBundle = "contact-form";
 
     private Path path = null;
-    private String language = null;
 
     private String defaultEmailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
 
@@ -93,16 +92,7 @@ public class ContactResource extends Resource implements ViewableV1 {
      */
     public View getView(HttpServletRequest request, String viewId) throws Exception {
         path = new Path(request.getServletPath());
-        try {
-            language = request.getParameter("yanel.meta.language");
-        } catch(Exception e) {
-            log.debug("language param is not found will use default : " + language);
-            language = defaultLanguage;
-        }
-        if(language == null || ("").equals(language)) {
-            log.debug("language param is empty or null : " + language);
-            language = defaultLanguage;
-        }
+
         File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "contact-form.xml");
 
             // create reader:
@@ -152,7 +142,9 @@ public class ContactResource extends Resource implements ViewableV1 {
             messageBundles[0] = messageBundle;
             messageBundles[1] = "global";
 
-            I18nTransformer2 i18nTransformer = new I18nTransformer2(messageBundles, language, getRealm().getDefaultLanguage());
+            log.debug("Language: " + getRequestedLanguage());
+            log.debug("Realm default language: " + getRealm().getDefaultLanguage());
+            I18nTransformer2 i18nTransformer = new I18nTransformer2(messageBundles, getRequestedLanguage(), getRealm().getDefaultLanguage());
             i18nTransformer.setEntityResolver(catalogResolver);
 
             // create serializer:
