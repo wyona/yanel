@@ -39,8 +39,20 @@
     <property name="realm.java.dir" value="${realm.home.dir}/src/java"/>
   </target>
 
-  <target name="init:resource-types">
-    <xmlproperty file="${realm.home.dir}/resource-types.xml"
+  <target name="init:resource-types" unless="eclipse.realm-resource-types.skip">
+    <dirname property="realm.xml.base.dir" file="${ant.file}"/>
+    <echo level="debug">realm.xml.base.dir: ${realm.xml.base.dir}</echo>
+
+    <property name="resource-types.xml.location" location="${realm.xml.base.dir}/resource-types.xml"/>
+    <fail message="Could not find the ${resource-types.xml.location} file: please set the 'resource-types.xml.location' property to its location or set the 'eclipse.realm-resource-types.skip' property to any value if you for example do not use any realm-specific resource-types.">
+      <condition>
+        <not>
+          <available file="${resource-types.xml.location}" />
+        </not>
+      </condition>
+    </fail>
+
+    <xmlproperty file="${resource-types.xml.location}"
      delimiter="${path.separator}"
     />
     <echo level="debug">resource-types.resource-type(src): ${resource-types.resource-type(src)}</echo>
@@ -48,7 +60,7 @@
      input="${resource-types.resource-type(src)}"
      defaultValue="${resource-types.resource-type(src)}"
      regexp="@REALM_SRC_DIR@"
-     replace="${realm.home.dir}"
+     replace="${realm.xml.base.dir}"
      global="true" />
     <echo level="verbose">resource-types.path: ${resource-types.path}</echo>
   </target>
