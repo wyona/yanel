@@ -13,16 +13,16 @@ Contact form for sending email
   <!-- Mandatory properties -->
   <!-- TODO: Allow more than one "to" -->
   <property name="to"/>
-  <!-- NOTE: Please note that one needs to reload/restart Yanel in order to activate changes of host and port! -->
-  <property name="smtpHost"/>
-  <property name="smtpPort"/>
 
   <!-- Optional properties -->
   <property name="subject"/>
   <property name="xslt"/> <!-- Global XSLT -->
+  <property name="xslt-body"/> <!-- XSLT to render body (actual form) -->
   <property name="mime-type"/>
-  <property name="from"/>
-  <property name="xslt-body"/>
+  <property name="from"/> <!-- INFO: If not configured then the email address specified of the form is used as from address -->
   <property name="email-validation-regex"/>
+  <!-- NOTE: Please note that one needs to reload/restart Yanel in order to activate changes of host and port! -->
+  <property name="smtpHost"/>
+  <property name="smtpPort"/>
 </rtd>
 </resource>
