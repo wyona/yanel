@@ -6,23 +6,24 @@
     <title>Configuration of yanel.xml</title>
   </head>
   <body>
-    <h1>Configuration of yanel.xml</h1>
-    <h2>Examples</h2>
-    <pre>
-&lt;?xml version="1.0"?>
+<div class="instructions">
+<h1>Configuration of yanel.xml</h1>
+<h2>Examples</h2>
+<pre>&lt;?xml version="1.0"?&gt;
 
-&lt;yanel xmlns="http://www.wyona.org/yanel/1.0" version="2007061900">
+&lt;yanel xmlns="http://www.wyona.org/yanel/1.0" version="2007061900"&gt;
   
-  &lt;!-- # Realms configuration -->
-  &lt;realms-config src="realms.xml"/>
+  &lt;!-- # Realms configuration --&gt;
+  &lt;realms-config src="realms.xml"/&gt;
   
-  &lt;!-- # ResourceTypes configuration -->
-  &lt;resource-types-config src="resource-types.xml"/>
+  &lt;!-- # ResourceTypes configuration --&gt;
+  &lt;resource-types-config src="resource-types.xml"/&gt;
   
-  &lt;!-- # Reserved-Prefix configuration -->
-  &lt;reserved-prefix>yanel&lt;/reserved-prefix>
-
-&lt;/yanel>    
-    </pre>
-  </body>
+  &lt;!-- # Reserved-Prefix configuration --&gt;
+  &lt;reserved-prefix&gt;yanel&lt;/reserved-prefix&gt;
+<br />  &lt;!-- # Mail server configuration --&gt;<br />  &lt;smtp host="mail.foo.com" port="25"/&gt;<br /><br />&lt;/yanel&gt;</pre>
+<p><strong>Note 1:</strong> Normally, you should edit <code>conf/local/local.yanel.xml</code>, rather than <code>conf/yanel.xml</code>.</p>
+<p><strong>Note 2:</strong> After editing either of these configuration files, Yanel needs to be rebuilt.</p>
+</div>
+</body>
 </html>
