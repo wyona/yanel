@@ -17,7 +17,7 @@
   <xsl:param name="zipCity" select="''"/>
   <xsl:param name="message" select="''"/>
 
-  <!-- INFO: error i18 key, e.g. emailNotSet or emailNotValid, which is configured within src/contributions/resources/contact-form/conf/contact-form_LANGUAGE.properties -->
+  <!-- INFO: Error i18 key, e.g. emailNotSet or emailNotValid, which is configured within src/contributions/resources/contact-form/conf/contact-form_LANGUAGE.properties and set within Java class src/contributions/resources/contact-form/src/java/org/wyona/yanel/impl/resources/contactform/ContactResource.java -->
   <xsl:param name="error" select="''"/>
   
   <xsl:param name="sent" select="'false'"/>
