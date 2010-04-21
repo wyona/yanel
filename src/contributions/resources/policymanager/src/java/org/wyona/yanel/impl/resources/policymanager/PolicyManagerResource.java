@@ -119,8 +119,13 @@ public class PolicyManagerResource extends BasicXMLResource {
                 }
 
                 if (viewId != null && viewId.equals("get-xml")) {
-                    log.warn("DEBUG: Get XML version of policy ...");
-                    sb.append(getPoliciesAsXML(getPath(), null, orderedBy, showParents));
+                    if (getEnvironment().getRequest().getParameter("aggregate") != null && getEnvironment().getRequest().getParameter("aggregate").equals("true")) {
+                        log.warn("DEBUG: Get XML version of aggregated policy ...");
+                        sb.append(getAggregatedPolicyAsXML(getPath(), null, orderedBy, showParents));
+                    } else {
+                        log.warn("DEBUG: Get XML version of policy ...");
+                        sb.append(getPoliciesAsXML(getPath(), null, orderedBy, showParents));
+                    }
                 } else {
                     log.warn("DEBUG: Get XHTML version of policy ...");
                     sb.append(PolicyViewer.getXHTMLView(getRealm().getPolicyManager(), getRealm().getIdentityManager().getGroupManager(), getPath(), null, orderedBy, showParents, showTabs, showAbbreviatedLabels));
@@ -507,6 +512,55 @@ public class PolicyManagerResource extends BasicXMLResource {
                 sb.append("<node local-name=\"" + names[i] + "\"/>");
             }
         }
+
+        sb.append("</policies>");
+        sb.append("</policy-viewer>");
+        return sb;
+    }
+
+    /**
+     * Get aggregated policy as XML
+     *
+     * @param path Content path which is associated with an access policy
+     * @param contentItemId Content Item ID which allows a unique association with an access policy and an item within the content
+     * @param orderedBy Allows ordering by usecases or identities
+     * @param showParents Show the policies of the parent nodes, which allows to figure out how the policy has been aggregated
+     */
+    private StringBuilder getAggregatedPolicyAsXML(String path, String contentItemId, int orderedBy, boolean showParents) throws Exception {
+        log.warn("DEBUG: Get policies for path: " + path);
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("<?xml version=\"1.0\"?><policy-viewer xmlns=\"http://www.wyona.org/security/1.0\">");
+
+        sb.append("<usecases><usecase id=\"r\">Read</usecase><usecase id=\"w\">Write</usecase></usecases>");
+
+        sb.append("<policies>");
+
+            boolean aggregate = true;
+            Policy p = getRealm().getPolicyManager().getPolicy(path, aggregate);
+
+            if (p != null) {
+                sb.append("<node name=\"" + path + "\">");
+                sb.append("<policy use-inherited-policies=\"" + p.useInheritedPolicies() + "\">");
+                UsecasePolicy[] up = p.getUsecasePolicies();
+                for (int k = 0; k < up.length; k++) {
+                    sb.append("<usecase id=\"" + up[k].getName() + "\">");
+                    // TODO: Use ItemPolicy and cast check in order to get the right order
+                    IdentityPolicy[] ip = up[k].getIdentityPolicies();
+                    for (int j = 0; j < ip.length; j++) {
+                        sb.append("<user id=\"" + ip[j].getId() + "\" permission=\"" + ip[j].getPermission() + "\" naz-blocked=\"true\" naz-permission-unlike-group=\"true\"/>"); // TODO: naz ...
+                    }
+                    GroupPolicy[] gp = up[k].getGroupPolicies();
+                    for (int j = 0; j < gp.length; j++) {
+                        sb.append("<group id=\"" + gp[j].getId() + "\" permission=\"" + gp[j].getPermission() + "\" naz-permission-unlike-members=\"true\"/>"); // TODO: naz ...
+                    }
+                    sb.append("</usecase>");
+                }
+                sb.append("</policy>");
+                sb.append("</node>");
+            } else {
+                sb.append("<node name=\"" + path + "\"/>");
+            }
 
         sb.append("</policies>");
         sb.append("</policy-viewer>");
