@@ -1,1 +1,4 @@
-<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Google Analytics integration</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Google Analytics integration</h1>  <p>Edit this text with <a href="http://www.yulup.org">Yulup</a>!</p></body></html>
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Google Analytics integration</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>
+<h1>Google Analytics integration</h1>
+<p>src/realms/yanel-website/content/xslt/apply-google-analytics.xsl</p>
+</body></html>
