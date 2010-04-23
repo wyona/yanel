@@ -22,22 +22,25 @@
 
 <xsl:template name="yanel-xsl:is-asset-URL">
   <xsl:param name="URL"/>
+  <xsl:variable name="url_without_qs" select="substring-before($URL, '?')"/>
   <xsl:choose>
+    <!-- do not track assets on full-qualified (presumably other than the current) domains -->
+    <!--TODO(?) check the realm URL in case someone wants to use the full URL? -->
+<!--
     <xsl:when test="starts-with($URL, 'http://') or starts-with($URL, 'https://')">
-      <!-- do not track assets on full-qualified (presumably other than the current) domains -->
-      <!--TODO(?) check the realm URL in case someone wants to use the full URL? -->
       <xsl:text>no</xsl:text>
     </xsl:when>
+-->
 
-    <!-- Equals to expression: ends-with($URL, '/') -->
-    <xsl:when test="substring($URL, string-length($URL)) = '/'">
+    <!-- INFO: Check if URL ends with forward slash (Equals to expression: ends-with($URL, '/')) -->
+    <xsl:when test="substring($url_without_qs, string-length($url_without_qs)) = '/'">
       <xsl:text>no</xsl:text>
     </xsl:when>
 
     <!-- NOTE: At the moment the suffix is only compared with .html (see $non-asset-URL-suffix) -->
     <!-- At the moment the following cases are not checked: .htm, foo-bar/, foo-bar -->
     <!--FIXME HACK: find a better method to differentiate document assets from pages: -->
-    <xsl:when test="substring($URL, 1 + string-length($URL) - string-length($non-asset-URL-suffix)) != $non-asset-URL-suffix"><!-- Equals to expression: not(ends-with($URL, $non-asset-URL-suffix)) -->
+    <xsl:when test="substring($url_without_qs, 1 + string-length($url_without_qs) - string-length($non-asset-URL-suffix)) != $non-asset-URL-suffix"><!-- Equals to expression: not(ends-with($url_without_qs, $non-asset-URL-suffix)) -->
       <xsl:text>yes</xsl:text>
     </xsl:when>
 
@@ -84,18 +87,26 @@
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
 </xsl:text></script>
+
+
 <script type="text/javascript"><xsl:text>
-var pageTracker = _gat._getTracker("</xsl:text><xsl:value-of select="$GA-key"/><xsl:text>");
-pageTracker._trackPageview();
+  var pageTracker = _gat._getTracker("</xsl:text><xsl:value-of select="$GA-key"/><xsl:text>");
+  pageTracker._trackPageview();
+
+<!-- INFO: Remove http:// or https:// and hostname from asset URLs -->
 <!--TODO?(performance) move that into a separate JS file: -->
 function Yanel_requestURIFromFQURL(HTMLAelement) {
   var FQURL = HTMLAelement.href<!--alert('FQURL: ' + FQURL);-->;
   var i = FQURL.indexOf('://');<!--alert('i: ' + i);-->
   i = FQURL.indexOf('/', i + 3);<!--alert('i: ' + i);-->
-  var filename = FQURL.substring(i);<!--alert('filename: ' + filename); return false;-->
+  var filename = FQURL.substring(i);
+<!-- DEBUG: In oder to see this alert, make sure to comment/uncomment the code line where this function Yanel_requestURIFromFQURL is used
+  alert('DEBUG: filename: ' + filename); return false;
+-->
   return filename;
 }
 </xsl:text></script>
+
 </xsl:template>
 
 
@@ -105,11 +116,18 @@ function Yanel_requestURIFromFQURL(HTMLAelement) {
   <xsl:copy>
     <xsl:apply-templates select="@*[name() != 'onclick']"/>
     <xsl:attribute name="onclick">
-      <xsl:text>pageTracker._trackPageview(<!----></xsl:text>
+
+      <!-- DEBUG: Uncomment the following call and comment the call with the pageTracker in order to debug the function Yanel_requestURIFromFQURL
       <xsl:call-template name="yanel-xsl:GA-asset-filename-JSexpr-from-URL">
         <xsl:with-param name="URL" select="$URL"/>
       </xsl:call-template>
-      <xsl:text>)<!---->;</xsl:text>
+      -->
+      <xsl:text>javascript: pageTracker._trackPageview(</xsl:text>
+      <xsl:call-template name="yanel-xsl:GA-asset-filename-JSexpr-from-URL">
+        <xsl:with-param name="URL" select="$URL"/>
+      </xsl:call-template>
+      <xsl:text>);</xsl:text>
+
       <xsl:value-of select="@onclick"/>
     </xsl:attribute>
     <xsl:apply-templates select="node()"/>
