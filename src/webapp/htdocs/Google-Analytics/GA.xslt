@@ -37,12 +37,21 @@
       <xsl:text>no</xsl:text>
     </xsl:when>
 
-    <!-- NOTE: At the moment the suffix is only compared with .html (see $non-asset-URL-suffix) -->
+    <!-- NOTE: Check if an URL does NOT end with .html and hence assume it is an asset. At the moment the suffix is only compared with .html (see $non-asset-URL-suffix) -->
     <!-- At the moment the following cases are not checked: .htm, foo-bar/, foo-bar -->
-    <!--FIXME HACK: find a better method to differentiate document assets from pages: -->
+    <!--FIXME HACK: find a better method to differentiate document assets (e.g. pdf, doc) from pages: -->
     <xsl:when test="substring($url_without_qs, 1 + string-length($url_without_qs) - string-length($non-asset-URL-suffix)) != $non-asset-URL-suffix"><!-- Equals to expression: not(ends-with($url_without_qs, $non-asset-URL-suffix)) -->
       <xsl:text>yes</xsl:text>
     </xsl:when>
+    <!-- NOTE: As a workaround we just hardcode all other suffixes which shall be excluded! -->
+<!--
+    <xsl:when test="substring($url_without_qs, 1 + string-length($url_without_qs) - string-length('.htm')) != '.htm'">
+      <xsl:text>yes</xsl:text>
+    </xsl:when>
+    <xsl:when test="substring($url_without_qs, 1 + string-length($url_without_qs) - string-length('#')) != '#'">
+      <xsl:text>yes</xsl:text>
+    </xsl:when>
+-->
 
     <xsl:otherwise>
       <xsl:text>no</xsl:text>
