@@ -20,12 +20,14 @@
   </xsl:copy>
 </xsl:template>
 
+
+
+<!-- INFO: Check if URL corresponds to an asset -->
 <xsl:template name="yanel-xsl:is-asset-URL">
   <xsl:param name="URL"/>
-  <xsl:variable name="url_without_qs" select="$URL"/>
-<!--
-  <xsl:variable name="url_without_qs" select="substring-before($URL, '?')"/>
--->
+
+  <!-- INFO: Remove query string from URL -->
+  <xsl:variable name="url_without_qs"><xsl:choose><xsl:when test="contains($URL, '?')"><xsl:value-of select="substring-before($URL, '?')"/></xsl:when><xsl:otherwise><xsl:value-of select="$URL"/></xsl:otherwise></xsl:choose></xsl:variable>
 
   <xsl:choose>
     <!-- INFO: Do not track assets on full-qualified (presumably other than the current/local) domains -->
@@ -58,6 +60,8 @@
 </xsl:template>
 
 
+
+<!-- INFO: Add onclick if URL corresponds to an asset -->
 <xsl:template match="xhtml:a">
   <xsl:param name="URL" select="@href"/>
 
