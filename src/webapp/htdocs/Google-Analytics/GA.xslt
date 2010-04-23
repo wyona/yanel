@@ -22,11 +22,15 @@
 
 <xsl:template name="yanel-xsl:is-asset-URL">
   <xsl:param name="URL"/>
-  <xsl:variable name="url_without_qs" select="substring-before($URL, '?')"/>
-  <xsl:choose>
-    <!-- do not track assets on full-qualified (presumably other than the current) domains -->
-    <!--TODO(?) check the realm URL in case someone wants to use the full URL? -->
+  <xsl:variable name="url_without_qs" select="$URL"/>
 <!--
+  <xsl:variable name="url_without_qs" select="substring-before($URL, '?')"/>
+-->
+
+  <xsl:choose>
+    <!-- INFO: Do not track assets on full-qualified (presumably other than the current/local) domains -->
+    <!--TODO: Check the realm URL in case someone wants to use the full URL (also locally)? -->
+<!-- INFO: Commented, because in many cases it makes sense to track full-qualified domains!
     <xsl:when test="starts-with($URL, 'http://') or starts-with($URL, 'https://')">
       <xsl:text>no</xsl:text>
     </xsl:when>
@@ -37,21 +41,15 @@
       <xsl:text>no</xsl:text>
     </xsl:when>
 
+
     <!-- NOTE: Check if an URL does NOT end with .html and hence assume it is an asset. At the moment the suffix is only compared with .html (see $non-asset-URL-suffix) -->
     <!-- At the moment the following cases are not checked: .htm, foo-bar/, foo-bar -->
-    <!--FIXME HACK: find a better method to differentiate document assets (e.g. pdf, doc) from pages: -->
-    <xsl:when test="substring($url_without_qs, 1 + string-length($url_without_qs) - string-length($non-asset-URL-suffix)) != $non-asset-URL-suffix"><!-- Equals to expression: not(ends-with($url_without_qs, $non-asset-URL-suffix)) -->
-      <xsl:text>yes</xsl:text>
-    </xsl:when>
+    <!-- TODO: find a better method to differentiate document assets (e.g. pdf, doc) and regular pages! -->
     <!-- NOTE: As a workaround we just hardcode all other suffixes which shall be excluded! -->
-<!--
-    <xsl:when test="substring($url_without_qs, 1 + string-length($url_without_qs) - string-length('.htm')) != '.htm'">
+    <xsl:when test="(substring($url_without_qs, 1 + string-length($url_without_qs) - string-length($non-asset-URL-suffix)) != $non-asset-URL-suffix) and (substring($url_without_qs, 1 + string-length($url_without_qs) - string-length('.htm')) != '.htm') and (substring($url_without_qs, 1 + string-length($url_without_qs) - string-length('#')) != '#')">
+      <!-- Equals to expression: not(ends-with($url_without_qs, $non-asset-URL-suffix)) -->
       <xsl:text>yes</xsl:text>
     </xsl:when>
-    <xsl:when test="substring($url_without_qs, 1 + string-length($url_without_qs) - string-length('#')) != '#'">
-      <xsl:text>yes</xsl:text>
-    </xsl:when>
--->
 
     <xsl:otherwise>
       <xsl:text>no</xsl:text>
