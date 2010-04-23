@@ -546,20 +546,32 @@ public class PolicyManagerResource extends BasicXMLResource {
                 sb.append("<policy use-inherited-policies=\"" + p.useInheritedPolicies() + "\">");
                 UsecasePolicy[] up = p.getUsecasePolicies();
                 for (int k = 0; k < up.length; k++) {
+                    // TODO: Do not list 'rw' users within 'r-' users! QUESTION: How to make this generic?!
                     sb.append("<usecase id=\"" + up[k].getName() + "\">");
-                    // TODO: Use ItemPolicy and cast check in order to get the right order
+
+                    // TODO (optional): Use ItemPolicy and cast check in order to get the right order!
+                    List mergedListOfUserPolicies = new java.util.ArrayList();
+
                     IdentityPolicy[] ip = up[k].getIdentityPolicies();
                     for (int j = 0; j < ip.length; j++) {
-                        sb.append("<user id=\"" + ip[j].getId() + "\" permission=\"" + ip[j].getPermission() + "\" naz-blocked=\"true\" naz-permission-unlike-group=\"true\"/>"); // TODO: naz ...
+                        mergedListOfUserPolicies.add(ip[j]);
                     }
+
                     GroupPolicy[] gp = up[k].getGroupPolicies();
                     for (int j = 0; j < gp.length; j++) {
                         List resolvedGroups = new java.util.ArrayList();
                         resolvedGroups.add(gp[j].getId());
                         User[] groupUsers = resolveGroup(gp[j].getId(), resolvedGroups);
                         for (int i = 0; i < groupUsers.length; i++) {
-                            sb.append("<user id=\"" + groupUsers[i].getID() + "\" permission=\"" + gp[j].getPermission() + "\" naz-permission-unlike-members=\"true\"/>"); // TODO: naz ...
+                            if (!existsWithinMergedList(groupUsers[i].getID(), mergedListOfUserPolicies)) {
+                                mergedListOfUserPolicies.add(new IdentityPolicy(new Identity(groupUsers[i].getID()), gp[j].getPermission()));
+                            }
                         }
+                    }
+
+                    for (int j = 0; j < mergedListOfUserPolicies.size(); j++) {
+                        IdentityPolicy identityPolicy = (IdentityPolicy) mergedListOfUserPolicies.get(j);
+                        sb.append("<user id=\"" + identityPolicy.getId() + "\" permission=\"" + identityPolicy.getPermission() + "\"/>");
                     }
                     sb.append("</usecase>");
                 }
@@ -610,6 +622,18 @@ public class PolicyManagerResource extends BasicXMLResource {
      private boolean alreadyResolved(String groupId, List resolvedGroupIDs) {
          for (int i = 0; i < resolvedGroupIDs.size(); i++) {
              if (groupId.equals((String)resolvedGroupIDs.get(i))) {
+                 return true;
+             }
+         }
+         return false;
+     }
+
+    /**
+     * Check whether user is part of merged list
+     */
+     private boolean existsWithinMergedList(String userId, List mergedListOfUserPolicies) {
+         for (int i = 0; i < mergedListOfUserPolicies.size(); i++) {
+             if (userId.equals(((IdentityPolicy)mergedListOfUserPolicies.get(i)).getId())) {
                  return true;
              }
          }
