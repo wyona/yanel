@@ -1,4 +1,6 @@
-<project name="yanel-xml-resource">
+<?xml version="1.0"?>
+
+<project name="yanel-directory-RT" default="deploy-jar">
   <import file="${yanel.source.home}/src/build/resource-types/resource-type.build.xml"/>
 
   <target name="copy-dependencies" depends="init">
