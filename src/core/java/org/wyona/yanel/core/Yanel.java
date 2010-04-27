@@ -100,19 +100,22 @@ public class Yanel {
        }
 
        if (config.getChild("smtp", false) != null) {
+
            String smtpPortSt = config.getChild("smtp").getAttribute("port");
            try {
                smtpPort = Integer.parseInt(smtpPortSt);
-               smtpHost = config.getChild("smtp").getAttribute("host");
-               java.util.Properties props = new java.util.Properties();
-               props.put("mail.smtp.host", smtpHost);
-               props.put("mail.smtp.port", smtpPortSt);
-               // http://java.sun.com/products/javamail/javadocs/javax/mail/Session.html
-               javax.mail.Session session = javax.mail.Session.getDefaultInstance(props, null);
-               log.info("Mailserver default session (available to all code executing in the same JVM): " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
            } catch(NumberFormatException e) {
                log.warn("Mail server not configured, because SMTP port '" + smtpPortSt + "' does not seem to be a number! Check within configuration: " + configFile);
            }
+
+           smtpHost = config.getChild("smtp").getAttribute("host");
+
+           java.util.Properties props = new java.util.Properties();
+           props.put("mail.smtp.host", smtpHost);
+           props.put("mail.smtp.port", smtpPortSt);
+           // http://java.sun.com/products/javamail/javadocs/javax/mail/Session.html
+           javax.mail.Session session = javax.mail.Session.getDefaultInstance(props, null);
+           log.info("Mailserver default session (available to all code executing in the same JVM): " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
        } else {
            log.warn("Mail server not configured within configuration: " + configFile);
        }
