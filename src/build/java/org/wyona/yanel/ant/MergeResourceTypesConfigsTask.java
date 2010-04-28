@@ -123,7 +123,7 @@ public class MergeResourceTypesConfigsTask extends Task {
                     }
 
                     // TODO: Check for duplicated resource-types also based re package attribute!
-                    if (!resourceTypeExists(srcAttr, rootElement)) {
+                    if (srcAttr == null || srcAttr.equals("") || !resourceTypeExists(srcAttr, rootElement)) {
                         rootElement.appendChild(globalDoc.createTextNode("\n  ")); // Only formatting
                         Element rtElement = globalDoc.createElementNS(NAMESPACE, "resource-type");
                         //Element rtElement = globalDoc.createElementNS(namespace, "todo");
