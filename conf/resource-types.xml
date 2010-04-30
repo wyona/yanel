@@ -8,10 +8,10 @@
 
 <!-- NOTE: Do not use relative paths to reference resource types, because the paths are not being resolved re the location of (local.)resource-types.xml -->
 
-<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2010052600">
+<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2010052600"> <!-- WARN: The date 05 is a typo (should read 04), but lets leave the version number as it is until May 26, 2010 has passed and just increase the minor version at the end in case there should be further changes --> 
 
   <changes>
-    <change version="2010052600">'copy-dir-name' attribute added back to 'contact-form' resource-type</change>
+    <change version="2010042600">'copy-dir-name' attribute added back to 'contact-form' resource-type</change>
     <change version="2010021600">security-api resource type added</change>
     <change version="2009082500">package attribute removed from xml and node/file resources</change>
     <change version="2009072600">search resource type added</change>
