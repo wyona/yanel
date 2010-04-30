@@ -134,6 +134,19 @@ public class UserManagerResource extends BasicXMLResource {
         sb.append("<user id=\"dz\" naz-only-local=\"true\"/>");
 */
         sb.append("</members>");
+
+        Group[] parentGroups = group.getParents();
+        if (parentGroups != null && parentGroups.length > 0) {
+            sb.append("<parents>");
+            for (int i = 0; i < parentGroups.length; i++) {
+                log.warn("DEBUG: Group: " + parentGroups[i].getID());
+                sb.append("<group id=\"" + parentGroups[i].getID() + "\"/>");
+            }
+            sb.append("</parents>");
+        } else {
+            log.warn("DEBUG: Group '" + group.getID() + "' has no parents!");
+        }
+
         sb.append("</group>");
         return sb;
     }
