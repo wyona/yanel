@@ -88,8 +88,22 @@ public class UserManagerResource extends BasicXMLResource {
      * Get a specific user
      * @param id User ID
      */
-    private StringBuilder getUserAsXML(String id) {
+    private StringBuilder getUserAsXML(String id) throws Exception {
+        UserManager um = getRealm().getIdentityManager().getUserManager();
+        User user = um.getUser(id);
         StringBuilder sb = new StringBuilder("<user id=\"" + id + "\">");
+        sb.append("<name>" + user.getName() + "</name>");
+        Group[] groups = user.getGroups();
+        if (groups != null && groups.length > 0 ) {
+            sb.append("<groups>");
+            for (int i = 0; i < groups.length; i++) {
+                sb.append("<group id=\"" + groups[i].getID() + "\"/>");
+            }
+            sb.append("</groups>");
+        } else {
+            sb.append("<!-- User is not member of any groups -->");
+            log.info("User '" + id + "' is not member of any groups.");
+        }
         sb.append("</user>");
         return sb;
     }
