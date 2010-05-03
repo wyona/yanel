@@ -168,9 +168,20 @@ public class UserManagerResource extends BasicXMLResource {
      */
     private void addMembersToGroup(String id) throws AccessManagementException {
         GroupManager gm = getRealm().getIdentityManager().getGroupManager();
+        UserManager um = getRealm().getIdentityManager().getUserManager();
         Group group = gm.getGroup(id);
-        log.warn("DEBUG: Add members to group: " + id);
-        group.addMember(gm.getGroup("smes"));
+        String[] members = getEnvironment().getRequest().getParameter("members").split(",");
+        for (int i = 0; i < members.length; i++) {
+            String typeID[] = members[i].split(":");
+            if (typeID[0].equals("u")) {
+                log.warn("DEBUG: Add user '" + typeID[1] + "' to group: " + id);
+                group.addMember(um.getUser(typeID[1]));
+            } else if (typeID[0].equals("g")) {
+                log.warn("DEBUG: Add group '" + typeID[1] + "' to group: " + id);
+                group.addMember(gm.getGroup(typeID[1]));
+            }
+        }
+        group.save();
     }
 
     /**
