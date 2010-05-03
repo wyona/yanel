@@ -54,6 +54,8 @@ public class UserManagerResource extends BasicXMLResource {
                 deleteUser(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("getgroups")) {
                 sb.append(getGroupsAsXML());
+            } else if (usecase.equals("add-members-to-group")) {
+                addMembersToGroup(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("getgroup")) {
                 sb.append(getGroupAsXML(getEnvironment().getRequest().getParameter("id")));
             } else if (usecase.equals("deletepolicy")) {
@@ -158,6 +160,17 @@ public class UserManagerResource extends BasicXMLResource {
     private void deleteUser(String id) throws AccessManagementException {
         UserManager um = getRealm().getIdentityManager().getUserManager();
         um.removeUser(id);
+    }
+
+    /**
+     * Add members (users and groups) to group
+     * @param id Group ID to which new members will be added
+     */
+    private void addMembersToGroup(String id) throws AccessManagementException {
+        GroupManager gm = getRealm().getIdentityManager().getGroupManager();
+        Group group = gm.getGroup(id);
+        log.warn("DEBUG: Add members to group: " + id);
+        group.addMember(gm.getGroup("smes"));
     }
 
     /**
