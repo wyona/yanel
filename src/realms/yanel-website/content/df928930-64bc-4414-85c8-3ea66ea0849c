@@ -27,6 +27,9 @@
 <h2>Efficiently building single realms</h2>
 <p>In the same way as building resource classes, it is also possible to build single realms after editing classes belonging to that realm:</p>
 <pre>{yanel.home}/build.sh -f {my.realm}/build.xml</pre>
+<h2>Other time savers</h2>
+<p>You can also save time by setting ant to be less verbose, and skipping the compilation of the GWT classes:</p>
+<pre>env ANT_ARGS=-q ./build.sh -Dgwt.compile.skip=foo</pre>
 <p>&#160;</p>
 </div>
 </body>
