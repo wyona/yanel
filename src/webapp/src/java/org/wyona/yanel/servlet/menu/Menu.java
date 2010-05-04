@@ -169,6 +169,8 @@ abstract public class Menu {
                 return "Bearbeiten";
             } else if(key.equals("y:file")) {
                 return "Datei";
+            } else if(key.equals("y:new")) {
+                return "Neu";
             } else if(key.equals("y:about-yanel")) {
                 return "Ueber Yanel";
             } else if(key.equals("y:about-realm")) {
@@ -215,6 +217,8 @@ abstract public class Menu {
                 return "Edit";
             } else if(key.equals("y:file")) {
                 return "File";
+            } else if(key.equals("y:new")) {
+                return "New";
             } else if(key.equals("y:about-yanel")) {
                 return "About Yanel";
             } else if(key.equals("y:about-realm")) {
