@@ -131,7 +131,17 @@ public class SearchResource extends BasicXMLResource {
      */
     private Result[] getLocalResults(String query) throws Exception {
         if (query != null && query.length() > 0) {
-            org.wyona.yarep.core.Node[] nodes = getRealm().getRepository().getSearcher().search(query);
+
+            org.wyona.yarep.core.Node[] nodes = null;
+            String propertyName = getResourceConfigProperty("property-name");
+            if (propertyName != null) {
+                log.warn("DEBUG: Search property '" + propertyName + "': " + query);
+                nodes = getRealm().getRepository().getSearcher().searchProperty(propertyName, query, "/");
+            } else {
+                log.warn("DEBUG: Search fulltext: " + query);
+                nodes = getRealm().getRepository().getSearcher().search(query);
+            }
+
             if (nodes != null && nodes.length > 0) {
                 Result[] results = new Result[nodes.length];
                 for (int i = 0; i < nodes.length; i++) {
