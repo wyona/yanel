@@ -10,8 +10,7 @@ Search a local repository, but also allow searching with third-party search engi
 </description>
 
 <rtd>
-<!--
-  <property name="foo" default-value="bar"/>
--->
+  <!-- OPTIONAL: If this is property is set, then the corresponding property is searched instead fulltext -->
+  <property name="property-name"/>
 </rtd>
 </resource>
