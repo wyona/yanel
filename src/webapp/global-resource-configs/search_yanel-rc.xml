@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="search" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+<!--
+  <yanel:property name="property-name" value="yarep_checkoutUserID"/>
+-->
+
+  <yanel:custom-config>
+    <views xmlns="http://www.wyona.org/yanel/rti/1.0">
+      <view id="default">
+<!--
+        <xslt>file:/Users/michaelwechner/src/wyona/public/yanel/trunk/src/contributions/resources/search/htdocs/results2xhtml.xsl</xslt>
+-->
+        <xslt>rthtdocs:/results2xhtml.xsl</xslt>
+<!--
+        <xslt>yanelresource:/my-global.xsl</xslt>
+-->
+        <mime-type>text/html</mime-type>
+        <serializer key="HTML_TRANSITIONAL"/>
+      </view>
+      <view id="xml">
+        <mime-type>application/xml</mime-type>
+      </view>
+    </views>
+
+    <external-search-providers>
+      <provider id="google" url="http://www.google.com/search?q=">Google</provider>
+      <provider id="bing" url="http://www.bing.com/search?q=">bing</provider>
+    </external-search-providers>
+  </yanel:custom-config>
+</yanel:resource-config>
