@@ -6,25 +6,35 @@
      <views>
       <view id="default" type="jelly">
         <template>rthtdocs:/tinymce.jelly</template>
+<!--
         <xslt>yanelresource:/my-global.xsl</xslt>
+-->
         <mime-type>text/html</mime-type>
       </view>
       <view id="fix-wellformness" type="jelly">
         <template>rthtdocs:/tinymce-fix.jelly</template>
+<!--
         <xslt>yanelresource:/my-global.xsl</xslt>
+-->
         <mime-type>text/html</mime-type>
       </view>
       <view id="done" type="jelly">
         <template>rthtdocs:/tinymce-status.jelly</template>
+<!--
         <xslt>yanelresource:/my-global.xsl</xslt>
+-->
       </view>
       <view id="cancel" type="jelly">
         <template>rthtdocs:/tinymce-status.jelly</template>
+<!--
         <xslt>yanelresource:/my-global.xsl</xslt>
+-->
       </view>
       <view id="error" type="jelly">
         <template>rthtdocs:/tinymce-status.jelly</template>
+<!--
         <xslt>yanelresource:/my-global.xsl</xslt>
+-->
       </view>
     </views>
   </yanel:custom-config>
