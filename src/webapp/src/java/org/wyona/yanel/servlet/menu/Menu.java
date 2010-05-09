@@ -122,6 +122,7 @@ abstract public class Menu {
         sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:help", userLanguage) + "</div>");
         sb.append("<ul>");
+        sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/search.html\">" + getLabel("y:search", userLanguage) + "</a></li>");
         sb.append("<li><a href=\"http://www.yanel.org/en/documentation/index.html\">Yanel Documentation</a></li>");
         sb.append("</ul>");
         sb.append("</li></ul>");
@@ -165,6 +166,8 @@ abstract public class Menu {
         if (language.equals("de")) {
             if(key.equals("y:help")) {
                 return "Hilfe";
+            } else if(key.equals("y:search")) {
+                return "Suchen";
             } else if(key.equals("y:edit")) {
                 return "Bearbeiten";
             } else if(key.equals("y:file")) {
@@ -213,6 +216,8 @@ abstract public class Menu {
         } else if (language.equals("en")) {
             if(key.equals("y:help")) {
                 return "Help";
+            } else if(key.equals("y:search")) {
+                return "Search";
             } else if(key.equals("y:edit")) {
                 return "Edit";
             } else if(key.equals("y:file")) {
