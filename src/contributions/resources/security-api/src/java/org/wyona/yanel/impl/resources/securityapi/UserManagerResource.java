@@ -56,6 +56,8 @@ public class UserManagerResource extends BasicXMLResource {
                 sb.append(getGroupsAsXML());
             } else if (usecase.equals("add-members-to-group")) {
                 addMembersToGroup(getEnvironment().getRequest().getParameter("id"));
+            } else if (usecase.equals("remove-members-from-group")) {
+                removeMembersFromGroup(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("getgroup")) {
                 sb.append(getGroupAsXML(getEnvironment().getRequest().getParameter("id")));
             } else if (usecase.equals("deletepolicy")) {
@@ -121,7 +123,7 @@ public class UserManagerResource extends BasicXMLResource {
         StringBuilder sb = new StringBuilder("<group xmlns=\"http://www.wyona.org/security/1.0\" id=\"" + id + "\">");
         sb.append("<members>");
         for (int i = 0; i < members.length; i++) {
-            log.warn("DEBUG: Member: " + members[i].getID());
+            log.debug("Member: " + members[i].getID());
             if (members[i] instanceof User) {
                 sb.append("<user id=\"" + members[i].getID() + "\"/>");
             } else if (members[i] instanceof Group) {
@@ -141,12 +143,12 @@ public class UserManagerResource extends BasicXMLResource {
         if (parentGroups != null && parentGroups.length > 0) {
             sb.append("<parents>");
             for (int i = 0; i < parentGroups.length; i++) {
-                log.warn("DEBUG: Group: " + parentGroups[i].getID());
+                log.debug("Group: " + parentGroups[i].getID());
                 sb.append("<group id=\"" + parentGroups[i].getID() + "\"/>");
             }
             sb.append("</parents>");
         } else {
-            log.warn("DEBUG: Group '" + group.getID() + "' has no parents!");
+            log.info("Group '" + group.getID() + "' has no parents!");
         }
 
         sb.append("</group>");
@@ -174,11 +176,33 @@ public class UserManagerResource extends BasicXMLResource {
         for (int i = 0; i < members.length; i++) {
             String typeID[] = members[i].split(":");
             if (typeID[0].equals("u")) {
-                log.warn("DEBUG: Add user '" + typeID[1] + "' to group: " + id);
+                log.debug("Add user '" + typeID[1] + "' to group: " + id);
                 group.addMember(um.getUser(typeID[1]));
             } else if (typeID[0].equals("g")) {
-                log.warn("DEBUG: Add group '" + typeID[1] + "' to group: " + id);
+                log.debug("Add group '" + typeID[1] + "' to group: " + id);
                 group.addMember(gm.getGroup(typeID[1]));
+            }
+        }
+        group.save();
+    }
+
+    /**
+     * Remove members (users and groups) from group
+     * @param id Group ID from which members will be removed
+     */
+    private void removeMembersFromGroup(String id) throws AccessManagementException {
+        GroupManager gm = getRealm().getIdentityManager().getGroupManager();
+        UserManager um = getRealm().getIdentityManager().getUserManager();
+        Group group = gm.getGroup(id);
+        String[] members = getEnvironment().getRequest().getParameter("members").split(",");
+        for (int i = 0; i < members.length; i++) {
+            String typeID[] = members[i].split(":");
+            if (typeID[0].equals("u")) {
+                log.warn("DEBUG: Remove user '" + typeID[1] + "' from group: " + id);
+                group.removeMember(um.getUser(typeID[1]));
+            } else if (typeID[0].equals("g")) {
+                log.warn("DEBUG: Remove group '" + typeID[1] + "' from group: " + id);
+                group.removeMember(gm.getGroup(typeID[1]));
             }
         }
         group.save();
