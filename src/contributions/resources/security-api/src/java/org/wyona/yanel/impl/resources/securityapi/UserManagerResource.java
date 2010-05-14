@@ -55,6 +55,8 @@ public class UserManagerResource extends BasicXMLResource {
             } else if (usecase.equals("importuser")) {
                 log.debug("Import user: " + getEnvironment().getRequest().getParameter("id"));
                 importUser(getEnvironment().getRequest().getParameter("id"));
+            } else if (usecase.equals("synchronize-users")) {
+                synchronizeUsers();
             } else if (usecase.equals("getgroups")) {
                 sb.append(getGroupsAsXML());
             } else if (usecase.equals("add-members-to-group")) {
@@ -179,6 +181,13 @@ public class UserManagerResource extends BasicXMLResource {
      */
     protected void importUser(String id) throws AccessManagementException {
         log.warn("Import user '" + id + "' NOT implemented! Please make sure to overwrite this method for your custom import.");
+    }
+
+    /**
+     * Synchronize users, e.g. from LDAP, whereas this is a custom functionality and hence this method should be overwritten
+     */
+    protected void synchronizeUsers() throws AccessManagementException {
+        log.warn("Synchronize users NOT implemented! Please make sure to overwrite this method for your custom import.");
     }
 
     /**
