@@ -52,6 +52,9 @@ public class UserManagerResource extends BasicXMLResource {
             } else if (usecase.equals("deleteuser")) {
                 log.warn("DEBUG: Delete user: " + getEnvironment().getRequest().getParameter("id"));
                 deleteUser(getEnvironment().getRequest().getParameter("id"));
+            } else if (usecase.equals("importuser")) {
+                log.debug("Import user: " + getEnvironment().getRequest().getParameter("id"));
+                importUser(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("getgroups")) {
                 sb.append(getGroupsAsXML());
             } else if (usecase.equals("add-members-to-group")) {
@@ -122,8 +125,14 @@ public class UserManagerResource extends BasicXMLResource {
         Item[] members = group.getMembers();
         StringBuilder sb = new StringBuilder("<group xmlns=\"http://www.wyona.org/security/1.0\" id=\"" + id + "\">");
         sb.append("<members>");
+        // INFO: See policymanager/src/java/org/wyona/yanel/impl/resources/policymanager/PolicyManagerResource.java#resolveGroup(), also re Loops!
+        String resolveGroups = getEnvironment().getRequest().getParameter("resolve-groups");
+        if (resolveGroups != null && resolveGroups.equals("true")) {
+            log.warn("DEBUG: Resolve groups!");
+        }
+
         for (int i = 0; i < members.length; i++) {
-            log.debug("Member: " + members[i].getID());
+            log.warn("DEBUG: Member: " + members[i].getID());
             if (members[i] instanceof User) {
                 sb.append("<user id=\"" + members[i].getID() + "\"/>");
             } else if (members[i] instanceof Group) {
@@ -162,6 +171,14 @@ public class UserManagerResource extends BasicXMLResource {
     private void deleteUser(String id) throws AccessManagementException {
         UserManager um = getRealm().getIdentityManager().getUserManager();
         um.removeUser(id);
+    }
+
+    /**
+     * Import a specific user, e.g. from LDAP, whereas this is a custom functionality and hence this method should be overwritten
+     * @param id User ID
+     */
+    protected void importUser(String id) throws AccessManagementException {
+        log.warn("Import user '" + id + "' NOT implemented! Please make sure to overwrite this method for your custom import.");
     }
 
     /**
