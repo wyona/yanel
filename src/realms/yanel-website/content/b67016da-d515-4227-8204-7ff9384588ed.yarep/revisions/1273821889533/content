@@ -1,0 +1,34 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Created from template ...</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>
+<h1>Access Control Policies</h1>
+<h2>Inheritance of policies or usecases</h2>
+<p>One can block inherited policies for <strong>all</strong> usecases</p>
+<p>&#160;</p>
+<pre>&lt;?xml version="1.0"?&gt;<br /><br />&lt;policy xmlns="http://www.wyona.org/security/1.0" use-inherited-policies="false"&gt;<br /><br />  &lt;usecase id="view"&gt;<br />    &lt;!--&lt;world permission="false"/&gt;--&gt;<br />    &lt;user id="lenya" permission="true"/&gt;<br />  &lt;/usecase&gt;<br /><br />  &lt;usecase id="open"&gt;<br />    &lt;user id="lenya" permission="true"/&gt;<br />  &lt;/usecase&gt;<br /><br />  &lt;usecase id="write"&gt;<br />    &lt;user id="lenya" permission="true"/&gt;<br />  &lt;/usecase&gt;<br /><br />&lt;/policy&gt;<br /></pre>
+<p>or also for a particular usecase</p>
+<p>&#160;</p>
+<pre>&lt;?xml version="1.0"?&gt;<br /><br />&lt;policy xmlns="http://www.wyona.org/security/1.0"&gt;<br /><br />  &lt;usecase id="view" use-inherited-policies="false"<br />    &lt;!--&lt;world permission="false"/&gt;--&gt;<br />    &lt;user id="lenya" permission="true"/&gt;<br />  &lt;/usecase&gt;<br /><br />&lt;/policy&gt;<br /></pre>
+<h2>Default usecases</h2>
+<p>The defaul usecases are currently hard-coded within <code>org.wyona.yanel.servlet.YanelServlet</code> and <code>org.wyona.security.impl.PolicyManagerImplVersion2</code></p>
+<ul>
+<li><strong>view:</strong> Allows to access the resource generated content</li>
+<li><strong>yanel.resource.meta:</strong> Allows to access the meta data of resource (e.g. resource type)</li>
+<li><strong>open:</strong> Allows to access the source content of a resource</li>
+<li><strong>write:</strong> Allows to write/save data to the source content of a resource</li>
+<li><strong>delete:</strong> Allows to delete a resource</li>
+<li><strong>resource.create:</strong> Allows to create a resource</li>
+<li><strong>toolbar:</strong> Allows to access the Yanel toolbar</li>
+<li><strong>introspection:</strong> Allows to access the Neutron introspection of a resource</li>
+<li><strong>policy.read:</strong> Allows to view the access policy of a resource</li>
+<li><strong>policy.update:</strong> Allows to modify the access policy of a resource</li>
+</ul>
+<h2>Custom usecases</h2>
+<p>For example workflow transitions!</p>
+<h2>How it works</h2>
+<pre>The access control directory mimics the data directory. Each file-or-dir-name.policy file sets the rules for <br /></pre>
+<h2>How to block parts of the realm</h2>
+<p>Here is an example that shows what needs to be done to block view acces to all parts of a website except a special page (useful for production websites "under construction"):</p>
+<ul>
+<li>Leave the default policy open: in the </li>
+</ul>
+</body>
+</html>
