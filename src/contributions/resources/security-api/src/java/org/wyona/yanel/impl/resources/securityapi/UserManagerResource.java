@@ -143,21 +143,30 @@ public class UserManagerResource extends BasicXMLResource {
     private StringBuilder getGroupAsXML(String id) throws Exception {
         GroupManager gm = getRealm().getIdentityManager().getGroupManager();
         Group group = gm.getGroup(id);
-        Item[] members = group.getMembers();
         StringBuilder sb = new StringBuilder("<group xmlns=\"http://www.wyona.org/security/1.0\" id=\"" + id + "\">");
-        sb.append("<members>");
-        // INFO: See policymanager/src/java/org/wyona/yanel/impl/resources/policymanager/PolicyManagerResource.java#resolveGroup(), also re Loops!
-        String resolveGroups = getEnvironment().getRequest().getParameter("resolve-groups");
-        if (resolveGroups != null && resolveGroups.equals("true")) {
+
+        String paraResolveGroups = getEnvironment().getRequest().getParameter("resolve-groups");
+        boolean resolveGroups = false;
+        if (paraResolveGroups != null && paraResolveGroups.equals("true")) {
             log.warn("DEBUG: Resolve groups!");
+            resolveGroups = true;
         }
 
+        Item[] members = group.getMembers();
+        sb.append("<members>");
+        // INFO: See policymanager/src/java/org/wyona/yanel/impl/resources/policymanager/PolicyManagerResource.java#resolveGroup(), also re Loops!
         for (int i = 0; i < members.length; i++) {
             log.warn("DEBUG: Member: " + members[i].getID());
             if (members[i] instanceof User) {
                 sb.append("<user id=\"" + members[i].getID() + "\"/>");
             } else if (members[i] instanceof Group) {
-                sb.append("<group id=\"" + members[i].getID() + "\"/>");
+                if (resolveGroups) {
+                    sb.append("<group id=\"" + members[i].getID() + "\">");
+                    log.warn("DEBUG: Resolve group: " + members[i].getID());
+                    sb.append("</group>");
+                } else {
+                    sb.append("<group id=\"" + members[i].getID() + "\"/>");
+                }
             } else {
                 log.warn("No such instance of member/item implemented: " + members[i].getID());
             }
@@ -168,6 +177,8 @@ public class UserManagerResource extends BasicXMLResource {
         sb.append("<user id=\"dz\" naz-only-local=\"true\"/>");
 */
         sb.append("</members>");
+
+
 
         Group[] parentGroups = group.getParents();
         if (parentGroups != null && parentGroups.length > 0) {
