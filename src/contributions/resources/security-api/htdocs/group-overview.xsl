@@ -23,20 +23,29 @@
       </head>
       <body>
         <h1>Group Overview of <xsl:value-of select="/security-api/s:group/@id"/></h1>
-        <ul>
+        <p>Generiert am 14.5.2010 | 20:45</p>
+        <table>
         <xsl:apply-templates select="/security-api/s:group/s:members/s:group"/>
         <xsl:apply-templates select="/security-api/s:group/s:members/s:user"/>
-        </ul>
+        </table>
       </body>
     </html>
   </xsl:template>
 
   <xsl:template match="s:user">
-    <li>Member User: <xsl:value-of select="@id"/></li>
+    <tr><td style="background-color: #c8ffc8;">u: <xsl:value-of select="@id"/></td><td>&#160;</td></tr>
   </xsl:template>
 
   <xsl:template match="s:group">
-    <li>Member Group: <xsl:value-of select="@id"/></li>
+    <tr>
+      <td style="background-color: #ffcc99;">g: <xsl:value-of select="@id"/></td>
+      <td>
+        <table>
+        <xsl:apply-templates select="s:members/s:group"/>
+        <xsl:apply-templates select="s:members/s:user"/>
+        </table>
+      </td>
+    </tr>
   </xsl:template>
   
 </xsl:stylesheet>
