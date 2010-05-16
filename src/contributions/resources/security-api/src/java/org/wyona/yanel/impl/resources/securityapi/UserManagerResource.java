@@ -56,7 +56,26 @@ public class UserManagerResource extends BasicXMLResource {
                 log.debug("Import user: " + getEnvironment().getRequest().getParameter("id"));
                 importUser(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("synchronize-users")) {
-                synchronizeUsers();
+                if (getEnvironment().getRequest().getParameter("get-last-date") != null) {
+                    if (getRealm().getRepository().getRootNode().hasNode("synchronization.properties")) {
+                        sb.append("<last-successful-synchronization date=\"" + getRealm().getRepository().getNode("/synchronization.properties").getProperty("last-successful-synchronization").getDate() + "\"/>");
+                    } else {
+                        log.warn("Not synchronized yet!");
+                        sb.append("<last-successful-synchronization date=\"" + "NOT_SYNCHRONIZED_YET" + "\"/>");
+                    }
+                } else {
+                    // TODO: Lock ...
+                    synchronizeUsers();
+                    // TODO: Unlock ...
+
+                    org.wyona.yarep.core.Node node;
+                    if (!getRealm().getRepository().getRootNode().hasNode("synchronization.properties")) {
+                        node = getRealm().getRepository().getRootNode().addNode("synchronization.properties", org.wyona.yarep.core.NodeType.RESOURCE);
+                    } else {
+                        node = getRealm().getRepository().getRootNode().getNode("synchronization.properties");
+                    }
+                    node.setProperty("last-successful-synchronization", new java.util.Date());
+                }
             } else if (usecase.equals("getgroups")) {
                 sb.append(getGroupsAsXML());
             } else if (usecase.equals("add-members-to-group")) {
