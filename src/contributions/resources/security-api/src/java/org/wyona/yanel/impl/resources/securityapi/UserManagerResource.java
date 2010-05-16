@@ -146,13 +146,15 @@ public class UserManagerResource extends BasicXMLResource {
         StringBuilder sb = new StringBuilder("<group xmlns=\"http://www.wyona.org/security/1.0\" id=\"" + id + "\">");
 
         String paraResolveGroups = getEnvironment().getRequest().getParameter("resolve-groups");
-        boolean resolveGroups = false;
+        boolean doResolveGroups = false;
         if (paraResolveGroups != null && paraResolveGroups.equals("true")) {
             log.warn("DEBUG: Resolve groups!");
-            resolveGroups = true;
+            doResolveGroups = true;
         }
 
-        sb.append(getGroupMembers(group, resolveGroups));
+        java.util.List resolvedGroups = new java.util.ArrayList(); // INFO: Save info in order to detect loops
+        resolvedGroups.add(group.getID());
+        sb.append(getGroupMembers(gm, group, doResolveGroups, resolvedGroups));
 
         Group[] parentGroups = group.getParents();
         if (parentGroups != null && parentGroups.length > 0) {
@@ -412,20 +414,27 @@ public class UserManagerResource extends BasicXMLResource {
     /**
      * Get group members as XML
      */
-    private String getGroupMembers(Group group, boolean resolveGroups) throws Exception {
+    private String getGroupMembers(GroupManager gm, Group group, boolean doResolveGroups, java.util.List resolvedGroups) throws Exception {
         Item[] members = group.getMembers();
         StringBuilder sb = new StringBuilder();
         sb.append("<members>");
         // INFO: See policymanager/src/java/org/wyona/yanel/impl/resources/policymanager/PolicyManagerResource.java#resolveGroup(), also re Loops!
         for (int i = 0; i < members.length; i++) {
-            log.warn("DEBUG: Member: " + members[i].getID());
+            //log.warn("DEBUG: Member: " + members[i].getID());
             if (members[i] instanceof User) {
                 sb.append("<user id=\"" + members[i].getID() + "\"/>");
             } else if (members[i] instanceof Group) {
-                if (resolveGroups) {
-                    sb.append("<group id=\"" + members[i].getID() + "\">");
-                    log.warn("DEBUG: Resolve group: " + members[i].getID());
-                    sb.append("</group>");
+                if (doResolveGroups) {
+                    if (alreadyResolved(members[i].getID(), resolvedGroups)) {
+                        log.error("Loop detected: " + resolvedGroups);
+                        sb.append("<loop-detected group-id=\"" + members[i].getID() + "\"/>");
+                    } else {
+                        sb.append("<group id=\"" + members[i].getID() + "\">");
+                        //log.warn("DEBUG: Resolve group: " + members[i].getID());
+                        resolvedGroups.add(members[i].getID());
+                        sb.append(getGroupMembers(gm, gm.getGroup(members[i].getID()), doResolveGroups, resolvedGroups));
+                        sb.append("</group>");
+                    }
                 } else {
                     sb.append("<group id=\"" + members[i].getID() + "\"/>");
                 }
@@ -441,4 +450,16 @@ public class UserManagerResource extends BasicXMLResource {
         sb.append("</members>");
         return sb.toString();
     }
+
+    /**
+     * Check whether group has been resolved already
+     */
+     private boolean alreadyResolved(String groupId, java.util.List resolvedGroupIDs) {
+         for (int i = 0; i < resolvedGroupIDs.size(); i++) {
+             if (groupId.equals((String)resolvedGroupIDs.get(i))) {
+                 return true;
+             }
+         }
+         return false;
+     }
 }
