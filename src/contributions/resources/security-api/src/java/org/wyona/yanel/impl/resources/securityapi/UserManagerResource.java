@@ -152,33 +152,7 @@ public class UserManagerResource extends BasicXMLResource {
             resolveGroups = true;
         }
 
-        Item[] members = group.getMembers();
-        sb.append("<members>");
-        // INFO: See policymanager/src/java/org/wyona/yanel/impl/resources/policymanager/PolicyManagerResource.java#resolveGroup(), also re Loops!
-        for (int i = 0; i < members.length; i++) {
-            log.warn("DEBUG: Member: " + members[i].getID());
-            if (members[i] instanceof User) {
-                sb.append("<user id=\"" + members[i].getID() + "\"/>");
-            } else if (members[i] instanceof Group) {
-                if (resolveGroups) {
-                    sb.append("<group id=\"" + members[i].getID() + "\">");
-                    log.warn("DEBUG: Resolve group: " + members[i].getID());
-                    sb.append("</group>");
-                } else {
-                    sb.append("<group id=\"" + members[i].getID() + "\"/>");
-                }
-            } else {
-                log.warn("No such instance of member/item implemented: " + members[i].getID());
-            }
-        }
-/*
-        sb.append("<user id=\"ep\" naz-blocked=\"true\"/>"); // TODO: naz ...
-        sb.append("<user id=\"fedpol_a\" naz-blocked=\"true\" naz-only-local=\"true\"/>");
-        sb.append("<user id=\"dz\" naz-only-local=\"true\"/>");
-*/
-        sb.append("</members>");
-
-
+        sb.append(getGroupMembers(group, resolveGroups));
 
         Group[] parentGroups = group.getParents();
         if (parentGroups != null && parentGroups.length > 0) {
@@ -433,5 +407,38 @@ public class UserManagerResource extends BasicXMLResource {
      */
     protected Map<String, String> getExtraXMLnamespaceDeclarations() throws Exception {
         return Collections.emptyMap(); // DEFAULT: No extra XML namespace declarations
+    }
+
+    /**
+     * Get group members as XML
+     */
+    private String getGroupMembers(Group group, boolean resolveGroups) throws Exception {
+        Item[] members = group.getMembers();
+        StringBuilder sb = new StringBuilder();
+        sb.append("<members>");
+        // INFO: See policymanager/src/java/org/wyona/yanel/impl/resources/policymanager/PolicyManagerResource.java#resolveGroup(), also re Loops!
+        for (int i = 0; i < members.length; i++) {
+            log.warn("DEBUG: Member: " + members[i].getID());
+            if (members[i] instanceof User) {
+                sb.append("<user id=\"" + members[i].getID() + "\"/>");
+            } else if (members[i] instanceof Group) {
+                if (resolveGroups) {
+                    sb.append("<group id=\"" + members[i].getID() + "\">");
+                    log.warn("DEBUG: Resolve group: " + members[i].getID());
+                    sb.append("</group>");
+                } else {
+                    sb.append("<group id=\"" + members[i].getID() + "\"/>");
+                }
+            } else {
+                log.warn("No such instance of member/item implemented: " + members[i].getID());
+            }
+        }
+
+        //sb.append("<user id=\"ep\" naz-blocked=\"true\"/>"); // TODO: naz ...
+        //sb.append("<user id=\"fedpol_a\" naz-blocked=\"true\" naz-only-local=\"true\"/>");
+        //sb.append("<user id=\"dz\" naz-only-local=\"true\"/>");
+
+        sb.append("</members>");
+        return sb.toString();
     }
 }
