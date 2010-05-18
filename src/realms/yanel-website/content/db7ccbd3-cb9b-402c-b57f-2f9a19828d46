@@ -1,8 +1,7 @@
 <?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>KonaKart Integration</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>
 <h1>KonaKart Integration</h1>
 <p><a href="http://www.konakart.com/">KonaKart</a> is a Java based eCommerce Shopping Cart Software.</p>
-<p>KonaKart supports various databases, but the following step-by-step instruction is based on PostgreSQL.</p>
-<p>&#160;</p>
+<p>KonaKart supports <a href="http://www.konakart.com/installationfaq.php">various databases</a>, but the following step-by-step instruction is based on PostgreSQL.</p>
 <h3>Install PostgreSQL on a Linux server<br /></h3>
 <ul>
 <li>uname -a</li>
@@ -15,5 +14,42 @@
 <li>su - postgres</li>
 <li>psql -U postgres</li>
 <li>select * from pg_tables;</li>
+</ul>
+<h3>Import KonaKart sample data into PostgreSQL</h3>
+<ul>
+<li>Download KonaKart, e.g. the ZIP version of the <a href="http://www.konakart.com/downloads/community_edition">community edition</a></li>
+<li>Also see the <a href="http://www.konakart.com/manual_installationfaq.php">KonaKart manual installation FAQ</a></li>
+<li>Create a KonaKart database within PostgreSQL:  
+<ul>
+<li>sudo bash</li>
+<li>/etc/init.d/postgresql-8.2 start</li>
+<li>su - postgres</li>
+<li>createdb -U postgres --encoding unicode konakart</li>
+</ul>
+</li>
+<li>Import the sample data:  
+<ul>
+<li>Depending on what web-server port you want to run KonaKart, you might have to change the port within the KonaKart sample data: 
+<ul>
+<li>grep 8780 konakart-community/database/PostgreSQL/konakart_demo.sql</li>
+<li>Replace the port number 8780 for example by 8080: vi: 1,$s/8780/8080/g</li>
+</ul>
+</li>
+<li>Import the data: psql -U postgres -d konakart -f konakart-community/database/PostgreSQL/konakart_demo.sql</li>
+<li>Test the data: 
+<ul>
+<li>psql -U postgres -d konakart</li>
+<li>select * from products;</li>
+</ul>
+</li>
+<li>...</li>
+</ul>
+</li>
+<li>...</li>
+</ul>
+<h3>Configure the database connection within KonaKart</h3>
+<ul>
+<li>...</li>
+<li>...</li>
 </ul>
 </body></html>
