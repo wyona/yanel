@@ -14,6 +14,7 @@
 
   <xsl:param name="yanel.back2realm" select="'BACK2REALM_IS_NULL'"/>
   <xsl:param name="yanel.reservedPrefix" select="'RESERVEDPREFIX_IS_NULL'"/>
+  <xsl:param name="yanel.toolbar-status" select="'TOOLBAR-STATUS_IS_NULL'"/>
   
   <xsl:template match="/">
         <html>
@@ -64,9 +65,16 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
                 </xsl:otherwise>
               </xsl:choose>
 
+<xsl:choose>
+  <xsl:when test="$yanel.toolbar-status = 'on'">
               <p>
               Do you want to <a href="{$yanel.back2realm}create-new-page.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Axml">create</a> a new page?
               </p>
+  </xsl:when>
+  <xsl:otherwise>
+    <p><a href="{$yanel.back2realm}en/contact.html?message=404 - Page not found - {/yanel:yanel/yanel:request/@yanel:uri}">Please let us know about this 404.</a></p>
+  </xsl:otherwise>
+</xsl:choose>
 
 
 
