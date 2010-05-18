@@ -2,4 +2,18 @@
 <h1>KonaKart Integration</h1>
 <p><a href="http://www.konakart.com/">KonaKart</a> is a Java based eCommerce Shopping Cart Software.</p>
 <p>KonaKart supports various databases, but the following step-by-step instruction is based on PostgreSQL.</p>
+<p>&#160;</p>
+<h3>Install PostgreSQL on a Linux server<br /></h3>
+<ul>
+<li>uname -a</li>
+<li>sudo bash</li>
+<li>aptitude search postgres</li>
+<li>aptitude install postgresql-8.2</li>
+<li>ls /var/lib/postgresql/8.2/</li>
+<li>/etc/init.d/postgresql-8.2 stop</li>
+<li>/etc/init.d/postgresql-8.2 start</li>
+<li>su - postgres</li>
+<li>psql -U postgres</li>
+<li>select * from pg_tables;</li>
+</ul>
 </body></html>
