@@ -1,0 +1,5 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>KonaKart Integration</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>
+<h1>KonaKart Integration</h1>
+<p><a href="http://www.konakart.com/">KonaKart</a> is a Java based eCommerce Shopping Cart Software.</p>
+<p>KonaKart supports various databases, but the following step-by-step instruction is based on PostgreSQL.</p>
+</body></html>
