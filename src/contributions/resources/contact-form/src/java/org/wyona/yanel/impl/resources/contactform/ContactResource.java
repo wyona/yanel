@@ -136,7 +136,12 @@ public class ContactResource extends Resource implements ViewableV1 {
                     if (request.getParameter("zipCity") != null) transformer.setParameter("zipCity", request.getParameter("zipCity"));
                     if (request.getParameter("message") != null) transformer.setParameter("message", request.getParameter("message"));
                 }
+            } else {
+                log.warn("DEBUG: Form not submitted yet!");
+                if (request.getParameter("message") != null) transformer.setParameter("message", request.getParameter("message"));
             }
+
+
             transformer.setParameter("content-language", getContentLanguage());
 
             // create xinclude transformer:
@@ -202,6 +207,7 @@ public class ContactResource extends Resource implements ViewableV1 {
     private void sendMail(Transformer transformer, String cookieValue) throws Exception {
         String email = getEnvironment().getRequest().getParameter("email");
         if(email == null || ("").equals(email)) {
+            log.warn("No email set yet!");
             transformer.setParameter("error", "emailNotSet");
         } else if(!validateEmail(email)) {
             log.warn("Doesn't seem to be a valid email: " + email + " (according to the following regular expression: " + getEmailRegEx() + ")");
