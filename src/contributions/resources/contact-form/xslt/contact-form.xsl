@@ -88,7 +88,7 @@
           <tr>
             <td align="right" valign="top" class="contentfield"><i18n:message><xsl:attribute name="key"><xsl:value-of select="$inputName"/></xsl:attribute></i18n:message>:&#0160;</td>
             <td>
-              <textarea rows="8" name="{$inputName}" cols="30" class="box">&#160;</textarea>
+              <textarea rows="8" name="{$inputName}" cols="30" class="box"><xsl:value-of select="$message"/>&#160;</textarea>
             </td>
             <td><xsl:if test="@required = 'true'">*</xsl:if></td>
           </tr>
