@@ -19,7 +19,7 @@
 <ul>
 <li>Download KonaKart, e.g. the ZIP version of the <a href="http://www.konakart.com/downloads/community_edition">community edition</a></li>
 <li>Also see the <a href="http://www.konakart.com/manual_installationfaq.php">KonaKart manual installation FAQ</a></li>
-<li>Create a KonaKart database within PostgreSQL:  
+<li>Create a KonaKart database within PostgreSQL:     
 <ul>
 <li>sudo bash</li>
 <li>/etc/init.d/postgresql-8.2 start</li>
@@ -27,16 +27,16 @@
 <li>createdb -U postgres --encoding unicode konakart</li>
 </ul>
 </li>
-<li>Import the sample data:  
+<li>Import the sample data:     
 <ul>
-<li>Depending on what web-server port you want to run KonaKart, you might have to change the port within the KonaKart sample data: 
+<li>Depending on what web-server port you want to run KonaKart, you might have to change the port within the KonaKart sample data:    
 <ul>
 <li>grep 8780 konakart-community/database/PostgreSQL/konakart_demo.sql</li>
 <li>Replace the port number 8780 for example by 8080: vi: 1,$s/8780/8080/g</li>
 </ul>
 </li>
 <li>Import the data: psql -U postgres -d konakart -f konakart-community/database/PostgreSQL/konakart_demo.sql</li>
-<li>Test the data: 
+<li>Test the data:    
 <ul>
 <li>psql -U postgres -d konakart</li>
 <li>select * from products;</li>
@@ -47,9 +47,31 @@
 </li>
 <li>...</li>
 </ul>
-<h3>Configure the database connection within KonaKart</h3>
+<h3>Configure the database connection within KonaKart and PostgreSQL<br /></h3>
 <ul>
-<li>...</li>
-<li>...</li>
+<li>webapps/konakart/WEB-INF/classes/konakart.properties
+<ul>
+<li>torque.database.store1.adapter&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; = postgresql</li>
+<li>torque.dsfactory.store1.connection.driver&#160;&#160; = org.postgresql.Driver</li>
+<li>torque.dsfactory.store1.connection.url&#160;&#160;&#160;&#160;&#160; = jdbc:postgresql://localhost:5432/konakart</li>
+<li>torque.dsfactory.store1.connection.user&#160;&#160;&#160;&#160; = postgres</li>
+<li>torque.dsfactory.store1.connection.password =</li>
+</ul>
+</li>
+<li>webapps/konakartadmin/WEB-INF/classes/konakartadmin.properties</li>
+<li>Make sure that postgreSQL is listening  
+<ul>
+<li>vi /etc/postgresql/8.2/main/postgresql.conf</li>
+<li>listen_addresses = 'localhost,127.0.0.1'</li>
+<li>netstat -nt -l | grep 5432</li>
+</ul>
+</li>
+<li>Make sure that you can connect without password from localhost: 
+<ul>
+<li>vi /etc/postgresql/8.2/main/pg_hba.conf</li>
+<li>host&#160;&#160;&#160; all&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; all&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; 127.0.0.1/32&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; trust</li>
+<li>host&#160;&#160;&#160; all&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; all&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; ::1/128&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; trust</li>
+</ul>
+</li>
 </ul>
 </body></html>
