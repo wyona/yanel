@@ -52,6 +52,12 @@ public class UserManagerResource extends BasicXMLResource {
             } else if (usecase.equals("deleteuser")) {
                 log.warn("DEBUG: Delete user: " + getEnvironment().getRequest().getParameter("id"));
                 deleteUser(getEnvironment().getRequest().getParameter("id"));
+            } else if (usecase.equals("deletegroup")) {
+                log.warn("DEBUG: Delete group: " + getEnvironment().getRequest().getParameter("id"));
+                deleteGroup(getEnvironment().getRequest().getParameter("id"));
+            } else if (usecase.equals("creategroup")) {
+                log.warn("DEBUG: Create group: " + getEnvironment().getRequest().getParameter("id"));
+                createGroup(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("importuser")) {
                 log.debug("Import user: " + getEnvironment().getRequest().getParameter("id"));
                 importUser(getEnvironment().getRequest().getParameter("id"));
@@ -179,6 +185,23 @@ public class UserManagerResource extends BasicXMLResource {
     private void deleteUser(String id) throws AccessManagementException {
         UserManager um = getRealm().getIdentityManager().getUserManager();
         um.removeUser(id);
+    }
+
+    /**
+     * Delete a specific group
+     * @param id Group ID
+     */
+    private void deleteGroup(String id) throws AccessManagementException {
+        GroupManager gm = getRealm().getIdentityManager().getGroupManager();
+        gm.removeGroup(id);
+    }
+
+    /**
+     * Create a group
+     * @param id Group ID
+     */
+    private void createGroup(String id) throws AccessManagementException {
+        GroupManager gm = getRealm().getIdentityManager().getGroupManager();
     }
 
     /**
