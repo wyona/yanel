@@ -57,7 +57,7 @@ public class UserManagerResource extends BasicXMLResource {
                 deleteGroup(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("creategroup")) {
                 log.warn("DEBUG: Create group: " + getEnvironment().getRequest().getParameter("id"));
-                createGroup(getEnvironment().getRequest().getParameter("id"));
+                createGroup(getEnvironment().getRequest().getParameter("id"), getEnvironment().getRequest().getParameter("name"));
             } else if (usecase.equals("importuser")) {
                 log.debug("Import user: " + getEnvironment().getRequest().getParameter("id"));
                 importUser(getEnvironment().getRequest().getParameter("id"));
@@ -199,9 +199,11 @@ public class UserManagerResource extends BasicXMLResource {
     /**
      * Create a group
      * @param id Group ID
+     * @param name Group name
      */
-    private void createGroup(String id) throws AccessManagementException {
+    private void createGroup(String id, String name) throws AccessManagementException {
         GroupManager gm = getRealm().getIdentityManager().getGroupManager();
+        gm.createGroup(id, name);
     }
 
     /**
