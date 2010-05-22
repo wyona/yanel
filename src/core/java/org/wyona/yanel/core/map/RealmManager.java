@@ -175,9 +175,11 @@ public class RealmManager {
     }
 
     /**
+     * @deprecated Use readRealms(File) instead
      * Read realms configuration
      */
     public void readRealms() throws ConfigurationException {
+        log.warn("DEPRECATED");
         readRealms(_realmsConfigFile);
     }
 
@@ -365,8 +367,8 @@ public class RealmManager {
         configSerializer.setIndent(true);
         configSerializer.serializeToFile(_realmsConfigFile, config);
         
-        // reload the realm configuration:
-        readRealms();
+        // INFO: reload the realm configuration
+        readRealms(_realmsConfigFile);
     }
 
     /**
