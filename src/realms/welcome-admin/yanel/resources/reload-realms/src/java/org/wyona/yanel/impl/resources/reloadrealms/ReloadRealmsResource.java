@@ -33,7 +33,8 @@ public class ReloadRealmsResource extends BasicXMLResource {
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<reload-realms>");
         try {
-            getYanel().getRealmConfiguration().readRealms();
+            org.wyona.yanel.core.map.RealmManager rm = getYanel().getRealmConfiguration();
+            rm.readRealms(new java.io.File(rm.getRealmsConfigurationFile()));
         } catch(Exception e) {
             log.error(e);
             sb.append("<exception>" + e.getMessage() + "</exception>");
