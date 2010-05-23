@@ -8,6 +8,8 @@
   <body>
 <div class="instructions">
 <h1>Configuration of yanel.xml</h1>
+<p>The file <code>yanel.xml</code> (or previously but deprecated <code>yanel.properties</code>) is the very first configuration file which is read by Yanel if one startups Yanel. It contains global parameters , whereas some of them can be overwritten per realm or per resource (e.g. the mail host) or some of them can be overwritten by using environment variables (e.g. realms.xml).</p>
+<p>The productive version of this configuration file is normally located at <code>WEB-INF/classes/yanel.xml</code>.</p>
 <h2>Examples</h2>
 <pre>&lt;?xml version="1.0"?&gt;
 
@@ -29,8 +31,8 @@
   &lt;smtp host="mail.foo.com" port="25"/&gt;
 
 &lt;/yanel&gt;</pre>
-<p><strong>Note 1:</strong> Normally, you should edit <code>conf/local/local.yanel.xml</code>, rather than <code>conf/yanel.xml</code>.</p>
-<p><strong>Note 2:</strong> After editing either of these configuration files, Yanel needs to be rebuilt in order to overwrite <code>WEB-INF/classes/yanel.xml</code> (or alternatively one can edit this file directly and just restart Yanel instead).</p>
+<p><strong>Note 1:</strong> If one is using Yanel from source, then one should edit <code>conf/local/local.yanel.xml</code> rather than <code>conf/yanel.xml</code>.</p>
+<p><strong>Note 2:</strong> After editing either of these configuration files, Yanel needs to be rebuilt in order to overwrite <code>WEB-INF/classes/yanel.xml</code> (or alternatively one can edit this file directly and just restart Yanel instead, whereas one needs to be aware that the changes are overwritten during the next build).</p>
 </div>
 </body>
 </html>
