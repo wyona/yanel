@@ -90,9 +90,9 @@ public class RealmManager {
             if (envName.equals("YANEL_REALMS_HOME")) {
                 File yanelRealmsHome = new File(env.get(envName));
                 if (yanelRealmsHome.isDirectory()) {
-                    log.warn("DEBUG: YANEL_REALMS_HOME: " + yanelRealmsHome);
                     File envRealmsConfigFile = new File(yanelRealmsHome, "realms.xml");
                     if (envRealmsConfigFile.isFile()) {
+                        log.warn("Use environment variable YANEL_REALMS_HOME: " + yanelRealmsHome);
                         return envRealmsConfigFile;
                     }
                     break;
