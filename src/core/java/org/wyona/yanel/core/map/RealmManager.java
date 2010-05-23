@@ -85,6 +85,8 @@ public class RealmManager {
      * @return Realms configuration file, either something like /usr/local/tomcat/webapps/yanel/WEB-INF/classes/realms.xml or /home/foo/realms.xml
      */
     private File getRealmsConfigFile(String yanelConfigurationFilename) throws ConfigurationException {
+
+        // 1.) Getting realms.xml from environment variable YANEL_REALMS_HOME
         java.util.Map<String, String> env = System.getenv();
         for (String envName : env.keySet()) {
             if (envName.equals("YANEL_REALMS_HOME")) {
@@ -94,12 +96,27 @@ public class RealmManager {
                     if (envRealmsConfigFile.isFile()) {
                         log.warn("Use environment variable YANEL_REALMS_HOME: " + yanelRealmsHome);
                         return envRealmsConfigFile;
+                    } else {
+                        log.warn("No realms configuration found: " + envRealmsConfigFile.getAbsolutePath());
                     }
                     break;
                 }
             }
         }
 
+
+        // 2.) Getting realms.xml from user home directory
+        log.warn("DEBUG: User home directory: " + System.getProperty("user.home"));
+        File userHomeRealmsConfigFile = new File(System.getProperty("user.home"), "realms.xml");
+        if (userHomeRealmsConfigFile.isFile()) {
+            log.warn("Use user home directory: " + System.getProperty("user.home"));
+            return userHomeRealmsConfigFile;
+        } else {
+            log.warn("No realms configuration found within user home directory: " + userHomeRealmsConfigFile.getAbsolutePath());
+        }
+
+
+        // 3.) Getting realms.xml from yanel.xml
         YANEL_CONFIGURATION_FILE = yanelConfigurationFilename;
 
         if (RealmManager.class.getClassLoader().getResource(YANEL_CONFIGURATION_FILE) == null) {
