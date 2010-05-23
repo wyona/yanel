@@ -68,7 +68,7 @@ public class ShowRealms extends Resource implements ViewableV2 {
         Repository contentRepo = getRealm().getRepository();
         
         sb.append("<yanel-info>");
-        sb.append("<realms>");
+        sb.append("<realms config=\"" + yanel.getRealmConfiguration().getRealmsConfigurationFile() + " \">");
         
         Realm[] realms = yanel.getRealmConfiguration().getRealms();
         for (int i = 0; i < realms.length; i++) {
