@@ -7,7 +7,13 @@
   </head>
   <body>
 <h1>Configuration of realms.xml</h1>
-<p>The location of the file <code>realms.xml</code> is configured within the file <a href="yanel_xml.html"><code>yanel.xml</code></a> or this path can be overwritten by setting the environment variable <code>YANEL_REALMS_HOME</code>.</p>
+<p>The realms configuration contains the locations and prefixes of the various realms and denotes which realm is the ROOT realm.</p>
+<p>The location of the file <code>realms.xml</code> is normally configured within the file <a href="yanel_xml.html"><code>yanel.xml</code></a> , but this path can be overwritten by adding a file realms.xml to the user home directory or by setting the environment variable <code>YANEL_REALMS_HOME</code>. The loading order is implemented by the java class org.wyona.yanel.core.map.RealmManager and the order is</p>
+<ol>
+<li>Environment variable (YANEL_REALMS_HOME)</li>
+<li>User home directory (user.home)</li>
+<li>Yanel configuration (yanel.xml)</li>
+</ol>
 <h2>Examples</h2>
 <pre>&lt;?xml version="1.0"?&gt;
 
@@ -29,7 +35,9 @@
 &lt;/realms&gt;        
     <br /><br /></pre>
 <h2>Environment variable YANEL_REALMS_HOME<br /></h2>
-<p>The environment variable can for example be set within <code>apache-tomcat-5.5.20/bin/catalina.sh</code> of Tomcat:</p>
+<p>The environment variable can for example be set within <code>apache-tomcat-5.5.20/bin/catalina.sh</code> of Tomcat</p>
 <p><code>export YANEL_REALMS_HOME=/Users/michaelwechner/src/realms</code></p>
+<p>whereas Yanel will then try to find a file</p>
+<p><code>/Users/michaelwechner/src/realms/realms.xml</code></p>
 </body>
 </html>
