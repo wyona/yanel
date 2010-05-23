@@ -7,6 +7,7 @@ package org.wyona.yanel.impl.resources.reloadrealms;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 
 import org.apache.log4j.Logger;
@@ -34,7 +35,9 @@ public class ReloadRealmsResource extends BasicXMLResource {
         sb.append("<reload-realms>");
         try {
             org.wyona.yanel.core.map.RealmManager rm = getYanel().getRealmConfiguration();
-            rm.readRealms(new java.io.File(rm.getRealmsConfigurationFile()));
+            File realmsConfigFile = new File(rm.getRealmsConfigurationFile());
+            rm.readRealms(realmsConfigFile);
+            sb.append("<realms-config src=\"" + realmsConfigFile.getAbsolutePath() + " \"/>");
         } catch(Exception e) {
             log.error(e);
             sb.append("<exception>" + e.getMessage() + "</exception>");
