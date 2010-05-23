@@ -81,6 +81,9 @@
   </xsl:template>
   
   <xsl:template match="realms">
+    <p>
+      Configuration File: <code><xsl:value-of select="@config"/></code>
+    </p>
     <ul>
       <xsl:apply-templates select="realm"/>
     </ul>
