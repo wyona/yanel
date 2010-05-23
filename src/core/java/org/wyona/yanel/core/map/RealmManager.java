@@ -72,17 +72,34 @@ public class RealmManager {
      */
     public RealmManager(String yanelConfigurationFilename) throws ConfigurationException {
         log.debug("Yanel Configuration Filename: " + yanelConfigurationFilename);
-        File realmsConfigFile = getSetRealmsConfigFile(yanelConfigurationFilename);
+        File realmsConfigFile = getRealmsConfigFile(yanelConfigurationFilename);
+        // INFO: Set private realms config file
+        _realmsConfigFile = realmsConfigFile;
         log.debug("Realms Configuration: " + realmsConfigFile);
         readRealms(realmsConfigFile);
     }
 
     /**
-     * Get realms configuration file
+     * Get realms configuration file (either based on yanel configuration or based on environment variable)
      * @param yanelConfigurationFilename Yanel configuration filename, either 'yanel.xml' or 'yanel.properties'
-     * @return Something like realms.xml
+     * @return Realms configuration file, either something like /usr/local/tomcat/webapps/yanel/WEB-INF/classes/realms.xml or /home/foo/realms.xml
      */
-    private File getSetRealmsConfigFile(String yanelConfigurationFilename) throws ConfigurationException {
+    private File getRealmsConfigFile(String yanelConfigurationFilename) throws ConfigurationException {
+        java.util.Map<String, String> env = System.getenv();
+        for (String envName : env.keySet()) {
+            if (envName.equals("YANEL_REALMS_HOME")) {
+                File yanelRealmsHome = new File(env.get(envName));
+                if (yanelRealmsHome.isDirectory()) {
+                    log.warn("DEBUG: YANEL_REALMS_HOME: " + yanelRealmsHome);
+                    File envRealmsConfigFile = new File(yanelRealmsHome, "realms.xml");
+                    if (envRealmsConfigFile.isFile()) {
+                        return envRealmsConfigFile;
+                    }
+                    break;
+                }
+            }
+        }
+
         YANEL_CONFIGURATION_FILE = yanelConfigurationFilename;
 
         if (RealmManager.class.getClassLoader().getResource(YANEL_CONFIGURATION_FILE) == null) {
@@ -153,9 +170,6 @@ public class RealmManager {
             throw new ConfigurationException("Realms configuration file could not be determined!");
         }
 
-        // INFO: Set private realms config file
-        _realmsConfigFile = realmsConfigFile;
-
         return realmsConfigFile;
     }
 
@@ -171,7 +185,12 @@ public class RealmManager {
      * Get realms configuration file
      */
     public String getRealmsConfigurationFile() {
-        return _realmsConfigFile.getAbsolutePath();
+        if (_realmsConfigFile != null && _realmsConfigFile.exists()) {
+            return _realmsConfigFile.getAbsolutePath();
+        } else {
+            log.error("Either no realms configuration file was set or it does not exist: " + _realmsConfigFile);
+            return null;
+        }
     }
 
     /**
