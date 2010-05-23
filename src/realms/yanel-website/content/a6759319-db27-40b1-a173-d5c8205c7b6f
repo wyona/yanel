@@ -6,27 +6,30 @@
     <title>Configuration of realms.xml</title>
   </head>
   <body>
-    <h1>Configuration of realms.xml</h1>
-    <h2>Examples</h2>
-    <pre>
-&lt;?xml version="1.0"?>
+<h1>Configuration of realms.xml</h1>
+<p>The location of the file <code>realms.xml</code> is configured within the file <a href="yanel_xml.html"><code>yanel.xml</code></a> or this path can be overwritten by setting the environment variable <code>YANEL_REALMS_HOME</code>.</p>
+<h2>Examples</h2>
+<pre>&lt;?xml version="1.0"?&gt;
 
-&lt;realms xmlns="http://www.wyona.org/yanel/1.0" version="2007060600">
+&lt;realms xmlns="http://www.wyona.org/yanel/1.0" version="2007060600"&gt;
 
-&lt;realm id="realm-id" mount-point="/" root="true">
-  &lt;!--&lt;name>Realm Name&lt;/name>-->
-  &lt;config src="/absolute/path/to/realm/"/>
-  &lt;reverse-proxy>
-    &lt;host-name>your.domain.ch&lt;/host-name>
+&lt;realm id="realm-id" mount-point="/" root="true"&gt;
+  &lt;!--&lt;name&gt;Realm Name&lt;/name&gt;--&gt;
+  &lt;config src="/absolute/path/to/realm/"/&gt;
+  &lt;reverse-proxy&gt;
+    &lt;host-name&gt;your.domain.ch&lt;/host-name&gt;
 &lt;!--
-    &lt;port>80&lt;/port>
-    &lt;ssl-port>443&lt;/ssl-port>
--->
-    &lt;prefix>/yanel/globus&lt;/prefix>
-  &lt;/reverse-proxy>
-&lt;/realm>
+    &lt;port&gt;80&lt;/port&gt;
+    &lt;ssl-port&gt;443&lt;/ssl-port&gt;
+--&gt;
+    &lt;prefix&gt;/yanel/globus&lt;/prefix&gt;
+  &lt;/reverse-proxy&gt;
+&lt;/realm&gt;
 
-&lt;/realms>        
-    </pre>
-  </body>
+&lt;/realms&gt;        
+    <br /><br /></pre>
+<h2>Environment variable YANEL_REALMS_HOME<br /></h2>
+<p>The environment variable can for example be set within <code>apache-tomcat-5.5.20/bin/catalina.sh</code> of Tomcat:</p>
+<p><code>export YANEL_REALMS_HOME=/Users/michaelwechner/src/realms</code></p>
+</body>
 </html>
