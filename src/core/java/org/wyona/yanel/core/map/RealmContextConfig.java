@@ -35,6 +35,9 @@ public class RealmContextConfig {
     private String label;
     private ReverseProxyConfig reverseProxyConfig;
 
+    /**
+     * @param unresolvedRealmConfigFile Unresolved realm configuration file, e.g. '../../realms/welcome-admin/'
+     */
     public RealmContextConfig(String id, String mountPoint, boolean rootFlag, File unresolvedRealmConfigFile) {
         this.id = id;
         this.mountPoint = mountPoint;
