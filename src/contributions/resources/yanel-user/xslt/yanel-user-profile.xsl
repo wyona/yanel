@@ -116,7 +116,21 @@
         <table>
           <tr>
             <td>Language:</td>
+            <td><!-- TODO: Display languages only which are supported by this realm! What about identity managers used by more than one realm with different languages?! -->
+              <select name="user-profile-language">
+                <option value="de"><xsl:if test="$user-profile-language = 'de'"><xsl:attribute name="selected">selected</xsl:attribute></xsl:if>de</option>
+                <option value="en"><xsl:if test="$user-profile-language = 'en'"><xsl:attribute name="selected">selected</xsl:attribute></xsl:if>en</option>
+                <option value="fr"><xsl:if test="$user-profile-language = 'fr'"><xsl:attribute name="selected">selected</xsl:attribute></xsl:if>fr</option>
+              </select>
+            </td>
+<!--
+            <td>
+              <input type="text" name="user-profile-language" value="{$user-profile-language}"/>
+            </td>
+-->
+<!--
             <td><xsl:value-of select="$user-profile-language"/></td>
+-->
           </tr>
           <tr>
             <td>Expiration Date:</td>
