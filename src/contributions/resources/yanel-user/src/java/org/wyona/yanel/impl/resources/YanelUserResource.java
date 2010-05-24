@@ -243,7 +243,6 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
 
     /**
      * @see org.wyona.yanel.core.api.attributes.CreatableV2#create(HttpServletRequest)
-     *      Creates the user
      */
     public void create(HttpServletRequest request) {
         try {
@@ -255,6 +254,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
                     String password = request.getParameter("rp.password");
                     String email = request.getParameter("rp.email");
                     String userName = request.getParameter("rp.userName");
+                    //String userProfileLanguage = request.getParameter("rp.userProfileLanguage");
 
                     um.createUser(userId, userName, email, password);
 
@@ -390,8 +390,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
     /**
      * Updates the user profile
      *
-     * @param request
-     *            The request containing the data to update
+     * @param request The request containing the data to update
      * @param transformer
      */
     private void updateUserProfile(HttpServletRequest request, Transformer transformer) {
@@ -406,6 +405,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
                 User user = realm.getIdentityManager().getUserManager().getUser(userId);
                 user.setEmail(request.getParameter("email"));
                 user.setName(request.getParameter("userName"));
+                user.setLanguage(request.getParameter("user-profile-language"));
                 user.save();
                 transformer.setParameter("success", "Profile updated successfully");
             } catch (Exception e) {
