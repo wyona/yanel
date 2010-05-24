@@ -103,18 +103,6 @@
             </td>
           </tr>
           <tr>
-            <td colspan="2">
-              <input type="submit" name="submitProfile" value="Apply"/>
-            </td>
-          </tr>
-        </table>
-      </p>
-    </form>
-
-    <h2>Account info</h2>
-      <p>
-        <table>
-          <tr>
             <td>Language:</td>
             <td><!-- TODO: Display languages only which are supported by this realm! What about identity managers used by more than one realm with different languages?! -->
               <select name="user-profile-language">
@@ -128,10 +116,25 @@
               <input type="text" name="user-profile-language" value="{$user-profile-language}"/>
             </td>
 -->
-<!--
-            <td><xsl:value-of select="$user-profile-language"/></td>
--->
           </tr>
+          <tr>
+            <td colspan="2">
+              <input type="submit" name="submitProfile" value="Apply"/>
+            </td>
+          </tr>
+        </table>
+      </p>
+    </form>
+
+    <h2>Additional Account info</h2>
+      <p>
+        <table>
+<!--
+          <tr>
+            <td>Language:</td>
+            <td><xsl:value-of select="$user-profile-language"/></td>
+          </tr>
+-->
           <tr>
             <td>Expiration Date:</td>
             <td><xsl:value-of select="$expiration-date"/></td>
