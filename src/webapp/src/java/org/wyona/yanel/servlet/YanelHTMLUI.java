@@ -275,7 +275,7 @@ class YanelHTMLUI {
     }
 
     /**
-     *
+     * Check whether toolbar is enabled (or suppressed)
      */
     boolean isToolbarEnabled(HttpServletRequest request) {
         String toolbarStatus = (String) request.getSession(true).getAttribute(TOOLBAR_KEY);
@@ -308,7 +308,8 @@ class YanelHTMLUI {
 
         Identity identity = YanelServlet.getIdentity(request, map);
         if (identity != null && !identity.isWorld()) {
-            buf.append(getLabel("user", userLanguage) + ": <b>" + identity.getUsername() + "</b>");
+            String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
+            buf.append(getLabel("user", userLanguage) + ": <b><a href=\"" + backToRealm + "yanel/users/" + identity.getUsername() + ".html\" style=\"font-size: 13px;\">" + identity.getUsername() + "</a></b>"); // TODO: yanel/users should be replaced by reservedPrefix, also see src/webapp/src/java/org/wyona/yanel/servlet/menu/Menu.java
         } else {
             buf.append(getLabel("user", userLanguage) + ": <b>Not signed in!</b>");
         }
