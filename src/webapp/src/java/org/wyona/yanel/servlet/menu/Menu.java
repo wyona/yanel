@@ -73,7 +73,7 @@ abstract public class Menu {
         sb.append("<div id=\"yaneltoolbar_menutitle\">Admin</div><ul>");
 
         // View page info moved to getFileMenu() of default implementation
-        sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/data-repository-sitetree.html\">Browse Data Repository Sitetree</a></li>");
+        sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/data-repository-sitetree.html\">" + getLabel("y:browse-sitetree", userLanguage) + "</a></li>");
         sb.append("<li class=\"haschild\">" + getLabel("y:permissions-management", userLanguage));
         sb.append("<ul>");
         sb.append("<li class=\"haschild\">Root Page&#160;&#160;&#160;");
@@ -194,6 +194,8 @@ abstract public class Menu {
                 return "Neue Seite erstellen";
             } else if(key.equals("y:permissions-management")) {
                 return "Rechteverwaltung";
+            } else if(key.equals("y:browse-sitetree")) {
+                return "Seitenverzeichnis";
             } else {
                 log.warn("Key '" + key + "' not supported yet by requested language '" + language + "'. Fallback to english!");
                 return getLabel(key, "en");
@@ -244,6 +246,8 @@ abstract public class Menu {
                 return "Create new page";
             } else if(key.equals("y:permissions-management")) {
                 return "Permissions Management";
+            } else if(key.equals("y:browse-sitetree")) {
+                return "Browse Data Repository Sitetree";
             } else {
                 log.warn("Key '" + key + "' not supported yet!");
                 return key;
