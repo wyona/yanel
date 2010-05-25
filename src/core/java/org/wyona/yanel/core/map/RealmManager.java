@@ -332,10 +332,11 @@ public class RealmManager {
     /**
      * If the given file has a relative path, resolve it relative to the given dir.
      * If dir is in fact a file, the resolving will use the parent dir of that file.  
-     * @param file Realm configuration specified within realms.xml
+     * @param file Unresolved realm configuration specified within realms.xml
      * @param dir Path of realms.xml
      */
     protected File resolveFile(File file, File dir) {
+        // TODO: Resolve javax.servlet.context
         // TODO: Replace this method by some method from org.wyona.commons.io.FileUtil ...
         if (!file.isAbsolute()) {
             if (dir.isDirectory()) {
