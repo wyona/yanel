@@ -29,7 +29,7 @@ public class TransitionMenuContentImpl implements ITransitionMenuContent {
     private Resource resource;
     private String state;
     private String revision;
-    private String isoMenuLang;
+    private String userLang;
     
     /**
      * ctor.
@@ -42,7 +42,8 @@ public class TransitionMenuContentImpl implements ITransitionMenuContent {
         this.resource = resource;
         this.state = status;
         this.revision = revision;
-        this.isoMenuLang = langCode.toLowerCase();
+        this.userLang = langCode.toLowerCase();
+        //log.debug("Requested language: " + userLang);
     }
     
     /**
@@ -61,7 +62,8 @@ public class TransitionMenuContentImpl implements ITransitionMenuContent {
 
             String label = t.getID() + " (WARNING: No label!)";
             try {
-                label = t.getDescription(this.resource.getRequestedLanguage());
+                label = t.getDescription(userLang);
+                //label = t.getDescription(this.resource.getRequestedLanguage()); // INFO: Depending on the realm configuration this can be the content language instead the user language
             } catch(Exception e) {
                 log.error(e, e);
             }
