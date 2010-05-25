@@ -302,7 +302,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             }
 
             // create i18n transformer:
-            I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), getRequestedLanguage(), getRealm().getDefaultLanguage(), uriResolver);
+            I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), getRequestedLanguage(), getUserLanguage(), getRealm().getDefaultLanguage(), uriResolver);
             i18nTransformer.setEntityResolver(catalogResolver);
 
             // create xinclude transformer:
@@ -529,4 +529,22 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         return new String[0];
     }
 
+    /**
+     * Get user language (order: profile, browser, ...)
+     */
+    private String getUserLanguage() throws Exception {
+        Identity identity = getEnvironment().getIdentity();
+        String language = getRequestedLanguage();
+        String userID = identity.getUsername();
+        if (userID != null) {
+            String userLanguage = getRealm().getIdentityManager().getUserManager().getUser(userID).getLanguage();
+            if(userLanguage != null) {
+                language = userLanguage;
+                log.debug("Use user profile language: " + language);
+            } else {
+                log.debug("Use requested language: " + language);
+            }
+        }
+        return language;
+    }
 }

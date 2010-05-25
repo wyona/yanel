@@ -6,15 +6,16 @@ import java.util.List;
 import java.util.Locale;
 import javax.xml.transform.URIResolver;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
+
 import org.wyona.yanel.core.i18n.MessageManager;
 import org.wyona.yanel.core.i18n.MessageProvider;
 import org.wyona.yanel.core.i18n.MessageProviderFactory;
 import org.wyona.yanel.core.source.SourceException;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
-
 
 /**
  * Transformer to translate content to a certain language using a message catalogue. 
@@ -83,11 +84,12 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class I18nTransformer3 extends AbstractTransformer {
 
-    private static Category log = Category.getInstance(I18nTransformer3.class);
+    private static Logger log = Logger.getLogger(I18nTransformer3.class);
     
     private static final int STATE_OUTSIDE = 0;
     private static final int STATE_INSIDE_TEXT = 1;
     private static final int STATE_INSIDE_TRANSLATE = 2;
+    private static final int STATE_INSIDE_TEXT_UI = 3;
     
     private MessageManager messageManager;
     private URIResolver resolver;
@@ -96,22 +98,44 @@ public class I18nTransformer3 extends AbstractTransformer {
     private StringBuffer textBuffer;
     private String defaultText;
     private Locale locale;
+    private Locale userLocale;
     private ArrayList parameters;
 
     public static final String NS_URI = "http://www.wyona.org/yanel/i18n/1.0";
-    
+    public static final String NS_UI_URI = "http://www.wyona.org/yanel/l10n/1.0";
+
+    /**
+     * @param language Localization or content language
+     */
     public I18nTransformer3(String catalogue, String language, String defaultLanguage, URIResolver resolver) {
         this.resolver = resolver;
+        //log.debug("Language: " + language);
         this.locale = new Locale(language);
+        //log.debug("Default language: " + defaultLanguage);
         Locale defaultLocale = new Locale(defaultLanguage);
         this.messageManager = new MessageManager(defaultLocale);
         MessageProvider messageProvider = getMessageProvider(catalogue);
         this.messageManager.addMessageProvider("catalogue-0", messageProvider);
     }
 
+    /**
+     * @param language Localization or content language
+     * @param userlanguage Localization of user (normally based on user profile setting)
+     */
+    public I18nTransformer3(String[] catalogues, String language, String userLanguage, String defaultLanguage, URIResolver resolver) {
+        this(catalogues, language, defaultLanguage, resolver);
+        log.warn("DEBUG: User language: " + userLanguage);
+        this.userLocale = new Locale(userLanguage);
+    }
+
+    /**
+     * @param language Localization or content language
+     */
     public I18nTransformer3(String[] catalogues, String language, String defaultLanguage, URIResolver resolver) {
         this.resolver = resolver;
+        //log.debug("Language: " + language);
         this.locale = new Locale(language);
+        //log.debug("Default language: " + defaultLanguage);
         Locale defaultLocale = new Locale(defaultLanguage);
         this.messageManager = new MessageManager(defaultLocale);
         
@@ -128,24 +152,45 @@ public class I18nTransformer3 extends AbstractTransformer {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
-    
+
+    /**
+     *
+     */
     protected String getMessage(String key) {
         String value = this.messageManager.getText(key, this.locale);
         if (value == null) {
-            log.error("cannot find message for key: " + key);
+            log.error("Cannot find message for key: " + key);
         }
         return value;
     }
-    
+
+    /**
+     * @deprecated Use getMessage(String, List, Locale) instead
+     */
     protected String getMessage(String key, List parameters) {
         Object[] paramArray = parameters.toArray();
         String value = this.messageManager.getText(key, paramArray, this.locale);
         if (value == null) {
-            log.error("cannot find message for key: " + key);
+            log.error("Cannot find message for key: " + key);
         }
         return value;
     }
-    
+
+    /**
+     *
+     */
+    private String getMessage(String key, List parameters, Locale locale) {
+        Object[] paramArray = parameters.toArray();
+        String value = this.messageManager.getText(key, paramArray, locale);
+        if (value == null) {
+            log.error("Cannot find message for key '" + key + "' and locale '" + locale + "'");
+        }
+        return value;
+    }
+
+    /**
+     * @deprecated Use getMessage(String, String, List, Locale) instead
+     */
     protected String getMessage(String key, String defaultText, List parameters) {
         if (key == null) {
             key = defaultText;
@@ -163,15 +208,46 @@ public class I18nTransformer3 extends AbstractTransformer {
         }
         return message;
     }
-    
+
+    /**
+     *
+     */
+    private String getMessage(String key, String defaultText, List parameters, Locale locale) {
+        if (key == null) {
+            key = defaultText;
+        }
+        String message = getMessage(key, parameters, locale);
+        if (message == null) {
+            message = defaultText;
+        }
+        if (message.length() == 0) {
+            message = key;
+        }
+        
+        if (log.isDebugEnabled()) {
+            log.debug("TAG [key] " + key + " [message]" + message);
+        }
+        return message;
+    }
+
+    /**
+     *
+     */
     public void startElement(String namespaceURI, String localName, String qName, Attributes attrs) throws SAXException {
         if (state == STATE_INSIDE_TEXT) {
             
             throw new SAXException("no elements allowed inside of i18n text element");
             
+        } else if (state == STATE_INSIDE_TEXT_UI) {
+            
+            throw new SAXException("No elements allowed inside of i18n text UI element");
+            
         } else if (state == STATE_INSIDE_TRANSLATE) {
             
             if (isI18nTextElement(namespaceURI, localName, qName)) {
+                this.textBuffer = new StringBuffer(); 
+                this.key = attrs.getValue("key");
+            } else if (isL10nTextElement(namespaceURI, localName, qName)) {
                 this.textBuffer = new StringBuffer(); 
                 this.key = attrs.getValue("key");
             } else if (isI18nParamElement(namespaceURI, localName, qName)) {
@@ -184,6 +260,10 @@ public class I18nTransformer3 extends AbstractTransformer {
             
             if (isI18nTextElement(namespaceURI, localName, qName)) {
                 state = STATE_INSIDE_TEXT;
+                this.textBuffer = new StringBuffer(); 
+                this.key = attrs.getValue("key");
+            } else if (isL10nTextElement(namespaceURI, localName, qName)) {
+                state = STATE_INSIDE_TEXT_UI;
                 this.textBuffer = new StringBuffer(); 
                 this.key = attrs.getValue("key");
             } else if (isI18nTranslateElement(namespaceURI, localName, qName)) {
@@ -248,11 +328,21 @@ public class I18nTransformer3 extends AbstractTransformer {
         }
     }
 
+    /**
+     *
+     */
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         if (state == STATE_INSIDE_TEXT) {
             if (isI18nTextElement(namespaceURI, localName, qName)) {
                 String defaultText = this.textBuffer.toString();
-                String message = getMessage(this.key, defaultText, new ArrayList());
+                String message = getMessage(this.key, defaultText, new ArrayList(), this.locale);
+                state = STATE_OUTSIDE;
+                outputString(message);
+            }
+        } else if (state == STATE_INSIDE_TEXT_UI) {
+            if (isL10nTextElement(namespaceURI, localName, qName)) {
+                String defaultText = this.textBuffer.toString();
+                String message = getMessage(this.key, defaultText, new ArrayList(), this.userLocale);
                 state = STATE_OUTSIDE;
                 outputString(message);
             }
@@ -265,7 +355,7 @@ public class I18nTransformer3 extends AbstractTransformer {
                 this.parameters.add(param);
                 
             } else if (isI18nTranslateElement(namespaceURI, localName, qName)) {
-                String message = getMessage(this.key, this.defaultText, this.parameters);
+                String message = getMessage(this.key, this.defaultText, this.parameters, this.locale);
                 state = STATE_OUTSIDE;
                 outputString(message);
             }
@@ -278,24 +368,44 @@ public class I18nTransformer3 extends AbstractTransformer {
         char[] c = s.toCharArray(); 
         characters(c, 0, c.length);
     }
-    
-    
+
     /**
-     * Decides whether a the given element is a i18n text element.
-     * Suppports the &lt;text&gt; element and for backwards compatibility also
-     * the &lt;message&gt; element.
+     * Decides whether a given element is a i18n text element.
+     * Suppports the &lt;text&gt; element and for backwards compatibility also the &lt;message&gt; element.
      * @param namespaceURI
      * @param localName
      * @param qName
      * @return true if the element is a i18n element
      */
     protected boolean isI18nTextElement(String namespaceURI, String localName, String qName) {
-        if (namespaceURI.equals(NS_URI) && (localName.equals("text") || localName.equals("message"))) {
+        if (namespaceURI.equals(NS_URI) && localName.equals("text")) {
+            return true;
+        }
+        if (namespaceURI.equals(NS_URI) && localName.equals("message")) {
+            log.warn("DEPRECATED");
             return true;
         }
         return false;
     }
 
+    /**
+     * Decides whether a given element is a l10n text user interface element.
+     * Suppports the &lt;text&gt; element
+     * @param namespaceURI
+     * @param localName
+     * @param qName
+     * @return true if the element is a l10n text user interface element
+     */
+    protected boolean isL10nTextElement(String namespaceURI, String localName, String qName) {
+        if (namespaceURI.equals(NS_UI_URI) && localName.equals("text")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Decides whether a the given element is a i18n translate element.
+     */
     protected boolean isI18nTranslateElement(String namespaceURI, String localName, String qName) {
         if (namespaceURI.equals(NS_URI) && localName.equals("translate")) {
             return true;
@@ -311,7 +421,7 @@ public class I18nTransformer3 extends AbstractTransformer {
     }
 
     public void characters(char[] buf, int offset, int len) throws SAXException {
-        if (this.state == STATE_INSIDE_TEXT || state == STATE_INSIDE_TRANSLATE) {
+        if (this.state == STATE_INSIDE_TEXT || state == STATE_INSIDE_TRANSLATE || state == STATE_INSIDE_TEXT_UI) {
             this.textBuffer.append(buf, offset, len);
         } else {
             super.characters(buf, offset, len);
