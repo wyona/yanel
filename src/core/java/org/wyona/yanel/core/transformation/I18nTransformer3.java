@@ -124,8 +124,13 @@ public class I18nTransformer3 extends AbstractTransformer {
      */
     public I18nTransformer3(String[] catalogues, String language, String userLanguage, String defaultLanguage, URIResolver resolver) {
         this(catalogues, language, defaultLanguage, resolver);
-        log.warn("DEBUG: User language: " + userLanguage);
-        this.userLocale = new Locale(userLanguage);
+        //log.debug("User language: " + userLanguage);
+        if (userLanguage != null) {
+            this.userLocale = new Locale(userLanguage);
+        } else {
+            log.warn("No user language set. Fallback to localization/content language: " + language);
+            this.userLocale = new Locale(language);
+        }
     }
 
     /**
