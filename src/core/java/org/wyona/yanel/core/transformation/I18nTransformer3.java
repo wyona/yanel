@@ -159,10 +159,21 @@ public class I18nTransformer3 extends AbstractTransformer {
     }
 
     /**
-     *
+     * @deprecated Use getMessage(String, Locale) instead
      */
     protected String getMessage(String key) {
         String value = this.messageManager.getText(key, this.locale);
+        if (value == null) {
+            log.error("Cannot find message for key: " + key);
+        }
+        return value;
+    }
+
+    /**
+     *
+     */
+    private String getMessage(String key, Locale locale) {
+        String value = this.messageManager.getText(key, locale);
         if (value == null) {
             log.error("Cannot find message for key: " + key);
         }
@@ -257,6 +268,8 @@ public class I18nTransformer3 extends AbstractTransformer {
                 this.key = attrs.getValue("key");
             } else if (isI18nParamElement(namespaceURI, localName, qName)) {
                 this.textBuffer = new StringBuffer(); 
+            } else if (isL10nParamElement(namespaceURI, localName, qName)) {
+                this.textBuffer = new StringBuffer(); 
             } else {
                 log.error("invalid element inside of i18n:translate: " + qName);
             }
@@ -277,10 +290,10 @@ public class I18nTransformer3 extends AbstractTransformer {
             } else {
                 // no i18n element -> translate attributes:
                 
-                int index = attrs.getIndex(NS_URI, "attr");
-                
-                if (index != -1) {
-                    List i18nAttrs = Arrays.asList(attrs.getValue(index).split(" "));
+                int indexI18nAttr = attrs.getIndex(NS_URI, "attr");
+                int indexL10nAttr = attrs.getIndex(NS_UI_URI, "attr");
+                if (indexI18nAttr != -1) {
+                    List i18nAttrs = Arrays.asList(attrs.getValue(indexI18nAttr).split(" "));
                     AttributesImpl newAttrs = new AttributesImpl();
                     
                     for(int i = 0; i < attrs.getLength(); i++) {
@@ -303,6 +316,32 @@ public class I18nTransformer3 extends AbstractTransformer {
                         }
                     }
                     super.startElement(namespaceURI, localName, qName, newAttrs);
+                    
+              } else if (indexL10nAttr != -1) {
+                  //log.debug("l10n attribute found!");
+                  List l10nAttrs = Arrays.asList(attrs.getValue(indexL10nAttr).split(" "));
+                  AttributesImpl newAttrs = new AttributesImpl();
+                    
+                  for(int i = 0; i < attrs.getLength(); i++) {
+                      String attrUri = attrs.getURI(i);
+                      String attrLocalName = attrs.getLocalName(i);
+                      String attrQName = attrs.getQName(i);
+                      String attrValue = attrs.getValue(i);
+                      String attrType = attrs.getType(i);
+                        
+                      if (!attrLocalName.equals("attr") || !attrUri.equals(NS_UI_URI)) {
+                          if (l10nAttrs.contains(attrQName)) {
+                              String l10nValue = getMessage(attrValue, this.userLocale);
+                              if (l10nValue == null) {
+                                  l10nValue = attrValue;
+                              }
+                              newAttrs.addAttribute(attrUri, attrLocalName, attrQName, attrType, l10nValue);
+                          } else {
+                              newAttrs.addAttribute(attrUri, attrLocalName, attrQName, attrType, attrValue);
+                          }
+                      }
+                  }
+                  super.startElement(namespaceURI, localName, qName, newAttrs);
                     
                 } else {
                     
@@ -356,6 +395,10 @@ public class I18nTransformer3 extends AbstractTransformer {
                 this.defaultText = this.textBuffer.toString();
     
             } else if (isI18nParamElement(namespaceURI, localName, qName)) {
+                String param = this.textBuffer.toString();
+                this.parameters.add(param);
+                
+            } else if (isL10nParamElement(namespaceURI, localName, qName)) {
                 String param = this.textBuffer.toString();
                 this.parameters.add(param);
                 
@@ -418,8 +461,21 @@ public class I18nTransformer3 extends AbstractTransformer {
         return false;
     }
 
+    /**
+     *
+     */
     protected boolean isI18nParamElement(String namespaceURI, String localName, String qName) {
         if (namespaceURI.equals(NS_URI) && localName.equals("param")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     *
+     */
+    protected boolean isL10nParamElement(String namespaceURI, String localName, String qName) {
+        if (namespaceURI.equals(NS_UI_URI) && localName.equals("param")) {
             return true;
         }
         return false;
