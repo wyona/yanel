@@ -167,8 +167,8 @@ public class ResourceTypeRegistry {
                         log.debug("Classname: " + rtd.getResourceTypeClassname());
                         hm.put(rtd.getResourceTypeUniversalName(), rtd);
                     } catch (Exception exception) {
-                        log.error("Exception re registring resource with package: " + packageName);
-                        log.error(exception.getMessage(), exception);
+                        log.error("Exception re registring resource with package '" + packageName + "' and resource definition URL '" + resourceURL + "'!");
+                        log.error(exception, exception);
                     }
                 } catch (Exception e) {
                     File resConfigFile = new File(resourceTypes[i].getAttribute("src"));
