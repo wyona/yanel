@@ -1,125 +1,106 @@
-<?xml version="1.0"?>
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <title>Yarep Search</title>
-    <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/>
-  </head>
-  <body>
-    <h1>Yarep Search</h1>
-    <p> Yarep comes with a search feature. To turn it on you just have to configure a index location
-      which is a directory where the index will be stored. </p>
-    <p> By default it uses Lucene as a standard search and indexing implementation. But if the
-      standard implementation doesn't fit your needs you can implement you own search by
-      implementing following interfaces: <ul>
-        <li>org.wyona.yarep.core.search.Indexer (used for indexing)</li>
-        <li>org.wyona.yarep.core.search.Searcher (used for searching)</li>
-        <li>org.wyona.yarep.core.search.Metadata (used to pass additional information to the Indexer)</li>
-      </ul> Have a look at the standard implementation at org.wyona.yarep.impl.search.lucene </p>
-    <h2>Configuration</h2>
-    <table>
-      <tbody>
-        <tr>
-          <th>Element Name (namespace)</th>
-          <th>Child-Element</th>
-          <th>Attribute</th>
-          <th>Explanation</th>
-        </tr>
-        <tr>
-          <td>search-index (http://www.wyona.org/yarep/search/2.0)</td>
-          <td>index-location, repo-auto-index-fulltext, repo-auto-index-properties, lucene (implementation specific)</td>
-          <td>indexer-class, searcher-class</td>
-          <td>Root configuration element for search. The attribute indexer-class configures a specific implementation of org.wyona.yarep.core.search.Indexer.
-          If not set it will fall back to the standard implementation (org.wyona.yarep.impl.search.lucene.LuceneIndexer). 
-          The attribute searcher-class configures a specific implementation of org.wyona.yarep.core.search.Searcher. If not set it will fall back to the standard implementation (org.wyona.yarep.impl.search.lucene.LuceneSearcher).</td>
-        </tr>
-        <tr>
-          <td>index-location</td>
-          <td></td>
-          <td>file</td>
-          <td>Path to a directory where the index will be stored. absoluth or relative to this config file. (Be sure your application has read/write access)</td>
-        </tr>
-        <tr>
-          <td>repo-auto-index-fulltext</td>
-          <td></td>
-          <td>boolean</td>
-          <td>true or false. if not set it will fall back to true. Indicates if indexing should be done when calling close() on a InputStream. if turned off, you can index a node by using Indexer.index(Node node) </td>
-        </tr>
-        <tr>
-          <td>repo-auto-index-properties</td>
-          <td></td>
-          <td>boolean</td>
-          <td>true or false. if not set it will fall back to true. Indicates if indexing should be done when saving a property. if turned off, you can index a node by using Indexer.index(Node node, Property property)</td>
-        </tr>
-      </tbody>
-    </table>
-    <h2>Standard implementation (lucene) configuration</h2>
-    <table>
-      <tbody>
-        <tr>
-          <th>Element Name (namespace)</th>
-          <th>Child-Element</th>
-          <th>Attribute</th>
-          <th>Explanation</th>
-        </tr>
-        <tr>
-          <td>lucene</td>
-          <td>local-tika-config, fulltext-analyzer, property-analyzer, write-lock-timeout</td>
-          <td></td>
-          <td>Root configuration element for Standard Search/Index implementation (lucene)</td>
-        </tr>
-        <tr>
-          <td>local-tika-config</td>
-          <td></td>
-          <td>file</td>
-          <td>file-path pointing to a tika-config file. absoluth or relative to this config file.</td>
-        </tr>
-        <tr>
-          <td>fulltext-analyzer</td>
-          <td></td>
-          <td>class</td>
-          <td>A class which extends org.apache.lucene.analysis.Analyzer. if empty it will use org.apache.lucene.analysis.standard.StandardAnalyzer.</td>
-        </tr>
-        <tr>
-          <td>property-analyzer</td>
-          <td></td>
-          <td>class</td>
-          <td>A class which extends org.apache.lucene.analysis.Analyzer. if empty it will use org.apache.lucene.analysis.WhitespaceAnalyzer.</td>
-        </tr>
-        <tr>
-          <td>write-lock-timeout</td>
-          <td></td>
-          <td>ms</td>
-          <td>Milliseconds. Sets the maximum time to wait for a write lock (in milliseconds) for the index. (TODO: This is not implemented yet.)</td>
-        </tr>
-      </tbody>
-    </table>    
-    <h2>Configuration Examples</h2>
-    <h3>Minimal Configuration</h3>
-    <div class="instructions">
-      <pre>
-  &lt;s:search-index xmlns:s="http://www.wyona.org/yarep/search/2.0" >
-    &lt;index-location file="index"/>
-  &lt;/s:search-index>        
-      </pre>
-    </div>
-    <h3>Full configuration</h3>
-    <div class="instructions">
-      <pre>
-  &lt;s:search-index xmlns:s="http://www.wyona.org/yarep/search/2.0" 
-      indexer-class="org.wyona.yarep.impl.search.lucene.LuceneIndexer" 
-      searcher-class="org.wyona.yarep.impl.search.lucene.LuceneSearcher">
-    &lt;auto-indexing boolean="true"/>
-    &lt;index-location file="index"/>
-    &lt;index-fulltext boolean="true"/>
-    &lt;index-properties boolean="true"/>
-    &lt;lucene>
-      &lt;local-tika-config file="tika-config.xml"/>
-      &lt;fulltext-analyzer class="org.apache.lucene.analysis.standard.StandardAnalyzer"/>
-      &lt;property-analyzer class="org.apache.lucene.analysis.WhitespaceAnalyzer"/>
-      &lt;write-lock-timeout ms="3000"/>
-    &lt;/lucene>
-  &lt;/s:search-index>
-      </pre>
-    </div>
-  </body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>Untitled document</title>
+</head>
+<body>
+<h1>Yarep Search</h1>
+<p>Yarep comes with a search feature. To turn it on you just have to configure a index location       which is a directory where the index will be stored.</p>
+<p>By default it uses Lucene as a standard search and indexing implementation. But if the       standard implementation doesn't fit your needs you can implement you own search by       implementing following interfaces:</p>
+<ul>
+<li>org.wyona.yarep.core.search.Indexer (used for indexing)</li>
+<li>org.wyona.yarep.core.search.Searcher (used for searching)</li>
+<li>org.wyona.yarep.core.search.Metadata (used to pass additional information to the Indexer)</li>
+</ul>
+<p>Have a look at the standard implementation at org.wyona.yarep.impl.search.lucene</p>
+<p>&#160;</p>
+<h2>Configuration</h2>
+<table border="0">
+<tbody>
+<tr>
+<th>Element Name (namespace)</th> <th>Child-Element</th> <th>Attribute</th> <th>Explanation</th>
+</tr>
+<tr>
+<td>search-index (http://www.wyona.org/yarep/search/2.0)</td>
+<td>index-location, repo-auto-index-fulltext, repo-auto-index-properties, lucene (implementation specific)</td>
+<td>indexer-class, searcher-class</td>
+<td>Root configuration element for search. The attribute indexer-class configures a specific implementation of org.wyona.yarep.core.search.Indexer.           If not set it will fall back to the standard implementation (org.wyona.yarep.impl.search.lucene.LuceneIndexer).            The attribute searcher-class configures a specific implementation of org.wyona.yarep.core.search.Searcher. If not set it will fall back to the standard implementation (org.wyona.yarep.impl.search.lucene.LuceneSearcher).</td>
+</tr>
+<tr>
+<td>index-location</td>
+<td>&#160;</td>
+<td>file</td>
+<td>Path to a directory where the index will be stored. absoluth or relative to this config file. (Be sure your application has read/write access)</td>
+</tr>
+<tr>
+<td>repo-auto-index-fulltext</td>
+<td>&#160;</td>
+<td>boolean</td>
+<td>true or false. if not set it will fall back to true. Indicates if indexing should be done when calling close() on a InputStream. if turned off, you can index a node by using Indexer.index(Node node)</td>
+</tr>
+<tr>
+<td>repo-auto-index-properties</td>
+<td>&#160;</td>
+<td>boolean</td>
+<td>true or false. if not set it will fall back to true. Indicates if indexing should be done when saving a property. if turned off, you can index a node by using Indexer.index(Node node, Property property)</td>
+</tr>
+</tbody>
+</table>
+<h2>Standard implementation (lucene) configuration</h2>
+<table border="0">
+<tbody>
+<tr>
+<th>Element Name (namespace)</th> <th>Child-Element</th> <th>Attribute</th> <th>Explanation</th>
+</tr>
+<tr>
+<td>lucene</td>
+<td>local-tika-config, fulltext-analyzer, property-analyzer, write-lock-timeout</td>
+<td>&#160;</td>
+<td>Root configuration element for Standard Search/Index implementation (lucene)</td>
+</tr>
+<tr>
+<td>local-tika-config</td>
+<td>&#160;</td>
+<td>file</td>
+<td>file-path pointing to a tika-config file. absoluth or relative to this config file.</td>
+</tr>
+<tr>
+<td>fulltext-analyzer</td>
+<td>&#160;</td>
+<td>class</td>
+<td>A class which extends org.apache.lucene.analysis.Analyzer. if empty it will use org.apache.lucene.analysis.standard.StandardAnalyzer.</td>
+</tr>
+<tr>
+<td>property-analyzer</td>
+<td>&#160;</td>
+<td>class</td>
+<td>A class which extends org.apache.lucene.analysis.Analyzer. if empty it will use org.apache.lucene.analysis.WhitespaceAnalyzer.</td>
+</tr>
+<tr>
+<td>write-lock-timeout</td>
+<td>&#160;</td>
+<td>ms</td>
+<td>Milliseconds. Sets the maximum time to wait for a write lock (in milliseconds) for the index. (TODO: This is not implemented yet.)</td>
+</tr>
+</tbody>
+</table>
+<h2>Configuration Examples</h2>
+<p>The configuration is done in the data repository definition file (e.g.  .../yanel/src/realms/from-scratch-realm-template/config/vfs-data-repository.xml).</p>
+<h3>Minimal Configuration</h3>
+<div class="instructions">
+<pre>  &lt;s:search-index xmlns:s="http://www.wyona.org/yarep/search/2.0" &gt;<br />    &lt;index-location file="index"/&gt;<br />  &lt;/s:search-index&gt;        <br />      </pre>
+</div>
+<h3>Full configuration</h3>
+<div class="instructions">
+<pre>  &lt;s:search-index xmlns:s="http://www.wyona.org/yarep/search/2.0" <br />      indexer-class="org.wyona.yarep.impl.search.lucene.LuceneIndexer" <br />      searcher-class="org.wyona.yarep.impl.search.lucene.LuceneSearcher"&gt;<br />    &lt;auto-indexing boolean="true"/&gt;<br />    &lt;index-location file="index"/&gt;<br />    &lt;index-fulltext boolean="true"/&gt;<br />    &lt;index-properties boolean="true"/&gt;<br />    &lt;lucene&gt;<br />      &lt;local-tika-config file="tika-config.xml"/&gt;<br />      &lt;fulltext-analyzer class="org.apache.lucene.analysis.standard.StandardAnalyzer"/&gt;<br />      &lt;property-analyzer class="org.apache.lucene.analysis.WhitespaceAnalyzer"/&gt;<br />      &lt;write-lock-timeout ms="3000"/&gt;<br />    &lt;/lucene&gt;<br />  &lt;/s:search-index&gt;<br /></pre>
+</div>
+<h2>Search resource configuration</h2>
+<p>Indexing of properties must be turned on for each property in the resource configuration of the search resource (e.g. .../yanel/src/realms/from-scratch-realm-template/res-configs/en/search.html.yanel-rc):</p>
+<div class="instructions">
+<pre>&lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0"&gt;<br />&#160; &lt;yanel:rti name="search" namespace="http://www.wyona.org/yanel/resource/1.0"/&gt;<br />
+&#160; &lt;yanel:property name="property-name" value="yarep_checkoutUserID"/&gt;<br />
+&lt;/yanel:resource-config&gt;<br />
+</pre>
+</div>
+</body>
 </html>
