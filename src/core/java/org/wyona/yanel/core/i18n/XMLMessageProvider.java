@@ -42,6 +42,9 @@ public class XMLMessageProvider implements MessageProvider {
     
     private Map messages = new HashMap();
 
+    /**
+     *
+     */
     public XMLMessageProvider(InputStream inputStream) {
         try {
             SAXParser parser = factory.newSAXParser();
@@ -54,6 +57,9 @@ public class XMLMessageProvider implements MessageProvider {
         }
     }
 
+    /**
+     *
+     */
     public String getText(String key, Locale locale, Locale defaultLocale) {
         String text = lookupText(key, locale);
         if (text == null) {
@@ -62,6 +68,9 @@ public class XMLMessageProvider implements MessageProvider {
         return text;
     }
 
+    /**
+     *
+     */
     private String lookupText(String key, Locale locale) {
         if (messages.containsKey(key)) {
             Message message = (Message)messages.get(key);
@@ -73,6 +82,8 @@ public class XMLMessageProvider implements MessageProvider {
                 }
                 locale = I18nUtils.getParentLocale(locale);
             }
+        } else {
+            log.warn("No such key: " + key);
         }
         return null;
     }
