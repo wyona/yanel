@@ -102,5 +102,14 @@
 &lt;/yanel:resource-config&gt;<br />
 </pre>
 </div>
+<h2>Implementation details of indexing</h2>
+<p>The fulltext index is written by the class org.wyona.yarep.impl.search.lucene.LuceneIndexer, which is called when the InputStream is closed.</p>
+<p>The actual sequence of indexing properties for a (virtual) file is:</p>
+<ul>
+<li>YourResource sets the properties in Yarep:<br />org.wyona.yarep.core.Node.setProperty(String, String) </li>
+<li>Yarep saves these properties in<br />org.wyona.yarep.impl.repo.vfs.VirtualFileSystemNode.saveProperties()</li>
+<li>by calling<br />org.wyona.yarep.impl.repo.vfs.VirtualFileSystemOutputStream.close()</li>
+</ul>
+<p>For this reason, it is very important that all OutputStreams are closed, even if the compiler won't warn you if you don't.</p>
 </body>
 </html>
