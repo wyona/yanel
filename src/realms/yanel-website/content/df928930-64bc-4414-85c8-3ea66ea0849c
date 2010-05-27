@@ -7,6 +7,11 @@
 <div class="instructions">
 <h1>Rapid Development of Components</h1>
 <p>When developing Yanel components, often there is no need to recompile everything once a total build has been done. Examples of components that can be built separately are <strong>webapp classes</strong>, <strong>resource classes</strong> and <strong>realms</strong>.</p>
+<h2>Efficiently building implementation classes</h2>
+<p>If you change only classes belonging to the Yanel/Yarep implementations, you can save time by executing the target "install-jars":</p>
+<pre>{yanel.home}/build.sh install-jars</pre>
+<p>This will compile the classes and make the jar file. After this, you only need to copy this jar to your Tomcat directory and restart Tomcat/Yanel, e.g.:</p>
+<pre>&#126;/Wyona/svn-repos/yanel $ copy build/lib/yanel-impl-1.0-dev-rREVISION.jar local/apache-tomcat-5.5.20/webapps/yanel/WEB-INF/lib/<br /></pre>
 <h2>Efficiently building webapp classes</h2>
 <p>Webapp classes are all classes that are under <code>{yanel.home}/src/webapp/src/java/org/wyona/yanel/servlet</code>. In order to build and test these classes efficiently, one can run:</p>
 <pre>{yanel.home}/build.sh compile-webapp copy-basic-webapp-libs copy-webapp-files-to-tomcat-cluster-node1</pre>
