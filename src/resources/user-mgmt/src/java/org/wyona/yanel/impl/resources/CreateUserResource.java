@@ -46,12 +46,27 @@ public class CreateUserResource extends ExecutableUsecaseResource {
         String email = getParameterAsString(PARAM_EMAIL);
         String password = getParameterAsString(PARAM_PASSWORD1);
         try {
+            // Create user
             if (log.isDebugEnabled()) {
                 log.debug("creating user: " + id + " " + name + " " + email);
             }
             userManager.createUser(id, name, email, password);
+
+            // Create access policy
+            org.wyona.security.core.api.PolicyManager policyManager = getRealm().getPolicyManager();
+            org.wyona.security.core.api.Policy policy = policyManager.createEmptyPolicy();
+            org.wyona.security.core.UsecasePolicy usecasePolicy = new org.wyona.security.core.UsecasePolicy("view");
+            usecasePolicy.addIdentity(new org.wyona.security.core.api.Identity(id), true);
+            policy.addUsecasePolicy(usecasePolicy);
+            // TODO: Replace "/users" by org.wyona.yanel.servlet.YanelGlobalResourceTypeMatcher#usersPathPrefix
+            policyManager.setPolicy("/" + getYanel().getReservedPrefix() + "/users/" + id + ".html", policy);
+
             addInfoMessage("User '" + id + "' (" + name + ") created successfully. (IMPORTANT: Please make sure to add user either to an existing group or to an access policy, because otherwise user will not have any explicite rights.)");
         } catch (AccessManagementException e) {
+            log.error(e, e);
+            throw new UsecaseException(e.getMessage(), e);
+        } catch (Exception e) {
+            log.error(e, e);
             throw new UsecaseException(e.getMessage(), e);
         }
     }
