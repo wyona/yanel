@@ -354,10 +354,16 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             if (title == null || title.length() == 0) {
                 log.warn("No title has been specified!");
                 title = "No title has been specified!";
+            } else {
+                log.debug("Title: " + title);
             }
 
             Repository repo = getRealm().getRepository();
             Node newNode = org.wyona.yanel.core.util.YarepUtil.addNodes(repo, getPath().toString(), org.wyona.yarep.core.NodeType.RESOURCE);
+            String sourceMimeType = request.getParameter("rp.source-mime-type");
+            if (sourceMimeType != null) {
+                newNode.setMimeType(sourceMimeType);
+            }
 
             String templatePath = request.getParameter("rp.template");
             if (log.isDebugEnabled()) log.debug("Template path: " + templatePath);
