@@ -1,5 +1,6 @@
 tinyMCE.init({
 	mode : "textareas",
+	//theme : "simple",
 	theme : "advanced",
 	plugins : "fullpage",
 	theme_advanced_toolbar_location : "top",
@@ -31,6 +32,7 @@ function yanelLookupResource(field_name, url, type, win) {
         // (PHP session ID is now included if there is one at all)
         cmsURL = cmsURL + "&type=" + type;
     }
+    // INFO: Suppress the toolbar
     cmsURL = cmsURL + "&yanel.target-back2realm=" + BACK2REALM + "&yanel.toolbar=suppress";
 
     tinyMCE.activeEditor.windowManager.open({
