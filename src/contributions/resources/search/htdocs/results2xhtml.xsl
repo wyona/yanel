@@ -53,15 +53,18 @@
 
   <xsl:template match="y:results">
     <h2>All Results (<a href="?q={../y:query}&amp;provider={../y:provider}&amp;yanel.resource.viewid=xml">as XML</a>)</h2>
-    <ul>
+    <br/>
     <xsl:apply-templates select="y:result"/>
-    </ul>
   </xsl:template>
 
   <xsl:template match="y:result">
-    <li>
-      <a><xsl:attribute name="href"><xsl:choose><xsl:when test="starts-with(@url, 'http')"><xsl:value-of select="@url"/></xsl:when><xsl:otherwise><xsl:value-of select="$yarep.back2realm"/><xsl:value-of select="substring(@url, 2)"/><!-- NOTE: Omit leading slash --></xsl:otherwise></xsl:choose></xsl:attribute><xsl:choose><xsl:when test="y:title"><xsl:value-of select="y:title"/></xsl:when><xsl:otherwise><xsl:value-of select="@url"/></xsl:otherwise></xsl:choose></a>
-    </li>
+    <xsl:variable name="href"><xsl:choose><xsl:when test="starts-with(@url, 'http')"><xsl:value-of select="@url"/></xsl:when><xsl:otherwise><xsl:value-of select="$yarep.back2realm"/><xsl:value-of select="substring(@url, 2)"/><!-- NOTE: Omit leading slash --></xsl:otherwise></xsl:choose></xsl:variable>
+
+    <p class="hit">
+      <a href="{$href}" style="font-size: 11pt;"><xsl:choose><xsl:when test="y:title"><xsl:value-of select="y:title"/></xsl:when><xsl:otherwise><xsl:value-of select="@url"/></xsl:otherwise></xsl:choose></a>
+      <!-- TODO <br/><xsl:value-of select="y:excerpt"/> -->
+      <br/><a href="{$href}" style="color: #228822; text-decoration: none;"><xsl:value-of select="$href"/></a>
+    </p>
   </xsl:template>
 
   <xsl:template match="y:exception">
