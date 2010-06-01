@@ -14,4 +14,7 @@
   <matcher pattern="/**.html" rcpath="/inner_app3.html.yanel-rc"/>
 -->
   <matcher pattern="/**.html" rcpath="/generic-xhtml-page_yanel-rc.xml"/>
+
+  <!-- Binaries ... -->
+  <matcher pattern="/**.jpg" rcpath="/node_yanel-rc.xml"/>
 </rc-map>
