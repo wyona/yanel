@@ -14,7 +14,7 @@
 -->
 
         <!-- Older IE versions have problems with the mime type application/xhtml+xml -->
-        <rc:property name="mime-type" value="text/html"/>
+        <rc:property name="mime-type" value="text/html"/> <!-- TODO: Is this actually implemented within src/resources/xml/src/java/org/wyona/yanel/impl/resources/XMLResource.java ? -->
         <rc:property name="source-mime-type" value="application/xhtml+xml"/>
 <!--
         <rc:property name="workflow-schema" value="/workflow.xml"/>
