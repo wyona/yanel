@@ -6,7 +6,11 @@
   <!-- NOTE: By calling the XSLT via another resource it allows to implement a dynamic layout switch :-) -->
   <yanel:property name="xslt" value="yanelresource:/my-global.xsl"/>
 
+  <!-- Older IE versions have problems with the mime type application/xhtml+xml -->
+  <yanel:property name="mime-type" value="text/html"/>
+<!--
   <yanel:property name="mime-type" value="application/xhtml+xml"/>
+-->
 
   <!-- NOTE: Workflow definition is located within app1 directory, even if a different layout is used! -->
   <yanel:property name="workflow-schema" value="/app1/workflow/workflow-with-review.xml"/>
