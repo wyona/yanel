@@ -487,7 +487,7 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                     newResource.setPath(pathOfNewResource.toString());
                 }
 
-                log.debug("Create new resource ...");
+                log.info("Create new resource: " + newResource.getResourceTypeUniversalName());
                 ((CreatableV2) newResource).create(request);
 
                 if (pathOfNewResource != null) {
