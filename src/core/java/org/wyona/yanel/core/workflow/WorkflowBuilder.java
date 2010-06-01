@@ -193,6 +193,9 @@ public class WorkflowBuilder {
         return condition;
     }
 
+    /**
+     * Get action from XML
+     */
     protected Action buildAction(Element element) throws WorkflowException {
         String className = element.getAttribute("class");
         Class actionClass;
