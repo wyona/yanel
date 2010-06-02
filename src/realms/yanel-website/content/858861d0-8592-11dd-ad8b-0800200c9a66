@@ -118,6 +118,6 @@
 <p>With the current implementation, it is not possible to search in fulltext mode and properties simultaneously, but it is possible to configure different searches via different resource-configs, e.g. one for each.</p>
 <h2>Custom parser</h2>
 <p>You can easily write your own (Tika) parser. The best way to do this is to copy an existing parser (e.g. org.apache.tika.parser.xml.DcXMLParser), and modify it according to your needs, and configure Tika to use your custom parser (in tika-config.xml). Also see the <a href="http://tika.apache.org/">Tika documentation</a>.</p>
-<p>Caveat: With the current Yarep implementation, only metadata fields "org.apache.tika.metadata.Metadata.TITLE", "org.apache.tika.metadata.Metadata.KEYWORDS" and "org.apache.tika.metadata.Metadata.DESCRIPTION" will be indexed, and they will be indexed as fulltext!</p>
+<p>Caveats: With the current Yarep implementation, only metadata fields "org.apache.tika.metadata.Metadata.TITLE", "org.apache.tika.metadata.Metadata.KEYWORDS" and "org.apache.tika.metadata.Metadata.DESCRIPTION" will be indexed, and they will be indexed as fulltext! Also be aware that in the case of multiple instances of these metadata fields, only the first one will be indexed, so if you have e.g. several keywords to index, you must put them in a single KEYWORDS field as a white space separated list of words.</p>
 </body>
 </html>
