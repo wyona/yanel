@@ -85,7 +85,7 @@
 </tbody>
 </table>
 <h2>Configuration Examples</h2>
-<p>The configuration is done in the data repository definition file (e.g.  .../yanel/src/realms/from-scratch-realm-template/config/vfs-data-repository.xml).</p>
+<p>The configuration is done in the data <a href="repository-configuration.html">repository definition</a> file (e.g.  .../yanel/src/realms/from-scratch-realm-template/config/vfs-data-repository.xml).</p>
 <h3>Minimal Configuration</h3>
 <div class="instructions">
 <pre>  &lt;s:search-index xmlns:s="http://www.wyona.org/yarep/search/2.0" &gt;<br />    &lt;index-location file="index"/&gt;<br />  &lt;/s:search-index&gt;        <br />      </pre>
@@ -95,14 +95,12 @@
 <pre>  &lt;s:search-index xmlns:s="http://www.wyona.org/yarep/search/2.0" <br />      indexer-class="org.wyona.yarep.impl.search.lucene.LuceneIndexer" <br />      searcher-class="org.wyona.yarep.impl.search.lucene.LuceneSearcher"&gt;<br />    &lt;auto-indexing boolean="true"/&gt;<br />    &lt;index-location file="index"/&gt;<br />    &lt;index-fulltext boolean="true"/&gt;<br />    &lt;index-properties boolean="true"/&gt;<br />    &lt;lucene&gt;<br />      &lt;local-tika-config file="tika-config.xml"/&gt;<br />      &lt;fulltext-analyzer class="org.apache.lucene.analysis.standard.StandardAnalyzer"/&gt;<br />      &lt;property-analyzer class="org.apache.lucene.analysis.WhitespaceAnalyzer"/&gt;<br />      &lt;write-lock-timeout ms="3000"/&gt;<br />    &lt;/lucene&gt;<br />  &lt;/s:search-index&gt;<br /></pre>
 </div>
 <h2>Search resource configuration</h2>
-<p>Indexing of properties must be turned on for each property in the resource configuration of the search resource (e.g. .../yanel/src/realms/from-scratch-realm-template/res-configs/en/search.html.yanel-rc):</p>
+<p>Searching for properties must be turned on for each property in the resource configuration of the search resource (e.g. .../yanel/src/realms/from-scratch-realm-template/res-configs/en/search.html.yanel-rc):</p>
 <div class="instructions">
-<pre>&lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0"&gt;<br />&#160; &lt;yanel:rti name="search" namespace="http://www.wyona.org/yanel/resource/1.0"/&gt;<br />
-&#160; &lt;yanel:property name="property-name" value="yarep_checkoutUserID"/&gt;<br />
-&lt;/yanel:resource-config&gt;<br />
-</pre>
+<pre>&lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0"&gt;<br />&#160; &lt;yanel:rti name="search" namespace="http://www.wyona.org/yanel/resource/1.0"/&gt;<br /><br />&#160; &lt;yanel:property name="property-name" value="yarep_checkoutUserID"/&gt;<br /><br />&lt;/yanel:resource-config&gt;<br /><br /></pre>
 </div>
 <h2>Implementation details of indexing</h2>
+<p>Yanel uses Tika (currently version 0.4) to parse the documents for indexing. The document is first parsed by Tika, then passed to Lucene for indexing. To configure Tika, use a Tika configuration file (see tika-core/src/main/resources/org/apache/tika/tika-config.xml in the Tika 0.4 source code package for an example).</p>
 <p>The fulltext index is written by the class org.wyona.yarep.impl.search.lucene.LuceneIndexer, which is called when the InputStream is closed.</p>
 <p>The actual sequence of indexing properties for a (virtual) file is:</p>
 <ul>
@@ -111,5 +109,15 @@
 <li>by calling<br />org.wyona.yarep.impl.repo.vfs.VirtualFileSystemOutputStream.close()</li>
 </ul>
 <p>For this reason, it is very important that all OutputStreams are closed, even if the compiler won't warn you if you don't.</p>
+<h2>Using the indexing/search features</h2>
+<p>If you use the default configuration of Yanel, only the fulltext of your content documents will be indexed. If you want properties to be indexed and searchable, you must:</p>
+<ul>
+<li>Turn on property search in the search resource config (see above)</li>
+<li>Index those properties when saving the content document by using<br />node.setProperty("property-name", "property-value");</li>
+</ul>
+<p>With the current implementation, it is not possible to search in fulltext mode and properties simultaneously, but it is possible to configure different searches via different resource-configs, e.g. one for each.</p>
+<h2>Custom parser</h2>
+<p>You can easily write your own (Tika) parser. The best way to do this is to copy an existing parser (e.g. org.apache.tika.parser.xml.DcXMLParser), and modify it according to your needs, and configure Tika to use your custom parser (in tika-config.xml). Also see the <a href="http://tika.apache.org/">Tika documentation</a>.</p>
+<p>Caveat: With the current Yarep implementation, only metadata fields "title", "keywords" and "description" will be indexed, and they will be indexed as fulltext!</p>
 </body>
 </html>
