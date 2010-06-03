@@ -120,10 +120,7 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
      * submitDelete - Result of deleting the user
      */
     public View getView(String viewId) throws Exception {
-
         View defaultView = new View();
-        File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "yanel-user-profile.xml");
-
         try {
 
             File xslFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "yanel-user-profile.xsl");
@@ -197,14 +194,14 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
             }
             defaultView.setMimeType(getMimeType(viewId));
             if (viewId != null && viewId.equals("xml")) {
-                defaultView.setInputStream(new java.io.FileInputStream(xmlFile));
+                defaultView.setInputStream(getXMLAsStream());
             } else {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(getPath());
                 String reservedPrefix = yanel.getReservedPrefix();
                 transformer.setParameter("yanel.back2realm", backToRealm);
                 transformer.setParameter("yanel.reservedPrefix", reservedPrefix);
-                transformer.transform(new javax.xml.transform.stream.StreamSource(xmlFile), new StreamResult(baos));
+                transformer.transform(new javax.xml.transform.stream.StreamSource(getXMLAsStream()), new StreamResult(baos));
                 defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
             }
         } catch (Exception e) {
@@ -219,8 +216,17 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#exists()
      */
     public boolean exists() throws Exception {
-        log.warn("Not implemented yet!");
-        return true;
+        String userId = getUserId();
+        if (userId != null) {
+            if (realm.getIdentityManager().getUserManager().getUser(userId) != null) {
+                return true;
+            } else {
+                log.error("No such user: " + userId);
+            }
+        } else {
+            log.error("No user ID!");
+        }
+        return false;
     }
 
     /**
@@ -617,5 +623,31 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
         }
 
         return success;
+    }
+
+    /**
+     * Get XML as stream
+     */
+    private java.io.InputStream getXMLAsStream() throws Exception {
+        String userId = getUserId();
+        if (userId != null) {
+            User user = realm.getIdentityManager().getUserManager().getUser(userId);
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("<?xml version=\"1.0\"?>");
+            sb.append("<user id=\"" + userId + "\" email=\"" + user.getEmail() + "\">");
+            sb.append("</user>");
+            //sb.append("<form name=\"user-profile-form\"/>");
+
+            return new java.io.StringBufferInputStream(sb.toString());
+        } else {
+            return new java.io.StringBufferInputStream("<no-user-id/>");
+        }
+
+
+/*
+        File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "yanel-user-profile.xml");
+        return new java.io.FileInputStream(xmlFile);
+*/
     }
 }

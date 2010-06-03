@@ -10,7 +10,9 @@
 
   <xsl:param name="userId" select="''"/>
   <xsl:param name="userName" select="''"/>
+<!-- DEPRECATED
   <xsl:param name="email" select="''"/>
+-->
   <xsl:param name="user-profile-language" select="'IS_NULL'"/>
   <xsl:param name="expiration-date" select="'IS_NULL'"/>
   <xsl:param name="description" select="'TODO'"/>
@@ -46,7 +48,10 @@
               User Profile of <xsl:value-of select="$userId"/>
             </h1>
               <xsl:call-template name="show-message"/>     
+<!--
               <xsl:apply-templates select="form"/>
+-->
+              <xsl:apply-templates select="user"/>
             </div></td></tr></table>
           </body>
         </xsl:otherwise>
@@ -54,7 +59,10 @@
     </html>
   </xsl:template>  
 
+  <xsl:template match="user">
+<!--
   <xsl:template match="form">
+-->
     <h2>Change Password</h2>
     <form name="user-password-form" method="post" action="#">
       <p>
@@ -99,7 +107,10 @@
           <tr>
             <td>E-Mail:</td>
             <td>
+              <input type="text" name="email" value="{@email}"/>
+<!-- DEPRECATED
               <input type="text" name="email" value="{$email}"/>
+-->
             </td>
           </tr>
           <tr>
