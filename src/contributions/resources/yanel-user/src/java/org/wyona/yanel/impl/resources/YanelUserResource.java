@@ -585,6 +585,11 @@ public class YanelUserResource extends Resource implements ViewableV2, Creatable
      */
     private String getUserId() throws Exception {
         String userId = null;
+
+        if (getEnvironment().getRequest().getParameter("id") != null) {
+            return getEnvironment().getRequest().getParameter("id");
+        }
+
         ResourceConfiguration resConfig = getConfiguration();
         if(resConfig != null) {
             userId = getConfiguration().getProperty("user");
