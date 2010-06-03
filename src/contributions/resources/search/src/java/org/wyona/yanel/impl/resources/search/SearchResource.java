@@ -17,6 +17,7 @@ import org.wyona.meguni.util.ResultSet;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  * Search resource
@@ -75,7 +76,7 @@ public class SearchResource extends BasicXMLResource {
 
         String query = getRequest().getParameter(QUERY_NAME);
         if (query != null && query.length() > 0) {
-            sb.append("<y:query>" + query + "</y:query>");
+            sb.append("<y:query>" + StringEscapeUtils.escapeXml(query) + "</y:query>");
             try {
                 Result[] results;
                 if (provider.equals(DEFAULT_PROVIDER)) {
@@ -97,7 +98,7 @@ public class SearchResource extends BasicXMLResource {
                         sb.append("<y:result url=\"" + results[i].getURL() + "\">");
                         if (results[i].getTitle() != null) {
                             log.debug("Title: " + results[i].getTitle());
-                            sb.append("  <y:title>" + org.apache.commons.lang.StringEscapeUtils.escapeXml(results[i].getTitle()) + "</y:title>");
+                            sb.append("  <y:title>" + StringEscapeUtils.escapeXml(results[i].getTitle()) + "</y:title>");
                         } else {
                             sb.append("  <y:no-title/>");
                         }
