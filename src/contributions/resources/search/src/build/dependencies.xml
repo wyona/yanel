@@ -13,6 +13,7 @@
       <dependency groupId="wyona-org-meguni" artifactId="wyona-org-meguni" version="0.1-r41793"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-impl" version="4.3"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-lang" version="2.1"/>
     </artifact:dependencies>
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
