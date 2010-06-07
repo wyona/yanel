@@ -10,6 +10,8 @@ import org.wyona.security.core.api.User;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -34,6 +36,11 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         String oldPassword = getEnvironment().getRequest().getParameter("oldPassword");
         if (oldPassword != null) {
             updatePassword(oldPassword);
+        }
+
+        String email = getEnvironment().getRequest().getParameter("email");
+        if (email != null) {
+            updateProfile(email);
         }
 
         try {
@@ -129,6 +136,32 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
     }
 
     /**
+     * Updates the user profile
+     *
+     * @param email E-Mail address of user
+     */
+    private void updateProfile(String email) {
+        if (email == null || ("").equals(email)) {
+            setTransformerParameter("error", "emailNotSet");
+        } else if (!validateEmail(email)) {
+            setTransformerParameter("error", "emailNotValid");
+        } else {
+            try {
+                String userId = getUserId();
+                User user = realm.getIdentityManager().getUserManager().getUser(userId);
+                user.setEmail(getEnvironment().getRequest().getParameter("email"));
+                user.setName(getEnvironment().getRequest().getParameter("userName"));
+                user.setLanguage(getEnvironment().getRequest().getParameter("user-profile-language"));
+                user.save();
+                setTransformerParameter("success", "Profile updated successfully");
+            } catch (Exception e) {
+                log.error(e, e);
+                setTransformerParameter("error", e.getMessage());
+            }
+        }
+    }
+
+    /**
      *
      */
     private void setTransformerParameter(String name, String value) {
@@ -150,5 +183,19 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         } catch (Exception e) {
             log.error(e, e);
         }
+    }
+
+    /**
+     * This method checks if the specified email is valid against a regex
+     *
+     * @param email
+     * @return true if email is valid
+     */
+    private boolean validateEmail(String email) {
+        String emailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
+        Pattern pattern = Pattern.compile(emailRegEx);
+        Matcher matcher = pattern.matcher(email);
+
+        return matcher.find();
     }
 }
