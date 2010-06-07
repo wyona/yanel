@@ -60,6 +60,7 @@ class YanelGlobalResourceTypeMatcher {
             log.debug("Get generic yanel resource config ...");
             final String userName = path.substring(usersPathPrefix.length(), path.length() - ".html".length());
             properties.put("user", userName);
+            properties.put("xslt", "rthtdocs:/yanel-user-profile.xsl");
             return new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
         } else if (globalRCfilename != null) {
             return getGlobalResourceConfiguration(globalRCfilename, realm, globalRCsBasePath);
