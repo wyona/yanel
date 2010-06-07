@@ -155,9 +155,14 @@
       </p>
 
     <h2>Groups</h2>
-    Groups which this user belongs to: <xsl:value-of select="$userGroupsString"/>
+    Groups which this user belongs to:<!-- <xsl:value-of select="$userGroupsString"/> -->
+    <xsl:for-each select="groups/group">
+      <xsl:value-of select="@id"/><xsl:if test="position() != last()">,&#160;</xsl:if>
+    </xsl:for-each>
+<!--
     <br/>
     All groups of this realm: <xsl:value-of select="$allGroupsString"/>
+-->
 
 
 <!-- TODO: Is this actually working? -->
