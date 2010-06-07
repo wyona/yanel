@@ -145,11 +145,11 @@
 -->
           <tr>
             <td>Expiration Date:</td>
-            <td><xsl:value-of select="$expiration-date"/></td>
+            <td><xsl:value-of select="expiration-date"/></td>
           </tr>
           <tr>
             <td>Description:</td>
-            <td><xsl:value-of select="$description"/></td>
+            <td><xsl:value-of select="description"/></td>
           </tr>
         </table>
       </p>
