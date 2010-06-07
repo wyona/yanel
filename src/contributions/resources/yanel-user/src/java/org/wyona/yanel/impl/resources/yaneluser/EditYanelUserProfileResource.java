@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 
 
 /**
- * A simple Resource which extends BasicXMLResource
+ * A resource to edit/update the profile of a user
  */
 public class EditYanelUserProfileResource extends BasicXMLResource {
     
@@ -49,9 +49,20 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
             StringBuilder sb = new StringBuilder();
 
             sb.append("<?xml version=\"1.0\"?>");
-            sb.append("<user id=\"" + userId + "\" email=\"" + user.getEmail() + "\">");
+            sb.append("<user id=\"" + userId + "\" email=\"" + user.getEmail() + "\" language=\"" + user.getLanguage() + "\">");
+            sb.append("  <name>" + user.getName() + "</name>");
+            sb.append("  <expiration-date>" + user.getExpirationDate() + "</expiration-date>");
+            sb.append("  <description>" + user.getDescription() + "</description>");
+
+            org.wyona.security.core.api.Group[] groups = user.getGroups();
+            if (groups !=  null && groups.length > 0) {
+                sb.append("  <groups>");
+                for (int i = 0; i < groups.length; i++) {
+                    sb.append("  <group id=\"" + groups[i].getID() + "\"/>");
+                }
+                sb.append("  </groups>");
+            }
             sb.append("</user>");
-            //sb.append("<form name=\"user-profile-form\"/>");
 
             return new java.io.StringBufferInputStream(sb.toString());
         } else {
