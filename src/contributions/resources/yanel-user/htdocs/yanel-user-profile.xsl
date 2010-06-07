@@ -37,15 +37,15 @@
         </xsl:when>
         <xsl:otherwise>
           <head>
-            <title>Edit user profile</title>
+            <title>Edit user profile: <xsl:value-of select="/user/name"/></title>
             <link type="text/css" href="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-css/global.css" rel="stylesheet"></link>
           </head>
           <body>
             <table id="bodytable" cellpadding="0" cellspacing="0"><tr><td id="title">
-              Edit user profile of <xsl:value-of select="$userId"/>
+              Edit user profile of <xsl:value-of select="/user/name"/>
             </td><td id="logo"><img src="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-img/yanel_header.png"/></td></tr><tr><td colspan="2" valign="top" width="100%"><div id="content">
             <h1> 
-              User Profile of <xsl:value-of select="$userId"/>
+              User Profile of '<xsl:value-of select="/user/name"/>' (ID: <xsl:value-of select="/user/@id"/>)
             </h1>
               <xsl:call-template name="show-message"/>     
 <!--
