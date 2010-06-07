@@ -101,8 +101,6 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
      */
     private void updatePassword(String oldPassword) {
         try {
-            String newPassword = getEnvironment().getRequest().getParameter("newPassword");
-            String newPasswordConfirmed = getEnvironment().getRequest().getParameter("newPasswordConfirmation");
             String userId = getUserId();
 
             if (!getRealm().getIdentityManager().getUserManager().getUser(userId).authenticate(oldPassword)) {
@@ -111,26 +109,20 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                 return;
             }
 
-/*
-            if (getRealm().getIdentityManager().getUserManager().getUser(userId).authenticate(
-                    oldPassword)) {
-                String plainPassword = request.getParameter("newPassword");
-                boolean confirmation = plainPassword.equals(request
-                        .getParameter("newPasswordConfirmation"));
-                if (confirmation && !plainPassword.equals("")) {
+            String newPassword = getEnvironment().getRequest().getParameter("newPassword");
+            String newPasswordConfirmed = getEnvironment().getRequest().getParameter("newPasswordConfirmation");
+            if (newPassword != null && !newPassword.equals("")) {
+                if (newPassword.equals(newPasswordConfirmed)) {
                     User user = getRealm().getIdentityManager().getUserManager().getUser(userId);
-                    user.setPassword(plainPassword);
+                    user.setPassword(newPassword);
                     user.save();
-
-                    transformer.setParameter("success", "Password updated successfully");
+                    setTransformerParameter("success", "Password updated successfully");
                 } else {
-                    transformer.setParameter("error", "Either no new password was supplied "
-                            + "or the password supplied and its confirmation do not coincide");
+                    setTransformerParameter("error", "New password and its confirmation do not match!");
                 }
             } else {
-                transformer.setParameter("error", "Authentication failed!");
+                setTransformerParameter("error", "No new password was specified!");
             }
-*/
         } catch (Exception e) {
             log.error(e, e);
         }
