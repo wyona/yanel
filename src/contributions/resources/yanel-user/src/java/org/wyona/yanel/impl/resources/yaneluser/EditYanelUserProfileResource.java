@@ -13,24 +13,29 @@ import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 
-
 /**
  * A resource to edit/update the profile of a user
  */
 public class EditYanelUserProfileResource extends BasicXMLResource {
     
     private static Logger log = Logger.getLogger(EditYanelUserProfileResource.class);
+
+    private String transformerParameterName;
+    private String transformerParameterValue;
     
     /*
-     * This method overrides the method to create the InputStream called by BasicXMLResource
-     * Since you extend the BasicXMLResource this has to contain well-formed xml.
-     * Should return a InputStream which contains XML. 
-     * Use String, StingBuffer, dom, jdom, org.apache.commons.io.IOUtils and so on to generate the XML.
+     * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
      */
     protected InputStream getContentXML(String viewId) {
         if (log.isDebugEnabled()) {
             log.debug("requested viewId: " + viewId);
         }
+
+        String oldPassword = getEnvironment().getRequest().getParameter("oldPassword");
+        if (oldPassword != null) {
+            updatePassword(oldPassword);
+        }
+
         try {
             return getXMLAsStream();
         } catch(Exception e) {
@@ -40,7 +45,7 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
     }
 
     /**
-     * Get XML as stream
+     * Get user profile as XML as stream
      */
     private java.io.InputStream getXMLAsStream() throws Exception {
         String userId = getUserId();
@@ -87,5 +92,71 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
             userId = getRTI().getProperty("user");
         }
         return userId;
+    }
+
+    /**
+     * Change user password
+     *
+     * @param oldPassword Existing current password
+     */
+    private void updatePassword(String oldPassword) {
+        try {
+            String newPassword = getEnvironment().getRequest().getParameter("newPassword");
+            String newPasswordConfirmed = getEnvironment().getRequest().getParameter("newPasswordConfirmation");
+            String userId = getUserId();
+
+            if (!getRealm().getIdentityManager().getUserManager().getUser(userId).authenticate(oldPassword)) {
+                setTransformerParameter("error", "Authentication of user '" +userId + "' failed!");
+                log.error("Authentication of user '" + userId + "' failed!");
+                return;
+            }
+
+/*
+            if (getRealm().getIdentityManager().getUserManager().getUser(userId).authenticate(
+                    oldPassword)) {
+                String plainPassword = request.getParameter("newPassword");
+                boolean confirmation = plainPassword.equals(request
+                        .getParameter("newPasswordConfirmation"));
+                if (confirmation && !plainPassword.equals("")) {
+                    User user = getRealm().getIdentityManager().getUserManager().getUser(userId);
+                    user.setPassword(plainPassword);
+                    user.save();
+
+                    transformer.setParameter("success", "Password updated successfully");
+                } else {
+                    transformer.setParameter("error", "Either no new password was supplied "
+                            + "or the password supplied and its confirmation do not coincide");
+                }
+            } else {
+                transformer.setParameter("error", "Authentication failed!");
+            }
+*/
+        } catch (Exception e) {
+            log.error(e, e);
+        }
+    }
+
+    /**
+     *
+     */
+    private void setTransformerParameter(String name, String value) {
+        transformerParameterName = name;
+        transformerParameterValue = value;
+    }
+
+    /**
+     * @see org.wyona.yanel.impl.resources.BasicXMLResource#passTransformerParameters(Transformer)
+     */
+    protected void passTransformerParameters(javax.xml.transform.Transformer transformer) throws Exception {
+        super.passTransformerParameters(transformer);
+        try {
+            if (transformerParameterName != null && transformerParameterValue != null) {
+                transformer.setParameter(transformerParameterName, transformerParameterValue);
+                transformerParameterName = null;
+                transformerParameterValue = null;
+            }
+        } catch (Exception e) {
+            log.error(e, e);
+        }
     }
 }
