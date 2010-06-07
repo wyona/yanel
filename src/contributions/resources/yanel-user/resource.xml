@@ -3,8 +3,11 @@
 <resource xmlns="http://www.wyona.org/yanel/1.0"
   name="yanel-user"
   namespace="http://www.wyona.org/yanel/resource/1.0"
-  class="org.wyona.yanel.impl.resources.YanelUserResource"
+  class="org.wyona.yanel.impl.resources.yaneluser.EditYanelUserProfileResource"
   >
+<!--
+  DEPRECATED: class="org.wyona.yanel.impl.resources.YanelUserResource"
+-->
 <description>
 User management interface
 </description>
