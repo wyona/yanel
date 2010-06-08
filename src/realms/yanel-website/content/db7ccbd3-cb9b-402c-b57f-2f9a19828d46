@@ -35,7 +35,7 @@
 <li>Download Community Server DMG Archive: mysql-5.1.47-osx10.6-x86_64.dmg</li>
 </ul>
 </li>
-<li>Open DMG 
+<li>Open DMG   
 <ul>
 <li>Double-click mysql-5.1.47-osx10.6-x86_64.pkg</li>
 <li>Will be installed to /usr/local/...</li>
@@ -46,14 +46,39 @@
 <li>sudo /Library/StartupItems/MySQLCOM/MySQLCOM start</li>
 <li>sudo /Library/StartupItems/MySQLCOM/MySQLCOM stop</li>
 <li>In order to disable automatic startup during system boot: vi /etc/hostconfig (set MYSQLCOM=-YES- to NO)</li>
-<li>Test mysql: /usr/local/mysql/bin/mysqlshow (also see <a href="http://dev.mysql.com/doc/refman/5.0/en/unix-post-installation.html">http://dev.mysql.com/doc/refman/5.0/en/unix-post-installation.html</a>)</li>
+<li>Test mysql: /usr/local/mysql/bin/mysqlshow -uroot -p<br />
+<ul>
+<li>(also see <a href="http://dev.mysql.com/doc/refman/5.0/en/unix-post-installation.html">http://dev.mysql.com/doc/refman/5.0/en/unix-post-installation.html</a>)</li>
+<li>OR: /usr/local/mysql/bin/mysql -uroot -p
+<ul>
+<li>show databases;</li>
+<li>quit</li>
+</ul>
+</li>
+</ul>
+</li>
 <li>Display version: /usr/local/mysql/bin/mysqladmin version</li>
+<li>Import MySQL dump: 
+<ul>
+<li>/usr/local/mysql/bin/mysql -uroot -p &lt; /Users/michaelwechner/dump.sql</li>
+<li>The initial root account passwords are empty, hence just hit enter when being asked for the password</li>
+</ul>
+</li>
+<li>Assuming that the dump created a database called 'my-database', which contains a table 'my-table': 
+<ul>
+<li>/usr/local/mysql/bin/mysql -uroot -p my-database</li>
+<li>show tables;</li>
+<li>select * from my-table;</li>
+<li>quit</li>
+</ul>
+</li>
+<li>...</li>
 </ul>
 <h3>Import KonaKart sample data into PostgreSQL</h3>
 <ul>
 <li>Download KonaKart, e.g. the ZIP version of the <a href="http://www.konakart.com/downloads/community_edition">community edition</a></li>
 <li>Also see the <a href="http://www.konakart.com/docs/manualInstallation.html">KonaKart manual installation FAQ</a> (Previous: <a href="http://www.konakart.com/manual_installationfaq.php">KonaKart manual installation FAQ<br /></a>)</li>
-<li>Create a KonaKart database within PostgreSQL:                   
+<li>Create a KonaKart database within PostgreSQL:                     
 <ul>
 <li>sudo bash</li>
 <li>/etc/init.d/postgresql-8.2 start</li>
@@ -62,9 +87,9 @@
 <li>createdb -U postgres --encoding unicode konakart</li>
 </ul>
 </li>
-<li>Import the sample data:                   
+<li>Import the sample data:                     
 <ul>
-<li>Depending on what web-server port you want to run KonaKart, you might have to change the port within the KonaKart sample data:                  
+<li>Depending on what web-server port you want to run KonaKart, you might have to change the port within the KonaKart sample data:                    
 <ul>
 <li>grep 8780 konakart-community/database/PostgreSQL/konakart_demo.sql</li>
 <li>Replace the port number 8780 for example by 8080: vi: 1,$s/8780/8080/g</li>
@@ -73,7 +98,7 @@
 </ul>
 </li>
 <li>Import the data: psql -U postgres -d konakart -f konakart-community/database/PostgreSQL/konakart_demo.sql</li>
-<li>Test the data:                  
+<li>Test the data:                    
 <ul>
 <li>psql -U postgres -d konakart</li>
 <li>select * from products;</li>
@@ -86,7 +111,7 @@
 </ul>
 <h3>Configure the database connection within KonaKart and PostgreSQL<br /></h3>
 <ul>
-<li>webapps/konakart/WEB-INF/classes/konakart.properties              
+<li>webapps/konakart/WEB-INF/classes/konakart.properties                
 <ul>
 <li>torque.database.store1.adapter&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; = postgresql</li>
 <li>torque.dsfactory.store1.connection.driver&#160;&#160; = org.postgresql.Driver</li>
@@ -96,14 +121,14 @@
 </ul>
 </li>
 <li>webapps/konakartadmin/WEB-INF/classes/konakartadmin.properties</li>
-<li>Make sure that postgreSQL is listening                
+<li>Make sure that postgreSQL is listening                  
 <ul>
 <li>vi /etc/postgresql/8.2/main/postgresql.conf</li>
 <li>listen_addresses = 'localhost,127.0.0.1'</li>
 <li>netstat -nt -l | grep 5432</li>
 </ul>
 </li>
-<li>Make sure that you can connect without password from localhost:               
+<li>Make sure that you can connect without password from localhost:                 
 <ul>
 <li>vi /etc/postgresql/8.2/main/pg_hba.conf</li>
 <li>host&#160;&#160;&#160; all&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; all&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; 127.0.0.1/32&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; trust</li>
@@ -124,7 +149,7 @@
 <ul>
 <li>Download the Linux installer: <a href="http://www.konakart.com/downloads/community_edition">http://www.konakart.com/downloads/community_edition</a></li>
 <li>./konakart-linux-install -S -DInstallationDir /home/wyona/konakart -DDatabaseType postgresql -DDatabaseUrl jdbc:postgresql://localhost:5432/konakart -DDatabaseDriver org.postgresql.Driver -DDatabaseUsername postgres</li>
-<li>Startup: It seems that the silent installer starts Tomcat automatically on port 8780       
+<li>Startup: It seems that the silent installer starts Tomcat automatically on port 8780         
 <ul>
 <li>netstat -nt -l | grep </li>
 <li>http://195.226.6.73:8780</li>
