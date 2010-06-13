@@ -71,7 +71,7 @@
 
     <!-- Patch build.xml -->
     <replace file="${new-resource-types.home}/${new.resource.name}/build.xml" value="${new.resource.name}">
-      <replacetoken>from-scratch</replacetoken>
+      <replacetoken>@MY_RESOURCE_TYPE_NAME@</replacetoken>
     </replace>
 
     <!-- Finalize creation based on chosen Java class template -->
