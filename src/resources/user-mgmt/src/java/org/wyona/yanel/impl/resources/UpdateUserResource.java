@@ -38,7 +38,7 @@ import org.wyona.yanel.impl.resources.usecase.UsecaseException;
  */
 public class UpdateUserResource extends ExecutableUsecaseResource {
 
-	private static final Logger log = Logger.getLogger(UpdateUserResource.class);
+    private static final Logger log = Logger.getLogger(UpdateUserResource.class);
     
     private static final String PARAM_USER_ID = "userID";
     private static final String PARAM_NAME = "name";
@@ -169,7 +169,10 @@ public class UpdateUserResource extends ExecutableUsecaseResource {
         }
         return true;
     }
-    
+
+    /**
+     *
+     */
     public User getUser() throws AccessManagementException {
         String id = getParameterAsString(PARAM_USER_ID);
         UserManager userManager = getRealm().getIdentityManager().getUserManager();
