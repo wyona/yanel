@@ -61,6 +61,7 @@ class YanelGlobalResourceTypeMatcher {
             final String userName = path.substring(usersPathPrefix.length(), path.length() - ".html".length());
             properties.put("user", userName);
             properties.put("xslt", "rthtdocs:/yanel-user-profile.xsl");
+            properties.put("mime-type", "text/html"); // INFO: Because of IE we use text/html instead application/xhtml+xml
             return new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
         } else if (globalRCfilename != null) {
             return getGlobalResourceConfiguration(globalRCfilename, realm, globalRCsBasePath);
