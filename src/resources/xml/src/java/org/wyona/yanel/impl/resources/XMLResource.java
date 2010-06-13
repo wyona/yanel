@@ -93,7 +93,14 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                 log.debug("Protocol/Scheme used: " + yanelPath);
                 SourceResolver resolver = new SourceResolver(this);
                 Source source = resolver.resolve(yanelPath, null);
-                return ((javax.xml.transform.stream.StreamSource) source).getInputStream();
+                InputStream in;
+                try {
+                    in = org.wyona.commons.xml.XMLHelper.isWellFormed(((javax.xml.transform.stream.StreamSource) source).getInputStream());
+                    return in;
+                } catch(Exception e) {
+                    StringBuilder sb = new StringBuilder("<exception>Date retrieved from '" + yanelPath + "' not well-formed!</exception>");
+                    return new java.io.ByteArrayInputStream(sb.toString().getBytes());
+                }
             } else {
                 log.info("No protocol used.");
             }
