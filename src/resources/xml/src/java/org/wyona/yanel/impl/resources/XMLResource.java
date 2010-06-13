@@ -91,15 +91,22 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             if (log.isDebugEnabled()) log.debug("Yanel Path: " + yanelPath);
             if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:") || yanelPath.startsWith("http:")) {
                 log.debug("Protocol/Scheme used: " + yanelPath);
-                SourceResolver resolver = new SourceResolver(this);
-                Source source = resolver.resolve(yanelPath, null);
-                InputStream in;
+                // TODO: URL Re-writing (see for example http://j2ep.sourceforge.net/docs/rewrite.html)
                 try {
-                    in = org.wyona.commons.xml.XMLHelper.isWellFormed(((javax.xml.transform.stream.StreamSource) source).getInputStream());
-                    return in;
+                    SourceResolver resolver = new SourceResolver(this);
+                    Source source = resolver.resolve(yanelPath, null);
+                    return org.wyona.commons.xml.XMLHelper.isWellFormed(((javax.xml.transform.stream.StreamSource) source).getInputStream());
                 } catch(Exception e) {
-                    StringBuilder sb = new StringBuilder("<exception>Date retrieved from '" + yanelPath + "' not well-formed!</exception>");
+                    String exceptionMessage = "Data retrieved from '" + yanelPath + "' not well-formed!";
+                    log.warn(exceptionMessage);
+/*
+                    StringBuilder sb = new StringBuilder("<exception>" + exceptionMessage + "</exception>");
                     return new java.io.ByteArrayInputStream(sb.toString().getBytes());
+*/
+                    SourceResolver resolver = new SourceResolver(this);
+                    Source source = resolver.resolve(yanelPath, null);
+                    return tidy(((javax.xml.transform.stream.StreamSource) source).getInputStream());
+                    //return tidy(intercept(((javax.xml.transform.stream.StreamSource) source).getInputStream()));
                 }
             } else {
                 log.info("No protocol used.");
@@ -625,5 +632,47 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
 
     public String getWorkflowIntrospection() throws WorkflowException {
         return WorkflowHelper.getWorkflowIntrospection(this);
+    }
+
+    /**
+     * Tidy HTML
+     * @return well-formed XHTML
+     */
+    private InputStream tidy(InputStream in) throws Exception {
+        log.warn("Tidy HTML ...");
+        org.w3c.tidy.Tidy tidy = new org.w3c.tidy.Tidy();
+        tidy.setXHTML(true);
+        tidy.setNumEntities(true);
+/*
+        tidy.setTidyMark(false);
+        tidy.setInputEncoding("utf-8");
+        tidy.setOutputEncoding("utf-8");
+*/
+
+        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+        tidy.parse(in, out);
+        in.close();
+        return new java.io.ByteArrayInputStream(out.toByteArray());
+        //return intercept(new java.io.ByteArrayInputStream(out.toByteArray()));
+    }
+
+    /**
+     * Intercept InputStream and log content ...
+     */
+    private InputStream intercept(InputStream in) throws java.io.IOException {
+        java.io.ByteArrayOutputStream baos  = new java.io.ByteArrayOutputStream();
+        byte[] buf = new byte[8192];
+        int bytesR;
+        while ((bytesR = in.read(buf)) != -1) {
+            baos.write(buf, 0, bytesR);
+        }
+
+        // Buffer within memory (TODO: Maybe replace with File-buffering ...)
+        // http://www-128.ibm.com/developerworks/java/library/j-io1/
+        byte[] memBuffer = baos.toByteArray();
+
+        log.warn("DEBUG: InputStream: " + baos);
+
+        return new java.io.ByteArrayInputStream(memBuffer);
     }
 }
