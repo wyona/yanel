@@ -89,6 +89,15 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     private InputStream getContentXML(Repository repo, String yanelPath, String revisionName) throws Exception {
         if (yanelPath != null) {
             if (log.isDebugEnabled()) log.debug("Yanel Path: " + yanelPath);
+            if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:") || yanelPath.startsWith("http:")) {
+                log.debug("Protocol/Scheme used: " + yanelPath);
+                SourceResolver resolver = new SourceResolver(this);
+                Source source = resolver.resolve(yanelPath, null);
+                return ((javax.xml.transform.stream.StreamSource) source).getInputStream();
+            } else {
+                log.info("No protocol used.");
+            }
+
             Resource res = yanel.getResourceManager().getResource(getEnvironment(), getRealm(), yanelPath);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                 // TODO: Pass the request ...
