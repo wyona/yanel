@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Wyona
+ * Copyright 2010 Wyona
  */
 
 package bar.foo.yanel.impl.resources;
@@ -23,11 +23,11 @@ public class FromScratchResource extends BasicXMLResource {
      * Since you extend the BasicXMLResource this has to contain well-formed xml.
      * Beside the simple StringBuffer there are several other ways how to construct the xml. see dom, jdom, org.apache.commons.io.IOUtils and so on
      */
-    protected InputStream getContentXML(String viewId) {
+    protected InputStream getContentXML(String viewId) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("requested viewId: " + viewId);
         }
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<root>");
         sb.append("<child>");
         sb.append("Hello World!");
