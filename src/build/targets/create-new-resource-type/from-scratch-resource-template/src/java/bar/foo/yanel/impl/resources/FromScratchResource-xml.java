@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Wyona
+ * Copyright 2010 Wyona
  */
 
 package bar.foo.yanel.impl.resources;
@@ -10,7 +10,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.apache.log4j.Logger;
-
 
 /**
  * A simple Resource which extends BasicXMLResource
@@ -25,7 +24,7 @@ public class FromScratchResource extends BasicXMLResource {
      * Should return a InputStream which contains XML. 
      * Use String, StingBuffer, dom, jdom, org.apache.commons.io.IOUtils and so on to generate the XML.
      */
-    protected InputStream getContentXML(String viewId) {
+    protected InputStream getContentXML(String viewId) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("requested viewId: " + viewId);
         }
