@@ -86,6 +86,7 @@ public class YanelUserResourceWebTest extends AbstractHtmlUnitTest {
     /**
      * Test unsuccessful password update - Incorrect current password
      */
+/* TODO ...
     public void testAuthenticationInPasswordUpdate() throws Exception {
         loadHtmlPage("test/use-cases/alice"); 
                 
@@ -106,6 +107,7 @@ public class YanelUserResourceWebTest extends AbstractHtmlUnitTest {
         
         assertPageContainsText("Authentication failed!"); 
     }
+*/
         
     /**
      * Test unsuccessful password update - Differences between new password and its confirmation
