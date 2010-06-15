@@ -14,5 +14,7 @@ User management interface
 
 <rtd>
   <property name="user"/>
+  <property name="xslt"/> <!-- For example rthtdocs:/yanel-user-profile.xsl -->
+  <!-- This resource is based on the BasicXMLResource and hence all parameters of the BasicXMLResource can be used -->
 </rtd>
 </resource>
