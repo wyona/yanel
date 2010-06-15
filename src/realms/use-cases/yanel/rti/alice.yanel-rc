@@ -3,4 +3,7 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="yanel-user" namespace="http://www.wyona.org/yanel/resource/1.0"/>
   <yanel:property name="user" value="alice"/>  
+
+  <yanel:property name="xslt" value="rthtdocs:/yanel-user-profile.xsl"/>
+  <yanel:property name="mime-type" value="text/html"/>
 </yanel:resource-config>
