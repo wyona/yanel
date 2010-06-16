@@ -9,7 +9,7 @@
     <webtest name="Usecase Test User Lenya">
       &config;
       <invoke description="Get the page: " url="/${realm.prefix}lenya"/>
-      <verifyText description="Verify that text is contained in the page" text="User Profile of lenya"/>
+      <verifyText description="Verify that text is contained in the page" text="Edit user profile of Lenya"/>
     </webtest>
   </target>
 
