@@ -95,6 +95,7 @@ public class UserManagerResource extends BasicXMLResource {
                 String recursivelyText = getParameterAsString("deep");
                 boolean recursively = "1".equals(recursivelyText);
                 deletePolicy(path, recursively);
+                sb.append("<policy-deleted path=\"" + path + "\" recursively=\"" + recursively + "\"/>");
             } else {
                 log.warn("No such usecase implemented: " + usecase);
                 sb.append("<no-such-yanel-usecase-implemented>" + usecase + "</no-such-yanel-usecase-implemented>");
@@ -303,13 +304,39 @@ public class UserManagerResource extends BasicXMLResource {
     /**
      * Deletes a specific policy.
      * @param id the policy ID
+     * @param recursively Flag whether to delete sub-policies recursively
      */
     private void deletePolicy(String path, boolean recursively) throws Exception {
         PolicyManager pm = getRealm().getPolicyManager();
+
         if (recursively) {
-            log.warn("Recursively deletion of policies not yet implemented, only policy "+path+" will be deleted.");
+            org.wyona.yarep.core.Repository apRepo = getRealm().getPolicyManager().getPoliciesRepository();
+            if (apRepo.existsNode(path)) {
+                org.wyona.yarep.core.Node node = apRepo.getNode(path);
+                if (node.getType() == org.wyona.yarep.core.NodeType.COLLECTION) {
+                    org.wyona.yarep.core.Node[] children = node.getNodes();
+                    if (children != null) {
+                        for (int i = 0; i < children.length; i++) {
+                            log.debug("Child: " + children[i].getName());
+                            deletePolicy(children[i].getPath(), true);
+                        }
+                    }
+                }
+            }
+        } else {
+            log.info("Only delete this particular policy: " + path);
         }
-        pm.removePolicy(path);
+
+        if (pm.getPolicy(path, false) != null) {
+            pm.removePolicy(path);
+            log.info("Policy '" + path + "' has been deleted.");
+        } else if (path.endsWith(".policy")) { // WARNING/TODO: This check violates the API!
+            String withoutImplSuffix = path.substring(0, path.indexOf(".policy"));
+            log.warn("This seems to be a policy: " + path + " (" + withoutImplSuffix + "), but this check violates the API!");
+            pm.removePolicy(withoutImplSuffix);
+        } else {
+            log.warn("No such policy: " + path);
+        }
     }
 
     /**
