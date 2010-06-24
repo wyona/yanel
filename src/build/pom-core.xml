@@ -10,31 +10,37 @@
       <groupId>wyona-org-security</groupId>
       <artifactId>wyona-org-security-core</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>0.2-dev-r49177</version>
+      <version>0.3-dev-r50588</version>
     </dependency>
     <dependency>
       <groupId>wyona-org-security</groupId>
       <artifactId>wyona-org-security-impl</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>0.2-dev-r49177</version>
+      <version>0.3-dev-r50588</version>
     </dependency>
     <dependency>
       <groupId>wyona-org-security</groupId>
       <artifactId>wyona-org-security-util</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>0.2-dev-r49177</version>
+      <version>0.3-dev-r50588</version>
     </dependency>
     <dependency>
       <groupId>yarep</groupId>
       <artifactId>yarep-core</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
       <version>1.0-dev-r50069</version>
+<!--
+      <version>1.0-dev-r50153</version>
+-->
     </dependency>
     <dependency>
       <groupId>yarep</groupId>
       <artifactId>yarep-impl</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
       <version>1.0-dev-r50069</version>
+<!--
+      <version>1.0-dev-r50153</version>
+-->
     </dependency>
     <dependency>
       <groupId>wyona-org-commons</groupId>
