@@ -295,7 +295,7 @@ public class UserManagerResource extends BasicXMLResource {
                 sb.append(" " + property.getKey() + "=\"" + org.wyona.commons.xml.XMLHelper.replaceEntities(property.getValue()) + "\""); //INFO: The name should be safe, so don't escape it
             }
 
-            sb.append(">" + groups[i].getName() + "</group>");
+            sb.append(">" + org.apache.commons.lang.StringEscapeUtils.escapeXml(groups[i].getName()) + "</group>");
         }
         sb.append("</groups>");
         return sb;
@@ -343,8 +343,6 @@ public class UserManagerResource extends BasicXMLResource {
      * Get all users
      */
     private StringBuilder getUsersAsXML() throws Exception {
-        UserManager um = getRealm().getIdentityManager().getUserManager();
-
         boolean refresh = true;
         if (getResourceConfigProperty("refresh-users") != null) {
             refresh = new Boolean(getResourceConfigProperty("refresh-users")).booleanValue();
@@ -352,6 +350,7 @@ public class UserManagerResource extends BasicXMLResource {
             log.warn("No refresh user property set within resource configuration '" + getConfiguration().getNode() + "', hence will use true as default.");
         }
 
+        UserManager um = getRealm().getIdentityManager().getUserManager();
         User[] users = um.getUsers(refresh);
         Arrays.sort(users, new ItemIDComparator());
 
@@ -389,7 +388,7 @@ public class UserManagerResource extends BasicXMLResource {
                 sb.append(" " + property.getKey() + "=\"" + org.wyona.commons.xml.XMLHelper.replaceEntities(property.getValue()) + "\""); //INFO: The name should be safe, so don't escape it
             }
 
-            sb.append(">" + users[i].getName() + "</user>");
+            sb.append(">" + org.apache.commons.lang.StringEscapeUtils.escapeXml(users[i].getName()) + "</user>");
         }
         sb.append("</users>");
         return sb;
