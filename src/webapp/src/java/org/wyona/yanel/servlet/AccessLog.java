@@ -32,7 +32,7 @@ public class AccessLog {
      * @param userAgent User agent, e.g. Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.0.19) Gecko/2010031218 Firefox/3.0.19
      */
     public static String getLogMessage(String requestURL, String realmID, String cookieValue, String referer, String userAgent) {
-        return requestURL + " r:" + realmID + " c:" + cookieValue + "ref:" + referer + " ua:" + userAgent;
+        return requestURL + " r:" + realmID + " c:" + cookieValue + " ref:" + referer + " ua:" + userAgent;
     }
 
     /**
