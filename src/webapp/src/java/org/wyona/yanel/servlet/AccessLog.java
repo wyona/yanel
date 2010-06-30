@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.util.Date;
+import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.log4j.Logger;
 
@@ -16,6 +18,8 @@ public class AccessLog {
     private static Logger log = Logger.getLogger(AccessLog.class);
 
     private static String ANALYTICS_COOKIE_NAME = "_yanel-analytics";
+
+    private static final String LOG_ENCODING = "UTF-8";
 
     /**
      * log4j category
@@ -32,7 +36,33 @@ public class AccessLog {
      * @param userAgent User agent, e.g. Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.0.19) Gecko/2010031218 Firefox/3.0.19
      */
     public static String getLogMessage(String requestURL, String realmID, String cookieValue, String referer, String userAgent) {
-        return requestURL + " r:" + realmID + " c:" + cookieValue + " ref:" + referer + " ua:" + userAgent;
+        String result =
+            encodeLogField("url", requestURL) +
+            encodeLogField("r", realmID) +
+            encodeLogField("c", cookieValue) +
+            encodeLogField("ref", referer) +
+            encodeLogField("ua", userAgent);
+
+        return result;
+    }
+
+    /**
+     * Correctly encode field for log message
+     *
+     * @param field Name of the field
+     * @param value Value of the field
+     */
+    public static String encodeLogField(String field, String value) {
+        String result;
+        
+        try {
+            result = field + ":" + URLEncoder.encode(value, LOG_ENCODING) + " ";
+        } catch(UnsupportedEncodingException e) {
+            // Fall back to default encoding
+            result = field + ":" + URLEncoder.encode(value) + " ";
+        }
+
+        return result;
     }
 
     /**
