@@ -18,7 +18,7 @@ public class FromScratchResource extends BasicXMLResource {
     
     private static Logger log = Logger.getLogger(FromScratchResource.class);
     
-    /*
+    /**
      * This method overrides the method to create the InputStream called by BasicXMLResource
      * Since you extend the BasicXMLResource this has to contain well-formed xml.
      * Should return a InputStream which contains XML. 
