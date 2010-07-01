@@ -71,13 +71,13 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
     public InputStream getContentXML(Repository repo, String yanelPath, String revisionName) {
         environment = getEnvironment();
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        String path;
+        String path = getPath();
         try {
-            if (yanelPath == null) {
-                path = getPath();
-            } else {
+            if (yanelPath != null) {
                 path = yanelPath;
             }
+            log.warn("DEBUG: Path: " + path);
+
             // TODO: This doesn't seem to work ... (check on Yarep ...)
             if (repo.getNode(path).isResource()) {
                 log.warn("Path is a resource instead of a collection: " + path);
@@ -96,7 +96,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
             // this configurable!
             // NOTE: Do not hardcode the .yanel-rti, but rather use
             // Path.getRTIPath ...
-            Node[] children = repo.getNode(getPath()).getNodes();
+            Node[] children = repo.getNode(path).getNodes();
             Calendar calendar = Calendar.getInstance();
             if (children != null) {
                 for (int i = 0; i < children.length; i++) {
