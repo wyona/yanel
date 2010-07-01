@@ -430,7 +430,7 @@ public class I18nTransformer3 extends AbstractTransformer {
             return true;
         }
         if (namespaceURI.equals(NS_URI) && localName.equals("message")) {
-            log.warn("DEPRECATED");
+            log.warn("DEPRECATED: Instead of 'i18n:message' use 'i18n:text'!");
             return true;
         }
         return false;
