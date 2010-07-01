@@ -53,16 +53,17 @@ public class AccessLog {
      * @param value Value of the field
      */
     public static String encodeLogField(String field, String value) {
-        String result;
-        
         try {
-            result = field + ":" + URLEncoder.encode(value, LOG_ENCODING) + " ";
+            if (value != null) {
+                return field + ":" + URLEncoder.encode(value, LOG_ENCODING) + " ";
+            } else {
+                log.warn("Value of field '" + field + "' is null!");
+                return field + ":" + value + " ";
+            }
         } catch(UnsupportedEncodingException e) {
-            // Fall back to default encoding
-            result = field + ":" + URLEncoder.encode(value) + " ";
+            log.warn("Fall back to default encoding");
+            return field + ":" + URLEncoder.encode(value) + " ";
         }
-
-        return result;
     }
 
     /**
