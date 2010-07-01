@@ -76,7 +76,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
             if (yanelPath != null) {
                 path = yanelPath;
             }
-            log.warn("DEBUG: Path: " + path);
+            log.debug("Selected path: " + path);
 
             // TODO: This doesn't seem to work ... (check on Yarep ...)
             if (repo.getNode(path).isResource()) {
