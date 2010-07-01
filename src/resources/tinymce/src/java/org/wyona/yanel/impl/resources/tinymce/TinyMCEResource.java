@@ -132,17 +132,19 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
         }
 
         if (hasErrors() || !checkPreconditions()) {
-            String editPath =  getEditPath();
-            String continuePath;
-            String referer = getEnvironment().getRequest().getHeader("referer");
-            if (editPath != null && editPath.length() > 1) {
-                continuePath = PathUtil.backToRealm(getPath()) + editPath.substring(1);
-            } else if (referer != null)  {
-                continuePath = referer;
-            } else {
-                continuePath = PathUtil.backToRealm(getPath());
+            if (getParameter(PARAMETER_CONTINUE_PATH) == null) {
+                String editPath =  getEditPath();
+                String continuePath;
+                String referer = getEnvironment().getRequest().getHeader("referer");
+                if (editPath != null && editPath.length() > 1) {
+                    continuePath = PathUtil.backToRealm(getPath()) + editPath.substring(1);
+                } else if (referer != null)  {
+                    continuePath = referer;
+                } else {
+                    continuePath = PathUtil.backToRealm(getPath());
+                }
+                setParameter(PARAMETER_CONTINUE_PATH, continuePath);
             }
-            setParameter(PARAMETER_CONTINUE_PATH, continuePath);
             return generateView(VIEW_CANCEL);
         }
 
@@ -283,7 +285,9 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
         } else {
             addError("Could not save the document, because resource is not ModifiableV2!");
         }
-        setParameter(PARAMETER_CONTINUE_PATH, PathUtil.backToRealm(getPath()) + getEditPath().substring(1)); // allow jelly template to show link to new event
+        if (getParameter(PARAMETER_CONTINUE_PATH) == null) {
+            setParameter(PARAMETER_CONTINUE_PATH, PathUtil.backToRealm(getPath()) + getEditPath().substring(1)); // allow jelly template to show link to new event
+        }
     }
     
     /* (non-Javadoc)
@@ -302,7 +306,9 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
                 addInfoMessage("Releasing of lock failed because of: " + resToEdit.getPath() + " " + e.getMessage() + ". ");
             }
         }
-        setParameter(PARAMETER_CONTINUE_PATH, PathUtil.backToRealm(getPath()) + getEditPath().substring(1)); // allow jelly template to show link to new event
+        if (getParameter(PARAMETER_CONTINUE_PATH) == null) {
+            setParameter(PARAMETER_CONTINUE_PATH, PathUtil.backToRealm(getPath()) + getEditPath().substring(1)); // allow jelly template to show link to new event
+        }
     }
     
     /**
