@@ -45,6 +45,7 @@ BUILD_OPTS=
 #./build.sh new-resource-type ...
 
 ./build.sh $BUILD_OPTS -DanswerCopyEndorsedJar=YES #XXX HACK: endorsed lib management always uses the same variable to ask for user input
+#./build.sh $BUILD_OPTS -DanswerCopyEndorsedJar=YES -Dgwt.compile.skip=foo # INFO: Do not skip GWT, because otherwise all GWT tests (e.g. policy editor) will fail
 
 # Patch Tomcat ports:
 tools/apache-ant/bin/ant -f tools/apache-tomcat/build.xml configure-host -Dtomcat.home.dir=$TOMCAT_HOME -Dhost=localhost -Dhost.HTTP.port=$HTTP_PORT -Dhost.HTTPS.port=$HTTPS_PORT -Dhost.SHUTDOWN.port=$SHUTDOWN_PORT -Dhost.AJP.port=$AJP_PORT
