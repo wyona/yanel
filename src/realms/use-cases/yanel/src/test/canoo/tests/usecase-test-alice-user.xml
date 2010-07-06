@@ -6,10 +6,10 @@
   <import file="../definitions.xml"/>
 
   <target name="test" depends="wt.defineMacros">
-    <webtest name="Usecase Test User Alice">
+    <webtest name="Usecase Test User alice">
       &config;
       <invoke description="Get the page: " url="/${realm.prefix}alice"/>
-      <verifyText description="Verify that text is contained in the page" text="Edit user profile of Alice"/>
+      <verifyText description="Verify that text is contained in the page" text="Edit user profile of Alice"/> <!-- WARN: This class is modifying the profile of alice beforehand: src/contributions/resources/yanel-user/src/test/htmlunit/org/wyona/yanel/impl/resources/YanelUserResourceWebTest.java -->
     </webtest>
   </target>
 
