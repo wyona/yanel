@@ -86,8 +86,9 @@ public class YanelUserResourceWebTest extends AbstractHtmlUnitTest {
     /**
      * Test unsuccessful password update - Incorrect current password
      */
-/* TODO ...
+/*
     public void testAuthenticationInPasswordUpdate() throws Exception {
+        // TODO ...
         loadHtmlPage("test/use-cases/alice"); 
                 
         final HtmlForm form1 = this.currentPage.getFormByName("user-password-form");
@@ -138,19 +139,24 @@ public class YanelUserResourceWebTest extends AbstractHtmlUnitTest {
      */
     public void testSuccessfulProfileUpdate() throws Exception {
         loadHtmlPage("test/use-cases/alice"); 
-                
-        final HtmlForm form = this.currentPage.getFormByName("user-profile-form");
-        
-        final HtmlSubmitInput button = (HtmlSubmitInput)form.getInputByName("submitProfile");
-        
-        final HtmlTextInput userNameField = (HtmlTextInput)form.getInputByName("userName");        
-        userNameField.setValueAttribute("Michael Wechner");
-        
-        final HtmlTextInput newEmailField = (HtmlTextInput)form.getInputByName("email");        
-        newEmailField.setValueAttribute("michi@wyona.org");     
-        
-        click(button);  
-        
+        final HtmlForm form1 = this.currentPage.getFormByName("user-profile-form");
+        final HtmlSubmitInput button1 = (HtmlSubmitInput)form1.getInputByName("submitProfile");
+        final HtmlTextInput userNameField1 = (HtmlTextInput)form1.getInputByName("userName");        
+        userNameField1.setValueAttribute("Michael Wechner");
+        final HtmlTextInput newEmailField1 = (HtmlTextInput)form1.getInputByName("email");        
+        newEmailField1.setValueAttribute("michi@wyona.org");     
+        click(button1);  
+        assertPageContainsText("Profile updated successfully");  
+
+        // INFO: Reset user profile
+        loadHtmlPage("test/use-cases/alice"); 
+        final HtmlForm form2 = this.currentPage.getFormByName("user-profile-form");
+        final HtmlSubmitInput button2 = (HtmlSubmitInput)form2.getInputByName("submitProfile");
+        final HtmlTextInput userNameField2 = (HtmlTextInput)form2.getInputByName("userName");        
+        userNameField2.setValueAttribute("Alice");
+        final HtmlTextInput newEmailField2 = (HtmlTextInput)form2.getInputByName("email");        
+        newEmailField2.setValueAttribute("alice@foo.bar");     
+        click(button2);  
         assertPageContainsText("Profile updated successfully");  
     }
     
