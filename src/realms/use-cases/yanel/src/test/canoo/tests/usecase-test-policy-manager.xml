@@ -8,7 +8,7 @@
 
   <target name="test" depends="wt.defineMacros">
 
-    <webtest name="Policy Manager Resource">
+    <webtest name="Test Policy Manager and Editor (GWT) Resource">
       &config;
       <login/>
 
