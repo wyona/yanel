@@ -154,24 +154,25 @@ public class SearchResource extends BasicXMLResource {
                         log.debug("Last link page number = " + lastLink);
                     }
 
-
-                    sb.append("<y:pages max-entries-per-page=\"" + maxEntries + "\" max-page-links=\"" + maxLinks + "\">");
-                    if (currentPageNumber > 1) {
-                        sb.append("<y:previous>" + (currentPageNumber - 1) + "</y:previous>");
-                    }
-                    for (int pageNumber = firstLink; pageNumber < lastLink; pageNumber++) {
-                        if (pageNumber <= 0) continue;
-                        if (pageNumber > totalPages) break;
-                        sb.append("<y:page");
-                        if (pageNumber == currentPageNumber) {
-                            sb.append(" selected='true'");
+                    if (paginationEnabled) {
+                        sb.append("<y:pages max-entries-per-page=\"" + maxEntries + "\" max-page-links=\"" + maxLinks + "\">");
+                        if (currentPageNumber > 1) {
+                            sb.append("<y:previous>" + (currentPageNumber - 1) + "</y:previous>");
                         }
-                        sb.append(">" + pageNumber + "</y:page>");
+                        for (int pageNumber = firstLink; pageNumber < lastLink; pageNumber++) {
+                            if (pageNumber <= 0) continue;
+                            if (pageNumber > totalPages) break;
+                            sb.append("<y:page");
+                            if (pageNumber == currentPageNumber) {
+                                sb.append(" selected='true'");
+                            }
+                            sb.append(">" + pageNumber + "</y:page>");
+                        }
+                        if (currentPageNumber < totalPages) {
+                            sb.append("<y:next>" + (currentPageNumber + 1) + "</y:next>");
+                        }
+                        sb.append("</y:pages>");
                     }
-                    if (currentPageNumber < totalPages) {
-                        sb.append("<y:next>" + (currentPageNumber + 1) + "</y:next>");
-                    }
-                    sb.append("</y:pages>");
                     
                     sb.append("<y:results total=\"" + results.length + "\" page-number='" + currentPageNumber + "'>");
                     int startingEntry = 0;
