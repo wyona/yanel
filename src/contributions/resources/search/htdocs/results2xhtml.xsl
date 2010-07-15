@@ -53,8 +53,10 @@
   </xsl:template>
 
   <xsl:template match="y:results">
-    <h2>All Results (<a href="?q={../y:query}&amp;provider={../y:provider}&amp;page={/y:search/y:results/@page-number}&amp;yanel.resource.viewid=xml">as XML</a>)</h2>
-    <br/>
+    <p>All Results (<a href="?q={../y:query}&amp;provider={../y:provider}&amp;page={/y:search/y:results/@page-number}&amp;yanel.resource.viewid=xml">as XML</a>)</p>
+    <p>
+    Page <xsl:value-of select="@page-number"/> of about <xsl:value-of select="@total"/> results
+    </p>
     <xsl:apply-templates select="y:result"/>
   </xsl:template>
 
