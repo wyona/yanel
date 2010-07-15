@@ -20,7 +20,12 @@ import org.apache.avalon.framework.configuration.ConfigurationUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 
 /**
- * Search resource
+ * Search resource. The configuration parameters "max-entries-per-page" and "max-navigation-links"
+ * can be used in the resource configuration file to set the number of search results per page
+ * and the number of links that will be displayed to navigate between those pages (usually at the 
+ * bottom of the page). The page numbers to be linked to will be passed to the XSLT so that they can 
+ * be handled there accordingly. The current page number must be shared between java and XSLT
+ * via the request parameter "page".
  */
 public class SearchResource extends BasicXMLResource {
     
@@ -30,23 +35,28 @@ public class SearchResource extends BasicXMLResource {
     private static String QUERY_NAME = "q";
     private static String DOMAIN_NAME = "domain";
     private static String DEFAULT_PROVIDER = "yanel";
+    private static final String CURRENT_PAGE_NUMBER_REQUEST_PARAMETER_NAME = "page";
+    private static final String MAX_ENTRIES_CONFIG_PARAMETER_NAME = "max-entries-per-page";
+    private static final int MAX_ENTRIES_DEFAULT = 3;
+    private static final String MAX_PAGINATION_LINKS_CONFIG_PARAMETER_NAME = "max-navigation-links";
+    private static final int MAX_PAGINATION_LINKS_DEFAULT = 1;
 
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(String)
      */
     public View getView(String viewId) throws Exception {
-        String provider = getRequest().getParameter(PROVIDER_NAME);
+        String provider = getEnvironment().getRequest().getParameter(PROVIDER_NAME);
         if (provider != null && !provider.equals(DEFAULT_PROVIDER)) {
             ExternalSearchProvider esp = getExternalSearchProvider(provider);
             if (esp != null) {
                 View view = new View();
                 view.setResponse(false); // this resource writes the response itself in order to do a server side redirect
 
-                javax.servlet.http.HttpServletResponse response = getResponse();
+                javax.servlet.http.HttpServletResponse response = getEnvironment().getResponse();
                 response.setStatus(307); // Temporary redirect (http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html)
 
-                String query = getRequest().getParameter(QUERY_NAME);
-                String domain = getRequest().getParameter(DOMAIN_NAME);
+                String query = getEnvironment().getRequest().getParameter(QUERY_NAME);
+                String domain = getEnvironment().getRequest().getParameter(DOMAIN_NAME);
                 String site="";
                 if (domain != null) site = "+site:" + domain; // TODO: This will work for Google and bing, but is this true for all search engines?
                 response.setHeader("Location", esp.getURL() + query + site);
@@ -67,14 +77,14 @@ public class SearchResource extends BasicXMLResource {
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<y:search xmlns:y=\"http://www.wyona.org/yanel/search/1.0\">");
 
-        String provider = getRequest().getParameter(PROVIDER_NAME);
+        String provider = getEnvironment().getRequest().getParameter(PROVIDER_NAME);
         if (provider == null) {
             provider = DEFAULT_PROVIDER;
             log.warn("No search provider specified! Default provider will be used: " + provider);
         }
         sb.append("<y:provider id=\"" + provider + "\">" + provider + "</y:provider>");
 
-        String query = getRequest().getParameter(QUERY_NAME);
+        String query = getEnvironment().getRequest().getParameter(QUERY_NAME);
         if (query != null && query.length() > 0) {
             sb.append("<y:query>" + StringEscapeUtils.escapeXml(query) + "</y:query>");
             try {
@@ -93,8 +103,88 @@ public class SearchResource extends BasicXMLResource {
                 }
 
                 if (results != null && results.length > 0) {
-                    sb.append("<y:results>");
-                    for (int i = 0; i < results.length; i++) {
+
+                    boolean paginationEnabled = false;
+                    int currentPageNumber = 1;
+                    int maxEntries = MAX_ENTRIES_DEFAULT;
+                    String maxEntriesStr = getResourceConfigProperty(MAX_ENTRIES_CONFIG_PARAMETER_NAME);
+                    if (maxEntriesStr != null && 0 != maxEntriesStr.length()){
+                        maxEntries = Integer.parseInt(maxEntriesStr.trim());
+                        paginationEnabled = true;
+                    }
+                    int maxLinks = MAX_PAGINATION_LINKS_DEFAULT;
+                    String maxLinksStr = getResourceConfigProperty(MAX_PAGINATION_LINKS_CONFIG_PARAMETER_NAME);
+                    if (maxLinksStr != null && 0 != maxLinksStr.length()){
+                        maxLinks = Integer.parseInt(maxLinksStr.trim());
+                        paginationEnabled = true;
+                    }
+
+
+                    if (paginationEnabled) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Max number of search results per page is set to " + maxEntries);
+                            log.debug("Max number of results page links is set to " + maxLinks);
+                            log.debug("Results will be paginated"); 
+                        }
+
+                        String currentPageNumberStr = getEnvironment().getRequest().getParameter(CURRENT_PAGE_NUMBER_REQUEST_PARAMETER_NAME);
+                        if (currentPageNumberStr == null || 0 == currentPageNumberStr.length()) {
+                            currentPageNumber = 1;
+                        } else {
+                            currentPageNumber = Integer.parseInt(currentPageNumberStr.trim());
+                            if (log.isDebugEnabled()) {
+                                log.debug("The currently diplayed results page number is " + currentPageNumber);
+                            }
+                        }
+                    } else {
+                        log.warn("Pagination is not configured within resource config, hence all results will be displayed.");
+                    }
+
+
+                    int totalPages = (results.length / maxEntries);
+                    if (results.length % maxEntries > 0) {
+                        totalPages = totalPages + 1;
+                    }
+                    int firstLink = currentPageNumber - (maxLinks / 2);
+                    int lastLink = firstLink + maxLinks;
+                    if (log.isDebugEnabled()) {
+                        log.debug("Total number of results = " + results.length);
+                        log.debug("Total number of pages = " + totalPages);
+                        log.debug("First link page number = " + firstLink);
+                        log.debug("Last link page number = " + lastLink);
+                    }
+
+
+                    sb.append("<y:pages max-entries-per-page=\"" + maxEntries + "\" max-page-links=\"" + maxLinks + "\">");
+                    if (currentPageNumber > 1) {
+                        sb.append("<y:previous>" + (currentPageNumber - 1) + "</y:previous>");
+                    }
+                    for (int pageNumber = firstLink; pageNumber < lastLink; pageNumber++) {
+                        if (pageNumber <= 0) continue;
+                        if (pageNumber > totalPages) break;
+                        sb.append("<y:page");
+                        if (pageNumber == currentPageNumber) {
+                            sb.append(" selected='true'");
+                        }
+                        sb.append(">" + pageNumber + "</y:page>");
+                    }
+                    if (currentPageNumber < totalPages) {
+                        sb.append("<y:next>" + (currentPageNumber + 1) + "</y:next>");
+                    }
+                    sb.append("</y:pages>");
+                    
+                    sb.append("<y:results page-number='" + currentPageNumber + "'>");
+                    int startingEntry = 0;
+                    int numberOfEntries = results.length;
+                    if (paginationEnabled) {
+                        startingEntry = (currentPageNumber - 1) * numberOfEntries;
+                        numberOfEntries = maxEntries;
+                    }
+                    for (int i = startingEntry; i < (startingEntry + numberOfEntries); i++) {
+                        if (i >= results.length) {
+                            // INFO: Break in case number of entries on last page exceeds length of results
+                            break;
+                        }
                         sb.append("<y:result url=\"" + results[i].getURL() + "\">");
                         if (results[i].getTitle() != null) {
                             log.debug("Title: " + results[i].getTitle());
