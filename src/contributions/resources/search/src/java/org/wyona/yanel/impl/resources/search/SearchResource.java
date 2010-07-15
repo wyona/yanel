@@ -173,12 +173,16 @@ public class SearchResource extends BasicXMLResource {
                     }
                     sb.append("</y:pages>");
                     
-                    sb.append("<y:results page-number='" + currentPageNumber + "'>");
+                    sb.append("<y:results total=\"" + results.length + "\" page-number='" + currentPageNumber + "'>");
                     int startingEntry = 0;
                     int numberOfEntries = results.length;
                     if (paginationEnabled) {
-                        startingEntry = (currentPageNumber - 1) * numberOfEntries;
                         numberOfEntries = maxEntries;
+                        startingEntry = (currentPageNumber - 1) * numberOfEntries;
+                    }
+                    if (log.isDebugEnabled()) {
+                        log.debug("Starting entry: " + startingEntry);
+                        log.debug("Number of entries: " + numberOfEntries);
                     }
                     for (int i = startingEntry; i < (startingEntry + numberOfEntries); i++) {
                         if (i >= results.length) {
