@@ -12,5 +12,7 @@ Search a local repository, but also allow searching with third-party search engi
 <rtd>
   <!-- OPTIONAL: If this is property is set, then the corresponding property is searched instead fulltext -->
   <property name="property-name"/>
+  <property name="max-entries-per-page"/>
+  <property name="max-navigation-links"/>
 </rtd>
 </resource>
