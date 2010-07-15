@@ -3,10 +3,8 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="search" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
-<!--
   <yanel:property name="max-entries-per-page" value="2"/>
   <yanel:property name="max-navigation-links" value="3"/>
--->
 
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
