@@ -43,6 +43,7 @@
         <xsl:apply-templates select="/y:search/y:no-query"/>
         <p>Search results provider: <xsl:value-of select="/y:search/y:provider"/></p>
         <xsl:apply-templates select="/y:search/y:results"/>
+        <xsl:apply-templates select="/y:search/y:pages"/>
         <xsl:if test="not(/y:search/y:results) and not(/y:search/y:exception) and not(/y:search/y:no-query)">
           <p>Your search - <xsl:value-of select="/y:search/y:query"/> - did not match any documents</p>
         </xsl:if>
@@ -52,7 +53,7 @@
   </xsl:template>
 
   <xsl:template match="y:results">
-    <h2>All Results (<a href="?q={../y:query}&amp;provider={../y:provider}&amp;yanel.resource.viewid=xml">as XML</a>)</h2>
+    <h2>All Results (<a href="?q={../y:query}&amp;provider={../y:provider}&amp;page={/y:search/y:results/@page-number}&amp;yanel.resource.viewid=xml">as XML</a>)</h2>
     <br/>
     <xsl:apply-templates select="y:result"/>
   </xsl:template>
@@ -79,6 +80,28 @@
     <p>
     No query was specified! Please make sure to enter a search term.
     </p>
+  </xsl:template>
+
+  <xsl:template match="y:pages">
+<p>
+    <xsl:if test="y:previous">
+      <a href="?q={/y:search/y:query}&amp;page={y:previous}">Previous</a>&#160;&#160;&#160;&#160;&#160;
+    </xsl:if>
+    <xsl:for-each select="y:page">
+     <xsl:choose>
+       <xsl:when test="@selected = 'true'">
+         <xsl:value-of select="."/>
+       </xsl:when>
+       <xsl:otherwise>
+         <a href="?q={/y:search/y:query}&amp;page={.}"><xsl:value-of select="."/></a>
+       </xsl:otherwise>
+     </xsl:choose>
+     <xsl:if test="position() != last()">,&#160;</xsl:if>
+    </xsl:for-each>
+    <xsl:if test="y:next">
+      &#160;&#160;&#160;&#160;&#160;<a href="?q={/y:search/y:query}&amp;page={y:next}">Next</a>
+    </xsl:if>
+</p>
   </xsl:template>
   
   <xsl:template match="@*|node()" priority="-1">
