@@ -93,12 +93,12 @@ public class AccessControlTransformer extends AbstractTransformer {
 
             try {
                 if (path.startsWith("/")) {
-                    //log.error("DEBUG: Check authorization for: " + path + ", " + identity + ", " + usecase);
+                    if (log.isDebugEnabled()) log.debug("Check authorization for: " + path + ", " + identity + ", " + usecase);
                     if (policyManager.authorize(path, identity, usecase)) {
-                        //log.error("DEBUG: Access granted for " + identity + ", " + usecase + ", " + path);
+                        if (log.isDebugEnabled()) log.debug("Access granted for " + identity + ", " + usecase + ", " + path);
                         reinsertBufferedParentElementAndAnchor();
                     } else {
-                        //log.error("DEBUG: Access denied for " + identity + ", " + usecase + ", " + path);
+                        if (log.isDebugEnabled()) log.debug("Access denied for " + identity + ", " + usecase + ", " + path);
                         accessGranted = false;
                     }
                 } else {
