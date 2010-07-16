@@ -10,19 +10,19 @@
       <groupId>wyona-org-security</groupId>
       <artifactId>wyona-org-security-core</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>0.3-dev-r50990</version>
+      <version>0.3-dev-r51363</version>
     </dependency>
     <dependency>
       <groupId>wyona-org-security</groupId>
       <artifactId>wyona-org-security-impl</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>0.3-dev-r50990</version>
+      <version>0.3-dev-r51363</version>
     </dependency>
     <dependency>
       <groupId>wyona-org-security</groupId>
       <artifactId>wyona-org-security-util</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>0.3-dev-r50990</version>
+      <version>0.3-dev-r51363</version>
     </dependency>
     <dependency>
       <groupId>yarep</groupId>
@@ -40,7 +40,7 @@
       <groupId>wyona-org-commons</groupId>
       <artifactId>wyona-org-commons</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>1.0-dev-r48003</version>
+      <version>1.0-dev-r51356</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
