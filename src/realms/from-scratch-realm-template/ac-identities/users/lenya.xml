@@ -11,4 +11,9 @@
   <language>de</language>
 -->
   <expire>2069-02-16T00:00:00</expire>
+
+  <groups>
+    <group id="example-group"/>
+    <group id="example-subgroup"/>
+  </groups>
 </user>
