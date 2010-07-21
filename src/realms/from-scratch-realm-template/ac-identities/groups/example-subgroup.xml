@@ -1,7 +1,13 @@
 <?xml version="1.0"?>
+
 <group id="example-subgroup" xmlns="http://www.wyona.org/security/1.0">
   <name>Example Sub-Group</name>
+
   <members>
     <member id="lenya" type="user"/>
   </members>
+
+  <parent-groups>
+    <group id="example-group"/>
+  </parent-groups>
 </group>
