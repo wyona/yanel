@@ -92,7 +92,8 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             }
             if(loginUsername != null) {
                 try {
-                    User user = realm.getIdentityManager().getUserManager().getUser(loginUsername, true);
+                    String trueId = realm.getIdentityManager().getUserManager().getTrueId(loginUsername);
+                    User user = realm.getIdentityManager().getUserManager().getUser(trueId, true);
                     if (user != null && user.authenticate(request.getParameter("yanel.login.password"))) {
                         log.debug("Realm: " + realm);
                         IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
@@ -100,12 +101,12 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                             identityMap = new IdentityMap();
                             session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
                         }
-                        identityMap.put(realm.getID(), new Identity(user));
+                        identityMap.put(realm.getID(), new Identity(user, loginUsername));
                         log.warn("Authentication was successful for user: " + user.getID());
                         log.warn("TODO: Add user to session listener!");
                         return null;
                     }
-                    log.warn("Login failed: " + loginUsername);
+                    log.warn("Login failed: " + loginUsername + " (True ID: " + trueId + ")");
                     getXHTMLAuthenticationForm(request, response, realm, "Login failed!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                     return response;
                 } catch (ExpiredIdentityException e) {
@@ -150,7 +151,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                             session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
                         }
                         log.debug("User: " + user.getID());
-                        identityMap.put(realm.getID(), new Identity(user));
+                        identityMap.put(realm.getID(), new Identity(user, openIDSignature));
                         // OpenID authentication successful, hence return null instead an "exceptional" response
                         // TODO: Do not return null (although successful), but rather strip-off all the openid query string stuff and then do a redirect
                         response.sendRedirect(request.getParameter("openid.return_to"));
@@ -224,7 +225,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                             identityMap = new IdentityMap();
                             session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
                         }
-                        identityMap.put(realm.getID(), new Identity(user));
+                        identityMap.put(realm.getID(), new Identity(user, username));
 
                         // TODO: send some XML content, e.g. <authentication-successful/>
                         response.setContentType("text/plain; charset=" + YanelServlet.DEFAULT_ENCODING);
