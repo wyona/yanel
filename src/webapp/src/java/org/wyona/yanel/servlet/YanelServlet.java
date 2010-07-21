@@ -1637,11 +1637,12 @@ public class YanelServlet extends HttpServlet {
                 String password = up[1];
                 log.debug("username: " + username + ", password: " + password);
                 try {
-                    User user = realm.getIdentityManager().getUserManager().getUser(username);
+                    String trueID = realm.getIdentityManager().getUserManager().getTrueId(username);
+                    User user = realm.getIdentityManager().getUserManager().getUser(trueID);
                     if (user != null && user.authenticate(password)) {
-                        return new Identity(user);
+                        return new Identity(user, username);
                     } else {
-                        log.warn("HTTP BASIC Authentication failed for " + username + "!");
+                        log.warn("HTTP BASIC Authentication failed for " + username + " (True ID: '" + trueID + "')!");
 /*
                         response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
                         response.sendError(response.SC_UNAUTHORIZED);
