@@ -564,7 +564,8 @@ public class PolicyManagerResource extends BasicXMLResource {
                         User[] groupUsers = resolveGroup(gp[j].getId(), resolvedGroups);
                         for (int i = 0; i < groupUsers.length; i++) {
                             if (!existsWithinMergedList(groupUsers[i].getID(), mergedListOfUserPolicies)) {
-                                mergedListOfUserPolicies.add(new IdentityPolicy(new Identity(groupUsers[i].getID()), gp[j].getPermission()));
+                                String id = groupUsers[i].getID();
+                                mergedListOfUserPolicies.add(new IdentityPolicy(new Identity(id, id), gp[j].getPermission()));
                             }
                         }
                     }
