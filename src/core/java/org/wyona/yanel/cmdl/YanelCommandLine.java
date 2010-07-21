@@ -99,7 +99,7 @@ public class YanelCommandLine {
     
 
         String[] groupnames = {"admin", "accounting"};
-        if (pm.authorize(path, new Identity("lenya", groupnames), new Role("view"))) {
+        if (pm.authorize(path, new Identity("lenya", groupnames, "lenya"), new Role("view"))) {
             System.out.println("Access granted: " + path);
         } else {
             // TODO: Deny access resp. start login process!
