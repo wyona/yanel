@@ -56,7 +56,7 @@ public class CreateUserResource extends ExecutableUsecaseResource {
             org.wyona.security.core.api.PolicyManager policyManager = getRealm().getPolicyManager();
             org.wyona.security.core.api.Policy policy = policyManager.createEmptyPolicy();
             org.wyona.security.core.UsecasePolicy usecasePolicy = new org.wyona.security.core.UsecasePolicy("view");
-            usecasePolicy.addIdentity(new org.wyona.security.core.api.Identity(id), true);
+            usecasePolicy.addIdentity(new org.wyona.security.core.api.Identity(id, id), true);
             policy.addUsecasePolicy(usecasePolicy);
             // TODO: Replace "/users" by org.wyona.yanel.servlet.YanelGlobalResourceTypeMatcher#usersPathPrefix
             policyManager.setPolicy("/" + getYanel().getReservedPrefix() + "/users/" + id + ".html", policy);
