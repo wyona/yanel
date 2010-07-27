@@ -92,21 +92,10 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             }
             if(loginUsername != null) {
                 try {
-                    String trueId = realm.getIdentityManager().getUserManager().getTrueId(loginUsername);
-                    User user = realm.getIdentityManager().getUserManager().getUser(trueId, true);
-                    if (user != null && user.authenticate(request.getParameter("yanel.login.password"))) {
-                        log.debug("Realm: " + realm);
-                        IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
-                        if (identityMap == null) {
-                            identityMap = new IdentityMap();
-                            session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
-                        }
-                        identityMap.put(realm.getID(), new Identity(user, loginUsername));
-                        log.warn("Authentication was successful for user: " + user.getID());
-                        log.warn("TODO: Add user to session listener!");
+                    if (authenticate(loginUsername, request.getParameter("yanel.login.password"), realm, session)) {
                         return null;
                     }
-                    log.warn("Login failed: " + loginUsername + " (True ID: " + trueId + ")");
+                    log.warn("Login failed: " + loginUsername + " (True ID: " + realm.getIdentityManager().getUserManager().getTrueId(loginUsername) + ")");
                     getXHTMLAuthenticationForm(request, response, realm, "Login failed!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                     return response;
                 } catch (ExpiredIdentityException e) {
@@ -643,5 +632,33 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             response.addCookie(rememberLoginOpenIDCookie);
         }
         return rememberMyLoginName;
+    }
+
+    /**
+     * Default authentication
+     *
+     * @param username Login username, which might be an alias
+     * @param password Plain text password
+     * @param realm Realm
+     * @param session HTTP session
+     *
+     * @return true if authentication was successful and else false
+     */
+    public static boolean authenticate(String username, String password, Realm realm, HttpSession session) throws Exception {
+        String trueId = realm.getIdentityManager().getUserManager().getTrueId(username);
+        User user = realm.getIdentityManager().getUserManager().getUser(trueId, true);
+        if (user != null && user.authenticate(password)) {
+            log.debug("Realm: " + realm);
+            IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
+            if (identityMap == null) {
+                identityMap = new IdentityMap();
+                session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
+            }
+            identityMap.put(realm.getID(), new Identity(user, username));
+            log.warn("Authentication was successful for user: " + user.getID());
+            log.warn("TODO: Add user to session listener!");
+            return true;
+        }
+        return false;
     }
 }
