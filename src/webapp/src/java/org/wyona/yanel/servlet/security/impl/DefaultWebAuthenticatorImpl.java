@@ -393,7 +393,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             realmElement.setAttributeNS(YanelServlet.NAMESPACE, "name", realm.getName());
             realmElement.setAttributeNS(YanelServlet.NAMESPACE, "mount-point", realm.getMountPoint().toString());  
 
-            String currentUserId = getCurrentUserId(request, realm);
+            String currentUserId = getCurrentUserId(request.getSession(true), realm);
             if (currentUserId != null) {
                 Element userElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "user"));
                 userElement.setAttributeNS(YanelServlet.NAMESPACE, "id", currentUserId);
@@ -585,10 +585,13 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 */
 
     /**
-     * Get current user id. Return null if not signed in yet.
+     * Get current user id (if signed-in) for a specific realm.
+     * @param session HTTP session
+     * @param realm Realm
+     * @return Username and if not signed-in, then null
      */
-    String getCurrentUserId(HttpServletRequest request, Realm realm) {
-        IdentityMap identityMap = (IdentityMap)request.getSession(true).getAttribute(YanelServlet.IDENTITY_MAP_KEY);
+    public static String getCurrentUserId(HttpSession session, Realm realm) {
+        IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
         if (identityMap != null) {
             Identity identity = (Identity) identityMap.get(realm.getID());
             if (identity != null && !identity.isWorld()) return identity.getUsername();
