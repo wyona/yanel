@@ -24,6 +24,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
+        <link rel="shortcut icon" href="{$yarep.back2realm}favicon.ico" type="image/vnd.microsoft.icon" />
         <!-- See http://www.w3.org/TR/REC-CSS2/media.html -->
         <link media="screen" type="text/css" href="{$yarep.back2realm}app1/css/screen.css" rel="stylesheet"/>
         <link media="print" type="text/css" href="{$yarep.back2realm}app1/css/print.css" rel="stylesheet"/>
