@@ -225,8 +225,8 @@ public class ResourceTypeRegistry {
                 }
             }    
         } catch (Exception e) {
+            log.error(e, e);
             String errorMsg = "Failure while reading configuration: " + e.getMessage(); 
-            log.error(errorMsg, e);
             throw new ConfigurationException(errorMsg, e);
         }
     }
