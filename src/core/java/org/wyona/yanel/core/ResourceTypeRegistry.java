@@ -90,7 +90,7 @@ public class ResourceTypeRegistry {
                     if (!resourceTypeConfigFile.isAbsolute()) {
                         resourceTypeConfigFile = FileUtil.file(configFile.getParentFile().getAbsolutePath(), resourceTypeConfigFile.toString());
                     }
-                    log.debug("Realms Configuration: " + resourceTypeConfigFile);
+                    log.debug("Resource types configuration: " + resourceTypeConfigFile);
                     readResourceTypes();
                 } catch (Exception e) {
                     String errorMsg = "Failure while reading configuration: " + e.getMessage();
