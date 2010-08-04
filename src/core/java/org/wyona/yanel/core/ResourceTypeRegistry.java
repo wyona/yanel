@@ -154,17 +154,23 @@ public class ResourceTypeRegistry {
             Configuration resourceTypes[] = config.getChildren("resource-type");
             
             for (int i = 0; i < resourceTypes.length; i++) {
+                log.warn("DEBUG: Register resource type...");
                 try {
                     String packageName = resourceTypes[i].getAttribute("package"); // INFO: This method will throw an exception if no 'package' attribute exists, and hence further down it will try to read the 'src' attribute...
+                    log.warn("DEBUG: Package: " + packageName);
                     log.info("Package: " + packageName);
 
                     // TODO: Config itself, e.g. org/wyona/yanel/impl/resources/redirect/my-resource.xml
 
                     URL packageURL = ResourceTypeRegistry.class.getClassLoader().getResource(packageName.replace('.','/'));
-                    log.info("Package: " + packageURL.getFile());
-                    File jarFile = new File(packageURL.getPath().substring(5, packageURL.getPath().indexOf("!")));
-                    log.debug("Jar file: " + jarFile);
-                    if (jarFile.isFile()) {
+                    log.warn("DEBUG: Package: " + packageURL.getFile());
+                    //log.info("Package: " + packageURL.getFile());
+                    File jarFile = null;
+                    if (packageURL.getPath().indexOf("!") > 0) {
+                        jarFile = new File(packageURL.getPath().substring(5, packageURL.getPath().indexOf("!")));
+                    }
+                    if (jarFile != null && jarFile.isFile()) {
+                        log.debug("Jar file: " + jarFile);
                         java.util.zip.ZipFile zipFile = new java.util.zip.ZipFile(jarFile);
                         java.util.Enumeration entries = zipFile.entries();
                         while (entries.hasMoreElements()) {
@@ -186,17 +192,30 @@ public class ResourceTypeRegistry {
                                 }
                             }
                         }
+                    } else if (new File(packageURL.getPath()).isDirectory()) {
+                        log.warn("TODO: ...");
+                                try {
+                                    ResourceTypeDefinition rtd = new ResourceTypeDefinition(new java.io.FileInputStream(new File(packageURL.getPath(), "resource.xml")));
+                                    log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
+                                    log.debug("Classname: " + rtd.getResourceTypeClassname());
+                                    hm.put(rtd.getResourceTypeUniversalName(), rtd);
+                                } catch (Exception exception) {
+                                    log.error("Exception re registring resource with package '" + packageName + "'!");
+                                    log.error(exception, exception);
+                                }
                     } else {
-                        log.error("No such file: " + jarFile);
+                        log.error("No such file or directory: " + packageURL.getPath());
                     }
                 } catch (Exception e) {
-                    //log.error(e.getMessage()); // INFO: Do not show this error message, because it is not really an error in most cases
+                    log.error(e.getMessage()); // INFO: Do not show this error message, because it is not really an error in most cases
+                    log.warn("DEBUG: No package attribute, hence try src attribute...");
                     log.info("No package attribute, hence try src attribute...");
-                    File resConfigFile = new File(resourceTypes[i].getAttribute("src"));
-                    log.info("Source: " + resConfigFile);
-                    if (!resConfigFile.isAbsolute()) {
-                        resConfigFile = FileUtil.file(resourceTypeConfigFile.getParentFile().getAbsolutePath(), resourceTypes[i].getAttribute("src"));
-                    }
+                    try {
+                        File resConfigFile = new File(resourceTypes[i].getAttribute("src"));
+                        log.info("Source: " + resConfigFile);
+                        if (!resConfigFile.isAbsolute()) {
+                            resConfigFile = FileUtil.file(resourceTypeConfigFile.getParentFile().getAbsolutePath(), resourceTypes[i].getAttribute("src"));
+                        }
 
                     if (resConfigFile.isDirectory()) {
                         File resDir = resConfigFile;
@@ -221,6 +240,9 @@ public class ResourceTypeRegistry {
                         hm.put(rtd.getResourceTypeUniversalName(), rtd);
                     } else {
                         log.error("No such file or directory: " + resConfigFile);
+                    }
+                    } catch (Exception exception) {
+                        log.error(exception, exception);
                     }
                 }
             }    
