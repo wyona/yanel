@@ -910,6 +910,7 @@ public class YanelServlet extends HttpServlet {
             
             return res;
         } catch (Exception e) {
+            log.error(e, e);
             throw new ServletException("Could not get resource for request <" + request.getServletPath() + ">: " + e.getMessage(), e);
         }
     }
