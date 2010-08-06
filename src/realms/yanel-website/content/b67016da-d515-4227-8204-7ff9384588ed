@@ -12,6 +12,7 @@
 <p>or also for a particular usecase</p>
 <p>&#160;</p>
 <pre>&lt;?xml version="1.0"?&gt;<br /><br />&lt;policy xmlns="http://www.wyona.org/security/1.0"&gt;<br /><br />  &lt;usecase id="view" use-inherited-policies="false"<br />    &lt;!--&lt;world permission="false"/&gt;--&gt;<br />    &lt;user id="lenya" permission="true"/&gt;<br />  &lt;/usecase&gt;<br /><br />&lt;/policy&gt;<br /></pre>
+<p>Please note that the order in which the rights are defined matters. For example, imagine you have a group called "users" with access to a given set of resources. Now if you'd like to temporarily block a given user, you need to add the line revoking his rights to the top, as usually the policy manager uses the first line that matches for a user. Of course, if you use a custom policy manager implementation, it may behave differently.</p>
 <h2>Default usecases</h2>
 <p>The defaul usecases are currently hard-coded within <code>org.wyona.yanel.servlet.YanelServlet</code> and <code>org.wyona.security.impl.PolicyManagerImplVersion2</code></p>
 <ul>
