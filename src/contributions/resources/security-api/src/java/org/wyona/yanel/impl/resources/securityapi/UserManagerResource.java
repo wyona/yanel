@@ -31,6 +31,9 @@ import org.apache.log4j.Logger;
 public class UserManagerResource extends BasicXMLResource {
     
     private static Logger log = Logger.getLogger(UserManagerResource.class);
+
+    private final String SYNCHRONIZATION_PROPERTIES = "synchronization.properties";
+    private final String SYNC_PROP_NAME = "last-successful-synchronization";
     
     @Override
     protected InputStream getContentXML(String viewId) {
@@ -62,9 +65,12 @@ public class UserManagerResource extends BasicXMLResource {
                 log.debug("Import user: " + getEnvironment().getRequest().getParameter("id"));
                 importUser(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("synchronize-users")) {
+                // TODO: It would probably make more sense to have this node within the identities repository, but the API does not provide access to the identities repository and maybe for a good reason!
+                //org.wyona.yarep.core.Node rootNode = getRealm().getIdentitiesRepository().getRootNode().getNode("users");
+                org.wyona.yarep.core.Node rootNode = getRealm().getRepository().getRootNode();
                 if (getEnvironment().getRequest().getParameter("get-last-date") != null) {
-                    if (getRealm().getRepository().getRootNode().hasNode("synchronization.properties")) {
-                        sb.append("<last-successful-synchronization date=\"" + getRealm().getRepository().getNode("/synchronization.properties").getProperty("last-successful-synchronization").getDate() + "\"/>");
+                    if (rootNode.hasNode(SYNCHRONIZATION_PROPERTIES)) {
+                        sb.append("<last-successful-synchronization date=\"" + rootNode.getNode(SYNCHRONIZATION_PROPERTIES).getProperty(SYNC_PROP_NAME).getDate() + "\"/>");
                     } else {
                         log.warn("Not synchronized yet!");
                         sb.append("<last-successful-synchronization date=\"" + "NOT_SYNCHRONIZED_YET" + "\"/>");
@@ -75,12 +81,13 @@ public class UserManagerResource extends BasicXMLResource {
                     // TODO: Unlock ...
 
                     org.wyona.yarep.core.Node node;
-                    if (!getRealm().getRepository().getRootNode().hasNode("synchronization.properties")) {
-                        node = getRealm().getRepository().getRootNode().addNode("synchronization.properties", org.wyona.yarep.core.NodeType.RESOURCE);
+                    if (!rootNode.hasNode(SYNCHRONIZATION_PROPERTIES)) {
+                        node = rootNode.addNode(SYNCHRONIZATION_PROPERTIES, org.wyona.yarep.core.NodeType.RESOURCE);
+                        org.apache.commons.io.IOUtils.write("# User synchronization (e.g. from LDAP to Yanel) meta information (e.g. last successful synchronization). See yarep meta property '" + SYNC_PROP_NAME + "'", node.getOutputStream());
                     } else {
-                        node = getRealm().getRepository().getRootNode().getNode("synchronization.properties");
+                        node = rootNode.getNode(SYNCHRONIZATION_PROPERTIES);
                     }
-                    node.setProperty("last-successful-synchronization", new java.util.Date());
+                    node.setProperty(SYNC_PROP_NAME, new java.util.Date());
                 }
             } else if (usecase.equals("getgroups")) {
                 sb.append(getGroupsAsXML());
