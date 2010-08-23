@@ -261,7 +261,7 @@
     <echo message="*****************************************************************"/>
   </target>
 
-  <target name="quick-start">
+  <target name="quick-start" description="Quick start (will install/configure Tomcat and Yanel automatically)">
     <echo>Quick Start</echo>
     <property name="answerCleanTomcatClusterNode1" value="yes"/>
     <property name="answerDeleteLocalBuildProperties" value="yes"/>
