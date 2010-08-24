@@ -48,9 +48,19 @@ public class MailUtil {
     }
 
     /**
+     * Send e-mail with a MIME type of "text/plain" and as encoding the platform's default charset
      * @param replyTo email address (if null, then no reply-to will be set)
      */
     public static void send(String smtpHost, int smtpPort, String from, String replyTo, String to, String subject, String content) throws AddressException, MessagingException {
+        send(smtpHost, smtpPort, from, replyTo, to, subject, content, java.nio.charset.Charset.defaultCharset().name(), "plain");
+    }
+
+    /**
+     * @param replyTo email address (if null, then no reply-to will be set)
+     * @param charset Charset, e.g. utf-8
+     * @param mimeSubType Mime sub-type, e.g. "html" or "plain"
+     */
+    public static void send(String smtpHost, int smtpPort, String from, String replyTo, String to, String subject, String content, String charset, String mimeSubType) throws AddressException, MessagingException {
         // Create a mail session
         Session session = null;
         if (smtpHost != null && smtpPort >= 0) {
@@ -68,7 +78,7 @@ public class MailUtil {
         }
 
         // Construct the message
-        Message msg = new MimeMessage(session);
+        MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(from));
         if (replyTo != null) {
             InternetAddress[] replyToAddresses = new InternetAddress[1];
@@ -77,7 +87,7 @@ public class MailUtil {
         }
         msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
         msg.setSubject(subject);
-        msg.setText(content);
+        msg.setText(content, charset, mimeSubType);
 
         // Send the message
         Transport.send(msg);
