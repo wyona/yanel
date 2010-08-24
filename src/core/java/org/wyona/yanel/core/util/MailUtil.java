@@ -73,7 +73,7 @@ public class MailUtil {
             java.util.Properties props = new java.util.Properties();
             props.put("mail.smtp.host", "mail.foo.bar"); // Dummy value
             props.put("mail.smtp.port", "37"); // Dummy value
-            session = Session.getDefaultInstance(props, null);
+            session = Session.getDefaultInstance(props, null); // INFO: The dummy values will be ignored, because Yanel (org.wyona.yanel.core.Yanel) sets during initialization the default session!
             log.warn("Use default mail session: " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
         }
 
