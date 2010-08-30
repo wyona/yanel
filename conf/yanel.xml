@@ -5,6 +5,11 @@
   <changes>
     <change version="20100126">smtp configuration added</change>
   </changes>
+
+  <!-- # Yanel version: Will be added during the build process (see src/build/(local.)build.properties and src/build/yanel2properties.xsl) -->
+<!--
+  <version revision="REVISION" version="1.0-dev"/>
+-->
   
   <!-- # Realms configuration -->
   <realms-config src="realms.xml"/>
