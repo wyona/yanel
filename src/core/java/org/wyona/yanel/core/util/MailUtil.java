@@ -41,10 +41,11 @@ public class MailUtil {
     }
 
     /**
-     *
+     * Send an email without a reply-to address
      */
     public static void send(String smtpHost, int smtpPort, String from, String to, String subject, String content) throws AddressException, MessagingException {
-        send(null, -1, from, null, to, subject, content);
+        String replyTo = null;
+        send(smtpHost, smtpPort, from, replyTo, to, subject, content);
     }
 
     /**
