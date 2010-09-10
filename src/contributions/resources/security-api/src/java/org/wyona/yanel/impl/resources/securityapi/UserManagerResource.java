@@ -351,7 +351,7 @@ public class UserManagerResource extends BasicXMLResource {
     /**
      * Get all users
      */
-    private StringBuilder getUsersAsXML() throws Exception {
+    protected StringBuilder getUsersAsXML() throws Exception {
         boolean refresh = true;
         if (getResourceConfigProperty("refresh-users") != null) {
             refresh = new Boolean(getResourceConfigProperty("refresh-users")).booleanValue();
@@ -406,7 +406,7 @@ public class UserManagerResource extends BasicXMLResource {
     /**
      * Get all remote users
      */
-    private StringBuilder getRemoteUsersAsXML() throws Exception {
+    protected StringBuilder getRemoteUsersAsXML() throws Exception {
         log.warn("Get remote users NOT implemented! Please make sure to overwrite this method for your custom setup.");
         return null;
     }
