@@ -50,6 +50,8 @@ public class UserManagerResource extends BasicXMLResource {
             sb.append("<yanel-usecase>" + usecase + "</yanel-usecase>");
             if (usecase.equals("getusers")) {
                 sb.append(getUsersAsXML());
+            } else if (usecase.equals("get-remote-users")) {
+                sb.append(getRemoteUsersAsXML());
             } else if (usecase.equals("getuser")) {
                 sb.append(getUserAsXML(getEnvironment().getRequest().getParameter("id")));
             } else if (usecase.equals("deleteuser")) {
@@ -399,6 +401,14 @@ public class UserManagerResource extends BasicXMLResource {
         }
         sb.append("</users>");
         return sb;
+    }
+
+    /**
+     * Get all remote users
+     */
+    private StringBuilder getRemoteUsersAsXML() throws Exception {
+        log.warn("Get remote users NOT implemented! Please make sure to overwrite this method for your custom setup.");
+        return null;
     }
 
     /**
