@@ -27,5 +27,9 @@
 <!--
   <smtp host="mail.foo.bar" port="25"/>
 -->
+<!-- Most mail-servers require authentication in order to relay messages to other hosts/domains -->
+<!--
+  <smtp host="mail.foo.bar" port="25" username="foo" password="bar"/>
+-->
 
 </yanel>
