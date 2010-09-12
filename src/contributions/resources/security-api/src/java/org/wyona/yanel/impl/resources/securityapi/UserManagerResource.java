@@ -49,7 +49,15 @@ public class UserManagerResource extends BasicXMLResource {
             log.warn("DEBUG: Yanel usecase: " + usecase);
             sb.append("<yanel-usecase>" + usecase + "</yanel-usecase>");
             if (usecase.equals("getusers")) {
-                sb.append(getUsersAsXML());
+                boolean refresh = true;
+                if (getResourceConfigProperty("refresh-users") != null) {
+                    refresh = new Boolean(getResourceConfigProperty("refresh-users")).booleanValue();
+                } else {
+                    log.warn("No refresh user property set within resource configuration '" + getConfiguration().getNode() + "', hence will use true as default.");
+                }
+
+                UserManager um = getRealm().getIdentityManager().getUserManager();
+                sb.append(getUsersAsXML(um.getUsers(refresh)));
             } else if (usecase.equals("get-remote-users")) {
                 sb.append(getRemoteUsersAsXML());
             } else if (usecase.equals("getuser")) {
@@ -349,18 +357,9 @@ public class UserManagerResource extends BasicXMLResource {
     }
 
     /**
-     * Get all users
+     * Get all users as XML
      */
-    protected StringBuilder getUsersAsXML() throws Exception {
-        boolean refresh = true;
-        if (getResourceConfigProperty("refresh-users") != null) {
-            refresh = new Boolean(getResourceConfigProperty("refresh-users")).booleanValue();
-        } else {
-            log.warn("No refresh user property set within resource configuration '" + getConfiguration().getNode() + "', hence will use true as default.");
-        }
-
-        UserManager um = getRealm().getIdentityManager().getUserManager();
-        User[] users = um.getUsers(refresh);
+    protected StringBuilder getUsersAsXML(User[] users) throws Exception {
         Arrays.sort(users, new ItemIDComparator());
 
         StringBuilder sb = new StringBuilder();
