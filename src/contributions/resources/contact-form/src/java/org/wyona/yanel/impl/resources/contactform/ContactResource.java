@@ -244,7 +244,7 @@ public class ContactResource extends Resource implements ViewableV1 {
                     if(smtpHost != null && smtpPortAsString != null) {
                         try {
                             smtpPort = Integer.parseInt(smtpPortAsString);
-                            SendMail.send(smtpHost, smtpPort, from, to, subject, content);
+                            org.wyona.yanel.core.util.MailUtil.send(smtpHost, smtpPort, from, to, subject, content);
                             transformer.setParameter("sent", "true");
                         } catch(NumberFormatException nfe) {
                             log.error(nfe);
@@ -253,7 +253,12 @@ public class ContactResource extends Resource implements ViewableV1 {
                         }
                     } else {
                         // INFO: Use default settings of Yanel for smtp-host and smtp-port
-                        SendMail.send(null, -1, from, to, subject, content);
+                        String replyTo = from;
+                        if (contact.getFirstName() != null || contact.getLastName() != null) {
+                            org.wyona.yanel.core.util.MailUtil.send(from, contact.getFirstName() + " " + contact.getLastName(), replyTo, to, subject, content);
+                        } else {
+                            org.wyona.yanel.core.util.MailUtil.send(from, replyTo, to, subject, content);
+                        }
                         transformer.setParameter("sent", "true");
                     }
                 } catch(javax.mail.MessagingException e) {
