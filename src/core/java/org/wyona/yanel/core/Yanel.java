@@ -58,6 +58,8 @@ public class Yanel {
     private String reservedPrefix = null;
     private boolean schedulerEnabled;
 
+    private String smtpUsername, smtpPassword;
+
     private static Logger log = Logger.getLogger(Yanel.class);
 
     /**
@@ -110,11 +112,23 @@ public class Yanel {
 
            smtpHost = config.getChild("smtp").getAttribute("host");
 
+           // INFO: SMTP Authentication (optional), which is normally necessary in order to relay messages to other hosts/domains
+           smtpUsername = config.getChild("smtp").getAttribute("username", null);
+           smtpPassword = config.getChild("smtp").getAttribute("password", null);
+
            java.util.Properties props = new java.util.Properties();
            props.put("mail.smtp.host", smtpHost);
            props.put("mail.smtp.port", smtpPortSt);
            // http://java.sun.com/products/javamail/javadocs/javax/mail/Session.html
-           javax.mail.Session session = javax.mail.Session.getDefaultInstance(props, null);
+           javax.mail.Session session = null;
+           if (smtpUsername != null && smtpPassword != null) {
+               log.info("SMTP authentication enabled using username: " + smtpUsername);
+               props.put("mail.smtp.auth", "true");
+               session = javax.mail.Session.getDefaultInstance(props, new YanelMailAuthenticator(smtpUsername, smtpPassword));
+           } else {
+               log.info("No SMTP authentication configured.");
+               session = javax.mail.Session.getDefaultInstance(props, null);
+           }
            log.info("Mailserver default session (available to all code executing in the same JVM): " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
        } else {
            log.warn("Mail server not configured within configuration: " + configFile);
@@ -136,7 +150,10 @@ public class Yanel {
            }
        }
     }
-   
+
+    /**
+     *
+     */
     public static Yanel getInstance() throws Exception {
         if (yanel == null) {
             yanel = new Yanel();
@@ -263,9 +280,42 @@ public class Yanel {
     }
 
     /**
-     * Check if scheduler is enabled
+     * Check whether scheduler is enabled
      */
     public boolean isSchedulerEnabled() {
         return schedulerEnabled;
+    }
+
+    /**
+     * Check whether SMTP authentication is set
+     */
+    public boolean isSMTPAuthSet() {
+        if (smtpUsername != null && smtpPassword != null) {
+            return true;
+        }
+        return false;
+    }
+}
+
+/**
+ * Simple authenticator used for SMTP
+ */
+class YanelMailAuthenticator extends javax.mail.Authenticator {
+
+    private String username, password;
+
+    /**
+     *
+     */
+    public YanelMailAuthenticator(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    /**
+     * @see javax.mail.Authenticator#getPasswordAuthentication()
+     */
+    protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+        return new javax.mail.PasswordAuthentication(this.username, this.password);
     }
 }

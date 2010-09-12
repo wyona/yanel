@@ -11,7 +11,7 @@ import javax.mail.internet.MimeMessage;
 import org.apache.log4j.Logger;
 
 /**
- *
+ * SMTP mail utility class
  */
 public class MailUtil {
     private static Logger log = Logger.getLogger(MailUtil.class);
@@ -70,12 +70,23 @@ public class MailUtil {
             props.put("mail.smtp.port", "" + smtpPort);
             session = Session.getInstance(props, null);
             log.warn("Use specific mail session: " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
-        } else {
+        } else { // INFO: Use the global configuration (default instance) of Yanel
             java.util.Properties props = new java.util.Properties();
             props.put("mail.smtp.host", "mail.foo.bar"); // Dummy value
             props.put("mail.smtp.port", "37"); // Dummy value
-            session = Session.getDefaultInstance(props, null); // INFO: The dummy values will be ignored, because Yanel (org.wyona.yanel.core.Yanel) sets during initialization the default session!
-            log.warn("Use default mail session: " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
+            boolean smtpAuthEnabled = false;
+            try {
+                smtpAuthEnabled = org.wyona.yanel.core.Yanel.getInstance().isSMTPAuthSet();
+            } catch (Exception e) {
+                log.error(e, e);
+            } 
+            if (smtpAuthEnabled) {
+                log.info("SMTP authentication enabled.");
+                session = Session.getDefaultInstance(props, new DummyAuthenticator()); // INFO: The dummy values will be ignored, because Yanel (org.wyona.yanel.core.Yanel) sets during initialization the default session!
+            } else {
+                session = Session.getDefaultInstance(props, null); // INFO: The dummy values will be ignored, because Yanel (org.wyona.yanel.core.Yanel) sets during initialization the default session!
+            }
+            log.info("Use default mail session: " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
         }
 
         // Construct the message
@@ -92,5 +103,28 @@ public class MailUtil {
 
         // Send the message
         Transport.send(msg);
+    }
+}
+
+/**
+ * Dummy authenticator used for SMTP
+ */
+class DummyAuthenticator extends javax.mail.Authenticator {
+
+    private String username, password;
+
+    /**
+     *
+     */
+    public DummyAuthenticator() {
+        this.username = "foo";
+        this.password = "bar";
+    }
+
+    /**
+     * @see javax.mail.Authenticator#getPasswordAuthentication()
+     */
+    protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+        return new javax.mail.PasswordAuthentication(this.username, this.password);
     }
 }
