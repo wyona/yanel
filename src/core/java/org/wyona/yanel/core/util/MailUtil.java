@@ -41,6 +41,18 @@ public class MailUtil {
     }
 
     /**
+     * @param fromAddress From address, e.g. contact@wyona.org
+     * @param fromName From name, e.g. Wyona
+     * @param replyTo email address (if null, then no reply-to will be set)
+     * @param to To address
+     * @param subject Subject of email
+     * @param content Body of email
+     */
+    public static void send(String fromAddress, String fromName, String replyTo, String to, String subject, String content) throws AddressException, MessagingException {
+        send(null, -1, fromAddress, fromName, replyTo, to, subject, content, java.nio.charset.Charset.defaultCharset().name(), "plain");
+    }
+
+    /**
      * Send an email without a reply-to address
      */
     public static void send(String smtpHost, int smtpPort, String from, String to, String subject, String content) throws AddressException, MessagingException {
@@ -57,11 +69,21 @@ public class MailUtil {
     }
 
     /**
+     * @deprecated
+     */
+    public static void send(String smtpHost, int smtpPort, String from, String replyTo, String to, String subject, String content, String charset, String mimeSubType) throws AddressException, MessagingException {
+        String fromName = null;
+        send(smtpHost, smtpPort, from, fromName, replyTo, to, subject, content, charset, mimeSubType);
+    }
+
+    /**
      * @param replyTo email address (if null, then no reply-to will be set)
      * @param charset Charset, e.g. utf-8
      * @param mimeSubType Mime sub-type, e.g. "html" or "plain"
+     * @param fromEmailAdress E-Mail address of sender, e.g. contact@wyona.org
+     * @param fromName Name of sender, e.g. Wyona
      */
-    public static void send(String smtpHost, int smtpPort, String from, String replyTo, String to, String subject, String content, String charset, String mimeSubType) throws AddressException, MessagingException {
+    public static void send(String smtpHost, int smtpPort, String fromEmailAddress, String fromName, String replyTo, String to, String subject, String content, String charset, String mimeSubType) throws AddressException, MessagingException {
         // Create a mail session
         Session session = null;
         if (smtpHost != null && smtpPort >= 0) {
@@ -91,7 +113,16 @@ public class MailUtil {
 
         // Construct the message
         MimeMessage msg = new MimeMessage(session);
-        msg.setFrom(new InternetAddress(from));
+        if (fromName != null && fromName. length() > 0) {
+            try {
+                msg.setFrom(new InternetAddress(fromEmailAddress, fromName));
+            } catch (java.io.UnsupportedEncodingException e) {
+                log.error(e, e);
+                msg.setFrom(new InternetAddress(fromEmailAddress));
+            }
+        } else {
+            msg.setFrom(new InternetAddress(fromEmailAddress));
+        }
         if (replyTo != null) {
             InternetAddress[] replyToAddresses = new InternetAddress[1];
             replyToAddresses[0] = new InternetAddress(replyTo);
