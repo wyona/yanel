@@ -11,7 +11,7 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
   version="2.4">
 
-<!-- AFAIK default session timeout is 30 minutes. NOTE: Please make sure to restart server and to delete browser cookies! -->
+<!-- AFAIK default session timeout is 30 minutes. NOTE: Please make sure to restart server and to delete browser cookies and to delete work directory of Tomcat! -->
 <!--
   <session-config>
     <session-timeout>30</session-timeout>
