@@ -1,5 +1,5 @@
 #!/bin/sh
-# This variant of the "CI" script should only have one single difference:
+# This refactored version of the "CI" script (hence the name "reCI") should only have one single difference:
 #  the server is not stopped at the end, but at the start, to make it available between each script invocation for testing purposes.
 
 # should allow Yanel to keep running past the end of Hudson jobs,
