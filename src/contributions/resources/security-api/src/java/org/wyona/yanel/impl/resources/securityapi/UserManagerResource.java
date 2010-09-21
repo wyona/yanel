@@ -183,9 +183,12 @@ public class UserManagerResource extends BasicXMLResource {
             doResolveGroups = true;
         }
 
-        java.util.List resolvedGroups = new java.util.ArrayList(); // INFO: Save info in order to detect loops
+        // INFO: Also see org.wyona.security.impl.yarep.YarepUser#getGroups(boolean)
+        java.util.List resolvedGroups = new java.util.ArrayList(); // INFO: List of all resolved groups
+        java.util.List branchGroups = new java.util.ArrayList(); // INFO: Save info in order to detect loops
         resolvedGroups.add(group.getID());
-        sb.append(getGroupMembers(gm, group, doResolveGroups, resolvedGroups));
+        branchGroups.add(group.getID());
+        sb.append(getGroupMembers(gm, group, doResolveGroups, branchGroups, resolvedGroups));
 
         Group[] parentGroups = group.getParents();
         if (parentGroups != null && parentGroups.length > 0) {
@@ -487,8 +490,10 @@ public class UserManagerResource extends BasicXMLResource {
 
     /**
      * Get group members as XML
+     * @param branchGroups List of groups within a branch in order to catch loops
+     * @param resolvedGroups List of all parents groups resolved
      */
-    private String getGroupMembers(GroupManager gm, Group group, boolean doResolveGroups, java.util.List resolvedGroups) throws Exception {
+    private String getGroupMembers(GroupManager gm, Group group, boolean doResolveGroups, java.util.List branchGroups, java.util.List resolvedGroups) throws Exception {
         Item[] members = group.getMembers();
         StringBuilder sb = new StringBuilder();
         sb.append("<members>");
@@ -499,14 +504,18 @@ public class UserManagerResource extends BasicXMLResource {
                 sb.append("<user id=\"" + members[i].getID() + "\"/>");
             } else if (members[i] instanceof Group) {
                 if (doResolveGroups) {
-                    if (alreadyResolved(members[i].getID(), resolvedGroups)) {
-                        log.error("Loop detected: " + resolvedGroups);
+                    if (alreadyResolved(members[i].getID(), branchGroups)) {
+                        log.error("Loop detected within members: " + branchGroups);
                         sb.append("<loop-detected group-id=\"" + members[i].getID() + "\"/>");
                     } else {
                         sb.append("<group id=\"" + members[i].getID() + "\">");
                         //log.warn("DEBUG: Resolve group: " + members[i].getID());
+                        // TODO: Make sure that there are no redundencies, whereas since resolvedGroups is not used, it does not matter for the moment.
                         resolvedGroups.add(members[i].getID());
-                        sb.append(getGroupMembers(gm, gm.getGroup(members[i].getID()), doResolveGroups, resolvedGroups));
+
+                        branchGroups.add(members[i].getID());
+                        sb.append(getGroupMembers(gm, gm.getGroup(members[i].getID()), doResolveGroups, branchGroups, resolvedGroups));
+                        branchGroups.remove(members[i].getID());
                         sb.append("</group>");
                     }
                 } else {
@@ -528,9 +537,9 @@ public class UserManagerResource extends BasicXMLResource {
     /**
      * Check whether group has been resolved already
      */
-     private boolean alreadyResolved(String groupId, java.util.List resolvedGroupIDs) {
-         for (int i = 0; i < resolvedGroupIDs.size(); i++) {
-             if (groupId.equals((String)resolvedGroupIDs.get(i))) {
+     private boolean alreadyResolved(String groupId, java.util.List branchGroupIDs) {
+         for (int i = 0; i < branchGroupIDs.size(); i++) {
+             if (groupId.equals((String)branchGroupIDs.get(i))) {
                  return true;
              }
          }
