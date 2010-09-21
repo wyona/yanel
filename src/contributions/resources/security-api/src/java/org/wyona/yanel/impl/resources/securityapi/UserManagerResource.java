@@ -145,7 +145,14 @@ public class UserManagerResource extends BasicXMLResource {
         User user = um.getUser(id);
         StringBuilder sb = new StringBuilder("<user id=\"" + id + "\">");
         sb.append("<name>" + user.getName() + "</name>");
-        Group[] groups = user.getGroups();
+
+        String paraResolveGroups = getEnvironment().getRequest().getParameter("resolve-groups");
+        boolean resolveGroups = false;
+        if (paraResolveGroups != null && paraResolveGroups.equals("true")) {
+            resolveGroups = true;
+        }
+
+        Group[] groups = user.getGroups(resolveGroups);
         if (groups != null && groups.length > 0 ) {
             sb.append("<groups>");
             for (int i = 0; i < groups.length; i++) {
