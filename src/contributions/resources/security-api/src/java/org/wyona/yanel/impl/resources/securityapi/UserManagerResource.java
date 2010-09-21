@@ -46,7 +46,7 @@ public class UserManagerResource extends BasicXMLResource {
         try {
         String usecase = getEnvironment().getRequest().getParameter("yanel.usecase");
         if (usecase != null) {
-            log.warn("DEBUG: Yanel usecase: " + usecase);
+            log.debug("Yanel usecase: " + usecase);
             sb.append("<yanel-usecase>" + usecase + "</yanel-usecase>");
             if (usecase.equals("getusers")) {
                 boolean refresh = true;
@@ -179,7 +179,7 @@ public class UserManagerResource extends BasicXMLResource {
         String paraResolveGroups = getEnvironment().getRequest().getParameter("resolve-groups");
         boolean doResolveGroups = false;
         if (paraResolveGroups != null && paraResolveGroups.equals("true")) {
-            log.warn("DEBUG: Resolve groups!");
+            log.debug("Resolve groups!");
             doResolveGroups = true;
         }
 
