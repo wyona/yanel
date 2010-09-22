@@ -292,7 +292,6 @@ public abstract class Resource {
      */
     public String getRequestedLanguage() throws Exception {
         return getRealm().getLanguageHandler().getLocalizationLanguage(this);
-        
     }
 
     /**
