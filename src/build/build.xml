@@ -69,7 +69,7 @@
 
     
   <target name="init" description="Initialize all parameters and other settings">
-    <echo>INFO: Building with ${ant.version} and Java version ${ant.java.version}</echo>
+    <echo>INFO: Building with ${ant.version} and Java version ${ant.java.version} (JAVA_HOME=${java.home}, User: ${user.name})</echo>
 
     <echo>Yanel Home Dir: ${yanel.source.home}</echo>
     <path id="yanel.source.home.ref">
