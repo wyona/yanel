@@ -29,6 +29,7 @@ public class DefaultMenuV2 extends DefaultMenu {
     /**
      * Implements the new tinymce suffix
      */
+    @Override
     public String getEditMenu(Resource resource) throws Exception {
         String userLanguage = getUserLanguage(resource);
         StringBuilder sb = new StringBuilder();
