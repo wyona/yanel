@@ -204,13 +204,46 @@
     </copy>
   </target>
 
-  <target name="junit" depends="init" description="Run junit tests">
+  <target name="compile-junit-tests" depends="init" description="Compile junit tests">
+    <echo>Compiling the junit tests of resource-type with root directory set to ${resource.home.dir}</echo>
+
+    <mkdir dir="${resource.classes.dir}"/>
+    <javac srcdir="${resource.home.dir}/src/test/junit" destdir="${resource.classes.dir}"
+      classpathref="classpath"
+      source="${source.java.version}"
+      target="${target.java.version}"
+      encoding="${javac.encoding}"
+      debug="true"
+    />
+
 <!--
-  <target name="junit" depends="build" description="Run junit tests">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${junit.build.dir}"/>
+    <mkdir dir="${htmlunit.build.dir}"/>
+    <copy todir="${test.data.dir}">
+      <fileset dir="${yanel.home.dir}/src/realms/test/yanel/data"/>
+    </copy>
+
+    <javac srcdir="${junit.src.dir}" destdir="${junit.build.dir}">
+      <classpath refid="classpath" />
+    </javac>
+    <javac srcdir="${htmlunit.src.dir}" destdir="${htmlunit.build.dir}">
+      <classpath refid="classpath" />
+    </javac>
 -->
-    <echo>TODO: Running the junit tests of resource-type with root directory set to ${resource.home.dir}</echo>
+  </target>
+
+  <target name="junit" depends="init, compile, compile-junit-tests" description="Run junit tests">
+    <echo>Running the junit tests of resource-type with root directory set to ${resource.home.dir}</echo>
     <property name="test.results.dir" value="${resource.build.dir}/test-results"/>
     <mkdir dir="${test.results.dir}"/>
+
+    <path id="classpath-of-tests">
+      <pathelement path="${maven2.cp}"/>
+      <pathelement path="${maven2.resource.cp}"/>
+      <pathelement location="${resource.classes.dir}"/>
+    </path>
+
     <junit fork="yes" printsummary="yes" haltonfailure="no" failureproperty="junit.tests.failed">
 <!--
       <batchtest todir="${test.results.dir}" unless="test.class.name">
@@ -220,7 +253,7 @@
       <test todir="${test.results.dir}" name="${test.class.name}" if="test.class.name"/>
       <formatter type="plain" usefile="false"/>
       <formatter type="xml"/>
-      <classpath refid="classpath" />
+      <classpath refid="classpath-of-tests" />
       <jvmarg value="-Djunit.base.dir=${resource.home.dir}/src/test/junit"/>
     </junit>
   </target>
