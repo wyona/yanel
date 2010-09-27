@@ -203,4 +203,23 @@
     <copy todir="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib" file="${resource.lib.dir}/yanel-resource-${resource.name}-${resource.version}.jar">
     </copy>
   </target>
+
+  <target name="junit" description="Run junit tests">
+<!--
+  <target name="junit" depends="build" description="Run junit tests">
+-->
+    <echo>TODO: Running the junit tests of resource-type with root directory set to ${resource.home.dir}</echo>
+<!--
+    <junit fork="yes" printsummary="yes" haltonfailure="no" failureproperty="junit.tests.failed">
+      <batchtest todir="${test.results.dir}" unless="test.class.name">
+        <fileset dir="${junit.build.dir}" includes="**/*Test.class" excludes="**/Abstract*.class"/>
+      </batchtest>
+      <test todir="${test.results.dir}" name="${test.class.name}" if="test.class.name"/>
+      <formatter type="plain" usefile="false"/>
+      <formatter type="xml"/>
+      <classpath refid="classpath" />
+      <jvmarg value="-Djunit.base.dir=${basedir}/junit"/>
+    </junit>
+-->
+  </target>
 </project>
