@@ -1076,7 +1076,7 @@ public class YanelServlet extends HttpServlet {
             }
             return null; // INFO: Return null in order to indicate that access is granted
         } else {
-            log.warn("Access denied: " + getRequestURLQS(request, null, false) + " (" + path + ", " + identity + ", " + usecase + ")");
+            log.warn("Access denied: " + getRequestURLQS(request, null, false) + " (Path of request: " + path + "; Identity: " + identity + "; Usecase: " + usecase + ")");
 
             // TODO: Implement HTTP BASIC/DIGEST response (see above)
 
