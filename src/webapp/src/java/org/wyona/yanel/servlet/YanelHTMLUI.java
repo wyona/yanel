@@ -23,6 +23,7 @@ import org.wyona.yanel.core.util.ResourceAttributeHelper;
 class YanelHTMLUI {
 
     private static final String TOOLBAR_KEY = "toolbar";
+    private static final String TOOLBAR_PARAM_NAME = "yanel.toolbar";
 
     private String reservedPrefix;
     private Map map;
@@ -41,7 +42,7 @@ class YanelHTMLUI {
      */
     void switchToolbar(HttpServletRequest request) {
         // Check for toolbar ...
-        String yanelToolbar = request.getParameter("yanel.toolbar");
+        String yanelToolbar = request.getParameter(TOOLBAR_PARAM_NAME);
         if(yanelToolbar != null) {
             if (yanelToolbar.equals("on")) {
                 log.info("Turn on toolbar!");
@@ -49,6 +50,8 @@ class YanelHTMLUI {
             } else if (yanelToolbar.equals("off")) {
                 log.info("Turn off toolbar!");
                 disableToolbar(request);
+            } else if (yanelToolbar.equals("suppress")) { // INFO: See isToolbarEnabled(HttpServletRequest)
+                log.info("Suppress toolbar!");
             } else {
                 log.warn("No such toolbar value: " + yanelToolbar);
             }
@@ -280,8 +283,8 @@ class YanelHTMLUI {
     boolean isToolbarEnabled(HttpServletRequest request) {
         String toolbarStatus = (String) request.getSession(true).getAttribute(TOOLBAR_KEY);
         if (toolbarStatus != null && toolbarStatus.equals("on")) {
-            String yanelToolbar = request.getParameter("yanel.toolbar");
-            if(yanelToolbar != null && request.getParameter("yanel.toolbar").equals("suppress")) {
+            String yanelToolbar = request.getParameter(TOOLBAR_PARAM_NAME);
+            if(yanelToolbar != null && request.getParameter(TOOLBAR_PARAM_NAME).equals("suppress")) {
                 return false;
             } else {
                 return true;
