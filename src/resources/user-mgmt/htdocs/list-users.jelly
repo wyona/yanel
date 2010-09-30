@@ -3,6 +3,11 @@
   <html xmlns="http://www.w3.org/1999/xhtml">
     <body>
       <h1>Users</h1>
+      <p>
+        Showing users ${resource.getLowerBound()} through ${resource.getUpperBound()}
+        out of a total of ${resource.getTotalUsers()}.
+      </p>
+      <!-- Table of users -->
       <table border="1">
         <tr>
           <th>ID</th>
@@ -16,13 +21,23 @@
             <td>${user.getName()}</td>
             <td>${user.getEmail()}</td>
             <td><a href="update-user-admin.html?userID=${user.getID()}">Update/Edit</a></td>
-<!-- Edit user whereas one needs to enter old password and also cannot change group settings
-            <td><a href="update-user.html?userID=${user.getID()}">Edit</a></td>
--->
             <td><a href="delete-user.html?userID=${user.getID()}">Delete</a></td>
           </tr>
         </j:forEach>
       </table>
+      <!-- Pagination -->
+      <p>
+        <j:if test="${resource.getCurrentPage() &gt; 1}">
+          <a href="?page=${resource.getCurrentPage()-1}">« Prev</a>
+          &#160;
+        </j:if>
+        Page ${resource.getCurrentPage()}/${resource.getTotalPages()}
+        <j:if test="${resource.hasNext()}">
+          &#160;
+          <a href="?page=${resource.getCurrentPage()+1}">Next »</a>
+        </j:if>
+      </p>
+      <!-- Links -->
       <a href="create-user.html">Create new user</a>
     </body>
   </html>
