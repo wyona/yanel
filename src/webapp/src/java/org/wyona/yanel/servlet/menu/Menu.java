@@ -1,20 +1,18 @@
 package org.wyona.yanel.servlet.menu;
 
-import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.map.Map;
-import org.wyona.yanel.core.map.Realm;
-import org.wyona.yanel.servlet.IdentityMap;
-import org.wyona.yanel.servlet.YanelServlet;
-
-import org.wyona.security.core.api.Identity;
+import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import java.io.IOException;
-
 import org.apache.log4j.Logger;
+import org.wyona.security.core.api.Identity;
+import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.map.Map;
+import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.servlet.IdentityMap;
+import org.wyona.yanel.servlet.YanelServlet;
 
 /**
  *
@@ -22,7 +20,8 @@ import org.apache.log4j.Logger;
 abstract public class Menu {
 
     private static Logger log = Logger.getLogger(Menu.class);
-
+    private String backToRealm;
+    
     /**
      * Get custom menus. Implement this method in order to introduce custom menus.
      */
@@ -32,14 +31,14 @@ abstract public class Menu {
      * Aggregate all menus (used by YanelServlet). Overwrite this method if Yanel or Help menu not needed.
      */
     public String getAllMenus(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
-        return getYanelMenu(resource, request, map, reservedPrefix) + getMenus(resource, request, map, reservedPrefix) + getAdminMenu(resource, request, map, reservedPrefix) + getHelpMenu(resource, request, map, reservedPrefix);
+    	backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
+    	return getYanelMenu(resource, request, map, reservedPrefix) + getMenus(resource, request, map, reservedPrefix) + getAdminMenu(resource, request, map, reservedPrefix) + getHelpMenu(resource, request, map, reservedPrefix);
     }
 
     /**
      * Get yanel menu
      */
     public String getYanelMenu(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
-        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
         String userLanguage = getUserLanguage(resource);
 
         StringBuilder sb= new StringBuilder();
@@ -275,5 +274,15 @@ abstract public class Menu {
             }
         }
         return language;
+    }
+    
+    /**
+     * Utility method to create a menu item line
+     * @param relativePath This is the relative path of the resource starting at the root of the realm
+     * @parem label Label of menu item
+     * @return the menu item
+     */
+    protected String getMenuItem(String relativePath, String label) {
+        return "<li><a href=\"" + backToRealm + relativePath + "\">" + label + "</a></li>";
     }
 }
