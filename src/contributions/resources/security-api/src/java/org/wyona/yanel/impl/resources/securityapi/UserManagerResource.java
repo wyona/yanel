@@ -14,6 +14,11 @@ import org.wyona.security.core.api.PolicyManager;
 import org.wyona.security.core.api.User;
 import org.wyona.security.core.api.UserManager;
 
+import org.wyona.commons.xml.XMLHelper;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.io.ByteArrayInputStream;
@@ -34,6 +39,8 @@ public class UserManagerResource extends BasicXMLResource {
 
     private final String SYNCHRONIZATION_PROPERTIES = "synchronization.properties";
     private final String SYNC_PROP_NAME = "last-successful-synchronization";
+
+    private static final String NAMESPACE = "http://www.wyona.org/yanel/security/1.0";
     
     @Override
     protected InputStream getContentXML(String viewId) {
@@ -43,11 +50,22 @@ public class UserManagerResource extends BasicXMLResource {
 
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<security-api>");
+        // TODO: Replace StringBuilder by DOM
+/*
+        Document responseDoc = XMLHelper.createDocument("security-api", NAMESPACE);
+        Element rootElement = responseDoc.getDocumentElement();
+*/
+        Element rootElement = null;
         try {
         String usecase = getEnvironment().getRequest().getParameter("yanel.usecase");
         if (usecase != null) {
             log.debug("Yanel usecase: " + usecase);
             sb.append("<yanel-usecase>" + usecase + "</yanel-usecase>");
+/*
+            Element usecaseElement = (Element) rootElement.appendChild(responseDoc.createElement("yanel-usecase"));
+            //Element usecaseElement = (Element) rootElement.appendChild(responseDoc.createElementNS(NAMESPACE, "yanel-usecase"));
+            usecaseElement.appendChild(responseDoc.createTextNode(usecase));
+*/
             if (usecase.equals("getusers")) {
                 boolean refresh = true;
                 if (getResourceConfigProperty("refresh-users") != null) {
@@ -70,7 +88,7 @@ public class UserManagerResource extends BasicXMLResource {
                 deleteGroup(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("creategroup")) {
                 log.debug("Try to create group: " + getEnvironment().getRequest().getParameter("id"));
-                createGroup(getEnvironment().getRequest().getParameter("id"), getEnvironment().getRequest().getParameter("name"));
+                createGroup(getEnvironment().getRequest().getParameter("id"), getEnvironment().getRequest().getParameter("name"), sb, rootElement);
             } else if (usecase.equals("importuser")) {
                 log.debug("Import user: " + getEnvironment().getRequest().getParameter("id"));
                 importUser(getEnvironment().getRequest().getParameter("id"));
@@ -79,11 +97,14 @@ public class UserManagerResource extends BasicXMLResource {
                 //org.wyona.yarep.core.Node rootNode = getRealm().getIdentitiesRepository().getRootNode().getNode("users");
                 org.wyona.yarep.core.Node rootNode = getRealm().getRepository().getRootNode();
                 if (getEnvironment().getRequest().getParameter("get-last-date") != null) {
+                    //Element lastSuccessfulSyncElement = (Element) rootElement.appendChild(responseDoc.createElement("last-successful-synchronization"));
                     if (rootNode.hasNode(SYNCHRONIZATION_PROPERTIES)) {
                         sb.append("<last-successful-synchronization date=\"" + rootNode.getNode(SYNCHRONIZATION_PROPERTIES).getProperty(SYNC_PROP_NAME).getDate() + "\"/>");
+                        //lastSuccessfulSyncElement.setAttribute("date", "" + rootNode.getNode(SYNCHRONIZATION_PROPERTIES).getProperty(SYNC_PROP_NAME).getDate());
                     } else {
                         log.warn("Not synchronized yet!");
                         sb.append("<last-successful-synchronization date=\"" + "NOT_SYNCHRONIZED_YET" + "\"/>");
+                        //lastSuccessfulSyncElement.setAttribute("date", "NOT_SYNCHRONIZED_YET");
                     }
                 } else {
                     // TODO: Lock ...
@@ -100,7 +121,7 @@ public class UserManagerResource extends BasicXMLResource {
                     node.setProperty(SYNC_PROP_NAME, new java.util.Date());
                 }
             } else if (usecase.equals("getgroups")) {
-                sb.append(getGroupsAsXML());
+                sb.append(getGroupsAsXML(rootElement));
             } else if (usecase.equals("add-members-to-group")) {
                 addMembersToGroup(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("remove-members-from-group")) {
@@ -113,21 +134,36 @@ public class UserManagerResource extends BasicXMLResource {
                 boolean recursively = "1".equals(recursivelyText);
                 deletePolicy(path, recursively);
                 sb.append("<policy-deleted path=\"" + path + "\" recursively=\"" + recursively + "\"/>");
+/*
+                Element policyDeletedElement = (Element) rootElement.appendChild(responseDoc.createElement("policy-deleted"));
+                policyDeletedElement.setAttribute("path", path);
+                policyDeletedElement.setAttribute("recursively", "" + recursively);
+*/
             } else {
                 log.warn("No such usecase implemented: " + usecase);
                 sb.append("<no-such-yanel-usecase-implemented>" + usecase + "</no-such-yanel-usecase-implemented>");
+/*
+                Element noSuchUsecaseElement = (Element) rootElement.appendChild(responseDoc.createElement("no-such-yanel-usecase-implemented"));
+                noSuchUsecaseElement.appendChild(responseDoc.createTextNode(usecase));
+*/
             }
         } else {
             log.warn("No usecase specified!");
             sb.append("<no-yanel-usecase/>");
+            //rootElement.appendChild(responseDoc.createElement("no-yanel-usecase"));
         }
         } catch(Exception e) {
             log.error(e, e);
             sb.append("<exception>" + e.getMessage() + "</exception>");
+/*
+            Element exceptionElement = (Element) rootElement.appendChild(responseDoc.createElement("exception"));
+            exceptionElement.appendChild(responseDoc.createTextNode(e.getMessage()));
+*/
         }
         sb.append("</security-api>");
 
         return new ByteArrayInputStream(sb.toString().getBytes());
+        //return new ByteArrayInputStream(XMLHelper.documentToString(responseDoc, false, true, null).getBytes());
     }
 
     @Override
@@ -229,7 +265,7 @@ public class UserManagerResource extends BasicXMLResource {
      * @param id Group ID
      * @param name Group name
      */
-    private void createGroup(String id, String name) throws AccessManagementException {
+    private void createGroup(String id, String name, StringBuilder sb, Element rootElement) throws AccessManagementException {
         GroupManager gm = getRealm().getIdentityManager().getGroupManager();
         int MAX_LENGTH = 30;
         if (id != null && name != null) {
@@ -238,7 +274,10 @@ public class UserManagerResource extends BasicXMLResource {
             } else if (id.length() > MAX_LENGTH) { // TODO: Make this configurable
                 log.warn("ID '" + id + "' is more than '" + MAX_LENGTH + "' characters, hence will not be created!");
             } else if (gm.existsGroup(id)) {
-                log.warn("Group with ID '" + id + "' already exists, hence will not be created!");
+                String message = "Group with ID '" + id + "' already exists, hence will not be created!";
+                log.warn(message);
+                sb.append("<exception status=\"400\">" + message + "</exception>");
+                //rootElement.appendChild();
             } else if (id.contains("/") || id.contains("*") || id.contains("?") || id.contains(".")) { // TODO: Make this configurable
                 log.warn("ID '" + id + "' contains special characters (/*?.), hence will not be created!");
             } else {
@@ -310,8 +349,9 @@ public class UserManagerResource extends BasicXMLResource {
 
     /**
      * Get all groups
+     * @param rootElement XML document which will be sent as response to the client
      */
-    private StringBuilder getGroupsAsXML() throws Exception {
+    private StringBuilder getGroupsAsXML(Element rootElement) throws Exception {
         GroupManager gm = getRealm().getIdentityManager().getGroupManager();
         Group[] groups = gm.getGroups();
         Arrays.sort(groups, new ItemIDComparator());
