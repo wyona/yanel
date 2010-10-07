@@ -55,14 +55,13 @@ import java.io.Writer;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
-import org.apache.commons.io.IOUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
- *
+ * Generic resource handling XML data and transforming it using XSLT, etc.
  */
 public class XMLResource extends BasicXMLResource implements ModifiableV2, VersionableV2, CreatableV2, IntrospectableV1, TranslatableV1, WorkflowableV1 {
 
@@ -397,7 +396,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                 InputStream is = ((YanelStreamSource)src).getInputStream();
                 Document doc = XMLHelper.readDocument(is);
                 if (log.isDebugEnabled()) {
-                  log.debug("Template content: " + System.getProperty("line.separator") + XMLHelper.documentToString(doc, false, true, null ));
+                  log.debug("Template content: " + System.getProperty("line.separator") + XMLHelper.documentToString(doc, false, true, null));
                 }
                 
                 if (title != null) {
