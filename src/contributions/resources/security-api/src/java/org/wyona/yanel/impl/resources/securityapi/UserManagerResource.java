@@ -69,7 +69,7 @@ public class UserManagerResource extends BasicXMLResource {
                 log.warn("DEBUG: Delete group: " + getEnvironment().getRequest().getParameter("id"));
                 deleteGroup(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("creategroup")) {
-                log.warn("DEBUG: Create group: " + getEnvironment().getRequest().getParameter("id"));
+                log.debug("Try to create group: " + getEnvironment().getRequest().getParameter("id"));
                 createGroup(getEnvironment().getRequest().getParameter("id"), getEnvironment().getRequest().getParameter("name"));
             } else if (usecase.equals("importuser")) {
                 log.debug("Import user: " + getEnvironment().getRequest().getParameter("id"));
@@ -231,7 +231,22 @@ public class UserManagerResource extends BasicXMLResource {
      */
     private void createGroup(String id, String name) throws AccessManagementException {
         GroupManager gm = getRealm().getIdentityManager().getGroupManager();
-        gm.createGroup(id, name);
+        int MAX_LENGTH = 30;
+        if (id != null && name != null) {
+            if (id.length() <= 0 || name.length() <= 0) {
+                log.warn("Either ID or name is empty, hence will not be created!");
+            } else if (id.length() > MAX_LENGTH) { // TODO: Make this configurable
+                log.warn("ID '" + id + "' is more than '" + MAX_LENGTH + "' characters, hence will not be created!");
+            } else if (gm.existsGroup(id)) {
+                log.warn("Group with ID '" + id + "' already exists, hence will not be created!");
+            } else if (id.contains("/") || id.contains("*") || id.contains("?") || id.contains(".")) { // TODO: Make this configurable
+                log.warn("ID '" + id + "' contains special characters (/*?.), hence will not be created!");
+            } else {
+                gm.createGroup(id, name);
+            }
+        } else {
+            log.warn("Either ID or name is null, hence will not be created!");
+        }
     }
 
     /**
