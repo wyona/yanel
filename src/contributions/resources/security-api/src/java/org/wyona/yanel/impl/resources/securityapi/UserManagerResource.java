@@ -270,21 +270,29 @@ public class UserManagerResource extends BasicXMLResource {
         int MAX_LENGTH = 30;
         if (id != null && name != null) {
             if (id.length() <= 0 || name.length() <= 0) {
-                log.warn("Either ID or name is empty, hence will not be created!");
+                String message = "Either ID or name is empty, hence will not be created!";
+                log.warn(message);
+                sb.append("<exception status=\"400\">" + message + "</exception>");
             } else if (id.length() > MAX_LENGTH) { // TODO: Make this configurable
-                log.warn("ID '" + id + "' is more than '" + MAX_LENGTH + "' characters, hence will not be created!");
+                String message = "ID '" + id + "' is more than '" + MAX_LENGTH + "' characters, hence will not be created!";
+                log.warn(message);
+                sb.append("<exception status=\"400\">" + message + "</exception>");
             } else if (gm.existsGroup(id)) {
                 String message = "Group with ID '" + id + "' already exists, hence will not be created!";
                 log.warn(message);
                 sb.append("<exception status=\"400\">" + message + "</exception>");
                 //rootElement.appendChild();
             } else if (id.contains("/") || id.contains("*") || id.contains("?") || id.contains(".")) { // TODO: Make this configurable
-                log.warn("ID '" + id + "' contains special characters (/*?.), hence will not be created!");
+                String message = "ID '" + id + "' contains special characters (/*?.), hence will not be created!";
+                log.warn(message);
+                sb.append("<exception status=\"400\">" + message + "</exception>");
             } else {
                 gm.createGroup(id, name);
             }
         } else {
-            log.warn("Either ID or name is null, hence will not be created!");
+            String message = "Either ID or name is null, hence will not be created!";
+            log.warn(message);
+            sb.append("<exception status=\"400\">" + message + "</exception>");
         }
     }
 
