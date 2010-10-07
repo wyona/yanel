@@ -309,7 +309,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.CreatableV2#create(HttpServletRequest)
      */
     public void create(HttpServletRequest request) {
         try {
@@ -362,7 +362,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.CreatableV2#createRTIProperties(HttpServletRequest)
      */
     public java.util.HashMap createRTIProperties(HttpServletRequest request) {
         java.util.HashMap map = new java.util.HashMap();
@@ -377,7 +377,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     /**
-     * Use suggested name if not null or empty, otherwise use name of uploaded file
+     * @see org.wyona.yanel.core.api.attributes.CreatableV2#getCreateName(String)
      */
     public String getCreateName(String suggestedName) {
         if (suggestedName != null && !suggestedName.equals("")) return suggestedName;
@@ -396,8 +396,9 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         }
         return null;
     }
+
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.CreatableV2#getPropertyType(String)
      */
     public String getPropertyType(String name) {
         return CreatableV2.TYPE_UPLOAD;
