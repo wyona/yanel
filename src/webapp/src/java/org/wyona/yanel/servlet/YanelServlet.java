@@ -1760,6 +1760,8 @@ public class YanelServlet extends HttpServlet {
             final String namespaceURI = namespaceURI_and_rest[0];
             final String[] name_and_rest = namespaceURI_and_rest[1].split("/", 2);
             final String name = name_and_rest[0];
+
+            // INFO: Decode URL, e.g. /yanel/resource-types/^http:^2f^2fwww.wyona.org^2fyanel^2fresource^2f1.0::user-admin/dummy.css
             final String decoded_namespaceURI = HttpServletRequestHelper.decodeURIinURLpath('^', namespaceURI);
             if (log.isDebugEnabled()) log.debug("decoded_namespaceURI: "+decoded_namespaceURI);
             // The request (see resource.getPath()) seems to replace 'http://' or 'http%3a%2f%2f' by 'http:/', so let's change this back
