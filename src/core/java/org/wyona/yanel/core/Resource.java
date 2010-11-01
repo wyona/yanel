@@ -84,7 +84,7 @@ public abstract class Resource {
     }
 
     /**
-     *
+     * Resource type universal name, e.g. <{http://www.wyona.org/yanel/resource/1.0}xml/>
      */
     public String getResourceTypeUniversalName() {
         return rtd.getResourceTypeUniversalName();
