@@ -25,7 +25,7 @@
     <title>Bienvenido a Yanel</title>  
   </xsl:when>
   <xsl:otherwise>
-    <title>Welcome to Yanel</title>  
+    <title>Welcome to Yanel - everything is related content is everything</title>
   </xsl:otherwise>
   </xsl:choose>
     <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-homepage.xml"/>
