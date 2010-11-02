@@ -258,7 +258,10 @@
       <pathelement location="${resource.java.dir}"/>
     </path>
 
+    <junit fork="yes" printsummary="yes" haltonfailure="yes" failureproperty="junit.tests.failed">
+<!-- INFO: haltonfailure should be set to "yes" in order to propagate the failure, because otherwise Hudson might think everything is alright
     <junit fork="yes" printsummary="yes" haltonfailure="no" failureproperty="junit.tests.failed">
+-->
       <batchtest todir="${test.results.dir}" unless="test.class.name">
         <fileset dir="${resource.junit.build.dir}" includes="**/*Test.class" excludes="**/Abstract*.class"/>
       </batchtest>
