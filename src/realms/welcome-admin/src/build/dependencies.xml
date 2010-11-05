@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="yanel-welcom-and-admin-realm-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="yanel-welcome-and-admin-realm-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
   <target name="dependencies" description="Dependencies">
     <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
