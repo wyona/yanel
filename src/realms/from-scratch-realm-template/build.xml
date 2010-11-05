@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+
+<project name="yanel-from-scratch-realm" default="deploy-jar">
+  <import file="${yanel.source.home}/src/build/realms/realm.build.xml"/>
+</project>
