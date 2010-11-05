@@ -527,7 +527,7 @@ public class PolicyManagerResource extends BasicXMLResource {
      * @param orderedBy Allows ordering by usecases or identities
      * @param showParents Show the policies of the parent nodes, which allows to figure out how the policy has been aggregated
      */
-    private StringBuilder getAggregatedPolicyAsXML(String path, String contentItemId, int orderedBy, boolean showParents) throws Exception {
+    protected StringBuilder getAggregatedPolicyAsXML(String path, String contentItemId, int orderedBy, boolean showParents) throws Exception {
         log.warn("DEBUG: Get aggregated policy for path: " + path);
         StringBuilder sb = new StringBuilder();
 
@@ -592,7 +592,7 @@ public class PolicyManagerResource extends BasicXMLResource {
      * @param groupdId Group ID
      * @param resolvedGroupIDs Resolved group IDs in order to detect loops
      */
-    private User[] resolveGroup(String groupId, List resolvedGroupIDs) throws Exception {
+    protected User[] resolveGroup(String groupId, List resolvedGroupIDs) throws Exception {
         Item[] members = getRealm().getIdentityManager().getGroupManager().getGroup(groupId).getMembers();
         List users = new java.util.ArrayList();
         for (int i = 0; i < members.length; i++) {
@@ -632,7 +632,7 @@ public class PolicyManagerResource extends BasicXMLResource {
     /**
      * Check whether user is part of merged list
      */
-     private boolean existsWithinMergedList(String userId, List mergedListOfUserPolicies) {
+     protected boolean existsWithinMergedList(String userId, List mergedListOfUserPolicies) {
          for (int i = 0; i < mergedListOfUserPolicies.size(); i++) {
              if (userId.equals(((IdentityPolicy)mergedListOfUserPolicies.get(i)).getId())) {
                  return true;
