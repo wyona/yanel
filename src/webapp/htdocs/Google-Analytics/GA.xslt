@@ -62,7 +62,10 @@
 
 
 <!-- INFO: Add onclick if URL corresponds to an asset -->
+<xsl:template match="*[local-name()='a']">
+<!-- TODO: It seems that all links inserted with TinyMCE are loosing their namespace and hence the below does not match
 <xsl:template match="xhtml:a">
+-->
   <xsl:param name="URL" select="@href"/>
 
 <!-- DEBUG: Output URL suffix
