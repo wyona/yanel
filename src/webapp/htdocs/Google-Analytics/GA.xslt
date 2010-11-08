@@ -44,11 +44,11 @@
     </xsl:when>
 
 
-    <!-- NOTE: Check if an URL does NOT end with .html and hence assume it is an asset. At the moment the suffix is only compared with .html (see $non-asset-URL-suffix) -->
+    <!-- NOTE: Check if an URL does NOT end with .html and hence assume it is an asset. At the moment the suffix is only compared with .html (see $non-asset-URL-suffix) and hence .htm and .php is handled exceptionally -->
     <!-- At the moment the following cases are not checked: .htm, foo-bar/, foo-bar -->
     <!-- TODO: find a better method to differentiate document assets (e.g. pdf, doc) and regular pages! -->
     <!-- NOTE: As a workaround we just hardcode all other suffixes which shall be excluded! -->
-    <xsl:when test="(substring($url_without_qs, 1 + string-length($url_without_qs) - string-length($non-asset-URL-suffix)) != $non-asset-URL-suffix) and (substring($url_without_qs, 1 + string-length($url_without_qs) - string-length('.htm')) != '.htm') and (substring($url_without_qs, 1 + string-length($url_without_qs) - string-length('#')) != '#')">
+    <xsl:when test="(substring($url_without_qs, 1 + string-length($url_without_qs) - string-length($non-asset-URL-suffix)) != $non-asset-URL-suffix) and (substring($url_without_qs, 1 + string-length($url_without_qs) - string-length('.htm')) != '.htm') and (substring($url_without_qs, 1 + string-length($url_without_qs) - string-length('.php')) != '.php')  and (substring($url_without_qs, 1 + string-length($url_without_qs) - string-length('#')) != '#')">
       <!-- Equals to expression: not(ends-with($url_without_qs, $non-asset-URL-suffix)) -->
       <xsl:text>yes</xsl:text>
     </xsl:when>
