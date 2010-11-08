@@ -36,7 +36,7 @@
 <p>You can also save time by setting ant to be less verbose, and skipping the compilation of the GWT classes:</p>
 <pre>env ANT_ARGS=-q ./build.sh -Dgwt.compile.skip=foo</pre>
 <p>&#160;</p>
-<p>In order to reload classes and libraries without stop/start Tomcat one can set within <code>local/apache-tomcat-5.5.20/conf/context.xml</code>:</p>
+<p>In order to reload classes and libraries without stop/start <a href="http://tomcat.apache.org/tomcat-5.5-doc/config/context.html">Tomcat</a> one can set within <code>local/apache-tomcat-5.5.20/conf/context.xml</code>:</p>
 <pre>&lt;Context reloadable="true"></pre>
 <p>&#160;</p>
 </div>
