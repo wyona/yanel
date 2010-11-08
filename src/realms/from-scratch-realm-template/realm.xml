@@ -68,7 +68,10 @@
   <i18n-catalogue>yanelrepo:/i18n-from-scratch-realm.xml</i18n-catalogue>
 -->
 
+  <menu class="org.wyona.yanel.servlet.toolbar.impl.FromScratchRealmToolbar"/>
+<!--
   <menu class="org.wyona.yanel.servlet.menu.impl.DefaultMenuV2"/>
+-->
 
 <!--
   <repo-navigation class="org.wyona.yanel.impl.navigation.SitetreeResConfigAndDataRepoImpl"/>
