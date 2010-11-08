@@ -1,21 +1,21 @@
 package org.wyona.yanel.servlet;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.wyona.security.core.api.Identity;
+
 import org.wyona.yanel.core.Resource;
-import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.map.Map;
-import org.wyona.yanel.core.util.ResourceAttributeHelper;
-
+import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.servlet.menu.Menu;
+import org.wyona.yanel.servlet.menu.impl.DefaultMenu;
+import org.wyona.yanel.servlet.toolbar.YanelToolbar;
+import org.wyona.yanel.servlet.toolbar.impl.DefaultYanelToolbar;
 
 /**
  * Generates the Yanel toolbar
@@ -29,21 +29,22 @@ class YanelHTMLUI {
     private Map map;
 
     private static Logger log = Logger.getLogger(YanelHTMLUI.class);
-    
+
     YanelHTMLUI(Map map, String reservedPrefix) {
         this.reservedPrefix = reservedPrefix;
         this.map = map;
     }
-    
+
     /**
      * Checks if the yanel.toolbar request parameter is set and stores
      * the value of the parameter in the session.
+     * 
      * @param request
      */
     void switchToolbar(HttpServletRequest request) {
         // Check for toolbar ...
         String yanelToolbar = request.getParameter(TOOLBAR_PARAM_NAME);
-        if(yanelToolbar != null) {
+        if (yanelToolbar != null) {
             if (yanelToolbar.equals("on")) {
                 log.info("Turn on toolbar!");
                 enableToolbar(request);
@@ -59,121 +60,83 @@ class YanelHTMLUI {
     }
 
     /**
-     * Get toolbar menus
+     * Creates a new YanelToolbar corresponding to the given resource.
+     * <p>
+     * This is determined by the realm configuration (
+     * {@link Realm#getMenuClass()}).
+     * <p>
+     * If the menu class is a subclass of {@code
+     * org.wyona.yanel.servlet.menu.Menu}, then it is instantiated and wrapped
+     * in a new instance of
+     * {@link org.wyona.yanel.servlet.toolbar.impl.DefaultYanelToolbar}.
+     * <p>
+     * If the menu class is an implementation of {@code
+     * org.wyona.yanel.servlet.toolbar.YanelToolbar}, then this is instantiated
+     * and returned.
+     * <p>
+     * If the menu class is not specified, then {@code DefaultYanelToolbar} is
+     * used, wrapping {@link DefaultMenu}.
+     * 
+     * @param resource the resource to get the toolbar for
+     * @return a new instance of the configured (or default) toolbar
+     * @throws ClassNotFoundException if the menu class is not a subtype of
+     *             {@code YanelToolbar} or {@code Menu}.
+     * @throws InstantiationException if the menu class could not be
+     *             instantiated
+     * @throws IllegalAccessException if the menu class or its nullary
+     *             constructor is not accessible
      */
-    private  String getToolbarMenus(Resource resource, HttpServletRequest request) throws ServletException, IOException, Exception {
-        org.wyona.yanel.servlet.menu.Menu menu = null;
-        String menuRealmClass = resource.getRealm().getMenuClass();
-        if (menuRealmClass != null) {
-            menu = (org.wyona.yanel.servlet.menu.Menu) Class.forName(menuRealmClass).newInstance();
-        // TODO: Check resource configuration ...
-        //} else if (RESOURCE) {
+    private YanelToolbar getYanelToolbar(Resource resource) throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException {
+        YanelToolbar yanelToolbar = null;
+        String menuRealmClassName = resource.getRealm().getMenuClass();
+        if (menuRealmClassName != null) {
+            Class<?> menuRealmClass = Class.forName(menuRealmClassName);
+            if (Menu.class.isAssignableFrom(menuRealmClass)) {
+                Menu menu = (Menu) menuRealmClass.newInstance();
+                yanelToolbar = new DefaultYanelToolbar(menu);
+            } else if (YanelToolbar.class.isAssignableFrom(menuRealmClass)) {
+                yanelToolbar = (YanelToolbar) menuRealmClass.newInstance();
+            } else {
+                new ClassCastException("Realm menu must either subclass org.wyona.yanel.servlet.menu.Menu or implement org.wyona.yanel.servlet.toolbar.YanelToolbar, but is ["
+                        + menuRealmClassName + "]");
+            }
+            // TODO: Check resource configuration ...
+            //} else if (RESOURCE) {
         } else {
-            menu = new org.wyona.yanel.servlet.menu.impl.DefaultMenu();
+            Menu menu = new DefaultMenu();
+            yanelToolbar = new DefaultYanelToolbar(menu);
         }
-        final String reservedPrefix = this.reservedPrefix;
-        final Map map = this.map;
-        return menu.getAllMenus(resource, request, map, reservedPrefix);
+        return yanelToolbar;
     }
 
     /**
-     * Gets the part of the toolbar which has to be inserted into the html header.
-     * @param resource
-     * @param request
-     * @return
-     * @throws Exception
+     * Merges the toolbar and the page content. This will parse the HTML stream
+     * and add the toolbar markup.
+     * <p>
+     * The toolbar markup comes from {@link YanelToolbar}, and is inserted as
+     * follows:
+     * <ul>
+     * <li>The content from {@link YanelToolbar#getToolbarHeader} is inserted
+     * immediately after the first {@literal <head>} tag. If there is no
+     * {@literal <head>} element, one is created, with the content from the
+     * toolbar.
+     * <li>The content from {@link YanelToolbar#getToolbarBodyStart} is inserted
+     * immediately after the first {@literal <body>} tag.
+     * <li>The content from {@link YanelToolbar#getToolbarBodyEnd} is inserted
+     * immediately before the last {@literal </body>} tag.
+     * </ul>
+     * 
+     * @param request the servlet request being processed
+     * @param response the servlet response being sent
+     * @param resource the resource being accessed
+     * @param view the view generating the page content
+     * @throws Exception :-(
      */
-    private String getToolbarHeader(Resource resource, HttpServletRequest request) throws Exception {
-        final String reservedPrefix = this.reservedPrefix;
- 
-        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        StringBuilder sb= new StringBuilder();
-        
-        sb.append("<!-- START: Dynamically added code by " + this.getClass().getName() + " -->");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbar.css\" rel=\"stylesheet\"/>");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("<style type=\"text/css\" media=\"screen\">");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("#yaneltoolbar_menu li li.haschild{ background: lightgrey url(" + backToRealm + reservedPrefix + "/yanel-img/submenu.gif) no-repeat 98% 50%;}");
-        sb.append(System.getProperty("line.separator"));
-        sb.append("#yaneltoolbar_menu li li.haschild:hover{  background: lightsteelblue url(" + backToRealm + reservedPrefix + "/yanel-img/submenu.gif) no-repeat 98% 50%;}");
-        sb.append("</style>");
-        sb.append(System.getProperty("line.separator"));
-        
-        // If browser is Mozilla (gecko engine rv:1.7)
-        if (request.getHeader("User-Agent").indexOf("rv:1.7") >= 0) {
-            sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbarMozilla.css\" rel=\"stylesheet\"/>");
-            sb.append(System.getProperty("line.separator"));
-        }
-        // If browser is IE
-        if (request.getHeader("User-Agent").indexOf("compatible; MSIE") >= 0 && request.getHeader("User-Agent").indexOf("Windows") >= 0 ) {
-            sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbarIE.css\" rel=\"stylesheet\"/>");
-            sb.append(System.getProperty("line.separator"));
-            sb.append("<style type=\"text/css\" media=\"screen\">");
-            sb.append("  body{behavior:url(" + backToRealm + reservedPrefix + "/csshover.htc);font-size:100%;}");
-            sb.append("</style>");
-            
-        }
-        // If browser is IE6
-        if (request.getHeader("User-Agent").indexOf("compatible; MSIE 6") >= 0 && request.getHeader("User-Agent").indexOf("Windows") >= 0 ) {
-            sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbarIE6.css\" rel=\"stylesheet\"/>");
-            sb.append(System.getProperty("line.separator"));
-        }
-        sb.append("<!-- END: Dynamically added code by " + this.getClass().getName() + " -->");
+    void mergeToolbarWithContent(HttpServletRequest request, HttpServletResponse response, Resource resource, View view)
+            throws Exception {
 
-        return sb.toString();
-    }
-    
-    /**
-     * Gets the part of the toolbar which has to be inserted into the html body 
-     * right after the opening body tag.
-     * @param resource
-     * @return
-     * @throws Exception
-     */
-    private String getToolbarBodyStart(Resource resource, HttpServletRequest request) throws Exception {
-        final String reservedPrefix = this.reservedPrefix;
-        final Map map = this.map;
-
-        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-        StringBuilder buf = new StringBuilder();
-        buf.append("<div id=\"yaneltoolbar_headerwrap\">");
-        buf.append("<div id=\"yaneltoolbar_menu\">");
-        buf.append(getToolbarMenus(resource, request));
-        buf.append("</div>");
-        
-        buf.append(getInfo(resource, request));
-        
-        buf.append("<span id=\"yaneltoolbar_logo\">");
-        buf.append("<a href=\"http://www.yanel.org\"><img src=\"" + backToRealm + reservedPrefix + "/yanel_toolbar_logo.png\" border=\"0\"/></a>");
-        buf.append("</span>");
-
-        buf.append("</div>");
-        buf.append("<div id=\"yaneltoolbar_middlewrap\">");
-        return buf.toString();
-    }
-    
-    /**
-     * Gets the part of the toolbar which has to be inserted into the html body
-     * right before the closing body tag.
-     * @param resource
-     * @return
-     * @throws Exception
-     */
-    private String getToolbarBodyEnd(Resource resource, HttpServletRequest request) throws Exception {
-        return "</div>";
-    }
-    
-    /**
-     * Merges the toolbar and the page content. This will parse the html stream and add
-     * the toolbar.
-     * @param response
-     * @param resource
-     * @param view
-     * @throws Exception
-     */
-    void mergeToolbarWithContent(HttpServletRequest request, HttpServletResponse response, Resource resource, View view) throws Exception {
+        YanelToolbar yanelToolbar = getYanelToolbar(resource);
 
         final int INSIDE_TAG = 0;
         final int OUTSIDE_TAG = 1;
@@ -192,66 +155,66 @@ class YanelHTMLUI {
         int bodycount = 0;
         while ((c = reader.read()) != -1) {
             switch (state) {
-            case OUTSIDE_TAG:
-                if (c == '<') {
-                    tagBuf = new StringBuffer("<");
-                    state = INSIDE_TAG;
-                } else {
-                    writer.write(c);
-                }
-                break;
-            case INSIDE_TAG:
-                //writer.write(c);
-                if (c == '>') {
-                    state = OUTSIDE_TAG;
-                    tagBuf.append((char)c);
-                    String tag = tagBuf.toString();
-                    if (tag.startsWith("<head")) {
-                        headExists = true;
-                        if (headcount == 0) {
-                            writer.write(tag, 0, tag.length());
-                            String toolbarString = getToolbarHeader(resource, request);
-                            writer.write(toolbarString, 0, toolbarString.length());
-                        } else {
-                            writer.write(tag, 0, tag.length());
-                        }
-                        headcount++;
-                    } else if (tag.startsWith("<body")) {
-                        if (!headExists) {
-                            log.warn("No <head> exists. Hence <head> will be added dynamically.");
-                            String headStartTag = "<head>";
-                            writer.write(headStartTag, 0, headStartTag.length());
-                            String toolbarString = getToolbarHeader(resource, request);
-                            writer.write(toolbarString, 0, toolbarString.length());
-                            String headEndTag = "</head>";
-                            writer.write(headEndTag, 0, headEndTag.length());
+                case OUTSIDE_TAG:
+                    if (c == '<') {
+                        tagBuf = new StringBuffer("<");
+                        state = INSIDE_TAG;
+                    } else {
+                        writer.write(c);
+                    }
+                    break;
+                case INSIDE_TAG:
+                    //writer.write(c);
+                    if (c == '>') {
+                        state = OUTSIDE_TAG;
+                        tagBuf.append((char) c);
+                        String tag = tagBuf.toString();
+                        if (tag.startsWith("<head")) {
                             headExists = true;
-                        }
+                            if (headcount == 0) {
+                                writer.write(tag, 0, tag.length());
+                                String toolbarString = yanelToolbar.getToolbarHeader(resource, request, map, reservedPrefix);
+                                writer.write(toolbarString, 0, toolbarString.length());
+                            } else {
+                                writer.write(tag, 0, tag.length());
+                            }
+                            headcount ++;
+                        } else if (tag.startsWith("<body")) {
+                            if (!headExists) {
+                                log.warn("No <head> exists. Hence <head> will be added dynamically.");
+                                String headStartTag = "<head>";
+                                writer.write(headStartTag, 0, headStartTag.length());
+                                String toolbarString = yanelToolbar.getToolbarHeader(resource, request, map, reservedPrefix);
+                                writer.write(toolbarString, 0, toolbarString.length());
+                                String headEndTag = "</head>";
+                                writer.write(headEndTag, 0, headEndTag.length());
+                                headExists = true;
+                            }
 
-                        if (bodycount == 0) {
-                            writer.write(tag, 0, tag.length());
-                            String toolbarString = getToolbarBodyStart(resource, request);
-                            writer.write(toolbarString, 0, toolbarString.length());
-                        } else {
-                            writer.write(tag, 0, tag.length());
-                        }
-                        bodycount++;
-                    } else if (tag.equals("</body>")) {
-                        bodycount--;
-                        if (bodycount == 0) {
-                            String toolbarString = getToolbarBodyEnd(resource, request);
-                            writer.write(toolbarString, 0, toolbarString.length());
-                            writer.write(tag, 0, tag.length());
+                            if (bodycount == 0) {
+                                writer.write(tag, 0, tag.length());
+                                String toolbarString = yanelToolbar.getToolbarBodyStart(resource, request, map, reservedPrefix);
+                                writer.write(toolbarString, 0, toolbarString.length());
+                            } else {
+                                writer.write(tag, 0, tag.length());
+                            }
+                            bodycount ++;
+                        } else if (tag.equals("</body>")) {
+                            bodycount --;
+                            if (bodycount == 0) {
+                                String toolbarString = yanelToolbar.getToolbarBodyEnd(resource, request, map, reservedPrefix);
+                                writer.write(toolbarString, 0, toolbarString.length());
+                                writer.write(tag, 0, tag.length());
+                            } else {
+                                writer.write(tag, 0, tag.length());
+                            }
                         } else {
                             writer.write(tag, 0, tag.length());
                         }
                     } else {
-                        writer.write(tag, 0, tag.length());
+                        tagBuf.append((char) c);
                     }
-                } else {
-                    tagBuf.append((char)c);
-                }
-                break;
+                    break;
             }
         }
         writer.flush();
@@ -262,111 +225,36 @@ class YanelHTMLUI {
             log.warn("Does not seem to be a (X)HTML document: " + request.getRequestURL());
         }
     }
-    
+
     /**
-     *
+     * Modifies the servlet request state to indicate that the toolbar is
+     * enabled.
      */
     void enableToolbar(HttpServletRequest request) {
         request.getSession(true).setAttribute(TOOLBAR_KEY, "on");
     }
 
     /**
-     *
+     * Modifies the servlet request state to indicate that the toolbar is
+     * disabled.
      */
     void disableToolbar(HttpServletRequest request) {
         request.getSession(true).setAttribute(TOOLBAR_KEY, "off");
     }
 
     /**
-     * Check whether toolbar is enabled (or suppressed)
+     * Checks whether toolbar is enabled (or suppressed).
      */
     boolean isToolbarEnabled(HttpServletRequest request) {
         String toolbarStatus = (String) request.getSession(true).getAttribute(TOOLBAR_KEY);
         if (toolbarStatus != null && toolbarStatus.equals("on")) {
             String yanelToolbar = request.getParameter(TOOLBAR_PARAM_NAME);
-            if(yanelToolbar != null && request.getParameter(TOOLBAR_PARAM_NAME).equals("suppress")) {
+            if (yanelToolbar != null && request.getParameter(TOOLBAR_PARAM_NAME).equals("suppress")) {
                 return false;
-            } else {
-                return true;
             }
+            return true;
         }
         return false;
     }
 
-    /**
-     * Get information such as realm name, user name, etc.
-     */
-    private String getInfo(Resource resource, HttpServletRequest request) throws Exception {
-        String userLanguage = getUserLanguage(resource);
-        StringBuilder buf = new StringBuilder();
-        buf.append("<span id=\"yaneltoolbar_info\">");
-        //buf.append("Version: " + yanel.getVersion() + "-r" + yanel.getRevision() + "&#160;&#160;");
-
-        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
-            VersionableV2 versionableRes = (VersionableV2)resource;
-            if (versionableRes.isCheckedOut()) {
-                buf.append(getLabel("page", userLanguage) + ": <b>Locked by " + versionableRes.getCheckoutUserID() + "</b> (<a href=\"?" + YanelServlet.YANEL_RESOURCE_USECASE + "=" + YanelServlet.RELEASE_LOCK + "\">unlock</a>)&#160;&#160;");
-            }
-        }
-
-        Identity identity = YanelServlet.getIdentity(request, map);
-        if (identity != null && !identity.isWorld()) {
-            String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-            buf.append(getLabel("user", userLanguage) + ": <b><a href=\"" + backToRealm + "yanel/users/" + identity.getUsername() + ".html\" style=\"font-size: 13px; text-decoration: none;\">" + identity.getAlias() + "</a></b>"); // TODO: yanel/users should be replaced by reservedPrefix, also see src/webapp/src/java/org/wyona/yanel/servlet/menu/Menu.java
-        } else {
-            buf.append(getLabel("user", userLanguage) + ": <b>Not signed in!</b>");
-        }
-        buf.append("</span>");
-        return buf.toString();
-    }
-
-    /**
-     * Get i18n (TODO: Replace this by something more generic)
-     *
-     * @param key I18n key
-     * @param language Language
-     */
-    private static String getLabel(String key, String language) {
-        if (language.equals("de")) {
-            if(key.equals("user")) {
-                return "Benutzer";
-            } else if(key.equals("page")) {
-                return "Seite";
-            } else {
-                log.warn("Key '" + key + "' not supported yet by requested language '" + language + "'. Fallback to english!");
-                return getLabel(key, "en");
-            }
-        } else if (language.equals("en")) {
-            if(key.equals("user")) {
-                return "User";
-            } else if(key.equals("page")) {
-                return "Page";
-            } else {
-                log.warn("Key '" + key + "' not supported yet!");
-                return key;
-            }
-        } else {
-            log.warn("Language '" + language + "' not supported yet. Fallback to english!");
-            return getLabel(key, "en");
-        }
-    }
-
-    /**
-     * Get user language (order: profile, browser, ...) (Also see org/wyona/yanel/servlet/menu/Menu.java)
-     */
-    private String getUserLanguage(Resource resource) throws Exception {
-        Identity identity = resource.getEnvironment().getIdentity();
-        String language = resource.getRequestedLanguage();
-        String userID = identity.getUsername();
-        if (userID != null) {
-            String userLanguage = resource.getRealm().getIdentityManager().getUserManager().getUser(userID).getLanguage();
-            if(userLanguage != null) {
-                language = userLanguage;
-                log.debug("Use user profile language: " + language);
-            } else {
-                log.debug("Use requested language: " + language);
-            }
-        }
-        return language;
-    }
 }
