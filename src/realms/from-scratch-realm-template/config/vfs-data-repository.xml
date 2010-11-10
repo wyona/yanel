@@ -10,7 +10,7 @@
     <index-location file="../data-repo/search-index"/>
     <repo-auto-index-fulltext boolean="true"/>
     <repo-auto-index-properties boolean="true"/>
-    <lucene>
+    <lucene index-revisions="true">
       <!-- The element 'local-tika-config' attribute 'file' is used to patch the default tika config -->
 <!--
       <local-tika-config file="tika-config.xml"/>
