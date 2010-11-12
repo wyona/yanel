@@ -538,6 +538,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         String userID = identity.getUsername();
         if (userID != null) {
             String userLanguage = getRealm().getIdentityManager().getUserManager().getUser(userID).getLanguage();
+            //log.debug("User language: " + userLanguage);
             if(userLanguage != null) {
                 language = userLanguage;
                 log.debug("Use user profile language: " + language);
