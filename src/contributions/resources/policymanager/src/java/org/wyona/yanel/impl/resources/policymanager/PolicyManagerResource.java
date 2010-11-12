@@ -394,8 +394,11 @@ public class PolicyManagerResource extends BasicXMLResource {
 
     /**
      * Write/Save policy
+     *
      * @param policyAsInputStream Policy as XML
+     * @param pm Policy manager
      * @param path Policy path
+     * @param im Identity (user/group) manager
      */
     private void writePolicy(InputStream policyAsInputStream, PolicyManager pm, String path, IdentityManager im) throws Exception {
         Policy policy = new org.wyona.security.util.PolicyParser().parseXML(policyAsInputStream, im);
