@@ -42,6 +42,8 @@ public class ResourceManager {
         this.rtRegistry = registry;
     }
 
+    // TODO: getResource(Environment, definition) What about the realm? Do we really need a path? TBD...
+
     /**
      * Creates a new resource object in the given realm with the given path and the given type.
      * @deprecated Use {@link #getResource(Environment, Realm, String, ResourceConfiguration)} instead,
