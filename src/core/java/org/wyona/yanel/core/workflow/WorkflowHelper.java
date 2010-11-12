@@ -391,11 +391,12 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     }
 
     /**
-     *
+     * Set workflow state (and date)
      */
     public static void setWorkflowState(Node node, String state, String revision) throws WorkflowException {
         try {
             Revision rev = node.getRevision(revision); 
+            log.debug("Set workflow state: " + state);
             rev.setProperty(WORKFLOW_STATE_PROPERTY, state);
             rev.setProperty(WORKFLOW_DATE_PROPERTY, new Date());
             // TODO: write workflow history
