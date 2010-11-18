@@ -139,6 +139,9 @@ public class PolicyManagerResource extends BasicXMLResource {
                 } else if (getXML != null && getXML.equals("policy")) {
                     //response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     sb.append(getPolicyAsXML(getRealm().getPolicyManager(), getPath()));
+                } else if (getXML != null && getXML.equals("policy-by-usecases")) {
+                    //response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
+                    sb.append(getPolicyAsXMLOrderedByUsecases(getRealm().getPolicyManager(), getPath()));
                 } else if (postXML != null && postXML.equals("policy")) {
                     //response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     try {
@@ -152,6 +155,7 @@ public class PolicyManagerResource extends BasicXMLResource {
                 } else {
                     //response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
                     String identitiesURL = backToRealm + getPath().substring(1) + "?" + PARAMETER_USECASE + "=update&amp;get=identities";
+                    //String policyURL = backToRealm + getPath().substring(1) + "?" + PARAMETER_USECASE + "=update&amp;get=policy-by-usecases";
                     String policyURL = backToRealm + getPath().substring(1) + "?" + PARAMETER_USECASE + "=update&amp;get=policy";
                     String saveURL = backToRealm + getPath().substring(1) + "?" + PARAMETER_USECASE +"=update&amp;post=policy"; // This doesn't seem to work with all browsers!
 
@@ -272,11 +276,48 @@ public class PolicyManagerResource extends BasicXMLResource {
     }
 
     /**
+     * Get policy as XML sorted by usecases
      *
+     * @param pm Policy manager
+     * @param path Policy path
+     */
+    private String getPolicyAsXMLOrderedByUsecases(PolicyManager pm, String path) {
+        log.debug("Get policy XML sorted by usecases");
+        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
+
+        try {
+            Policy policy = pm.getPolicy(path, false);
+            if (policy == null) {
+                String useInheritedPolicies = "false"; // For backwards compatibility (and security) reasons we set it to false
+                if (getResourceConfigProperty("use-inherited-policies-upon-creation") != null) {
+                    useInheritedPolicies = getResourceConfigProperty("use-inherited-policies-upon-creation");
+                }
+                sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\" use-inherited-policies=\"" + useInheritedPolicies + "\">");
+                log.warn("No policy yet for path: " + path + " (Return empty policy)");
+            } else {
+                sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\" use-inherited-policies=\"" + policy.useInheritedPolicies() + "\">");
+
+                // TODO: Use getPolicyItems(policy) instead ...
+                sb.append(getPolicyIdentities(policy));
+                sb.append(getPolicyGroups(policy));
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\">");
+            sb.append("<exception>" + e.getMessage() + "</exception>");
+        }
+
+        sb.append("</policy>");
+        return sb.toString();
+    }
+
+    /**
+     * Get policy as XML
+     * @deprecated Because this method does not keep the order of usecases. Use {@link #getPolicyAsXMLOrderedByUsecases(String, String)} instead.
      */
     private String getPolicyAsXML(PolicyManager pm, String path) {
-
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        log.warn("Get policy sorted by users and groups. Please be aware that hence one will loose the usecase order!");
+        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
 
         try {
             Policy policy = pm.getPolicy(path, false);
@@ -312,6 +353,7 @@ public class PolicyManagerResource extends BasicXMLResource {
         UsecasePolicy[] up = p.getUsecasePolicies();
         if (up != null && up.length > 0) {
             for (int i = 0; i < up.length; i++) {
+                //log.debug("Usecase policy: " + up[i].getName());
                 org.wyona.security.core.IdentityPolicy[] idps = up[i].getIdentityPolicies();
                 for (int j = 0; j < idps.length; j++) {
                     //log.debug("Usecase Identity Policy: " + up[i].getName() + ", " + idps[j].getIdentity().getUsername() + ", " + idps[j].getPermission());
@@ -404,6 +446,7 @@ public class PolicyManagerResource extends BasicXMLResource {
         Policy policy = new org.wyona.security.util.PolicyParser().parseXML(policyAsInputStream, im);
 
         // INFO: Add WORLD permissions, because policy editor does not support WORLD editing yet. As soon as the policy editor supports WORLD editing, then this piece of code becomes obsolete
+        log.warn("TODO: Add WORLD as soon as policy editor supports WORLD ...");
         Policy originalPolicy = pm.getPolicy(path, false);
         if (originalPolicy != null) {
             org.wyona.security.core.UsecasePolicy[] up = originalPolicy.getUsecasePolicies();
