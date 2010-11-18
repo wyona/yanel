@@ -69,7 +69,7 @@ public class MailUtil {
     }
 
     /**
-     * @deprecated
+     * @deprecated Because one cannot set a "from name". Use {@link #send(String, int, String, String, String, String, String, String, String, String)} instead.
      */
     public static void send(String smtpHost, int smtpPort, String from, String replyTo, String to, String subject, String content, String charset, String mimeSubType) throws AddressException, MessagingException {
         String fromName = null;
