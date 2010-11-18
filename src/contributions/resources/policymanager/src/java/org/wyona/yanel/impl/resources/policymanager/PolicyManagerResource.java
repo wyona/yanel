@@ -155,8 +155,11 @@ public class PolicyManagerResource extends BasicXMLResource {
                 } else {
                     //response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
                     String identitiesURL = backToRealm + getPath().substring(1) + "?" + PARAMETER_USECASE + "=update&amp;get=identities";
+
                     //String policyURL = backToRealm + getPath().substring(1) + "?" + PARAMETER_USECASE + "=update&amp;get=policy-by-usecases";
                     String policyURL = backToRealm + getPath().substring(1) + "?" + PARAMETER_USECASE + "=update&amp;get=policy";
+                    // DEPRECATED: String policyURL = backToRealm + getPath().substring(1) + "?" + PARAMETER_USECASE + "=update&amp;get=policy";
+
                     String saveURL = backToRealm + getPath().substring(1) + "?" + PARAMETER_USECASE +"=update&amp;post=policy"; // This doesn't seem to work with all browsers!
 
                     String cancelURL = getReferer(backToRealm);
@@ -276,7 +279,7 @@ public class PolicyManagerResource extends BasicXMLResource {
     }
 
     /**
-     * Get policy as XML sorted by usecases
+     * Get policy as XML sorted by usecases (TODO: Move this into security library as utility class)
      *
      * @param pm Policy manager
      * @param path Policy path
@@ -297,9 +300,7 @@ public class PolicyManagerResource extends BasicXMLResource {
             } else {
                 sb.append("<policy xmlns=\"http://www.wyona.org/security/1.0\" use-inherited-policies=\"" + policy.useInheritedPolicies() + "\">");
 
-                // TODO: Use getPolicyItems(policy) instead ...
-                sb.append(getPolicyIdentities(policy));
-                sb.append(getPolicyGroups(policy));
+                sb.append(getPolicyUsecasesAsXML(policy));
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -341,6 +342,36 @@ public class PolicyManagerResource extends BasicXMLResource {
 
         sb.append("</policy>");
         return sb.toString();
+    }
+
+    /**
+     * Get policy usecases as XML
+     * @param p Policy
+     */
+    static public StringBuilder getPolicyUsecasesAsXML(Policy p) {
+        StringBuilder sb = new StringBuilder();
+        UsecasePolicy[] up = p.getUsecasePolicies();
+        for (int i = 0; i < up.length; i++) {
+            sb.append("<usecase id=\"" + up[i].getName() + "\">");
+            org.wyona.security.core.ItemPolicy[] ip = up[i].getItemPolicies();
+            for (int k = 0; k < ip.length; k++) {
+                if (ip[k] instanceof IdentityPolicy) {
+                    Identity id = ((IdentityPolicy)ip[k]).getIdentity();
+                    if (id.isWorld()) {
+                        sb.append("<world permission=\"" + ip[k].getPermission() + "\"/>");
+                    } else {
+                        sb.append("<user id=\"" + id.getUsername() + "\" permission=\"" + ip[k].getPermission() + "\"/>");
+                    }
+                } else if (ip[k] instanceof GroupPolicy) {
+                    sb.append("<group id=\"" + ip[k].getId() + "\" permission=\"" + ip[k].getPermission() + "\"/>");
+                } else {
+                    log.error("No such policy item type implemented: " + ip[k]);
+                }
+            }
+            sb.append("</usecase>");
+        }
+
+        return sb;
     }
 
     /**
