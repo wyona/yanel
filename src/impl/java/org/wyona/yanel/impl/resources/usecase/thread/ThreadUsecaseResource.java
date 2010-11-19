@@ -6,7 +6,8 @@ package org.wyona.yanel.impl.resources.usecase.thread;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
+
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.impl.resources.usecase.ExecutableUsecaseResource;
 import org.wyona.yanel.impl.resources.usecase.UsecaseException;
@@ -21,7 +22,7 @@ import org.wyona.yanel.impl.resources.usecase.UsecaseException;
  */
 public abstract class ThreadUsecaseResource extends ExecutableUsecaseResource {
     
-    private static Category log = Category.getInstance(ThreadUsecaseResource.class);
+    private static Logger log = Logger.getLogger(ThreadUsecaseResource.class);
 
     /**
      * @see org.wyona.yanel.impl.resources.usecase.UsecaseResource#processUsecase(java.lang.String)
