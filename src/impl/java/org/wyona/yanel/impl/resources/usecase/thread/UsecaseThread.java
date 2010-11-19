@@ -20,14 +20,14 @@ import java.io.Serializable;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  * A thread which can be executed by the ThreadUsecaseResource.
  */
 public abstract class UsecaseThread extends Thread implements Serializable {
 
-    private static Category log = Category.getInstance(UsecaseThread.class);
+    private static Logger log = Logger.getLogger(UsecaseThread.class);
 
     protected String threadID;
     protected int progress = 0;
