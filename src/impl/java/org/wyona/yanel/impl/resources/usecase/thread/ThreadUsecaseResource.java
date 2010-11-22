@@ -123,6 +123,7 @@ public abstract class ThreadUsecaseResource extends ExecutableUsecaseResource {
      * @return thread or null if the thread is not attached to the session. 
      */
     public UsecaseThread getThread() {
+        // TODO: Is it really a good idea to set/get the thread ID within the session, because what if the session expires?!
         HttpSession session = getEnvironment().getRequest().getSession();
         return UsecaseThread.getThreadFromSession(session, getThreadID());
     }
