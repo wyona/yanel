@@ -20,6 +20,9 @@ import java.io.Serializable;
 
 import javax.servlet.http.HttpSession;
 
+import org.wyona.yarep.core.Node;
+import org.wyona.yarep.core.Repository;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -34,25 +37,52 @@ public abstract class UsecaseThread extends Thread implements Serializable {
     protected boolean cancelled = false;
     protected boolean done = false;
     protected StringBuffer eventLog;
-    
+ 
+    /**
+     * @param threadID Thread ID
+     */
     public UsecaseThread(String threadID) {
         this.threadID = threadID;
         this.eventLog = new StringBuffer();
     }
 
     /**
-     * Attaches this thread to the given session.
-     * @param session
+     * Attaches this thread ID to the HTTP session of the 'user'.
+     * @param session HTTP session of the 'user'
      * @throws IllegalStateException if a thread with the same key already exists in this session.
      */
     public void attachThreadToSession(HttpSession session) throws IllegalStateException {
         String attrName = getThreadKey(this.threadID);
         if (session.getAttribute(attrName) != null) {
-            String errorMsg = "thread exists already";
+            String errorMsg = "Thread with id '" + threadID + "' exists already within 'user' session!";
             log.error(errorMsg);
             throw new IllegalStateException(errorMsg);
         }
         session.setAttribute(attrName, this);
+    }
+
+    /**
+     * Attach this thread ID to a repository.
+     * @param repository Repository
+     * @param directoryPath Collection path which contains the thread key
+     * @throws IllegalStateException if a thread with the same key already exists in this repository.
+     */
+    public void attachThreadIDToRepository(org.wyona.yarep.core.Repository repository, String directoryPath) throws IllegalStateException, org.wyona.yarep.core.RepositoryException {
+        log.warn("DEBUG: Java thread ID: " + getId());
+        String threadKey = getThreadKey(this.threadID);
+        String threadKeyPath = directoryPath + "/" + threadKey;
+        if (repository.existsNode(threadKeyPath)) {
+            String errorMsg = "Thread with id '" + threadID + "' exists already within repository!";
+            log.error(errorMsg);
+            throw new IllegalStateException(errorMsg);
+        }
+        org.wyona.yarep.core.Node node = org.wyona.yarep.util.YarepUtil.addNodes(repository, threadKeyPath, org.wyona.yarep.core.NodeType.RESOURCE);
+        try {
+            org.apache.commons.io.IOUtils.copy(new java.io.StringBufferInputStream("" + getId()), node.getOutputStream());
+        } catch(java.io.IOException e) {
+            log.error(e, e);
+            throw new org.wyona.yarep.core.RepositoryException(e.getMessage());
+        }
     }
     
     /**
@@ -76,6 +106,65 @@ public abstract class UsecaseThread extends Thread implements Serializable {
     }
     
     /**
+     * Get thread with the given id from repository.
+     * @param repository Repository
+     * @param directoryPath Collection path which contains the thread key
+     * @param threadID
+     * @return thread or null if there is no such thread attached to the repository
+     */
+    public static java.lang.management.ThreadInfo getThreadFromRepository(org.wyona.yarep.core.Repository repository, String directoryPath, String threadID) throws org.wyona.yarep.core.RepositoryException, java.io.IOException {
+    //public static UsecaseThread getThreadFromRepository(org.wyona.yarep.core.Repository repository, String directoryPath, String threadID) throws org.wyona.yarep.core.RepositoryException, java.io.IOException {
+        String threadKey = getThreadKey(threadID);
+        String threadKeyPath = directoryPath + "/" + threadKey;
+        if (repository.existsNode(threadKeyPath)) {
+            Node node = repository.getNode(threadKeyPath);
+            String javaThreadId = new java.io.BufferedReader(new java.io.InputStreamReader(node.getInputStream())).readLine();
+
+            final java.lang.management.ThreadMXBean thbean = java.lang.management.ManagementFactory.getThreadMXBean();
+            long[] threadIDs = thbean.getAllThreadIds( );
+            for (int i = 0; i < threadIDs.length; i++) {
+                log.warn("DEBUG: Thread ID: " + threadIDs[i]);
+                if (javaThreadId.equals("" + threadIDs[i])) {
+                    log.warn("DEBUG: Thread with id '" + javaThreadId + "' is running.");
+                    return thbean.getThreadInfo(threadIDs[i]);
+/*
+                    final Thread[] threads = getAllThreads();
+                    for (Thread thread : threads) {
+                        if (thread.getId() == threadIDs[i]) {
+                            return (UsecaseThread) thread;
+                        }
+                    }
+                    log.error("No thread with id '" + threadIDs[i] + "' exists!");
+                    return null;
+*/
+                }
+            }
+            log.warn("No such thread running: " + threadID + ", " + javaThreadId);
+            return null;
+        } else {
+            log.warn("No such thread '" + threadID + "' within repository: " + threadKeyPath);
+            return null;
+        }
+        //return (UsecaseThread)session.getAttribute(attrName); 
+    }
+
+    /**
+     * Get threads for a specific state, e.g. "NEW" or "RUNNABLE"
+     */
+    private Thread[] getThreads(final Thread.State state) {
+        log.warn("Not implemented yet!");
+        return null;
+    }
+
+    /**
+     * Also see http://nadeausoftware.com/articles/2008/04/java_tip_how_list_and_find_threads_and_thread_groups#GettingathreadbyID
+     */
+    private static Thread[] getAllThreads() {
+        log.warn("Not implemented yet!");
+        return null;
+    }
+
+    /**
      * Removes this thread from the given session.
      * If this thread does not exist in this session, this method does nothing.
      * @param session
@@ -83,6 +172,22 @@ public abstract class UsecaseThread extends Thread implements Serializable {
     public void detachThreadFromSession(HttpSession session) {
         String attrName = getThreadKey(this.threadID);
         session.removeAttribute(attrName);
+    }
+
+    /**
+     * Removes this thread ID from the repository.
+     * If this thread ID does not exist in this repository, this method does nothing except log a warning.
+     * @param repository Repository
+     * @param directoryPath Collection path which contains the thread key
+     */
+    public void detachThreadIDFromRepository(org.wyona.yarep.core.Repository repository, String directoryPath) throws org.wyona.yarep.core.RepositoryException, org.wyona.yarep.core.NoSuchNodeException {
+        String threadKey = getThreadKey(this.threadID);
+        String threadKeyPath = directoryPath + "/" + threadKey;
+        if (repository.existsNode(threadKeyPath)) {
+            repository.getNode(threadKeyPath).delete();
+        } else {
+            log.warn("No such thread '" + threadID + "' within repository: " + threadKeyPath);
+        }
     }
     
     /**
