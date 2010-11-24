@@ -131,7 +131,11 @@ module.build.dir.includes: ${module.build.dir.includes}
     </delete>
   </target>
 
+  <!-- @Override resource-type.build.xml#compile -->
   <target name="compile" depends="yanel-resource-type.compile, gwt:compile" description="Compile Java classes and GWT files"/>
+<!-- INFO: Only compile regular java classes, but no gwt-classes
+  <target name="compile" depends="yanel-resource-type.compile" description="Compile Java classes and GWT files"/>
+-->
 
   <target name="gwt:compile" depends="gwt:clean" description="Compile GWT files" unless="gwt.compile.skip">
 
