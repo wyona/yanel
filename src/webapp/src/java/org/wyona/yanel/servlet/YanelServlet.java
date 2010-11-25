@@ -2374,11 +2374,13 @@ public class YanelServlet extends HttpServlet {
                 User user = realm.getIdentityManager().getUserManager().getUser(identity.getUsername());
                 // The log should be attached to the user, because realms can share a UserManager, but the UserManager API has no mean to save such data, so how should we do this?
                 // What if realm ID is changing?
+/* TODO: This does not scale re many users ...
                 String logPath = "/yanel-logs/browser-history/" + user.getID() + ".txt";
                 if (!realm.getRepository().existsNode(logPath)) {
                     org.wyona.yarep.util.YarepUtil.addNodes(realm.getRepository(), logPath, org.wyona.yarep.core.NodeType.RESOURCE);
                 }
                 org.wyona.yarep.core.Node node = realm.getRepository().getNode(logPath);
+*/
                 // Stream into node (append log entry, see for example log4j)
                 // 127.0.0.1 - - [07/Nov/2009:01:24:09 +0100] "GET /yanel/from-scratch-realm/de/index.html HTTP/1.1" 200 4464
 /*
