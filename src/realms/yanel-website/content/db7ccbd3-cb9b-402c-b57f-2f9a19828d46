@@ -100,7 +100,7 @@
 <li>createdb -U postgres --encoding unicode konakart</li>
 </ul>
 </li>
-<li>Import the sample data:                           
+<li>Import the sample data (e.g. a dump):                           
 <ul>
 <li>Depending on what web-server port you want to run KonaKart, you might have to change the port within the KonaKart sample data:                          
 <ul>
@@ -210,9 +210,10 @@
 <ul>
 <li>Backup and restore data: <a href="http://www.postgresql.org/docs/8.1/static/backup.html">http://www.postgresql.org/docs/8.1/static/backup.html</a> 
 <ul>
-<li>sudo bash</li>
-<li>su - postgres</li>
-<li>pg_dump konakart &gt; konakart_demo.sql.DUMP_2010.05.31T09.09</li>
+<li><code>sudo bash</code></li>
+<li><code>su - postgres</code></li>
+<li><code>pg_dump konakart &gt; konakart_demo.sql.DUMP_2010.05.31T09.09</code></li>
+<li>Or instead using sudo: <code>pg_dump -U postgres konakart &gt; konakart_demo.sql.DUMP_2010.05.31T09.09</code></li>
 </ul>
 </li>
 </ul>
