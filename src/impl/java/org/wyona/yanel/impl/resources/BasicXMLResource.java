@@ -117,14 +117,24 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     protected HashMap<String, ViewDescriptor> viewDescriptors;
 
+    /**
+     * Get view descriptor for a particular view id
+     * @param viewId View id
+     */
     protected ViewDescriptor getViewDescriptor(String viewId) {
         ViewDescriptor[] viewDescriptors = getViewDescriptors();
-        for (int i = 0; i < viewDescriptors.length; i++) {
-            if (viewDescriptors[i].getId().equals(viewId)) {
-                return viewDescriptors[i];
+        if (viewDescriptors != null) {
+            for (int i = 0; i < viewDescriptors.length; i++) {
+                if (viewDescriptors[i].getId().equals(viewId)) {
+                    return viewDescriptors[i];
+                }
             }
+            log.warn("No view descriptor found for view id: " + viewId);
+            return null;
+        } else {
+            log.warn("No view descriptors set (within resource configuration)!");
+            return null;
         }
-        return null;
     }
 
     /**
@@ -211,6 +221,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         return -1;
     }
 
+    /**
+     *
+     */
     public View getXMLView(String viewId, InputStream xmlInputStream) throws Exception {
         View view = new View();
         if (viewId == null) {
