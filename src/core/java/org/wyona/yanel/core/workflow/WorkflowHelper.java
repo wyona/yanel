@@ -180,6 +180,8 @@ public class WorkflowHelper {
 
     /**
      * Get workflow which is associated with resource
+     * @param resource Resource
+     * @return Workflow instance
      */
     public static Workflow getWorkflow(Resource resource) throws WorkflowException {
         try {
@@ -188,9 +190,11 @@ public class WorkflowHelper {
                 return null;
             }
             WorkflowBuilder builder = new WorkflowBuilder();
-            InputStream stream = resource.getRealm().getRepository().getNode(workflowSchema).getInputStream();
-            // TODO: cache of workflow
-            return builder.buildWorkflow(stream);
+            if (resource.getRealm().getRepository().existsNode(workflowSchema)) {
+                return builder.buildWorkflow(resource.getRealm().getRepository().getNode(workflowSchema).getInputStream()); // TODO: Cache result of workflow builder for performance reasons
+            } else {
+                throw new WorkflowException("No such workflow instance '" + workflowSchema + "' within repository: " + resource.getRealm().getRepository() + " (configured within resource config with request path: " + resource.getPath() + ")");
+            }
         } catch (Exception e) {
             log.error(e, e);
             throw new WorkflowException(e.getMessage(), e);
