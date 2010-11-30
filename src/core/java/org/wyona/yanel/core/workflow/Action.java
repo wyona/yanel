@@ -17,11 +17,22 @@ package org.wyona.yanel.core.workflow;
 
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
 
+/**
+ * Action interface in order to develop a custom action which is executed during a workflow transition
+ */
 public interface Action {
 
-    void execute(WorkflowableV1 workflowable, Workflow workflow,
-            String revision) throws WorkflowException;
+    /**
+     * Execute action
+     * @param workflowable A Workflowable resource to which the action is associated with
+     * @param workflow Workflow instance
+     * @param revision Revision of resource
+     */
+    void execute(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException;
 
+    /**
+     * Set "configuration parameters" (e.g. E-Mail address). Also see {@link WorkflowBuilder}.
+     * @param expression "Parameters"
+     */
     void setExpression(String expression) throws WorkflowException;
-
 }
