@@ -256,6 +256,7 @@
       <pathelement location="${resource.classes.dir}"/>
       <pathelement location="${resource.junit.build.dir}"/>
       <pathelement location="${resource.java.dir}"/>
+      <pathelement location="${resource.junit.src.dir}"/> <!-- In order to pick up a local MY_RESOURCE_TYPE/src/test/junit/log4j.properties file -->
     </path>
 
     <junit fork="yes" printsummary="yes" haltonfailure="yes" failureproperty="junit.tests.failed">
