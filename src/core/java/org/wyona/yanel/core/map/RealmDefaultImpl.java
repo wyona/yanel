@@ -113,7 +113,6 @@ public class RealmDefaultImpl implements Realm {
      */
     protected void configure(Configuration config) throws Exception {
         Yanel yanel = Yanel.getInstance();
-	File repoConfig = null;
 
         // Set name if not already set by yanel realms registration config
         Configuration nameConfigElement = config.getChild("name", false);
@@ -122,49 +121,8 @@ public class RealmDefaultImpl implements Realm {
         }
 
 
-        // Set PolicyManager for this realm
-        Configuration repoConfigElement = config.getChild("ac-policies", false);
-        if (repoConfigElement != null) {
-            PolicyManagerFactory pmFactory = null;
-            PolicyManager policyManager = null;
-            try {
-                String customPolicyManagerFactoryImplClassName = repoConfigElement.getAttribute("class");
-                pmFactory = (PolicyManagerFactory) Class.forName(customPolicyManagerFactoryImplClassName).newInstance();
-                policyManager = pmFactory.newPolicyManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "policy-manager-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
-            } catch (ConfigurationException e) {
-                pmFactory = yanel.getPolicyManagerFactory("PolicyManagerFactory");
-                log.info("Default PolicyManager will be used for realm: " + getName());
-                repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
-                RepositoryFactory policiesRepoFactory = yanel.getRepositoryFactory("ACPoliciesRepositoryFactory");
-                Repository policiesRepo = policiesRepoFactory.newRepository(getID(), repoConfig);
-                policyManager = pmFactory.newPolicyManager(policiesRepo);
-            }
-            setPolicyManager(policyManager);
-        }
-
-
-        // Set IdentityManager for this realm
-        repoConfigElement = config.getChild("ac-identities", false);
-        if (repoConfigElement != null) {
-
-            IdentityManagerFactory imFactory = null;
-            IdentityManager identityManager = null;
-            try {
-            	String customIdentityManagerFactoryImplClassName = repoConfigElement.getAttribute("class");
-                log.debug("Set custom identity manager " + customIdentityManagerFactoryImplClassName + " for realm: " + getName());
-            	imFactory = (IdentityManagerFactory) Class.forName(customIdentityManagerFactoryImplClassName).newInstance();
-                identityManager = imFactory.newIdentityManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "identity-manager-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
-                log.debug("Custom identity manager " + identityManager.getClass().getName() + " has been set for realm: " + getName());
-            } catch (ConfigurationException e) {
-            	imFactory = yanel.getIdentityManagerFactory("IdentityManagerFactory");
-            	log.info("Default IdentityManager will be used for realm: " + getName());
-            	repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
-                RepositoryFactory identitiesRepoFactory = yanel.getRepositoryFactory("ACIdentitiesRepositoryFactory");
-                Repository identitiesRepo = identitiesRepoFactory.newRepository(getID(), repoConfig);
-                identityManager = imFactory.newIdentityManager(identitiesRepo);
-            }
-            setIdentityManager(identityManager);
-        }
+        initIdentityManager(config, yanel);
+        initPolicyManager(config, yanel);
 
         // Set WebAuthenticator for this realm
         Configuration waConfigElement = config.getChild("web-authenticator", false);
@@ -194,7 +152,7 @@ public class RealmDefaultImpl implements Realm {
         RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory(EXTRA_REPOSITORY_FACTORY_BEAN_ID);
 
         String repoConfigSrc = config.getChild("data", false).getValue();
-        repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigSrc));
+        File repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigSrc));
         log.info("Set data repository: " + getID() + ", " + repoConfig);
         setRepository(repoFactory.newRepository(getID(), repoConfig));
 
@@ -557,5 +515,54 @@ public class RealmDefaultImpl implements Realm {
         return this.i18nCatalogue;
     }
 
+    /**
+     * Init policy manager
+     */
+    protected void initPolicyManager(Configuration config, Yanel yanel) throws Exception {
+        Configuration repoConfigElement = config.getChild("ac-policies", false);
+        if (repoConfigElement != null) {
+            PolicyManagerFactory pmFactory = null;
+            PolicyManager policyManager = null;
+            try {
+                String customPolicyManagerFactoryImplClassName = repoConfigElement.getAttribute("class");
+                pmFactory = (PolicyManagerFactory) Class.forName(customPolicyManagerFactoryImplClassName).newInstance();
+                policyManager = pmFactory.newPolicyManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "policy-manager-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
+            } catch (ConfigurationException e) {
+                pmFactory = yanel.getPolicyManagerFactory("PolicyManagerFactory");
+                log.info("Default PolicyManager will be used for realm: " + getName());
+                File repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
+                RepositoryFactory policiesRepoFactory = yanel.getRepositoryFactory("ACPoliciesRepositoryFactory");
+                Repository policiesRepo = policiesRepoFactory.newRepository(getID(), repoConfig);
+                policyManager = pmFactory.newPolicyManager(policiesRepo);
+            }
+            setPolicyManager(policyManager);
+        }
+    }
 
+    /**
+     * Init identity manager
+     */
+    protected void initIdentityManager(Configuration config, Yanel yanel) throws Exception {
+        Configuration repoConfigElement = config.getChild("ac-identities", false);
+        if (repoConfigElement != null) {
+
+            IdentityManagerFactory imFactory = null;
+            IdentityManager identityManager = null;
+            try {
+            	String customIdentityManagerFactoryImplClassName = repoConfigElement.getAttribute("class");
+                log.debug("Set custom identity manager " + customIdentityManagerFactoryImplClassName + " for realm: " + getName());
+            	imFactory = (IdentityManagerFactory) Class.forName(customIdentityManagerFactoryImplClassName).newInstance();
+                identityManager = imFactory.newIdentityManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "identity-manager-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
+                log.debug("Custom identity manager " + identityManager.getClass().getName() + " has been set for realm: " + getName());
+            } catch (ConfigurationException e) {
+            	imFactory = yanel.getIdentityManagerFactory("IdentityManagerFactory");
+            	log.info("Default IdentityManager will be used for realm: " + getName());
+            	File repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
+                RepositoryFactory identitiesRepoFactory = yanel.getRepositoryFactory("ACIdentitiesRepositoryFactory");
+                Repository identitiesRepo = identitiesRepoFactory.newRepository(getID(), repoConfig);
+                identityManager = imFactory.newIdentityManager(identitiesRepo);
+            }
+            setIdentityManager(identityManager);
+        }
+    }
 }
