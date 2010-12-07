@@ -556,7 +556,7 @@ public class UserManagerResource extends BasicXMLResource {
      * @param branchGroups List of groups within a branch in order to catch loops
      * @param resolvedGroups List of all parents groups resolved
      */
-    private String getGroupMembers(GroupManager gm, Group group, boolean doResolveGroups, java.util.List branchGroups, java.util.List resolvedGroups) throws Exception {
+    protected String getGroupMembers(GroupManager gm, Group group, boolean doResolveGroups, java.util.List branchGroups, java.util.List resolvedGroups) throws Exception {
         Item[] members = group.getMembers();
         StringBuilder sb = new StringBuilder();
         sb.append("<members>");
