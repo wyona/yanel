@@ -116,7 +116,22 @@ public class RealmManager {
         }
 
 
-        // 3.) Getting realms.xml from yanel.xml
+        // 3.) Getting realms.xml from http://tomcat.apache.org/tomcat-5.5-doc/config/context.html#Environment_Entries
+        String envEntryPath = "java:comp/env/yanel/realms-config-file";
+        try {
+            javax.naming.InitialContext ic = new javax.naming.InitialContext();
+            if (ic.lookup(envEntryPath) != null) {
+                log.warn("realms.xml set as environment entry: " + (String) ic.lookup(envEntryPath));
+                return new File((String) ic.lookup(envEntryPath));
+            } else {
+                log.info("No enviroment entry '" + envEntryPath + "' set.");
+            }
+        } catch (Exception e) {
+            log.info("No enviroment entry '" + envEntryPath + "' set.");
+        }
+
+
+        // 4.) Getting realms.xml from yanel.xml
         YANEL_CONFIGURATION_FILE = yanelConfigurationFilename;
 
         if (RealmManager.class.getClassLoader().getResource(YANEL_CONFIGURATION_FILE) == null) {
@@ -413,6 +428,7 @@ public class RealmManager {
      * Inherit properties of root realm to other realms
      */
     private void inheritRootRealmProperties() {
+        // TODO: Use entrySet
         java.util.Iterator keyIterator = _realms.keySet().iterator();
         while(keyIterator.hasNext()) {
             String key = (String)keyIterator.next();
