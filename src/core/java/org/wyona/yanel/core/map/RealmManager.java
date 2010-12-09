@@ -88,13 +88,13 @@ public class RealmManager {
 
         // 1.) Getting realms.xml from environment variable YANEL_REALMS_HOME
         java.util.Map<String, String> env = System.getenv();
-        for (String envName : env.keySet()) {
-            if (envName.equals("YANEL_REALMS_HOME")) {
-                File yanelRealmsHome = new File(env.get(envName));
+        for (java.util.Map.Entry envEntry : env.entrySet()) {
+            if (((String) envEntry.getKey()).equals("YANEL_REALMS_HOME")) {
+                File yanelRealmsHome = new File((String) envEntry.getValue());
                 if (yanelRealmsHome.isDirectory()) {
                     File envRealmsConfigFile = new File(yanelRealmsHome, "realms.xml");
                     if (envRealmsConfigFile.isFile()) {
-                        log.warn("Use environment variable YANEL_REALMS_HOME: " + yanelRealmsHome);
+                        log.warn("Use environment variable YANEL_REALMS_HOME '" + yanelRealmsHome + "' in order to load realms configuration.");
                         return envRealmsConfigFile;
                     } else {
                         log.warn("No realms configuration found: " + envRealmsConfigFile.getAbsolutePath());
