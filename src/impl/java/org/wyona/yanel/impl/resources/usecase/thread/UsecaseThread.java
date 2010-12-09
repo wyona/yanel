@@ -73,7 +73,7 @@ public abstract class UsecaseThread extends Thread implements Serializable {
         String threadKey = getThreadKey(this.threadID);
         String threadKeyPath = directoryPath + "/" + threadKey;
         if (repository.existsNode(threadKeyPath)) {
-            String errorMsg = "Thread with id '" + threadID + "' exists already within repository!";
+            String errorMsg = "Thread with id '" + threadID + "' exists already within repository: " + threadKeyPath;
             log.error(errorMsg);
             throw new IllegalStateException(errorMsg);
         }
@@ -126,7 +126,7 @@ public abstract class UsecaseThread extends Thread implements Serializable {
             for (int i = 0; i < threadIDs.length; i++) {
                 log.warn("DEBUG: Thread ID: " + threadIDs[i]);
                 if (javaThreadId.equals("" + threadIDs[i])) {
-                    log.warn("DEBUG: Thread with id '" + javaThreadId + "' is running.");
+                    log.debug("Thread with id '" + javaThreadId + "' is running.");
                     return thbean.getThreadInfo(threadIDs[i]);
 /*
                     final Thread[] threads = getAllThreads();
@@ -140,10 +140,10 @@ public abstract class UsecaseThread extends Thread implements Serializable {
 */
                 }
             }
-            log.warn("No such thread running: " + threadID + ", " + javaThreadId);
+            log.info("No such thread running: " + threadID + ", " + javaThreadId);
             return null;
         } else {
-            log.warn("No such thread '" + threadID + "' within repository: " + threadKeyPath);
+            log.info("No such thread '" + threadID + "' within repository: " + threadKeyPath);
             return null;
         }
         //return (UsecaseThread)session.getAttribute(attrName); 
