@@ -56,7 +56,7 @@ public class RealmManager {
 
     private File _realmsConfigFile; 
 
-    private LinkedHashMap hm = new LinkedHashMap();
+    private LinkedHashMap _realms = new LinkedHashMap();
     private Realm rootRealm = null;
 
     /**
@@ -224,7 +224,7 @@ public class RealmManager {
      * @param realmsConfigFile Realms configuration file
      */
     public void readRealms(File realmsConfigFile) throws ConfigurationException {
-        hm = new LinkedHashMap();
+        _realms = new LinkedHashMap();
         rootRealm = null;
 
         DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
@@ -305,7 +305,7 @@ public class RealmManager {
                 }
                     
                 log.info("Realm: " + realm);
-                hm.put(realmId, realm);
+                _realms.put(realmId, realm);
                 if (rcc[i].isRoot()) {
                     log.debug("Root realm found: " + realm.getID());
                     if (rootRealm == null) {
@@ -349,18 +349,19 @@ public class RealmManager {
     }
 
     /**
-     *
+     * Get realm
+     * @param id Realm ID
      */
     public Realm getRealm(String id) {
-        return (Realm) hm.get(id);
+        return (Realm) _realms.get(id);
     }
 
     /**
      * Get all realms in the order they given in the (local.)yanel.properties file.
      */
     public Realm[] getRealms() {
-        Realm[] realms = new Realm[hm.size()];
-        return realms = (Realm[])hm.values().toArray(realms);
+        Realm[] realms = new Realm[_realms.size()];
+        return realms = (Realm[])_realms.values().toArray(realms);
     }
 
     /**
@@ -412,21 +413,24 @@ public class RealmManager {
      * Inherit properties of root realm to other realms
      */
     private void inheritRootRealmProperties() {
-        java.util.Iterator keyIterator = hm.keySet().iterator();
+        java.util.Iterator keyIterator = _realms.keySet().iterator();
         while(keyIterator.hasNext()) {
             String key = (String)keyIterator.next();
-            Realm realm = (Realm)hm.get(key);
-            if ((realm.getProxyHostName() == null) && (!key.equals(rootRealm.getID())) && rootRealm.isProxySet()) {
-                realm.setProxy(rootRealm.getProxyHostName(), rootRealm.getProxyPort(), rootRealm.getProxySSLPort(), rootRealm.getProxyPrefix());
-                log.debug("Inherit root realm properties to realm: " + key);
-            }
-            if (realm.getIdentityManager() == null) {
-                log.info("Realm \"" + realm.getName() + "\" will inherit IdentityManager of root realm!");
-                realm.setIdentityManager(rootRealm.getIdentityManager());
-            }
-            if (realm.getPolicyManager() == null) {
-                log.warn("Realm \"" + realm.getName() + "\" will inherit PolicyManager of root realm!");
-                realm.setPolicyManager(rootRealm.getPolicyManager());
+            Realm realm = (Realm)_realms.get(key);
+            if (!realm.getID().equals(rootRealm.getID())) {
+                log.warn("DEBUG: Check whether to inherit root realm properties to another realm: " + realm.getName());
+                if ((realm.getProxyHostName() == null) && (!key.equals(rootRealm.getID())) && rootRealm.isProxySet()) {
+                    realm.setProxy(rootRealm.getProxyHostName(), rootRealm.getProxyPort(), rootRealm.getProxySSLPort(), rootRealm.getProxyPrefix());
+                    log.info("Inherit root realm properties to realm: " + key);
+                }
+                if (realm.getIdentityManager() == null) {
+                    log.info("Realm \"" + realm.getName() + "\" will inherit IdentityManager of root realm!");
+                    realm.setIdentityManager(rootRealm.getIdentityManager());
+                }
+                if (realm.getPolicyManager() == null) {
+                    log.warn("Realm \"" + realm.getName() + "\" will inherit PolicyManager of root realm!");
+                    realm.setPolicyManager(rootRealm.getPolicyManager());
+                }
             }
         }
     }
