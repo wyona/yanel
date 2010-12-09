@@ -12,6 +12,7 @@
 <ol>
 <li>Environment variable (YANEL_REALMS_HOME)</li>
 <li>User home directory (user.home)</li>
+<li><a href="http://tomcat.apache.org/tomcat-5.5-doc/config/context.html#Environment_Entries">Environment entry</a> (e.g. within apache-tomcat/conf/context.xml: &lt;Environment name="yanel/realms-config-file" type="java.lang.String" value="/Users/alice/realms.xml"/&gt;)</li>
 <li>Yanel configuration (yanel.xml)</li>
 </ol>
 <h2>Examples</h2>
