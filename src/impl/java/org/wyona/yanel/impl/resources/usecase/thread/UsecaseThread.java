@@ -124,7 +124,7 @@ public abstract class UsecaseThread extends Thread implements Serializable {
             final java.lang.management.ThreadMXBean thbean = java.lang.management.ManagementFactory.getThreadMXBean();
             long[] threadIDs = thbean.getAllThreadIds( );
             for (int i = 0; i < threadIDs.length; i++) {
-                log.warn("DEBUG: Thread ID: " + threadIDs[i]);
+                log.debug("Thread ID: " + threadIDs[i]);
                 if (javaThreadId.equals("" + threadIDs[i])) {
                     log.debug("Thread with id '" + javaThreadId + "' is running.");
                     return thbean.getThreadInfo(threadIDs[i]);
