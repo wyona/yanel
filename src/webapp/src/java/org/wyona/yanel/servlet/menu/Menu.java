@@ -11,7 +11,6 @@ import org.wyona.security.core.api.Identity;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
-import org.wyona.yanel.servlet.IdentityMap;
 import org.wyona.yanel.servlet.YanelServlet;
 
 /**
@@ -128,28 +127,6 @@ abstract public class Menu {
         return sb.toString();
     }
     
-    /**
-     * @deprecated Use Resource.getEnvironment().getIdentity() instead
-     * Gets the identity from the session associated with the given request.
-     * @param request
-     * @param map Realm/Path map
-     * @return identity or null if there is no identity in the session for the current
-     *                  realm or if there is no session at all
-     */
-/*
-    public Identity getIdentity(HttpServletRequest request, Map map) throws Exception {
-        Realm realm = map.getRealm(request.getServletPath());
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
-            if (identityMap != null) {
-                return (Identity)identityMap.get(realm.getID());
-            }
-        }
-        return null;
-    }
-*/
-
     /**
      * Check if user is authorized to access resource (IMPORTANT NOTE: Using isAuthorized() can lead to performance/scalabilty issues)
      * @param path Resource path
