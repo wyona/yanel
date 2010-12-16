@@ -129,11 +129,14 @@ abstract public class Menu {
     }
     
     /**
+     * @deprecated Use Resource.getEnvironment().getIdentity() instead
      * Gets the identity from the session associated with the given request.
      * @param request
+     * @param map Realm/Path map
      * @return identity or null if there is no identity in the session for the current
      *                  realm or if there is no session at all
      */
+/*
     public Identity getIdentity(HttpServletRequest request, Map map) throws Exception {
         Realm realm = map.getRealm(request.getServletPath());
         HttpSession session = request.getSession(false);
@@ -145,6 +148,7 @@ abstract public class Menu {
         }
         return null;
     }
+*/
 
     /**
      * Check if user is authorized to access resource (IMPORTANT NOTE: Using isAuthorized() can lead to performance/scalabilty issues)
