@@ -1631,6 +1631,24 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
+     * Attach the identity to the HTTP session for a specific realm (associated with the given request)
+     * @param session HTTP session of client
+     * @param realm Realm
+     */
+    public static void setIdentity(Identity identity, HttpSession session, Realm realm) throws Exception {
+        if (session != null) {
+            IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
+            if (identityMap == null) {
+                identityMap = new IdentityMap();
+                session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
+            }
+            identityMap.put(realm.getID(), identity); // INFO: Please note that the constructor Identity(User, String) is resolving group IDs (including parent group IDs) and hence these are "attached" to the session in order to improve performance during authorizatio n checks
+        } else {
+            log.warn("Session is null!");
+        }
+    }
+
+    /**
      * Get the identity from the given request/session (for a specific realm) or via the 'Authorization' HTTP header in the case of BASIC or DIGEST
      * @param request Client/Servlet request
      * @param realm Realm
