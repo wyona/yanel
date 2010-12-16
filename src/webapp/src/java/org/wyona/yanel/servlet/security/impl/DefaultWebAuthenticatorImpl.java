@@ -393,7 +393,12 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             realmElement.setAttributeNS(YanelServlet.NAMESPACE, "name", realm.getName());
             realmElement.setAttributeNS(YanelServlet.NAMESPACE, "mount-point", realm.getMountPoint().toString());  
 
-            String currentUserId = getCurrentUserId(request.getSession(true), realm);
+            String currentUserId = null;
+            Identity identity = YanelServlet.getIdentity(request.getSession(true), realm);
+            if (identity != null) {
+                currentUserId = identity.getUsername();
+            }
+            //String currentUserId = getCurrentUserId(request.getSession(true), realm);
             if (currentUserId != null) {
                 Element userElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "user"));
                 userElement.setAttributeNS(YanelServlet.NAMESPACE, "id", currentUserId);
@@ -585,11 +590,13 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 */
 
     /**
+     * @deprecated Use YanelServlet.getIdentity(Session, Realm) instead
      * Get current user id (if signed-in) for a specific realm.
      * @param session HTTP session
      * @param realm Realm
      * @return Username and if not signed-in, then null
      */
+/*
     public static String getCurrentUserId(HttpSession session, Realm realm) {
         IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
         if (identityMap != null) {
@@ -598,6 +605,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
         }
         return null;
     }
+*/
 
     /**
      * Handle "remember my login"
@@ -657,7 +665,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 identityMap = new IdentityMap();
                 session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
             }
-            identityMap.put(realm.getID(), new Identity(user, username));
+            identityMap.put(realm.getID(), new Identity(user, username)); // INFO: Please note that the constructor Identity(User, String) is resolving group IDs (including parent group IDs) and hence these are "attached" to the session in order to improve performance during authorization checks
             log.warn("Authentication was successful for user: " + user.getID());
             log.warn("TODO: Add user to session listener!");
             return true;
