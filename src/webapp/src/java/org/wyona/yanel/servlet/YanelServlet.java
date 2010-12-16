@@ -1602,28 +1602,50 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Gets the identity from the session associated with the given request (associated with a realm) or via the 'Authorization' HTTP header in the case of BASIC or DIGEST
+     * Get the identity from the given request (associated with a realm) or via the 'Authorization' HTTP header in the case of BASIC or DIGEST
      * @param request Client/Servlet request
      * @param map Map in order to determine realm
      * @return Identity if one exist, or otherwise an empty identity
      */
-    static Identity getIdentity(HttpServletRequest request, Map map) throws Exception {
-        Realm realm = map.getRealm(request.getServletPath());
-        HttpSession session = request.getSession(false);
+    private static Identity getIdentity(HttpServletRequest request, Map map) throws Exception {
+        return getIdentity(request, map.getRealm(request.getServletPath()));
+    }
+
+    /**
+     * Get the identity from the HTTP session (associated with the given request) for a specific realm
+     * @param session HTTP session of client
+     * @param realm Realm
+     * @return Identity if one exist, or otherwise null
+     */
+    public static Identity getIdentity(HttpSession session, Realm realm) throws Exception {
         if (session != null) {
             IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
             if (identityMap != null) {
                 Identity identity = (Identity)identityMap.get(realm.getID());
-                if (identity != null) {
+                if (identity != null && !identity.isWorld()) {
                     return identity;
                 }
             }
+        }
+        return null; 
+    }
+
+    /**
+     * Get the identity from the given request/session (for a specific realm) or via the 'Authorization' HTTP header in the case of BASIC or DIGEST
+     * @param request Client/Servlet request
+     * @param realm Realm
+     * @return Identity if one exist, or otherwise an empty identity
+     */
+    private static Identity getIdentity(HttpServletRequest request, Realm realm) throws Exception {
+        Identity identity = getIdentity(request.getSession(false), realm);
+        if (identity != null) {
+            return identity;
         }
 
         // HTTP BASIC Authentication (For clients such as for instance Sunbird, OpenOffice or cadaver)
         // IMPORT NOTE: BASIC Authentication needs to be checked on every request, because clients often do not support session handling
         String authorizationHeader = request.getHeader("Authorization");
-        if (log.isDebugEnabled()) log.debug("Checking for Authorization Header: " + authorizationHeader);
+        if (log.isDebugEnabled()) log.debug("No identity attached to session, hence check request authorization header: " + authorizationHeader);
         if (authorizationHeader != null) {
             if (authorizationHeader.toUpperCase().startsWith("BASIC")) {
                 log.warn("Using BASIC authorization ...");
