@@ -111,7 +111,7 @@ public interface Realm {
     public void setRTIRepository(Repository repository) throws Exception;
 
     /**
-     *
+     * Get web authenticator
      */
     public WebAuthenticator getWebAuthenticator();
 
