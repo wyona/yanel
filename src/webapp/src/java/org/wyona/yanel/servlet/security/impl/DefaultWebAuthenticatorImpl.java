@@ -2,7 +2,6 @@ package org.wyona.yanel.servlet.security.impl;
 
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
-import org.wyona.yanel.servlet.IdentityMap;
 import org.wyona.yanel.servlet.YanelServlet;
 import org.wyona.yanel.core.api.security.WebAuthenticator;
 
@@ -134,13 +133,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                         }
                         User user = uManager.getUser(openIdentity);
                         //User user = uManager.getUser(openIdentity, true);
-                        IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
-                        if (identityMap == null) {
-                            identityMap = new IdentityMap();
-                            session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
-                        }
-                        log.debug("User: " + user.getID());
-                        identityMap.put(realm.getID(), new Identity(user, openIDSignature));
+                        YanelServlet.setIdentity(new Identity(user, openIDSignature), session, realm);
                         // OpenID authentication successful, hence return null instead an "exceptional" response
                         // TODO: Do not return null (although successful), but rather strip-off all the openid query string stuff and then do a redirect
                         response.sendRedirect(request.getParameter("openid.return_to"));
@@ -209,13 +202,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                     User user = realm.getIdentityManager().getUserManager().getUser(username, true);
                     if (user != null && user.authenticate(password)) {
                         log.info("Authentication successful: " + username);
-                        IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
-                        if (identityMap == null) {
-                            identityMap = new IdentityMap();
-                            session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
-                        }
-                        identityMap.put(realm.getID(), new Identity(user, username));
-
+                        YanelServlet.setIdentity(new Identity(user, username), session, realm);
                         // TODO: send some XML content, e.g. <authentication-successful/>
                         response.setContentType("text/plain; charset=" + YanelServlet.DEFAULT_ENCODING);
                         response.setStatus(HttpServletResponse.SC_OK);
@@ -590,24 +577,6 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 */
 
     /**
-     * @deprecated Use YanelServlet.getIdentity(Session, Realm) instead
-     * Get current user id (if signed-in) for a specific realm.
-     * @param session HTTP session
-     * @param realm Realm
-     * @return Username and if not signed-in, then null
-     */
-/*
-    public static String getCurrentUserId(HttpSession session, Realm realm) {
-        IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
-        if (identityMap != null) {
-            Identity identity = (Identity) identityMap.get(realm.getID());
-            if (identity != null && !identity.isWorld()) return identity.getUsername();
-        }
-        return null;
-    }
-*/
-
-    /**
      * Handle "remember my login"
      */
     private static boolean doRememberMyLoginName(HttpServletRequest request, HttpServletResponse response, String loginUsername, String openID) {
@@ -660,12 +629,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
         User user = realm.getIdentityManager().getUserManager().getUser(trueId, true);
         if (user != null && user.authenticate(password)) {
             log.debug("Realm: " + realm);
-            IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
-            if (identityMap == null) {
-                identityMap = new IdentityMap();
-                session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
-            }
-            identityMap.put(realm.getID(), new Identity(user, username)); // INFO: Please note that the constructor Identity(User, String) is resolving group IDs (including parent group IDs) and hence these are "attached" to the session in order to improve performance during authorization checks
+            YanelServlet.setIdentity(new Identity(user, username), session, realm);
             log.warn("Authentication was successful for user: " + user.getID());
             log.warn("TODO: Add user to session listener!");
             return true;
