@@ -545,7 +545,7 @@ public class PolicyManagerResource extends BasicXMLResource {
      * @param orderedBy Allows ordering by usecases or identities
      * @param showParents Show the policies of the parent nodes, which allows to figure out how the policy has been aggregated
      */
-    private StringBuilder getPoliciesAsXML(String path, String contentItemId, int orderedBy, boolean showParents) throws Exception {
+    protected StringBuilder getPoliciesAsXML(String path, String contentItemId, int orderedBy, boolean showParents) throws Exception {
         log.warn("DEBUG: Get policies for path: " + path);
         StringBuilder sb = new StringBuilder();
 
@@ -576,11 +576,13 @@ public class PolicyManagerResource extends BasicXMLResource {
                     // TODO: Use ItemPolicy and cast check in order to get the right order
                     IdentityPolicy[] ip = up[k].getIdentityPolicies();
                     for (int j = 0; j < ip.length; j++) {
-                        sb.append("<user id=\"" + ip[j].getId() + "\" permission=\"" + ip[j].getPermission() + "\" naz-blocked=\"true\" naz-permission-unlike-group=\"true\"/>"); // TODO: naz ...
+                    	boolean userExists = getRealm().getIdentityManager().getUserManager().existsUser(ip[j].getId());
+                        sb.append("<user exists=\"" + userExists + "\" id=\"" + ip[j].getId() + "\" permission=\"" + ip[j].getPermission() + "\" naz-blocked=\"true\" naz-permission-unlike-group=\"true\"/>"); // TODO: Remove NAZ specific attributes
                     }
                     GroupPolicy[] gp = up[k].getGroupPolicies();
                     for (int j = 0; j < gp.length; j++) {
-                        sb.append("<group id=\"" + gp[j].getId() + "\" permission=\"" + gp[j].getPermission() + "\" naz-permission-unlike-members=\"true\"/>"); // TODO: naz ...
+                    	boolean groupExists = getRealm().getIdentityManager().getGroupManager().existsGroup(gp[j].getId());
+                        sb.append("<group exists=\"" + groupExists + "\" id=\"" + gp[j].getId() + "\" permission=\"" + gp[j].getPermission() + "\" naz-permission-unlike-members=\"true\"/>"); // TODO: Remove NAZ specific attributes
                     }
                     sb.append("</usecase>");
                 }
@@ -649,7 +651,8 @@ public class PolicyManagerResource extends BasicXMLResource {
 
                     for (int j = 0; j < mergedListOfUserPolicies.size(); j++) {
                         IdentityPolicy identityPolicy = (IdentityPolicy) mergedListOfUserPolicies.get(j);
-                        sb.append("<user id=\"" + identityPolicy.getId() + "\" permission=\"" + identityPolicy.getPermission() + "\"/>");
+                        boolean userExists = getRealm().getIdentityManager().getUserManager().existsUser(identityPolicy.getId());
+                        sb.append("<user exists=\"" + userExists + "\" id=\"" + identityPolicy.getId() + "\" permission=\"" + identityPolicy.getPermission() + "\"/>");
                     }
                     sb.append("</usecase>");
                 }
