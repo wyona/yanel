@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<project name="wiki-page-test" default="test">
+
+  <import file="../definitions.xml"/>
+
+  <target name="test" depends="wt.defineMacros">
+
+    <webtest name="Usecase Test wiki-test-page">
+      &config;
+      <invoke description="Get the page: " url="/${realm.prefix}hello/wiki/hello-world.html"/>
+
+     <verifyText description="Verify that title is contained in the page" text="Wiki Test Page"/>
+
+
+     <verifyText description="Verify that special characeters are contained in the page" text="äöü"/>
+     <verifyText description="Verify that heading is contained in the page" text="Heading3"/>
+   </webtest>
+       
+  </target>
+
+</project>
