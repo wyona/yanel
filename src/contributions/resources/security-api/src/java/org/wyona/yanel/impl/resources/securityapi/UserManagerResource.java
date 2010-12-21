@@ -134,11 +134,12 @@ public class UserManagerResource extends BasicXMLResource {
                 boolean recursively = "1".equals(recursivelyText);
                 deletePolicy(path, recursively);
                 sb.append("<policy-deleted path=\"" + path + "\" recursively=\"" + recursively + "\"/>");
-/*
+/* TODO: Use DOM instead StringBuilder
                 Element policyDeletedElement = (Element) rootElement.appendChild(responseDoc.createElement("policy-deleted"));
                 policyDeletedElement.setAttribute("path", path);
                 policyDeletedElement.setAttribute("recursively", "" + recursively);
 */
+                log.warn("Policy '" + path + "' has been deleted (Recursively: " + recursively + ").");
             } else {
                 log.warn("No such usecase implemented: " + usecase);
                 sb.append("<no-such-yanel-usecase-implemented>" + usecase + "</no-such-yanel-usecase-implemented>");
