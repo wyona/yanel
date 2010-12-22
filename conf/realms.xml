@@ -100,6 +100,9 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
 <!-- ROOT realm -->
 <realm id="welcome" mount-point="/" root="true">
   <config src="@REALMS_DIR@/welcome-admin/"/>
+<!-- TODO: Implement src/core/java/org/wyona/yanel/core/map/RealmManager#resolveFile()
+  <config src="${javax.servlet.context}/realms/welcome-admin/"/>
+-->
 </realm>
 
 </realms>
