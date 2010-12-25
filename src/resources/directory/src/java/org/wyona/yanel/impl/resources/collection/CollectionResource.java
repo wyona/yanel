@@ -51,26 +51,21 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
 
     private Environment environment;
 
+    /**
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(java.lang.String)
+     */
     public View getView(String viewId) throws Exception {
-        return getView(viewId, null);
+        return getXMLView(viewId, getContentXML());
     }
 
     /**
-     * Generates view
+     * Get collection (directory listing) as XML
      */
-    public View getView(String viewId, String revisionName) throws Exception {
-        Repository repo = getRealm().getRepository();
+    private InputStream getContentXML() throws Exception {
         String yanelPath = getResourceConfigProperty("yanel-path");
-        InputStream xmlInputStream = getContentXML(repo, yanelPath, revisionName);
-        return getXMLView(viewId, xmlInputStream);
-    }
-
-    /**
-     *
-     */
-    public InputStream getContentXML(Repository repo, String yanelPath, String revisionName) {
+        Repository repo = getRealm().getRepository();
         environment = getEnvironment();
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         String path = getPath();
         try {
             if (yanelPath != null) {
@@ -91,7 +86,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
             // TODO: Add realm prefix, e.g. realm-prefix="ulysses-demo"
             // NOTE: The schema is according to
             // http://cocoon.apache.org/2.1/userdocs/directory-generator.html
-            sb.append("<dir:directory yanel:path=\"" + getPath() + "\" dir:name=\"" + repo.getNode(path).getName() + "\" dir:path=\"" + path + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
+            sb.append("<dir:directory yanel:repository-configuration-file=\"" + repo.getConfigFile() + "\" yanel:path=\"" + getPath() + "\" dir:name=\"" + repo.getNode(path).getName() + "\" dir:path=\"" + path + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
             // TODO: Do not show the children with suffix .yanel-rti resp. make
             // this configurable!
             // NOTE: Do not hardcode the .yanel-rti, but rather use
@@ -259,8 +254,8 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
     }
 
     /**
-    *
-    */
+     * @see
+     */
    public void create(HttpServletRequest request) {
        try {
            Repository repo = getRealm().getRepository();
