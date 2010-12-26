@@ -5,4 +5,7 @@
 
   <yanel:property name="xslt" value="/xslt/global.xsl"/>
   <yanel:property name="yanel-path" value="/hello"/>
+<!--
+  <yanel:property name="yanel-path" value="file:/Users/michaelwechner"/>
+-->
 </yanel:resource-config>
