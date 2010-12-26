@@ -30,7 +30,7 @@ import org.wyona.yarep.core.Node;
 import org.wyona.yanel.core.util.DateUtil;
 import org.wyona.yanel.core.util.PathUtil;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.InputStream;
@@ -43,13 +43,11 @@ import javax.xml.transform.stream.StreamResult;
 import java.util.Calendar;
 
 /**
- *
+ * Resource in order to list nodes of a collection/directory
  */
 public class CollectionResource extends BasicXMLResource implements ViewableV2, CreatableV2 {
 
-    private static Category log = Category.getInstance(CollectionResource.class);
-
-    private Environment environment;
+    private static Logger log = Logger.getLogger(CollectionResource.class);
 
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(java.lang.String)
@@ -63,61 +61,128 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
      */
     private InputStream getContentXML() throws Exception {
         String yanelPath = getResourceConfigProperty("yanel-path");
-        Repository repo = getRealm().getRepository();
-        environment = getEnvironment();
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
-        String path = getPath();
         try {
             if (yanelPath != null) {
-                path = yanelPath;
-            }
-            log.debug("Selected path: " + path);
-
-            // TODO: This doesn't seem to work ... (check on Yarep ...)
-            if (repo.getNode(path).isResource()) {
-                log.warn("Path is a resource instead of a collection: " + path);
-                // p = p.getParent();
-            }
-            // TODO: Implement org.wyona.yarep.core.Path.getParent()
-            if (!repo.getNode(path).isCollection()) {
-                log.warn("Path is not a collection: " + path);
-                log.warn("Use parent of path: " + repo.getNode(path).getParent().getPath());
-            }
-            // TODO: Add realm prefix, e.g. realm-prefix="ulysses-demo"
-            // NOTE: The schema is according to
-            // http://cocoon.apache.org/2.1/userdocs/directory-generator.html
-            sb.append("<dir:directory yanel:repository-configuration-file=\"" + repo.getConfigFile() + "\" yanel:path=\"" + getPath() + "\" dir:name=\"" + repo.getNode(path).getName() + "\" dir:path=\"" + path + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
-            // TODO: Do not show the children with suffix .yanel-rti resp. make
-            // this configurable!
-            // NOTE: Do not hardcode the .yanel-rti, but rather use
-            // Path.getRTIPath ...
-            Node[] children = repo.getNode(path).getNodes();
-            Calendar calendar = Calendar.getInstance();
-            if (children != null) {
-                for (int i = 0; i < children.length; i++) {
-                    if (children[i].isResource()) {
-                        calendar.setTimeInMillis(children[i].getLastModified());
-                        String lastModified = DateUtil.format(calendar.getTime());
-                        sb.append("<dir:file path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].getLastModified() + "\" date=\"" + lastModified + "\" size=\"" + children[i].getSize() + "\"/>");
-                    } else if (children[i].isCollection()) {
-                        sb.append("<dir:directory path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
-                    } else {
-                        sb.append("<yanel:exception yanel:path=\"" + children[i] + "\"/>");
-                    }
-                }
-                if (children.length < 1) {
-                    sb.append("<yanel:no-children/>");
+                if (yanelPath.startsWith("file:")) {
+                    log.warn("List children of actual file system directory ...");
+                    sb.append(getContentXMLOfFileSystemDirectory(yanelPath.substring(5)));
+                } else {
+                    sb.append(getContentXMLOfYarepNode(yanelPath));
                 }
             } else {
-                sb.append("<yanel:no-children/>");
+                sb.append(getContentXMLOfYarepNode(getPath()));
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        sb.append("</dir:directory>");
+
         return new java.io.StringBufferInputStream(sb.toString());
     }
 
+    /**
+     * Get file system directory listing as XML
+     */
+    private StringBuilder getContentXMLOfFileSystemDirectory(String path) throws Exception {
+        log.warn("DEBUG: Selected path: " + path);
+
+        if (new File(path).isFile()) {
+            log.warn("Path '" + path + "' is a File instead a Directory, hence use parent of path!");
+            path = new File(path).getParent();
+        }
+
+        if (!new File(path).isDirectory()) {
+            log.warn("Path '" + path + "' is not a Directory!");
+            return new StringBuilder("<no-such-directory>" + path + "</no-such-directory>");
+        }
+
+/*
+        // NOTE: The schema is according to
+        // http://cocoon.apache.org/2.1/userdocs/directory-generator.html
+        StringBuilder sb = new StringBuilder();
+        sb.append("<dir:directory yanel:repository-configuration-file=\"" + repo.getConfigFile() + "\" yanel:path=\"" + getPath() + "\" dir:name=\"" + repo.getNode(path).getName() + "\" dir:path=\"" + path + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
+        // TODO: Do not show the children with suffix .yanel-rti resp. make this configurable!
+        // NOTE: Do not hardcode the .yanel-rti, but rather use Path.getRTIPath ...
+        Node[] children = repo.getNode(path).getNodes();
+        Calendar calendar = Calendar.getInstance();
+        if (children != null) {
+            for (int i = 0; i < children.length; i++) {
+                if (children[i].isResource()) {
+                    calendar.setTimeInMillis(children[i].getLastModified());
+                    String lastModified = DateUtil.format(calendar.getTime());
+                    sb.append("<dir:file path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].getLastModified() + "\" date=\"" + lastModified + "\" size=\"" + children[i].getSize() + "\"/>");
+                } else if (children[i].isCollection()) {
+                    sb.append("<dir:directory path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
+                } else {
+                    sb.append("<yanel:exception yanel:path=\"" + children[i] + "\"/>");
+                }
+            }
+            if (children.length < 1) {
+                sb.append("<yanel:no-children/>");
+            }
+        } else {
+            sb.append("<yanel:no-children/>");
+        }
+        sb.append("</dir:directory>");
+
+        return sb;
+*/
+        return new StringBuilder("<directory>" + path + "</directory>");
+    }
+
+    /**
+     * Get yarep collection listing as XML
+     */
+    private StringBuilder getContentXMLOfYarepNode(String path) throws Exception {
+        Repository repo = getRealm().getRepository();
+        log.debug("Selected path: " + path);
+
+        // TODO: This doesn't seem to work ... (check on Yarep ...)
+        if (repo.getNode(path).isResource()) {
+            log.warn("Path is a resource instead of a collection: " + path);
+            // p = p.getParent();
+        }
+        // TODO: Implement org.wyona.yarep.core.Path.getParent()
+        if (!repo.getNode(path).isCollection()) {
+            log.warn("Path is not a collection: " + path);
+            log.warn("Use parent of path: " + repo.getNode(path).getParent().getPath());
+        }
+        // TODO: Add realm prefix, e.g. realm-prefix="ulysses-demo"
+        // NOTE: The schema is according to
+        // http://cocoon.apache.org/2.1/userdocs/directory-generator.html
+        StringBuilder sb = new StringBuilder();
+        sb.append("<dir:directory yanel:repository-configuration-file=\"" + repo.getConfigFile() + "\" yanel:path=\"" + getPath() + "\" dir:name=\"" + repo.getNode(path).getName() + "\" dir:path=\"" + path + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
+        // TODO: Do not show the children with suffix .yanel-rti resp. make this configurable!
+        // NOTE: Do not hardcode the .yanel-rti, but rather use Path.getRTIPath ...
+        Node[] children = repo.getNode(path).getNodes();
+        Calendar calendar = Calendar.getInstance();
+        if (children != null) {
+            for (int i = 0; i < children.length; i++) {
+                if (children[i].isResource()) {
+                    calendar.setTimeInMillis(children[i].getLastModified());
+                    String lastModified = DateUtil.format(calendar.getTime());
+                    sb.append("<dir:file path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].getLastModified() + "\" date=\"" + lastModified + "\" size=\"" + children[i].getSize() + "\"/>");
+                } else if (children[i].isCollection()) {
+                    sb.append("<dir:directory path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
+                } else {
+                    sb.append("<yanel:exception yanel:path=\"" + children[i] + "\"/>");
+                }
+            }
+            if (children.length < 1) {
+                sb.append("<yanel:no-children/>");
+            }
+        } else {
+            sb.append("<yanel:no-children/>");
+        }
+        sb.append("</dir:directory>");
+
+        return sb;
+    }
+
+    /**
+     * @see org.wyona.yanel.impl.resources.BasicXMLResource#getXMLView(String, InputStream)
+     */
+    @Override
     public View getXMLView(String viewId, InputStream xmlInputStream) throws Exception {
         if (viewId == null || !viewId.equals("source")) {
             TransformerFactory tfactory = TransformerFactory.newInstance();
@@ -217,7 +282,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
         int steps;
 
         // TODO: Wouldn't it make more sense to use "tokens" and use a URL rewriter at the very end (also see the portlet specificatio http://jcp.org/aboutJava/communityprocess/review/jsr168/)
-        String resourceContainerPath = environment.getResourceContainerPath();
+        String resourceContainerPath = getEnvironment().getResourceContainerPath();
         if (log.isDebugEnabled()) {
             log.debug("Resource container path: " + resourceContainerPath);
             log.debug("Resource path: " + getPath());
