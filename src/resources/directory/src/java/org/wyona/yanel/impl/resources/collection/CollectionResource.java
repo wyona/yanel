@@ -84,7 +84,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
      * Get file system directory listing as XML
      */
     private StringBuilder getContentXMLOfFileSystemDirectory(String path) throws Exception {
-        log.warn("DEBUG: Selected path: " + path);
+        log.debug("Selected path: " + path);
 
         if (new File(path).isFile()) {
             log.warn("Path '" + path + "' is a File instead a Directory, hence use parent of path!");
@@ -96,22 +96,20 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
             return new StringBuilder("<no-such-directory>" + path + "</no-such-directory>");
         }
 
-/*
         // NOTE: The schema is according to
         // http://cocoon.apache.org/2.1/userdocs/directory-generator.html
         StringBuilder sb = new StringBuilder();
-        sb.append("<dir:directory yanel:repository-configuration-file=\"" + repo.getConfigFile() + "\" yanel:path=\"" + getPath() + "\" dir:name=\"" + repo.getNode(path).getName() + "\" dir:path=\"" + path + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
-        // TODO: Do not show the children with suffix .yanel-rti resp. make this configurable!
-        // NOTE: Do not hardcode the .yanel-rti, but rather use Path.getRTIPath ...
-        Node[] children = repo.getNode(path).getNodes();
+        sb.append("<dir:directory yanel:path=\"" + getPath() + "\" dir:name=\"" + new File(path).getName() + "\" dir:path=\"" + path + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
+
+        File[] children = new File(path).listFiles();
         Calendar calendar = Calendar.getInstance();
         if (children != null) {
             for (int i = 0; i < children.length; i++) {
-                if (children[i].isResource()) {
-                    calendar.setTimeInMillis(children[i].getLastModified());
+                if (children[i].isFile()) {
+                    calendar.setTimeInMillis(children[i].lastModified());
                     String lastModified = DateUtil.format(calendar.getTime());
-                    sb.append("<dir:file path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].getLastModified() + "\" date=\"" + lastModified + "\" size=\"" + children[i].getSize() + "\"/>");
-                } else if (children[i].isCollection()) {
+                    sb.append("<dir:file path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].lastModified() + "\" date=\"" + lastModified + "\" size=\"" + children[i].length() + "\"/>");
+                } else if (children[i].isDirectory()) {
                     sb.append("<dir:directory path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
                 } else {
                     sb.append("<yanel:exception yanel:path=\"" + children[i] + "\"/>");
@@ -126,8 +124,6 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
         sb.append("</dir:directory>");
 
         return sb;
-*/
-        return new StringBuilder("<directory>" + path + "</directory>");
     }
 
     /**
