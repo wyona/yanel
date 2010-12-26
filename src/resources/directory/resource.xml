@@ -9,6 +9,6 @@ Collection (resp. Directory, resp. Folder) resource
   <property name="default-xslt"/>
   <property name="xslt"/> <!-- Can be used multiple times (see XML resource) -->
   <property name="mime-type"/>
-  <property name="yanel-path"/> <!-- OPTIONAL: Set a specific yarep collection path -->
+  <property name="yanel-path"/> <!-- OPTIONAL: Set a specific yarep collection path, whereas one can also use the file protocol (e.g. file:/home/USER) in order to access the file system instead a yarep repository -->
 </rtd>
 </resource>
