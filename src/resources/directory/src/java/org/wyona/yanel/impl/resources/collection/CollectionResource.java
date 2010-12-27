@@ -82,6 +82,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
 
     /**
      * Get file system directory listing as XML
+     * @param path File system path (without 'file:' scheme/protocol)
      */
     private StringBuilder getContentXMLOfFileSystemDirectory(String path) throws Exception {
         log.debug("Selected path: " + path);
@@ -110,7 +111,9 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
                     String lastModified = DateUtil.format(calendar.getTime());
                     sb.append("<dir:file path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].lastModified() + "\" date=\"" + lastModified + "\" size=\"" + children[i].length() + "\"/>");
                 } else if (children[i].isDirectory()) {
-                    sb.append("<dir:directory path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
+                    calendar.setTimeInMillis(children[i].lastModified());
+                    String lastModified = DateUtil.format(calendar.getTime());
+                    sb.append("<dir:directory path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].lastModified() + "\" date=\"" + lastModified + "\"/>");
                 } else {
                     sb.append("<yanel:exception yanel:path=\"" + children[i] + "\"/>");
                 }
