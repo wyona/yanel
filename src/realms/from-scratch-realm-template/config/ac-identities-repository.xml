@@ -18,7 +18,9 @@
     <repo-auto-index-fulltext boolean="true"/>
     <repo-auto-index-properties boolean="true"/>
     <lucene>
+<!--
       <local-tika-config file="tika-config.xml"/>
+-->
       <fulltext-analyzer class="org.apache.lucene.analysis.standard.StandardAnalyzer"/>
       <property-analyzer class="org.apache.lucene.analysis.WhitespaceAnalyzer"/>
       <write-lock-timeout ms="3000"/>
