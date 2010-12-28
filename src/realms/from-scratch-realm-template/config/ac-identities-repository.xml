@@ -1,11 +1,35 @@
 <?xml version="1.0"?>
 
-<repository class="org.wyona.yarep.impl.DefaultRepository">
+<repository class="org.wyona.yarep.impl.repo.vfs.VirtualFileSystemRepository">
   <name>Yanel from Scratch Access Control Identities</name>
 
-  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../ac-identities"/>
+  <meta src="../ac-identities/yarep-meta"/>
+  <content src="../ac-identities/data">
+    <!-- Ignore patterns are optional -->
+    <ignore pattern=".*\.svn"/>
+  </content>
 
-  <storage class="org.wyona.yarep.core.impl.vfs.VFileSystemStorage">
-    <content src="../ac-identities"/>
-  </storage>
+  <!-- Search index config -->
+  <s:search-index 
+      xmlns:s="http://www.wyona.org/yarep/search/2.0" 
+      indexer-class="org.wyona.yarep.impl.search.lucene.LuceneIndexer" 
+      searcher-class="org.wyona.yarep.impl.search.lucene.LuceneSearcher">
+    <index-location file="../ac-identities/search-index"/>
+    <repo-auto-index-fulltext boolean="true"/>
+    <repo-auto-index-properties boolean="true"/>
+    <lucene>
+      <local-tika-config file="tika-config.xml"/>
+      <fulltext-analyzer class="org.apache.lucene.analysis.standard.StandardAnalyzer"/>
+      <property-analyzer class="org.apache.lucene.analysis.WhitespaceAnalyzer"/>
+      <write-lock-timeout ms="3000"/>
+    </lucene>
+  </s:search-index>
+  
+  <!--
+  <splitpath depth="1" length="2" escape="+">
+    <include path="/users/"/>
+    <include path="/groups/"/>
+  </splitpath>
+  -->
+
 </repository>
