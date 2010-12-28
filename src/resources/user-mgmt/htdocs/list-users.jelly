@@ -3,6 +3,30 @@
   <html xmlns="http://www.w3.org/1999/xhtml">
     <body>
       <h1>Users</h1>
+
+      <p>
+<form method="GET">
+      Search for users:&#160;<input style="display:inline;" type="text" name="query"/>&#160;<input style="display:inline;" type="submit" value="Go"/>
+</form>
+      </p>
+
+<!-- TODO ...
+      <p>
+      <j:choose>
+      <j:when test="${resource.getTotalUsers() &lt; 1}">
+        <p>
+          <strong>No users found.</strong>
+        </p>
+      </j:when>
+      <j:otherwise>
+        <p>
+          <strong>${resource.getTotalUsers()} Users found.</strong>
+        </p>
+      </j:otherwise>
+      </j:choose>
+      </p>
+-->
+
       <p>
         Showing users ${resource.getLowerBound()} through ${resource.getUpperBound()}
         out of a total of ${resource.getTotalUsers()}.
