@@ -22,6 +22,8 @@ import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.yanel.impl.resources.usecase.UsecaseException;
 import org.wyona.yanel.impl.resources.usecase.UsecaseResource;
 
+import org.apache.log4j.Logger;
+
 import java.lang.System;
 import java.lang.Integer;
 import java.lang.Boolean;
@@ -37,6 +39,7 @@ public class ListUsersResource extends UsecaseResource {
     // Constants
     private static final int DEFAULT_ITEMS_PER_PAGE = 10;
     //private static final int DEFAULT_ITEMS_PER_PAGE = 100;
+    private static final Logger log =  Logger.getLogger(ListUsersResource.class);
 
     // Variables
     private int currentPage = 1;
@@ -82,7 +85,22 @@ public class ListUsersResource extends UsecaseResource {
             // All users matching search term,
             // or all users overall if search term is empty
             Iterator<User> allUsers;
-            allUsers = userManager.getAllUsers();
+            String query = getParameterAsString("query");
+
+            if(query != null && !"".equals(query)) { 
+                try {
+                    // TODO: What if getUsers() returns garbage?
+                    allUsers = userManager.getUsers(query);
+                } catch(Exception e) {
+                    log.warn(e, e);
+                    lowerBound = 0;
+                    upperBound = 0;
+                    totalUsers = 0;
+                    return;
+                }
+            } else {
+                allUsers = userManager.getAllUsers();
+            }
 
             // Boundaries...
             lowerBound = (currentPage-1)*itemsPerPage;
