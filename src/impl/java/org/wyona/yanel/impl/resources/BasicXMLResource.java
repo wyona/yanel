@@ -523,6 +523,15 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * Get toolbar status from session
      */
     protected String getToolbarStatus() {
+        org.wyona.yanel.core.ToolbarState ts = getEnvironment().getToolbarState();
+        switch(ts) {
+            case ON: return "on";
+            case SUPPRESSED: return "on"; // Strictly backwards compatible
+            //case SUPPRESSED: return "suppressed";
+            default: return "off";
+        }
+
+/*
         // TODO: Use YanelServlet.TOOLBAR_KEY instead "toolbar"!
         javax.servlet.http.HttpSession session = getEnvironment().getRequest().getSession(true);
         if (session != null) {
@@ -530,6 +539,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         }
         log.warn("No session exists or could be created!");
         return null;
+*/
     }
 
     /**
