@@ -30,6 +30,9 @@ class YanelHTMLUI {
 
     private static Logger log = Logger.getLogger(YanelHTMLUI.class);
 
+    /**
+     *
+     */
     YanelHTMLUI(Map map, String reservedPrefix) {
         this.reservedPrefix = reservedPrefix;
         this.map = map;
@@ -250,6 +253,7 @@ class YanelHTMLUI {
         if (toolbarStatus != null && toolbarStatus.equals("on")) {
             String yanelToolbar = request.getParameter(TOOLBAR_PARAM_NAME);
             if (yanelToolbar != null && request.getParameter(TOOLBAR_PARAM_NAME).equals("suppress")) {
+                log.info("Toolbar is actually enabled but suppressed.");
                 return false;
             }
             return true;
@@ -257,4 +261,18 @@ class YanelHTMLUI {
         return false;
     }
 
+    /**
+     * Checks whether toolbar is suppressed.
+     */
+    boolean isToolbarSuppressed(HttpServletRequest request) {
+        String toolbarStatus = (String) request.getSession(true).getAttribute(TOOLBAR_KEY);
+        if (toolbarStatus != null && toolbarStatus.equals("on")) {
+            String yanelToolbar = request.getParameter(TOOLBAR_PARAM_NAME);
+            if (yanelToolbar != null && request.getParameter(TOOLBAR_PARAM_NAME).equals("suppress")) {
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
 }
