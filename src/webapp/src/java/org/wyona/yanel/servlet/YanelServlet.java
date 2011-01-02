@@ -39,6 +39,7 @@ import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.ResourceTypeRegistry;
+import org.wyona.yanel.core.ToolbarState;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
@@ -924,13 +925,18 @@ public class YanelServlet extends HttpServlet {
             identity = getIdentity(request, map);
             Realm realm = map.getRealm(request.getServletPath());
             String stateOfView = StateOfView.AUTHORING;
-            if (yanelUI.isToolbarEnabled(request)) {
+            if (yanelUI.isToolbarEnabled(request)) { // TODO: Is this the only criteria?
                 stateOfView = StateOfView.AUTHORING;
             } else {
                 stateOfView = StateOfView.LIVE;
             }
             //log.debug("State of view: " + stateOfView);
             Environment environment = new Environment(request, response, identity, stateOfView, null);
+            if (yanelUI.isToolbarEnabled(request)) { // TODO: Differentiate between ON and SUPPRESSED
+                environment.setToolbarState(ToolbarState.ON);
+            } else {
+                environment.setToolbarState(ToolbarState.OFF);
+            }
             return environment;
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);
