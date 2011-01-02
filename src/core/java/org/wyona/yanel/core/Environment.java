@@ -35,7 +35,11 @@ public class Environment {
     private Identity identity;
     private String sov;
     private String rcp;
-    
+    private ToolbarState toolbarState;
+
+    /**
+     *
+     */
     public Environment(HttpServletRequest request, HttpServletResponse response, Identity identity, String stateOfView, String resourceContainerPath) {
         setRequest(request);
         setResponse(response);
@@ -83,6 +87,20 @@ public class Environment {
      */
     public String getStateOfView() {
         return sov;
+    }
+
+    /**
+     * Set toolbar state (off, on, suppress)
+     */
+    public void setToolbarState(ToolbarState toolbarState) {
+        this.toolbarState = toolbarState;
+    }
+
+    /**
+     * Get toolbar state (off, on, suppress)
+     */
+    public ToolbarState getToolbarState() {
+        return toolbarState;
     }
 
     public void setIdentity(Identity identity) {
