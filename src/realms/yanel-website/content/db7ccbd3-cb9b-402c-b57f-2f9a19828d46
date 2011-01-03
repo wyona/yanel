@@ -19,6 +19,7 @@
 <li>su - postgres</li>
 <li>psql -U postgres</li>
 <li>select * from pg_tables;</li>
+<li>\q</li>
 </ul>
 <h3>Install PostgreSQL on Mac OS X (Snow Leopard)</h3>
 <ul>
@@ -115,6 +116,7 @@
 <ul>
 <li>psql -U postgres -d konakart</li>
 <li>select * from products;</li>
+<li>\q</li>
 </ul>
 </li>
 <li>...</li>
