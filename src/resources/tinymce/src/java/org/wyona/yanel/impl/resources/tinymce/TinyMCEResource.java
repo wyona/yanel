@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.tidy.Tidy;
@@ -44,7 +43,6 @@ import org.wyona.yanel.impl.resources.xml.ConfigurableViewDescriptor;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.xml.resolver.tools.CatalogResolver;
-
 
 /**
  * Resource to edit another modifiable resource with TinyMCE
@@ -121,6 +119,16 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
      * @see org.wyona.yanel.impl.resources.usecase.UsecaseResource#processUsecase(java.lang.String)
      */
     protected View processUsecase(String viewID) throws UsecaseException {
+        log.warn("DEBUG: Edit path: " + getEditPath());
+        try {
+        if (!getRealm().getPolicyManager().authorize(getEditPath(), getEnvironment().getIdentity(), new org.wyona.security.core.api.Usecase("write"))) {
+            log.warn("Not authorized: " + getPath() + ", " + getEditPath());
+            return null; // TODO: Fix the security issue, but not very nice ...
+        }
+        } catch(Exception e) {
+            throw new UsecaseException(e);
+        }
+
         String editorContent = getEditorContent();
         String resourceContent = getResourceContent();
         
