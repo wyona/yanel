@@ -22,7 +22,7 @@
     Quick Start
     -----------
 
-    1) Build Yanel by running
+    1) Build Yanel by running (whereas build will be without SSL, but please use configure further down to setup Yanel with SSL)
 
         UNIX: ./build.sh quick-start
         Windows: build.bat quick-start
