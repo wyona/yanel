@@ -477,7 +477,7 @@ public class RealmDefaultImpl implements Realm {
     }
 
     /**
-     * Get repository
+     * Get repository, whereas default repositories can be retrieved by 'yanel_data', 'yanel_ac-policies', 'yanel_ac-identities' and 'yanel_res-configs'.
      * @param id Repository id
      */
     public Repository getRepository(String id) throws Exception {
@@ -495,7 +495,7 @@ public class RealmDefaultImpl implements Realm {
             if (extraRepoFactory.exists(id)) {
                 return extraRepoFactory.newRepository(id);
             } else {
-                log.warn("No such extra repository: " + id);
+                log.warn("No such extra repository: " + id + " (Realm: " + getID() + ")");
             } 
         }
 
