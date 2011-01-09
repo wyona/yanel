@@ -55,8 +55,10 @@ public class RealmDefaultImpl implements Realm {
     private String id;
     private String mountPoint;
     private String defaultLanguage;
-    private Repository repository;
-    private Repository rtiRepository;
+    private Repository repository = null;
+    private Repository rtiRepository = null;
+    private Repository identitiesRepository = null;
+    private Repository policiesRepository = null;
     private PolicyManager privatePolicyManager;
     private IdentityManager privateIdentityManager;
     private WebAuthenticator privateWebAuthenticator;
@@ -216,7 +218,11 @@ public class RealmDefaultImpl implements Realm {
                 String id = repoElements[i].getAttribute("id");
                 String repoConfigPath = repoElements[i].getAttribute("config");
                 repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigPath));
-                extraRepoFactory.newRepository(id, repoConfig);
+                if (!extraRepoFactory.exists(id)) {
+                    extraRepoFactory.newRepository(id, repoConfig);
+                } else {
+                    log.error("Extra repository with ID '" + id + "' already exists (Realm ID: '" + getID() + "')!");
+                }
             }
         }
         
@@ -470,12 +476,29 @@ public class RealmDefaultImpl implements Realm {
         this.translationManager = translationManager;
     }
 
+    /**
+     * Get repository
+     * @param id Repository id
+     */
     public Repository getRepository(String id) throws Exception {
-        Yanel yanel = Yanel.getInstance();
-        RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory(EXTRA_REPOSITORY_FACTORY_BEAN_ID);
-        if (extraRepoFactory.exists(id)) {
-            return extraRepoFactory.newRepository(id);
-        } 
+        if("yanel_data".equals(id)) {
+            return repository;
+        } else if("yanel_ac-policies".equals(id)) {
+            return policiesRepository;
+        } else if("yanel_ac-identities".equals(id)) {
+            return identitiesRepository;
+        } else if("yanel_res-configs".equals(id)) {
+            return rtiRepository;
+        } else {
+            Yanel yanel = Yanel.getInstance();
+            RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory(EXTRA_REPOSITORY_FACTORY_BEAN_ID);
+            if (extraRepoFactory.exists(id)) {
+                return extraRepoFactory.newRepository(id);
+            } else {
+                log.warn("No such extra repository: " + id);
+            } 
+        }
+
         return null;
     }
 
@@ -488,13 +511,14 @@ public class RealmDefaultImpl implements Realm {
     }
 
     /**
-     *
+     * Destroy/shutdown realm
      */
     public void destroy() throws Exception {
         log.warn("Shutdown realm: " + getName());
-        getRepository().close();
-        getRTIRepository().close();
-        // TODO: close ac-identities and ac-policies repository?
+        repository.close();
+        rtiRepository.close();
+        identitiesRepository.close();
+        policiesRepository.close();
     }
 
     /**
@@ -532,8 +556,8 @@ public class RealmDefaultImpl implements Realm {
                 log.info("Default PolicyManager will be used for realm: " + getName());
                 File repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
                 RepositoryFactory policiesRepoFactory = yanel.getRepositoryFactory("ACPoliciesRepositoryFactory");
-                Repository policiesRepo = policiesRepoFactory.newRepository(getID(), repoConfig);
-                policyManager = pmFactory.newPolicyManager(policiesRepo);
+                policiesRepository = policiesRepoFactory.newRepository(getID(), repoConfig);
+                policyManager = pmFactory.newPolicyManager(policiesRepository);
             }
             setPolicyManager(policyManager);
         }
@@ -559,8 +583,8 @@ public class RealmDefaultImpl implements Realm {
             	log.info("Default IdentityManager will be used for realm: " + getName());
             	File repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigElement.getValue()));
                 RepositoryFactory identitiesRepoFactory = yanel.getRepositoryFactory("ACIdentitiesRepositoryFactory");
-                Repository identitiesRepo = identitiesRepoFactory.newRepository(getID(), repoConfig);
-                identityManager = imFactory.newIdentityManager(identitiesRepo);
+                identitiesRepository = identitiesRepoFactory.newRepository(getID(), repoConfig);
+                identityManager = imFactory.newIdentityManager(identitiesRepository);
             }
             setIdentityManager(identityManager);
         }
