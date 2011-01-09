@@ -218,8 +218,8 @@ public class RealmDefaultImpl implements Realm {
                 String id = repoElements[i].getAttribute("id");
                 String repoConfigPath = repoElements[i].getAttribute("config");
                 repoConfig = FileUtil.resolve(getConfigFile(), new File(repoConfigPath));
-                if (!extraRepoFactory.exists(id)) {
-                    extraRepoFactory.newRepository(id, repoConfig);
+                if (!extraRepoFactory.exists(getID() + "_" + id)) {
+                    extraRepoFactory.newRepository(getID() + "_" + id, repoConfig);
                 } else {
                     log.error("Extra repository with ID '" + id + "' already exists (Realm ID: '" + getID() + "')!");
                 }
@@ -492,8 +492,8 @@ public class RealmDefaultImpl implements Realm {
         } else {
             Yanel yanel = Yanel.getInstance();
             RepositoryFactory extraRepoFactory = yanel.getRepositoryFactory(EXTRA_REPOSITORY_FACTORY_BEAN_ID);
-            if (extraRepoFactory.exists(id)) {
-                return extraRepoFactory.newRepository(id);
+            if (extraRepoFactory.exists(getID() + "_" + id)) {
+                return extraRepoFactory.newRepository(getID() + "_" + id);
             } else {
                 log.warn("No such extra repository: " + id + " (Realm: " + getID() + ")");
             } 
@@ -514,11 +514,14 @@ public class RealmDefaultImpl implements Realm {
      * Destroy/shutdown realm
      */
     public void destroy() throws Exception {
-        log.warn("Shutdown realm: " + getName());
+        log.warn("Shutdown realm (and its repositories): " + getName());
+
         repository.close();
         rtiRepository.close();
         identitiesRepository.close();
         policiesRepository.close();
+
+        // TODO: Close extra repositories
     }
 
     /**
