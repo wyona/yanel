@@ -73,6 +73,11 @@
       <artifactId>mail</artifactId>
       <version>1.4</version>
     </dependency>
+
+    <dependency>
+      <groupId>wyona-org-yanel</groupId>
+      <artifactId>yanel-resource-creatable-modifiable-deletable-v3</artifactId>
+      <version>0.1-dev-r55944</version>
+    </dependency>
   </dependencies>
 </project>
-
