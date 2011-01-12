@@ -4,6 +4,9 @@
   <yanel:rti name="list-users" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
   <yanel:property name="xslt" value="yanelhtdocs:/html.xslt"/>
+<!-- INFO: Default is 10
+  <yanel:property name="items-per-page" value="5"/>
+-->
   
   <yanel:custom-config>
     <views>
