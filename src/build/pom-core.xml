@@ -43,6 +43,12 @@
       <version>1.0-dev-r54308</version>
     </dependency>
     <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
+      <version>2.5</version>
+    </dependency>
+    <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.16</version>
