@@ -19,7 +19,7 @@
               <j:when test="${resource.getGroup().getMembers().size() > 0}">
             <ol>
               <j:forEach var="member" items="${resource.getGroup().getMembers()}">
-                <li>${member.getID()} (${member.getName()})</li>
+                <li><a href="update-user-admin.html?userID=${member.getID()}">${member.getID()}</a> (${member.getName()})</li>
               </j:forEach>
             </ol>
               </j:when>
