@@ -95,7 +95,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     /**
-     *
+     * Get mime type
      */
     public String getMimeType(String viewId) throws Exception {
         // TODO: Also check mime type of data repository node
