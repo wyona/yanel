@@ -20,7 +20,7 @@
         <table border="1">
           <j:forEach var="group" items="${resource.getGroups()}">
             <tr>
-              <td>${group.getName()}</td>
+              <td><a href="view-group.html?groupID=${group.getID()}">${group.getName()}</a></td>
               <td>
                 <j:choose>
                   <j:when test="${resource.isGroupSelected(group)}">
