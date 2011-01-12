@@ -36,8 +36,10 @@
                   version="1.x"/>
       <dependency groupId="opensymphony" artifactId="oscache"
                   version="2.3"/>
+<!--
       <dependency groupId="commons-lang" artifactId="commons-lang"
                   version="2.2"/>
+-->
       <dependency groupId="oro" artifactId="oro"
                   version="2.0.8"/>
       <dependency groupId="jdom" artifactId="jdom"
