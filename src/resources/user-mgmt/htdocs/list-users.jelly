@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+
 <j:jelly xmlns:j="jelly:core">
   <html xmlns="http://www.w3.org/1999/xhtml">
     <body>
@@ -34,18 +35,36 @@
       <!-- Table of users -->
       <table border="1">
         <tr>
+          <th>Actions</th>
           <th>ID</th>
           <th>Name</th>
           <th>Email</th>
-          <th colspan="2">Actions</th>
+          <th>Aliases</th>
         </tr>
         <j:forEach var="user" items="${resource.getUsers()}">
           <tr>
-            <td>${user.getID()}</td>
-            <td>${user.getName()}</td>
-            <td>${user.getEmail()}</td>
-            <td><a href="update-user-admin.html?userID=${user.getID()}">Update/Edit</a></td>
-            <td><a href="delete-user.html?userID=${user.getID()}">Delete</a></td>
+            <td valign="top">
+              <a href="update-user-admin.html?userID=${user.getID()}">Update/Edit</a><br/>
+              <a href="delete-user.html?userID=${user.getID()}">Delete</a>
+            </td>
+            <td valign="top"><a href="update-user-admin.html?userID=${user.getID()}">${user.getID()}</a></td>
+            <td valign="top">${user.getName()}</td>
+            <td valign="top">${user.getEmail()}</td>
+      <j:choose>
+      <j:when test="${user.getAliases().size() &gt; 0}">
+        <td valign="top">
+        <j:forEach var="alias" items="${user.getAliases()}">
+          ${alias}<br/>
+        </j:forEach>
+        </td>
+      </j:when>
+      <j:otherwise>
+            <td valign="top">-</td>
+      </j:otherwise>
+      </j:choose>
+<!--
+            <td valign="top">${user.getDescription()}</td>
+-->
           </tr>
         </j:forEach>
       </table>
