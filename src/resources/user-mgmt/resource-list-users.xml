@@ -11,5 +11,6 @@ List users
 
 <rtd>
   <property name="xslt"/>
+  <property name="items-per-page"/> <!-- INFO: Default is 10 -->
 </rtd>
 </resource>
