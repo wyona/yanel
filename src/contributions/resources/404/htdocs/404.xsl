@@ -25,10 +25,10 @@
                   - 404
                 </xsl:when>
                 <xsl:when test="child::node()/yanel:exception">
-                  <i18n:message key="anErrorOccurred">- An error occurred</i18n:message>
+                  <i18n:text key="anErrorOccurred">- An error occurred</i18n:text>
                 </xsl:when>
                 <xsl:otherwise>
-                  <i18n:message key="pageInfo">- Page Info</i18n:message>
+                  <i18n:text key="pageInfo">- Page Info</i18n:text>
                 </xsl:otherwise>
               </xsl:choose>
             </title>
@@ -47,13 +47,13 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
               Yanel - 
               <xsl:choose>
                 <xsl:when test="/yanel:yanel/yanel:exception/@yanel:status = '404'">
-                  <i18n:message key="error404">404</i18n:message>
+                  <i18n:text key="error404">404</i18n:text>
                 </xsl:when>
                 <xsl:when test="child::node()/yanel:exception">
-                  <i18n:message key="anErrorOccurred">An error occurred</i18n:message>
+                  <i18n:text key="anErrorOccurred">An error occurred</i18n:text>
                 </xsl:when>
                 <xsl:otherwise>
-                  <i18n:message key="pageInfo">Page Info</i18n:message>
+                  <i18n:text key="pageInfo">Page Info</i18n:text>
                 </xsl:otherwise>
               </xsl:choose>
             </td>
