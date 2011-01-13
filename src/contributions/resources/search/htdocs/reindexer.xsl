@@ -9,14 +9,16 @@
   <xsl:template match="/y:reindex">
     <html>
       <head>
-        <title>Re-indexer</title>
+        <title>Re-index repository</title>
       </head>
       <body>
-        <h1>Re-indexer</h1>
+        <h1>Re-index repository</h1>
         <xsl:apply-templates select="y:exception"/>
         <xsl:apply-templates select="y:message"/>
 
+<!--
         <xsl:if test="not(y:exception or y:message)">
+-->
           <p>Choose which repository you would like to re-index:</p>
           <ul>
             <xsl:for-each select="y:repository">
@@ -24,7 +26,9 @@
                 <a href="?repository={@id}"><xsl:value-of select="."/></a></li>
             </xsl:for-each>
           </ul>
+<!--
         </xsl:if>
+-->
       </body>
     </html>
   </xsl:template>
