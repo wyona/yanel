@@ -100,7 +100,7 @@ public class AccessLog {
                 }
             }
         }
-        log.warn("No Yanel analytics cookie '" + ANALYTICS_COOKIE_NAME + "' set yet!");
+        log.info("No Yanel analytics cookie '" + ANALYTICS_COOKIE_NAME + "' set yet!");
         return null;
     }
 
