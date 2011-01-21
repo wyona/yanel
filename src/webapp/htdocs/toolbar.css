@@ -162,18 +162,6 @@ div#yaneltoolbar_menu li:hover{
   background:lightsteelblue;
 }
 
-div#yaneltoolbar_menu li:hover ul ul,
-div#yaneltoolbar_menu li li:hover ul ul,
-div#yaneltoolbar_menu li li li:hover ul ul,
-div#yaneltoolbar_menu li li li li:hover ul ul
-{display:none;}
-
-div#yaneltoolbar_menu li:hover ul,
-div#yaneltoolbar_menu li li:hover ul,
-div#yaneltoolbar_menu li li li:hover ul,
-div#yaneltoolbar_menu li li li li:hover ul
-{display:block;}
-
 /* End of non-anchor hover selectors */
 
 #yaneltoolbar_menu li.inactive {

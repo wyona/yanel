@@ -22,6 +22,9 @@ public class DefaultYanelToolbar implements YanelToolbar {
 
     private static Logger log = Logger.getLogger(DefaultYanelToolbar.class);
 
+    //private int DELAY_IN_MILLIS = 300;
+    private int DELAY_IN_MILLIS = 400;
+
     private final Menu menu;
 
     public DefaultYanelToolbar(Menu menu) {
@@ -72,6 +75,31 @@ public class DefaultYanelToolbar implements YanelToolbar {
                 + "/yanel-img/submenu.gif) no-repeat 98% 50%;}");
         sb.append("</style>");
         sb.append(System.getProperty("line.separator"));
+        sb.append("<script src=\"" + backToRealm + reservedPrefix + "/yanel-js/jquery/1.4.4/jquery.min.js\"></script>");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("<script>");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("var $yanelJquery144 = jQuery.noConflict();");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("</script>");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("<script src=\"" + backToRealm + reservedPrefix + "/yanel-js/superfish.js\"></script> ");
+        sb.append(System.getProperty("line.separator"));
+        
+        sb.append("<script>");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("$yanelJquery144(document).ready(function(){ ");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  $yanelJquery144(\"div#yaneltoolbar_menu ul\").superfish({");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("    delay:     " + DELAY_IN_MILLIS);
+        sb.append(System.getProperty("line.separator"));
+        sb.append("  });"); 
+        sb.append(System.getProperty("line.separator"));
+        sb.append( "});");
+        sb.append(System.getProperty("line.separator"));
+        sb.append("</script>"); 
+        sb.append(System.getProperty("line.separator"));
 
         // If browser is Mozilla (gecko engine rv:1.7)
         if (request.getHeader("User-Agent").indexOf("rv:1.7") >= 0) {
@@ -83,11 +111,6 @@ public class DefaultYanelToolbar implements YanelToolbar {
         if (request.getHeader("User-Agent").indexOf("compatible; MSIE") >= 0
                 && request.getHeader("User-Agent").indexOf("Windows") >= 0) {
             sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbarIE.css\" rel=\"stylesheet\"/>");
-            sb.append(System.getProperty("line.separator"));
-            sb.append("<style type=\"text/css\" media=\"screen\">");
-            sb.append("  body{behavior:url(" + backToRealm + reservedPrefix + "/csshover.htc);font-size:100%;}");
-            sb.append("</style>");
-
         }
         // If browser is IE6
         if (request.getHeader("User-Agent").indexOf("compatible; MSIE 6") >= 0
