@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<project name="hello-yanel-resource" default="test">
+
+  <import file="../definitions.xml"/>
+
+  <target name="test" depends="wt.defineMacros">
+
+    <webtest name="Usecase Test hello-yanel-resource">
+      &config;
+      <invoke description="Get the page: " url="/${realm.prefix}hello/?yanel.resource.viewid=source"/>
+
+     <verifyText description="Verify that title is contained in the page" text="dir:directory yanel:repository-configuration-file=" />
+
+
+     <verifyText description="Verify that title is contained in the page" text="dir:file path="/>
+
+
+   </webtest>
+       
+  </target>
+
+</project>
