@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<project name="hello-index-html" default="test">
+
+  <import file="../definitions.xml"/>
+
+  <target name="test" depends="wt.defineMacros">
+
+    <webtest name="Usecase Test hello-index-html">
+      &config;
+      <invoke description="Get the page: " url="/${realm.prefix}hello/index.html"/>
+
+
+     <verifyText description="Verify that title is contained in the page" text="/hello/index.html"/>
+
+    <clickLink description="Follow the link to the next page"
+      label="XML view" />
+
+     <verifyText description="Verify that title is contained in the page" text="dir:directory yanel:repository-configuration-file=" />
+
+
+
+   </webtest>
+       
+  </target>
+
+</project>
