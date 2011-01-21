@@ -16,6 +16,7 @@
 <!--
     <ant antfile="usecase-test-create-realm-from-scratch.xml"/>
 -->
+
     <ant antfile="usecase-test-resource-documentation.xml"/>
     <ant antfile="usecase-test-create-resource.xml"/>
     <ant antfile="usecase-test-lenya-user.xml"/>
@@ -26,6 +27,8 @@
     <ant antfile="usecase-test-viewtest.xml"/>
     <ant antfile="usecase-test-timeline.xml"/>
     <ant antfile="usecase-test-update-webapp-resource.xml"/>
-    <ant antfile="usecase-test-wiki-test-page.xml"/>
+    <ant antfile="usecase-test-wiki-test-page.xml"/> 
+    <ant antfile="usecase-test-hello-index-page.xml"/>
+    <ant antfile="usecase-test-hello-yanel-resource.xml"/>
   </target>
 </project>
