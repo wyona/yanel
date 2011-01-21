@@ -34,7 +34,13 @@ public class YanelWebsiteMenu extends Menu {
 	sb.append("<ul><li>");
         sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:file", userLanguage) + "</div>");
         sb.append("<ul>");
-        sb.append("<li class=\"haschild\"><a href=\"" + backToRealm + "create-new-page.html\">New&#160;&#160;&#160;</a><ul><li><a href=\"" + backToRealm + "create-new-page.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Axml\">Standard page (XHTML)</a></li><li><a href=\"" + backToRealm + "create-new-page.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Awiki\">Wiki page</a></li><li><a href=\"" + backToRealm + "create-new-page.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Afile\">File</a></li></ul></li>");
+        sb.append("<li class=\"haschild\"><a href=\"" + backToRealm + "create-new-page.html\">" + getLabel("y:new", userLanguage) + "</a>");
+        sb.append("<ul>");
+        sb.append("<li><a href=\"" + backToRealm + "create-new-page.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Axml\">Standard page (XHTML)</a></li>");
+        sb.append("<li><a href=\"" + backToRealm + "create-new-page.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Awiki\">Wiki page</a></li>");
+        sb.append("<li><a href=\"" + backToRealm + "create-new-page.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Afile\">File</a></li>");
+        sb.append("</ul>");
+        sb.append("</li>");
 
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
             sb.append("<li><a href=\"?yanel.resource.usecase=delete\">Delete this page</a></li>");
