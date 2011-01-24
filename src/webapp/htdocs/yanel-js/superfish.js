@@ -14,7 +14,7 @@
 
 		var sf = $yanelJquery144.fn.superfish,
 			c = sf.c,
-			$yanelJquery144arrow = $yanelJquery144(['<span class="',c.arrowClass,'"> &#187;</span>'].join('')),
+			$yanelJquery144arrow = $yanelJquery144(['<span class="',c.arrowClass,'"> &#160;</span>'].join('')),
 			over = function(){
 				var $yanelJquery144$yanelJquery144 = $yanelJquery144(this), menu = getMenu($yanelJquery144$yanelJquery144);
 				clearTimeout(menu.sfTimer);
