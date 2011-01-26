@@ -1,4 +1,5 @@
-<project name="yanel-data-repo-sitetree-resource-type">
-   <import 
-file="${yanel.source.home}/src/build/resource-types/resource-type.build.xml"/>
+<?xml version="1.0"?>
+
+<project name="yanel-data-repo-sitetree-resource-type" default="deploy-jar">
+   <import file="${yanel.source.home}/src/build/resource-types/resource-type.build.xml"/>
 </project>
