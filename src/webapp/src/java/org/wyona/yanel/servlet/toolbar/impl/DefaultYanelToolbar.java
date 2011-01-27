@@ -31,7 +31,11 @@ public class DefaultYanelToolbar implements YanelToolbar {
         this.menu = menu;
     }
 
+    /**
+     * Generate toolbar body
+     */
     public String getToolbarBodyStart(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) {
+        log.debug("Generate toolbar XHTML ...");
         try {
             String backToRealm = PathUtil.backToRealm(resource.getPath());
             StringBuilder buf = new StringBuilder();
@@ -57,6 +61,9 @@ public class DefaultYanelToolbar implements YanelToolbar {
         }
     }
 
+    /**
+     *
+     */
     public String getToolbarHeader(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) {
 
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
@@ -64,7 +71,7 @@ public class DefaultYanelToolbar implements YanelToolbar {
 
         sb.append("<!-- START: Dynamically added code by " + this.getClass().getName() + " -->");
         sb.append(System.getProperty("line.separator"));
-        sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbar.css\" rel=\"stylesheet\"/>");
+        sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbar_v2.css\" rel=\"stylesheet\"/>");
         sb.append(System.getProperty("line.separator"));
         sb.append("<style type=\"text/css\" media=\"screen\">");
         sb.append(System.getProperty("line.separator"));
@@ -75,6 +82,8 @@ public class DefaultYanelToolbar implements YanelToolbar {
                 + "/yanel-img/submenu.gif) no-repeat 98% 50%;}");
         sb.append("</style>");
         sb.append(System.getProperty("line.separator"));
+
+        // INFO: superfish related stuff
         sb.append("<script src=\"" + backToRealm + reservedPrefix + "/yanel-js/jquery/1.4.4/jquery.min.js\"></script>");
         sb.append(System.getProperty("line.separator"));
         sb.append("<script>");
@@ -85,7 +94,6 @@ public class DefaultYanelToolbar implements YanelToolbar {
         sb.append(System.getProperty("line.separator"));
         sb.append("<script src=\"" + backToRealm + reservedPrefix + "/yanel-js/superfish.js\"></script> ");
         sb.append(System.getProperty("line.separator"));
-        
         sb.append("<script>");
         sb.append(System.getProperty("line.separator"));
         sb.append("$yanelJquery144(document).ready(function(){ ");
@@ -101,7 +109,7 @@ public class DefaultYanelToolbar implements YanelToolbar {
         sb.append("</script>"); 
         sb.append(System.getProperty("line.separator"));
 
-        // If browser is Mozilla (gecko engine rv:1.7)
+        // INFO: If browser is Mozilla (gecko engine rv:1.7)
         if (request.getHeader("User-Agent").indexOf("rv:1.7") >= 0) {
             sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix
                     + "/toolbarMozilla.css\" rel=\"stylesheet\"/>");
@@ -111,6 +119,12 @@ public class DefaultYanelToolbar implements YanelToolbar {
         if (request.getHeader("User-Agent").indexOf("compatible; MSIE") >= 0
                 && request.getHeader("User-Agent").indexOf("Windows") >= 0) {
             sb.append("<link type=\"text/css\" href=\"" + backToRealm + reservedPrefix + "/toolbarIE.css\" rel=\"stylesheet\"/>");
+/* NOTE: Not necessary anymore?
+            sb.append(System.getProperty("line.separator"));
+            sb.append("<style type=\"text/css\" media=\"screen\">");
+            sb.append("  body{behavior:url(" + backToRealm + reservedPrefix + "/csshover.htc);font-size:100%;}");
+            sb.append("</style>");
+*/
         }
         // If browser is IE6
         if (request.getHeader("User-Agent").indexOf("compatible; MSIE 6") >= 0
