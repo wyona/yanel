@@ -1,3 +1,5 @@
+/* Changes re superfish added (or rather specifc rules removed) */
+
 html,
 body {
 	margin:0 !important;
@@ -25,14 +27,13 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
   position: absolute;
   right:15px;
   float:right;
-  top:0px;
 }
 
 #yaneltoolbar_info {
   position: absolute;
   right: 100px;
   float: right;
-  top: 3px;
+  top: 2px;
 }
 
 /* menu style starts here */
@@ -46,6 +47,7 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
   font-weight: normal;
   font-style: normal;
   font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
+  vertical-align: baseline;
 }
 
 #yaneltoolbar_menu a, #yaneltoolbar_menu #yaneltoolbar_menutitle{
@@ -53,11 +55,18 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
   color:#000;
   white-space:nowrap;
   margin:0;
+  height: 18px;
+  line-height: 18px;
+  background: lightGrey;
 }
 
 #yaneltoolbar_menutitle {
   padding-right:30px;
+  height: 28px;
+  line-height: 28px;
+  vertical-align: baseline;
   font-size: 12px;
+  padding-top: 1px;
   font-weight: normal;
   font-style: normal;
   font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
@@ -74,6 +83,8 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
 
 #yaneltoolbar_menu a {
   text-decoration:none;
+  margin: 0;
+  padding: 3px;
   font-size: 12px;
   font-weight: normal;
   font-style: normal;
@@ -86,6 +97,7 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
 
 #yaneltoolbar_menu a:hover {
   color:#000;
+  background:lightsteelblue;
 }
 
 #yaneltoolbar_menu a:active {
@@ -99,6 +111,7 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
 #yaneltoolbar_menu a.yaneltoolbar_disabled_link:visited {
   color:#999;
   cursor:default;
+  background:lightsteelblue;
 }
 
 #yaneltoolbar_menu ul{
@@ -114,7 +127,7 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
 #yaneltoolbar_menu li {
   position:relative;
   margin:1px;
-  padding:2px;
+  padding:0;
   font-size: 12px;
   font-weight: normal;
   font-style: normal;
@@ -122,13 +135,18 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
   color: #777777;
 }
 
-#yaneltoolbar_menu li .haschild {
+#yaneltoolbar_menu li.haschild {
+  height: 18px;
+  line-height: 18px;
+  padding: 3px;
   color: black;
 }
 
 #yaneltoolbar_menu li li {
   background:lightgrey;
-  padding:4px;
+  padding:0;
+  height: 24px;
+  line-height: 24px;
 }
 
 #yaneltoolbar_menu ul ul{
@@ -161,18 +179,6 @@ div#yaneltoolbar_menu li:hover{
   z-index:500;
   background:lightsteelblue;
 }
-
-div#yaneltoolbar_menu li:hover ul ul,
-div#yaneltoolbar_menu li li:hover ul ul,
-div#yaneltoolbar_menu li li li:hover ul ul,
-div#yaneltoolbar_menu li li li li:hover ul ul
-{display:none;}
-
-div#yaneltoolbar_menu li:hover ul,
-div#yaneltoolbar_menu li li:hover ul,
-div#yaneltoolbar_menu li li li:hover ul,
-div#yaneltoolbar_menu li li li li:hover ul
-{display:block;}
 
 /* End of non-anchor hover selectors */
 
