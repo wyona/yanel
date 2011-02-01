@@ -1,0 +1,27 @@
+# INFO: This file helps Mercurial to ignore files/directories similar to svn:ignore (also see http://mercurial.selenic.com/wiki/WorkingWithSubversion)
+syntax: regexp
+# Old svn directories, backup files
+\.svn
+.*~
+\..*\.swp
+.*\.orig
+# Ignore build directories, logfiles
+build/lib
+build/classes
+^logs
+^local
+^build
+^conf/local
+^src/build/local.build.properties$
+# Ignore resources created by build process
+^src/contributions/resources/xinha/htdocs/xinha$
+^src/resources/tinymce/htdocs/tinymce$
+^src/contributions/resources/policymanager/htdocs/org.wyona.security.gwt.accesspolicyeditor.AccessPolicyEditor$
+# Ignore Lucene index files
+.*\.cfs
+.*\.del
+segments_.*
+segments\.gen
+# Ignore yarep meta/uid files
+.*\.yarep/meta
+\.yarep-uid
