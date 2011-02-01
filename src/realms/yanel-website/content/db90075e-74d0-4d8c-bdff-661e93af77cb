@@ -22,6 +22,7 @@
         <li>Is it secure?</li>
         <li>Can it be used offline?</li>
         <li>Can the patch be reverted easily?</li>
+        <li>Does it work for all browsers?</li>
       </ul>
     </li>
     <li>Notify people via the mailing list and be prepared to revert the patch!</li>
@@ -34,8 +35,17 @@
 <table>
   <tr><th>Question></th><th>Answer</th></tr>
   <tr><td>Does it build?</td><td>Yes</td></tr>
-  <tr><td>Is the formatting correct?</td><td>...</td></tr>
+  <tr><td>Is the formatting correct?</td><td>Yes</td></tr>
+  <tr><td>Is it backwards compatible?</td><td>No</td></tr>
+  <tr><td>Does it scale/perform? (Can the implementation be changed?)</td><td>TODO</td></tr>
+  <tr><td>Can it be enhanced?</td><td>TODO</td></tr>
+  <tr><td>Can it be customized?</td><td>TODO</td></tr>
+  <tr><td>Does it work within a cluster?</td><td>TODO</td></tr>
+  <tr><td>Is it secure?</td><td>TODO</td></tr>
+  <tr><td>Can it be used offline?</td><td>TODO</td></tr>
+  <tr><td>Can the patch be reverted easily?</td><td>TODO</td></tr>
   <tr><td>Does an automatic test exist?</td><td>No</td></tr>
+  <tr><td>Does it work for all browsers?</td><td>N/A (not applicable)</td></tr>
 </table>
 
   </body>
