@@ -122,6 +122,9 @@
   <target name="compile" description="Compile Java classes" depends="init">
 
     <mkdir dir="${realm.classes.dir}"/>
+    <touch> <!-- WORKAROUND: See the bottom of http://ant.apache.org/manual/Tasks/javac.html or http://lists.wyona.org/pipermail/yanel-development/2011-February/005447.html -->
+      <fileset dir="${realm.java.dir}" includes="**/package-info.java"/>
+    </touch>
     <javac srcdir="${realm.java.dir}" destdir="${realm.classes.dir}"
       classpathref="classpath"
       encoding="${javac.encoding}"
