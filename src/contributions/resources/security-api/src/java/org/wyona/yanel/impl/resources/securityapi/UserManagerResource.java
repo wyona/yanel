@@ -164,7 +164,7 @@ public class UserManagerResource extends BasicXMLResource {
         sb.append("</security-api>");
 
         return new ByteArrayInputStream(sb.toString().getBytes());
-        //return new ByteArrayInputStream(XMLHelper.documentToString(responseDoc, false, true, null).getBytes());
+        //return XMLHelper.getInputStream(responseDoc, false, true, null);
     }
 
     @Override
