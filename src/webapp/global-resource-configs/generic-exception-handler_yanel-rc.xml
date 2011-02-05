@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="generic-exception-handler" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:custom-config>
+    <views xmlns="http://www.wyona.org/yanel/rti/1.0">
+      <view id="default">
+        <xslt>rthtdocs:/exception-handler.xsl</xslt>
+        <mime-type>application/xhtml+xml</mime-type>
+      </view>
+      <view id="xml">
+        <mime-type>application/xml</mime-type>
+      </view>
+    </views>
+  </yanel:custom-config>
+</yanel:resource-config>
