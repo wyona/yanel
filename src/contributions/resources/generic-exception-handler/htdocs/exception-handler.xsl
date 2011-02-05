@@ -36,7 +36,10 @@
                 <ul>
                   <li>Servlet path: <xsl:value-of select="/yanel:yanel/yanel:request/@servlet-path"/></li>
                   <li>Request path: <xsl:value-of select="/yanel:yanel/yanel:request/@uri"/></li>
+                  <li>Message: <xsl:value-of select="/yanel:yanel/yanel:exception/@message"/></li>
                 </ul>
+                <h4>Stacktrace</h4>
+                <xsl:value-of select="/yanel:yanel/yanel:exception"/>
               </div> 
             </td> 
           </tr> 
