@@ -68,6 +68,8 @@ import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
+import org.wyona.yanel.impl.resources.BasicGenericExceptionHandlerResource;
+
 import org.wyona.yanel.servlet.IdentityMap;
 import org.wyona.yanel.servlet.communication.HttpRequest;
 import org.wyona.yanel.servlet.communication.HttpResponse;
@@ -634,13 +636,9 @@ public class YanelServlet extends HttpServlet {
             do404(request, response, doc, message);
             return;
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            String message = e.toString() + "\n\n" + getStackTrace(e);
-            //String message = e.toString();
-            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
-            exceptionElement.appendChild(doc.createTextNode(message));
+            log.error(e, e);
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            setYanelOutput(request, response, doc);
+            handleException(request, response, e);
             return;
         }
         // END first try
@@ -1674,7 +1672,7 @@ public class YanelServlet extends HttpServlet {
         if (log.isDebugEnabled()) log.debug("No identity attached to session, hence check request authorization header: " + authorizationHeader);
         if (authorizationHeader != null) {
             if (authorizationHeader.toUpperCase().startsWith("BASIC")) {
-                log.warn("Using BASIC authorization ...");
+                log.warn("Using BASIC authorization ..."); // TODO: Reformulate text ...
                 // Get encoded user and password, comes after "BASIC "
                 String userpassEncoded = authorizationHeader.substring(6);
                 // Decode it, using any base 64 decoder
@@ -1737,23 +1735,32 @@ public class YanelServlet extends HttpServlet {
     /**
      * Generate response using a resource configuration
      * @param rc Resource configuration
+     * @return true if generation of response was successful or return false otherwise
      */
     private boolean generateResponseFromRTview(HttpServletRequest request, HttpServletResponse response, ResourceConfiguration rc, String path) throws ServletException {
+        try {
+            Resource resource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), getRealm(request), path, rc);
+            return generateResponseFromResourceView(request, response, resource);
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
+    }
+
+    /**
+     * Generate response using a resource configuration
+     * @param resource Resource
+     * @return true if generation of response was successful or return false otherwise
+     */
+    private boolean generateResponseFromResourceView(HttpServletRequest request, HttpServletResponse response, Resource resource) throws Exception {
         String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
 
         if (request.getParameter("yanel.format") != null) { // backwards compatible
             viewId = request.getParameter("yanel.format");
+            log.warn("For backwards compatibility reasons also consider parameter 'yanel.format', but which is deprecated. Please use '" + VIEW_ID_PARAM_NAME + "' instead.");
         }
-
-        try {
-            Realm realm = getRealm(request);
-            Resource resource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), realm, path, rc);
-            View view = ((ViewableV2) resource).getView(viewId);
-            if (view != null) {
-                if (generateResponse(view, resource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return true;
-            }
-        } catch (Exception e) {
-            throw new ServletException(e);
+        View view = ((ViewableV2) resource).getView(viewId);
+        if (view != null) {
+            if (generateResponse(view, resource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return true;
         }
         return false;
     }
@@ -2257,12 +2264,34 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Handle a generic exception.
+     * @param request The request object.
+     * @param response The response object.
+     * @param ex The exception to handle.
      */
-    private String getStackTrace(Exception e) {
-        java.io.StringWriter sw = new java.io.StringWriter();
-        e.printStackTrace(new java.io.PrintWriter(sw));
-        return sw.toString();
+    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception ex) {
+        try {
+            Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
+            String path = getResource(request, response).getPath();
+            ResourceConfiguration rc = getGlobalResourceConfiguration("generic-exception-handler_yanel-rc.xml", realm);
+
+            BasicGenericExceptionHandlerResource resource = (BasicGenericExceptionHandlerResource) yanelInstance.getResourceManager().getResource(getEnvironment(request, response), getRealm(request), path, rc);
+            resource.setException(ex);
+
+            boolean hasBeenHandled = generateResponseFromResourceView(request, response, resource);
+
+            if(!hasBeenHandled) {
+                log.error("Generic exception handler is broken!");
+                log.error("Unable to output/handle the following exception:");
+                log.error(ex, ex);
+            }
+        } catch (Exception e) {
+            log.error("Generic exception handler is broken!");
+            log.error("Unable to handle the following exception:");
+            log.error(ex, ex);
+            log.error("Caught exception while handling the above exception:");
+            log.error(e, e);
+        }
     }
 
     /**
