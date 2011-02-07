@@ -93,7 +93,7 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
         }
 
         //private String getNodeAsXML(com.hp.hpl.jena.rdf.model.Resource resource) {
-        //log.error("DEBUG: Path: " + path);
+        //log.debug("Path: " + path);
         Sitetree sitetree = getRealm().getRepoNavigation();
         Node node = sitetree.getNode(getRealm(), path);
         StringBuilder sb = new StringBuilder("");
