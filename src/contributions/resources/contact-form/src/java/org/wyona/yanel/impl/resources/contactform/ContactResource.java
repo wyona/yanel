@@ -139,7 +139,7 @@ public class ContactResource extends Resource implements ViewableV1 {
                     if (request.getParameter("message") != null) transformer.setParameter("message", request.getParameter("message"));
                 }
             } else {
-                log.warn("DEBUG: Form not submitted yet!");
+                log.debug("Form not submitted yet!");
                 if (request.getParameter("message") != null) transformer.setParameter("message", request.getParameter("message"));
             }
 
@@ -302,7 +302,7 @@ public class ContactResource extends Resource implements ViewableV1 {
 
 /*
         File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "global.xsl");
-        log.error("DEBUG: XSLT file: " + xsltFile);
+        log.debug("XSLT file: " + xsltFile);
         return new StreamSource(xsltFile);
 */
     }
