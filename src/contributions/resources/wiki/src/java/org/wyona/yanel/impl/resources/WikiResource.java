@@ -375,7 +375,7 @@ public class WikiResource extends Resource implements ViewableV1, CreatableV2, I
 
             org.wyona.yarep.core.Path introspectionPath = new org.wyona.yarep.core.Path(newPath.getParent() + "/introspection-" + newPath.getName() + ".xml");
             String introspectionContent = getWikiIntrospection(title, newPath.getName());
-            log.error("DEBUG: Writing introspection into repository \"" + dataRepo.getName() + "\" with content:\n" + introspectionContent + "\nto path: " + introspectionPath);
+            log.debug("Writing introspection into repository \"" + dataRepo.getName() + "\" with content:\n" + introspectionContent + "\nto path: " + introspectionPath);
             if (!dataRepo.existsNode(introspectionPath.toString())) {
                 //TODO: Add nodes recursively ...
                 dataRepo.getNode(introspectionPath.getParent().toString()).addNode(introspectionPath.getName(), org.wyona.yarep.core.NodeType.RESOURCE);
