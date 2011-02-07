@@ -68,7 +68,7 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
      * @see org.wyona.yanel.impl.resources.usecase.UsecaseResource#init()
      */
     protected void init() throws UsecaseException {
-        log.warn("DEBUG: Init resource ...");
+        log.debug("Init resource ...");
         try {
             String matcherExtension = getResourceConfigProperty(CONFIG_PROPERTY_MATCHER_EXTENSION);
             if (matcherExtension != null && matcherExtension.length() > 0) {
@@ -98,9 +98,9 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
             return;
         }
         
-        log.warn("DEBUG: Edit path: " + editPath);
+        log.debug("Edit path: " + editPath);
         editorContent = getParameterAsString(editPath); 
-        log.warn("DEBUG: Editor content: " + editorContent);
+        log.debug("Editor content: " + editorContent);
 
         if (ResourceAttributeHelper.hasAttributeImplemented(resToEdit, "Modifiable", "2")) {
             try {
@@ -119,7 +119,7 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
      * @see org.wyona.yanel.impl.resources.usecase.UsecaseResource#processUsecase(java.lang.String)
      */
     protected View processUsecase(String viewID) throws UsecaseException {
-        log.warn("DEBUG: Edit path: " + getEditPath());
+        log.debug("Edit path: " + getEditPath());
         try {
         if (!getRealm().getPolicyManager().authorize(getEditPath(), getEnvironment().getIdentity(), new org.wyona.security.core.api.Usecase("write"))) {
             log.warn("Not authorized: " + getPath() + ", " + getEditPath());
@@ -133,9 +133,9 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
         String resourceContent = getResourceContent();
         
         if (getParameter(PARAM_CANCEL) != null) {
-            log.warn("DEBUG: Name: " + PARAM_CANCEL + ", Value: " + getParameterAsString(PARAM_CANCEL));
+            log.debug("Name: " + PARAM_CANCEL + ", Value: " + getParameterAsString(PARAM_CANCEL));
             cancel();
-            log.warn("DEBUG: Original view ID: " + viewID + ", new view ID: " + VIEW_CANCEL);
+            log.debug("Original view ID: " + viewID + ", new view ID: " + VIEW_CANCEL);
             return generateView(VIEW_CANCEL);
         }
 
@@ -158,7 +158,7 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
 
         String userID = getEnvironment().getIdentity().getUsername();
 
-        log.warn("DEBUG: Check if content of '" + getResToEdit().getPath() + "' is already checked out");
+        log.debug("Check if content of '" + getResToEdit().getPath() + "' is already checked out");
         if (isResToEditCheckedOut() && !(getParameter(PARAM_SUBMIT) != null || getParameter(PARAM_SUBMIT_TIDY_SAVE) != null)) {
             addError("Resource is checked out ");
             String checkoutUserID = getResToEditCheckoutUserID();
@@ -213,7 +213,7 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
             if (isResToEditVersionableV2()) {
                 if (!isResToEditCheckedOut()) {
                     ((VersionableV2) getResToEdit()).checkout(userID);
-                    log.warn("DEBUG: Resource '" + getResToEdit().getPath() + "' has been checked out.");
+                    log.debug("Resource '" + getResToEdit().getPath() + "' has been checked out.");
                 } else {
                     log.warn("Resource '" + getResToEdit().getPath() + "' is already checked out!");
                 }
@@ -263,18 +263,18 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
             try {
                 final String content = getEditorContent();
                 if (log.isDebugEnabled()) log.debug("saving content: " + content);
-                log.warn("DEBUG: Saving content: " + content);
+                log.debug("Saving content: " + content);
                 OutputStream os = ((ModifiableV2) resToEdit).getOutputStream();
                 IOUtils.write(content, os);
                 os.close();
                 addInfoMessage("Succesfully saved resource " + resToEdit.getPath() + ". ");
 
 
-                log.warn("DEBUG: Try to checkin resource: " + resToEdit.getPath());
+                log.debug("Try to checkin resource: " + resToEdit.getPath());
                 if (isResToEditVersionableV2()) {
                     VersionableV2 versionable  = (VersionableV2)resToEdit;
                     try {
-                        log.warn("DEBUG: Checkin: " + resToEdit.getPath());
+                        log.debug("Checkin: " + resToEdit.getPath());
                         versionable.checkin("Updated with tinyMCE");
                         addInfoMessage("Succesfully checked in resource '" + resToEdit.getPath() + "'.");
                     } catch (Exception e) {
