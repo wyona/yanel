@@ -230,10 +230,10 @@ public class SearchResource extends BasicXMLResource {
             org.wyona.yarep.core.Node[] nodes = null;
             String propertyName = getResourceConfigProperty("property-name");
             if (propertyName != null) {
-                log.warn("DEBUG: Search property '" + propertyName + "': " + query);
+                log.debug("Search property '" + propertyName + "': " + query);
                 nodes = getRealm().getRepository().getSearcher().searchProperty(propertyName, query, "/");
             } else {
-                log.warn("DEBUG: Search fulltext: " + query);
+                log.debug("Search fulltext: " + query);
                 nodes = getRealm().getRepository().getSearcher().search(query);
             }
 
@@ -263,8 +263,8 @@ public class SearchResource extends BasicXMLResource {
         if (rs != null && rs.size() > 0) {
             Result[] results = new Result[rs.size()];
             for (int i = 0; i < rs.size(); i++) {
-                //log.warn("DEBUG: Title: " + rs.get(i).title);
-                //log.warn("DEBUG: Excerpt: " + rs.get(i).excerpt);
+                //log.debug("Title: " + rs.get(i).title);
+                //log.debug("Excerpt: " + rs.get(i).excerpt);
                 results[i] = new Result(rs.get(i).url.toString(), null, null, null, null);
                 //results[i] = new Result(rs.get(i).url.toString(), rs.get(i).title, rs.get(i).excerpt, null, null);
             }
@@ -337,7 +337,7 @@ public class SearchResource extends BasicXMLResource {
                     //parser.parse(in, new org.apache.tika.sax.WriteOutContentHandler(writer), tikaMetaData);
                     //String title = writer.toString().trim();
 
-                    log.warn("DEBUG: Keywords: " + tikaMetaData.get(org.apache.tika.metadata.Metadata.KEYWORDS));
+                    log.debug("Keywords: " + tikaMetaData.get(org.apache.tika.metadata.Metadata.KEYWORDS));
 
                     String title = xhtmlBean.getTitle();
                     if (title != null && title.length() > 0) {
