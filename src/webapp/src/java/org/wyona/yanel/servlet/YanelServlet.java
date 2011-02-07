@@ -1420,7 +1420,7 @@ public class YanelServlet extends HttpServlet {
             // INFO: Append timestamp in order to workaround 301 redirect cache problem (Also see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6465)
             // TODO: Check if url still has a query string (see above)
             urlWithoutLogoutQS = urlWithoutLogoutQS + "?yanel.refresh=" + new Date().getTime();
-            log.warn("DEBUG: Redirect to original request: " + urlWithoutLogoutQS);
+            log.debug("Redirect to original request: " + urlWithoutLogoutQS);
  
             response.setHeader("Location", urlWithoutLogoutQS.toString());
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
@@ -2478,7 +2478,7 @@ public class YanelServlet extends HttpServlet {
                 //logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue() + " ref:" + request.getHeader("referer") + " ua:" + request.getHeader("User-Agent"));
                 logAccess.info(AccessLog.getLogMessage(request, response, realm.getID()));
             }
-            //log.warn("DEBUG: Referer: " + request.getHeader(HTTP_REFERRER));
+            //log.debug("Referer: " + request.getHeader(HTTP_REFERRER));
         } catch(Exception e) { // Catch all exceptions, because we do not want to throw exceptions because of logging browser history
             log.error(e, e);
         }
