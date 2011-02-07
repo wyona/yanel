@@ -196,7 +196,7 @@ public class RedirectResource extends Resource implements ViewableV2, CreatableV
      * @see org.wyona.yanel.core.api.attributes.CreatableV1#getProperty(String)
      */
     public Object getProperty(String name) {
-        log.error("DEBUG: name: " + name);
+        log.debug("name: " + name);
         return defaultHrefSetByCreator;
     }
 
@@ -204,7 +204,7 @@ public class RedirectResource extends Resource implements ViewableV2, CreatableV
      * @see org.wyona.yanel.core.api.attributes.CreatableV1#setProperty(String, Object)
      */
     public void setProperty(String name, Object value) {
-        log.error("DEBUG: name: " + name);
+        log.debug("name: " + name);
         defaultHrefSetByCreator = (String) value;
     }
 
