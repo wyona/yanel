@@ -106,7 +106,7 @@ public class NodeRTIImpl implements Node {
             log.debug("Check if node is a collection: " + path);
             if (repo.getNode(path.toString()).isCollection()) {
             //if (repo.isCollection(path)) {
-                log.error("DEBUG: Is collection within repo: " + path);
+                log.debug("Is collection within repo: " + path);
                 Path[] children = repo.getChildren(path);
                 for (int i = 0; i < children.length; i++) {
                     if (children[i].getName().indexOf(".yanel-rti") > 0) {
