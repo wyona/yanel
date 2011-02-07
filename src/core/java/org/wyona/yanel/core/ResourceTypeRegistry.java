@@ -154,16 +154,16 @@ public class ResourceTypeRegistry {
             Configuration resourceTypes[] = config.getChildren("resource-type");
             
             for (int i = 0; i < resourceTypes.length; i++) {
-                log.warn("DEBUG: Register resource type...");
+                log.debug("Register resource type...");
                 try {
                     String packageName = resourceTypes[i].getAttribute("package"); // INFO: This method will throw an exception if no 'package' attribute exists, and hence further down it will try to read the 'src' attribute...
-                    log.warn("DEBUG: Package: " + packageName);
+                    log.debug("Package: " + packageName);
                     log.info("Package: " + packageName);
 
                     // TODO: Config itself, e.g. org/wyona/yanel/impl/resources/redirect/my-resource.xml
 
                     URL packageURL = ResourceTypeRegistry.class.getClassLoader().getResource(packageName.replace('.','/'));
-                    log.warn("DEBUG: Package: " + packageURL.getFile());
+                    log.debug("Package: " + packageURL.getFile());
                     //log.info("Package: " + packageURL.getFile());
                     File jarFile = null;
                     if (packageURL.getPath().indexOf("!") > 0) {
@@ -208,7 +208,7 @@ public class ResourceTypeRegistry {
                     }
                 } catch (Exception e) {
                     log.error(e.getMessage()); // INFO: Do not show this error message, because it is not really an error in most cases
-                    log.warn("DEBUG: No package attribute, hence try src attribute...");
+                    log.debug("No package attribute, hence try src attribute...");
                     log.info("No package attribute, hence try src attribute...");
                     try {
                         File resConfigFile = new File(resourceTypes[i].getAttribute("src"));
