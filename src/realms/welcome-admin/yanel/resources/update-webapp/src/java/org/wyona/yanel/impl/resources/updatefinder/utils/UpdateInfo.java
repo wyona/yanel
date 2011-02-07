@@ -212,16 +212,16 @@ public class UpdateInfo {
      * @return List of all updaters which are usable for a specific Yanel revision. Return null if none is available.
      */
     public List<Map<String, String>> getUpdatersForYanelRevision(String yanelRevision) {
-        log.warn("DEBUG: Find an updater for revision: " + yanelRevision);
+        log.debug("Find an updater for revision: " + yanelRevision);
         VersionComparator versionComparator = new VersionComparator();
         List<Map<String, String>> bestUpdater = getUpdateVersionsOf("type", "updater");
         if (bestUpdater == null) return null;
         for (int i = bestUpdater.size() - 1; i >= 0; i--) { // INFO: Start at the end, because otherwise remove(int) will lead to strange results
             Map<String, String> versionDetail = bestUpdater.get(i);
-            log.warn("DEBUG: Check updater: " + versionDetail.get("revision"));
+            log.debug("Check updater: " + versionDetail.get("revision"));
 
-            log.warn("DEBUG: Updater MinRevision: " + versionDetail.get(TARGET_APPLICATION_MIN_REVISION));
-            log.warn("DEBUG: Updater MaxRevision: " +versionDetail.get(TARGET_APPLICATION_MAX_REVISION));
+            log.debug("Updater MinRevision: " + versionDetail.get(TARGET_APPLICATION_MIN_REVISION));
+            log.debug("Updater MaxRevision: " +versionDetail.get(TARGET_APPLICATION_MAX_REVISION));
             if (versionComparator.compare(versionDetail.get(TARGET_APPLICATION_MIN_REVISION), yanelRevision) > 0 ) {
                 bestUpdater.remove(i);
                 continue;
@@ -230,7 +230,7 @@ public class UpdateInfo {
                 bestUpdater.remove(i);
                 continue;
             }
-            log.warn("DEBUG: Workable updater: " + versionDetail.get("revision"));
+            log.debug("Workable updater: " + versionDetail.get("revision"));
         }
 
         Collections.sort(bestUpdater, new UpdateInfoVersionComparator());
@@ -244,7 +244,7 @@ public class UpdateInfo {
      * @return List of all updates which are installable for a specific Yanel revision. Return null if none is available.
      */
     public List<Map<String, String>> getYanelUpdatesForYanelRevision(String yanelRevision) {
-        log.warn("DEBUG: Find an update for revision: " + yanelRevision);
+        log.debug("Find an update for revision: " + yanelRevision);
 
         // Get all updates
         List<Map<String, String>> allUpdates = getUpdateVersionsOf("type", "updates");
@@ -258,7 +258,7 @@ public class UpdateInfo {
         for (int i = allUpdates.size() - 1; i >= 0; i--) { // INFO: Start at the end, because otherwise remove(int) will lead to strange results
             Map<String, String> updatesVersionDetail = allUpdates.get(i);
             String updateRevision = updatesVersionDetail.get("revision");
-            log.warn("DEBUG: Check update revision: " + updateRevision);
+            log.debug("Check update revision: " + updateRevision);
             if (versionComparator.compare(updatesVersionDetail.get(TARGET_APPLICATION_MIN_REVISION), yanelRevision) > 0 ) {
                 allUpdates.remove(i);
                 continue;
@@ -267,7 +267,7 @@ public class UpdateInfo {
                 allUpdates.remove(i);
                 continue;
             }
-            log.warn("DEBUG: Workable update revision: " + updateRevision);
+            log.debug("Workable update revision: " + updateRevision);
         }
 
         // Get all updaters which work for yanelRevision
@@ -281,12 +281,12 @@ public class UpdateInfo {
         for (int i = 0; i < allUpdates.size(); i++) { // TODO: Reverse ... because otherwise remove will lead to strange results
             Map<String, String> updatesVersionDetail = allUpdates.get(i);
             String revision = updatesVersionDetail.get("revision");
-            log.error("DEBUG: Update revision: " + revision);
+            log.debug("Update revision: " + revision);
             
             
             for (int j = 0; j < updaters.size(); j++) { // TODO: Reverse ... because otherwise remove will lead to strange results
                 Map<String, String> updatersVersionDetail = updaters.get(j);
-                log.error("DEBUG: Updater revision: " + updatersVersionDetail.get("revision"));
+                log.debug("Updater revision: " + updatersVersionDetail.get("revision"));
                 if (versionComparator.compare(updatersVersionDetail.get(TARGET_APPLICATION_MIN_REVISION), revision) > 0 ) {
                     allUpdates.remove(i);
                 }
