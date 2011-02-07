@@ -32,7 +32,7 @@ public class TimelineResource extends Resource implements ViewableV2, Introspect
     public boolean exists() {
         log.warn("Not really implemented yet! Needs to check if events XML exists.");
         try {
-            log.warn("DEBUG: Path: " + getPath() + "/" + getResourceConfigProperty("href"));
+            log.debug("Path: " + getPath() + "/" + getResourceConfigProperty("href"));
         } catch(Exception e) {
             log.error(e, e);
         }
