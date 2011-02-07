@@ -69,7 +69,7 @@ public abstract class UsecaseThread extends Thread implements Serializable {
      */
     public void attachThreadIDToRepository(org.wyona.yarep.core.Repository repository, String directoryPath) throws IllegalStateException, org.wyona.yarep.core.RepositoryException {
         // Also see http://grizzly.java.net/
-        log.warn("DEBUG: Java thread ID: " + getId());
+        log.debug("Java thread ID: " + getId());
         String threadKey = getThreadKey(this.threadID);
         String threadKeyPath = directoryPath + "/" + threadKey;
         if (repository.existsNode(threadKeyPath)) {
