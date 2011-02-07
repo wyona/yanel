@@ -149,7 +149,7 @@ public class ShowRealms extends Resource implements ViewableV2 {
         File xsltFile = org.wyona.commons.io.FileUtil.file(rtd
                 .getConfigFile().getParentFile().getAbsolutePath(), "xslt"
                 + File.separator + "info2xhtml.xsl");
-        log.error("DEBUG: XSLT file: " + xsltFile);
+        log.debug("XSLT file: " + xsltFile);
         return new StreamSource(xsltFile);
     }
 
