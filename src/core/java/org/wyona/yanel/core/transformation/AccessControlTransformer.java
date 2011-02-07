@@ -75,9 +75,9 @@ public class AccessControlTransformer extends AbstractTransformer {
      *
      */
     public void startElement(String namespaceURI, String localName, String qName, Attributes attrs) throws SAXException {
-        //log.error("DEBUG: Start element: " + localName + ", " + qName);
+        //log.debug("Start element: " + localName + ", " + qName);
         numberOfNestedElements = numberOfNestedElements + 1;
-        //log.error("DEBUG: Number of nested elements: " + numberOfNestedElements);
+        //log.debug("Number of nested elements: " + numberOfNestedElements);
 
 
         if (bufferEnabled && isAnchorElement(namespaceURI, localName, qName)) {
@@ -136,7 +136,7 @@ public class AccessControlTransformer extends AbstractTransformer {
 
         if (bufferEnabled || !accessGranted) {
         //if (bufferEnabled || accessDenied) {
-            //log.error("DEBUG: Do nothing and just dump start of element: <" + localName + " ...>");
+            //log.debug("Do nothing and just dump start of element: <" + localName + " ...>");
         } else {
             super.startElement(namespaceURI, localName, qName, attrs);
         }
@@ -146,7 +146,7 @@ public class AccessControlTransformer extends AbstractTransformer {
      *
      */
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-        //log.error("DEBUG: End element: " + localName + ", " + qName);
+        //log.debug("End element: " + localName + ", " + qName);
         numberOfNestedElements = numberOfNestedElements - 1;
 
 
@@ -172,12 +172,12 @@ public class AccessControlTransformer extends AbstractTransformer {
 
         if (bufferEnabled || !accessGranted) {
         //if (bufferEnabled || accessDenied) {
-            //log.error("DEBUG: Do nothing and just dump end of element: </" + localName + ">");
+            //log.debug("Do nothing and just dump end of element: </" + localName + ">");
         } else {
             super.endElement(namespaceURI, localName, qName);
         }
 
-        //log.error("DEBUG: Number of nested elements: " + numberOfNestedElements);
+        //log.debug("Number of nested elements: " + numberOfNestedElements);
         if (isParentElement(namespaceURI, localName, qName) && numberOfNestedElements == -1 && !accessGranted) {
             accessGranted = true;
         }
@@ -194,7 +194,7 @@ super.characters(characters, 0, characters.length);
     public void characters(char[] buf, int offset, int len) throws SAXException {
         if (!accessGranted) {
         //if (accessDenied) {
-            //log.error("DEBUG: Do nothing and just dump characters!");
+            //log.debug("Do nothing and just dump characters!");
         } else {
             super.characters(buf, offset, len);
         }
