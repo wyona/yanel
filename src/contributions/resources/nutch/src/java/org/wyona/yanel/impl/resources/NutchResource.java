@@ -516,7 +516,7 @@ public class NutchResource extends Resource implements ViewableV1 {
     private void getSearchResults(Document document, Element rootElement, String searchTerm, int start) {
         try {
             Query query = Query.parse(searchTerm, configuration);
-            //log.error("DEBUG: Query: " + query);
+            //log.debug("Query: " + query);
             nutchBean = new NutchBean(configuration);
             int hitsPerPage = 10;
             if (request.getParameter("hitsPerPage") != null) hitsPerPage = Integer.parseInt(request.getParameter("hitsPerPage"));
