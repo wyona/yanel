@@ -399,7 +399,7 @@ public class TestingControlResource extends Resource implements ViewableV2 {
                 org.wyona.yarep.core.Repository Repo = this.getRealm().getRepository();
                 org.wyona.commons.io.Path newPath = new org.wyona.commons.io.Path("/test-results-archive/"
                         + resultName);
-                log.error("DEBUG: " + newPath);
+                log.debug("" + newPath);
                 org.wyona.yanel.core.util.YarepUtil.addNodes(Repo,
                         newPath.toString(),
                         org.wyona.yarep.core.NodeType.RESOURCE);
