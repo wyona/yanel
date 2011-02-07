@@ -109,12 +109,12 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         Repository dataRepo = getRealm().getRepository();
 
         if (dataRepo.existsNode(getPath()) && dataRepo.isResource(new org.wyona.yarep.core.Path(getPath()))) {
-            log.warn("DEBUG: ICS exists: " + new org.wyona.yarep.core.Path(getPath()));
+            log.debug("ICS exists: " + new org.wyona.yarep.core.Path(getPath()));
             if(viewId == null) {
                 View view = new View();
                 view.setMimeType(getMimeType(null));
                 view.setInputStream(dataRepo.getNode(getPath()).getInputStream());
-                log.warn("DEBUG: Return ICS!");
+                log.debug("Return ICS!");
                 return view;
             }
         }
@@ -124,7 +124,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         if (eventsPath == null) {
             eventsPath = getPath();
         }
-        log.warn("DEBUG: Generate calendar from XML based events: " + eventsPath);
+        log.debug("Generate calendar from XML based events: " + eventsPath);
 
         org.wyona.yarep.core.Path[] children = dataRepo.getChildren(new org.wyona.yarep.core.Path(eventsPath));
         //org.wyona.yarep.core.Path[] children = dataRepo.search("categories", categories);
@@ -223,13 +223,13 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         //java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(in));
         String line;
         CalendarEvent event = null;
-        log.error("DEBUG: Parse ICS and write events as XML into repository ...");
+        log.debug("Parse ICS and write events as XML into repository ...");
         while ((line = br.readLine()) != null) {
             if (line.startsWith("BEGIN:VEVENT")) {
                 event = new CalendarEvent();
             } else if (line.startsWith("END:VEVENT")) {
                 String eventPath = getResourceConfigProperty("events-path") + "/" + event.getUID() + ".xml";
-                log.warn("DEBUG: Write event " + eventPath + ", " + event.toXML());
+                log.debug("Write event " + eventPath + ", " + event.toXML());
                 if (!dataRepo.existsNode(eventPath)) {
                     org.wyona.yarep.util.YarepUtil.addNodes(dataRepo, eventPath, org.wyona.yarep.core.NodeType.RESOURCE);
                 }
@@ -252,7 +252,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
      * Save/Write the actual ICS
      */
     private InputStream writeICS(InputStream in) throws Exception {
-        log.error("DEBUG: Write ICS as a whole to the repository: " + getPath());
+        log.debug("Write ICS as a whole to the repository: " + getPath());
         org.wyona.yarep.core.Path path = new org.wyona.yarep.core.Path(getPath());
 
         OutputStream out;
@@ -327,7 +327,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
      */
     public void create(HttpServletRequest request) {
         String newPath = getPath();
-        log.error("DEBUG: New path: " + newPath);
+        log.debug("New path: " + newPath);
     }
 
     /**
