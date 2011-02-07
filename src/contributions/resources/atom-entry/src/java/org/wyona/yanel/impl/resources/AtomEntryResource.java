@@ -194,7 +194,7 @@ public class AtomEntryResource extends Resource implements ViewableV2, Modifiabl
         org.apache.abdera.writer.Writer writer = abdera.getWriter();
         writer.writeTo(entry, out);
 
-        log.error("DEBUG: Atom entry has been written: " + getPath());
+        log.debug("Atom entry has been written: " + getPath());
     }
 
     /**
