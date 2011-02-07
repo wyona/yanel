@@ -42,7 +42,7 @@ public class MoreLikeThisResource extends BasicXMLResource {
                 sb.append("</results>");
             } else {
                 sb.append("<no-results/>");
-                log.warn("DEBUG: No results for more like this: " + sourcePath);
+                log.debug("No results for more like this: " + sourcePath);
             }
         }
         sb.append("</more-like-this>");
@@ -59,7 +59,7 @@ public class MoreLikeThisResource extends BasicXMLResource {
         org.apache.lucene.search.similar.MoreLikeThis mlt = new org.apache.lucene.search.similar.MoreLikeThis(luceneIndexer.getIndexReader());
         mlt.setFieldNames(new String[] {"_FULLTEXT"});
         org.apache.lucene.search.Query query = mlt.like(repo.getNode(sourcePath).getInputStream());
-        log.warn("DEBUG: Query: " + query);
+        log.debug("Query: " + query);
         // Hits hits = is.search(query);
         //org.wyona.yarep.impl.search.lucene.LuceneSearcher luceneSearcher = (org.wyona.yarep.impl.search.lucene.LuceneSearcher) repo.getSearcher();
         return null;
