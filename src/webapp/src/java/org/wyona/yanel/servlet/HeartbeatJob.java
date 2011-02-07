@@ -25,6 +25,6 @@ public class HeartbeatJob implements Job {
             realmName = realm.getName();
         }
         log.info("Heartbeat: " + new java.util.Date() + " (Realm: " + realmName + ")"); // TODO: Show statistics, e.g. uptime, etc.
-        //log.warn("DEBUG: Heartbeat: " + new java.util.Date() + " (Realm: " + realmName + ")");
+        //log.debug("Heartbeat: " + new java.util.Date() + " (Realm: " + realmName + ")");
     }
 }
