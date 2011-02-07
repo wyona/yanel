@@ -670,7 +670,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         // http://www-128.ibm.com/developerworks/java/library/j-io1/
         byte[] memBuffer = baos.toByteArray();
 
-        log.warn("DEBUG: InputStream: " + baos);
+        log.debug("InputStream: " + baos);
 
         return new java.io.ByteArrayInputStream(memBuffer);
     }
