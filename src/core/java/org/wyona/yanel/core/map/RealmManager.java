@@ -106,7 +106,7 @@ public class RealmManager {
 
 
         // 2.) Getting realms.xml from user home directory
-        log.warn("DEBUG: User home directory: " + System.getProperty("user.home"));
+        log.debug("User home directory: " + System.getProperty("user.home"));
         File userHomeRealmsConfigFile = new File(System.getProperty("user.home"), "realms.xml");
         if (userHomeRealmsConfigFile.isFile()) {
             log.warn("Use user home directory: " + System.getProperty("user.home"));
@@ -434,7 +434,7 @@ public class RealmManager {
             String key = (String)keyIterator.next();
             Realm realm = (Realm)_realms.get(key);
             if (!realm.getID().equals(rootRealm.getID())) {
-                log.warn("DEBUG: Check whether to inherit root realm properties to another realm: " + realm.getName());
+                log.debug("Check whether to inherit root realm properties to another realm: " + realm.getName());
                 if ((realm.getProxyHostName() == null) && (!key.equals(rootRealm.getID())) && rootRealm.isProxySet()) {
                     realm.setProxy(rootRealm.getProxyHostName(), rootRealm.getProxyPort(), rootRealm.getProxySSLPort(), rootRealm.getProxyPrefix());
                     log.info("Inherit root realm properties to realm: " + key);
