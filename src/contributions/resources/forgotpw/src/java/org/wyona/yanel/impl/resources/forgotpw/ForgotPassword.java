@@ -172,7 +172,7 @@ public class ForgotPassword extends BasicXMLResource {
      * @param requestID Request ID
      */
     private User getUserForRequest(String requestID, long duration_hour) throws Exception {
-        log.warn("DEBUG: Find user for request with ID: " + requestID);
+        log.debug("Find user for request with ID: " + requestID);
         if (getRealm().getRepository().existsNode(getPersistentRequestPath(requestID))) {
             Node requestNode = getRealm().getRepository().getNode(getPersistentRequestPath(requestID));
 
@@ -362,7 +362,7 @@ public class ForgotPassword extends BasicXMLResource {
             // TODO: Finish proxy settings replacement
 
             String proxyHostName = realm.getProxyHostName();
-            log.warn("DEBUG: Proxy host name: " + proxyHostName);
+            log.debug("Proxy host name: " + proxyHostName);
             if (proxyHostName != null) {
                 url = new URL(url.getProtocol(), proxyHostName, url.getPort(), url.getFile());
             }
