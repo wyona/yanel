@@ -81,10 +81,10 @@ public class UserManagerResource extends BasicXMLResource {
             } else if (usecase.equals("getuser")) {
                 sb.append(getUserAsXML(getEnvironment().getRequest().getParameter("id")));
             } else if (usecase.equals("deleteuser")) {
-                log.warn("DEBUG: Delete user: " + getEnvironment().getRequest().getParameter("id"));
+                log.debug("Delete user: " + getEnvironment().getRequest().getParameter("id"));
                 deleteUser(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("deletegroup")) {
-                log.warn("DEBUG: Delete group: " + getEnvironment().getRequest().getParameter("id"));
+                log.debug("Delete group: " + getEnvironment().getRequest().getParameter("id"));
                 deleteGroup(getEnvironment().getRequest().getParameter("id"));
             } else if (usecase.equals("creategroup")) {
                 log.debug("Try to create group: " + getEnvironment().getRequest().getParameter("id"));
@@ -346,10 +346,10 @@ public class UserManagerResource extends BasicXMLResource {
         for (int i = 0; i < members.length; i++) {
             String typeID[] = members[i].split(":");
             if (typeID[0].equals("u")) {
-                log.warn("DEBUG: Remove user '" + typeID[1] + "' from group: " + id);
+                log.debug("Remove user '" + typeID[1] + "' from group: " + id);
                 group.removeMember(um.getUser(typeID[1]));
             } else if (typeID[0].equals("g")) {
-                log.warn("DEBUG: Remove group '" + typeID[1] + "' from group: " + id);
+                log.debug("Remove group '" + typeID[1] + "' from group: " + id);
                 group.removeMember(gm.getGroup(typeID[1]));
             }
         }
@@ -563,7 +563,7 @@ public class UserManagerResource extends BasicXMLResource {
         sb.append("<members>");
         // INFO: See policymanager/src/java/org/wyona/yanel/impl/resources/policymanager/PolicyManagerResource.java#resolveGroup(), also re Loops!
         for (int i = 0; i < members.length; i++) {
-            //log.warn("DEBUG: Member: " + members[i].getID());
+            //log.debug("Member: " + members[i].getID());
             if (members[i] instanceof User) {
                 sb.append("<user id=\"" + members[i].getID() + "\"/>");
             } else if (members[i] instanceof Group) {
@@ -573,7 +573,7 @@ public class UserManagerResource extends BasicXMLResource {
                         sb.append("<loop-detected group-id=\"" + members[i].getID() + "\"/>");
                     } else {
                         sb.append("<group id=\"" + members[i].getID() + "\">");
-                        //log.warn("DEBUG: Resolve group: " + members[i].getID());
+                        //log.debug("Resolve group: " + members[i].getID());
                         // TODO: Make sure that there are no redundencies, whereas since resolvedGroups is not used, it does not matter for the moment.
                         resolvedGroups.add(members[i].getID());
 
