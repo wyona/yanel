@@ -599,7 +599,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 response.addCookie(rememberLoginNameCookie);
             }
         } else {
-            log.error("DEBUG: Do NOT remember my login name: " + loginUsername + "," + openID);
+            log.debug("Do NOT remember my login name: " + loginUsername + "," + openID);
             rememberMyLoginName = false;
 
             // Unset Login Cookies (http://java.sun.com/j2ee/sdk_1.3/techdocs/api/javax/servlet/http/Cookie.html#setMaxAge(int))
