@@ -536,7 +536,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
         List<Map<String, String>> bestUpdater = updateInfo.getUpdateVersionsOf("type", "updater", installInfo.getRevision());
         for (int i = 0; i < bestUpdater.size(); i++) {
             Map<String, String> versionDetail =bestUpdater.get(i);
-            log.error("DEBUG: Updater details: " + versionDetail);
+            log.debug("Updater details: " + versionDetail);
             if (versionComparator.compare(versionDetail.get(UpdateInfo.TARGET_APPLICATION_MIN_REVISION), updateRevision) > 0 ) {
                 bestUpdater.remove(i);
             }
@@ -563,7 +563,7 @@ public class UpdateFinder extends Resource implements ViewableV2 {
 
         for (int i = 0; i < updates.size(); i++) {
             Map<String, String> versionDetail = updates.get(i);
-            log.error("DEBUG: Update: " + versionDetail.get("id") + "-v-" + versionDetail.get("version") + "-r-" + versionDetail.get("revision"));
+            log.debug("Update: " + versionDetail.get("id") + "-v-" + versionDetail.get("version") + "-r-" + versionDetail.get("revision"));
 
             for (int j = 0; j < tomcatContextHandler.getWebappNames().length; j++) {
                 if (tomcatContextHandler.getWebappNames()[j].equals(versionDetail.get("id") + "-v-" + versionDetail.get("version") + "-r-" + versionDetail.get("revision"))) {
