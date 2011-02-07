@@ -120,14 +120,14 @@ public class PolicyManagerResource extends BasicXMLResource {
 
                 if (viewId != null && viewId.equals("get-xml")) {
                     if (getEnvironment().getRequest().getParameter("aggregate") != null && getEnvironment().getRequest().getParameter("aggregate").equals("true")) {
-                        log.warn("DEBUG: Get XML version of aggregated policy ...");
+                        log.debug("Get XML version of aggregated policy ...");
                         sb.append(getAggregatedPolicyAsXML(getPath(), null, orderedBy, showParents));
                     } else {
-                        log.warn("DEBUG: Get XML version of policy ...");
+                        log.debug("Get XML version of policy ...");
                         sb.append(getPoliciesAsXML(getPath(), null, orderedBy, showParents));
                     }
                 } else {
-                    log.warn("DEBUG: Get XHTML version of policy ...");
+                    log.debug("Get XHTML version of policy ...");
                     sb.append(PolicyViewer.getXHTMLView(getRealm().getPolicyManager(), getRealm().getIdentityManager().getGroupManager(), getPath(), null, orderedBy, showParents, showTabs, showAbbreviatedLabels));
                 }
             } else if (policyUsecase.equals("update")) {
@@ -163,7 +163,7 @@ public class PolicyManagerResource extends BasicXMLResource {
                     String saveURL = backToRealm + getPath().substring(1) + "?" + PARAMETER_USECASE +"=update&amp;post=policy"; // This doesn't seem to work with all browsers!
 
                     String cancelURL = getReferer(backToRealm);
-                    log.warn("DEBUG: Cancel URL: " + cancelURL);
+                    log.debug("Cancel URL: " + cancelURL);
 
                     // TODO: i18n
                     String title = "Edit Access Policy of Node '" + policyPath + "'";
@@ -510,7 +510,7 @@ public class PolicyManagerResource extends BasicXMLResource {
         if(referer != null) {
             java.net.URL url = new java.net.URL(referer);
             String filenameQSWithoutLeadingSlash = url.getFile().substring(url.getFile().lastIndexOf("/") + 1);
-            log.warn("DEBUG: Manipulated referer: '" + filenameQSWithoutLeadingSlash + "'");
+            log.debug("Manipulated referer: '" + filenameQSWithoutLeadingSlash + "'");
             // IMPORTANT: The below might cause problems with certain reverse proxys, whereas with httpd and mod_proxy it seems to be fine. If this should be a problem, then either strip off the webapp and realm prefix, or use the host-page-url as base and submit a relative path using the filenameQSWithoutLeadingSlash
             return replaceEntities(referer);
             //return backToRealm  + replaceEntities(url.getFile() + "?" + url.getQuery());
@@ -546,7 +546,7 @@ public class PolicyManagerResource extends BasicXMLResource {
      * @param showParents Show the policies of the parent nodes, which allows to figure out how the policy has been aggregated
      */
     protected StringBuilder getPoliciesAsXML(String path, String contentItemId, int orderedBy, boolean showParents) throws Exception {
-        log.warn("DEBUG: Get policies for path: " + path);
+        log.debug("Get policies for path: " + path);
         StringBuilder sb = new StringBuilder();
 
         sb.append("<?xml version=\"1.0\"?><policy-viewer xmlns=\"http://www.wyona.org/security/1.0\">");
@@ -607,7 +607,7 @@ public class PolicyManagerResource extends BasicXMLResource {
      * @param showParents Show the policies of the parent nodes, which allows to figure out how the policy has been aggregated
      */
     protected StringBuilder getAggregatedPolicyAsXML(String path, String contentItemId, int orderedBy, boolean showParents) throws Exception {
-        log.warn("DEBUG: Get aggregated policy for path: " + path);
+        log.debug("Get aggregated policy for path: " + path);
         StringBuilder sb = new StringBuilder();
 
         sb.append("<?xml version=\"1.0\"?><policy-viewer xmlns=\"http://www.wyona.org/security/1.0\">");
