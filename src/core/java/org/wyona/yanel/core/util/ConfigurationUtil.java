@@ -86,10 +86,11 @@ public class ConfigurationUtil {
         // original comment by michi:
         // avalon ConfigurationUtil doesn't seem to work properly
         /*
-         * org.w3c.dom.Element element = ConfigurationUtil.toElement(customConfig);
-         * log.error("DEBUG: element: " + element.getLocalName()); org.w3c.dom.Document doc =
-         * element.getOwnerDocument(); org.w3c.dom.Element rootElement = doc.getDocumentElement();
-         * rootElement.appendChild(element); return doc;
+          org.w3c.dom.Element element = ConfigurationUtil.toElement(customConfig);
+          log.debug("Element name: " + element.getLocalName());
+          org.w3c.dom.Document doc = element.getOwnerDocument();
+          org.w3c.dom.Element rootElement = doc.getDocumentElement();
+          rootElement.appendChild(element); return doc;
          */
     }
 
