@@ -1,0 +1,5 @@
+src/build/resource-types/GWT-src-core-java = [svn]http://svn.wyona.com/repos/public/yanel/contributions/ajax-components/src/core/java
+tools/apache-ant = [svn]http://svn.wyona.com/repos/public/0_tools/apache-ant-1.7.1
+tools/apache-ant_extras = [svn]http://svn.wyona.com/repos/public/0_tools/apache-ant-1.7.1_extras
+tools/eclipse.settings = [svn]http://svn.wyona.com/repos/public/0_tools/eclipse-3.settings
+src/contributions/resources/policymanager/src-gwt = [svn]http://svn.wyona.com/repos/public/yanel/contributions/ajax-components/src/access-policy-editor
