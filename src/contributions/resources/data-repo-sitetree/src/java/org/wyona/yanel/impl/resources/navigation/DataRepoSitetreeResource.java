@@ -1,182 +1,185 @@
-/*
- * Copyright 2006 Wyona
+/*-
+ * Copyright 2011 Wyona
  */
 
 package org.wyona.yanel.impl.resources.navigation;
 
-import javax.xml.transform.Transformer;
 
 import org.wyona.yanel.core.navigation.Node;
 import org.wyona.yanel.core.navigation.Sitetree;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.apache.log4j.Logger;
 
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import javax.xml.transform.Transformer;
+
 /**
- *
+ * Data repository site tree generator.
  */
 public class DataRepoSitetreeResource extends BasicXMLResource {
-
     private static Logger log = Logger.getLogger(DataRepoSitetreeResource.class);
 
     /**
-     *
+     * Get size.
+     * @see org.wyona.yanel.core.Resource
      */
-    public DataRepoSitetreeResource() {
-    }
-
-    /**
-     *
-     */
+    @Override
     public long getSize() throws Exception {
         return -1;
     }
 
     /**
-     *
+     * Does resource exist?
+     * @see org.wyona.yanel.core.Resource
      */
+    @Override
     public boolean exists() throws Exception {
         return true;
     }
 
     /**
-     *
+     * Get content as XML.
+     * @param viewId Ignored by this function.
+     * @see org.wyona.yanel.impl.BasicXMLResource
      */
-    public java.io.InputStream getContentXML(String viewId) throws Exception {
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        sb.append(getSitetreeAsXML());
-        //sb.append(getSitetreeAsXML(getPath().toString()));
+    @Override
+    public InputStream getContentXML(String viewId) throws Exception {
+        Document doc = null;
 
-        return new java.io.StringBufferInputStream(sb.toString());
+        try {
+            doc = org.wyona.commons.xml.XMLHelper.createDocument(null, "sitetree");
+        } catch (Exception e) {
+            throw new Exception(e.getMessage(), e);
+        }
+
+        Element rootElement = doc.getDocumentElement();
+        getSitetreeAsXML(doc, rootElement);
+
+        ByteArrayOutputStream baout = new ByteArrayOutputStream();
+        org.wyona.commons.xml.XMLHelper.writeDocument(doc, baout);
+        return new ByteArrayInputStream(baout.toByteArray());
     }
 
     /**
-     * Get sitetree as XML
+     * Get sitetree as XML.
+     * @param doc The result document.
+     * @param root The root element of the result document.
      */
-    private String getSitetreeAsXML() throws Exception {
+    private void getSitetreeAsXML(Document doc, Element root) throws Exception {
+        // Get name4path parameter
         String name4pathParameter = "path";
-        if (getResourceConfigProperty("name4path-parameter") != null) {
+        if(getResourceConfigProperty("name4path-parameter") != null) {
             name4pathParameter = getResourceConfigProperty("name4path-parameter");
         }
-        StringBuffer sb = new StringBuffer("<sitetree>");
-        if (getEnvironment().getRequest().getParameter(name4pathParameter) != null) {
-            sb.append(getNodeAsXML(request.getParameter(name4pathParameter)));
+
+        // Get node as XML.
+        if(getEnvironment().getRequest().getParameter(name4pathParameter) != null) {
+            getNodeAsXML(request.getParameter(name4pathParameter), doc, root);
         } else {
-            sb.append(getNodeAsXML("/"));
+            getNodeAsXML("/", doc, root);
         }
 
-        // TODO: Sitetree generated out of RDF resources and statements
-        /*
-        com.hp.hpl.jena.rdf.model.Resource rootResource = getRealm().getSitetreeRootResource();
-        sb.append(getNodeAsXML(rootResource));
-        */
-        sb.append("</sitetree>");
-
-        return sb.toString();
     }
 
     /**
-     * Get node as XML
+     * Get node as XML.
+     * @param doc The result document.
+     * @param root The root element of the result document.
      */
-    private String getNodeAsXML(String path) {
+    private void getNodeAsXML(String path, Document doc, Element root) {
+        // Should we show all subnodes?
         boolean showAllSubnodes = true;
+
         try {
-            if (getResourceConfigProperty("show-all-subnodes") != null) {
+            if(getResourceConfigProperty("show-all-subnodes") != null) {
                 showAllSubnodes = Boolean.valueOf(getResourceConfigProperty("show-all-subnodes")).booleanValue();
             }
         } catch (Exception e) {
-            log.info("could not get property show-all-subnodes. falling back to show-all-subnodes=true.");
+            log.info("Could not get property show-all-subnodes. Falling back to default value (true).");
         }
+
         String showAllSubnodesParameter = getParameterAsString("show-all-subnodes");
-        if (showAllSubnodesParameter != null && Boolean.valueOf(showAllSubnodesParameter).booleanValue()) {
+        if(showAllSubnodesParameter != null && Boolean.valueOf(showAllSubnodesParameter).booleanValue()) {
             showAllSubnodes = true;
         }
 
-        //private String getNodeAsXML(com.hp.hpl.jena.rdf.model.Resource resource) {
-        //log.debug("Path: " + path);
+        // Get nodes from repository
         Sitetree sitetree = getRealm().getRepoNavigation();
         Node node = sitetree.getNode(getRealm(), path);
-        StringBuilder sb = new StringBuilder("");
 
-        // TODO: Check for statements "parentOf" for this resource
-        /*
-        Statement[] st = resource.getStatements("parentOf");
-        if (st.length > 0) {
-            for (int i = 0; i < st.length; i++) {
-                Resource child = st.getObject();
-                URL url = getReal().getURLBuilder(child);
-            }
-        } else {
-            // Is not a collection, there are no children
-        }
-        */
+        // Construct XML.
+        if(node != null) {
+            if(node.isCollection()) {
+                Element collectionElement = null;
 
-        if (node != null) {
-            if (node.isCollection()) {
-                if (showAllSubnodes) {
-                    sb.append("<collection path=\"" + path + "\" name=\"" + node.getName() + "\">");
-                    // TODO: There seems to be a problem re special characters
-                    sb.append("<label><![CDATA[" + node.getName() + "]]></label>");
-                    //sb.append("<label><![CDATA[" + node.getLabel() + "]]></label>");
+                if(showAllSubnodes) {
+                    collectionElement = (Element) root.appendChild(doc.createElement("collection"));
+                    collectionElement.setAttribute("path", node.getPath());
+                    collectionElement.setAttribute("name", node.getName());
+                    Element labelElement = (Element) collectionElement.appendChild(doc.createElement("label"));
+                    labelElement.appendChild(doc.createTextNode(node.getName()));
                 }
+
+                // Get all children
                 Node[] children = node.getChildren();
-                for (int i = 0; i < children.length; i++) {
-                    String childPath = path + "/" + children[i].getName();
-                    if (path.equals("/")) {
-                        childPath = path + children[i].getName();
-                    }
-                    //log.debug("Child path: " + childPath);
-
-                    if (children[i].isCollection()) {
-                        if (!showAllSubnodes) {
-                            sb.append("<collection path=\"" + childPath + "\" name=\"" + children[i].getName() + "\">");
-                            // TODO: ...
-                            sb.append("<label><![CDATA[" +children[i].getName() + "]]></label>");
-                            //sb.append("<label><![CDATA[" + children[i].getLabel() + "]]></label>");
-                            sb.append("</collection>");
+                for(Node child : children) {
+                    if(child.isCollection()) {
+                        if(collectionElement == null) {
+                            collectionElement = (Element) root.appendChild(doc.createElement("collection"));
+                            collectionElement.setAttribute("path", node.getPath());
+                            collectionElement.setAttribute("name", node.getName());
+                            Element labelElement = (Element) collectionElement.appendChild(doc.createElement("label"));
+                            labelElement.appendChild(doc.createTextNode(node.getName()));
                         } else {
-                            sb.append(getNodeAsXML(childPath));
+                            getNodeAsXML(child.getPath(), doc, collectionElement);
                         }
-                        //sb.append(getNodeAsXML(children[i].getPath()));
-                    } else if (children[i].isResource()) {
-                        sb.append("<resource path=\"" + childPath + "\" name=\"" + children[i].getName() + "\">");
-                        //sb.append("<resource path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\">");
-                        // TODO ...
-                        sb.append("<label><![CDATA[" + children[i].getName() + "]]></label>");
-                        //sb.append("<label><![CDATA[" + children[i].getLabel() + "]]></label>");
-                        sb.append("</resource>");
+                    } else if(child.isResource()) {
+                        Element resourceElement = (Element) root.appendChild(doc.createElement("resource"));
+                        resourceElement.setAttribute("path", child.getPath());
+                        resourceElement.setAttribute("name", child.getName());
+                        Element labelElement = (Element) resourceElement.appendChild(doc.createElement("label"));
+                        labelElement.appendChild(doc.createTextNode(child.getName()));
                     } else {
-                        sb.append("<neither-resource-nor-collection path=\"" + childPath + "\" name=\"" + children[i].getName() + "\"/>");
-                        //sb.append("<neither-resource-nor-collection path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
+                        Element nothingElement = (Element) root.appendChild(doc.createElement("neither-resource-nor-collection"));
+                        nothingElement.setAttribute("path", child.getPath());
+                        nothingElement.setAttribute("name", child.getName());
                     }
-                }
-                if (showAllSubnodes) {
-                    sb.append("</collection>");
                 }
             } else {
-                sb.append("<resource path=\"" + path + "\" name=\"" + node.getName() + "\">");
-                // TODO ...
-                sb.append("<label><![CDATA[" + node.getName() + "]]></label>");
-                //sb.append("<label><![CDATA[" + node.getLabel() + "]]></label>");
-                sb.append("</resource>");
+                Element resourceElement = (Element) root.appendChild(doc.createElement("resource"));
+                resourceElement.setAttribute("path", node.getPath());
+                resourceElement.setAttribute("name", node.getName());
+                Element labelElement = (Element) resourceElement.appendChild(doc.createElement("label"));
+                labelElement.appendChild(doc.createTextNode(node.getName()));
             }
         } else {
-            String errorMessage = "node is null for path: " + path;
-            sb.append("<exception>" + errorMessage + "</exception>");
+            String errorMessage = "Node is null! (For path: " + path + ")";
+            Element exceptionElement = (Element) root.appendChild(doc.createElement("resource"));
+            exceptionElement.appendChild(doc.createTextNode(errorMessage));
             log.error(errorMessage);
         }
-        return sb.toString();
     }
     
+    /**
+     * Pass transformer parameters.
+     */
+    @Override
     protected void passTransformerParameters(Transformer transformer) throws Exception {
         super.passTransformerParameters(transformer);
+
         try {
             String resourceConfigPropertyDomain = getResourceConfigProperty("domain");
-            if (resourceConfigPropertyDomain != null) {
+            if(resourceConfigPropertyDomain != null) {
                 transformer.setParameter("domain", resourceConfigPropertyDomain);
             }
-        } catch (Exception e) {
-            log.error("could not get property domain. domain will not be availabel within transformer chain. " + e.getMessage(), e);
+        } catch(Exception e) {
+            log.error("Could not get property domain. Domain will not be available within transformer chain.");
+            log.error(e.getMessage(), e);
         }
     }
 }
