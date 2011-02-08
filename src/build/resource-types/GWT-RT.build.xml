@@ -55,6 +55,7 @@
     <property file="${component.home.dir}/build.properties"/>
 
     <property name="component.build.dir" value="${resource.home.dir}/htdocs"/>
+    <mkdir dir="${component.build.dir}"/>
     <!--property name="component.resources.build.dir" value="${component.build.dir}"/--><!--/resources-->
     <property name="component.java.dir" value="${component.home.dir}/java"/>
     <!--echo message="${component.java.dir}"/-->
