@@ -528,16 +528,25 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
         org.wyona.yanel.core.map.Realm realm = newResource.getRealm();
         String rcPath = org.wyona.yanel.core.ResourceConfigurationMap.getRCPath(realm, newResource.getPath());
         if (rcPath != null) {
+            log.debug("Resource configuration path: " + rcPath);
             if (realm.getRTIRepository().existsNode(rcPath)) {
                 ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getNode(rcPath));  
                 if (rc != null && newResource.getRTD().getResourceTypeLocalName().equals(rc.getName()) && newResource.getRTD().getResourceTypeNamespace().equals(rc.getNamespace())) {
                     log.warn("Path of new resource '" + newResource.getPath() + "' matches within resource configuration map and hence no resource config will be created!");
                     return;
+                } else {
+                    if (rc != null) {
+                        log.warn("Resource configuration '" + rcPath + "' exists, but either name ('" + rc.getName() + "', '" + newResource.getRTD().getResourceTypeLocalName() + "') or namespace ('" + rc.getNamespace() + "', '" + newResource.getRTD().getResourceTypeNamespace() + "') do not match!");
+                    } 
                 }
             } else {
                 throw new Exception("Request did match within resource configuration map of realm '" + realm.getName() + "', but no such resource type configuration node exist: " + rcPath);
             }
+        } else {
+            log.error("No such resource configuration path: " + rcPath);
         }
+
+        log.debug("Path of new resource '" + newResource.getPath() + "' does not match within resource configuration map and hence resource config will be created!");
 
         // Create resource config XML
         StringBuilder rcContent = new StringBuilder("<?xml version=\"1.0\"?>\n\n");
