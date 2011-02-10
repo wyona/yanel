@@ -11,5 +11,6 @@ Allows to create new resources
 
 <rtd>
   <property name="lookin"/> <!-- INFO: Initial look-in path, e.g. root of sitetree '/' -->
+  <property name="create-resource-configuration"/> <!-- INFO: Because of backwards compatibility default is true and some automagic is applied based on the resource configuration map -->
 </rtd>
 </resource>

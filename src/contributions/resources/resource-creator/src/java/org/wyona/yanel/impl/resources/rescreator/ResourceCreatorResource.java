@@ -491,7 +491,19 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
                 ((CreatableV2) newResource).create(request);
 
                 if (pathOfNewResource != null) {
-                    createResourceConfiguration(newResource);
+                    boolean createRC = true;
+                    try {
+                        String createRCString = getResourceConfigProperty("create-resource-configuration");
+                        if (createRCString != null && "false".equals(createRCString)) {
+                            createRC = false;
+                        }
+                    } catch (Exception e) {
+                        log.error(e, e);
+                    }
+                    if (createRC == true) {
+                        createResourceConfiguration(newResource);
+                    }
+
                     addToSitetree(newResource, type);
                 }
             } else {
