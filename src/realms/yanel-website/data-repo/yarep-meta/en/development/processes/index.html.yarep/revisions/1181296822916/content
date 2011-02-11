@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<!--
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Development Processes</title>
+</head>
+<body>
+<h1>Development Processes</h1>
+<ul>
+  <li><a href="how-to-create-a-patch.html">How to create a patch</a></li>
+  <li>RTC (Review and Then Commit)</li>
+  <li><a href="../../../create-windows-installer.html">How to create a Windows installer</a></li><li><a href="cruisecontrol.html">CruiseControl</a></li>
+</ul>
+</body>
+</html>

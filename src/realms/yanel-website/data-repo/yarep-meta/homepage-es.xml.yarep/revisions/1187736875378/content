@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<homepage xmlns="http://yanel.wyona.org/homepage/1.0">
+
+<header>
+<body xmlns="http://www.w3.org/1999/xhtml">
+<h1 id="header"><img id="logo" src="img/yanel.png" border="0"/><img id="lead" src="img/everything_is_content.png"/></h1>
+<div class="language_choice"> <a href="." shape="rect"> EN </a>| ES  </div>
+<p>
+Todo es Gestión de Contenidos. Yanel es gratuito, de código abierto y fácil de utilizar.
+</p>
+</body>
+</header>
+
+<download>
+  <version>Source</version>
+</download>
+
+<footer>
+<body xmlns="http://www.w3.org/1999/xhtml">
+<p>
+<a href="en/download/index.html">Otros sistemas y versiones</a> | <a href="es/acerca.html">Conozca más acerca de Yanel</a>
+</p>
+<p>
+En caso de que necesite soporte o desee contactar con los desarrolladores por cualquier motivo, por favor, suscríbase a una de las
+ <a href="mailing-lists.html">listas de correo</a>.
+</p>
+</body>
+
+</footer>
+</homepage>

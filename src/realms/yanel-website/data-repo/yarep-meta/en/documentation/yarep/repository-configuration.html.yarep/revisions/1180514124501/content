@@ -1,0 +1,6 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>From Template</title></head><body>  <h1>Repository Configuration</h1><br/><p>&lt;?xml version=&quot;1.0&quot;?&gt;</p><p>&lt;repository class=&quot;foor.bar.MyRepositoryImplementation&quot;&gt;</p><p>&lt;name&gt;My Repository&lt;/name&gt;<br/></p><p>&lt;/repository&gt;<br/></p><p>If no class attribute is being specified, then the default implementation is being used <a href="https://svn.wyona.com/repos/public/yarep/trunk/src/impl/java/org/wyona/yarep/impl/DefaultRepository.java"><i>org.wyona.yarep.impl.DefaultRepository</i></a>.</p><p> There are various other repository implementations, whereas examples can be found within</p>
+<p><a href="https://svn.wyona.com/repos/public/yarep/trunk/src/test/repository/">https://svn.wyona.com/repos/public/yarep/trunk/src/test/repository/</a></p>
+<p>resp.</p>
+<p><a href="https://svn.wyona.com/repos/public/yarep/trunk/src/impl/java/org/wyona/yarep/impl/repo/">https://svn.wyona.com/repos/public/yarep/trunk/src/impl/java/org/wyona/yarep/impl/repo/</a></p>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>Using JMeter with Yanel</title>
+</head>
+
+
+<body>
+<h1>Using JMeter with Yanel<br /></h1>
+<h2>How to use the jmeter-ant-task</h2>
+<p>Included in yanel is a jmeter testplan. you can find it under local/test/data/jmeter/testplan/yanel_test_plan.jmx resp. src/realms/test/yanel/data/jmeter/testplan/yanel_test_plan.jmx</p>
+<p>To make it work you need to install <a href="http://jakarta.apache.org/jmeter/">jmeter2.2</a> (jmeter2.1 will write the output in a different format hence the xslt included in yanel will not work) on your system and configure the path to your jmeter installation in src/build/local.build.properties jmeter.home.dir</p>
+<p>Also set jmeter.save.saveservice.output_format=xml in the jmeter.properties of your jmeter installation.</p>
+<p>To execute the test just type ./build.sh jmeter.</p>
+<p>You will find the results in local/test/data/jmeter/jmeter-results/ resp. http://localhost:8080/yanel/test/jmeter/jmeter-results/</p>
+<p>Note: turn off SSL.</p>
+<h2 id="section-Testing+Guidelines-UsingJMeter">Using JMeter</h2>
+<p>JMeter can be used either interactively by running the GUI (<tt>JMETER_HOME/bin/jmeter</tt>),  or through the <a class="external" href="http://www.yanel.org/en/documentation/jmeter.html">JMeter Ant Task</a><img class="outlink" src="http://documentation.yanel.wyona.org/wiki/images/out.png" alt="" />.  For the complete JMeter documention, see <a class="external" href="http://jakarta.apache.org/jmeter/usermanual/index.html">http://jakarta.apache.org/jmeter/usermanual/index.html</a><img class="outlink" src="http://documentation.yanel.wyona.org/wiki/images/out.png" alt="" /></p>
+<h2>Setting up a  test plan</h2>
+<p>JMeter test plans are XML files, but generally too comlicated to edit by  hand, so use the JMeter GUI to set up a test plan.</p>
+<p>Here is a basic example:</p>
+<ul>
+<li>Start JMeter </li>
+<li>Add a Thread Group to the Test Plan    
+<ul>
+<li>Set Number of Threads to the number of concurrent users desired,  e.g. 5 </li>
+<li>Set the Ramp-Up Period to e.g. 1, that means that JMeter will  start with 1 thread/user, and add 1 user every second to reach 5 users  after 5 seconds </li>
+<li>Set the Loop Count to 1 (we'll set this later) </li>
+</ul>
+</li>
+<li>Add the configuration element HTTP Request Defaults  as a child to the thread group    
+<ul>
+<li>Set Server Name/IP &amp; Port, e.g. <tt>127.0.0.1</tt> and <tt>8080</tt> </li>
+<li>Set the Default Protocol, e.g. HTTP </li>
+</ul>
+</li>
+<li>Add a Loop Controller element as a child to the  thread group    
+<ul>
+<li>Set the Loop Count, e.g. 100 </li>
+</ul>
+</li>
+<li>Add an HTTP Request element as a child to the Loop  Controller    
+<ul>
+<li>Set the Method, e.g. GET </li>
+<li>Set the path to the page you want to test, e.g. <tt>de/index.html</tt> (without the server address, because this is already set in the HTTP  Request Defaults element) </li>
+</ul>
+</li>
+<li>Add a Response Assertion element as a child to the  HTTP Request    
+<ul>
+<li>Add a pattern to test for existence on the page tested (i.e. <tt>de/index.html</tt>) </li>
+</ul>
+</li>
+<li>Add a Constant Timer as a child to the Loop  Controller element    
+<ul>
+<li>Set the Thread Delay, e.g. to 500 ms (this tells JMeter to wait 5  milliseconds between consecutive HTTP requests within the loop) </li>
+</ul>
+</li>
+<li>To view the results of the test, add one or more  Listener Elements to the Thread Group, e.g. Graph Results, or View  Results in Table </li>
+<li>Save the Test Plan </li>
+</ul>
+<p>This test plan should now look like this:</p>
+<pre>Test Plan<br /> |__ Thread Group<br />      |__ HTTP Request Defaults<br />      |__ Loop Controller<br />      |    |__ HTTP Request<br />      |    |    |__ Response Assertion<br />      |    |__ Constant Timer<br />      |__ Graph Results<br />      |__ View Results in Table<br /></pre>
+<h2 id="section-Testing+Guidelines-MoreDocumentation">More  Documentation</h2>
+<p>Other resources on testing:</p>
+<ul>
+<li><a href="testing-framework.html">Yanel  Testing Framework</a><img class="outlink" src="http://documentation.yanel.wyona.org/wiki/images/out.png" alt="" /></li>
+</ul>
+</body>
+</html>

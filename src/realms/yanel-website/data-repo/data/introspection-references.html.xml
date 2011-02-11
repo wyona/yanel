@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<introspection xmlns="http://www.wyona.org/neutron/1.0">
+
+  <edit mime-type="text/plain" name="References">
+    <checkout url="references.html.txt?yanel.resource.usecase=checkout" method="GET"/>
+    <checkin  url="references.html.txt?yanel.resource.usecase=checkin" method="PUT"/>
+  </edit>
+</introspection>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Import an existing website as a new realm</title>
+</head>
+<body>
+<h1>Import an existing website as a new realm</h1>
+<ul>
+  <li>sudo apt-get install httrack</li>
+  <li>httrack -w http://foo.bar</li><li>Add introspection link to (X)HTML head</li><li>Make introspection documents available</li><li>...</li><li><b>IMPORTANT:</b> One might have to change the encoding: <code>iconv -f ISO-8859-1 -t UTF-8 page.html &gt; page.html.UTF-8</code> (Please make sure that the meta content=&quot;application/xhtml+xml; charset=UTF-8&quot; resp. the XML head encoding=&quot;UTF-8&quot; is also being set appropriately. Also make sure that the server is sending the appropriate mime type which can be declared within the resource configuration .yanel-rc)</li>
+</ul>
+</body>
+</html>

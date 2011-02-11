@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Setup your Build Environment</title>
+</head>
+<body><h1>Setup your Build Environment</h1><br/>If you develop your webapplications with yanel it's likely you have more than one project. To decrease the build time you better don't build all of your project every time. It's possible with yanel to configure several projects and switch between them.<br/><br/>First add some folders for you projects. just add within your conf/local a folder for each project e.g.:<br/><br/><tt>conf/local/project-a/<br/>                         project-b/<br/></tt><tt>                         </tt><tt>               project-c/<br/></tt><tt>                         </tt><tt>               project-d/</tt><br/><br/>then you need to add local.configs for each of your projects e.g.:<br/><br/><tt>
+conf/local/project-a/local.log4j.properties<br/>                     local.realms.xml<br/></tt><tt>                     </tt><tt>
+                             local.resource-types.xml<br/></tt><tt>                     </tt><tt>
+                             local.yanel.xml</tt><br/><br/>best you copy the original configs in your conf/ folder and modify it accordingly to your projects.<br/><br/>to switch between the different projekt-configs add your projects in your src/build/local.build.properties:<br/><br/><tt># Dir name of local configuration<br/>#local.config.dir=conf/local/project-a/<br/>#local.config.dir=conf/local/project-b/<br/>#local.config.dir=conf/local/project-c/<br/>local.config.dir=conf/local/project-d/</tt><br/><br/>now you can switch between the different project by commenting out some of them.<br/><br/><br/>
+</body>
+</html>

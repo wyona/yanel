@@ -1,0 +1,78 @@
+Return-path: <comiotto@rcfmedia.ch>
+Envelope-to: michael.wechner@wyona.com
+Received: from rcfmedia.net ([213.239.204.130])
+	by mx1.wyona.com with esmtp (Exim 3.35 #1 (Debian))
+	id 1G8vql-0004OR-00
+	for <michael.wechner@wyona.com>; Fri, 04 Aug 2006 11:20:11 +0200
+Received: (qmail 30613 invoked by uid 1009); 4 Aug 2006 11:19:34 +0200
+Received: from comiotto@rcfmedia.ch by hetzner by uid 1007 with qmail-scanner-1.21st 
+ (clamdscan: 0.70-rc. spamassassin: 2.63.  Clear:RC:1(80.218.16.87):. 
+ Processed in 0.022977 secs); 04 Aug 2006 09:19:34 -0000
+Received: from unknown (HELO ?192.168.2.100?) (comiotto@rcfmedia.ch@80.218.16.87)
+  by rcfmedia.net with SMTP; 4 Aug 2006 09:19:34 -0000
+In-Reply-To: <44D300D0.3060809@wyona.com>
+References: <44CA38C7.9050208@student.ethz.ch> <44D24CEA.3090406@student.ethz.ch> <44D300D0.3060809@wyona.com>
+Mime-Version: 1.0 (Apple Message framework v624)
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+Message-Id: <3858570a4db0746cfd22d22f34f6b656@rcfmedia.ch>
+Content-Transfer-Encoding: 7bit
+Cc: phoenix@wyona.org,
+ Andreas Wuest <awuest@student.ethz.ch>
+From: Thomas Comiotto <comiotto@rcfmedia.ch>
+Subject: Re: [Phoenix] Towards a 0.1.10 release
+Date: Fri, 4 Aug 2006 11:20:09 +0200
+To: Michael Wechner <michael.wechner@wyona.com>
+X-Mailer: Apple Mail (2.624)
+
+
+Am 04.08.2006 um 10:09 schrieb Michael Wechner:
+
+> Andreas Wuest wrote:
+>
+>> Hi
+>>
+>> On 28.7.2006 18:18 Uhr, Andreas Wuest wrote:
+>>
+>>> Hi
+>>>
+>>> Since 0.1.9 was already released as a further developer release, we 
+>>> are now targetting 0.1.10 as the first public release.
+>>>
+>>> Outstanding issues I'd like to have resolved before we go public:
+>>
+>>
+>> It would also be nice if we had the Neutron specification fixed with 
+>> regard to what we are actually doing (and also Neutron-Auth separated 
+>> from Neutron).
+>>
+> +1
+>
+
+I also feel we should introduce some naming conventions that help 
+making type definitions a bit more consistent.
+
+To illustrate what I mean we have for instance..
+
+  - Message. Element type. Used in login.message or exception.message
+  - Name. Attribute type. Used in edit.name or param.name
+  - Description. Attribute type. Used in param.description
+
+Would be nice to have some clear rules/criterions for when to use an 
+element or an attribute, and possibly some seperation of GUI related 
+types, as in
+
+<edit type="someType" label="someLabel"/>
+
+or
+
+<edit>
+   <type>someType</type>
+   <label>someLabel</label>
+</edit>
+
+--
+Bests
+Thomas
+  
+
+

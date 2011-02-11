@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>  <meta name="generator" content="HTML Tidy for Java (vers. 26 Sep 2004), see www.w3.org" /> <title>Create a Windows Installer for Yanel</title> 
+  </head>
+  <body>
+<h1>Create Binary for Windows</h1>
+<h2>Requirements</h2>
+<ul>
+<li>a Windows operating system (obviously): Windows 2000, XP, Vista or later incarnations of NT should work</li>
+<li>a JDK (needed since we build from the Java source) &gt;= 1.5 </li>
+<li>the Subversion command-line client (until <a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5341">bug 5341</a> gets fixed) &gt;= 1.4: get it under Cygwin or download it from <a href="http://www.sliksvn.com/en/download">http://www.sliksvn.com/en/download</a> for example and install it </li>
+<li>the complete installation of NSIS &gt;= 2.24: download it from <a href="http://nsis.sourceforge.net/">http://nsis.sourceforge.net/</a> and install it (at the moment it is expected by the below script to sit under C:\Programme\NSIS, sorry for that; however for now the script can be tweaked easily) </li>
+</ul>
+<h2>Steps<br /></h2>
+<ol>
+<li>start Windows </li>
+<li>checkout Yanel from <a href="download/source-repository.html">SVN</a> (anonymous access is sufficient) </li>
+<li>run <em>src\release</em> &lt;version string&gt; &lt;revision number&gt; (see the <a href="http://svn.wyona.org/repos/public/yanel/trunk/src/README-release.txt">description of the official release process</a> for how to choose the exact values)... and wait a while </li>
+<li>you should test the installer which will be run automatically just before the script ends </li>
+<li>the installer program can then be provided as binary snapshot/release within the <a href="../../../en/download/windows.html">Windows download section</a>: it will be available in the folder <em>build\bin-snapshots\wyona-yanel-VERSION-rREVISION-bin-win</em> under the name <em>install-Wyona-Yanel-VERSION-rREVISION.exe</em> </li>
+</ol>
+</body>
+</html>

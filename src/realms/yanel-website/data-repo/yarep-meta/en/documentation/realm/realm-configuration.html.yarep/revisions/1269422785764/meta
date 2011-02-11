@@ -1,0 +1,12 @@
+yarep_size<long>:3996
+workflow-state<string>:draft
+yarep_checkinDate<date>:2010-03-24T10:21:56:869+0100
+yarep_revisionCreator<string>:lenya
+yarep_type<string>:resource
+yarep_lastModifed<long>:1269422785000
+yarep_checkoutUserID<string>:lenya
+yarep_checkoutDate<date>:2010-03-24T10:22:24:101+0100
+yarep_isCheckedOut<boolean>:false
+workflow-date<date>:2010-03-24T10:26:25:889+0100
+yarep_revisionCreationDate<date>:2010-03-24T10:26:25:787+0100
+yarep_revisionComment<string>:Updated with tinyMCE

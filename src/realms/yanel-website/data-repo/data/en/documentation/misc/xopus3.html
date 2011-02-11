@@ -1,0 +1,175 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Xopus 3</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head>
+
+<body>
+<div class="instructions">
+<h1>Xopus 3</h1>
+
+<ul>
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#starting">Loading/Opening data</a></li>
+  <li><a href="#saving">Saving data</a></li>
+  <li><a href="#lookup">Lookup</a></li>
+  <li><a href="#misc">Misc</a></li>
+  <li><a href="#resources">Resources</a></li>
+</ul>
+
+<a name="introduction"/>
+<h2>Introduction</h2>
+<p>This document describes various items re integration of Xopus 3</p>
+
+<a name="starting"/>
+<h2>Loading/Opening data</h2>
+
+<p>
+Download Xopus from <a href="http://www.xopus.com/download/">http://www.xopus.com/download/</a> and unzip and deploy it such that it can be accessed for example with the following URL http://127.0.0.1:8080/yanel/from-scratch-realm/Xopus-3.2.10/xopus/xopus.js
+</p>
+
+<p>
+<b>WARNING:</b> It doesn't seem to be possible to make it accessible from within a resource, which means using a URL as for example http://127.0.0.1:8080/yanel/from-scratch-realm/yanel/resource-types/http%3a%2f%2fwww.wyona.org%2fyanel%2fresource%2f1.0%3a%3axopus3/Xopus-3.2.10/xopus/xopus.js
+</p>
+
+<p>
+In order to load data for editing with Xopus 3 one needs to provide an XHTML page containing a link to the main Xopus javascript (xopus.js) and an XML configuration (&lt;x:config>...&lt;/x:config>) containing pointers to the actual <a href="http://xopus.com/files/demo/examples/Simple/document.xml">XML data</a>, its <a href="http://xopus.com/files/demo/examples/Simple/schema.xsd">schema</a> and some <a href="http://xopus.com/files/demo/examples/Simple/stylesheet.xsl">XSLT</a> for the WYSIWYG transformation of the XML.
+</p>
+
+<p>
+This page can be provided at any URL as for example http://127.0.0.1:8080/yanel/from-scratch-realm/xopus-example.html and served with the mime type text/html, whereas please make sure to resolve the Xopus javascript path relative to the page's URL:
+</p>
+
+<pre>
+&lt;html xmlns="http://www.w3.org/1999/xhtml">
+  &lt;head>
+    &lt;title>Starting Xopus ...&lt;/title>
+    &lt;script src="./Xopus-3.2.10/xopus/xopus.js" type="text/javascript">&lt;/script>
+  &lt;/head>
+  &lt;body bgcolor="#ffffff">
+    &lt;div autostart="true" xopus="true">
+      &lt;xml>
+        &lt;x:config version="1.0" xmlns:x="http://www.xopus.com/xmlns/config">
+          &lt;x:pipeline xml="sample.xml" xsd="sample.xsd">
+            &lt;x:view name="WYSIWYG View">
+              &lt;x:transform xsl="sample.xsl"/>
+            &lt;/x:view>
+            &lt;x:view name="XML View">
+              &lt;x:treeTransform/>
+            &lt;/x:view>
+          &lt;/x:pipeline>
+        &lt;/x:config>
+      &lt;/xml>
+    &lt;/div>
+  &lt;/body>
+&lt;/html>
+</pre>
+
+<p>
+The actual content and it's related schema and XSLT are resolved then by Xopus relative to the location of the above page, for example http://127.0.0.1:8080/yanel/from-scratch-realm/sample.xml
+</p>
+
+<p>
+<b>NOTE:</b> After loading this page and in particular loading the Xopus javascript, one will be redirected to Xopus-3.xx/xopus/xopus.html, whereas this page will be kept as reference within the URL. (The page Xopus-3.x.x/xopus/xopus.html is referencing a favicon.ico, but which doesn't exist within the Xopus-3.x.x/xopus/media folder! One might want to add one in order to avoid 404 messages within the log-file.)
+</p>
+
+<a name="saving"/>
+<h2>Saving data</h2>
+<p>
+In order to save data from Xopus to the server one needs to implement a custom javascript save function (and also an exit function):
+</p>
+
+<pre>
+// This function is called when the save button is pressed, or when the save function is called on an XMLDocument.
+function mySaveFunction(uri, xmlDocument)
+{
+  // HTTP POST the XML document
+  var result = HTTPTools.postXML(uri, xmlDocument,"UTF-8");
+
+  // Show a dialog with the result.  
+  //return confirm("Called save\n" + "Result: " + result + "\n");
+}
+
+// Register the save function.
+IO.setSaveXMLFunction(mySaveFunction);
+
+// Set exit URL:
+var exitURL = unescape(window.location.href).split('#')[0].split('?')[0] + '?yanel.resource.usecase=checkin';
+//alert(exitURL);
+
+Editor.setExitURL(exitURL);
+</pre>
+
+<p>
+The file containing the javascript code above needs to be referenced from within the x:config
+</p>
+
+<pre>
+      &lt;!-- .. -->
+    &lt;/x:pipeline>
+
+    &lt;x:javascript src="./Xopus-3.2.10/custom/save.js"/>
+  &lt;/x:config>
+&lt;/xml>
+</pre>
+
+<a name="lookup"/>
+<h2>Lookup</h2>
+<p>
+The "Lookups" need to be configured within x:config
+</p>
+
+<pre>
+      &lt;!-- .. -->
+    &lt;/x:pipeline>
+
+    &lt;x:lookupConfig>
+      &lt;!-- Image Lookup -->
+      &lt;x:lookup xmlns:yanel="http://wyona.org/yanel/1.0"
+            parentPattern="self::yanel:image" 
+            name="src"
+            url="SOME_URL?yanel.resource.usecase=xopus-imagelookup" 
+            forceLookup="true" 
+            autoOpen="true"/>
+      &lt;!-- Link Lookup -->
+      &lt;x:lookup xmlns:xhtml="http://www.w3.org/1999/xhtml"
+            parentPattern="self::xhtml:a" 
+            name="href"
+            url="SOME_URL?yanel.resource.usecase=xopus-linklookup" 
+            forceLookup="true" 
+            autoOpen="true"/>
+    &lt;/x:lookupConfig>
+  &lt;/x:config>
+&lt;/xml>
+</pre>
+
+<p>
+Sometimes Xopus hangs after closing a lookup. This can be 'fixed' by adding a sleep() to Xopus-3.2.10/xopus/media/lookup.html
+</p>
+
+<pre>
+funtion doUnload() {
+  sleep(500);
+</pre>
+
+<p>
+In order to transfer the values from the custom Lookup-Dialog into Xopus one needs to use top.dialogArguments (instead window.dialogArguments as used by Xopus 2)
+</p>
+
+<a name="misc"/>
+<h2>Misc</h2>
+<p>
+Xopus depends on the MSXML Parser, whereas depending on the version of the MSXML Parser one needs to adapt the schemas and XSLTs.
+In order to test what version you have installed, please browse to the following URL
+<a href="http://xopus.com/files/msxmltester/">http://xopus.com/files/msxmltester/</a>
+</p>
+
+<p>
+Depending on the schemas and XSLTs provided by the server you might have to upgrade your locally installed MSXML Parser.
+</p>
+
+<a name="resources"/>
+<h2>Resources</h2>
+<ul>
+  <li><a href="http://xopus.com/Documentation/Developer%20Guide%5CHow%20To%5CUpgrade%20from%20Xopus%202%20to%203.new">Upgrade from Xopus 2 to 3</a></li>
+  <li><a href="http://lenya.apache.org/docu12x/components/misc/xopus.html">Xopus 2 integration re Lenya 1.2.x</a></li> 
+</ul>
+</div>
+</body>
+</html>

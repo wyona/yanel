@@ -1,0 +1,12 @@
+yarep_size<long>:6922
+workflow-state<string>:draft
+yarep_checkinDate<date>:2009-01-29T12:12:08:000+0100
+yarep_lastModifed<long>:1246439242000
+yarep_revisionCreator<string>:lenya
+yarep_type<string>:resource
+yarep_checkoutUserID<string>:lenya
+yarep_checkoutDate<date>:2009-07-01T11:06:25:000+0200
+workflow-date<date>:2009-07-01T11:07:22:000+0200
+yarep_isCheckedOut<boolean>:false
+yarep_revisionCreationDate<date>:2009-07-01T11:07:22:000+0200
+yarep_revisionComment<string>:updated

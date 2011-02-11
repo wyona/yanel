@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>Resource Type Configurations</title>
+</head>
+<body>
+<div class="instructions">
+<h1>Resource Type Configurations</h1>
+<p>Yanel looks up the configuration for a requested URL to determine what resource-type to use. The resource-type configurations are located in the <em>repository</em> which is configured (in the file <a href="../realm/realm-configuration.html"> <code>realm.xml</code> </a>) as the <em>rti</em> (resource type identifier, see the XML tag<code> &lt;rti&gt;</code> in <a href="../realm/realm-configuration.html#rc-repo"> <code>realm.xml</code></a>) repository of the realm. This repository is used to configure Yanel's responses to requests, based on the request URLs, and normally contains 3 types of entries:</p>
+<ul>
+<li>The "<code>map.rc-map</code>" file</li>
+<li>"<code>*_yanel-rc.xml</code>" files </li>
+<li>"<code>*.yanel-rc files</code>" (e.g. *.html.yanel-rc, *.xml.yanel-rc, etc.)</li>
+</ul>
+<h2>The "map.rc-map" file</h2>
+<p>This is an XML file used to configure responses based on URLs using wildcards, enabling you to configure collections of URLs in the same way. For details, see <a href="rc-map.html"> <code>rc-map</code></a>.</p>
+<h2>The "*_yanel-rc.xml" files</h2>
+<p>These files contain configurations for the patterns matched based on the <a href="rc-map.html"> <code>rc-map</code></a>.</p>
+<h2>The "*.yanel-rc" files</h2>
+<p>These are used to configure single URLs. The URL matched is the same as the file name, without the <code>.yanel-rc</code> extension. For example, the request URL <code>{realm-URL}/discoveries.html</code> will be matched to the file <code>discoveries.html.yanel-rc.</code></p>
+<p><span style="text-decoration: underline;"><strong>Note 1:</strong></span> You can use a configuration file for a certain URL, while at the same time using an <a href="rc-map.html"> <code>rc-map</code></a> for a pattern of URLs.</p>
+<p><span style="text-decoration: underline;"><strong>Note 2:</strong></span> These file names are a convention only. To better understand the matching mechanism, also see the page "<a href="http://yanel.wyona.org/en/documentation/how-a-request-is-being-processed.html">How a request is processed</a>".</p>
+<h2>Example 1: An XML Resource</h2>
+<p>This type of resource returns an XML snippet/document, which is usually further processed using XSLTs:</p>
+<pre>&lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0"&gt;<br />&#160; &lt;yanel:rti name="xml" namespace="http://www.wyona.org/yanel/resource/1.0"/&gt;<br />&#160; &lt;yanel:property name="mime-type" value="text/html"/&gt;<br />&#160; &lt;yanel:property name="xslt" value="/app/xslt/global.xsl"/&gt;<br />&lt;/yanel:resource-config&gt;</pre>
+<h2>Example 2: A resource creator<br /></h2>
+<p>As a more complex example, consider this configuration for a resource creator that creates new XHTML pages:</p>
+<pre>&lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0"&gt;<br />&#160; &lt;yanel:rti name="resource-creator" namespace="http://www.wyona.org/yanel/resource/1.0"/&gt;<br />&#160; &lt;yanel:property name="lookin" value="/path/to/resource/creation/dir/"/&gt;<br />&#160; &lt;yanel:custom-config&gt;<br />&#160;&#160;&#160; &lt;rc:resource-types xmlns:rc="http://www.wyona.org/yanel/resource/resource-creator/1.0"&gt;<br />&#160;&#160;&#160;&#160;&#160; &lt;rc:resource-type name="xml" namespace="http://www.wyona.org/yanel/resource/1.0"&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;rc:display-name&gt;New XHTML Page&lt;/rc:display-name&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;rc:property name="mime-type" value="text/html"/&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;rc:property name="source-mime-type" value="application/xhtml+xml"/&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;rc:property name="template" value="yanelrepo:/templates/my-template.html"/&gt;<br />&#160;&#160;&#160;&#160;&#160; &lt;/rc:resource-type&gt;<br />&#160;&#160;&#160; &lt;/rc:resource-types&gt;<br />&#160; &lt;/yanel:custom-config&gt;<br />&lt;/yanel:resource-config&gt;</pre>
+<p>&#160;</p>
+</div>
+</body>
+</html>

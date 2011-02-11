@@ -1,0 +1,18 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Created from template ...</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  
+<h2>SSL</h2>
+<h3>Binary Version</h3>
+<p>Within the file <i>TOMCAT/webapps/yanel/WEB-INF/web.xml</i> one can set</p>
+<p>
+&lt;servlet&gt;<br/>
+   ...<br/>
+  &lt;init-param xmlns:webApp=&quot;http://java.sun.com/xml/ns/j2ee&quot;&gt;<br/>
+    &lt;param-name&gt;ssl-port&lt;/param-name&gt;<br/>
+    &lt;param-value&gt;8443&lt;/param-value&gt;<br/>
+  &lt;/init-param&gt;<br/>
+&lt;/servlet&gt;</p>Restart Tomcat (please make sure that Tomcat has SSL turned on, see &quot;conf/serverl.xml&quot;)
+<h3>Source Version</h3>
+<p>
+Within the file <i>src/build/(local.)build.properties</i> one can set the parameters <i>tomcat1.ssl.port=8443</i> and <i>tomcat2.ssl.port=8443</i>. Then re-configure Tomcat (run &quot;configure&quot; to turn on SSL for Tomcat resp. patch &quot;conf/server.xml&quot;) resp. re-build (run &quot;build&quot; to patch the &quot;web.xml&quot; file) Yanel
+</p>
+</body>
+</html>

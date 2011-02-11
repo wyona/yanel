@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Configuration of spring-yanel-config.xml</title>
+  </head>
+  <body>
+    <h1>Configuration of spring-yanel-config.xml</h1>
+    <h2>Examples</h2>
+    <pre>
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+&lt;beans>
+  &lt;bean id="DefaultRepositoryFactory" class="org.wyona.yarep.core.RepositoryFactory"/>
+  &lt;bean id="RTIRepositoryFactory" class="org.wyona.yarep.core.RepositoryFactory">
+    &lt;!-- &lt;constructor-arg type="java.lang.String" value="yanel-rti-yarep.properties"/> -->
+  &lt;/bean>
+  &lt;bean id="ACPoliciesRepositoryFactory" class="org.wyona.yarep.core.RepositoryFactory">
+    &lt;!-- &lt;constructor-arg type="java.lang.String" value="ac-policies-yarep.properties"/> -->
+  &lt;/bean>
+  &lt;bean id="ACIdentitiesRepositoryFactory" class="org.wyona.yarep.core.RepositoryFactory">
+    &lt;!-- &lt;constructor-arg type="java.lang.String" value="ac-identities-yarep.properties"/> -->
+  &lt;/bean>
+  &lt;bean id="ExtraRepositoryFactory" class="org.wyona.yarep.core.RepositoryFactory"/>
+  &lt;bean id="map" class="org.wyona.yanel.impl.map.MapImpl"/>
+  &lt;!--
+  &lt;bean id="policyManager" class="org.wyona.security.impl.PolicyManagerImpl"/>
+  &lt;bean id="identityManager" class="org.wyona.security.impl.IdentityManagerImpl"/>
+  -->
+&lt;!--
+  &lt;bean id="PolicyManagerFactory" class="org.wyona.security.impl.PolicyManagerFactoryImplVersion2"/>
+-->
+  &lt;bean id="PolicyManagerFactory" class="org.wyona.security.impl.PolicyManagerFactoryImpl"/>
+  &lt;bean id="IdentityManagerFactory" class="org.wyona.security.impl.IdentityManagerFactoryImpl"/>
+
+  &lt;bean id="repo-navigation" class="org.wyona.yanel.impl.navigation.SitetreeResConfigAndDataRepoImpl"/>
+&lt;!--
+  &lt;bean id="repo-navigation" class="org.wyona.yanel.impl.navigation.SitetreeRTIImpl"/>
+-->
+&lt;/beans>
+    
+    </pre>
+  </body>
+</html>

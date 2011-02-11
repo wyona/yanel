@@ -1,0 +1,16 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Created from template ...</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <br/><p><h1>Usecase: Invite a friend</h1><br/><h2>Usability</h2></p><ul><li>Get FOAF (resp. <a href="usecase-search-a-friend.html">Find a friend</a>)</li><li>Select this friend from the &quot;address book&quot;</li><li>Click on the invite widget</li></ul>
+<h2>Protocol</h2>
+<p>TBD: How can we avoid spam? I would suggested via a "trust server"!
+
+<ul>
+<li>Get profile of friend and hence get friend's provider server</li>
+<li>Get from friend's provider server the FOAF introspection (resp. the invite URL)</li>
+<li>Send your profile to friend's provider invitation URL</li>
+<li>Friend's provider server will contact "trust server" with your profile</li>
+<li>If "trust server" acknowledges your profile as being trustworthy then your friend's provider server will contact your friend by forwarding your profile</li>
+</ul>
+
+</p>
+
+<p><h2>Misc</h2></p><ul><li><a href="http://blogs.sun.com/bblfish/entry/my_bloomin_friends">http://blogs.sun.com/bblfish/entry/my_bloomin_friends</a><br/></li></ul></body>
+</html>

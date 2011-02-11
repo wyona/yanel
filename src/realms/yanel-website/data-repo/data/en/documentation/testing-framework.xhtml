@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>Testing Framework</title>
+</head>
+
+
+<body>
+<div class="instructions">
+<h1>Testing Framework</h1>
+<h3>General information</h3>
+There are different kind of tests: 
+<ul>
+<li><strong>junit</strong>: To test specific functionality of certain java components/classes see <a href="http://junit.org/">http://junit.org/</a></li>
+<li><strong>htmlunit</strong>: To test the web pages (simulating user interaction) see <a href="http://htmlunit.sourceforge.net/">http://htmlunit.sourceforge.net/</a></li>
+<li><strong>Canoo</strong>: To test the web pages (simulating user interaction) see <a href="http://webtest.canoo.com/">http://webtest.canoo.com</a></li>
+<li><strong>JMeter</strong>: To load test web applications (simulating user interaction) see <a href="http://jakarta.apache.org/jmeter/">http://jakarta.apache.org/jmeter/</a></li>
+</ul>
+<h3>How to run the tests</h3>
+<p>After downloading the Yanel source (either via <a href="../../download/source-repository.html">SVN</a> or as <a href="../download/index.html">snapshot</a>) one can run the tests all at once (as we do it within <a href="http://195.226.6.72:8080">Hudson</a>) or run the various tests individually.</p>
+<p>If you want to run all at once (including build and start of Yanel), then execute the shell script</p>
+<pre>./src/build/targets/continuous-integration/reCI 8080 8443 8005 8009 /home/michi/local/canoo-webtest-3.0-R_1758
+</pre>
+whereas please make sure to have <a href="http://webtest.canoo.com">Canoo webtests</a> installed.
+<p>&#160;</p>
+<p>If you want to run the tests individually, then it's necessary to build and start yanel before running the tests.</p>
+<p><strong>IMPORTANT:</strong> If you want to run the htmlunit tests, you have to start tomcat and configure the host and url in</p>
+<pre>$YANEL_HOME/src/test/htmlunit/local.htmlunit-properties.xml
+</pre>
+<p>&#160;</p>
+<p>Then execute in $YANEL_HOME:</p>
+<pre>./build.sh test
+</pre>
+<p>&#160;</p>
+<p>To run single tests standalone:</p>
+<pre>cd $YANEL_HOME
+./build.sh -f src/test/build.xml junit -Dtest.class.name=org.wyona.yanel.impl.map.MapImplTest
+./build.sh -f src/test/build.xml htmlunit -Dtest.class.name=org.wyona.yanel.htmlunit.yanelwebsite.SimpleWebTest
+</pre>
+<p>&#160;</p>
+<p>To run Yanel specific Canoo webtests (including junit and htmlunit):</p>
+<pre>./build.sh test -Dwebtest.home.dir=/usr/local/canoo-webtest-3.0-R_1758 -Dwebtest.config.host=localhost -Dwebtest.config.protocol=http -Dwebtest.config.port=8080 -Dheadless=
+</pre>
+<p>&#160;</p>
+<p>whereas if the global property 'headless' is set, then also the Canoo property 'wt.headless' is set within src/build/targets/test.xml, which means no monitor is displayed and no browser is opened to display the Canoo results.</p>
+<p>Some Canoo web-tests are located at</p>
+<pre>src/realms/use-cases/yanel/src/test/canoo/
+src/realms/yanel-website/src/test/canoo/
+</pre>
+whereas also see the README.txt files within these directories.
+<p>&#160;</p>
+<p>To run realm specific Canoo webtests</p>
+<pre>./build.sh -f src/realms/yanel-website/src/test/canoo/build.xml
+</pre>
+or to run a specific target
+<pre>./build.sh -f src/realms/yanel-website/src/test/canoo/build.xml MY_TARGET_NAME
+</pre>
+<p>&#160;</p>
+<p>whereas make sure to configure the properties within the realm first, e.g.</p>
+<pre>src/realms/yanel-website/src/test/canoo/build.properties
+src/realms/yanel-website/src/test/canoo/local.build.properties<br /></pre>
+<p>To run JMeter tests, use the "jmeter" target:</p>
+<pre>./build.sh [-f path/to/build.xml] jmeter<br /></pre>
+<p>&#160;</p>
+<h3>How to write tests</h3>
+<p>Where to place core tests: <br />$YANEL_HOME/src/test/junit/ <br />$YANEL_HOME/src/test/htmlunit/ <br /><br />Where to place resource tests: <br />$YANEL_HOME/src/resources/MYRESOURCE/src/test/junit/ <br />$YANEL_HOME/src/resources/MYRESOURCE/src/test/htmlunit/</p>
+<p>Choose the name of the class according to the following convention:</p>
+<p>*Test.java e.g. MyResourceTest.java for junit tests</p>
+<p>*WebTest.java e.g. MyResourceWebTest.java for htmlunit tests</p>
+<p>The tests which adhere to these conventions will be executed automatically by the testing framework.</p>
+<p>Have a look at the existing tests to see how it works, e.g. in the xml resource.</p>
+<p>You can find more example htmlunit tests at: <a href="http://svn.wyona.com/repos/public/lenya/htmlunit/">http://svn.wyona.com/repos/public/lenya/htmlunit/</a> (Username:anonymous Password: anonymous).</p>
+<p>For writing JMeter tests, see the <a href="jmeter.html">JMeter page</a>.</p>
+<h3>Misc</h3>
+<p>In the case of Mac OS X (at least Snow Leopard) and Java 1.6 one needs to add xalan-2.7.0.jar to the directory <code>/Library/Java/Extensions</code> (also see <a href="http://blog.jonasbandi.net/2009/06/running-canoo-webtest-30-on-os-x.html">http://blog.jonasbandi.net/2009/06/running-canoo-webtest-30-on-os-x.html</a>).</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Specification: Update/Dependency manager</title>
+  </head>
+<body>
+  <h3>Specification</h3>
+  <h1>Update/Dependency manager</h1>
+<p>Yanel should be able to update itself. </p>
+
+<p>Hence there is a resource-type <a href="http://svn.wyona.com/repos/public/yanel/trunk/src/realms/welcome-admin/yanel/resources/update-webapp/resource.xml">&quot;update-webapp&quot;</a> which provides an update-manager.
+The update-manager reads the install.rdf (<a href="http://svn.wyona.com/repos/public/yanel/trunk/src/build/install.rdf"><code>WEB-INF/classes/install.rdf</code></a>) of the locally installed/deployed Yanel and gets the update-link (<code>updateURL</code>) from it. The update-link points to an update.rdf file located on the update-server (e.g. <a href="http://www.yanel.org/downloads/update.rdf">http://www.yanel.org/downloads/update.rdf</a>, which is located within a <a href="https://svn.wyona.com/repos/public/yanel/contributions/realms/downloads">sub-realm</a> of the yanel-website realm) which describes all the relevant changes and the versions accordingly (Also see <a href="#proposal1">proposal 1</a>).</p>
+
+<p>The update.rdf describes the  updates (version, compatibility, the link where to get the particular update). The update-manager compares the current version (install.rdf) with the version provided by the update.rdf and displays all the version which the current Yanel could update to.</p>
+
+<p>The user can choose which version she wants to update to. The update-manager then does a backup of the current yanel [problem1] downloads the war of the update version, merges the changes in the config files [problem2] (which are listed in the install.rdf) into the downloaded update and deploys it. If the user is not happy with the updated version, then she can revert the update. The update-manager would deploy the backup again.</p>
+
+
+<b>Problems:</b>
+<ul>
+  <li>[problem1] To backup the current version yanel should block all request while backuping to prevent inconsistency</li>
+  <li>[problem2] To allow a merge of the config all config files should be xml rather than property files</li>
+  <li>If the update would fail and break yanel, the update-manager would not be available anymore to manage the revert. Maybe the update-manager should stay in a separate servlet.</li>
+  <li>If the update-manager should handle every servlet container, then complexity will increase. Maybe we should limit it to tomcat which comes with the binary version.</li>
+</ul>
+
+<a name="proposal1">&#160;</a>
+<b>Proposals:</b>
+<br/>
+<ul><li>[Proposal 1] To provide the updates (including update.rdf) there should be a realm which contains the updates. This realm would not be included within yanel.<br/></li></ul> <br/></body>
+</html>

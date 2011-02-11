@@ -1,0 +1,9 @@
+workflow-state<string>:draft
+yarep_revisionCreator<string>:lenya
+yarep_type<string>:resource
+yarep_checkoutUserID<string>:lenya
+yarep_checkoutDate<date>:2007-07-18T08:57:03:000+0200
+workflow-date<date>:2007-07-18T09:02:41:000+0200
+yarep_isCheckedOut<boolean>:false
+yarep_revisionCreationDate<date>:2007-07-18T09:02:41:000+0200
+yarep_revisionComment<string>:updated

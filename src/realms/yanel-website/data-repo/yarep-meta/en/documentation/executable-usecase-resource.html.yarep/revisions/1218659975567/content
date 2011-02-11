@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>ExecutableUsecaseResource</title>
+    <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/>
+  </head>
+  <body>
+    <h1>ExecutableUsecaseResource</h1>ExecutableUsecaseResource is a base class for resources
+    providing a stateless usecase. you can extend this class if you want to develop a resource-type
+    which will display several views for a usecase.<br/>It already has implemented a bunch of nice
+    thing which you could like. e.g. Jelly (<a href="http://commons.apache.org/jelly/">Executable
+    XML</a>), Built-in views (default, done, cancel), Custom Views, Info and Error Messages. <br/>At
+    the moment folowing resource-types extending ExecutableUsecaseResource: user-mgmt. 
+    
+    <h3>ExecutableUsecaseResource extends BasicXMLResource</h3>
+    <p>
+      Since ExecutableUsecaseResource extends BasicXMLResource you can use all the things provided by <a href="basic-xml-resource-type.html">BasicXMLResource</a>.
+    </p>
+    <h2>Jelly</h2>
+    <p>
+      If you extend from ExecutableUsecaseResource or UsecaseResource you can use jelly-views.
+    </p>
+    
+  </body>
+</html>

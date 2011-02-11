@@ -1,0 +1,53 @@
+Return-path: <comiotto@rcfmedia.ch>
+Envelope-to: michael.wechner@wyona.com
+Received: from rcfmedia.net ([213.239.204.130])
+	by mx1.wyona.com with esmtp (Exim 3.35 #1 (Debian))
+	id 1G8wLq-0005Bh-00
+	for <michael.wechner@wyona.com>; Fri, 04 Aug 2006 11:52:19 +0200
+Received: (qmail 4729 invoked by uid 1009); 4 Aug 2006 11:51:37 +0200
+Received: from comiotto@rcfmedia.ch by hetzner by uid 1007 with qmail-scanner-1.21st 
+ (clamdscan: 0.70-rc. spamassassin: 2.63.  Clear:RC:1(80.218.16.87):. 
+ Processed in 0.016903 secs); 04 Aug 2006 09:51:37 -0000
+Received: from unknown (HELO ?192.168.2.100?) (comiotto@rcfmedia.ch@80.218.16.87)
+  by rcfmedia.net with SMTP; 4 Aug 2006 09:51:37 -0000
+In-Reply-To: <6e3cebe0241859747b16701b4e2d0669@rcfmedia.ch>
+References: <44CA38C7.9050208@student.ethz.ch>	<44D24CEA.3090406@student.ethz.ch> <6320a5c1577c3ff50ddcdac25f72018e@rcfmedia.ch> <44D30191.1020501@wyona.com> <6e3cebe0241859747b16701b4e2d0669@rcfmedia.ch>
+Mime-Version: 1.0 (Apple Message framework v624)
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+Message-Id: <911d37cd549e9545b07dbaa502c2f6d4@rcfmedia.ch>
+Content-Transfer-Encoding: 7bit
+Cc: Michael Wechner <michael.wechner@wyona.com>,
+ phoenix@wyona.org
+From: Thomas Comiotto <comiotto@rcfmedia.ch>
+Subject: Addition to Re: Altrenatives to introspection [WAS: Re: [Phoenix] Towards a 0.1.10 release]
+Date: Fri, 4 Aug 2006 11:52:12 +0200
+To: Thomas Comiotto <comiotto@rcfmedia.ch>
+X-Mailer: Apple Mail (2.624)
+
+>
+>
+> POST foo.bar.com/neutron
+> <neutron>
+>   <options url="somefile.xml"/>
+> </neutron>
+>
+
+Options could be requested for a directory of course which probably 
+would even better. Then the server would have to return directives for 
+all contained resources/resource-sets or for all 
+resources/resource-sets below the requested path.
+
+That would introduce some redundancies / alternative approach to 
+<navigation>. I'm not sure how to differentiate but I think it's 
+imperative to deal with retrieving trees of resources/resource-sets in 
+a straight forward manner. Maybe worth to consult the WebDAV specs once 
+more, which is too restrictive (and at the same time fuzzy regarding 
+implementation directives) in terms of handling what they call a 
+"collection" in my view (see lenya WebDAV integration) - but they had 
+their reasons too;)
+
+--
+Bests
+Thomas
+
+

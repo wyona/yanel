@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>Untitled document</title>
+</head>
+<body>
+<h1>Configuration of resource-types.xml</h1>
+<p>Resource-types are not only the building blocks of Yanel itself, but also the building blocks of a Yanel application.</p>
+<p>That's why there are several places where resource-types can be added:</p>
+<ol>
+<li>for your project-specific resource-types: in the resource-types.xml file under the same directory as your realm configuration file (e.g. realm.xml)</li>
+<li>[advanced usage:] for resource-types used by many of your projects (and that are maybe even enhancing Yanel in general but are for various reasons not available by default): in the local.resource-types.xml file under your Yanel local configuration directory (usually $YANEL_HOME/conf/local/)</li>
+<li>[only useful to developers with commit rights on Yanel:] for resource-types bundled with Yanel by default: in $YANEL_HOME/conf/resource-types.xml</li>
+</ol>
+<h2><em>Optional</em> project-specific resource-types.xml</h2>
+<p><em><strong>Important: </strong></em>This file is not mandatory, so it being not found will trigger no error message: please be careful naming it correctly and placing it in the right directory (see details above).</p>
+<p><em>Note: </em>In this file the paths are really relative to the  directory where the realm configuration file (e.g. realm.xml) is, not to  the realm directory itself (where build.xml is). So if your project directory layout is for example:</p>
+<pre>build.xml<br />resource-types/<br />    resource-type-1/<br />configuration/<br />    realm.xml<br />    other.realm.xml<br />    resource-types.xml<br /></pre>
+<p>...then your project-specific resource-types.xml file (in the configuration directory) would read:</p>
+<pre>&lt;resource-types xmlns="http://www.wyona.org/yanel/1.0"&gt;<br />  &lt;resource-type src="@REALM_SRC_DIR@/../resource-types/resource-type-1/" compile="true"/&gt;<br />&lt;/resource-types&gt;<br /></pre>
+<h2>Example of project-specific resource-types.xml<br /></h2>
+<pre>&lt;?xml version="1.0"?&gt;<br /><br />&lt;resource-types xmlns="http://www.wyona.org/yanel/1.0"&gt;<br /><br />  &lt;!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! --&gt;<br /><br />  &lt;resource-type src="@REALM_SRC_DIR@/res-types/layoutselector/" compile="true" copy-dir-name="fsr-layoutselector"/&gt;<br />&lt;!--<br />  &lt;resource-type src="/home/michi/src/wyona/public/yanel/contributions/resources/xopus3/" compile="true" copy-dir-name="fsr-xopus3"/&gt;<br />--&gt;<br />&lt;!--<br />  &lt;resource-type src="/Users/michaelwechner/src/wyona/public/yanel/contributions/resources/timetracker/" compile="true"/&gt;<br />--&gt;<br /><br />  &lt;!-- Library is loaded via Maven, see src/realms/welcome-admin/src/build/dependencies.xml --&gt;<br />  &lt;resource-type package="org.wyona.yanel.impl.resources.example" compile="true"/&gt;<br />&lt;/resource-types&gt;<br /><br /></pre>
+<h2>Example of Yanel-wide resource-types.xml<br /></h2>
+<pre>&lt;?xml version="1.0"?&gt;
+
+&lt;!-- NOTE: The "compile" attribute is true by default --&gt;
+&lt;!-- NOTE: Do not use relative paths to reference resource types, because the paths are not being resolved re the location of (local.)resource-types.xml --&gt;
+
+&lt;resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2008081300"&gt;
+
+  &lt;changes&gt;
+    &lt;change version="2008081300"&gt;redirect resource type added&lt;/change&gt;
+    &lt;change version="2008041600"&gt;session manager resource type added&lt;/change&gt;
+    &lt;change version="2008041200"&gt;404 resource type added&lt;/change&gt;
+    &lt;change version="2008040400"&gt;policy manager resource type added&lt;/change&gt;
+    &lt;change version="2007112000"&gt;@YANEL_SRC_DIR@ parameter introduced&lt;/change&gt;
+    &lt;change version="2007081500"&gt;timeline resource type added&lt;/change&gt;
+    &lt;change version="2007070100"&gt;user-mgmt resource type added&lt;/change&gt;
+    &lt;change version="2007062900"&gt;data-repo-sitetree resource type added&lt;/change&gt;
+  &lt;/changes&gt;
+
+  &lt;!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! --&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/sessionmanager/" compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/404/" compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/policymanager/" compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/timeline/" compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/data-repo-sitetree/" compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/navigation/"                  compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/translation/"                 compile="true"/&gt;
+  &lt;resource-type package="org.wyona.yanel.impl.resources.node" src="@YANEL_SRC_DIR@/src/resources/file/" compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/directory/" compile="true" copy-dir-name="yanel-collection"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/add-realm/"                  compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/odt/"                         compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/xml/"                         compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/user-mgmt/"                   compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/realms/welcome-admin/yanel/resources/show-realms/"                 compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/realms/welcome-admin/yanel/resources/update-webapp/"                 compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/testing-control/"             compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/resources/testing-times/"               compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/atom/"          compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/atom-entry/"    compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/contact-form/"  compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/wiki/"          compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/zip/"           compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/calendar/"      compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/resource-creator/"      compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/nutch/" compile="true"/&gt;
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/davcollection/" compile="true"/&gt;
+
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/pdf/" compile="true" copy-dir-name="yanel-pdf"/&gt;
+
+  &lt;resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/yanel-user/" compile="true"/&gt;
+
+&lt;!--
+  &lt;resource-type src="/SOME_ABSOLUTE_PATH/contributions/resources/tape/" compile="true"/&gt;
+--&gt;
+
+  &lt;resource-type package="org.wyona.yanel.impl.resources.redirect" src="@YANEL_SRC_DIR@/src/contributions/resources/redirect/" compile="true"/&gt;
+
+&lt;/resource-types&gt;
+
+    </pre>
+</body>
+</html>

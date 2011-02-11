@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>How to create a patch</title>
+</head>
+<body>
+<h1>How to create a patch</h1>
+
+<h2>Windows</h2>
+<ul>
+<li>Download patch exec for <a href="http://gnuwin32.sourceforge.net/packages/patch.htm">Windows</a></li>
+<li>start -&gt; Control Panel -&gt; System -&gt; Advanced -&gt; Environment Variables -&gt; Edit Use Variable Path (...;C:\Program Files\GnuWin32\bin</li>
+<li>start -&gt; Run -&gt; cmd -&gt; patch --help</li>
+</ul>
+
+<h2>UNIX</h2>
+<ul>
+  <li>svn diff DIRECTORY/FILE > patch.txt</li>
+</ul>
+
+<h1>How to submit a patch</h1>
+<p>
+Please upload patches to <a href="../../task-bug-tracker.html">Bugzilla</a> instead sending them via the mailing lists.
+</p>
+
+<h1>How to apply a patch</h1>
+
+<h2>UNIX</h2>
+<ul>
+  <li>patch -p0 &lt; patch.txt</li>
+</ul>
+
+</body>
+</html>

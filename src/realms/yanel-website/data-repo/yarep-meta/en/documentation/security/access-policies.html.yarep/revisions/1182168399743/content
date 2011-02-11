@@ -1,0 +1,25 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Created from template ...</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <p><h1>Access Control Policies</h1>
+
+<pre>
+&lt;?xml version="1.0"?>
+
+&lt;policy xmlns="http://www.wyona.org/security/1.0" use-inherited-policies="false">
+
+  &lt;role id="view">
+    &lt;!--&lt;world permission="false"/>-->
+    &lt;user id="lenya" permission="true"/>
+  &lt;/role>
+
+  &lt;role id="open">
+    &lt;user id="lenya" permission="true"/>
+  &lt;/role>
+
+  &lt;role id="write">
+    &lt;user id="lenya" permission="true"/>
+  &lt;/role>
+
+&lt;/policy>
+</pre>
+
+</p></body>
+</html>

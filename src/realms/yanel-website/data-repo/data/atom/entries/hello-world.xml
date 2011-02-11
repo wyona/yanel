@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<entry xmlns="http://www.w3.org/2005/Atom">
+ <title>Hello World</title>
+ <author><name>Michael Wechner</name></author>
+ <id>urn:uuid:ab91d8ef-e068-4b6c-ad7f-2b5b336173b2</id>
+ <updated>2006-08-17T11:49:23+01:00</updated>
+ <summary type='html'>A very first Atom entry</summary>
+ <content type='xhtml'><div xmlns='http://www.w3.org/1999/xhtml'><p>A very first Atom entry of Yanel</p></div></content>
+ <dc:subject xmlns:dc='http://purl.org/dc/elements/1.1/'>Hello World</dc:subject>
+</entry>

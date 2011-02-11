@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<introspection xmlns="http://www.wyona.org/neutron/2.0">
+<resource name="Download (UNIX)">
+<edit mime-type="application/xhtml+xml">
+  <checkout url="unix.html?yanel.resource.viewid=source&amp;yanel.resource.usecase=checkout" method="GET"/>
+  <checkin  url="unix.html?yanel.resource.usecase=checkin"  method="PUT"/>
+</edit>
+</resource>
+</introspection>

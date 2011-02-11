@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Development Processes</title>
+</head>
+<body>
+
+<h1>Version control workflow</h1>
+
+<a href="example-workflow.png">
+<img style="float:right;width:40%;margin-bottom:1.5em;" src="example-workflow.png"/>
+</a>
+
+<h2>Overview</h2>
+
+<p>
+  This document aims to explain how Version Control Systems are used
+  within the Yanel development process. The picture on the right should
+  be understood as an example of a possible workflow, but remember that
+  these are just conventions and are not set in stone. For an explanation
+  of the review process, see the <a href="rtc.html">review then commit</a> page.
+</p>
+
+<h2>Subversion</h2>
+
+<h3>Summary</h3>
+
+<p>
+  The central Subversion repository is located at 
+  <a href="http://svn.wyona.com/repos/public/yanel/trunk/">here</a>.
+  This repository always contains the <em>master</em> copy of Yanel.
+  Whenever you want to make a new deployment of Yanel, use the Subversion
+  repository to get the latest revision.
+</p>
+
+<h2>Mercurial</h2>
+
+<h3>Summary</h3>
+
+<p>
+  Note: You need at least version 1.5 of Mercurial, but 1.7 is recommended.
+</p>
+
+<p>
+  A Mercurial mirror of the central Subversion repository is located at
+  <a href="http://hg.wyona.com/yanel-mercurial-mirror">here</a>. This mirror
+  is intended for developers who would like to use Mercurial rather than 
+  Subversion for their day-to-day work with Yanel. In the end, patches still
+  need to be commited to the central Subversion repository however.
+</p>
+
+<h3>Technical details</h3>
+
+<p>
+For the Mercurial mirror to work correctly, three files are important (these
+are all checked into the Subversion repository):
+<ul>
+  <li><strong>.hgignore</strong>: List of files that should be ignored</li>
+  <li><strong>.hgsub</strong>: List of all subrepositories</li>
+  <li><strong>.hgsubstate</strong>: Current state of subrepositories</li>
+</ul>
+
+The subrepositories file is necessary because
+the Yanel Subversion repository contains other, external Subversion repositories
+used to to pull in various libraries/dependencies. The existance of the 
+<strong>.hgsub</strong> file will make sure that Mercurial will also automatically
+make a checkout of these repositories for you. But please note that whenever a
+subrepository is updated, <em>the .hgsubstate file must manually be updated
+within the Subversion repository</em>. This is because the Mercurial mirror can not
+check files into the central Subversion repository, and as such cannot update the
+file by itself.
+</p>
+
+<h3>FAQ</h3>
+<ul>
+  <li>Why does mercurial use the abbreviation <strong>hg</strong>? Because <strong>Hg</strong> is the symboly of the chemical element mercury :-)</li>
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,2 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>From Template</title></head><body>  <p><h1>Instantiation of a Repository</h1>In order to instantiate a repository one has first to instantiate the repository factory, e.g.</p><p><br/>RepositoryFactory rf = new RepositoryFactory();</p>which is loading the file yarep.properties from the classpath. Alternatively one can also specify a properties file, e.g.<br/><br/>RepositoryFactory rf = new RepositoryFactry(&quot;my-yarep.properties&quot;);</body>
+</html>

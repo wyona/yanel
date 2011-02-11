@@ -1,0 +1,58 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Realm Configuration</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>
+<h1>Realm Configuration<br /></h1>
+<ul>
+<li><a href="#name">Name of the realm</a></li>
+<li><a href="#realm-class">Custom implementation of the realm</a></li>
+<li>Access policy manager</li>
+<li>Access identity manager</li>
+<li>Custom web authenticator (optional)</li>
+<li>Default Data/Content repository</li>
+<li><a href="#rc-repo">Resource configurations repository</a></li>
+<li>Default language of realm (optional)</li>
+<li>Languages supported by this realm (optional)</li>
+<li>Language handler (optional)</li>
+<li>Translation manager (optional)</li>
+<li><a href="#yarep-repos">Additional Yarep based repositories (optional)</a></li>
+<li><a href="#i18n">I18n configuration of this realm</a> (optional)</li>
+<li>Custom menu implementation (optional)</li>
+<li><a href="#repo-navigation">Custom repository navigation implemenation</a> (optional)</li>
+</ul>
+<p>The realm configuration for each realm is done in the file <code>realm.xml</code> in its root directory. For an example, see <code><a href="http://svn.wyona.com/repos/public/yanel/trunk/src/realms/from-scratch-realm-template/realm.xml">src/realms/from-scratch-realm-template/realm.xml</a></code>.</p>
+<p><a name="name"> </a></p>
+<h2>Name of the Realm</h2>
+<p>The name of the realm is configured as follows:</p>
+<pre>&lt;name&gt;The name of my realm&lt;/name&gt;</pre>
+<p><a name="realm-class"> </a></p>
+<h2>Custom Implementation of the Realm</h2>
+<p>The implementation of the realm can be configured as follows:</p>
+<pre>&lt;realm-config class="org.wyona.yanel.impl.map.FOAFRealm" xmlns="http://www.wyona.org/yanel/realm/1.0"&gt;...&lt;/realm-config&gt;</pre>
+<p>whereas if the class attribute is not set, then the default implementation will be used.</p>
+<p><a name="#rc-repo"> </a></p>
+<h2>Resource Configurations Repository</h2>
+<p>The <a href="../resources/resource_type_configuration.html">resource configurations repository</a> is configured as follows:</p>
+<pre>&lt;rti&gt;config/rti-repository.xml&lt;/rti&gt;</pre>
+<p><a name="yarep-repos"> </a></p>
+<h2>Additional Yarep based Repositories</h2>
+<p>Additional Yarep repositories can be configured as follows</p>
+<pre>&lt;yarep-repositories&gt;<br />  &lt;repository id="my-extra-repo" config="config/my-extra-repository.xml"/&gt;<br />&lt;/yarep-repositories&gt;<br /></pre>
+<p><a name="i18n"> </a></p>
+<h2>I18n Configuration</h2>
+<p>The i18n catalogue can be configured as follows</p>
+<pre>&lt;i18n-catalogue&gt;yanelrepo:/my-i18n-catalogue.xml&lt;/i18n-catalogue&gt;</pre>
+<p>More information on i18n can be found within the <a href="../i18n.html">i18n documentation</a>.</p>
+<p><a name="repo-navigation"> </a></p>
+<h2>Custom Repository Navigation</h2>
+<p>The custom repository navigation can be configured as follows</p>
+<pre>&lt;repo-navigation class="foo.bar.yanel.impl.navigation.CustomSitetreeImpl"&gt;"Custom Configuration"&lt;/repo-navigation&gt;</pre>
+<p>whereas Yanel is offering various implementations within the package <code>org.wyona.yanel.impl.navigation</code>.</p>
+<p>The default implementation is <code>org.wyona.yanel.impl.navigation.SitetreeResConfigAndDataRepoImpl</code>, whereas this is configured within <code>spring-yanel-config.xml</code> (Yanel source: <code>conf/spring-yanel-config.xml</code>, Yanel webapp binary: <code>WEB-INF/classes/spring-yanel-config.xml</code>).</p>
+<p>The XML file implementation <code>org.wyona.yanel.impl.navigation.SitetreeDOMImpl</code> requires a source element:</p>
+<pre>&lt;repo-navigation class="org.wyona.yanel.impl.navigation.SitetreeDOMImpl"&gt;
+  &lt;src&gt;data-repo/data/sitetree.xml&lt;/src&gt;
+&lt;!--
+  &lt;src&gt;yanelrepo:/sitetree.xml&lt;/src&gt;
+--&gt;
+&lt;/repo-navigation&gt;</pre>
+<p>&#160;</p>
+</body>
+</html>

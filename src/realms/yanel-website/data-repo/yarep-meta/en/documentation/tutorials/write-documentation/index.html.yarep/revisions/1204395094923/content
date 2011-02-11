@@ -1,0 +1,32 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Write documentation</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  
+<div class="instructions">
+<h1>How-to write english documentation for Yanel using Yulup<br/></h1>  <p>The purpose of this tutorial is to demonstrate a way to to create, edit
+and contribute documentation. Please keep in mind that Yanel and Yulup
+are both functional but not polished.</p><p>This tutorial assumes that you've:<br/></p><ul><li><a href="http://127.0.0.1:8080/yanel/yanel-website/download/source-repository.html">installed the source distibution</a> of Yanel with support for SSL in /usr/local/wyona and are able to view content in Firefox.</li><li><a href="http://www.yulup.org/download/index.html">installed Yulup</a> to edit whatever you are authoring.</li></ul>This tutorial was created using the methods described in this tutorial.    
+<ol>
+<li>At http://127.0.0.1:8080/yanel/ click on 'Turn on toolbar'.  You should now see a Yanel menu at the top of the page.</li>
+<li>Click on the 'Yanel Website' link in the <i>Registered Realms</i> section.</li>
+<li>Click on 'Learn more about Yanel'.</li>
+<li>Click on 'Documentation'.</li>
+<li>Take a moment to consider how what you are intending to add fits into the existing documentation structure.<br/>   You need to decide what resource type you want to create, where it will be placed and how to link to it.<br/><br/>   For this tutorial, we will create a new tutorial called 'Adding Some Content' which will be placed at<br/>   http://127.0.0.1:8080/yanel/yanel-website/en/documentation/tutorials/add-some-content/index.html</li> 
+<li>On the Yanel menu, select 'File-New-Standard page (XHTML)' which will redirect you to a login page for the 'Yanel Website' realm.</li>
+<li>You may login with 'alice', 'levi'.  After successfully logging in you will be redirected to Step 1 of creating a new page.<br/><br/>    In the 'title:' property text box enter the title that you would like to have for the page <i>Adding some content</i>. <br/><br/>In 'Save as:' use the directory tree to navigate to where the new content is to be placed.  For this tutorial this means, <i>/en/documentation/</i><br/><br/>    Be very careful as there are currently no warnings about overwriting.  If you do overwrite something,  you may want to make<br/>    use of subversion's revert command to restore what was overwritten.<br/><br/>    In the 'New name:' text box enter <i>tutorials/add-some-content/index.html</i><br/><br/>    Review your work and the click on the 'Save new resource' button.  This will create the resource and move you to a confirmation and summary page.</li>
+<li>Now that you've created the new resource, you may view it by clicking on the link on the confirmation/summary page.</li>
+<li>To start the Yulup editor, click on the Yulup icon on the upper right hand corner of the Firefix window and select 'Login'.<br/>    You many login using 'alice', 'levi'.</li>
+<li>Once again click on the Yulup icon and select 'Checkout and Edit &quot;index.html&quot;'  This will load the document into the Yulup editor interface.</li>
+<li>Edit the document by exploring what Yulup can do.  The <i>global.css</i> for the yanel-website realm has a div class called 'instructions' that you may use the 'Source' view in Yulup to add 
+<pre>&lt;div class=&quot;instructions&quot;&gt;</pre>after the &lt;body&gt; tag
+which will style &lt;li&gt; and &lt;pre&gt;. <br/><br/>When you are done click on the diskette icon and select 'Check back in to CMS and exit' icon on the Yulup toolbar to commit your changes.</li>
+<li>Congratulations!  You created and edited some new content in Yanel using Yulup.<br/><br/>    If you are really working on documenation for Yanel and you have commit privileges for the project you will need to use subversion to add the content you just created.  One way of doing this is to open a shell and use the following sequence of commands:
+<pre>cd /usr/local/wyona/yanel-trunk/src/realms/yanel-website  <br/>egrep -rio 'Adding some content' *<br/></pre>
+This will allow you to find what you created within the file system.<br/><br/>    When writing this tutorial, egrep returned    <pre>content/9e6fb7cd-8e79-431c-8d81-0cad8bb5eeed:Adding some content<br/>Adding some content<br/>content/9e6fb7cd-8e79-431c-8d81-0cad8bb5eeed.yarep/revisions/1204347225811/content:Adding some content<br/>Adding some content   <br/></pre>
+You will notice that Yulup makes use of Yarep as a data abstraction layer which introduces version control for the resource (content) you created.<br/><br/>   To add this content to the Yanel subversion repository at Wyona, you need to add the current version of the content   
+<pre>svn add content/9e6fb7cd-8e79-431c-8d81-0cad8bb5eeed</pre>
+and the repository for the content.
+<pre>svn add content/9e6fb7cd-8e79-431c-8d81-0cad8bb5eeed.yarep</pre>
+You don't want to really commit the results of this tutorial to the Yanel repository at Wyona so you should remove your local modifications  
+<pre>svn del --force content/9e6fb7cd-8e79-431c-8d81-0cad8bb5eeed<br/>svn del --force content/9e6fb7cd-8e79-431c-8d81-0cad8bb5eeed.yarep/<br/></pre>
+   If you are not a commiter but have created some documentation, please create a patch <a href="http://127.0.0.1:8080/yanel/yanel-website/en/development/processes/how-to-create-a-patch.html">http://127.0.0.1:8080/yanel/yanel-website/en/development/processes/how-to-create-a-patch.html</a>.</li><li>If you are really adding documentation to Yanel, you will need to either commit a change that links to your work or submit a patch that offers a change that will link to your work.</li>
+</ol></div>
+</body>
+</html>

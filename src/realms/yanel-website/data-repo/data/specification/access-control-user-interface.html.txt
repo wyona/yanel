@@ -1,0 +1,49 @@
+!Access Control User Interface
+
+[Task 5116|http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5116]
+
+* Usecase two realms and one user accessing both realms
+* Usecase two realms and two users with the same id accessing one realm each
+
+----------------
+Yanel Access Control User Interface Specification
+
+The Access Control User Interface should provide the following features:
+
+- Add a new user
+
+ Usecases
+
+ 1. The chosen userId might already exist. If it does exist already, the 
+ interface should inform  about the problem and ask the user 
+ to choose a different userId.
+
+ 2. A user can belong to several realms. 
+
+ If the user belongs to two or more realms, the user data
+ must be stored in a single place, and each realm should be able 
+ to access this information and authenticate the user.
+
+ A user belonging to two or more realms can have different userIds
+ for each realm. It is specially useful if a user with
+ the same userId already belongs to one of the realms.
+
+ 3. The user interface must be able to interact with LDAP servers
+
+
+- Edit an existing user
+  User profiles should be accessible from certain URL. Accessing this URL
+  must require authentication. From there, users must be able to modify
+  their profiles and change their passwords.
+
+- Delete users.
+
+
+Implementation considerations
+
+YanelUserResource
+
+This resource will be responsible for the interaction with the user. It
+will implement the ViewableV2 interface (editing profiles) and the CreatableV2
+interface (creating new users).
+

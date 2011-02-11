@@ -1,0 +1,6 @@
+!WebDAV
+
+* cadaver http://127.0.0.1:8080/yanel/yanel-website/
+* ls
+* set editor vi
+* edit roadmap.xml?yanel.webdav=edit

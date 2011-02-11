@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>Setting up Yanel in Eclipse</title>
+</head>
+<body>
+<div class="instructions">
+<h1>Setting up Yanel in the Eclipse IDE</h1>
+<p>This document will get you started using Eclipse to develop/debug Yanel. To keep things simple and reliable, building and SVN access will be done outside of Eclipse. Also, it is assumed that you are using a unix-like shell for command line processing, if you are using the windows command line, replace the references to the shell scripts below with their aequivalent dos batch files (e.g. replace "build.sh" with "build.bat") and "/" with "\".</p>
+<p>Depending on what you will be working on, you might need to import several projects into Eclipse. In this context, there are 3 types of projects: realms, resources, and Yanel itself. Please note that importing Yanel into Eclipse as a project will <strong>not</strong> automatically import Yanel's resource types, they have to be imported separately, and one by one, as described below.</p>
+<h2>Importing a realm</h2>
+<p>If you want to work on a realm that has a separate repository from the Yanel source, i.e. that is not one of the realms included with Yanel, follow these steps to  import it as a project into Eclipse:</p>
+<ol>
+<li>Check out Yanel and the external realm, and add the realm to Yanel by following <a href="../how-to-add-a-new-realm.html">this example</a>.</li>
+<li>Compile and deploy "yanel-test-1.0-dev-rREVISION.jar":<br />
+<pre>{path/to/yanel/root}/build.sh -f {path/to/yanel/root}/src/test/build.xml install-jar<br /></pre>
+<p>This will build the jar file and deploy it automatically to your maven repository.</p>
+</li>
+<li>Build an Eclipse project using the specific "eclipse" target with the realm's build file:<br />
+<pre>{path/to/yanel/root}/build.sh -f {path/to/realm/root}/build.xml eclipse</pre>
+</li>
+<li>In Eclipse, select <em>File -&gt; Import</em>, to open the Import  dialog.</li>
+<li>Select <em>General -&gt; Existing Projects into Workspace</em>, then  click on <em>Next</em>.</li>
+<li>Check <em>"Select root directory"</em>, click on <em>Browse</em>, and  select the realm's root directory (i.e. where build.xml is located)</li>
+<li>Make sure the realm project is selected (should be the only one), <em>"Copy projects into workspace"</em> is <strong>not</strong> selected, and  click on <em>Finish</em>.</li>
+</ol>
+<p>The realm should now be visible as a project in Eclipse's Package Explorer.</p>
+<h2>Importing resource types<br /></h2>
+<p>If you want to work on a specific resource type that is either a resource type of Yanel, or one belonging to another realm, follow these steps to  import it as a project into Eclipse:</p>
+<ol>
+<li>Follow points #1-2 above if you have not already done so.</li>
+<li>If the resource type you are importing belongs to an external realm, follow point #3 above in case you have not already done so.</li>
+<li>If the resource type you are importing belongs to Yanel, build an Eclipse project using the specific "eclipse" target with  the resource's build file:<br />
+<pre>{path/to/yanel/root}/build.sh -f {path/to/yanel/root}/build.xml eclipse</pre>
+</li>
+<li>In Eclipse, select <em>File -&gt; Import</em>, to open the Import  dialog.</li>
+<li>Select <em>General -&gt; Existing Projects into Workspace</em>, then   click on <em>Next</em>.</li>
+<li>Check <em>"Select root directory"</em>, click on <em>Browse</em>, and  select either "{path/to/realm}/res-types" (if you are importing an external realm's resources, they will be imported all at once) or the directory of the Yanel resource that you want to import ({path/to/yanel/root}/src/resources/{resource-to-import}, in this case you have to import them one by one).</li>
+<li>Select the resources that you want to import as projects, make sure <em>"Copy  projects into workspace"</em> is <strong>not</strong> selected, and  click on <em>Finish</em>.</li>
+</ol>
+<p>The resources should now be visible as a projects in Eclipse's Package Explorer.</p>
+<h2>Importing Yanel<br /></h2>
+<ol>
+<li> Check out and build Yanel as <a href="http://yanel.org/download/source-repository.html">usual</a>, if you have not yet done so.</li>
+<li>Build an Eclipse project using the specific target "eclipse":<br />
+<pre>{path/to/yanel/root}/build.sh eclipse</pre>
+</li>
+<li>In Eclipse, select <em>File -&gt; Import</em>, to open the Import dialog.</li>
+<li>Select <em>General -&gt; Existing Projects into Workspace</em>, then click on <em>Next</em>.</li>
+<li>Check <em>"Select root directory"</em>, click on <em>Browse</em>, and select the Yanel root directory (i.e. where build.sh is located)</li>
+<li>Make sure the Yanel project is selected (should be the only one), <em>"Copy projects into workspace"</em> is <strong>not</strong> selected, and click on <em>Finish</em>.</li>
+</ol> 
+<ul>
+</ul>
+<p>The project "yanel" should now be visible in the Package Explorer.</p>
+<h2>Debugging<br /></h2>
+<ul>
+</ul>
+<p>To start debugging with Eclipse, start Tomcat in debug mode:</p>
+<pre>{path/to/yanel/root}/local/apache-tomcat-5.5.20/bin/catalina.sh jpda start</pre>
+<p>Alternatively, you can (theoretically) also use the Eclipse Tomcat Launcher. If you succeed in this, please document it here.</p>
+<h2>Notes</h2>
+<p>Windows users, please configure your line endings as LF by setting <em>Preferences -&gt; General -&gt; Workspace -&gt; New text file line delimiter</em> to <em>"Unix"</em>.</p>
+</div>
+</body>
+</html>
