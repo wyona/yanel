@@ -206,7 +206,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ModifiableV2#getOutputStream()
      */
     public OutputStream getOutputStream() throws Exception {
         return getRealm().getRepository().getNode(getPath()).getOutputStream();
