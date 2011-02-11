@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="reindexer" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="xslt" value="rthtdocs:/reindexer.xsl"/>
+  <yanel:property name="mime-type" value="application/xhtml+xml"/>
+  <yanel:property name="allow-default-repos" value="true"/>
+
+<!--
+  <yanel:property name="repository-id" value="hugo"/>
+-->
+</yanel:resource-config>
