@@ -20,6 +20,9 @@ import org.wyona.yanel.core.workflow.Action;
 import org.wyona.yanel.core.workflow.Workflow;
 import org.wyona.yanel.core.workflow.WorkflowException;
 
+/**
+ * Example ...
+ */
 public class PublishAction implements Action {
 
     protected String variable;
