@@ -6,7 +6,10 @@
   <name>Yanel Website</name>
 
   <rti>config/res-config-repository.xml</rti>
+<!-- Deprecated
   <data>config/repository.xml</data>
+-->
+  <data>config/data-repository.xml</data>
   <ac-policies>config/ac-policies-repository2.xml</ac-policies>
   <ac-identities>config/ac-identities-repository.xml</ac-identities>
 
