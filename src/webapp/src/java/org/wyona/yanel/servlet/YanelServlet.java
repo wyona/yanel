@@ -2470,7 +2470,7 @@ public class YanelServlet extends HttpServlet {
 */
 
                 String requestURL = request.getRequestURL().toString();
-                logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue() + " u:" + identity.getUsername() + " ref:" + request.getHeader("referer") + " ua:" + request.getHeader("User-Agent")); // INFO: See a list of user agents at http://www.user-agents.org/
+                logAccess.info(AccessLog.getLogMessage(request, response, realm.getID()));
             } else {
                 // INFO: Log access of anonymous user
                 String requestURL = request.getRequestURL().toString();
