@@ -7,7 +7,6 @@
   <yanel:property name="mime-type" value="application/xhtml+xml"/>
   <yanel:property name="allow-default-repos" value="true"/>
 
-  <yanel:property name="repository-id" value="cis-repository"/>
 <!--
   <yanel:property name="repository-id" value="hugo"/>
 -->
