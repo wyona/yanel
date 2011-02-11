@@ -101,6 +101,7 @@ abstract public class Menu {
             sb.append("<li>"+ getLabel("y:group-management", userLanguage) + "</li>");
         }
         sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/about-realm.html\">" + getLabel("y:about-realm", userLanguage) + "</a></li>");
+        sb.append("<li><a href=\"" + backToRealm + "re-index.html\">" + getLabel("y:re-index", userLanguage) + "</a></li>");
         sb.append("</ul>");
 
         sb.append("</li></ul>");
@@ -158,6 +159,8 @@ abstract public class Menu {
                 return "Ueber Yanel";
             } else if(key.equals("y:about-realm")) {
                 return "Ueber diesen Realm (bzw. Website)";
+            } else if(key.equals("y:re-index")) {
+                return "Website neu indexieren";
             } else if(key.equals("y:turn-off-toolbar")) {
                 return "Toolbar deaktivieren";
             } else if(key.equals("y:logout")) {
@@ -210,6 +213,8 @@ abstract public class Menu {
                 return "About Yanel";
             } else if(key.equals("y:about-realm")) {
                 return "About Realm";
+            } else if(key.equals("y:re-index")) {
+                return "Re-index this realm/website";
             } else if(key.equals("y:my-profile")) {
                 return "My profile";
             } else if(key.equals("y:turn-off-toolbar")) {
