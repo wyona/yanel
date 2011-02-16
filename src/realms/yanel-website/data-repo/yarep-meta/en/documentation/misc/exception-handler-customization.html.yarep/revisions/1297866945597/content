@@ -1,0 +1,36 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Exception handler customization</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>
+<h1>Exception handler customization</h1>
+<p>It is possible to customize the exception handling screen per realm. The default exception handler is installed as a global resource configuration within Yanel. In order to create and install a custom exception handler, the following steps need to be taken.</p>
+<h2><strong>Overview</strong></h2>
+<p>&#160;</p>
+<ol>
+<li>Create your new exception handler: Create a new resource type that inherits from&#160;org.wyona.yanel.impl.resources.BasicGenericExceptionHandlerResource. The basic exception handler is an extension of the BasicXMLResource class, so simply override the getContentXML(String viewId) function in order to output your custom error message. You have access to the exception that was thrown through the variable e. The source code can be found at YANEL/src/impl/java/org/wyona/yanel/impl/resources/BasicGenericExceptionHandlerResource.java.</li>
+<li>Overwrite the global resource configuration for the exception handler within your realm by creating the file REALM/src/webapp/global-resource-configs/generic-exception-handler_yanel-rc.xml within your realm.</li>
+</ol>
+<h2><strong>In more detail</strong></h2>
+<h3><strong>Example custom exception handler</strong></h3>
+<pre>package org.wyona.yanel.resources.konakart.shared;
+
+import org.wyona.yanel.core.attributes.viewable.View;
+import org.wyona.yanel.impl.resources.BasicGenericExceptionHandlerResource;
+
+import javax.servlet.http.HttpServletResponse;
+
+public class KonakartExceptionHandler extends BasicGenericExceptionHandlerResource {
+
+    /** 
+     * Get view.
+     */
+    @Override
+    public View getView(String viewId) throws Exception {
+        View view = new View();
+        view.setResponse(false);
+        HttpServletResponse response = getEnvironment().getResponse();
+        response.sendError(503, "The shop is currently unavailable.");
+        return view;
+    }   
+}</pre>
+<div><strong><br /></strong></div>
+<div>After that, your own exception handler should be called whenever an exception is thrown.</div>
+<p>&#160;</p>
+</body></html>
