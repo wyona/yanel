@@ -14,8 +14,7 @@
 <p>Please select the platform on which you would like to run Yanel:</p>
 <ul>
 <li><a href="windows.html">Windows</a></li>
-<li><a href="unix.html">Unix</a>&#160;(Linux, Mac OS X, and more)</li>
+<li><a href="unix.html">U</a>nix&#160;(Linux, Mac OS X, and more)</li>
 </ul>
-<div>Or directly get the <a href="../../download/source-repository.html">source code from our Subversion/Mercurial repositories</a>.</div>
 </body>
 </html>

@@ -11,6 +11,7 @@
 <body>
 <h1>Download (UNIX)</h1>
 <p>You can select to download a source code snapshot from below, or get a checkout of the latest version of Yanel through our Subversion repository. Please note that we have a strong focus on keeping the Subversion repository stable, and source code snapshots can become out of date rather quickly. If you are interested in our development methodology, see the <a href="../development/processes/index.html">page on processes</a>.</p>
+<p>&#160;</p>
 <p><span style="font-size: 15px; font-weight: bold;">Source Code Snapshots</span></p>
 <p>
 <table border="1" cellspacing="0" cellpadding="0" bgcolor="#dddddd">
