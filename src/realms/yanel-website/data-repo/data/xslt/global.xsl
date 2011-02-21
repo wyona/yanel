@@ -102,8 +102,8 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <tr>
   <td colspan="2" id="footer">
 
-    <i18n:message key="poweredBy"/><xsl:text> </xsl:text><a href="http://yanel.wyona.org">Wyona Yanel</a> | <a href="http://svn.wyona.com/repos/public/tomcat-cluster/">Wyona Balancer</a> | <a href="http://tomcat.apache.org">Apache Tomcat</a> | <a href="http://httpd.apache.org">Apache HTTP Server</a><br/>
-    Copyright &#169; 2011 <a href="http://www.wyona.com">Wyona</a>. <i18n:message key="allRightsReserved"/>. - <a href="?yanel.resource.meta"><i18n:message key="pageInfo"/></a> - <a href="?yanel.toolbar=on">Toolbar</a>
+    <i18n:text key="poweredBy"/><xsl:text> </xsl:text><a href="http://yanel.wyona.org">Wyona Yanel</a> | <a href="http://svn.wyona.com/repos/public/tomcat-cluster/">Wyona Balancer</a> | <a href="http://tomcat.apache.org">Apache Tomcat</a> | <a href="http://httpd.apache.org">Apache HTTP Server</a><br/>
+    Copyright &#169; 2011 <a href="http://www.wyona.com">Wyona</a>. <i18n:text key="allRightsReserved"/>. - <a href="?yanel.resource.meta"><i18n:text key="pageInfo"/></a> - <a href="?yanel.toolbar=on">Toolbar</a>
 
   </td>
 </tr>
@@ -121,7 +121,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <xsl:template name="navigation">
 <xi:include href="yanelresource:/navigation/menu.xml?path={$yanel.path}&amp;language={$language}"/>
 <br/>
-<b><i18n:message key="search"/></b>
+<b><i18n:text key="search"/></b>
 &#160;<form action="{$yarep.back2realm}en/search.html" method="GET"><input type="text" name="query" class="searchbox" size="14"/></form>
 </xsl:template>
 
