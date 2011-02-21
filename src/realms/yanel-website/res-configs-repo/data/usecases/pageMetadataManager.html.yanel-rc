@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="pageMetaDataManager" namespace="http://wyona.com/yanel/metadata/resource/1.0"/>
+  <yanel:custom-config>
+     <views>
+      <view id="default" type="jelly">
+        <template>rthtdocs:/xinha.jelly</template>
+        <xslt>/xslt/global.xsl</xslt> <!-- Optional -->
+        <mime-type>text/html</mime-type>
+      </view>
+      <view id="done" type="jelly">
+        <template>rthtdocs:/xinha-status.jelly</template>
+        <xslt>/xslt/global.xsl</xslt>
+      </view>
+      <view id="cancel" type="jelly">
+        <template>rthtdocs:/xinha-status.jelly</template>
+        <xslt>/xslt/global.xsl</xslt>
+      </view>
+      <view id="error" type="jelly">
+        <template>rthtdocs:/xinha-status.jelly</template>
+        <xslt>/xslt/global.xsl</xslt>
+      </view>
+    </views>
+  </yanel:custom-config>
+</yanel:resource-config>
