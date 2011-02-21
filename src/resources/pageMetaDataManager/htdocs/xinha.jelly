@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly xmlns:j="jelly:core">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+      <title>Edit meta data of ${resource.getEditPath()}</title>
+    </head>
+    <body>
+      <h1>Edit meta data of ${resource.getEditPath()}</h1>
+
+      <p class="yanel-usecase-error">${resource.getErrorMessages()}</p>
+
+      <j:if test="${resource.getInfoMessages() != null &amp;&amp; !resource.getInfoMessages().equals('')}">
+      <p>Messages: ${resource.getInfoMessages()}</p>
+      </j:if>
+
+      <j:choose>
+        <j:when test="${resource.getEditPath() != null &amp;&amp; !resource.getEditPath().equals('')}">
+          <p>Please annotate this page by entering a comma separated list of keywords/tags:</p>
+
+<!--
+        <em>DEBUG: [${resource.getContentToEdit()}]</em>
+-->
+        
+          <form action="">
+            <input type="hidden" name="edit-path" value="${resource.getEditPath()}"/>
+            <textarea id="metadata" name="metadata" rows="15" cols="40" style="width: 100%">
+              ${resource.getContentToEdit()}
+            </textarea>
+            <br />
+            <input type="submit" id="submit" name="submit" value="Save" />
+            <input type="submit" id="submit" name="cancel" value="Cancel" />
+          </form>
+        </j:when>
+        <j:otherwise>
+          <strong>No edit path!</strong>
+        </j:otherwise>
+      </j:choose>
+    </body>
+  </html>
+</j:jelly>

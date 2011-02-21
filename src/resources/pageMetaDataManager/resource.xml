@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="pageMetaDataManager"
+  namespace="http://wyona.com/yanel/metadata/resource/1.0"
+  class="com.wyona.yanel.metadata.manager.PageMetaDataManager"
+  >
+<description>
+Allows the management of Page Metadata
+</description>
+
+<rtd>
+<!--
+  <property name="foo" default-value="bar"/>
+-->
+</rtd>
+</resource>
