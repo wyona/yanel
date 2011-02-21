@@ -16,8 +16,28 @@
 
 package org.wyona.yanel.impl.resources;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.transform.Source;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.wyona.commons.xml.XMLHelper;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.api.attributes.AnnotatableV1;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
@@ -37,36 +57,20 @@ import org.wyona.yanel.core.util.ResourceAttributeHelper;
 import org.wyona.yanel.core.workflow.Workflow;
 import org.wyona.yanel.core.workflow.WorkflowException;
 import org.wyona.yanel.core.workflow.WorkflowHelper;
-
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.Revision;
 
-import org.wyona.commons.xml.XMLHelper;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.transform.Source;
-
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.Date;
-
-import org.apache.log4j.Logger;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 /**
  * Generic resource handling XML data and transforming it using XSLT, etc.
  */
-public class XMLResource extends BasicXMLResource implements ModifiableV2, VersionableV2, CreatableV2, IntrospectableV1, TranslatableV1, WorkflowableV1 {
+public class XMLResource extends BasicXMLResource implements ModifiableV2, VersionableV2, CreatableV2, IntrospectableV1, TranslatableV1, WorkflowableV1, AnnotatableV1 {
 
     private static Logger log = Logger.getLogger(XMLResource.class);
 
+    private Boolean annotationRead = false;
+    private Set<String> annotations  = new HashSet<String>();
+    
 
     public View getView(String viewId) throws Exception {
         return getView(viewId, null);
@@ -687,5 +691,85 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         log.debug("InputStream: " + baos);
 
         return new java.io.ByteArrayInputStream(memBuffer);
+    }
+    
+    /**
+     * @see org.wyona.yanel.core.api.attributes.AnnotatableV1@setAnnotation(String)
+     */
+    public void setAnnotation(String name) throws Exception {
+        readAnnotations();
+        if(name != null && !annotations.contains(name)){
+            annotations.add(name);
+            saveAnnotations();
+        } else {
+            log.warn("Either no annotation or annotation already exists: " + name);
+        }
+    }
+
+    /**
+     * @see org.wyona.yanel.core.api.attributes.AnnotatableV1@removeAnnotation(String)
+     */
+    public void removeAnnotation(String name) throws Exception{
+        readAnnotations();
+        if(name != null && annotations.contains(name)){
+            annotations.remove(name);
+            saveAnnotations();
+        } else {
+            log.warn("Either no annotation or annotation does not exist: " + name);
+        }
+    }
+
+    /**
+     * @see org.wyona.yanel.core.api.attributes.AnnotatableV1@clearAllAnnotations()
+     */
+    public void clearAllAnnotations() throws Exception{
+        readAnnotations();
+        annotations.clear();
+        saveAnnotations();
+    }
+	
+    /**
+     * @see org.wyona.yanel.core.api.attributes.AnnotatableV1@getAnnotations()
+     */
+    public String[] getAnnotations() throws Exception {
+        readAnnotations();
+        return annotations.toArray(new String[0]);
+    }
+
+    /**
+     * Read annotations
+     */
+    private void readAnnotations() throws Exception {
+        if(annotationRead) {
+            log.info("Annotations have already been read from persistent repository: " + annotations);
+            return;
+        }
+
+        if (getRealm().getRepository().getNode(getPath()).hasProperty("annotations")) {
+            String aString = getRealm().getRepository().getNode(getPath()).getProperty("annotations").getString();
+            String[] aArray = aString.split(", ");
+            for(int i = 0; i < aArray.length; i++) {
+                annotations.add(aArray[i]);
+            }
+            annotationRead = true;
+            return;
+        } else {
+            log.warn("No annotations yet: " + getPath());
+        }
+    }
+
+    /**
+     * Save annotations
+     */
+    private void saveAnnotations() throws Exception{
+        String[] aArray = annotations.toArray(new String[0]);
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < aArray.length; i++) {
+            sb.append(aArray[i]);
+            if (i < aArray.length - 1) {
+                sb.append(", ");
+            }
+        }
+        getRealm().getRepository().getNode(getPath()).setProperty("annotations", sb.toString());
     }
 }
