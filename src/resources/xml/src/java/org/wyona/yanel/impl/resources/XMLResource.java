@@ -90,6 +90,8 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * Get initial content as XML
      */
     private InputStream getContentXML(Repository repo, String yanelPath, String revisionName) throws Exception {
+        // TODO: Add annotations to XML root element using a namespace
+
         if (yanelPath != null) {
             if (log.isDebugEnabled()) log.debug("Yanel Path: " + yanelPath);
             if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:") || yanelPath.startsWith("http:")) {
