@@ -70,8 +70,9 @@ public class YanelWebsiteMenu extends Menu {
         sb.append("<div id=\"yaneltoolbar_menutitle\">" + getLabel("y:edit", userLanguage) + "</div><ul>");
         sb.append("<li class=\"haschild\">Open with&#160;&#160;&#160;");
         sb.append("<ul><li>Source editor</li>");
-        // TODO: Check whether resource type has annotatable interface implemented
-        sb.append("<li><a href=\"" + backToRealm + "usecases/pageMetadataManager.html?edit-path=" + resource.getPath() + "\">Meta data editor</a></li>");
+        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Annotatable", "1")) {
+            sb.append("<li><a href=\"" + backToRealm + "usecases/pageMetadataManager.html?edit-path=" + resource.getPath() + "\">Meta data editor</a></li>");
+        }
         sb.append("<li class=\"haschild\">WYSIWYG editor&#160;&#160;&#160;");
         sb.append("<ul>");
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Modifiable", "2")) {
