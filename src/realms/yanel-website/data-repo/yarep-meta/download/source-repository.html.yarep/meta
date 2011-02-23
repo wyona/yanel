@@ -1,9 +1,9 @@
 yarep_vfs-meta-file-version<string>:1.0
 yarep_size<long>:1570
-yarep_checkinDate<date>:2011-02-17T11\:10\:28\:663+0100
-yarep_type<string>:resource
+yarep_checkinDate<date>:2011-02-23T10\:15\:33\:561+0100
 yarep_lastModifed<long>:1270814083000
-yarep_checkoutUserID<string>:alice
+yarep_type<string>:resource
+yarep_checkoutUserID<string>:lenya
+yarep_checkoutDate<date>:2011-02-23T10\:15\:29\:252+0100
 yarep_isCheckedOut<boolean>:false
-yarep_checkoutDate<date>:2011-02-17T11\:00\:44\:148+0100
-live-revision<string>:1297937427298
+live-revision<string>:1298452532762
