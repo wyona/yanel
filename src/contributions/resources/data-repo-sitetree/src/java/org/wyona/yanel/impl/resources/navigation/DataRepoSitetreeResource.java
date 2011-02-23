@@ -134,8 +134,8 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
                             childCollectionElement.setAttribute("path", node.getPath());
                             childCollectionElement.setAttribute("name", node.getName());
                             Element labelElement = (Element) childCollectionElement.appendChild(doc.createElement("label"));
-                            labelElement.appendChild(doc.createTextNode(node.getName()));
-                            //labelElement.appendChild(doc.createTextNode(node.getLabel()));
+                            //labelElement.appendChild(doc.createTextNode(node.getName()));
+                            labelElement.appendChild(doc.createTextNode(node.getName() + " (" + node.getLabel() + ")"));
                         } else {
                             getNodeAsXML(child.getPath(), doc, collectionElement);
                         }
@@ -149,8 +149,8 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
                         resourceElement.setAttribute("path", child.getPath());
                         resourceElement.setAttribute("name", child.getName());
                         Element labelElement = (Element) resourceElement.appendChild(doc.createElement("label"));
-                        labelElement.appendChild(doc.createTextNode(child.getName()));
-                        //labelElement.appendChild(doc.createTextNode(child.getLabel()));
+                        //labelElement.appendChild(doc.createTextNode(child.getName()));
+                        labelElement.appendChild(doc.createTextNode(child.getName() + " (" + child.getLabel() + ")"));
                     } else {
                         Element nothingElement = (Element) root.appendChild(doc.createElement("neither-resource-nor-collection"));
                         nothingElement.setAttribute("path", child.getPath());
