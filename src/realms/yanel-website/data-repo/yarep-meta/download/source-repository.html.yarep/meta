@@ -4,6 +4,7 @@ yarep_checkinDate<date>:2011-02-23T10\:15\:33\:561+0100
 yarep_lastModifed<long>:1270814083000
 yarep_type<string>:resource
 yarep_checkoutUserID<string>:lenya
+annotations<string>:Source, , Code, Download
 yarep_checkoutDate<date>:2011-02-23T10\:15\:29\:252+0100
 yarep_isCheckedOut<boolean>:false
 live-revision<string>:1298452532762
