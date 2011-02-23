@@ -1,9 +1,7 @@
-/*-
+/*
  * Copyright 2011 Wyona
  */
-
 package org.wyona.yanel.impl.resources.navigation;
-
 
 import org.wyona.yanel.core.navigation.Node;
 import org.wyona.yanel.core.navigation.Sitetree;
@@ -87,7 +85,9 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
     }
 
     /**
-     * Get node as XML.
+     * Get either children of node as XML (show-all-subnodes=false) or whole sitetree (show-all-subnodes=true).
+     *
+     * @param path Path of node
      * @param doc The result document.
      * @param root The root element of the result document.
      */
@@ -130,20 +130,27 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
                 for(Node child : children) {
                     if(child.isCollection()) {
                         if(collectionElement == null) {
-                            collectionElement = (Element) root.appendChild(doc.createElement("collection"));
-                            collectionElement.setAttribute("path", node.getPath());
-                            collectionElement.setAttribute("name", node.getName());
-                            Element labelElement = (Element) collectionElement.appendChild(doc.createElement("label"));
+                            Element childCollectionElement = (Element) root.appendChild(doc.createElement("collection"));
+                            childCollectionElement.setAttribute("path", node.getPath());
+                            childCollectionElement.setAttribute("name", node.getName());
+                            Element labelElement = (Element) childCollectionElement.appendChild(doc.createElement("label"));
                             labelElement.appendChild(doc.createTextNode(node.getName()));
+                            //labelElement.appendChild(doc.createTextNode(node.getLabel()));
                         } else {
                             getNodeAsXML(child.getPath(), doc, collectionElement);
                         }
                     } else if(child.isResource()) {
-                        Element resourceElement = (Element) root.appendChild(doc.createElement("resource"));
+                        Element resourceElement;
+                        if (collectionElement == null) {
+                            resourceElement = (Element) root.appendChild(doc.createElement("resource"));
+                        } else {
+                            resourceElement = (Element) collectionElement.appendChild(doc.createElement("resource"));
+                        }
                         resourceElement.setAttribute("path", child.getPath());
                         resourceElement.setAttribute("name", child.getName());
                         Element labelElement = (Element) resourceElement.appendChild(doc.createElement("label"));
                         labelElement.appendChild(doc.createTextNode(child.getName()));
+                        //labelElement.appendChild(doc.createTextNode(child.getLabel()));
                     } else {
                         Element nothingElement = (Element) root.appendChild(doc.createElement("neither-resource-nor-collection"));
                         nothingElement.setAttribute("path", child.getPath());
