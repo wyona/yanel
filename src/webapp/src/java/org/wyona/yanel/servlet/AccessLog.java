@@ -34,14 +34,29 @@ public class AccessLog {
      * @param cookieValue Value/UUID of unique persistent cookie
      * @param referer Referer
      * @param userAgent User agent, e.g. Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.0.19) Gecko/2010031218 Firefox/3.0.19
+     * @param tags The current annotations of the page as csv 
      */
-    public static String getLogMessage(String requestURL, String realmID, String cookieValue, String referer, String userAgent) {
-        String result =
+    public static String getLogMessage(String requestURL, String realmID, String cookieValue, String referer, String userAgent, String[] tags) {
+        
+    	String tagsFlat = null;
+
+        if (tags != null && tags.length > 0) {
+            tagsFlat = "";
+            for (String m : tags) {
+                if (!tagsFlat.equals("")) tagsFlat += ",";
+                tagsFlat += m;
+            }
+        } else {
+            //log.debug("No tags!");
+        }
+    	
+    	String result =
             encodeLogField("url", requestURL) +
             encodeLogField("r", realmID) +
             encodeLogField("c", cookieValue) +
             encodeLogField("ref", referer) +
-            encodeLogField("ua", userAgent);
+            encodeLogField("ua", userAgent) + 
+            (tagsFlat != null ? encodeLogField("t", tagsFlat) : "");
 
         return result;
     }
@@ -69,21 +84,29 @@ public class AccessLog {
     /**
      * Get log message
      */
-    public static String getLogMessage(HttpServletRequest request, HttpServletResponse response, String realmID) {
+    public static String getLogMessage(HttpServletRequest request, HttpServletResponse response, String realmID, String[] tags) {
         Cookie cookie = getYanelAnalyticsCookie(request, response);
-        return getLogMessage(request.getRequestURL().toString(), realmID, cookie.getValue(), request.getHeader("referer"), request.getHeader("User-Agent"));
+        return getLogMessage(getURLInclQueryString(request), realmID, cookie.getValue(), request.getHeader("referer"), request.getHeader("User-Agent"),tags);
     }
 
     /**
      * Get log message
      */
-    public static String getLogMessage(HttpServletRequest request, String realmID) {
+    public static String getLogMessage(HttpServletRequest request, String realmID, String[] tags) {
         Cookie cookie = getYanelAnalyticsCookie(request);
         String cookieValue = null;
         if (cookie != null) {
             cookieValue = cookie.getValue();
         }
-        return getLogMessage(request.getRequestURL().toString(), realmID, cookieValue, request.getHeader("referer"), request.getHeader("User-Agent"));
+        return getLogMessage(getURLInclQueryString(request), realmID, cookieValue, request.getHeader("referer"), request.getHeader("User-Agent"), tags);
+    }
+
+    /**
+     * Get log message
+     * @deprecated Please use getLogMessage(HttpServletRequest, String, String[]) instead
+     */
+    public static String getLogMessage(HttpServletRequest request, String realmID) {
+        return getLogMessage(request, realmID, null);
     }
 
     /**
@@ -118,5 +141,17 @@ public class AccessLog {
         analyticsCookie.setPath(request.getContextPath());
         response.addCookie(analyticsCookie);
         return analyticsCookie;
+    }
+
+    /**
+     * Get request URL including query string
+     */
+    private static String getURLInclQueryString(HttpServletRequest request) {
+        String qs = request.getQueryString();
+        if (qs != null) {
+            return request.getRequestURL().toString() + "?" + qs;
+        } else {
+            return request.getRequestURL().toString();
+        }
     }
 }

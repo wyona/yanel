@@ -41,6 +41,7 @@ import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.ResourceTypeRegistry;
 import org.wyona.yanel.core.ToolbarState;
 import org.wyona.yanel.core.Yanel;
+import org.wyona.yanel.core.api.attributes.AnnotatableV1;
 import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
@@ -1127,7 +1128,7 @@ public class YanelServlet extends HttpServlet {
                         - Or authentication was successful and web authenticator sends a redirect
                 */
                 if(logAccessEnabled) {
-                    doLogAccess(request, response);
+                    doLogAccess(request, response, null);
                 }
                 return response;
             } else {
@@ -1919,9 +1920,12 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Generate response from a resource view, whereas it will be checked first if the resource already wrote the response (if so, then just return)
+     * @param res Resource which handles the request in order to generate a response
      */
     private HttpServletResponse generateResponse(View view, Resource res, HttpServletRequest request, HttpServletResponse response, Document doc, long size, long lastModified) throws ServletException, IOException {
         // TODO: There seem like no header fields are being set (e.g. Content-Length, ...). Please see below ...
+
+        //log.debug("Generate response: " + res.getPath());
 
         // Check if viewable resource has already created a response
         if (!view.isResponse()) {
@@ -1929,7 +1933,7 @@ public class YanelServlet extends HttpServlet {
                 if (view.getMimeType() != null) {
                     // TODO: Add more mime types or rather make it configurable
                     if (view.getMimeType().indexOf("html") > 0 || view.getMimeType().indexOf("pdf") > 0 || view.getMimeType().indexOf("video") >= 0) {
-                        doLogAccess(request, response);
+                        doLogAccess(request, response, res);
                     }
                 }
             }
@@ -1965,7 +1969,7 @@ public class YanelServlet extends HttpServlet {
         if(logAccessEnabled) {
             if (mimeType != null) {
                 if (mimeType.indexOf("html") > 0 || mimeType.indexOf("pdf") > 0) { // INFO: Only HTML pages and PDFs etc. should be logged, but no images, CSS, etc. Check the mime-type instead the suffix or use JavaScript or Pixel
-                    doLogAccess(request, response);
+                    doLogAccess(request, response, res);
                 }
             }
         }
@@ -2436,8 +2440,9 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Log browser history of each user
+     * @param resource Resource which handles the request
      */
-    private void doLogAccess(HttpServletRequest request, HttpServletResponse response) {
+    private void doLogAccess(HttpServletRequest request, HttpServletResponse response, Resource resource) {
         Cookie cookie = AccessLog.getYanelAnalyticsCookie(request, response);
         // TBD: What about a cluster, performance/scalability? See for example http://www.oreillynet.com/cs/user/view/cs_msg/17399 (also see Tomcat conf/server.xml <Valve className="AccessLogValve" and className="FastCommonAccessLogValve")
         // See apache-tomcat-5.5.20/logs/localhost_access_log.2009-11-07.txt
@@ -2446,6 +2451,21 @@ public class YanelServlet extends HttpServlet {
             Realm realm = map.getRealm(request.getServletPath());
             // TBD/TODO: What if user has logged out, but still has a persistent cookie?!
             //String userID = getEnvironment(request, response).getIdentity().getUsername();
+
+            String[] tags = null;
+            if (resource != null && ResourceAttributeHelper.hasAttributeImplemented(resource, "Annotatable", "1")) {
+                AnnotatableV1 anno = (AnnotatableV1) resource;
+                try {
+                    tags = anno.getAnnotations();
+                } catch (Exception ex) {
+                    log.error(ex, ex);
+                }
+            } else {
+                if (resource != null) {
+                    log.warn("DEBUG: Resource has no tags yet: " + resource.getPath());
+                }
+            }
+            
             Identity identity = getIdentity(request, map);
             if (identity != null && identity.getUsername() != null) {
                 User user = realm.getIdentityManager().getUserManager().getUser(identity.getUsername());
@@ -2470,13 +2490,13 @@ public class YanelServlet extends HttpServlet {
 */
 
                 String requestURL = request.getRequestURL().toString();
-                logAccess.info(AccessLog.getLogMessage(request, response, realm.getID()));
+                logAccess.info(AccessLog.getLogMessage(request, response, realm.getID(), tags));
             } else {
                 // INFO: Log access of anonymous user
                 String requestURL = request.getRequestURL().toString();
                 // TODO: Also log referer as entry point
                 //logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue() + " ref:" + request.getHeader("referer") + " ua:" + request.getHeader("User-Agent"));
-                logAccess.info(AccessLog.getLogMessage(request, response, realm.getID()));
+                logAccess.info(AccessLog.getLogMessage(request, response, realm.getID(), tags));
             }
             //log.debug("Referer: " + request.getHeader(HTTP_REFERRER));
         } catch(Exception e) { // Catch all exceptions, because we do not want to throw exceptions because of logging browser history
