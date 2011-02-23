@@ -117,8 +117,11 @@ public class ContactResource extends Resource implements ViewableV1 {
                     throw new Exception("there is no spamblock implemented in the form.");
                 }
                 if (request.getParameter("spamblock_hidden").equals("TRyAg41n") && request.getParameter("spamblock_input").equals("8989890")) {    
+                    // TODO: Maybe add contact subject, etc. to tags?!
+                    String[] tags = new String[1];
+                    tags[0] = "Contact";
                     logAccess.info(
-                        org.wyona.yanel.servlet.AccessLog.getLogMessage(request, getRealm().getID()) + 
+                        org.wyona.yanel.servlet.AccessLog.getLogMessage(request, getRealm().getID(), tags) + 
                         org.wyona.yanel.servlet.AccessLog.encodeLogField("e-mail", request.getParameter("email")));
                     javax.servlet.http.Cookie cookie = org.wyona.yanel.servlet.AccessLog.getYanelAnalyticsCookie(request);
                     String cookieValue = null;
