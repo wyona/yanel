@@ -131,11 +131,11 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
                     if(child.isCollection()) {
                         if(collectionElement == null) {
                             Element childCollectionElement = (Element) root.appendChild(doc.createElement("collection"));
-                            childCollectionElement.setAttribute("path", node.getPath());
-                            childCollectionElement.setAttribute("name", node.getName());
+                            childCollectionElement.setAttribute("path", child.getPath());
+                            childCollectionElement.setAttribute("name", child.getName());
                             Element labelElement = (Element) childCollectionElement.appendChild(doc.createElement("label"));
-                            //labelElement.appendChild(doc.createTextNode(node.getName()));
-                            labelElement.appendChild(doc.createTextNode(node.getName() + " (" + node.getLabel() + ")"));
+                            //labelElement.appendChild(doc.createTextNode(child.getName()));
+                            labelElement.appendChild(doc.createTextNode(child.getName() + " (" + child.getLabel() + ")"));
                         } else {
                             getNodeAsXML(child.getPath(), doc, collectionElement);
                         }
