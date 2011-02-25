@@ -15,7 +15,7 @@ USER="michi"
 JAVA_HOME="/usr/local/jdk1.5.0_06"
 
 # The bin directories of all the servers
-DAEMONS="/home/michi/src/yanel/trunk/local/apache-tomcat-5.5.20/bin"
+DAEMONS="/home/michi/src/yanel/trunk/local/apache-tomcat-5.5.33/bin"
 
 # where you can also set more than one server, e.g.
 #DAEMONS="/home/michi/src/tomcat-cluster/build/jakarta-tomcat-5.0.30-cnode1/bin /home/michi/src/tomcat-cluster/build/jakarta-tomcat-5.0.30-cnode2/bin"
