@@ -142,7 +142,7 @@ public class ResourceTypeRegistry {
     }
 
     /**
-     * Load/register resource types (e.g. from local/apache-tomcat-5.5.20/webapps/yanel/WEB-INF/classes/resource-types.xml)
+     * Load/register resource types (e.g. from local/apache-tomcat-5.5.33/webapps/yanel/WEB-INF/classes/resource-types.xml)
      */
     public void readResourceTypes() throws ConfigurationException {
         try {
