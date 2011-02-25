@@ -83,7 +83,7 @@
     <dependency>
       <groupId>wyona-org-yanel</groupId>
       <artifactId>yanel-resource-creatable-modifiable-deletable-v3</artifactId>
-      <version>0.1-dev-r56925</version>
+      <version>0.1-dev-r55963</version>
     </dependency>
   </dependencies>
 </project>
