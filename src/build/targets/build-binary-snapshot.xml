@@ -71,7 +71,7 @@
 
     <!-- TODO: Differentiate between Java 1.4 and higher (jmx.jar)! -->
 <!--
-    <copy file="${yanel.source.home}/tools/apache-tomcat/java-1.4/apache-tomcat-5.5.20/bin/jmx.jar" todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/bin"/>
+    <copy file="${yanel.source.home}/tools/apache-tomcat/java-1.4/apache-tomcat-5.5.33/bin/jmx.jar" todir="${snapshot.dir.unix}/apache-tomcat-${tomcat.version}/bin"/>
 -->
 
     <!-- Endorsed JARs -->
