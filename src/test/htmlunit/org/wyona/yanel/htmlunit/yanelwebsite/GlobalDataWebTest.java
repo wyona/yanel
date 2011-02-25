@@ -90,7 +90,7 @@ public class GlobalDataWebTest extends AbstractHtmlUnitTest {
     }
 
     /**
-     * Test globally available htdocs (located within src/webapp/htdocs/ or rather local/apache-tomcat-5.5.20/webapps/yanel/htdocs/)
+     * Test globally available htdocs (located within src/webapp/htdocs/ or rather local/apache-tomcat-5.5.33/webapps/yanel/htdocs/)
      */
     public void testHtdocsPages() throws Exception {
         loadReservedHtmlPage("help.html");
