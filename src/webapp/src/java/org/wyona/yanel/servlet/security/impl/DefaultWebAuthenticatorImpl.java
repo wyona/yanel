@@ -29,7 +29,7 @@ import java.net.URL;
 
 import org.w3c.dom.Element;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
@@ -48,19 +48,27 @@ import org.openid4java.discovery.Identifier;
 import org.openid4java.message.AuthRequest;
 import org.openid4java.message.ParameterList;
 
+/**
+ * Default web authenticator implementation. This implementation can be overwritten per realm (<web-authenticator class="..."/>), see http://www.yanel.org/en/documentation/realm/realm-configuration.html
+ */
 public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
-    private static Category log = Category.getInstance(DefaultWebAuthenticatorImpl.class);
+    private static Logger log = Logger.getLogger(DefaultWebAuthenticatorImpl.class);
 
     private static String OPENID_DISCOVERED_KEY = "openid-discovered";
 
     private static String LOGIN_DEFAULT_COOKIE_NAME = "_yanel-login-default";
     private static String LOGIN_OPENID_COOKIE_NAME = "_yanel-login-openid";
 
+    private static final String LOGIN_USER_REQUEST_PARAM_NAME = "yanel.login.username";
+
     // NOTE: The OpenID consumer manager needs to be the same instance for redirect to provider and provider verification
     private ConsumerManager manager;
     private boolean allowOpenIdUserCreation;
 
+    /**
+     * @see org.wyona.yanel.core.api.security.WebAuthenticator#init(Document, URIResolver)
+     */
     public void init(org.w3c.dom.Document configuration, javax.xml.transform.URIResolver resolver) throws Exception {
         // TODO: commented because there is a problem with this line 
         //manager = new ConsumerManager();
@@ -83,7 +91,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
 
             // HTML Form based authentication
-            String loginUsername = request.getParameter("yanel.login.username");
+            String loginUsername = request.getParameter(LOGIN_USER_REQUEST_PARAM_NAME);
             String openID = request.getParameter("yanel.login.openid");
             String openIDSignature = request.getParameter("openid.sig");
             if (loginUsername !=  null || openID != null) {
@@ -91,11 +99,17 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             }
             if(loginUsername != null) {
                 try {
-                    if (authenticate(loginUsername, request.getParameter("yanel.login.password"), realm, session)) {
+                    String loginPassword = request.getParameter("yanel.login.password");
+                    if (loginPassword != null && authenticate(loginUsername, loginPassword, realm, session)) {
                         return null;
                     }
-                    log.warn("Login failed: " + loginUsername + " (True ID: " + realm.getIdentityManager().getUserManager().getTrueId(loginUsername) + ")");
-                    getXHTMLAuthenticationForm(request, response, realm, "Login failed!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                    if (loginPassword == null) {
+                        log.warn("No password specified yet!");
+                        getXHTMLAuthenticationForm(request, response, realm, "Please make sure to enter password!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                    } else {
+                        log.warn("Login failed: " + loginUsername + " (True ID: " + realm.getIdentityManager().getUserManager().getTrueId(loginUsername) + ")");
+                        getXHTMLAuthenticationForm(request, response, realm, "Login failed!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                    }
                     return response;
                 } catch (ExpiredIdentityException e) {
                     log.warn("Login failed: [" + loginUsername + "] " + e);
@@ -327,7 +341,10 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
         }
         return false;
     }
-            
+
+    /**
+     *
+     */
     private HttpServletResponse getUnauthenticatedResponse(HttpServletRequest request, HttpServletResponse response, Map map, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort) throws Exception {
         Realm realm = map.getRealm(request.getServletPath());
             log.warn("No credentials specified yet!");
@@ -399,7 +416,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             }
 
             Cookie[] cookies = request.getCookies();
-            if (cookies != null) {
+            if (cookies != null) { // INFO: Check cookies if login name was set to be remembered
                 for (int i = 0; i < cookies.length; i++) {
                     log.debug("Cookie: " + cookies[i].getName() + ", " + cookies[i].getValue());
                     // TODO: Parse realm and login name (see method doRememberMyLoginName())
@@ -411,6 +428,12 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                         loginOpenIDElement.setAttributeNS(YanelServlet.NAMESPACE, "openid", cookies[i].getValue());
                     }
                 }
+            }
+
+            String loginUsername = request.getParameter(LOGIN_USER_REQUEST_PARAM_NAME); // INFO: Check request parameter for login name
+            if (loginUsername != null) {
+                Element presetLoginElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-preset"));
+                presetLoginElement.setAttributeNS(YanelServlet.NAMESPACE, "username", loginUsername);
             }
             
             String yanelFormat = request.getParameter("yanel.format");
