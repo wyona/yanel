@@ -41,6 +41,7 @@ public class DeleteUserResource extends ExecutableUsecaseResource {
             UserManager userManager = getRealm().getIdentityManager().getUserManager();
             userManager.removeUser(id);
             addInfoMessage("User " + id + " deleted successfully.");
+            log.warn("TODO: Delete access policy!"); // Also see CreateUserResource
         } catch (AccessManagementException e) {
             log.error(e, e);
             throw new UsecaseException(e.getMessage(), e);
