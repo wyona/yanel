@@ -3,7 +3,7 @@
   <html xmlns="http://www.w3.org/1999/xhtml">
     <body>
       <h1>Create User</h1>
-      <p>${resource.getErrorMessages()}</p>
+      <p><font color="red">${resource.getErrorMessages()}</font></p>
       <form action="">
         <label for="userID">User ID:</label>
         <input type="text" id="userID" name="userID" value="${resource.getParameterAsString('userID')}"/>
