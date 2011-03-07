@@ -17,6 +17,9 @@
 
         <h2>All "logged-in" sessions</h2>
         <!-- Show all logged-in sessions first -->
+        <xsl:if test="not(s:session[s:identities])">
+          <p>No "logged-in" sessions yet.</p>
+        </xsl:if>
         <ol>
           <xsl:apply-templates select="s:session[s:identities]"/>
         </ol>
