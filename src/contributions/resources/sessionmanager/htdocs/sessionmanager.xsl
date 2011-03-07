@@ -53,20 +53,12 @@
           </li>
         </xsl:if>
 
-<!--
-        <xsl:if test="s:identity">
+        <xsl:if test="s:last-accessed-url">
           <li>
-            <strong>Identity: </strong>
-            <xsl:value-of select="s:identities"/>
+            <strong>Last accessed URL: </strong>
+            <xsl:value-of select="s:last-accessed-url"/>
           </li>
         </xsl:if>
-        <xsl:if test="s:last-access">
-          <li>
-            <strong>Last accessed page: </strong>
-            <xsl:value-of select="s:last-access"/>
-          </li>
-        </xsl:if>
--->
       </ul>
       <br/>
     </li>
