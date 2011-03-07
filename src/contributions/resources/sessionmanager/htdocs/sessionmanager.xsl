@@ -14,13 +14,19 @@
         <h1>Session manager</h1>
         <strong>Total number of sessions: </strong>
         <xsl:value-of select="s:number-of-sessions"/>
-        <br/>
-        <ul>
-          <!-- Show all logged-in sessions first -->
+
+        <h2>All "logged-in" sessions</h2>
+        <!-- Show all logged-in sessions first -->
+        <ol>
           <xsl:apply-templates select="s:session[s:identities]"/>
-          <!-- Show all anonymous sessions later -->
+        </ol>
+
+        <h2>All anonymous sessions</h2>
+        <!-- Show all anonymous sessions later -->
+        <ol>
           <xsl:apply-templates select="s:session[s:no-identity-yet]"/>
-        </ul>
+        </ol>
+
         <hr/>
         <p><a href="?yanel.resource.viewid=source">XML</a> (Please make sure to configure a view called "source")</p>
       </body>
@@ -40,6 +46,14 @@
           <strong>Last accessed time: </strong>
           <xsl:value-of select="@last-accessed-time"/>
         </li>
+        <xsl:if test="s:identities">
+          <li>
+            <strong>Identities: </strong>
+            <xsl:value-of select="s:identities"/>
+          </li>
+        </xsl:if>
+
+<!--
         <xsl:if test="s:identity">
           <li>
             <strong>Identity: </strong>
@@ -52,6 +66,7 @@
             <xsl:value-of select="s:last-access"/>
           </li>
         </xsl:if>
+-->
       </ul>
       <br/>
     </li>
