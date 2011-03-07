@@ -152,6 +152,7 @@ public class YanelServlet extends HttpServlet {
     private static final String CONTENT_TYPE_XHTML = "xhtml";
 
     private static String ANALYTICS_COOKIE_NAME = "_yanel-analytics";
+    public static final String YANEL_LAST_ACCESS_ATTR = "_yanel-last-access";
 
     private Scheduler scheduler;
 
@@ -1931,8 +1932,7 @@ public class YanelServlet extends HttpServlet {
         if (!view.isResponse()) {
             if(logAccessEnabled) {
                 if (view.getMimeType() != null) {
-                    // TODO: Add more mime types or rather make it configurable
-                    if (view.getMimeType().indexOf("html") > 0 || view.getMimeType().indexOf("pdf") > 0 || view.getMimeType().indexOf("video") >= 0) {
+                    if (isMimeTypeOk(view.getMimeType())) {
                         doLogAccess(request, response, res);
                     }
                 }
@@ -1968,12 +1968,11 @@ public class YanelServlet extends HttpServlet {
 
         if(logAccessEnabled) {
             if (mimeType != null) {
-                if (mimeType.indexOf("html") > 0 || mimeType.indexOf("pdf") > 0) { // INFO: Only HTML pages and PDFs etc. should be logged, but no images, CSS, etc. Check the mime-type instead the suffix or use JavaScript or Pixel
+                if (isMimeTypeOk(mimeType)) {
                     doLogAccess(request, response, res);
                 }
             }
         }
-
 
         // Set HTTP headers:
         HashMap<?, ?> headers = view.getHttpHeaders();
@@ -2499,6 +2498,13 @@ public class YanelServlet extends HttpServlet {
                 logAccess.info(AccessLog.getLogMessage(request, response, realm.getID(), tags));
             }
             //log.debug("Referer: " + request.getHeader(HTTP_REFERRER));
+
+            // INFO: Store last accessed page in session such that session manager can show user activity.
+            HttpSession session = request.getSession(true);
+            if(session != null) {
+                session.setAttribute(YANEL_LAST_ACCESS_ATTR, request.getServletPath()); 
+                //log.debug("Last access: " + request.getServletPath());
+            }
         } catch(Exception e) { // Catch all exceptions, because we do not want to throw exceptions because of logging browser history
             log.error(e, e);
         }
@@ -2563,5 +2569,18 @@ public class YanelServlet extends HttpServlet {
         } else {
             Element notVersionableElement = (Element) resourceElement.appendChild(doc.createElement("not-versionable"));
         }
+    }
+
+    /**
+     * Check whether mime type is html, pdf or video
+     * @param mt Mime type
+     */
+    private boolean isMimeTypeOk(String mt) {
+        // TODO: Add more mime types or rather make it configurable
+        // INFO: Only HTML pages and PDFs etc. should be logged, but no images, CSS, etc. Check the mime-type instead the suffix or use JavaScript or Pixel
+        if (mt.indexOf("html") > 0 || mt.indexOf("pdf") > 0 || mt.indexOf("video") >= 0) {
+            return true;
+        }
+        return false;
     }
 }
