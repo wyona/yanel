@@ -56,7 +56,7 @@
             <li>Turn on <a href="?yanel.toolbar=on">toolbar</a> </li>
             <li><a href="update-webapp.html">Find Updates</a></li>
             <li><a href="reload-realms.html">Reload realms</a></li>
-            <li><a href="session-manager.html">Session Manager</a></li>
+            <li><a href="yanel/session-manager.html">Session Manager</a></li>
             <li>Download <a href="http://www.yulup.org">Yulup</a> for editing web-pages independently of Yanel.</li>
 
 <!--
