@@ -4,6 +4,7 @@
 
 package org.wyona.yanel.impl.resources.sessionmanager;
 
+import org.wyona.yanel.servlet.YanelServlet;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
 import org.wyona.yanel.servlet.IdentityMap;
 
@@ -36,11 +37,17 @@ public class SessionManagerResource extends BasicXMLResource {
         for (int i = 0; i < activeSessions.length; i++) {
             try {
                 sb.append("<session id=\"" + activeSessions[i].getId() + "\" creation-time=\"" + dateFormat.format(new Date(activeSessions[i].getCreationTime())) + "\" last-accessed-time=\"" + dateFormat.format(new Date(activeSessions[i].getLastAccessedTime())) + "\">");
+
+                // TODO ...
                 IdentityMap identityMap = (IdentityMap) activeSessions[i].getAttribute(org.wyona.yanel.servlet.YanelServlet.IDENTITY_MAP_KEY);
                 if (identityMap != null) {
                     sb.append("<identities>" + identityMap.toString() + "</identities>");
                 } else {
                     sb.append("<no-identity-yet/>");
+                }
+                String lastAccessedURL = (String) activeSessions[i].getAttribute(YanelServlet.YANEL_LAST_ACCESS_ATTR);
+                if(lastAccessedURL != null) {
+                    sb.append("<last-accessed-url>" + lastAccessedURL + "</last-accessed-url>");
                 }
                 sb.append("</session>");
             } catch (Exception e) {
