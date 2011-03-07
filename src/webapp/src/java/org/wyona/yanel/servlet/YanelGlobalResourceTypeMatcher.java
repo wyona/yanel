@@ -36,6 +36,7 @@ class YanelGlobalResourceTypeMatcher {
 
         //XXX: maybe we should use a configuration file instead!
         java.util.Map<String, String> globalRCmap = new HashMap<String, String>();
+        globalRCmap.put("session-manager.html", "session-manager_yanel-rc.xml");
         globalRCmap.put("search.html", "search_yanel-rc.xml");
         globalRCmap.put("data-repository-sitetree.html", "data-repo-sitetree_yanel-rc.xml");
         globalRCmap.put("user-forgot-pw.html", "user-forgot-pw_yanel-rc.xml");
