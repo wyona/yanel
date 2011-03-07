@@ -493,7 +493,7 @@ public class YanelServlet extends HttpServlet {
 
                     if (!((ViewableV2) res).exists()) {
                         log.warn("No such ViewableV2 resource: " + res.getPath());
-                        log.warn("TODO: It seems like many ViewableV2 resources are not implementing exists() properly!");
+                        log.warn("TODO: Many ViewableV2 resources are not implementing exists() properly, hence do not generate a 404 for backwards compatibility! As a workaround use the exists() method within the getView(String) method and throw a ResourceNotFoundException accordingly.");
                         //do404(request, response, doc, res.getPath());
                         //return;
                     }
