@@ -23,6 +23,8 @@
             http://marcus-christie.blogspot.com/2006/08/using-ant-with-maven-1-and-maven-2.html
     -->
     <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
+    <!-- TODO: The zwischengas repository contains the moxy dependencies. Copy these to the wyona.org repository -->
+    <artifact:remoteRepository id="zwischengas.repository" url="http://zwischengas-maven2.wyona.org/"/>
 
     <!-- dependencies which are only needed at compile time, but won't be copied to WEB-INF/lib -->
     <artifact:dependencies pathId="maven2.compile.classpath" filesetId="maven2.compile.fileset">
@@ -32,7 +34,9 @@
     
     <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
+      <remoteRepository refid="zwischengas.repository"/>
       <dependency groupId="log4j" artifactId="log4j" version="1.2.16"/>
+      <dependency groupId="org.eclipse.persistence" artifactId="org.eclipse.persistence.moxy" version="2.1.2"/> <!-- INFO: JAXB implementation -->
       <!-- TODO: Add checksum file to server -->
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
