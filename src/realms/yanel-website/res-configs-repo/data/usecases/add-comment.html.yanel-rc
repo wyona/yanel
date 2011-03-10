@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+
+  <yanel:rti name="comment" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:custom-config>
+    <views>
+      <view id="default" type="xml">
+        <xslt>rthtdocs:/add-comment.xsl</xslt>
+        <mime-type>application/xhtml+xml</mime-type>
+<!--
+        <mime-type>text/html</mime-type>
+-->
+      </view>
+    </views>
+  </yanel:custom-config>
+</yanel:resource-config>
