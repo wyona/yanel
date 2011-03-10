@@ -38,6 +38,7 @@ import org.wyona.commons.xml.XMLHelper;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.AnnotatableV1;
+import org.wyona.yanel.core.api.attributes.CommentableV1;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
@@ -46,6 +47,7 @@ import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
+import org.wyona.yanel.core.attributes.commentable.CommentManagerV1;
 import org.wyona.yanel.core.attributes.translatable.TranslationException;
 import org.wyona.yanel.core.attributes.translatable.TranslationManager;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
@@ -64,7 +66,7 @@ import org.wyona.yarep.core.Revision;
 /**
  * Generic resource handling XML data and transforming it using XSLT, etc.
  */
-public class XMLResource extends BasicXMLResource implements ModifiableV2, VersionableV2, CreatableV2, IntrospectableV1, TranslatableV1, WorkflowableV1, AnnotatableV1 {
+public class XMLResource extends BasicXMLResource implements ModifiableV2, VersionableV2, CreatableV2, IntrospectableV1, TranslatableV1, WorkflowableV1, AnnotatableV1, CommentableV1 {
 
     private static Logger log = Logger.getLogger(XMLResource.class);
 
@@ -90,7 +92,6 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * Get initial content as XML
      */
     private InputStream getContentXML(Repository repo, String yanelPath, String revisionName) throws Exception {
-        // TODO: Add annotations to XML root element using a namespace
 
         if (yanelPath != null) {
             if (log.isDebugEnabled()) log.debug("Yanel Path: " + yanelPath);
@@ -147,6 +148,37 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             node = repo.getNode(getPath()).getRevision(revisionName);
         } else {
             node = repo.getNode(getPath());
+        }
+
+        // TODO: Add annotations to XML root element using a namespace
+
+        String checkComments = getResourceConfigProperty("check-comments");
+        if (checkComments != null && checkComments.equals("true")) {
+            CommentManagerV1 cMan = getCommentManager();
+            if (cMan.hasComments(getRealm(), getPath())) {
+                // TODO: Differentiate between users who have access to all comments and only public comments
+                //java.util.List comments = cMan.getPublicComments(realm, getPath()).getComments();
+                java.util.List comments = cMan.getAllComments(realm, getPath()).getComments();
+                log.warn("DEBUG: Resource '" + getPath() + "' has comments: " + comments.size());
+                // TODO: Add comments to XML root element using a namespace
+                Document mainDoc = XMLHelper.readDocument(node.getInputStream());
+                String aggregateComments = getResourceConfigProperty("aggregate-comments");
+                if (aggregateComments != null && aggregateComments.equals("true")) {
+                    Document commentsDoc = org.wyona.yarep.util.YarepXMLBindingUtil.getDocFromJAXBDataObject(cMan.getAllComments(realm, getPath()));
+                    log.warn("DEBUG: Aggregate comments ...");
+                    //org.w3c.dom.Node importedNode = mainDoc.getDocumentElement().getOwnerDocument().importNode(commentsDoc.getDocumentElement(), true);
+                    //mainDoc.getDocumentElement().appendChild(importedNode);
+                    //org.w3c.dom.Node importedNode = mainDoc.importNode(commentsDoc.getDocumentElement(), true);
+                    mainDoc.getDocumentElement().appendChild(mainDoc.importNode(commentsDoc.getDocumentElement(), true));
+                } else {
+                    XMLHelper.appendFragment(mainDoc.getDocumentElement(), "<comments:has-comments xmlns:comments=\"http://www.wyona.org/yanel/comments/1.0\">" + comments.size() + "</comments:has-comments>");
+                }
+                return XMLHelper.getInputStream(mainDoc, false, true, null);
+            } else {
+                log.debug("Resource '" + getPath() + "' has no comments yet.");
+            }
+        } else {
+            //log.debug("Do not aggregate comments");
         }
         return node.getInputStream();
     }
@@ -773,5 +805,12 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             }
         }
         getRealm().getRepository().getNode(getPath()).setProperty("annotations", sb.toString());
+    }
+
+    /**
+     * @see org.wyona.yanel.core.api.attributes.CommentableV1#getCommentManager()
+     */
+    public CommentManagerV1 getCommentManager() throws Exception {
+        return new org.wyona.yanel.impl.comments.CommentManagerV1Impl();
     }
 }
