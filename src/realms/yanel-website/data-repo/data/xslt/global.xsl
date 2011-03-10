@@ -6,6 +6,8 @@
   xmlns:i18n="http://www.wyona.org/yanel/i18n/1.0"
   xmlns:xi="http://www.w3.org/2001/XInclude"
   xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:comments="http://www.wyona.org/yanel/comments/1.0"
+  xmlns:cmts="http://www.wyona.org/yanel/1.0"
 >
 
 <!-- IMPORTANT: Needs to correspond to the mime-type which is sent by the server! -->
@@ -96,6 +98,14 @@ WARNING: This content has been generated dynamically. All changes will be lost.
   <div id="content">
     <xsl:call-template name="translations"/>
     <xsl:copy-of select="/xhtml:html/xhtml:body/node()"/>
+
+    <br/>
+    <hr/>
+    <div id="comments">
+      <h4>Your comments are much appreciated</h4>
+      <p>Is the content of this page unclear or you think it could be improved? Please <a href="{$yarep.back2realm}usecases/add-comment.html?path={$yanel.path}">add a comment</a> and we will try to improve it accordingly.</p>
+      <xsl:apply-templates select="/xhtml:html/comments:has-comments"/><xsl:apply-templates select="/xhtml:html/cmts:root/cmts:comments"/>
+    </div>
   </div>
 </td>
 </tr>
@@ -123,6 +133,22 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <br/>
 <b><i18n:text key="search"/></b>
 &#160;<form action="{$yarep.back2realm}en/search.html" method="GET"><input type="text" name="query" class="searchbox" size="14"/></form>
+</xsl:template>
+
+<xsl:template match="comments:has-comments">
+&#160;|&#160;Display all (<xsl:value-of select="."/>) comments
+</xsl:template>
+
+<xsl:template match="cmts:comments">
+<h4><xsl:value-of select="count(cmts:comment)"/> Comments</h4>
+<xsl:apply-templates select="cmts:comment"/>
+</xsl:template>
+
+<xsl:template match="cmts:comment">
+<p>
+<span style="font-size: 8px;">Posted by anonymous on <xsl:value-of select="cmts:created"/></span><br/>
+<xsl:value-of select="cmts:text"/>
+</p>
 </xsl:template>
 
 </xsl:stylesheet>
