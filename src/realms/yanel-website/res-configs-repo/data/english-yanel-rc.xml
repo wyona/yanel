@@ -7,6 +7,9 @@
 
   <yanel:property name="workflow-schema" value="/workflow/workflow-with-review.xml"/>
 
+  <yanel:property name="check-comments" value="true"/>
+  <yanel:property name="aggregate-comments" value="true"/>
+
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
       <view id="default">
