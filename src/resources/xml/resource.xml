@@ -17,5 +17,7 @@ XML whereas an XSLT or multiple XSLTs can be specified and applied
   <!-- "yanel-path" allows to instantiate another resource which provides XML (or retrieve an XML from the content repository of the realm). For example value="/sitetree-en.xml" or value="yanelresource:/hello.xml" or "http://127.0.0.1:8080/yanel/from-scratch-realm/en/index.html?yanel.resource.viewid=sourc" -->
   <property name="yanel-path"/> <!-- optional, if not set, then a 1:1 resolving will be applied -->
   <property name="workflow-schema"/> <!-- optional -->
+  <property name="check-comments"/> <!-- optional and default is 'false' -->
+  <property name="aggregate-comments"/> <!-- optional and default is 'false' -->
 </rtd>
 </resource>
