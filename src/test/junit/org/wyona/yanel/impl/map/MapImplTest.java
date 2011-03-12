@@ -36,7 +36,8 @@ public class MapImplTest extends AbstractYanelTest {
      * Tests if the map returns the correct rti for a given path.
      */
     public void testRTI() throws Exception {
-        Path path = new Path("/yanel-website/en/about.html");
+        Path path = new Path("/yanel-website/en/features.html");
+        //Path path = new Path("/yanel-website/en/about.html");
         String rti = map.getResourceTypeIdentifier(path);
         assertEquals("Incorrect RTI for path: " + path.toString(), "<{http://www.wyona.org/yanel/resource/1.0}xml/>", rti);
     }
