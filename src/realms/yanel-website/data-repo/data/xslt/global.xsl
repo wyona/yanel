@@ -147,6 +147,8 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <xsl:template match="cmts:comment">
 <p>
 <span style="font-size: 8px;">Posted by anonymous on <xsl:value-of select="cmts:created"/></span><br/>
+<strong><xsl:value-of select="cmts:title"/></strong>
+<br/>
 <xsl:value-of select="cmts:text"/>
 </p>
 </xsl:template>
