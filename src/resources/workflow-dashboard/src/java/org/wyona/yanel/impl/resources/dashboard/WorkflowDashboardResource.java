@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Wyona
+ * Copyright 2011 Wyona
  */
 
 package org.wyona.yanel.impl.resources.dashboard;
@@ -12,17 +12,14 @@ import java.io.InputStream;
 import org.apache.log4j.Logger;
 
 /**
- * A simple Resource which extends BasicXMLResource
+ * A resource in order to find resources by their workflow state
  */
 public class WorkflowDashboardResource extends BasicXMLResource {
     
     private static Logger log = Logger.getLogger(WorkflowDashboardResource.class);
     
     /**
-     * This method overrides the method to create the InputStream called by BasicXMLResource
-     * Since you extend the BasicXMLResource this has to contain well-formed xml.
-     * Should return a InputStream which contains XML. 
-     * Use String, StingBuffer, dom, jdom, org.apache.commons.io.IOUtils and so on to generate the XML.
+     * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
      */
     protected InputStream getContentXML(String viewId) throws Exception {
         if (log.isDebugEnabled()) {
