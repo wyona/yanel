@@ -790,8 +790,7 @@ public class YanelServlet extends HttpServlet {
                 response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 PrintWriter w = response.getWriter();
-                // TODO: XMLExceptionV1 is part of Neutron and hence not really appropriate for this kind of exception
-                w.print(XMLExceptionV1.getDefaultException(XMLExceptionV1.AUTHORIZATION, e.getMessage()));
+                w.print(getWorkflowException(e.getMessage()));
                 return;
             }
         } else {
@@ -2582,5 +2581,17 @@ public class YanelServlet extends HttpServlet {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Get workflow exception
+     */
+    private static String getWorkflowException(String message) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version=\"1.0\"?>");
+        sb.append("<exception xmlns=\"http://www.wyona.org/yanel/workflow/1.0\" type=\"" + "workflow" + "\">");
+        sb.append("<message>" + message + "</message>");
+        sb.append("</exception>");
+        return sb.toString();
     }
 }
