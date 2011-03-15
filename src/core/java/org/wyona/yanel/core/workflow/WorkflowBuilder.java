@@ -28,8 +28,15 @@ import org.w3c.dom.NodeList;
 import org.wyona.yanel.core.workflow.impl.TransitionImpl;
 import org.wyona.yanel.core.workflow.impl.WorkflowImpl;
 
+/**
+ * Utility class in order to build a workflow
+ */
 public class WorkflowBuilder {
 
+    /**
+     * Build workflow from an input stream containing a workflow definition as XML
+     * @param stream Input stream containing workflow as XML
+     */
     public Workflow buildWorkflow(InputStream stream) throws WorkflowException {
         try {
             Document document = org.wyona.commons.xml.XMLHelper.readDocument(stream);
