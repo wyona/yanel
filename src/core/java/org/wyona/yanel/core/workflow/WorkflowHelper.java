@@ -50,8 +50,10 @@ public class WorkflowHelper {
     protected static final String WORKFLOW_STATE_PROPERTY = "workflow-state";
     protected static final String WORKFLOW_SCHEMA_PROPERTY_NAME = "workflow-schema";
 
-    public static void doTransition(Resource resource, String transitionID, String revision) 
-            throws WorkflowException {
+    /**
+     * Execute workflow transition for a specific revision of a particular resource
+     */
+    public static void doTransition(Resource resource, String transitionID, String revision) throws WorkflowException {
         boolean foundTransition = false;
         String currentState = null;
         WorkflowableV1 workflowable = (WorkflowableV1)resource;
@@ -399,10 +401,21 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
      */
     public static void setWorkflowState(Node node, String state, String revision) throws WorkflowException {
         try {
-            Revision rev = node.getRevision(revision); 
+            setWorkflowState(node.getRevision(revision), state);
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new WorkflowException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Set workflow state (and date)
+     */
+    public static void setWorkflowState(Node node, String state) throws WorkflowException {
+        try {
             log.debug("Set workflow state: " + state);
-            rev.setProperty(WORKFLOW_STATE_PROPERTY, state);
-            rev.setProperty(WORKFLOW_DATE_PROPERTY, new Date());
+            node.setProperty(WORKFLOW_STATE_PROPERTY, state);
+            node.setProperty(WORKFLOW_DATE_PROPERTY, new Date());
             // TODO: write workflow history
         } catch (Exception e) {
             log.error(e, e);
