@@ -15,6 +15,7 @@
  */
 package org.wyona.yanel.impl.workflow;
 
+import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
 import org.wyona.yanel.core.workflow.Action;
 import org.wyona.yanel.core.workflow.Workflow;
@@ -43,9 +44,17 @@ public class EmailAction implements Action {
      */
     public void execute(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException {
         String[] emailAddresses = getEmailAddresses();
+        String from = getSenderAddress(workflowable, workflow, revision);
+        String subject = getSubject(workflowable, workflow, revision);
+        String content = getText(workflowable, workflow, revision);
         if (emailAddresses != null) {
             for (int i = 0; i < emailAddresses.length; i++) {
-                log.warn("Send email to: " + emailAddresses[i]);
+                log.info("Send email to: " + emailAddresses[i]);
+                try {
+                    org.wyona.yanel.core.util.MailUtil.send(from, emailAddresses[i], subject, content);
+                } catch(Exception e) {
+                    throw new WorkflowException(e);
+                }
             }
         } else {
             throw new WorkflowException("No email addresses!");
@@ -70,5 +79,28 @@ public class EmailAction implements Action {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Get from/sender address
+     */
+    protected String getSenderAddress(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException {
+        return "contact@wyona.com";
+    }
+
+    /**
+     * Get subject
+     */
+    protected String getSubject(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException {
+        Resource resource = (Resource) workflowable;
+        return "[Yanel] The workflow state of the resource '" + resource.getPath() + "' has been changed: " + workflowable.getWorkflowState(revision);
+    }
+
+    /**
+     * Get text
+     */
+    protected String getText(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException {
+        Resource resource = (Resource) workflowable;
+        return "Please review the workflow state change of the resource: " + resource.getPath();
     }
 }
