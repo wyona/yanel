@@ -2589,7 +2589,7 @@ public class YanelServlet extends HttpServlet {
     private static String getWorkflowException(String message) {
         StringBuilder sb = new StringBuilder();
         sb.append("<?xml version=\"1.0\"?>");
-        sb.append("<exception xmlns=\"http://www.wyona.org/yanel/workflow/1.0\" type=\"" + "workflow" + "\">");
+        sb.append("<exception xmlns=\"" + org.wyona.yanel.core.workflow.Workflow.NAMESPACE + "\" type=\"" + "workflow" + "\">");
         sb.append("<message>" + message + "</message>");
         sb.append("</exception>");
         return sb.toString();
