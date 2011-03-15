@@ -42,6 +42,33 @@ public class EmailAction implements Action {
      * @see org.wyona.yanel.core.workflow.Action#execute(WorkflowableV1, Workflow, String)
      */
     public void execute(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException {
-        log.warn("Send emails to: " + expression);
+        String[] emailAddresses = getEmailAddresses();
+        if (emailAddresses != null) {
+            for (int i = 0; i < emailAddresses.length; i++) {
+                log.warn("Send email to: " + emailAddresses[i]);
+            }
+        } else {
+            throw new WorkflowException("No email addresses!");
+        }
+    }
+
+    /**
+     * Get email addresses
+     */
+    private String[] getEmailAddresses() throws WorkflowException {
+        if (expression != null) {
+            String[] ea = expression.split(",");
+            String[] emails = new String[ea.length]; // TODO: Make more fault tolerant
+            for(int i = 0; i < ea.length; i++) {
+                if (ea[i].indexOf("@") < 1) {
+                    throw new WorkflowException("No such email address: " + ea[i]);
+                } else {
+                    emails[i] = ea[i].trim();
+                }
+            }
+            return emails;
+        } else {
+            return null;
+        }
     }
 }
