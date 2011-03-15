@@ -10,6 +10,7 @@ import org.wyona.yanel.core.attributes.commentable.CommentStatusV1;
 import org.wyona.yanel.core.attributes.commentable.CommentV1;
 import org.wyona.yanel.core.attributes.commentable.CommentsV1;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.core.workflow.Workflow;
 
 import org.wyona.yarep.util.YarepXMLBindingUtil;
 
@@ -88,6 +89,14 @@ public class CommentManagerV1Impl implements CommentManagerV1 {
                 CommentsV1 comments = YarepXMLBindingUtil.readJAXBDataObject(CommentsV1.class, realm.getRepository(), getAbsoluteYarepPathOfComment(path));
                 comments.getComments().add(newComment);
                 YarepXMLBindingUtil.writeJAXBDataObject(realm.getRepository(), comments, getAbsoluteYarepPathOfComment(path));
+
+                Workflow workflow = getWorkflow();
+                if (workflow != null) {
+                    org.wyona.yarep.core.Node commentsNode = realm.getRepository().getNode(getAbsoluteYarepPathOfComment(path)); // TODO: Use comment node instead comments node
+                    org.wyona.yanel.core.workflow.WorkflowHelper.setWorkflowState(commentsNode, workflow.getInitialState());
+                    // TODO: Check if transition ID 'submit' exists!
+                    //WorkflowHelper.doTransition(newResource, "submit", revision.getRevisionName());
+                }
             }
         } else {
             log.error("Invalid path received: " + path);
@@ -101,5 +110,17 @@ public class CommentManagerV1Impl implements CommentManagerV1 {
      */
     private String getAbsoluteYarepPathOfComment(String pathOfReferencedDoc) {
         return REPOSITORY_BASE_PATH + pathOfReferencedDoc;
+    }
+
+    /**
+     * Get workflow
+     */
+    private Workflow getWorkflow() {
+        //return org.wyona.yanel.core.workflow.Workflow workflow = new org.wyona.yanel.core.workflow.WorkflowBuilder().buildWorkflow(workflowAsIS);
+        org.wyona.yanel.core.workflow.impl.WorkflowImpl workflow = new org.wyona.yanel.core.workflow.impl.WorkflowImpl();
+        String states[] = {"draft", "review", "approved"};
+        workflow.setStates(states);
+        workflow.setInitialState("draft");
+        return workflow;
     }
 }
