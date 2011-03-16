@@ -11,6 +11,9 @@ import org.wyona.yanel.core.YanelNamespaces;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CommentV1 {
 
+    @XmlElement(name="id", namespace=YanelNamespaces.YANEL_NS)
+    private String id = null;
+
     @XmlElement(name="text", namespace=YanelNamespaces.YANEL_NS)
     private String commentText = null;
 
@@ -32,10 +35,30 @@ public class CommentV1 {
     @XmlElement(name="status", namespace=YanelNamespaces.YANEL_NS)
     private CommentStatusV1 commentStatus = CommentStatusV1.DRAFT;
 
+    /**
+     * Get ID of comment
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Set ID of comment
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * Get text of comment
+     */
     public String getCommentText() {
         return commentText;
     }
 
+    /**
+     * Set text of comment
+     */
     public void setCommentText(String commentText) {
         this.commentText = commentText;
     }
