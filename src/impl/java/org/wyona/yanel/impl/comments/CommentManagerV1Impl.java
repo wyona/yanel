@@ -87,6 +87,11 @@ public class CommentManagerV1Impl implements CommentManagerV1 {
                     YarepXMLBindingUtil.writeJAXBDataObject(realm.getRepository(), comments, getAbsoluteYarepPathOfComment(path));
                 }
                 CommentsV1 comments = YarepXMLBindingUtil.readJAXBDataObject(CommentsV1.class, realm.getRepository(), getAbsoluteYarepPathOfComment(path));
+                if (newComment.getId() == null) {
+                    String id = "" + new java.util.Date().getTime();
+                    log.warn("Comment has no ID yet, hence create one automatically: " + id);
+                    newComment.setId(id);
+                }
                 comments.getComments().add(newComment);
                 YarepXMLBindingUtil.writeJAXBDataObject(realm.getRepository(), comments, getAbsoluteYarepPathOfComment(path));
 
