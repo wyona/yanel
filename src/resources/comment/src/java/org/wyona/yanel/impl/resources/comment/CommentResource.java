@@ -44,7 +44,12 @@ public class CommentResource extends BasicXMLResource {
                         CommentV1 comment = new CommentV1();
                         comment.setCommentText(body);
                         String title = getEnvironment().getRequest().getParameter("title");
-                        if (title != null) comment.setTitle(title);
+                        if (title != null && title.trim().length() > 0) {
+                            comment.setTitle(title);
+                            comment.setId(title.replace(" ", "_"));
+                        } else {
+                            log.warn("No title set!");
+                        }
                         String email = getEnvironment().getRequest().getParameter("email");
                         if (email != null) comment.setAuthorMail(email);
                         String name = getEnvironment().getRequest().getParameter("name");
