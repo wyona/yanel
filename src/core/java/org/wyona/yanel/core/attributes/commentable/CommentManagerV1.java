@@ -33,7 +33,7 @@ public interface CommentManagerV1 {
     /**
      * Add a new Comment (newComment) for a given document (path)
      * @param path Resource path (e.g. absolute Yarep Path)
-     * @param newComment new comment to be added to the document referenced by path
+     * @param newComment New comment to be added to the resource referenced by the path
      * @return true if comment could be added
      * @throws Exception
      */
