@@ -89,6 +89,47 @@ public class WorkflowHelper {
                     " for state: " + currentState);
         }
     }
+
+/* INFO: It's better to hide the persistence and hence use doTransition(Resource, String, String)
+    public static void doTransition(Node node, String transitionID, Workflow workflow) throws WorkflowException {
+        boolean foundTransition = false;
+        String currentState = null;
+        currentState = getWorkflowState(node);
+        if (currentState == null) {
+            currentState = workflow.getInitialState(); 
+        }
+        Transition[] transitions = workflow.getLeavingTransitions(currentState);
+        
+        for (int i = 0; i < transitions.length; i++) {
+            if (transitions[i].getID().equals(transitionID)) {
+
+                // INFO: The isComplied() method is based on workflowable instead node
+                Condition[] conditions = transitions[i].getConditions();
+                for (int j = 0; j < conditions.length; j++) {
+                    if (!conditions[j].isComplied(workflowable, workflow, revision)) {
+                        throw new WorkflowException("Workflow condition not complied for state '" + currentState + "' and transition '" + transitionID + "': " + conditions[j].getMessage());
+                    }
+                }
+
+                String newState = transitions[i].getDestinationState();
+                
+                setWorkflowState(node, newState);
+                
+                // INFO: The execute() method is based on workflowable instead node
+                Action[] actions = transitions[i].getActions();
+                for (int j = 0; j < actions.length; j++) {
+                    actions[j].execute(workflowable, workflow, revision);
+                }
+                
+                foundTransition = true;
+            }
+        }
+        if (!foundTransition) {
+            throw new WorkflowException("Invalid workflow transition: " + transitionID + 
+                    " for state: " + currentState);
+        }
+    }
+*/
     
     /*public static boolean canDoTransition(Resource resource, String transitionID, String revision) 
             throws WorkflowException {
@@ -373,7 +414,19 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
      */
     public static String getWorkflowState(Node node, String revision) throws WorkflowException {
         try {
-            Property stateProp = node.getRevision(revision).getProperty(WORKFLOW_STATE_PROPERTY);
+            return getWorkflowState(node.getRevision(revision));
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new WorkflowException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     *
+     */
+    private static String getWorkflowState(Node node) throws WorkflowException {
+        try {
+            Property stateProp = node.getProperty(WORKFLOW_STATE_PROPERTY);
             if (stateProp != null) {
                 return stateProp.getString();
             }
@@ -397,6 +450,7 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     }
 
     /**
+     * @deprecated Use {@link setWorkflowState(Resource, String, String)} instead
      * Set workflow state (and date)
      */
     public static void setWorkflowState(Node node, String state, String revision) throws WorkflowException {
@@ -411,7 +465,7 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     /**
      * Set workflow state (and date)
      */
-    public static void setWorkflowState(Node node, String state) throws WorkflowException {
+    private static void setWorkflowState(Node node, String state) throws WorkflowException {
         try {
             log.debug("Set workflow state: " + state);
             node.setProperty(WORKFLOW_STATE_PROPERTY, state);
@@ -424,7 +478,7 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     }
 
     /**
-     *
+     * @param revision Revision of resource
      */
     public static Date getWorkflowDate(Resource resource, String revision) throws WorkflowException {
         try {
@@ -436,7 +490,7 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     }
 
     /**
-     *
+     * @deprecated Use {@link getWorkflowDate(Resource, String)} instead
      */
     public static Date getWorkflowDate(Node node, String revision) throws WorkflowException {
         try {

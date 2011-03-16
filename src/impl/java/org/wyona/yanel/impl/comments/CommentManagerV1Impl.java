@@ -93,9 +93,8 @@ public class CommentManagerV1Impl implements CommentManagerV1 {
                 Workflow workflow = getWorkflow();
                 if (workflow != null) {
                     org.wyona.yarep.core.Node commentsNode = realm.getRepository().getNode(getAbsoluteYarepPathOfComment(path)); // TODO: Use comment node instead comments node
-                    org.wyona.yanel.core.workflow.WorkflowHelper.setWorkflowState(commentsNode, workflow.getInitialState());
-                    // TODO: Check if transition ID 'submit' exists!
-                    //WorkflowHelper.doTransition(newResource, "submit", revision.getRevisionName());
+                    //org.wyona.yanel.core.workflow.WorkflowHelper.setWorkflowState(commentsNode, workflow.getInitialState());
+                    //org.wyona.yanel.core.workflow.WorkflowHelper.doTransition(commentsNode, "submit-for-review", workflow);
                 }
             }
         } else {
@@ -118,9 +117,18 @@ public class CommentManagerV1Impl implements CommentManagerV1 {
     private Workflow getWorkflow() {
         //return org.wyona.yanel.core.workflow.Workflow workflow = new org.wyona.yanel.core.workflow.WorkflowBuilder().buildWorkflow(workflowAsIS);
         org.wyona.yanel.core.workflow.impl.WorkflowImpl workflow = new org.wyona.yanel.core.workflow.impl.WorkflowImpl();
+
         String states[] = {"draft", "review", "approved"};
         workflow.setStates(states);
         workflow.setInitialState("draft");
+
+        org.wyona.yanel.core.workflow.impl.TransitionImpl submitT = new org.wyona.yanel.core.workflow.impl.TransitionImpl("submit-for-review", "draft", "review");
+        org.wyona.yanel.core.workflow.impl.TransitionImpl approveT = new org.wyona.yanel.core.workflow.impl.TransitionImpl("approve", "review", "approved");
+        org.wyona.yanel.core.workflow.Transition[] transitions = new org.wyona.yanel.core.workflow.Transition[2];
+        transitions[0] = submitT;
+        transitions[1] = approveT;
+        workflow.setTransitions(transitions);
+
         return workflow;
     }
 }
