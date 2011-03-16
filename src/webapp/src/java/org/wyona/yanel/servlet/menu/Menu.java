@@ -103,6 +103,7 @@ abstract public class Menu {
         sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/about-realm.html\">" + getLabel("y:about-realm", userLanguage) + "</a></li>");
         sb.append("<li><a href=\"" + backToRealm + "re-index.html\">" + getLabel("y:re-index", userLanguage) + "</a></li>");
         sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/session-manager.html\">" + "Session Manager" + "</a></li>");
+        sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/workflow-dashboard.html?workflow-state=review\">" + "Workflow Dashboard" + "</a></li>");
         sb.append("</ul>");
 
         sb.append("</li></ul>");
