@@ -22,20 +22,31 @@ public class CommentsV1 {
     @XmlElement(name="comment", namespace=YanelNamespaces.YANEL_NS)
     private List<CommentV1> comments = new ArrayList<CommentV1>();
 
+    /**
+     *
+     */
     public List<CommentV1> getComments() {
         return comments;
     }
 
+    /**
+     *
+     */
     public void setComments(List<CommentV1> comments) {
         this.comments = comments;
     }
 
+    /**
+     *
+     */
     public String getReferencedPath() {
         return referencedPath;
     }
 
+    /**
+     *
+     */
     public void setReferencedPath(String referencedPath) {
         this.referencedPath = referencedPath;
     }
-    
 }
