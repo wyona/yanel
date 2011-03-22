@@ -27,11 +27,14 @@
       <body>
         <h1>Workflow Dashboard</h1>
         <form>
+          <fieldset style="width: 300px; background: #eee;">
+            <legend>Search ...</legend>
           <xsl:apply-templates select="/workflow-dashboard/workflow-states"/>
-          <br/>
+          <br/><br/>
           <xsl:apply-templates select="/workflow-dashboard/mime-types"/>
-          <br/>
+          <br/><br/>
           <input type="submit" value="Search"/>
+          </fieldset>
         </form>
 
         <xsl:choose>
@@ -55,7 +58,7 @@
         </xsl:choose>
 
         <p>
-        <a href="?yanel.resource.viewid=xml&amp;workflow-state={/workflow-dashboard/@workflow-state}&amp;mime-type={/workflow-dashboard/@mime-type}">XML</a>
+        <a><xsl:attribute name="href">?yanel.resource.viewid=xml&amp;workflow-state=<xsl:value-of select="/workflow-dashboard/@workflow-state"/><xsl:if test="/workflow-dashboard/@mime-type">&amp;mime-type=<xsl:value-of select="/workflow-dashboard/@mime-type"/></xsl:if></xsl:attribute>XML</a>
         </p>
           </xsl:when>
           <xsl:otherwise>
@@ -67,6 +70,7 @@
   </xsl:template>
 
   <xsl:template match="workflow-states">
+    Workflow state:<br/>
     <select name="workflow-state">
       <xsl:for-each select="state">
         <xsl:choose>
@@ -82,7 +86,9 @@
   </xsl:template>
 
   <xsl:template match="mime-types">
+    Mime type:<br/>
     <select name="mime-type">
+      <option value="none_selected">any</option>
       <xsl:for-each select="mime-type">
         <xsl:choose>
           <xsl:when test="/workflow-dashboard/@mime-type = .">
