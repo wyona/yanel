@@ -103,6 +103,9 @@ public class FromScratchRealmToolbar implements YanelToolbar {
         return sb.toString();
     }
 
+    /**
+     * @see org.wyona.yanel.servlet.toolbar.YanelToolbar#getToolbarBodyEnd(Resource, HttpServletRequest, Map, String)
+     */
     public String getToolbarBodyEnd(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) {
         return "</div>";
     }
