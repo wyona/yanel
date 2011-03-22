@@ -4,7 +4,7 @@
   <yanel:rti name="workflow-dashboard" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
   <yanel:property name="one-particular-workflow-path" value="/app1/workflow/workflow-with-review.xml"/>
-  <yanel:property name="mime-types" value="application/xhtml+xml"/>
+  <yanel:property name="mime-types" value="application/xhtml+xml, text/html"/>
 
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
