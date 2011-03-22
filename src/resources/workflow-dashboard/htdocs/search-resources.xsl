@@ -69,7 +69,14 @@
   <xsl:template match="workflow-states">
     <select name="workflow-state">
       <xsl:for-each select="state">
+        <xsl:choose>
+          <xsl:when test="/workflow-dashboard/@workflow-state = .">
+        <option selected="selected"><xsl:value-of select="."/></option>
+          </xsl:when>
+          <xsl:otherwise>
         <option><xsl:value-of select="."/></option>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:for-each>
     </select>
   </xsl:template>
@@ -77,7 +84,14 @@
   <xsl:template match="mime-types">
     <select name="mime-type">
       <xsl:for-each select="mime-type">
+        <xsl:choose>
+          <xsl:when test="/workflow-dashboard/@mime-type = .">
+        <option selected="selected"><xsl:value-of select="."/></option>
+          </xsl:when>
+          <xsl:otherwise>
         <option><xsl:value-of select="."/></option>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:for-each>
     </select>
   </xsl:template>
