@@ -37,7 +37,7 @@ public class WorkflowDashboardResource extends BasicXMLResource {
         if (workflowState != null) {
             queryText = "workflow-state:" + workflowState;
             mimeType = getEnvironment().getRequest().getParameter("mime-type");
-            if (mimeType != null) {
+            if (mimeType != null && !mimeType.equals("none_selected")) {
                 queryText = queryText + " AND " + "yarep_mimeType:" + mimeType;
             }
         }
