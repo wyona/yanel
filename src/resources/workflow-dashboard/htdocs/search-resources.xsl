@@ -39,11 +39,18 @@
         </p>
 
         <h2>Results</h2>
+        <xsl:choose>
+          <xsl:when test="/workflow-dashboard/no-nodes-found">
+            <p>No documents found!</p>
+          </xsl:when>
+          <xsl:otherwise>
         <ul>
         <xsl:for-each select="/workflow-dashboard/node">
           <li><a href="{$yarep.back2realm}{substring-after(@path, '/')}"><xsl:value-of select="@path"/></a></li>
         </xsl:for-each>
         </ul>
+          </xsl:otherwise>
+        </xsl:choose>
 
         <p>
         <a href="?yanel.resource.viewid=xml">XML</a>
