@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="workflow-dashboard" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="one-particular-workflow-path" value="/app1/workflow/workflow-with-review.xml"/>
+  <yanel:property name="mime-types" value="application/xhtml+xml"/>
+
+  <yanel:custom-config>
+    <views xmlns="http://www.wyona.org/yanel/rti/1.0">
+      <view id="default">
+<!-- DEBUG -->
+        <xslt>rthtdocs:/search-resources.xsl</xslt>
+        <mime-type>application/xhtml+xml</mime-type>
+        <serializer key="HTML_TRANSITIONAL"/>
+      </view>
+      <view id="xml">
+<!-- DEBUG -->
+        <mime-type>application/xml</mime-type>
+      </view>
+    </views>
+  </yanel:custom-config>
+</yanel:resource-config>
