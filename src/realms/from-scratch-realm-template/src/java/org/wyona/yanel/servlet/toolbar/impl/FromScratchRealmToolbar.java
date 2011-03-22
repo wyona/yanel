@@ -28,6 +28,9 @@ public class FromScratchRealmToolbar implements YanelToolbar {
         this.menu = new org.wyona.yanel.servlet.menu.impl.DefaultMenuV2();
     }
 
+    /**
+     * @see org.wyona.yanel.servlet.toolbar.YanelToolbar#getToolbarBodyStart(Resource, HttpServletRequest, Map, String)
+     */
     public String getToolbarBodyStart(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) {
         try {
             String backToRealm = PathUtil.backToRealm(resource.getPath());
@@ -37,7 +40,7 @@ public class FromScratchRealmToolbar implements YanelToolbar {
             buf.append(getToolbarMenus(resource, request, map, reservedPrefix));
             buf.append("</div>");
 
-            buf.append(getInfo(resource, request, map));
+            buf.append(getInfo(resource, request, map, backToRealm, reservedPrefix));
 
             buf.append("<span id=\"yaneltoolbar_logo\">");
             buf.append("<a href=\"http://www.wyona.com\"><img src=\"" + backToRealm + reservedPrefix
@@ -114,7 +117,7 @@ public class FromScratchRealmToolbar implements YanelToolbar {
     /**
      * Gets information such as realm name, user name, etc.
      */
-    private String getInfo(Resource resource, HttpServletRequest request, Map map) throws Exception {
+    private String getInfo(Resource resource, HttpServletRequest request, Map map, String backToRealm, String reservedPrefix) throws Exception {
         String userLanguage = getUserLanguage(resource);
         StringBuilder buf = new StringBuilder();
         buf.append("<span id=\"yaneltoolbar_info\">");
@@ -128,11 +131,16 @@ public class FromScratchRealmToolbar implements YanelToolbar {
                         + "\">unlock</a>)&#160;&#160;");
             }
         }
+
+        org.wyona.yarep.core.Node[] nodes = resource.getRealm().getRepository().getSearcher().searchProperty("workflow-state", "review", "/");
+        if (nodes != null && nodes.length > 0) {
+            buf.append("Workflow: <a href=\"" + backToRealm + reservedPrefix + "/workflow-dashboard.html?workflow-state=review\">" + nodes.length + " pages to be reviewed</a>&#160;&#160;");
+        }
+
         Identity identity = resource.getEnvironment().getIdentity();
         if (identity != null && !identity.isWorld()) {
-            String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
-            buf.append(getLabel("user", userLanguage) + ": <b><a href=\"" + backToRealm + "yanel/users/" + identity.getUsername()
-                    + ".html\" style=\"font-size: 13px; text-decoration: none;\">" + identity.getAlias() + "</a></b>"); // TODO: yanel/users should be replaced by reservedPrefix, also see src/webapp/src/java/org/wyona/yanel/servlet/menu/Menu.java
+            buf.append(getLabel("user", userLanguage) + ": <b><a href=\"" + backToRealm + reservedPrefix + "/users/" + identity.getUsername()
+                    + ".html\" style=\"font-size: 13px; text-decoration: none;\">" + identity.getAlias() + "</a></b>");
         } else {
             buf.append(getLabel("user", userLanguage) + ": <b>Not signed in!</b>");
         }
