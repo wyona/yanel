@@ -27,14 +27,19 @@ public class WorkflowDashboardResource extends BasicXMLResource {
             log.debug("requested viewId: " + viewId);
         }
 
-        String workflowState = "draft";
+        String workflowState = null;
         if (getEnvironment().getRequest().getParameter("workflow-state") != null) {
             workflowState = getEnvironment().getRequest().getParameter("workflow-state");
         }
 
-        String queryText = "workflow-state:" + workflowState;
-        if (getEnvironment().getRequest().getParameter("mime-type") != null) {
-            queryText = queryText + " AND " + "yarep_mimeType:" + getEnvironment().getRequest().getParameter("mime-type");
+        String queryText = null;
+        String mimeType = null;
+        if (workflowState != null) {
+            queryText = "workflow-state:" + workflowState;
+            mimeType = getEnvironment().getRequest().getParameter("mime-type");
+            if (mimeType != null) {
+                queryText = queryText + " AND " + "yarep_mimeType:" + mimeType;
+            }
         }
 
 /*
@@ -64,12 +69,25 @@ public class WorkflowDashboardResource extends BasicXMLResource {
         }
 */
 
-        //org.wyona.yarep.core.Node[] nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", workflowState, "/meetings");
-        //org.wyona.yarep.core.Node[] nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", workflowState, "/");
-        org.wyona.yarep.core.Node[] nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", queryText, "/");
+        org.wyona.yarep.core.Node[] nodes = null;
+        if (queryText != null) {
+            //nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", workflowState, "/meetings");
+            //nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", workflowState, "/");
+            nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", queryText, "/");
+        }
 
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
-        sb.append("<workflow-dashboard query=\"" + queryText + "\">");
+        sb.append("<workflow-dashboard");
+        if (queryText != null) {
+            sb.append(" query=\"" + queryText + "\"");
+        }
+        if (workflowState != null) {
+            sb.append(" workflow-state=\"" + workflowState + "\"");
+        }
+        if (mimeType != null) {
+            sb.append(" mime-type=\"" + mimeType + "\"");
+        }
+        sb.append(">");
 
         String[] mimeTypes = getMimeTypes();
         if (mimeTypes != null) {

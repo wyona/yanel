@@ -34,6 +34,8 @@
           <input type="submit" value="Search"/>
         </form>
 
+        <xsl:choose>
+          <xsl:when test="/workflow-dashboard/@query">
         <p>
         Query: <xsl:value-of select="/workflow-dashboard/@query"/>
         </p>
@@ -53,8 +55,13 @@
         </xsl:choose>
 
         <p>
-        <a href="?yanel.resource.viewid=xml">XML</a>
+        <a href="?yanel.resource.viewid=xml&amp;workflow-state={/workflow-dashboard/@workflow-state}&amp;mime-type={/workflow-dashboard/@mime-type}">XML</a>
         </p>
+          </xsl:when>
+          <xsl:otherwise>
+<xsl:comment>No query yet.</xsl:comment>
+          </xsl:otherwise>
+        </xsl:choose>
       </body>
     </html>
   </xsl:template>
