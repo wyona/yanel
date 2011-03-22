@@ -10,8 +10,7 @@ Resource in order to search other resources with a particular workflow state
 </description>
 
 <rtd>
-<!--
-  <property name="foo" default-value="bar"/>
--->
+  <property name="one-particular-workflow-path"/> <!-- Optional, e.g. '/app1/workflow/workflow-with-review.xml' -->
+  <property name="mime-types"/> <!-- Optional, e.g. 'application/xhtml+xml, application/blogentry+xml' -->
 </rtd>
 </resource>
