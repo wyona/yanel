@@ -16,7 +16,7 @@ import org.wyona.yanel.servlet.toolbar.YanelToolbar;
 import org.wyona.yanel.servlet.toolbar.YanelToolbarException;
 
 /**
- * The default Yanel toolbar, wrapping a {@link Menu}.
+ * The default Yanel toolbar implementation, wrapping a {@link Menu} (which might has been configured in the realm.xml configuration).
  */
 public class DefaultYanelToolbar implements YanelToolbar {
 
@@ -27,12 +27,15 @@ public class DefaultYanelToolbar implements YanelToolbar {
 
     private final Menu menu;
 
+    /**
+     *
+     */
     public DefaultYanelToolbar(Menu menu) {
         this.menu = menu;
     }
 
     /**
-     * Generate toolbar body
+     * @see org/wyona/yanel/servlet/toolbar/YanelToolbar#getToolbarBodyStart(Resource, HttpServletRequest, Map, String)
      */
     public String getToolbarBodyStart(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) {
         log.debug("Generate toolbar XHTML ...");
@@ -62,7 +65,7 @@ public class DefaultYanelToolbar implements YanelToolbar {
     }
 
     /**
-     *
+     * @see org/wyona/yanel/servlet/toolbar/YanelToolbar#getToolbarHeader(Resource, HttpServletRequest, Map, String)
      */
     public String getToolbarHeader(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) {
 
@@ -137,6 +140,9 @@ public class DefaultYanelToolbar implements YanelToolbar {
         return sb.toString();
     }
 
+    /**
+     * @see org/wyona/yanel/servlet/toolbar/YanelToolbar#getToolbarBodyEnd(Resource, HttpServletRequest, Map, String)
+     */
     public String getToolbarBodyEnd(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) {
         return "</div>";
     }
