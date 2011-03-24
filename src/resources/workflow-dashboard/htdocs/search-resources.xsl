@@ -86,7 +86,7 @@
   </xsl:template>
 
   <xsl:template match="mime-types">
-    Mime type:<br/>
+    Content type:<br/>
     <select name="mime-type">
       <option value="none_selected">any</option>
       <xsl:for-each select="mime-type">
