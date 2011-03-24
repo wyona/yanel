@@ -55,7 +55,7 @@ public class DefaultYanelToolbar implements YanelToolbar {
             buf.append(getToolbarMenus(resource, request, map, reservedPrefix));
             buf.append("</div>");
 
-            buf.append("<span id=\"yaneltoolbar_info\">" + getInfo(resource, request, map) + "</span>");
+            buf.append("<span id=\"yaneltoolbar_info\">" + getInfo(resource, request, map, backToRealm, reservedPrefix) + "</span>");
 
             buf.append("<span id=\"yaneltoolbar_logo\">");
             buf.append("<a href=\"http://www.yanel.org\"><img src=\"" + backToRealm + reservedPrefix
@@ -165,7 +165,7 @@ public class DefaultYanelToolbar implements YanelToolbar {
     /**
      * Gets information such as realm name, user name, etc.
      */
-    protected String getInfo(Resource resource, HttpServletRequest request, Map map) throws Exception {
+    protected String getInfo(Resource resource, HttpServletRequest request, Map map, String backToRealm, String reservedPrefix) throws Exception {
         String userLanguage = getUserLanguage(resource);
 
         StringBuilder buf = new StringBuilder();
@@ -183,7 +183,6 @@ public class DefaultYanelToolbar implements YanelToolbar {
 
         Identity identity = resource.getEnvironment().getIdentity();
         if (identity != null && !identity.isWorld()) {
-            String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
             buf.append(getLabel("user", userLanguage) + ": <b><a href=\"" + backToRealm + "yanel/users/" + identity.getUsername()
                     + ".html\" style=\"font-size: 13px; text-decoration: none;\">" + identity.getAlias() + "</a></b>"); // TODO: yanel/users should be replaced by reservedPrefix, also see src/webapp/src/java/org/wyona/yanel/servlet/menu/Menu.java
         } else {
