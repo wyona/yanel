@@ -107,8 +107,7 @@ class YanelHTMLUI {
             // TODO: Check resource configuration ...
             //} else if (RESOURCE) {
         } else {
-            Menu menu = new DefaultMenu();
-            yanelToolbar = new DefaultYanelToolbar(menu);
+            yanelToolbar = new DefaultYanelToolbar(new DefaultMenu());
         }
         return yanelToolbar;
     }
