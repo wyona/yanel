@@ -25,7 +25,15 @@ public class DefaultYanelToolbar implements YanelToolbar {
     //private int DELAY_IN_MILLIS = 300;
     private int DELAY_IN_MILLIS = 400;
 
-    private final Menu menu;
+    protected Menu menu;
+
+    /**
+     *
+     */
+    public DefaultYanelToolbar() {
+        log.warn("No realm specific menu seems to be configured, hence use default menu.");
+        menu = new org.wyona.yanel.servlet.menu.impl.DefaultMenu();
+    }
 
     /**
      *
@@ -42,12 +50,12 @@ public class DefaultYanelToolbar implements YanelToolbar {
         try {
             String backToRealm = PathUtil.backToRealm(resource.getPath());
             StringBuilder buf = new StringBuilder();
-            buf.append("<div id=\"yaneltoolbar_headerwrap\">");
+            buf.append("<div id=\"yaneltoolbar_headerwrap\"><!-- Yanel default toolbar version 1.0 -->");
             buf.append("<div id=\"yaneltoolbar_menu\">");
             buf.append(getToolbarMenus(resource, request, map, reservedPrefix));
             buf.append("</div>");
 
-            buf.append(getInfo(resource, request, map));
+            buf.append("<span id=\"yaneltoolbar_info\">" + getInfo(resource, request, map) + "</span>");
 
             buf.append("<span id=\"yaneltoolbar_logo\">");
             buf.append("<a href=\"http://www.yanel.org\"><img src=\"" + backToRealm + reservedPrefix
@@ -157,10 +165,11 @@ public class DefaultYanelToolbar implements YanelToolbar {
     /**
      * Gets information such as realm name, user name, etc.
      */
-    private String getInfo(Resource resource, HttpServletRequest request, Map map) throws Exception {
+    protected String getInfo(Resource resource, HttpServletRequest request, Map map) throws Exception {
         String userLanguage = getUserLanguage(resource);
+
         StringBuilder buf = new StringBuilder();
-        buf.append("<span id=\"yaneltoolbar_info\">");
+
         //buf.append("Version: " + yanel.getVersion() + "-r" + yanel.getRevision() + "&#160;&#160;");
 
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "2")) {
@@ -171,6 +180,7 @@ public class DefaultYanelToolbar implements YanelToolbar {
                         + "\">unlock</a>)&#160;&#160;");
             }
         }
+
         Identity identity = resource.getEnvironment().getIdentity();
         if (identity != null && !identity.isWorld()) {
             String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
@@ -179,7 +189,7 @@ public class DefaultYanelToolbar implements YanelToolbar {
         } else {
             buf.append(getLabel("user", userLanguage) + ": <b>Not signed in!</b>");
         }
-        buf.append("</span>");
+
         return buf.toString();
     }
 
