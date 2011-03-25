@@ -21,7 +21,7 @@ import org.wyona.yanel.core.Resource;
 import org.apache.log4j.Logger;
 
 /**
- *
+ * Utility class in order to check what interfaces a resource has implemented
  */
 public class ResourceAttributeHelper {
 
