@@ -40,7 +40,7 @@
       <groupId>wyona-org-commons</groupId>
       <artifactId>wyona-org-commons</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>1.0-dev-r56551</version>
+      <version>1.0-dev-r57354</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
@@ -84,6 +84,9 @@
       <groupId>wyona-org-yanel</groupId>
       <artifactId>yanel-resource-creatable-modifiable-deletable-v3</artifactId>
       <version>0.1-dev-r55963</version>
+<!--
+      <version>0.1-dev-r56925</version>
+-->
     </dependency>
   </dependencies>
 </project>
