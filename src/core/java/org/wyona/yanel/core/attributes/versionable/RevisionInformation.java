@@ -8,7 +8,7 @@ import org.wyona.yarep.core.Revision;
 /**
  * This class is a simple container for information about a revision of a resource. 
  */
-public class RevisionInformation {
+public class RevisionInformation implements Comparable {
     
     protected String name;
     protected Date date;
@@ -61,5 +61,15 @@ public class RevisionInformation {
     public String getUser() {
         return user;
     }
-    
+
+    /**
+     * @see java.lang.Comparable#compareTo(Object)
+     */
+    public int compareTo(Object obj) {
+        if (obj == null) {
+            return -1;
+        }
+        RevisionInformation ri = (RevisionInformation)obj;
+        return ri.getDate().compareTo(getDate());
+    }
 }
