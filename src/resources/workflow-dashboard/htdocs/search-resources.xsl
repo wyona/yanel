@@ -54,7 +54,7 @@
           <li>
             <xsl:choose>
               <xsl:when test="revision">
-                <a href="{$yarep.back2realm}{substring-after(@path, '/')}?yanel.resource.revision={revision}"><xsl:value-of select="@path"/></a> (Revision: <xsl:value-of select="revision"/>)
+                <a href="{$yarep.back2realm}{substring-after(@path, '/')}?yanel.resource.revision={revision}"><xsl:value-of select="@path"/></a> (Revision: <xsl:value-of select="revision"/>, <xsl:value-of select="revision/@creation-date"/>)
               </xsl:when>
               <xsl:otherwise>
                 <a href="{$yarep.back2realm}{substring-after(@path, '/')}"><xsl:value-of select="@path"/></a>

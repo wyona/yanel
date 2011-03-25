@@ -73,7 +73,9 @@ public class WorkflowDashboardResource extends BasicXMLResource {
         if (queryText != null) {
             //nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", workflowState, "/meetings");
             //nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", workflowState, "/");
-            nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", queryText, "/");
+            //nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", queryText, "/");
+
+            nodes = getRealm().getRepository().getSearcher().search(queryText);
         }
 
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
@@ -116,7 +118,7 @@ public class WorkflowDashboardResource extends BasicXMLResource {
             for (int i = 0; i < nodes.length; i++) {
                 sb.append("<node path=\"" + nodes[i].getPath() + "\">");
                 if (nodes[i] instanceof org.wyona.yarep.core.Revision) { // INFO: This only makes sense if revisions are being indexed actually
-                    sb.append("<revision>" + ((org.wyona.yarep.core.Revision) nodes[i]).getRevisionName() + "</revision>");
+                    sb.append("<revision creation-date=\"" + ((org.wyona.yarep.core.Revision) nodes[i]).getCreationDate() + "\">" + ((org.wyona.yarep.core.Revision) nodes[i]).getRevisionName() + "</revision>");
                 } else {
                     sb.append("<no-revision/>");
                 }
