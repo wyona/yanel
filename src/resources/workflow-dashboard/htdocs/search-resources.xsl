@@ -51,7 +51,16 @@
           <xsl:otherwise>
         <ul>
         <xsl:for-each select="/workflow-dashboard/node">
-          <li><a href="{$yarep.back2realm}{substring-after(@path, '/')}"><xsl:value-of select="@path"/></a></li>
+          <li>
+            <xsl:choose>
+              <xsl:when test="revision">
+                <a href="{$yarep.back2realm}{substring-after(@path, '/')}?yanel.resource.revision={revision}"><xsl:value-of select="@path"/></a> (Revision: <xsl:value-of select="revision"/>)
+              </xsl:when>
+              <xsl:otherwise>
+                <a href="{$yarep.back2realm}{substring-after(@path, '/')}"><xsl:value-of select="@path"/></a>
+              </xsl:otherwise>
+            </xsl:choose>
+          </li>
         </xsl:for-each>
         </ul>
           </xsl:otherwise>
