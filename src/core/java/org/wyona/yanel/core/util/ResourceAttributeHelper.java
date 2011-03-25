@@ -31,6 +31,7 @@ public class ResourceAttributeHelper {
      * Check if a resource has a specific interface with a specific version implemented or not
      */
     static public boolean hasAttributeImplemented(Resource res, String attribute, String version) {
+        // TODO: Use org.wyona.commons.clazz.ClazzUtil#implementsInterface(Object object, String iface)
         boolean implemented = false;
         Class clazz = res.getClass();
         
