@@ -33,6 +33,7 @@ public interface VersionableV2 {
      * @throws Exception
      */
     public RevisionInformation[] getRevisions() throws Exception;
+    // TODO: It would be nice if a new version of this method would return an iterator for scalability reasons, and also allows sorting, e.g. by date
     
     /**
      * Gets the view of a certain revision.
@@ -49,6 +50,7 @@ public interface VersionableV2 {
      * @throws Exception
      */
     public void restore(String revisionName) throws Exception;
+    // TODO: It would be nice if a new version of this method would return the new revision number/name which has been created during restoring
     
     /**
      * Puts this resource into checked-out state. Noone else will be able to check it out afterwards.
@@ -90,8 +92,7 @@ public interface VersionableV2 {
     public Date getCheckoutDate() throws Exception;
     
     /*
-     * Methods which could be added to this interface:
-     * 
+     * TODO: Methods which could be added to a new version of this interface:
      *
      * getDiff(String rev1, String rev2) throws Exception;
      * getHeadRevisionNumber() ?
