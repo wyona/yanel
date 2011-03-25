@@ -25,7 +25,6 @@ import org.wyona.security.core.PolicyManagerFactory;
 import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.yanel.core.LanguageHandler;
-import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.attributes.translatable.DefaultTranslationManager;
 import org.wyona.yanel.core.attributes.translatable.TranslationManager;
 import org.wyona.yanel.core.api.security.WebAuthenticator;
