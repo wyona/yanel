@@ -37,6 +37,7 @@
   </changes>
 
   <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/personalized-content/" compile="false"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/workflow-dashboard/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/comment/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/pageMetaDataManager/" compile="true"/>
