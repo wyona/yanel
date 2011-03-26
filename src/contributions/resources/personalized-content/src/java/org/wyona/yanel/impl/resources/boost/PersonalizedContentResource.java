@@ -10,6 +10,7 @@ import org.wyona.commons.xml.XMLHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 
@@ -40,11 +41,19 @@ public class PersonalizedContentResource extends BasicXMLResource {
 
         javax.servlet.http.Cookie cookie = org.wyona.yanel.servlet.AccessLog.getYanelAnalyticsCookie(getEnvironment().getRequest(), getEnvironment().getResponse());
         if (cookie != null) {
+            Date lastAccess = getLastAccess(cookie.getValue(), "www.yanel.org");
+            java.text.DateFormat df = new java.text.SimpleDateFormat("yyyyMMdd");
+
             doc.getDocumentElement().setAttributeNS(NAMESPACE, "cookie-id", cookie.getValue());
+            doc.getDocumentElement().setAttributeNS(NAMESPACE, "last-access", df.format(lastAccess));
+
             String[] userInterests = getUserInterests(cookie.getValue());
             if (userInterests != null && userInterests.length > 0) {
                 for (int k = 0; k < userInterests.length; k++) {
-                    org.wyona.yarep.core.Node[] nodes = getRealm().getRepository().getSearcher().search(userInterests[k]);
+                    String query = userInterests[k];
+                    String queryInclModDate = userInterests[k] + " AND mod_date:[" + df.format(lastAccess) + " TO " + df.format(new Date()) + "]"; // INFO: See http://lucene.apache.org/java/2_3_2/queryparsersyntax.html#Range%20Searches
+                    log.warn("DEBUG: Query: " + queryInclModDate);
+                    org.wyona.yarep.core.Node[] nodes = getRealm().getRepository().getSearcher().search(query);
                     if (nodes != null && nodes.length > 0) {
                         for (int i = 0; i < nodes.length; i++) {
                             org.w3c.dom.Element result = doc.createElementNS(NAMESPACE, "result");
@@ -70,6 +79,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
 
     /**
      * Get user's interests (TODO: Use org.wyona.boost.client...)
+     * @param Unique cookie ID
      */
     private String[] getUserInterests(String cookieID) {
         String[] interests = new String[3];
@@ -77,5 +87,14 @@ public class PersonalizedContentResource extends BasicXMLResource {
         interests[1] = "OSGi";
         interests[2] = "Switzerland";
         return interests;
+    }
+
+    /**
+     * Get user's last access (TODO: Use org.wyona.boost.client...)
+     * @param Unique cookie ID
+     */
+    private Date getLastAccess(String cookieID, String domain) throws Exception {
+        java.text.DateFormat df = new java.text.SimpleDateFormat("yyyy.MM.dd");
+        return df.parse("2011.02.16");
     }
 }
