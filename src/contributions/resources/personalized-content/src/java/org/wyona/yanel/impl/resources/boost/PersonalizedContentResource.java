@@ -58,6 +58,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
                         for (int i = 0; i < nodes.length; i++) {
                             org.w3c.dom.Element result = doc.createElementNS(NAMESPACE, "result");
                             result.setAttributeNS(NAMESPACE, "node-path", nodes[i].getPath());
+                            result.setAttributeNS(NAMESPACE, "node-last-modified", "" + new Date(nodes[i].getLastModified()));
                             result.setAttributeNS(NAMESPACE, "interest", userInterests[k]);
                             doc.getDocumentElement().appendChild(result);
                         }
