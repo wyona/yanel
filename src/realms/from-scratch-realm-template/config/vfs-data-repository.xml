@@ -6,7 +6,7 @@
   <directory alternative="index.html" mime-type="application/xhtml+xml"/>
   <meta src="../data-repo/yarep-meta"/>
 
-  <s:search-index xmlns:s="http://www.wyona.org/yarep/search/2.0" indexer-class="org.wyona.yarep.impl.search.lucene.LuceneIndexer" searcher-class="org.wyona.yarep.impl.search.lucene.LuceneSearcher">
+  <s:search-index xmlns:s="http://www.wyona.org/yarep/search/2.0" indexer-class="org.wyona.yarep.impl.search.lucene.LuceneIndexerV2" searcher-class="org.wyona.yarep.impl.search.lucene.LuceneSearcher">
     <index-location file="../data-repo/search-index"/>
     <repo-auto-index-fulltext boolean="true"/>
     <repo-auto-index-properties boolean="true"/>
