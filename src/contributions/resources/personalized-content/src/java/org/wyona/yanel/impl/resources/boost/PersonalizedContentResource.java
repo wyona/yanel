@@ -51,9 +51,11 @@ public class PersonalizedContentResource extends BasicXMLResource {
             if (userInterests != null && userInterests.length > 0) {
                 for (int k = 0; k < userInterests.length; k++) {
                     String query = userInterests[k];
-                    String queryInclModDate = userInterests[k] + " AND mod_date:[" + df.format(lastAccess) + " TO " + df.format(new Date()) + "]"; // INFO: See http://lucene.apache.org/java/2_3_2/queryparsersyntax.html#Range%20Searches
+                    //String queryInclModDate = userInterests[k] + " AND mod_date:[" + df.format(lastAccess) + " TO " + df.format(new Date()) + "]"; // INFO: See http://lucene.apache.org/java/2_3_2/queryparsersyntax.html#Range%20Searches
+                    String queryInclModDate = userInterests[k] + " AND yarep_lastModified:[" + lastAccess.getTime() + " TO " + new Date().getTime() + "]"; // INFO: See http://lucene.apache.org/java/2_3_2/queryparsersyntax.html#Range%20Searches
                     log.warn("DEBUG: Query: " + queryInclModDate);
-                    org.wyona.yarep.core.Node[] nodes = getRealm().getRepository().getSearcher().search(query);
+                    //org.wyona.yarep.core.Node[] nodes = getRealm().getRepository().getSearcher().search(query);
+                    org.wyona.yarep.core.Node[] nodes = getRealm().getRepository().getSearcher().search(queryInclModDate);
                     if (nodes != null && nodes.length > 0) {
                         for (int i = 0; i < nodes.length; i++) {
                             org.w3c.dom.Element result = doc.createElementNS(NAMESPACE, "result");
@@ -97,5 +99,12 @@ public class PersonalizedContentResource extends BasicXMLResource {
     private Date getLastAccess(String cookieID, String domain) throws Exception {
         java.text.DateFormat df = new java.text.SimpleDateFormat("yyyy.MM.dd");
         return df.parse("2011.02.16");
+    }
+
+    /**
+     * @see org/wyona/yanel/core/api/attributes/ViewableV2#exists()
+     */
+    public boolean exists() throws Exception {
+        return true;
     }
 }
