@@ -8,7 +8,8 @@
 
     <taskdef name="addrealm" classpath="${yanel.source.home}/build/classes" classname="org.wyona.yanel.ant.AddRealmTask"/>
 
-    <addrealm newrealmconfig="${realm-config}"/>
+    <addrealm newrealmconfig="${realm-config}" newrealmmountpoint="${realm-mount-point}" newrealmid="${realm-id}"/>
+  	 	
   </target>
 
   <target name="build-add-realm-task" depends="init, compile-core">
