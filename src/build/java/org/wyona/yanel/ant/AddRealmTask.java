@@ -13,8 +13,8 @@ import org.apache.tools.ant.types.Path;
 public class AddRealmTask extends Task {
 
     private Path newRealmConfig;
-    private Path newRealmMountPoint;
-    private Path newRealmId;
+    private String newRealmMountPoint;
+    private String newRealmId;
 
     /**
      *
@@ -37,14 +37,14 @@ public class AddRealmTask extends Task {
     /**
      * Ant file task attribute new (third party) realm mount point
      */
-    public void setNewRealmMountPoint(Path newRealmMountPoint) {
+    public void setNewRealmMountPoint(String newRealmMountPoint) {
         this.newRealmMountPoint = newRealmMountPoint;
     }
     
     /**
      * Ant file task attribute new (third party) realm id
      */
-    public void setNewRealmId(Path newRealmId) {
+    public void setNewRealmId(String newRealmId) {
         this.newRealmId = newRealmId;
     }
   
