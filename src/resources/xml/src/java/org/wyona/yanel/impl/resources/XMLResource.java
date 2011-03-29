@@ -654,9 +654,13 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         }
     }
 
+    /**
+     * @see org.wyona.yanel.core.api.attributes.WorkflowableV1#getWorkflowState(String)
+     */
     public String getWorkflowState(String revision) throws WorkflowException {
         try {
             return WorkflowHelper.getWorkflowState(getRepoNode(), revision);
+            //return WorkflowHelper.getWorkflowState(this, revision); // INFO: This method cannot be used in this particular case, because getRepoNode() does not return necessarily the same node as this method uses internally!
         } catch (Exception e) {
             log.error(e, e);
             throw new WorkflowException(e.getMessage(), e);
