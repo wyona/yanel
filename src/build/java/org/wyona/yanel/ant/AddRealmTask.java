@@ -56,9 +56,12 @@ public class AddRealmTask extends Task {
         	realm.appendChild(doc.createTextNode("\n  ")); // formatting
         	
         	Element config = doc.createElementNS(rootElement.getNamespaceURI(), "config");
+        	
         	String configSrcAttribute = newRealmConfig.toString();
-        	if (!configSrcAttribute.endsWith("/")) {
-        		configSrcAttribute += "/";
+        	if (new File(newRealmConfig.toString()).isDirectory()) {
+        	    if (!configSrcAttribute.endsWith("/")) {
+        		    configSrcAttribute += "/";
+        	    }
         	}
         	config.setAttribute("src", configSrcAttribute);
         	      	

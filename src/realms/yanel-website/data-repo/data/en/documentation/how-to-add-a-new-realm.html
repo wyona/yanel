@@ -18,17 +18,16 @@ as $YANEL_HOME and $YULUP_WEBSITE .
 </p>
 <ul>
   <li>Download the Yulup Website from Wyona's repository using subversion:
-    <pre>svn --username anonymous --password anonymous co http://svn.wyona.com/repos/public/yulup/website<br/></pre>
+    <pre>svn co http://svn.wyona.com/repos/public/yulup/website yulup-realm<br/></pre>
   </li>
-  <li>Check to see if you have the file $YANEL_HOME/conf/local/local.realms.xml.  If you do not, copy the file $YANEL_HOME/conf/realms.xml to $YANEL_HOME/conf/local/local.realms.xml  <br/></li><li>Add the following entry to $YANEL_HOME/conf/local/local.realms.xml
+  <li>Navigate to $YANEL_HOME and run
+    <pre>./build.sh add-realm -Drealm-config=$YULUP_WEBSITE/yanel/config/yanel-realm-config.xml -Drealm-mount-point=/yulup/ -Drealm-id=yulup<br/></pre>
+  </li>
+  <li>Alternatively, you can add the realm node directly into $YANEL_HOME/conf/local/local.realms.xml. If you do not have this file, copy $YANEL_HOME/conf/realms.xml to $YANEL_HOME/conf/local/local.realms.xml first<br/>
     <pre>&lt;realm id=&quot;yulup&quot; mount-point=&quot;/yulup/&quot;&gt;<br/>  &lt;name&gt;Yulup Website&lt;/name&gt;<br/>  &lt;config src=&quot;$YULUP_WEBSITE/yanel/config/yanel-realm-config.xml&quot;/&gt;<br/>&lt;/realm&gt;</pre>
     <b>NOTE for Windows users:</b> Also use forward slashes, e.g. 
     <pre>D:/realms/foo/yanel/config/yanel-realm-config.xml<br/></pre>
-    Alternatively one can also run
-    <pre>
-    ./build.sh add-realm -Drealm-config=src/realms/from-scratch-realm-template/realm.xml
-    </pre>
-  </li>
+    </li>
 <li>Rebuild Yanel</li>
 <li>Restart Yanel</li>
 </ul>
