@@ -6,16 +6,20 @@
   <target name="add-realm" description="Add third party realm" depends="init, build-add-realm-task">
     <echo>Add third party realm ${realm-config} to local config ${local.config.home}</echo>
 
-    <taskdef name="addrealm" classpath="${yanel.source.home}/build/classes" classname="org.wyona.yanel.ant.AddRealmTask"/>
+    <taskdef name="addrealm" classpath="${yanel.source.home}/build/classes" classname="org.wyona.yanel.ant.AddRealmTask">
+      <classpath refid="classpath.taskdef.merge-resource-types-configs"/>
+      <!--TODO use add-third-party-realm classpath -->
+    </taskdef>
 
-    <addrealm newrealmconfig="${realm-config}" newrealmmountpoint="${realm-mount-point}" newrealmid="${realm-id}"/>
+    <addrealm newrealmconfig="${realm-config}" newrealmmountpoint="${realm-mount-point}" newrealmid="${realm-id}" defaultrealmsxml="${yanel.source.home}/conf/realms.xml" localrealmsxml="${local.config.home}/local.realms.xml"/>
   	 	
   </target>
 
   <target name="build-add-realm-task" depends="init, compile-core">
     <javac srcdir="${yanel.source.home}/src/build/java"
            encoding="${javac.encoding}"
-           destdir="${yanel.source.home}/build/classes"
-    />
+           destdir="${yanel.source.home}/build/classes">
+     <classpath refid="classpath.compile"/>
+   </javac>
   </target>
 </project>
