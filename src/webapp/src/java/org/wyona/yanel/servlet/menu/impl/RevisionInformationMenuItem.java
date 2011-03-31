@@ -46,6 +46,8 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
 
     /**
      * Generate revision menu
+     * @param mostRecent Flag whether this is the most recent revision
+     * @param oldestRevision Flag whether this is the oldest revision
      */
     private String getContent(boolean mostRecent, boolean oldestRevision) {
         String value = "<li class=\"haschild\">" + formatDate(this.revisionInfo.getDate()) + " (" + this.revisionInfo.getName();
@@ -109,12 +111,11 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
         value += "</ul></li>";
         value += "<li><a href=\"?yanel.resource.revision=" + this.revisionInfo.getName() + "\">Display</a></li>";
 
-/* TODO: Implement diff
+        // TODO: Implement diff
         value += "<li class=\"haschild\">Diff<ul>";
         if (!mostRecent) value += "<li>Most recent</li><li>Next</li>";
         if (!oldestRevision) value += "<li>Previous</li>";
         value += "</ul></li>";
-*/
 
         value += "</ul>";
         value += "</li>";
