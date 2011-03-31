@@ -44,6 +44,7 @@ import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.TranslatableV1;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
+import org.wyona.yanel.core.api.attributes.VersionableV3;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
@@ -66,7 +67,7 @@ import org.wyona.yarep.core.Revision;
 /**
  * Generic resource handling XML data and transforming it using XSLT, etc.
  */
-public class XMLResource extends BasicXMLResource implements ModifiableV2, VersionableV2, CreatableV2, IntrospectableV1, TranslatableV1, WorkflowableV1, AnnotatableV1, CommentableV1 {
+public class XMLResource extends BasicXMLResource implements ModifiableV2, VersionableV2, VersionableV3, CreatableV2, IntrospectableV1, TranslatableV1, WorkflowableV1, AnnotatableV1, CommentableV1 {
 
     private static Logger log = Logger.getLogger(XMLResource.class);
 
@@ -296,6 +297,26 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     public boolean delete() throws Exception {
         getRealm().getRepository().getNode(getPath()).delete();
         return true;
+    }
+
+    /**
+     * @see org.wyona.yanel.core.api.attributes.VersionableV3#getRevisions(boolean)
+     */
+    public java.util.Iterator<RevisionInformation> getRevisions(boolean reverse) throws Exception {
+        if (org.wyona.commons.clazz.ClazzUtil.implementsInterface(getRepoNode(), "org.wyona.yarep.core.attributes.VersionableV1")) {
+            org.wyona.yarep.core.attributes.VersionableV1 versionableNode = (org.wyona.yarep.core.attributes.VersionableV1) getRepoNode();
+            return new org.wyona.yanel.core.attributes.versionable.RevisionInformationIterator(versionableNode.getRevisions(reverse));
+/*
+            java.util.Iterator it = versionableNode.getRevisions(false);
+            while (it.hasNext()) {
+                log.warn("DEBUG: Revision: " + ((Revision)it.next()).getRevisionName());
+            }
+            log.warn("Implementation not finished yet!");
+            return null;
+*/
+        } else {
+            return null;
+        }
     }
 
     /**
