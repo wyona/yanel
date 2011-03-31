@@ -306,14 +306,6 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         if (org.wyona.commons.clazz.ClazzUtil.implementsInterface(getRepoNode(), "org.wyona.yarep.core.attributes.VersionableV1")) {
             org.wyona.yarep.core.attributes.VersionableV1 versionableNode = (org.wyona.yarep.core.attributes.VersionableV1) getRepoNode();
             return new org.wyona.yanel.core.attributes.versionable.RevisionInformationIterator(versionableNode.getRevisions(reverse));
-/*
-            java.util.Iterator it = versionableNode.getRevisions(false);
-            while (it.hasNext()) {
-                log.warn("DEBUG: Revision: " + ((Revision)it.next()).getRevisionName());
-            }
-            log.warn("Implementation not finished yet!");
-            return null;
-*/
         } else {
             return null;
         }
