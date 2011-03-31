@@ -22,7 +22,7 @@ import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 
 /**
- * DEV (not released yet, this interface still might change ...)
+ * RELEASED, do NOT change
  */
 public interface VersionableV2 {
 
