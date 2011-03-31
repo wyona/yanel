@@ -40,7 +40,8 @@ public class PersonalizedContentResource extends BasicXMLResource {
             rootEl.appendChild(doc.createElementNS(NAMESPACE, "no-username-yet"));
         }
 
-        javax.servlet.http.Cookie cookie = org.wyona.yanel.servlet.AccessLog.getYanelAnalyticsCookie(getEnvironment().getRequest(), getEnvironment().getResponse());
+        //javax.servlet.http.Cookie cookie = org.wyona.yanel.servlet.AccessLog.getYanelAnalyticsCookie(getEnvironment().getRequest(), getEnvironment().getResponse());
+        javax.servlet.http.Cookie cookie = org.wyona.yanel.servlet.AccessLog.getYanelAnalyticsCookie(getEnvironment().getRequest());
         if (cookie != null) {
             Date lastAccess = getLastAccess(cookie.getValue(), "www.yanel.org");
             java.text.DateFormat df = new java.text.SimpleDateFormat("yyyyMMdd");
