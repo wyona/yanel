@@ -4,36 +4,21 @@
 <head>
   <title>Setup your Build Environment for more than one project</title>
 </head>
-<body><h1>Setup your Build Environment for more than one project</h1>
-
-<p>
-Let's assume you have a Yanel project for client A (e.g. <a href="http://www.globus.ch">retail shop website/realm</a>) and another project for client B (e.g. <a href="http://www.zwischengas.com">classic car website/realm</a>).
-</p>
-
-<p>
-Now you have several options how to set this up:
+<body>
+<h1>Setup your Build Environment for more than one project</h1>
+<p>Let's assume you have a Yanel project for client A (e.g. <a href="http://www.globus.ch">retail shop website/realm</a>) and another project for client B (e.g. <a href="http://www.zwischengas.com">classic car website/realm</a>).</p>
+<p>Now you have several options how to set this up:</p>
 <ol>
-  <li>Run each project/realm from a separate Yanel instance</li>
-  <li>Run both projects/realms from the same Yanel instance, hence add both realm configurations to your YANEL_HOME/conf/local/local.realms.xml</li>
-  <li>Run one Yanel instance, but use two different local.realms.xml configurations and switch from one to the other</li>
+<li>Run each project/realm from a separate Yanel instance</li>
+<li>Run both projects/realms from the same Yanel instance, hence add both realm configurations to your YANEL_HOME/conf/local/local.realms.xml</li>
+<li>Run one Yanel instance, but use two different local.realms.xml configurations and switch from one to the other</li>
 </ol>
-</p>
-
+<p>&#160;</p>
 <h4>1) More than one Yanel instances</h4>
-<p>
-This setup does not really make sense if you work on more than one realm, but rather for
-developers working on more than one Yanel core component in order to avoid conflicts.
-</p>
-
+<p>This setup does not really make sense if you work on more than one realm, but rather for developers working on more than one Yanel core component in order to avoid conflicts.</p>
 <h4>2) One Yanel instance with multiple realms</h4>
-<p>
-For most cases this is the recommened setup.
-</p>
-
+<p>For most cases this is the recommened setup.</p>
 <h4>3) One Yanel instance, but two different configurations</h4>
-First add some folders for you projects. just add within your conf/local a folder for each project e.g.:<br/><br/><tt>YANEL_HOME/conf/local/project-a/<br/>                         project-b/<br/></tt><tt>                         </tt><tt>               project-c/<br/></tt><tt>                         </tt><tt>               project-d/</tt><br/><br/>then you need to add local.configs for each of your projects e.g.:<br/><br/><tt>
-conf/local/project-a/local.log4j.properties<br/>                     local.realms.xml<br/></tt><tt>                     </tt><tt>
-                             local.resource-types.xml<br/></tt><tt>                     </tt><tt>
-                             local.yanel.xml</tt><br/><br/>best you copy the original configs in your conf/ folder and modify it accordingly to your projects.<br/><br/>to switch between the different projekt-configs add your projects in your src/build/local.build.properties:<br/><br/><tt># Dir name of local configuration<br/>#local.config.dir=conf/local/project-a/<br/>#local.config.dir=conf/local/project-b/<br/>#local.config.dir=conf/local/project-c/<br/>local.config.dir=conf/local/project-d/</tt><br/><br/>now you can switch between the different project by commenting out some of them.<br/><br/><br/>
+<p>First add some folders for you projects. just add within your conf/local a folder for each project e.g.:<br /><br /><tt>YANEL_HOME/conf/local/project-a/<br />YANEL_HOME/conf/local/project-b/</tt><br /><br />then you need to add local.configs for each of your projects e.g.:<br /><br /><tt> YANEL_HOME/conf/local/project-a/local.log4j.properties<br />YANEL_HOME/conf/local/project-a/local.realms.xml<br /></tt><tt>YANEL_HOME/conf/local/project-a/</tt><tt>local.resource-types.xml<br /></tt><tt>YANEL_HOME/conf/local/project-a/</tt><tt>local.yanel.xml</tt><br /><br />best you copy the original configs in your conf/ folder and modify it accordingly to your projects.<br /><br />To switch between the different project-configs add your projects in your src/build/local.build.properties:<br /><br /><tt># Dir name of local configuration<br />#local.config.dir=conf/local/project-a/<br />#local.config.dir=conf/local/project-b/<br />#local.config.dir=conf/local/project-c/<br />local.config.dir=conf/local/project-d/</tt><br /><br />now you can switch between the different project by commenting out some of them.<br /><br /></p>
 </body>
 </html>
