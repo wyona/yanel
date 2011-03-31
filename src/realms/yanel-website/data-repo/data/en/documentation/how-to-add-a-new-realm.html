@@ -49,7 +49,28 @@ configuration from the root realm.
             <a href="http://svn.wyona.com/repos/public/osr-101/trunk/yanel/config/yanel-realm-config.xml">OSR-101 (Neutron Protocol Website)</a> (U: anonymous, P: anonymous)</li>
           <li>
             <a href="http://svn.wyona.com/repos/public/yanel/trunk/src/realms/from-scratch-realm-template/yanel/config/yanel-realm-config.xml">Yanel from Scratch Realm</a> (U: anonymous, P: anonymous)</li>
-          
-        </ul>
+</ul>
+
+<h1>Developer Notes</h1>
+<p>
+If you want to modify the output of "./build.sh add-realm" you need to edit the Ant file where the "add-realm" target is defined:<br/>
+<pre>$YANEL_HOME/src/build/targets/add-third-party-realm.xml</pre>
+</p>
+
+<p>
+In that file you see the entry:<br/>
+<pre>&lt;target name="add-realm" description="Add third party realm" depends="init, build-add-realm-task"&gt;</pre>
+</p>
+
+<p>
+This is where the target "add-realm is defined and configured. Inside this element there is another entry:"<br/>
+<pre>&lt;taskdef name="addrealm" classpath="${yanel.source.home}/build/classes" classname="org.wyona.yanel.ant.AddRealmTask"&gt;</pre>
+</p>
+
+<p>
+The "classname" attribute defines the java class that will be executed for the "add-realm" target:<br/>
+<pre>$YANEL_HOME/src/build/java/org/wyona/yanel/ant/AddRealmTask.java</pre>
+</p>
+
 </body>
 </html>
