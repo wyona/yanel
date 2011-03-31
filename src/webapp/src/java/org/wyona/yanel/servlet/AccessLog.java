@@ -36,7 +36,7 @@ public class AccessLog {
      * @param userAgent User agent, e.g. Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.0.19) Gecko/2010031218 Firefox/3.0.19
      * @param tags The current annotations of the page as csv 
      */
-    public static String getLogMessage(String requestURL, String realmID, String cookieValue, String referer, String userAgent, String[] tags) {
+    private static String getLogMessage(String requestURL, String realmID, String cookieValue, String referer, String userAgent, String[] tags) {
         
     	String tagsFlat = null;
 
@@ -49,7 +49,8 @@ public class AccessLog {
         } else {
             //log.debug("No tags!");
         }
-    	
+ 
+        // TODO: Move log field names (e.g. url, ref, ua) to org.wyona.boost.log.LogConstants
     	String result =
             encodeLogField("url", requestURL) +
             encodeLogField("r", realmID) +
@@ -82,10 +83,16 @@ public class AccessLog {
     }
 
     /**
-     * Get log message
+     * Get log message, whereas set Yanel analytics cookie if it does not exist yet as persistent cookie
      */
     public static String getLogMessage(HttpServletRequest request, HttpServletResponse response, String realmID, String[] tags) {
-        Cookie cookie = getYanelAnalyticsCookie(request, response);
+        Cookie cookie = getSetYanelAnalyticsCookie(request, response);
+        try {
+            org.wyona.security.core.api.Identity identity = YanelServlet.getIdentity(request.getSession(true), realmID);
+            // TODO: Add userID if available
+        } catch(Exception e) {
+            log.error(e, e);
+        }
         return getLogMessage(getURLInclQueryString(request), realmID, cookie.getValue(), request.getHeader("referer"), request.getHeader("User-Agent"),tags);
     }
 
@@ -131,7 +138,7 @@ public class AccessLog {
      * Get Yanel analytics cookie, whereas set cookie if it does not exist yet as persistent cookie
      * @param request Client request
      */
-    public static Cookie getYanelAnalyticsCookie(HttpServletRequest request, HttpServletResponse response) {
+    private static Cookie getSetYanelAnalyticsCookie(HttpServletRequest request, HttpServletResponse response) {
         Cookie c = getYanelAnalyticsCookie(request);
         if (c != null) return c;
 

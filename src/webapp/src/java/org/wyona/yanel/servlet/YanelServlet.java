@@ -1619,16 +1619,39 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
+     * @deprecated Use {@link #getIdentity(HttpSession, String)} instead
      * Get the identity from the HTTP session (associated with the given request) for a specific realm
      * @param session HTTP session of client
      * @param realm Realm
      * @return Identity if one exist, or otherwise null
      */
     public static Identity getIdentity(HttpSession session, Realm realm) throws Exception {
+        return getIdentity(session, realm.getID());
+/*
         if (session != null) {
             IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
             if (identityMap != null) {
                 Identity identity = (Identity)identityMap.get(realm.getID());
+                if (identity != null && !identity.isWorld()) {
+                    return identity;
+                }
+            }
+        }
+        return null; 
+*/
+    }
+
+    /**
+     * Get the identity from the HTTP session (associated with the given request) for a specific realm
+     * @param session HTTP session of client
+     * @param realmID Realm ID
+     * @return Identity if one exist, or otherwise null
+     */
+    public static Identity getIdentity(HttpSession session, String realmID) throws Exception {
+        if (session != null) {
+            IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
+            if (identityMap != null) {
+                Identity identity = (Identity)identityMap.get(realmID);
                 if (identity != null && !identity.isWorld()) {
                     return identity;
                 }
@@ -2441,14 +2464,21 @@ public class YanelServlet extends HttpServlet {
      * @param resource Resource which handles the request
      */
     private void doLogAccess(HttpServletRequest request, HttpServletResponse response, Resource resource) {
-        Cookie cookie = AccessLog.getYanelAnalyticsCookie(request, response);
         // TBD: What about a cluster, performance/scalability? See for example http://www.oreillynet.com/cs/user/view/cs_msg/17399 (also see Tomcat conf/server.xml <Valve className="AccessLogValve" and className="FastCommonAccessLogValve")
         // See apache-tomcat-5.5.33/logs/localhost_access_log.2009-11-07.txt
         // 127.0.0.1 - - [07/Nov/2009:01:24:09 +0100] "GET /yanel/from-scratch-realm/de/index.html HTTP/1.1" 200 4464
+/*
+        Differentiate between hits, pageviews (only html or also PDF, etc.?) and visits (also see http://www.ibm.com/developerworks/web/library/wa-mwt1/)
+        In order to log page-views one can use:
+          - single-pixel method (advantage: also works if javascript is disabled)
+          - JavaScript (similar to Google analytics)
+          - Analyze mime type (advantage: no additional code/requests necessary)
+          - Log analysis (no special tracking required)
+*/
+
+
         try {
             Realm realm = map.getRealm(request.getServletPath());
-            // TBD/TODO: What if user has logged out, but still has a persistent cookie?!
-            //String userID = getEnvironment(request, response).getIdentity().getUsername();
 
             String[] tags = null;
             if (resource != null && ResourceAttributeHelper.hasAttributeImplemented(resource, "Annotatable", "1")) {
@@ -2459,43 +2489,33 @@ public class YanelServlet extends HttpServlet {
                     log.error(ex, ex);
                 }
             } else {
-                if (resource != null) {
-                    log.warn("DEBUG: Resource has no tags yet: " + resource.getPath());
+                if (log.isDebugEnabled() && resource != null) {
+                    log.debug("Resource has no tags yet: " + resource.getPath());
                 }
             }
+
+            String accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), tags);
             
+            // TBD/TODO: What if user has logged out, but still has a persistent cookie?!
             Identity identity = getIdentity(request, map);
             if (identity != null && identity.getUsername() != null) {
+                accessLogMessage = accessLogMessage + AccessLog.encodeLogField("u", identity.getUsername());
+
+/* TODO: This does not scale re many users ...
                 User user = realm.getIdentityManager().getUserManager().getUser(identity.getUsername());
                 // The log should be attached to the user, because realms can share a UserManager, but the UserManager API has no mean to save such data, so how should we do this?
                 // What if realm ID is changing?
-/* TODO: This does not scale re many users ...
                 String logPath = "/yanel-logs/browser-history/" + user.getID() + ".txt";
                 if (!realm.getRepository().existsNode(logPath)) {
                     org.wyona.yarep.util.YarepUtil.addNodes(realm.getRepository(), logPath, org.wyona.yarep.core.NodeType.RESOURCE);
                 }
                 org.wyona.yarep.core.Node node = realm.getRepository().getNode(logPath);
-*/
                 // Stream into node (append log entry, see for example log4j)
                 // 127.0.0.1 - - [07/Nov/2009:01:24:09 +0100] "GET /yanel/from-scratch-realm/de/index.html HTTP/1.1" 200 4464
-/*
-                Differentiate between hits, pageviews (only html or also PDF, etc.?) and visits (also see http://www.ibm.com/developerworks/web/library/wa-mwt1/)
-                In order to log page-views one can use:
-                 - single-pixel method (advantage: also works if javascript is disabled)
-                 - JavaScript (similar to Google analytics)
-                 - Analyze mime type (advantage: no additional code/requests necessary)
-                 - Log analysis (no special tracking required)
 */
-
-                String requestURL = request.getRequestURL().toString();
-                logAccess.info(AccessLog.getLogMessage(request, response, realm.getID(), tags));
-            } else {
-                // INFO: Log access of anonymous user
-                String requestURL = request.getRequestURL().toString();
-                // TODO: Also log referer as entry point
-                //logAccess.info(requestURL + " r:" + realm.getID() + " c:" + cookie.getValue() + " ref:" + request.getHeader("referer") + " ua:" + request.getHeader("User-Agent"));
-                logAccess.info(AccessLog.getLogMessage(request, response, realm.getID(), tags));
             }
+            logAccess.info(accessLogMessage);
+
             //log.debug("Referer: " + request.getHeader(HTTP_REFERRER));
 
             // INFO: Store last accessed page in session such that session manager can show user activity.
@@ -2504,7 +2524,7 @@ public class YanelServlet extends HttpServlet {
                 session.setAttribute(YANEL_LAST_ACCESS_ATTR, request.getServletPath()); 
                 //log.debug("Last access: " + request.getServletPath());
             }
-        } catch(Exception e) { // Catch all exceptions, because we do not want to throw exceptions because of logging browser history
+        } catch(Exception e) { // Catch all exceptions, because we do not want to throw exceptions because of possible logging browser history errors
             log.error(e, e);
         }
     }
