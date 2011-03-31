@@ -17,8 +17,15 @@
 <!-- IMPORTANT: Please make sure to add a trailing slash in the case of a mount-point (and in the case of the 'src' attribute if you don't specify the 'realm.xml' configuration explicitely), for example '/yanel-website/' instead '/yanel-website' -->
 
 <!--
-  NOTE: Don't remove the from-scratch-realm-template. It is needed by yanel to create new realms.
   NOTE: The variable @REALMS_DIR@ is configured within src/build/build.properties#default.realms.dir
+
+  NOTE: The realm id attribute is needed internally by Yanel, but also can be used for cross-accessing realms, e.g. a resource can use the id to access data from another realm than the realm it is called from, e.g. yanelrepo:yanel-website:TODO:/homepage.xml (Also see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=7582)
+
+  NOTE: The realm mount-point is used as prefix when accessing a realm through a browser
+-->
+
+<!--
+  NOTE: Please be aware that the from-scratch-realm-template is needed by the welcome realm to create new realms.
 -->
 <realm id="from-scratch-realm-template" mount-point="/from-scratch-realm/">
   <config src="@REALMS_DIR@/from-scratch-realm-template/"/>
@@ -89,20 +96,20 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
 </realm>
 -->
 
+<!-- ROOT realm (The mount point is '/'. TBD: Is the 'root' attribute actually needed?!) -->
+<realm id="welcome" mount-point="/" root="true">
+  <config src="@REALMS_DIR@/welcome-admin/"/>
+<!-- TODO: Implement src/core/java/org/wyona/yanel/core/map/RealmManager#resolveFile()
+  <config src="${javax.servlet.context}/realms/welcome-admin/"/>
+-->
+</realm>
+
 <realm id="test-cases" mount-point="/test/use-cases/">
   <config src="@REALMS_DIR@/use-cases/yanel/"/>
 </realm>
 
 <realm id="test" mount-point="/test/">
   <config src="@REALMS_DIR@/test/yanel/"/>
-</realm>
-
-<!-- ROOT realm -->
-<realm id="welcome" mount-point="/" root="true">
-  <config src="@REALMS_DIR@/welcome-admin/"/>
-<!-- TODO: Implement src/core/java/org/wyona/yanel/core/map/RealmManager#resolveFile()
-  <config src="${javax.servlet.context}/realms/welcome-admin/"/>
--->
 </realm>
 
 </realms>
