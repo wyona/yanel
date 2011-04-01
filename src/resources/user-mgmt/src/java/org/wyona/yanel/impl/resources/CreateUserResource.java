@@ -34,7 +34,9 @@ public class CreateUserResource extends ExecutableUsecaseResource {
 
     private static final String PARAM_USER_ID = "userID";
     private static final String PARAM_NAME = "name";
+    private static final String PARAM_ALIAS = "alias";
     private static final String PARAM_EMAIL = "email";
+    private static final String PARAM_EMAIL_ALIAS = "email-alias";
     private static final String PARAM_PASSWORD1 = "password1";
     private static final String PARAM_PASSWORD2 = "password2";
 
@@ -43,7 +45,9 @@ public class CreateUserResource extends ExecutableUsecaseResource {
         UserManager userManager = getRealm().getIdentityManager().getUserManager();
         String id = getParameterAsString(PARAM_USER_ID);
         String name = getParameterAsString(PARAM_NAME);
+        String alias = getParameterAsString(PARAM_ALIAS);
         String email = getParameterAsString(PARAM_EMAIL);
+        boolean useEmailAsAlias = (getParameterAsString(PARAM_EMAIL_ALIAS) != null) ? true : false;
         String password = getParameterAsString(PARAM_PASSWORD1);
         try {
             // Create user
@@ -51,6 +55,24 @@ public class CreateUserResource extends ExecutableUsecaseResource {
                 log.debug("creating user: " + id + " " + name + " " + email);
             }
             userManager.createUser(id, name, email, password);
+            
+            // Create alias
+            if (alias != null) {
+                if (log.isDebugEnabled()) {
+                	log.debug("setting alias: " + alias + " for user: " + id + " " + name + " " + email);
+                }
+                // TODO: Does alias exist already!
+                userManager.createAlias(alias, id);
+            }
+            
+            // Create alias from email
+            if (useEmailAsAlias) {
+                if (log.isDebugEnabled()) {
+                	log.debug("setting email as alias for user: " + id + " " + name + " " + email);
+                }
+                // TODO: Does alias exist already!
+                userManager.createAlias(email, id);
+            }
 
             // Create access policy
             org.wyona.security.core.api.PolicyManager policyManager = getRealm().getPolicyManager();
@@ -73,7 +95,7 @@ public class CreateUserResource extends ExecutableUsecaseResource {
 
     @Override
     public boolean checkPreconditions() throws UsecaseException {
-        String id = getParameterAsString(PARAM_USER_ID);
+    	String id = getParameterAsString(PARAM_USER_ID);
         String name = getParameterAsString(PARAM_NAME);
         String email = getParameterAsString(PARAM_EMAIL);
         String password1 = getParameterAsString(PARAM_PASSWORD1);
