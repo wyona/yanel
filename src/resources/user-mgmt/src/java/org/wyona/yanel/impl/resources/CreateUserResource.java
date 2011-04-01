@@ -57,7 +57,7 @@ public class CreateUserResource extends ExecutableUsecaseResource {
             userManager.createUser(id, name, email, password);
             
             // Create alias
-            if (alias != null) {
+            if (alias != null && alias.trim().length() > 0) {
                 if (log.isDebugEnabled()) {
                 	log.debug("setting alias: " + alias + " for user: " + id + " " + name + " " + email);
                 }
