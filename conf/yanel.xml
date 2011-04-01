@@ -23,11 +23,10 @@
   <!-- # Scheduler configuration -->
   <scheduler enabled="false"/>
   
-  <!-- # Mail server configuration -->
-<!--
-  <smtp host="mail.foo.bar" port="25"/>
--->
-<!-- Most mail-servers require authentication in order to relay messages to other hosts/domains -->
+  <!-- # Mail server configuration.
+         Username and password attributes are optional,
+         but mail-servers require authentication in order to relay messages to other hosts/domains
+  -->
 <!--
   <smtp host="mail.foo.bar" port="25" username="foo" password="bar"/>
 -->
