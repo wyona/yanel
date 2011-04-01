@@ -4,14 +4,18 @@
     <body>
       <h1>Create User</h1>
       <p><font color="red">${resource.getErrorMessages()}</font></p>
-      <form action="">
+      <form action="" method="POST">
         <label for="userID">User ID:</label>
         <input type="text" id="userID" name="userID" value="${resource.getParameterAsString('userID')}"/>
         <br/>
         Name: <input type="text" name="name" value="${resource.getParameterAsString('name')}"/>
         <br/>
+        Alias (optional): <input type="text" name="alias" value="${resource.getParameterAsString('alias')}"/>
+        <br/>
         Email: <input type="text" name="email" value="${resource.getParameterAsString('email')}"/>
         <br/>
+        <input type="checkbox" name="email-alias" value="${resource.getParameterAsString('email-alias')}"/> Also use your email address as an alias
+        <br/><br/>
         Password: (At least 6 characters) <input type="password" name="password1"/>
         <br/>
         Confirm password: <input type="password" name="password2"/>
