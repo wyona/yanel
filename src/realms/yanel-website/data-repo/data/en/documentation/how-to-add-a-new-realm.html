@@ -22,6 +22,11 @@ as $YANEL_HOME and $YULUP_WEBSITE .
   </li>
   <li>Navigate to $YANEL_HOME and run
     <pre>./build.sh add-realm -Drealm-config=$YULUP_WEBSITE/yanel/config/yanel-realm-config.xml -Drealm-mount-point=/yulup/ -Drealm-id=yulup<br/></pre>
+    <p>Note: Usually the realm configuration file is named "realm.xml" and saved in the realm root directory.<br/>
+    Yulup doesn't follow this convention, instead using a file named "yanel-realm-config" saved in "$YULUP_WEBSITE/yanel/config".<br/>
+    If you name the realm configuration file conventionally as "realm.xml" you can point the "-Drealm-config=" parameter to the directory that contains the file.<br/>
+    If you have a chosen a different name, please point that parameter explicitly to the file.
+    </p>
   </li>
   <li>Alternatively, you can add the realm node directly into $YANEL_HOME/conf/local/local.realms.xml. If you do not have this file, copy $YANEL_HOME/conf/realms.xml to $YANEL_HOME/conf/local/local.realms.xml first<br/>
     <pre>&lt;realm id=&quot;yulup&quot; mount-point=&quot;/yulup/&quot;&gt;<br/>  &lt;name&gt;Yulup Website&lt;/name&gt;<br/>  &lt;config src=&quot;$YULUP_WEBSITE/yanel/config/yanel-realm-config.xml&quot;/&gt;<br/>&lt;/realm&gt;</pre>
