@@ -12,7 +12,7 @@
         <!-- <xslt>/xslt/global.xsl</xslt> -->
         <mime-type>text/html</mime-type> <!-- IE browser has trouble with application/xhtml+xml -->
       </view>
-      <view id="editor" type="XML">
+      <view id="editor" type="XML"> <!-- INFO: Policy Editor Form -->
         <xslt>yanelhtdocs:/html.xslt</xslt>
         <mime-type>text/html</mime-type> <!-- browsers have trouble with application/xhtml+xml re javascript of GWT -->
         <!-- <xslt>/xslt/global.xsl</xslt> -->
