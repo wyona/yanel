@@ -58,6 +58,7 @@ public class VersioningUtil {
                             if (workflowableRes.getWorkflowState(newRevisionName) == null) {
 
                                 // TODO/TBD: Should the workflow state of the old revision be used (as is) or rather workflow.getInitialState()
+                                log.warn("TODO/TBD: Should the workflow state of the old revision be used (as is) or rather workflow.getInitialState()");
                                 String newWorkflowState = workflowableRes.getWorkflowState(revisionName);
                                 //String newWorkflowState = workflowableRes.getInitialWorkflowState(); // INFO: Maybe Part of WorkflowableV2?!
 
