@@ -53,16 +53,20 @@ public class VersioningUtil {
                             newRevisionName = getMostRecentRevision((VersionableV3) resource).getName();
                         }
                         if (newRevisionName != null) {
+                            if (log.isDebugEnabled()) log.debug("Revision head: " + newRevisionName);
                             WorkflowableV1 workflowableRes = (WorkflowableV1) resource;
                             if (workflowableRes.getWorkflowState(newRevisionName) == null) {
+
                                 // TODO/TBD: Should the workflow state of the old revision be used (as is) or rather workflow.getInitialState()
-                                //if (log.isDebugEnabled()) log.debug("Revision head: " + getRevisionHead(versionableRes)); // WARN: Very bad peformance, because does not scale well!
-                                workflowableRes.setWorkflowState(workflowableRes.getWorkflowState(revisionName), getRevisionHead(versionableRes));
+                                String newWorkflowState = workflowableRes.getWorkflowState(revisionName);
+                                //String newWorkflowState = workflowableRes.getInitialWorkflowState(); // INFO: Maybe Part of WorkflowableV2?!
+
+                                workflowableRes.setWorkflowState(newWorkflowState, newRevisionName);
                             } else {
                                 log.warn("The workflow state has already been set (probably by the checkin method): " + workflowableRes.getWorkflowState(newRevisionName));
                             }
                         } else {
-                            log.warn("Cannot determine the revision name, hence please make sure to set the workflow state inside the checkin method if applicable!");
+                            log.warn("Cannot determine the revision name, hence please make sure to set the workflow state inside the checkin method if applicable or implement the versionable V3 interface!");
                         }
                     } else {
                         log.info("Cannot set workflow, because resource '" + resource.getPath() + "' is not WorkflowableV1");
@@ -81,11 +85,13 @@ public class VersioningUtil {
     /**
      * Get revision number/name of head (most recent) revision (WARN: Peformance/Scalability)
      */
-    private static String getRevisionHead(VersionableV2 resource) throws Exception {
+/*
+    private static String getRevisionHeadName(VersionableV2 resource) throws Exception {
         RevisionInformation[] ri = resource.getRevisions();
         java.util.Arrays.sort(ri);
         return ri[0].getName();
     }
+*/
 
     /**
      * Get most recent revision
