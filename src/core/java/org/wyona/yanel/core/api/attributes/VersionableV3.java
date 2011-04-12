@@ -35,13 +35,11 @@ public interface VersionableV3 {
     public java.util.Iterator<RevisionInformation> getRevisions(boolean reverse) throws Exception;
 
     /**
-     * Gets an iterator of revision information objects (newest/head revision first, oldest at the last position)
-     * @param reverse Reverse order by date. If set to true, then the oldest revision is first and the newest/head is last.
-     * @return information of the various revisions, or empty iterator if there are no revisions.
+     * Puts this resource into checked-in state, and creates a new revision.
      * @throws Exception
      */
 /*
-    public java.util.Iterator<RevisionInformation> getRevisions(boolean reverse) throws Exception;
+    public RevisionInformation checkin(String comment) throws Exception;
 */
 
     /**
