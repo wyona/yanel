@@ -20,10 +20,14 @@ import org.wyona.yanel.core.workflow.Action;
 import org.wyona.yanel.core.workflow.Workflow;
 import org.wyona.yanel.core.workflow.WorkflowException;
 
+import org.apache.log4j.Logger;
+
 /**
  * Example ...
  */
 public class PublishAction implements Action {
+
+    private Logger log = Logger.getLogger(PublishAction.class);
 
     protected String variable;
 
@@ -31,9 +35,10 @@ public class PublishAction implements Action {
         this.variable = expression;
     }
 
-    public void execute(WorkflowableV1 workflowable, Workflow workflow, String revision)
-            throws WorkflowException {
-        // TODO
+    /**
+     * @see org.wyona.yanel.core.workflow.Action#execute(WorkflowableV1 , Workflow , String)
+     */
+    public void execute(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException {
+        log.warn("TODO: Do something ...");
     }
-
 }
