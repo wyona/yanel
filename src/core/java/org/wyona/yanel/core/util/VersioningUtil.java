@@ -19,6 +19,7 @@ package org.wyona.yanel.core.util;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
+import org.wyona.yanel.core.api.attributes.VersionableV3;
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 
@@ -32,8 +33,9 @@ public class VersioningUtil {
     private static Logger log = Logger.getLogger(VersioningUtil.class);
 
     /**
+     * Revert to a previous revision
      * @param resource Resource which shall be rolled back
-     * @param revisionName Revision name to which shall be rolled back
+     * @param revisionName Previous revision name to which shall be rolled back
      * @param userName User who is executing the roll back
      */
     public static void rollBack(Resource resource, String revisionName, String userName) {
@@ -44,11 +46,24 @@ public class VersioningUtil {
                     versionableRes.checkout(userName);
                     versionableRes.restore(revisionName);
                     versionableRes.checkin("Rolled back to revision '" + revisionName + "'");
+                    //RevisionInformation newRevInfo = versionableRes.checkin("Rolled back to revision '" + revisionName + "'"); // INFO: Maybe part of VersionableV3?! 
                     if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Workflowable", "1")) {
-                        WorkflowableV1 workflowableRes = (WorkflowableV1) resource;
-                        // TBD: Should the workflow state of the old revision be used (as is) or rather workflow.getInitialState()
-                        //log.debug("Revision head: " + getRevisionHead(versionableRes));
-                        workflowableRes.setWorkflowState(workflowableRes.getWorkflowState(revisionName), getRevisionHead(versionableRes));
+                        String newRevisionName = null;
+                        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Versionable", "3")) {
+                            newRevisionName = getMostRecentRevision((VersionableV3) resource).getName();
+                        }
+                        if (newRevisionName != null) {
+                            WorkflowableV1 workflowableRes = (WorkflowableV1) resource;
+                            if (workflowableRes.getWorkflowState(newRevisionName) == null) {
+                                // TODO/TBD: Should the workflow state of the old revision be used (as is) or rather workflow.getInitialState()
+                                //if (log.isDebugEnabled()) log.debug("Revision head: " + getRevisionHead(versionableRes)); // WARN: Very bad peformance, because does not scale well!
+                                workflowableRes.setWorkflowState(workflowableRes.getWorkflowState(revisionName), getRevisionHead(versionableRes));
+                            } else {
+                                log.warn("The workflow state has already been set (probably by the checkin method): " + workflowableRes.getWorkflowState(newRevisionName));
+                            }
+                        } else {
+                            log.warn("Cannot determine the revision name, hence please make sure to set the workflow state inside the checkin method if applicable!");
+                        }
                     } else {
                         log.info("Cannot set workflow, because resource '" + resource.getPath() + "' is not WorkflowableV1");
                     }
@@ -70,5 +85,18 @@ public class VersioningUtil {
         RevisionInformation[] ri = resource.getRevisions();
         java.util.Arrays.sort(ri);
         return ri[0].getName();
+    }
+
+    /**
+     * Get most recent revision
+     * @param resource Resource which implements versionable V3
+     */
+    private static RevisionInformation getMostRecentRevision(VersionableV3 resource) throws Exception {
+        java.util.Iterator it = resource.getRevisions(false);
+        if (it.hasNext()) {
+            return (RevisionInformation)it.next();
+        } else {
+            throw new Exception("Resource '" + ((Resource)resource).getPath() + "' has no most recent revision!");
+        }
     }
 }
