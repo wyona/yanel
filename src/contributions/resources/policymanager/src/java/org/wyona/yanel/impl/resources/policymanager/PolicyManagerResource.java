@@ -186,11 +186,15 @@ public class PolicyManagerResource extends BasicXMLResource {
                     sb.append("</head>");
                     sb.append("<body><h1>" + title + "</h1><p><div id=\"access-policy-editor-hook\"></div></p></body></html>");
                 }
+            } else if (policyUsecase.equals("delete")) {
+                log.warn("Delete policy: " + getPath());
+                getRealm().getPolicyManager().removePolicy(getPath());
+                sb.append("<html><body>Policy has been deleted: " + getPath() + "</body></html>");
             } else {
                 //response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
                 getEnvironment().getResponse().setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
                 sb.append("<html><body>Policy usecase not implemented yet: " + policyUsecase + "</body></html>");
-                log.error("Policy usecase not implemented yet: " + policyUsecase);
+                log.warn("No such policy usecase implemented yet: " + policyUsecase);
             }
         return new ByteArrayInputStream(sb.toString().getBytes("utf-8"));
     }
