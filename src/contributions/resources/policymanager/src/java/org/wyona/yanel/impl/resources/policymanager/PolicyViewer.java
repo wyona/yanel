@@ -396,19 +396,22 @@ public class PolicyViewer {
         if (policy != null) {
             String showUseInheritedPolicies = "";
             String editPolicy = "";
+            String deletePolicy = "";
             if (!aggregate) {
                 showUseInheritedPolicies = "<p>Use inherited policies: " + policy.useInheritedPolicies() + "</p>";
                 if (back != null) {
                     editPolicy = "<p><a href=\"" + back + "?yanel.policy=update\">Edit policy.</a></p>";
+                    deletePolicy = "<p><a href=\"" + back + "?yanel.policy=delete\">Delete policy.</a></p>";
                 } else {
                     editPolicy = "<p><a href=\"?yanel.policy=update\">Edit policy.</a></p>";
+                    deletePolicy = "<p><a href=\"?yanel.policy=delete\">Delete policy.</a></p>";
                 }
             }
 
             if (orderedBy == ORDERED_BY_USECASES) {
-                sb.append(editPolicy + showUseInheritedPolicies + getPolicyAsXHTMLListOrderedByUsecases(policy, abbreviation));
+                sb.append(editPolicy + deletePolicy + showUseInheritedPolicies + getPolicyAsXHTMLListOrderedByUsecases(policy, abbreviation));
             } else if (orderedBy == ORDERED_BY_IDENTITIES) {
-                sb.append(editPolicy + showUseInheritedPolicies + getPolicyAsXHTMLListOrderedByIdentities(policy, aggregate, pm, groupManager, abbreviation));
+                sb.append(editPolicy + deletePolicy + showUseInheritedPolicies + getPolicyAsXHTMLListOrderedByIdentities(policy, aggregate, pm, groupManager, abbreviation));
             } else {
                 sb.append("No such orderedBy implemented: " + orderedBy);
             }
