@@ -51,7 +51,7 @@
             <td valign="top">${user.getName()}</td>
             <td valign="top">${user.getEmail()}</td>
       <j:choose>
-      <j:when test="${user.getAliases().size() &gt; 0}">
+      <j:when test="${user.getAliases() != null and user.getAliases().size() &gt; 0}">
         <td valign="top">
         <j:forEach var="alias" items="${user.getAliases()}">
           ${alias}<br/>
