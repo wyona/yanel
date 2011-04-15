@@ -46,6 +46,7 @@ public class AccessLog {
                 if (!tagsFlat.equals("")) tagsFlat += ",";
                 tagsFlat += m;
             }
+            //log.debug("Tags: " + tagsFlat);
         } else {
             //log.debug("No tags!");
         }
