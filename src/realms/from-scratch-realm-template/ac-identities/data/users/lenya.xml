@@ -16,4 +16,8 @@
     <group id="example-group"/>
     <group id="example-subgroup"/>
   </groups>
+
+  <aliases>
+    <alias id="bob@wyona.org"/>
+  </aliases>
 </user>
