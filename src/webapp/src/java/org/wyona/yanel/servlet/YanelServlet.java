@@ -237,7 +237,7 @@ public class YanelServlet extends HttpServlet {
             if(yanelUsecase != null && yanelUsecase.equals("logout")) {
                 // INFO: Logout from Yanel
                 if(doLogout(request, response) != null) return;
-            } else if(yanelUsecase != null && yanelUsecase.equals("create")) {
+            } else if(yanelUsecase != null && yanelUsecase.equals("create")) { // TODO: Why does that not go through access control?
                 // INFO: Create a new resource
                 if(doCreate(request, response) != null) return;
             }
@@ -2481,17 +2481,22 @@ public class YanelServlet extends HttpServlet {
             Realm realm = map.getRealm(request.getServletPath());
 
             String[] tags = null;
-            if (resource != null && ResourceAttributeHelper.hasAttributeImplemented(resource, "Annotatable", "1")) {
-                AnnotatableV1 anno = (AnnotatableV1) resource;
-                try {
-                    tags = anno.getAnnotations();
-                } catch (Exception ex) {
-                    log.error(ex, ex);
+            if (resource != null) {
+                if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Annotatable", "1")) {
+                    AnnotatableV1 anno = (AnnotatableV1) resource;
+                    try {
+                        tags = anno.getAnnotations();
+                        //log.debug("Resource has tags: " + tags);
+                    } catch (Exception ex) {
+                        log.error(ex, ex);
+                    }
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Resource has no tags yet: " + resource.getPath());
+                    }
                 }
             } else {
-                if (log.isDebugEnabled() && resource != null) {
-                    log.debug("Resource has no tags yet: " + resource.getPath());
-                }
+                log.debug("Resource is null because access was probably denied: " + request.getServletPath());
             }
 
             String accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), tags);
