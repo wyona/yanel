@@ -579,7 +579,10 @@ public class RealmDefaultImpl implements Realm {
             	String customIdentityManagerFactoryImplClassName = repoConfigElement.getAttribute("class");
                 log.debug("Set custom identity manager " + customIdentityManagerFactoryImplClassName + " for realm: " + getName());
             	imFactory = (IdentityManagerFactory) Class.forName(customIdentityManagerFactoryImplClassName).newInstance();
+
+                // INFO: ConfigurationUtil generates a DOM Document with the root node called "identity-manager-config" which wraps/contains the custom indentities configuration
                 identityManager = imFactory.newIdentityManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "identity-manager-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
+
                 log.debug("Custom identity manager " + identityManager.getClass().getName() + " has been set for realm: " + getName());
             } catch (ConfigurationException e) {
             	imFactory = yanel.getIdentityManagerFactory("IdentityManagerFactory");
