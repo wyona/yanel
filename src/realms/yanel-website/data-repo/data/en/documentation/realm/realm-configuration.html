@@ -14,7 +14,7 @@
 <li>Translation manager (optional)</li>
 <li><a href="#yarep-repos">Additional Yarep based repositories (optional)</a></li>
 <li><a href="#i18n">I18n configuration of this realm</a> (optional)</li>
-<li>Custom menu implementation (optional)</li>
+<li><a href="#menu-toolbar">Custom menu implementation</a> (optional)</li>
 <li><a href="#repo-navigation">Custom repository navigation implemenation</a> (optional)</li>
 </ul>
 <p>The realm configuration for each realm is done in the file <code>realm.xml</code> in its root directory. For an example, see <a href="http://svn.wyona.com/repos/public/yanel/trunk/src/realms/from-scratch-realm-template/realm.xml"><code>src/realms/from-scratch-realm-template/realm.xml</code></a>.</p>
@@ -40,6 +40,18 @@
 <p>The i18n catalogue can be configured as follows</p>
 <pre>&lt;i18n-catalogue&gt;yanelrepo:/my-i18n-catalogue.xml&lt;/i18n-catalogue&gt;</pre>
 <p>More information on i18n can be found within the <a href="../i18n.html">i18n documentation</a>.</p>
+
+<a name="menu-toolbar"> </a>
+<h2>Custom menu implementation</h2>
+<p>Custom menu implementation can be configured as follows, either by specifying a custom toolbar implementation</p>
+<pre>&lt;menu class="org.wyona.yanel.servlet.toolbar.impl.FromScratchRealmToolbar"/&gt;</pre>
+<p>
+or by specifying a custom menu implementation
+</p>
+<pre>&lt;menu class="org.wyona.yanel.servlet.menu.impl.DefaultMenuV2"/&gt;</pre>
+whereas if neither nor is specified, then the DefaultMenu (version 1) implementation is used, which is set within
+<code>src/webapp/src/java/org/wyona/yanel/servlet/YanelHTMLUI.java</code>
+
 <a name="repo-navigation"> </a>
 <h2>Custom Repository Navigation</h2>
 <p>The custom repository navigation can be configured as follows</p>
