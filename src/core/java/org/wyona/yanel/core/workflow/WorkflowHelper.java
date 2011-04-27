@@ -341,7 +341,7 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     public static String getWorkflowVariable(Node node, String name) throws WorkflowException {
         try {
             if (!node.hasProperty(name)) {
-                log.warn("No such property: " + name);
+                log.info("No such property: " + name);
                 return null;
             }
             Property property = node.getProperty(name);
