@@ -128,7 +128,7 @@
       <dependency groupId="postgresql" artifactId="postgresql" version="8.1-409.jdbc3"/>
 
 
-      <dependency groupId="wyona-org-yanel" artifactId="yanel-resource-creatable-modifiable-deletable-v3" version="0.1-dev-r58133"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-resource-creatable-modifiable-deletable-v3" version="0.1-dev-r58140"/>
 <!--
       <dependency groupId="wyona-org-yanel" artifactId="yanel-resource-creatable-modifiable-deletable-v3" version="0.1-dev-r56925"/>
 -->
