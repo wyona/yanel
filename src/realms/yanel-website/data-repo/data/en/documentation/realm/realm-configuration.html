@@ -5,14 +5,14 @@
 <li><a href="#realm-class">Custom implementation of the realm</a></li>
 <li>Access policy manager</li>
 <li>Access identity manager</li>
-<li>Custom web authenticator (optional)</li>
+<li><a href="#custom-authenticator">Custom web authenticator</a> (optional)</li>
 <li>Default Data/Content repository</li>
 <li><a href="#rc-repo">Resource configurations repository</a></li>
 <li>Default language of realm (optional)</li>
 <li>Languages supported by this realm (optional)</li>
 <li>Language handler (optional)</li>
 <li>Translation manager (optional)</li>
-<li><a href="#yarep-repos">Additional Yarep based repositories (optional)</a></li>
+<li><a href="#yarep-repos">Additional Yarep based repositories</a> (optional)</li>
 <li><a href="#i18n">I18n configuration of this realm</a> (optional)</li>
 <li><a href="#menu-toolbar">Custom menu implementation</a> (optional)</li>
 <li><a href="#repo-navigation">Custom repository navigation implemenation</a> (optional)</li>
@@ -27,6 +27,12 @@
 <p>The implementation of the realm can be configured as follows:</p>
 <pre>&lt;realm-config class="org.wyona.yanel.impl.map.FOAFRealm" xmlns="http://www.wyona.org/yanel/realm/1.0"&gt;...&lt;/realm-config&gt;</pre>
 <p>whereas if the class attribute is not set, then the default implementation will be used.</p>
+
+<a name="custom-authenticator"> </a>
+<h2>Custom web authenticator</h2>
+<p>The default web authenticator implementation <code>org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl</code> (which is set by <code>org.wyona.yanel.core.map.RealmDefaultImpl</code>) can be overwritten by configuring</p>
+<pre>&lt;web-authenticator class="foo.bar.yanel.servlet.security.impl.FooBarWebAuthenticatorImpl"&gt;<br />  &lt;foo:bar xmlns:foo="http://bar.foo/yanel/web-authenticator/1.0"&gt;some-custom-config&lt;/foor:bar&gt;<br />&lt;/web-authenticator&gt;<br /></pre>
+
 <a name="rc-repo"> </a>
 <h2>Resource Configurations Repository</h2>
 <p>The <a href="../resources/resource_type_configuration.html">resource configurations repository</a> is configured as follows:</p>
@@ -35,6 +41,7 @@
 <h2>Additional Yarep based Repositories</h2>
 <p>Additional Yarep repositories can be configured as follows</p>
 <pre>&lt;yarep-repositories&gt;<br />  &lt;repository id="my-extra-repo" config="config/my-extra-repository.xml"/&gt;<br />&lt;/yarep-repositories&gt;<br /></pre>
+
 <a name="i18n"> </a>
 <h2>I18n Configuration</h2>
 <p>The i18n catalogue can be configured as follows</p>
