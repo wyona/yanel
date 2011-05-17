@@ -74,6 +74,7 @@ import org.wyona.yanel.impl.resources.BasicGenericExceptionHandlerResource;
 import org.wyona.yanel.servlet.IdentityMap;
 import org.wyona.yanel.servlet.communication.HttpRequest;
 import org.wyona.yanel.servlet.communication.HttpResponse;
+import org.wyona.yanel.servlet.security.impl.AutoLogin;
 
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.Usecase;
@@ -235,6 +236,7 @@ public class YanelServlet extends HttpServlet {
 
             String yanelUsecase = request.getParameter(YANEL_USECASE);
             if(yanelUsecase != null && yanelUsecase.equals("logout")) {
+                AutoLogin.removeCookie(request);
                 // INFO: Logout from Yanel
                 if(doLogout(request, response) != null) return;
             } else if(yanelUsecase != null && yanelUsecase.equals("create")) { // TODO: Why does that not go through access control?
@@ -1057,6 +1059,14 @@ public class YanelServlet extends HttpServlet {
             path = map.getPath(realm, request.getServletPath());
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);
+        }
+
+        // Auto-Login
+        if (identity == null || (identity != null && identity.isWorld())) {
+            Cookie autoLoginCookie = AutoLogin.getCookie(request);
+            if (autoLoginCookie != null) {
+                // Try auto-login
+            }
         }
 
         // Check Authorization
