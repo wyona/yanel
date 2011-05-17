@@ -95,12 +95,15 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             String openID = request.getParameter("yanel.login.openid");
             String openIDSignature = request.getParameter("openid.sig");
             if (loginUsername !=  null || openID != null) {
-                boolean rememberMyLoginName = doRememberMyLoginName(request, response, loginUsername, openID);
+                doRememberMyLoginName(request, response, loginUsername, openID);
+                //boolean rememberMyLoginName = doRememberMyLoginName(request, response, loginUsername, openID);
             }
             if(loginUsername != null) {
                 try {
                     String loginPassword = request.getParameter("yanel.login.password");
                     if (loginPassword != null && authenticate(loginUsername, loginPassword, realm, session)) {
+                        log.debug("Login was successful");
+                        doAutoLogin(request, response, loginUsername, openID);
                         return null;
                     }
                     if (loginPassword == null) {
@@ -600,12 +603,27 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 */
 
     /**
+     * Handle "auto login"
+     */
+    private static boolean doAutoLogin(HttpServletRequest request, HttpServletResponse response, String loginUsername, String openID) {
+        if (request.getParameter("auto-login") != null) {
+            log.warn("TODO: Implement auto-login");
+            // Set auto login cookie containing username and secure token, whereas create new secure token per session
+            // Implement this as utility method such that it can be re-used independent of the default authenticator!
+            return true;
+        } else {
+            log.debug("Ignore auto login...");
+            return false;
+        }
+    }
+
+    /**
      * Handle "remember my login"
      */
     private static boolean doRememberMyLoginName(HttpServletRequest request, HttpServletResponse response, String loginUsername, String openID) {
         boolean rememberMyLoginName = false;
         if (request.getParameter("remember-my-login-name") != null) {
-            log.error("DEBUG:Remember my login name: " + loginUsername + "," + openID);
+            log.debug("Remember my login name: " + loginUsername + "," + openID);
             rememberMyLoginName = true;
             Cookie rememberLoginNameCookie = null;
             // TODO: Add realm as additional information
