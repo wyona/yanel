@@ -1137,9 +1137,15 @@ public class YanelServlet extends HttpServlet {
                         - Or authentication failed and web authenticator is resending response to fetch again credentials");
                         - Or authentication was successful and web authenticator sends a redirect
                 */
-                if(logAccessEnabled) {
-                    doLogAccess(request, response, null);
+
+                if(logAccessEnabled) { // INFO: Although authorization has been denied and user first needs to authenticate, let's log the request anyway (TODO: Check mime type, whereas only introspection is currently excluded)
+                    if (usecase!= null && !usecase.equals("introspection")) {
+                        log.debug("Ignore introspection requests ...");
+                    } else {
+                        doLogAccess(request, response, null);
+                    }
                 }
+
                 return response;
             } else {
                 try {
@@ -1965,6 +1971,7 @@ public class YanelServlet extends HttpServlet {
             if(logAccessEnabled) {
                 if (view.getMimeType() != null) {
                     if (isMimeTypeOk(view.getMimeType())) {
+                        //log.debug("Mime type '" + view.getMimeType() + "' of request: " + request.getServletPath() + "?" + request.getQueryString());
                         doLogAccess(request, response, res);
                     }
                 }
@@ -2001,6 +2008,7 @@ public class YanelServlet extends HttpServlet {
         if(logAccessEnabled) {
             if (mimeType != null) {
                 if (isMimeTypeOk(mimeType)) {
+                    //log.debug("Mime type '" + mimeType + "' of request: " + request.getServletPath() + "?" + request.getQueryString());
                     doLogAccess(request, response, res);
                 }
             }
