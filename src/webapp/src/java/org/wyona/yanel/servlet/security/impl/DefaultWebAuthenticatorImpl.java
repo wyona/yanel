@@ -610,6 +610,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             log.warn("TODO: Implement auto-login");
             // Set auto login cookie containing username and secure token, whereas create new secure token per session
             // Implement this as utility method such that it can be re-used independent of the default authenticator!
+            AutoLogin.setCookie(loginUsername, request, response); // TODO: What about openID?!
             return true;
         } else {
             log.debug("Ignore auto login...");
