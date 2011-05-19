@@ -236,7 +236,7 @@ public class YanelServlet extends HttpServlet {
 
             String yanelUsecase = request.getParameter(YANEL_USECASE);
             if(yanelUsecase != null && yanelUsecase.equals("logout")) {
-                AutoLogin.removeCookie(request);
+                AutoLogin.removeCookie(request, response);
                 // INFO: Logout from Yanel
                 if(doLogout(request, response) != null) return;
             } else if(yanelUsecase != null && yanelUsecase.equals("create")) { // TODO: Why does that not go through access control?
@@ -1065,7 +1065,13 @@ public class YanelServlet extends HttpServlet {
         if (identity == null || (identity != null && identity.isWorld())) {
             Cookie autoLoginCookie = AutoLogin.getCookie(request);
             if (autoLoginCookie != null) {
-                // Try auto-login
+                try {
+                    if (AutoLogin.matchCookie(autoLoginCookie, realm.getRepository())) {
+                        // TODO: login
+                    }
+                } catch(Exception e) {
+                    log.error(e, e);
+                }
             }
         }
 

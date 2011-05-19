@@ -103,7 +103,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                     String loginPassword = request.getParameter("yanel.login.password");
                     if (loginPassword != null && authenticate(loginUsername, loginPassword, realm, session)) {
                         log.debug("Login was successful");
-                        doAutoLogin(request, response, loginUsername, openID);
+                        doAutoLogin(request, response, loginUsername, openID, realm);
                         return null;
                     }
                     if (loginPassword == null) {
@@ -605,12 +605,14 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     /**
      * Handle "auto login"
      */
-    private static boolean doAutoLogin(HttpServletRequest request, HttpServletResponse response, String loginUsername, String openID) {
+    private static boolean doAutoLogin(HttpServletRequest request, HttpServletResponse response, String loginUsername, String openID, Realm realm) throws Exception {
         if (request.getParameter("auto-login") != null) {
             log.warn("TODO: Implement auto-login");
             // Set auto login cookie containing username and secure token, whereas create new secure token per session
             // Implement this as utility method such that it can be re-used independent of the default authenticator!
-            AutoLogin.setCookie(loginUsername, request, response); // TODO: What about openID?!
+            Cookie autoLoginCookie = AutoLogin.setCookie(loginUsername, request, response); // TODO: What about openID?!
+            //AutoLogin.saveToken(autoLoginCookie, realm.getIdentityManager().getUserManager());
+            AutoLogin.saveToken(autoLoginCookie, realm.getRepository());
             return true;
         } else {
             log.debug("Ignore auto login...");
