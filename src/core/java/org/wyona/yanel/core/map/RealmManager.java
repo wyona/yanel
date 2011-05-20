@@ -312,7 +312,7 @@ public class RealmManager {
                         realm.setProxy(rpc.getHostName(), proxyPort, proxySSLPort, prefixValue);
                     }
                 } catch (Exception e) {
-                    String errorMsg = "Error setting up realm [" + realmId + "]: " + realmConfigFile + ": " + e;
+                    String errorMsg = "Error setting up realm [" + realmId + "]: '" + realmConfigFile + "': " + e;
                     log.error(errorMsg, e);
                     // NOTE: Do not throw an exception, because otherwise all other realms are not being loaded either
                     //throw new ConfigurationException(errorMsg, e);
