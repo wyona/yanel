@@ -66,6 +66,9 @@ public class RealmManagerConfig {
                     throw new ConfigurationException("Missing <config src=\"...\"/> child element for realm " + realmId);
                 }
                 String configSrc = configElement.getAttribute("src", null);
+                if (configSrc != null) {
+                    configSrc = configSrc.trim(); // INFO: Trim in case somebody added accidentally leading or trailing spaces
+                }
 
                 RealmContextConfig rcc = new RealmContextConfig(realmId, mountPoint, new Boolean(rootFlag).booleanValue(), new File(configSrc));
 
