@@ -28,6 +28,9 @@ public class SourceResolver implements URIResolver {
         this.resolvers = new HashMap<String, URIResolver>();
     }
 
+    /**
+     * Get source for a specific URL, e.g. 'rthtdocs:/xslt/foaf2xhtml.xsl' (whereas in this case base can be set to null)
+     */
     public Source resolve(String uri, String base) throws SourceException {
         if (log.isDebugEnabled()) {
             log.debug("URI to be resolved: " + uri);
@@ -71,6 +74,10 @@ public class SourceResolver implements URIResolver {
         throw new SourceException("No resolver could be loaded for scheme: " + uriScheme);
     }
     
+    /**
+     * Get resolver for a particular scheme, e.g. rthtdocs (htdocs directory of a resource)
+     * @param scheme Scheme/protocol
+     */
     private URIResolver getResolver(String scheme) {
         URIResolver resolver = null;
         if (this.resolvers.containsKey(scheme)) {
@@ -99,5 +106,4 @@ public class SourceResolver implements URIResolver {
         }
         return resolver;
     }
-    
 }
