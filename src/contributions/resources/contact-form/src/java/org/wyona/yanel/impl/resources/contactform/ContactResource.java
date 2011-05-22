@@ -88,7 +88,7 @@ public class ContactResource extends Resource implements ViewableV1 {
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ViewableV1#getView(HttpServletRequest, String)
      */
     public View getView(HttpServletRequest request, String viewId) throws Exception {
         path = new Path(request.getServletPath());
