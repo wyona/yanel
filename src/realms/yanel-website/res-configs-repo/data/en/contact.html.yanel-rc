@@ -8,7 +8,7 @@
   <yanel:property name="subject" value="Yanel Website (yanel.org): I am interested in Yanel, please get in touch with me"/>
   <yanel:property name="to" value="contact@wyona.com"/>
 
-  <!-- Alternative smtp settings. If not set, then the default settings of Yanel will be used configured within yanel.xml -->
+  <!-- Alternative SMTP configuration. If the below is commented, then the default settings of Yanel will be used which are configured within WEB-INF/classes/yanel.xml (also see the source configuration at conf/yanel.xml or rather make a copy at conf/local/local.yanel.xml) -->
 <!--
   <yanel:property name="smtpHost" value="mail.wyona.com"/>
   <yanel:property name="smtpPort" value="25"/>
