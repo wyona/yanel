@@ -41,16 +41,17 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
-import org.wyona.yarep.core.NoSuchNodeException;
-import org.wyona.yarep.core.RepositoryException;
-import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.ResourceResolver;
 import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
+import org.wyona.yanel.servlet.AccessLog;
 
+import org.wyona.yarep.core.NoSuchNodeException;
+import org.wyona.yarep.core.RepositoryException;
+import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
 
 import org.xml.sax.InputSource;
@@ -62,7 +63,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class ContactResource extends Resource implements ViewableV1 {
 
     private static Logger log = Logger.getLogger(ContactResource.class);
-    private static Logger logAccess = Logger.getLogger(org.wyona.yanel.servlet.AccessLog.CATEGORY);
+    private static Logger logAccess = Logger.getLogger(AccessLog.CATEGORY);
 
     private static final String SMTP_HOST = "smtpHost";
     private static final String SMTP_PORT = "smtpPort";
@@ -120,9 +121,7 @@ public class ContactResource extends Resource implements ViewableV1 {
                     // TODO: Maybe add contact subject, etc. to tags?!
                     String[] tags = new String[1];
                     tags[0] = "Contact";
-                    logAccess.info(
-                        org.wyona.yanel.servlet.AccessLog.getLogMessage(request, getRealm().getID(), tags) + 
-                        org.wyona.yanel.servlet.AccessLog.encodeLogField("e-mail", request.getParameter("email")));
+                    logAccess.info(AccessLog.getLogMessage(request, getRealm().getID(), tags) + AccessLog.encodeLogField("e-mail", request.getParameter("email")) + AccessLog.encodeLogField("pt", "contact") + AccessLog.encodeLogField("ra", "submit"));
                     javax.servlet.http.Cookie cookie = org.wyona.yanel.servlet.AccessLog.getYanelAnalyticsCookie(request);
                     String cookieValue = null;
                     if (cookie != null) {
@@ -144,6 +143,9 @@ public class ContactResource extends Resource implements ViewableV1 {
             } else {
                 log.debug("Form not submitted yet!");
                 if (request.getParameter("message") != null) transformer.setParameter("message", request.getParameter("message"));
+                String[] tags = new String[1];
+                tags[0] = "Contact";
+                logAccess.info(AccessLog.getLogMessage(request, getRealm().getID(), tags) + AccessLog.encodeLogField("pt", "contact") + AccessLog.encodeLogField("ra", "view"));
             }
 
 
