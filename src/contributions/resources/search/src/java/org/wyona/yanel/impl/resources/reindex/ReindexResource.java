@@ -38,11 +38,10 @@ public class ReindexResource extends BasicXMLResource {
         sb.append("\">");
 
         // Which repo needs to be re-indexed?
-        Repository repo = null;
-        String reindexRepo = getEnvironment().getRequest().getParameter("repository"); 
+        String reindexRepo = getEnvironment().getRequest().getParameter(REPO_NAME); 
 
         // Are we allowed to re-index this repository?
-        // Only repositories in the res-config are allowed to be re-indexed
+        // Only default repositories and the ones listed in the resource configuration are allowed to be re-indexed
         boolean allowed = false;
 
         // List default repositories
@@ -64,7 +63,7 @@ public class ReindexResource extends BasicXMLResource {
                 sb.append("\">Configured repository with id '");
                 sb.append(repoId);
                 sb.append("'</r:repository>");
-                // Check  if repo that should be re-indexed is in res-config
+                // Check  if repo that should be re-indexed is listed in resource configuration (see property 'repository-id')
                 if(!allowed && repoId.equals(reindexRepo)) allowed = true;
             }
         }
@@ -79,6 +78,7 @@ public class ReindexResource extends BasicXMLResource {
         }
 
         // If it's an extra repo, allowed needs to be set to true
+        Repository repo = null;
         if(allowed) {
             try {
                 repo = getRealm().getRepository(reindexRepo);
@@ -102,7 +102,7 @@ public class ReindexResource extends BasicXMLResource {
                 sb.append("</r:exception>");
             }
         } else if(reindexRepo != null) {
-            sb.append("<r:exception>Repository does not exist.</r:exception>");
+            sb.append("<r:exception>Repository '" + reindexRepo + "' does either not exist or is not configured in order to be re-indexed.</r:exception>");
         }
 
         sb.append("</r:reindex>");
