@@ -135,7 +135,12 @@ public class FromScratchRealmToolbar implements YanelToolbar {
             }
         }
 
-        org.wyona.yarep.core.Node[] nodes = resource.getRealm().getRepository().getSearcher().searchProperty("workflow-state", "review", "/");
+        org.wyona.yarep.core.Node[] nodes = null;
+        try {
+            nodes = resource.getRealm().getRepository().getSearcher().searchProperty("workflow-state", "review", "/");
+        } catch(org.wyona.yarep.core.search.SearchException e) {
+            log.error(e, e); // INFO: Do not throw exception in order to make it more fault tolerant, for example the SearchException is thrown if no index exists
+        }
         if (nodes != null && nodes.length > 0) {
             buf.append("Workflow: <a href=\"" + backToRealm + reservedPrefix + "/workflow-dashboard.html?workflow-state=review\">" + nodes.length + " pages to be reviewed</a>&#160;&#160;");
         }
