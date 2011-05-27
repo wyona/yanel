@@ -5,8 +5,8 @@
   <email>lenya@wyona.org</email>
   <language>en</language>
 
-  <password>f8648245a124740f173173ecd7b1a32a</password>
-  <salt>cd1f93aa2b4c0bcd</salt>
+  <password algorithm="SHA-256">4e34cef21c84eb8f6825477f7528540ee8259dce2d86770f7f4c4bd299461027</password>
+  <salt>849606beb9a4c159</salt>
 
   <description>Test User</description>
   <expire>2069-02-16T00:00:00</expire>
