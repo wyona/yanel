@@ -86,28 +86,33 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
      * Get user id from resource configuration
      */
     private String getUserId() throws Exception {
-        String userId = null;
 
+        // 1)
         if (getEnvironment().getRequest().getParameter("id") != null) {
             return getEnvironment().getRequest().getParameter("id");
         }
 
-        final String userName = getPath().substring(getPath().lastIndexOf("/") + 1, getPath().lastIndexOf(".html"));
-        log.debug("User name: " + userName);
-        if (userName != null && getRealm().getIdentityManager().getUserManager().existsUser(userName)) {
-            return userName;
-        } else {
-            log.warn("No such user '" + userName + "', hence try to get user ID from resource configuration");
-        }
-
+        // 2)
         ResourceConfiguration resConfig = getConfiguration();
+        String userId = null;
         if(resConfig != null) {
             userId = getConfiguration().getProperty("user");
         } else {
             log.warn("DEPRECATED: Do not use RTI but rather a resource configuration");
             userId = getRTI().getProperty("user");
         }
-        return userId;
+        if (userId != null) {
+            return userId;
+        }
+
+        // 3)
+        final String userName = getPath().substring(getPath().lastIndexOf("/") + 1, getPath().lastIndexOf(".html"));
+        log.debug("User name: " + userName);
+        if (userName != null && getRealm().getIdentityManager().getUserManager().existsUser(userName)) {
+            return userName;
+        } else {
+            throw new Exception("No such user '" + userName + "'");
+        }
     }
 
     /**
