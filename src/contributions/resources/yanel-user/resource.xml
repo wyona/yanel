@@ -9,11 +9,12 @@
   DEPRECATED: class="org.wyona.yanel.impl.resources.YanelUserResource"
 -->
 <description>
-User management interface
+User profile UI in order to manage profile by user her/himself
 </description>
 
 <rtd>
-  <property name="user"/>
+  <property name="user"/> <!-- optional, whereas otherwise user ID will be retrieved from URL, e.g. the URL yanel/from-scratch-realm/yanel/users/alice.html?yanel.resource.viewid=source contains the ID 'alice' -->
+
   <property name="xslt"/> <!-- For example rthtdocs:/yanel-user-profile.xsl -->
   <!-- This resource is based on the BasicXMLResource and hence all parameters of the BasicXMLResource can be used -->
 </rtd>
