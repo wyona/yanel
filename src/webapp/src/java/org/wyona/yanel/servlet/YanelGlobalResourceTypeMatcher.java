@@ -36,11 +36,13 @@ class YanelGlobalResourceTypeMatcher {
 
         //XXX: maybe we should use a configuration file instead!
         java.util.Map<String, String> globalRCmap = new HashMap<String, String>();
+
         globalRCmap.put("workflow-dashboard.html", "workflow-dashboard_yanel-rc.xml");
         globalRCmap.put("session-manager.html", "session-manager_yanel-rc.xml");
         globalRCmap.put("search.html", "search_yanel-rc.xml");
         globalRCmap.put("data-repository-sitetree.html", "data-repo-sitetree_yanel-rc.xml");
         globalRCmap.put("user-forgot-pw.html", "user-forgot-pw_yanel-rc.xml");
+
         final String ADMIN_PREFIX = "admin/";
         globalRCmap.put(ADMIN_PREFIX + "list-groups.html", "user-mgmt/list-groups_yanel-rc.xml");
         globalRCmap.put(ADMIN_PREFIX + "list-users.html", "user-mgmt/list-users_yanel-rc.xml");
@@ -51,6 +53,7 @@ class YanelGlobalResourceTypeMatcher {
         globalRCmap.put(ADMIN_PREFIX + "update-user.html", "user-mgmt/update-user_yanel-rc.xml");
         globalRCmap.put(ADMIN_PREFIX + "create-user.html", "user-mgmt/create-user_yanel-rc.xml");
         globalRCmap.put(ADMIN_PREFIX + "update-user-admin.html", "user-mgmt/update-user-admin_yanel-rc.xml");
+
         final String API_PREFIX = "api/";
         globalRCmap.put(API_PREFIX + "usermanager", "api/usermanager-api_yanel-rc.xml");
 
@@ -59,12 +62,15 @@ class YanelGlobalResourceTypeMatcher {
 
         final String usersPathPrefix = pathPrefix + "users/";
         if (path.startsWith(usersPathPrefix)) {
-            log.debug("Get generic yanel resource config ...");
+            log.warn("DEBUG: Get generic yanel resource config ...");
+/* Deprecated
             final String userName = path.substring(usersPathPrefix.length(), path.length() - ".html".length());
             properties.put("user", userName);
             properties.put("xslt", "rthtdocs:/yanel-user-profile.xsl");
             properties.put("mime-type", "text/html"); // INFO: Because of IE we use text/html instead application/xhtml+xml
             return new ResourceConfiguration("yanel-user", "http://www.wyona.org/yanel/resource/1.0", properties);
+*/
+            return getGlobalResourceConfiguration("user-profile_yanel-rc.xml", realm, globalRCsBasePath);
         } else if (globalRCfilename != null) {
             return getGlobalResourceConfiguration(globalRCfilename, realm, globalRCsBasePath);
         } else {
