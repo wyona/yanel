@@ -4,7 +4,7 @@
   <name>Alice</name>
   <email>alice@yanel.org</email>
   <language>en</language>
-  <password>5fe7da0fb203fa7726986dbace882c20</password>
+  <password algorithm="MD5">5fe7da0fb203fa7726986dbace882c20</password>
   <salt>cb5a72db5dbe2ce2</salt>
   <description>Test User</description>
   <expire>2069-02-16T00:00:00</expire>
