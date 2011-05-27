@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<policy xmlns="http://www.wyona.org/security/1.0">
+
+  <usecase id="view">
+    <user id="alice" permission="true"/>
+  </usecase>
+
+</policy>
