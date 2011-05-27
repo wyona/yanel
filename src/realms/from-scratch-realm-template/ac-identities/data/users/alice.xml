@@ -1,13 +1,13 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<user id="alice" xmlns="http://www.wyona.org/security/1.0">
+<user xmlns="http://www.wyona.org/security/1.0" id="alice">
   <name>Alice</name>
-  <description>Test User</description>
   <email>alice@yanel.org</email>
-  <password type="md5">8e07dafd13495561db9063ebe4db4b27</password>
-
   <language>en</language>
+  <password>5fe7da0fb203fa7726986dbace882c20</password>
+  <salt>cb5a72db5dbe2ce2</salt>
+  <description>Test User</description>
   <expire>2069-02-16T00:00:00</expire>
-
+  <aliases/>
   <groups/>
 </user>

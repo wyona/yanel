@@ -1,23 +1,20 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<user id="lenya" xmlns="http://www.wyona.org/security/1.0">
+<user xmlns="http://www.wyona.org/security/1.0" id="lenya">
   <name>Bob</name>
-  <description>Test User</description>
   <email>lenya@wyona.org</email>
-  <password type="md5">8e07dafd13495561db9063ebe4db4b27</password>
-
   <language>en</language>
-<!--
-  <language>de</language>
--->
-  <expire>2069-02-16T00:00:00</expire>
 
+  <password>f8648245a124740f173173ecd7b1a32a</password>
+  <salt>cd1f93aa2b4c0bcd</salt>
+
+  <description>Test User</description>
+  <expire>2069-02-16T00:00:00</expire>
+  <aliases>
+    <alias id="bob@wyona.org"/>
+  </aliases>
   <groups>
     <group id="example-group"/>
     <group id="example-subgroup"/>
   </groups>
-
-  <aliases>
-    <alias id="bob@wyona.org"/>
-  </aliases>
 </user>
