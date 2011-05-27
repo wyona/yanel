@@ -13,6 +13,11 @@ User profile UI in order to manage profile by user her/himself
 </description>
 
 <rtd>
+  <!-- The priority of user ID detection is:
+    1) http://127.0.0.1:8080/yanel/from-scratch-realm/yanel/users/alice.html?id=lenya will return lenya
+    2) http://127.0.0.1:8080/yanel/from-scratch-realm/yanel/users/alice.html will return alice
+    3) http://127.0.0.1:8080/yanel/from-scratch-realm/yanel/users/NO_SUCH_USER.html will return whatever is set inside the resource configuration by using the parameter 'user' (see below)
+  -->
   <property name="user"/> <!-- optional, whereas otherwise user ID will be retrieved from URL, e.g. the URL yanel/from-scratch-realm/yanel/users/alice.html?yanel.resource.viewid=source contains the ID 'alice' -->
 
   <property name="xslt"/> <!-- For example rthtdocs:/yanel-user-profile.xsl -->
