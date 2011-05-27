@@ -46,6 +46,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * @deprecated Use EditYanelUserProfileResource instead.
+ *
  * This resource allows creating, editing and deleting users. A user is defined
  * by the following parameters: userId userName (optional) group email password
  */
