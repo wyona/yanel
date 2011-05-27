@@ -6,7 +6,10 @@
   class="org.wyona.yanel.impl.resources.securityapi.UserManagerResource"
   >
 <description>
-Security API to read and write via XML
+Security API to read and write via XML:
+
+http://127.0.0.1:8080/yanel/from-scratch-realm/yanel/api/usermanager?yanel.usecase=getusers
+http://127.0.0.1:8080/yanel/from-scratch-realm/yanel/api/usermanager?yanel.usecase=getuser&amp;id=alice
 </description>
 
 <rtd>
