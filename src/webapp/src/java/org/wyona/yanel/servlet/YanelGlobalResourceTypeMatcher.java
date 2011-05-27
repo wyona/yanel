@@ -62,7 +62,7 @@ class YanelGlobalResourceTypeMatcher {
 
         final String usersPathPrefix = pathPrefix + "users/";
         if (path.startsWith(usersPathPrefix)) {
-            log.warn("DEBUG: Get generic yanel resource config ...");
+            log.debug("Get generic yanel user profile resource ...");
 /* Deprecated
             final String userName = path.substring(usersPathPrefix.length(), path.length() - ".html".length());
             properties.put("user", userName);
