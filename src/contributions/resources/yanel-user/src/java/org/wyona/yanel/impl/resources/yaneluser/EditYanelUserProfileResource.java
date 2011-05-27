@@ -86,15 +86,21 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
      * Get user id from resource configuration
      */
     private String getUserId() throws Exception {
+        String userId = null;
 
         // 1)
-        if (getEnvironment().getRequest().getParameter("id") != null) {
-            return getEnvironment().getRequest().getParameter("id");
+        userId = getEnvironment().getRequest().getParameter("id");
+        if (userId != null) {
+            if (getRealm().getPolicyManager().authorize("/yanel/users/" + userId + ".html", getEnvironment().getIdentity(), new org.wyona.security.core.api.Usecase("view"))) { // INFO: Because the policymanager has no mean to check (or interpret) query strings we need to recheck programmatically
+                return userId;
+            } else {
+                //throw new Exception("User '" + getEnvironment().getIdentity().getUsername() + "' tries to access user profile '" + userId + "', but is not authorized!");
+                log.warn("User '" + getEnvironment().getIdentity().getUsername() + "' tries to access user profile '" + userId + "', but is not authorized!");
+            }
         }
 
         // 2)
         ResourceConfiguration resConfig = getConfiguration();
-        String userId = null;
         if(resConfig != null) {
             userId = getConfiguration().getProperty("user");
         } else {
@@ -106,12 +112,11 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         }
 
         // 3)
-        final String userName = getPath().substring(getPath().lastIndexOf("/") + 1, getPath().lastIndexOf(".html"));
-        log.debug("User name: " + userName);
-        if (userName != null && getRealm().getIdentityManager().getUserManager().existsUser(userName)) {
-            return userName;
+        userId = getPath().substring(getPath().lastIndexOf("/") + 1, getPath().lastIndexOf(".html"));
+        if (userId != null && getRealm().getIdentityManager().getUserManager().existsUser(userId)) {
+            return userId;
         } else {
-            throw new Exception("No such user '" + userName + "'");
+            throw new Exception("No such user '" + userId + "'");
         }
     }
 
