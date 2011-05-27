@@ -91,6 +91,15 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         if (getEnvironment().getRequest().getParameter("id") != null) {
             return getEnvironment().getRequest().getParameter("id");
         }
+
+        final String userName = getPath().substring(getPath().lastIndexOf("/") + 1, getPath().lastIndexOf(".html"));
+        log.debug("User name: " + userName);
+        if (userName != null && getRealm().getIdentityManager().getUserManager().existsUser(userName)) {
+            return userName;
+        } else {
+            log.warn("No such user '" + userName + "', hence try to get user ID from resource configuration");
+        }
+
         ResourceConfiguration resConfig = getConfiguration();
         if(resConfig != null) {
             userId = getConfiguration().getProperty("user");
