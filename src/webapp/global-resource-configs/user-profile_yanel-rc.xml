@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="yanel-user" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="xslt" value="rthtdocs:/yanel-user-profile.xsl"/>
+  <yanel:property name="user" value="lenya"/>
+  <yanel:property name="mime-type" value="text/html"/>
+
+<!--
+  <yanel:custom-config>
+    <views xmlns="http://www.wyona.org/yanel/rti/1.0">
+      <view id="default">
+        <xslt>rthtdocs:/yanel-user-profile.xsl</xslt>
+        <mime-type>text/html</mime-type>
+        <serializer key="HTML_TRANSITIONAL"/>
+      </view>
+      <view id="xml">
+        <mime-type>application/xml</mime-type>
+      </view>
+    </views>
+  </yanel:custom-config>
+-->
+</yanel:resource-config>
