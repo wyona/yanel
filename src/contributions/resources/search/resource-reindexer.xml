@@ -10,7 +10,8 @@ A resource in order to re-index repositories.
 </description>
 
 <rtd>
-  <property name="allow-default-repos"/> <!-- INFO: Optional and default is 'false'. -->
-  <property name="repository-id"/> <!-- INFO: Allows additonal repositories to be indexed (see realm.xml). The property is optional. -->
+  <property name="allow-default-repos"/> <!-- INFO: Enable re-indexing of default repositories. Optional and default is 'false'. -->
+
+  <property name="repository-id"/> <!-- INFO: Allows additonal repositories to be indexed (see http://www.yanel.org/en/documentation/realm/realm-configuration.html#yarep-repos). The property is optional. -->
 </rtd>
 </resource>
