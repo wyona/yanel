@@ -316,6 +316,10 @@ public class TranslationResource extends Resource implements ViewableV2 {
             return "firefox";
         } else if (userAgent.indexOf("MSIE") > 0) {
             return "msie";
+        } else if (userAgent.indexOf("Chrome") > 0) { // INFO: Please note that the chrome user agent also contains the word Safari, e.g. "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.77 Safari/534.24"
+            return "chrome";
+        } else if (userAgent.indexOf("Safari") > 0) {
+            return "safari";
         } else {
             log.warn("Client could not be recognized: " + userAgent);
             return null;
