@@ -447,6 +447,11 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         if (os != null) transformer.setParameter("os", os);
         String client = getClient(userAgent);
         if (client != null) transformer.setParameter("client", client);
+        if (isMobileDevice(userAgent)) {
+            transformer.setParameter("is-mobile-device", "true");
+        } else {
+            transformer.setParameter("is-mobile-device", "false");
+        }
 
         // Set query string
         String queryString = request.getQueryString();
@@ -481,6 +486,20 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     }
 
     /**
+     * Check whether user agent is a mobile device
+     * @param userAgent User agent identifier, e.g. "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:2.0.1) Gecko/20100101 Firefox/4.0.1" or "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_3 like Mac OS X; fr-fr) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8F190 Safari/6533.18.5" (also see for example http://deviceatlas.com/node/1826129)
+     */
+    private boolean isMobileDevice(String userAgent) {
+        //log.debug("Check user agent: " + userAgent);
+        if (userAgent.indexOf("iPhone") > 0) {
+            log.warn("DEBUG: User agent seems to be an iPhone: " + userAgent);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Get operating system
      */
     protected String getOS(String userAgent) {
@@ -504,6 +523,10 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             return "firefox";
         } else if (userAgent.indexOf("MSIE") > 0) {
             return "msie";
+        } else if (userAgent.indexOf("Chrome") > 0) { // INFO: Please note that the chrome user agent also contains the word Safari, e.g. "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.77 Safari/534.24"
+            return "chrome";
+        } else if (userAgent.indexOf("Safari") > 0) {
+            return "safari";
         } else {
             if (log.isDebugEnabled()) log.debug("Client could not be recognized: " + userAgent);
             return null;
