@@ -4,7 +4,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.util.Date;
+import java.util.UUID;
 import java.net.URLEncoder;
 import java.io.UnsupportedEncodingException;
 
@@ -143,7 +143,7 @@ public class AccessLog {
         Cookie c = getYanelAnalyticsCookie(request);
         if (c != null) return c;
 
-        Cookie analyticsCookie = new Cookie(ANALYTICS_COOKIE_NAME, "YA-" + new Date().getTime()); // TODO: getTime() is not unique!
+        Cookie analyticsCookie = new Cookie(ANALYTICS_COOKIE_NAME, "YA-" + UUID.randomUUID().toString());
         analyticsCookie.setMaxAge(31536000); // 1 year
         //analyticsCookie.setMaxAge(86400); // 1 day
         analyticsCookie.setPath(request.getContextPath());
