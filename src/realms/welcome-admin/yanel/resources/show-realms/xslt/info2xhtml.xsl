@@ -53,7 +53,7 @@
   
   <xsl:template match="resourcetype">
     <li>
-      <img src="{icon}" alt="{./icon/@alt}"/> &#160;<xsl:value-of select="./localname"/>&#160;<a href="{./docu}">docu</a>
+      <img src="{icon}" alt="{./icon/@alt}"/> &#160;<xsl:value-of select="./localname"/>&#160;(<xsl:value-of select="./namespace"/>)&#160;<a href="{./docu}">docu</a>
     </li>
   </xsl:template>
 
