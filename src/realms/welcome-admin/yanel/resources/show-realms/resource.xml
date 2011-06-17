@@ -9,4 +9,9 @@
     show all configured Realms
   </description>
 
+<rtd>
+  <property name="mime-type"/>
+  <property name="xslt"/> <!--INFO: Global XSLT. Please note that the Java class itself is calling before another xslt located at 'xslt/info2xhtml.xsl' -->
+</rtd>
+
 </resource>
