@@ -55,7 +55,7 @@ public class ShowRealms extends Resource implements ViewableV2 {
     }
     
     /**
-     * 
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(String)
      */
     public View getView(String viewId) throws Exception {
         View defaultView = new View();
@@ -91,6 +91,8 @@ public class ShowRealms extends Resource implements ViewableV2 {
         }
         
         sb.append("</realms>");
+
+        // INFO: List all resource/controller types
         sb.append("<resourcetypes>");
         
         ResourceTypeRegistry rtr = new ResourceTypeRegistry();
@@ -102,6 +104,7 @@ public class ShowRealms extends Resource implements ViewableV2 {
                 // TODO: Use utility class
                 //String rtYanelHtdocPath = PathUtil.getResourcesHtdocsPathURLencoded(ResourceManager.getResource(rtds[i])) + yanel.getReservedPrefix() + "/";
                 sb.append("<localname>" + rtds[i].getResourceTypeLocalName() + "</localname>");
+                sb.append("<namespace>" + rtds[i].getResourceTypeNamespace() + "</namespace>");
                 sb.append("<description>" + rtds[i].getResourceTypeDescription() + "</description>");
                 sb.append("<icon alt=\"" + rtds[i].getResourceTypeLocalName() + " resource-type\">" + rtYanelHtdocPath + "icons/32x32/rt-icon.png" + "</icon>");
                 sb.append("<docu>" + rtYanelHtdocPath + "doc/index.html" + "</docu>");
@@ -114,23 +117,23 @@ public class ShowRealms extends Resource implements ViewableV2 {
         sb.append("</resourcetypes>");
         sb.append("</yanel-info>");
 
-
-        Transformer transformer = TransformerFactory.newInstance()
-                .newTransformer(getXSLTStreamSource(getPath(), contentRepo));
+        // INFO: Init XSLT
+        Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(getPath(), contentRepo));
         transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
         transformer.setParameter("servlet.context", servletContext);
         transformer.setParameter("yanel.path", getPath());
         transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
         transformer.setParameter("yarep.back2realm", backToRoot(getPath(), ""));
+
         // TODO: Is this the best way to generate an InputStream from an
         // OutputStream?
         java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
         transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
-        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos
-                .toByteArray()));
+
+
+        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
         defaultView.setMimeType(getMimeType(getPath()));
-        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos
-                .toByteArray()));
+        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
 
         defaultView.setMimeType("application/xhtml+xml");
         return defaultView;
@@ -139,13 +142,14 @@ public class ShowRealms extends Resource implements ViewableV2 {
     /**
      * 
      */
-    private StreamSource getXSLTStreamSource(String path, Repository repo)
-            throws Exception {
+    private StreamSource getXSLTStreamSource(String path, Repository repo) throws Exception {
         String xsltPath = getXSLTPath();
         if (xsltPath != null) {
-            return new StreamSource(repo
-                    .getInputStream(new org.wyona.yarep.core.Path(getXSLTPath())));
+            return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath())));
         }
+
+        log.warn("No XSLT property configured inside resource configuration, hence use default XSLT of resource itself: " + "xslt/info2xhtml.xsl");
+
         File xsltFile = org.wyona.commons.io.FileUtil.file(rtd
                 .getConfigFile().getParentFile().getAbsolutePath(), "xslt"
                 + File.separator + "info2xhtml.xsl");
@@ -154,7 +158,7 @@ public class ShowRealms extends Resource implements ViewableV2 {
     }
 
     /**
-     * 
+     * Get xslt path from resource configuration
      */
     private String getXSLTPath() throws Exception {
         return getConfiguration().getProperty("xslt");
