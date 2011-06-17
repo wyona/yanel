@@ -76,6 +76,9 @@
 
         <h2>Registered Resources within this Yanel instance</h2>
         <xsl:apply-templates select="/yanel-info/resourcetypes"/>
+
+        <hr/>
+        <a href="?yanel.resource.viewid=source-xml">Source XML</a>
       </body>
     </html>
   </xsl:template>
