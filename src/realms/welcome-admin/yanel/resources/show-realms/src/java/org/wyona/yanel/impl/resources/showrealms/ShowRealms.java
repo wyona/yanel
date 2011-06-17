@@ -83,7 +83,6 @@ public class ShowRealms extends Resource implements ViewableV2 {
 
         View defaultView = new View();
         defaultView.setMimeType(getMimeType(getPath()));
-        defaultView.setMimeType("application/xhtml+xml");
         defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
 
         return defaultView;
@@ -174,12 +173,15 @@ public class ShowRealms extends Resource implements ViewableV2 {
     }
 
      /**
-     * 
-     */
+      * Get mime type
+      */
     public String getMimeType(String path) throws Exception {
         String mimeType = getConfiguration().getProperty("mime-type");
         //String mimeType = getRTI().getProperty("mime-type");
-        if (mimeType == null) mimeType = "application/xhtml+xml";
+        if (mimeType == null) {
+            mimeType = "application/xhtml+xml";
+            log.warn("No mime type configured, hence return '" + mimeType + "'");
+        }
         return mimeType;
     }
     
