@@ -10,6 +10,10 @@
     <user id="lenya" permission="true"/>
   </usecase>
 
+  <usecase id="yanel.resource.meta">
+    <user id="lenya" permission="true"/>
+  </usecase>
+
   <usecase id="policy.read">
     <user id="lenya" permission="true"/>
   </usecase>
