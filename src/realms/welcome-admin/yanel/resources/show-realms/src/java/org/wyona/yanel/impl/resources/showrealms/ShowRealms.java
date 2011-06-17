@@ -58,14 +58,42 @@ public class ShowRealms extends Resource implements ViewableV2 {
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(String)
      */
     public View getView(String viewId) throws Exception {
+        StringBuilder sb = getXML();
+
+        if (viewId != null && viewId.equals("source-xml")) {
+            View xmlView = new View();
+            xmlView.setMimeType("application/xml");
+            xmlView.setInputStream(new java.io.StringBufferInputStream(sb.toString()));
+            return xmlView;
+        }
+
+        // INFO: Init XSLT
+        Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(getPath(), getRealm().getRepository()));
+        transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
+        transformer.setParameter("servlet.context", request.getContextPath());
+        transformer.setParameter("yanel.path", getPath());
+        transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
+        transformer.setParameter("yarep.back2realm", backToRoot(getPath(), ""));
+
+        // TODO: Is this the best way to generate an InputStream from an
+        // OutputStream?
+        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+        transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
+
+
         View defaultView = new View();
-        defaultView.setMimeType("application/xml");
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
-        defaultView.setInputStream(new java.io.StringBufferInputStream(sb
-                .toString()));
-        String servletContext =  request.getContextPath();
-        
-        Repository contentRepo = getRealm().getRepository();
+        defaultView.setMimeType(getMimeType(getPath()));
+        defaultView.setMimeType("application/xhtml+xml");
+        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+
+        return defaultView;
+    }
+
+    /**
+     * Generate XML
+     */
+    private StringBuilder getXML() {
+        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         
         sb.append("<yanel-info>");
         sb.append("<realms config=\"" + yanel.getRealmConfiguration().getRealmsConfigurationFile() + " \">");
@@ -116,27 +144,7 @@ public class ShowRealms extends Resource implements ViewableV2 {
         
         sb.append("</resourcetypes>");
         sb.append("</yanel-info>");
-
-        // INFO: Init XSLT
-        Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(getPath(), contentRepo));
-        transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
-        transformer.setParameter("servlet.context", servletContext);
-        transformer.setParameter("yanel.path", getPath());
-        transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
-        transformer.setParameter("yarep.back2realm", backToRoot(getPath(), ""));
-
-        // TODO: Is this the best way to generate an InputStream from an
-        // OutputStream?
-        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-        transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
-
-
-        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
-        defaultView.setMimeType(getMimeType(getPath()));
-        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
-
-        defaultView.setMimeType("application/xhtml+xml");
-        return defaultView;
+        return sb;
     }
 
     /**
