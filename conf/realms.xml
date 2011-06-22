@@ -24,6 +24,8 @@
   NOTE: The realm mount-point is used as prefix when accessing a realm through a browser
 -->
 
+<!-- NOTE: In the case of Windows please also use forward slashes, for example "C:/Users/Obi-Wan Kenobi/Desktop/my-realm/" -->
+
 <!--
   NOTE: Please be aware that the from-scratch-realm-template is needed by the welcome realm to create new realms.
 -->
