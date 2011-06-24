@@ -151,7 +151,7 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
             }
 
             String[] xsltPath = getXSLTPath(getPath());
-            if (xsltPath != null) {
+            if (xsltPath != null && xsltPath.length > 0) {
                 
                 // create reader:
                 XMLReader xmlReader = XMLReaderFactory.createXMLReader();
@@ -210,7 +210,10 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
                 // write result into view:
                 defaultView.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
                 return defaultView;
+            } else {
+                log.warn("No xslt specified inside resource configuration.");
             }
+
             log.debug("Mime-Type: " + mimeType);
             defaultView.setInputStream(getContentXML(repo, siteTreePath));
         } catch(Exception e) {
