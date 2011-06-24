@@ -54,6 +54,7 @@ import org.wyona.yanel.core.api.security.WebAuthenticator;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.attributes.tracking.TrackingInformationV1;
 import org.wyona.yanel.core.navigation.Node;
 import org.wyona.yanel.core.navigation.Sitetree;
 import org.wyona.yanel.core.serialization.SerializerFactory;
@@ -447,6 +448,7 @@ public class YanelServlet extends HttpServlet {
 
         String usecase = request.getParameter(YANEL_RESOURCE_USECASE);
         Resource res = null;
+        TrackingInformationV1 trackInfo = null;
         long lastModified = -1;
         long size = -1;
 
@@ -455,6 +457,14 @@ public class YanelServlet extends HttpServlet {
             Environment environment = getEnvironment(request, response);
             res = getResource(request, response);
             if (res != null) {
+                if (ResourceAttributeHelper.hasAttributeImplemented(res, "Trackable", "1")) {
+                    //log.debug("Do track: " + res.getPath());
+                    trackInfo = new TrackingInformationV1();
+                    ((org.wyona.yanel.core.api.attributes.TrackableV1) res).doTrack(trackInfo);
+                //} else {
+                //    log.debug("Resource '" + res.getPath() + "' is not trackable.");
+                }
+
 
                 // START introspection generation
                 if (usecase != null && usecase.equals("introspection")) {
@@ -661,7 +671,7 @@ public class YanelServlet extends HttpServlet {
 
 
         if (view != null) {
-            if (generateResponse(view, res, request, response, doc, size, lastModified) != null) return;
+            if (generateResponse(view, res, request, response, doc, size, lastModified, trackInfo) != null) return;
         } else {
             String message = "View is null!";
             Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
@@ -1148,7 +1158,7 @@ public class YanelServlet extends HttpServlet {
                     if (usecase!= null && !usecase.equals("introspection")) {
                         log.debug("Ignore introspection requests ...");
                     } else {
-                        doLogAccess(request, response, null);
+                        doLogAccess(request, response, null, null);
                     }
                 }
 
@@ -1806,7 +1816,9 @@ public class YanelServlet extends HttpServlet {
         }
         View view = ((ViewableV2) resource).getView(viewId);
         if (view != null) {
-            if (generateResponse(view, resource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1) != null) return true;
+            log.warn("TODO: Tracking not implemented yet: " + resource.getPath());
+            TrackingInformationV1 trackInfo = null;
+            if (generateResponse(view, resource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1, trackInfo) != null) return true;
         }
         return false;
     }
@@ -1966,19 +1978,20 @@ public class YanelServlet extends HttpServlet {
     /**
      * Generate response from a resource view, whereas it will be checked first if the resource already wrote the response (if so, then just return)
      * @param res Resource which handles the request in order to generate a response
+     * @param trackInfo Tracking information bean which might be updated by resource if resource is implementing trackable
      */
-    private HttpServletResponse generateResponse(View view, Resource res, HttpServletRequest request, HttpServletResponse response, Document doc, long size, long lastModified) throws ServletException, IOException {
-        // TODO: There seem like no header fields are being set (e.g. Content-Length, ...). Please see below ...
-
+    private HttpServletResponse generateResponse(View view, Resource res, HttpServletRequest request, HttpServletResponse response, Document doc, long size, long lastModified, TrackingInformationV1 trackInfo) throws ServletException, IOException {
         //log.debug("Generate response: " + res.getPath());
 
-        // Check if viewable resource has already created a response
+        // TODO: There seem like no header fields are being set (e.g. Content-Length, ...). Please see below ...
+
+        // INFO: Check if viewable resource has already created a response
         if (!view.isResponse()) {
             if(logAccessEnabled) {
                 if (view.getMimeType() != null) {
                     if (isMimeTypeOk(view.getMimeType())) {
                         //log.debug("Mime type '" + view.getMimeType() + "' of request: " + request.getServletPath() + "?" + request.getQueryString());
-                        doLogAccess(request, response, res);
+                        doLogAccess(request, response, res, trackInfo);
                     }
                 }
             }
@@ -2010,12 +2023,11 @@ public class YanelServlet extends HttpServlet {
             }
         }
 
-
         if(logAccessEnabled) {
             if (mimeType != null) {
                 if (isMimeTypeOk(mimeType)) {
                     //log.debug("Mime type '" + mimeType + "' of request: " + request.getServletPath() + "?" + request.getQueryString());
-                    doLogAccess(request, response, res);
+                    doLogAccess(request, response, res, trackInfo);
                 }
             }
         }
@@ -2486,8 +2498,9 @@ public class YanelServlet extends HttpServlet {
     /**
      * Log browser history of each user
      * @param resource Resource which handles the request
+     * @param trackInfo Tracking information bean
      */
-    private void doLogAccess(HttpServletRequest request, HttpServletResponse response, Resource resource) {
+    private void doLogAccess(HttpServletRequest request, HttpServletResponse response, Resource resource, TrackingInformationV1 trackInfo) {
         // TBD: What about a cluster, performance/scalability? See for example http://www.oreillynet.com/cs/user/view/cs_msg/17399 (also see Tomcat conf/server.xml <Valve className="AccessLogValve" and className="FastCommonAccessLogValve")
         // See apache-tomcat-5.5.33/logs/localhost_access_log.2009-11-07.txt
         // 127.0.0.1 - - [07/Nov/2009:01:24:09 +0100] "GET /yanel/from-scratch-realm/de/index.html HTTP/1.1" 200 4464
@@ -2523,7 +2536,34 @@ public class YanelServlet extends HttpServlet {
                 log.debug("Resource is null because access was probably denied: " + request.getServletPath());
             }
 
-            String accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), tags);
+            String accessLogMessage;
+            if (trackInfo != null) {
+                String[] trackingTags = trackInfo.getTags();
+                if (trackingTags != null && trackingTags.length > 0) {
+                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), trackingTags);
+                } else {
+                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), tags);
+                }
+
+                String pageType = trackInfo.getPageType();
+                if (pageType != null) {
+                    accessLogMessage = accessLogMessage + AccessLog.encodeLogField("pt", pageType);
+                }
+
+                String requestAction = trackInfo.getRequestAction();
+                if (requestAction != null) {
+                    accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ra", requestAction);
+                }
+
+                HashMap<String, String> customFields = trackInfo.getCustomFields();
+                if (customFields != null) {
+                    for (java.util.Map.Entry field : customFields.entrySet()) {
+                        accessLogMessage = accessLogMessage + AccessLog.encodeLogField((String) field.getKey(), (String) field.getValue());
+                    }
+                }
+            } else {
+                accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), tags);
+            }
             
             // TBD/TODO: What if user has logged out, but still has a persistent cookie?!
             Identity identity = getIdentity(request, map);
