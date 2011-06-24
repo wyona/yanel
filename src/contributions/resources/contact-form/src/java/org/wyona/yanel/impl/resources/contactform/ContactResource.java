@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -38,16 +39,17 @@ import org.apache.xml.utils.ListingErrorHandler;
 
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.api.attributes.TrackableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.attributes.tracking.TrackingInformationV1;
 import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.ResourceResolver;
 import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
-import org.wyona.yanel.servlet.AccessLog;
 
 import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.RepositoryException;
@@ -60,10 +62,12 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 
 //XXX: This resource-type should rather be implemented with BasicXMLResource really...
-public class ContactResource extends Resource implements ViewableV1 {
+/**
+ *
+ */
+public class ContactResource extends Resource implements ViewableV1, TrackableV1 {
 
     private static Logger log = Logger.getLogger(ContactResource.class);
-    private static Logger logAccess = Logger.getLogger(AccessLog.CATEGORY);
 
     private static final String SMTP_HOST = "smtpHost";
     private static final String SMTP_PORT = "smtpPort";
@@ -80,6 +84,11 @@ public class ContactResource extends Resource implements ViewableV1 {
 
     private String defaultEmailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
 
+    private TrackingInformationV1 trackInfo;
+
+    /**
+     * @see
+     */
     public ViewDescriptor[] getViewDescriptors() {
         return null;
     }
@@ -92,6 +101,13 @@ public class ContactResource extends Resource implements ViewableV1 {
      * @see org.wyona.yanel.core.api.attributes.ViewableV1#getView(HttpServletRequest, String)
      */
     public View getView(HttpServletRequest request, String viewId) throws Exception {
+        if (trackInfo != null) {
+            trackInfo.addTag("contact");
+            trackInfo.setPageType("contact");
+        } else {
+            log.warn("Tracking information bean is null! Check life cycle of resource!");
+        }
+
         path = new Path(request.getServletPath());
 
         File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "contact-form.xml");
@@ -112,16 +128,28 @@ public class ContactResource extends Resource implements ViewableV1 {
             TransformerHandler xsltHandler1 = tf.newTransformerHandler(getBodyXSLTStreamSource());
             Transformer transformer = xsltHandler1.getTransformer();
 
-            boolean submit = request.getParameter("email") != null;
+            String email = request.getParameter("email");
+            boolean submit = email != null;
             if(submit) {
                 if (request.getParameter("spamblock_hidden") == null || request.getParameter("spamblock_input") == null) {
                     throw new Exception("there is no spamblock implemented in the form.");
                 }
                 if (request.getParameter("spamblock_hidden").equals("TRyAg41n") && request.getParameter("spamblock_input").equals("8989890")) {    
+                    String message = request.getParameter("message");
                     // TODO: Maybe add contact subject, etc. to tags?!
                     String[] tags = new String[1];
-                    tags[0] = "Contact";
-                    logAccess.info(AccessLog.getLogMessage(request, getRealm().getID(), tags) + AccessLog.encodeLogField("e-mail", request.getParameter("email")) + AccessLog.encodeLogField("pt", "contact") + AccessLog.encodeLogField("ra", "submit"));
+                    tags[0] = "contact";
+                    if (trackInfo != null) {
+                        log.warn("DEBUG: Message: " + message);
+                        if (message != null) {
+                            trackInfo.addTag(message);
+                        }
+                        trackInfo.addCustomField("e-mail", email);
+                        trackInfo.setRequestAction("submit");
+                    } else {
+                        log.warn("Tracking information bean is null! Check life cycle of resource!");
+                    }
+
                     javax.servlet.http.Cookie cookie = org.wyona.yanel.servlet.AccessLog.getYanelAnalyticsCookie(request);
                     String cookieValue = null;
                     if (cookie != null) {
@@ -135,17 +163,21 @@ public class ContactResource extends Resource implements ViewableV1 {
                     if (request.getParameter("company") != null) transformer.setParameter("company", request.getParameter("company"));
                     if (request.getParameter("firstName") != null) transformer.setParameter("firstName", request.getParameter("firstName"));
                     if (request.getParameter("lastName") != null) transformer.setParameter("lastName", request.getParameter("lastName"));
-                    if (request.getParameter("email") != null) transformer.setParameter("email", request.getParameter("email"));
+                    if (request.getParameter("email") != null) transformer.setParameter("email", email);
                     if (request.getParameter("address") != null) transformer.setParameter("address", request.getParameter("address"));
                     if (request.getParameter("zipCity") != null) transformer.setParameter("zipCity", request.getParameter("zipCity"));
-                    if (request.getParameter("message") != null) transformer.setParameter("message", request.getParameter("message"));
+                    if (request.getParameter("message") != null) transformer.setParameter("message", message);
                 }
             } else {
                 log.debug("Form not submitted yet!");
                 if (request.getParameter("message") != null) transformer.setParameter("message", request.getParameter("message"));
                 String[] tags = new String[1];
-                tags[0] = "Contact";
-                logAccess.info(AccessLog.getLogMessage(request, getRealm().getID(), tags) + AccessLog.encodeLogField("pt", "contact") + AccessLog.encodeLogField("ra", "view"));
+                tags[0] = "contact";
+                if (trackInfo != null) {
+                    trackInfo.setRequestAction("view");
+                } else {
+                    log.warn("Tracking information bean is null! Check life cycle of resource!");
+                }
             }
 
 
@@ -336,5 +368,12 @@ public class ContactResource extends Resource implements ViewableV1 {
     private String getEmailRegEx() throws Exception {
         if (getResourceConfigProperty("email-validation-regex") != null) return getResourceConfigProperty("email-validation-regex");
         return defaultEmailRegEx;
+    }
+
+    /**
+     * @see org.wyona.yanel.core.api.attributes.TrackableV1#doTrack(TrackingInformationV1)
+     */
+    public void doTrack(org.wyona.yanel.core.attributes.tracking.TrackingInformationV1 trackInfo) {
+        this.trackInfo = trackInfo;
     }
 }
