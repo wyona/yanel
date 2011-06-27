@@ -232,8 +232,8 @@ public class YanelServlet extends HttpServlet {
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // NOTE: Do not add code outside the try-catch block, because otherwise exceptions won't be logged
         try {
-            String httpAcceptMediaTypes = request.getHeader("Accept");
-            String httpAcceptLanguage = request.getHeader("Accept-Language");
+            //String httpAcceptMediaTypes = request.getHeader("Accept");
+            //String httpAcceptLanguage = request.getHeader("Accept-Language");
 
             String yanelUsecase = request.getParameter(YANEL_USECASE);
             if(yanelUsecase != null && yanelUsecase.equals("logout")) {
@@ -2583,6 +2583,12 @@ public class YanelServlet extends HttpServlet {
                 // 127.0.0.1 - - [07/Nov/2009:01:24:09 +0100] "GET /yanel/from-scratch-realm/de/index.html HTTP/1.1" 200 4464
 */
             }
+
+            String httpAcceptLanguage = request.getHeader("Accept-Language");
+            if (httpAcceptLanguage != null) {
+                accessLogMessage = accessLogMessage + AccessLog.encodeLogField("a-lang", httpAcceptLanguage);
+            }
+
             logAccess.info(accessLogMessage);
 
             //log.debug("Referer: " + request.getHeader(HTTP_REFERRER));
