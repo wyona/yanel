@@ -183,6 +183,13 @@ public class UserManagerResource extends BasicXMLResource {
         StringBuilder sb = new StringBuilder("<user id=\"" + id + "\">");
         sb.append("<name>" + user.getName() + "</name>");
 
+        String email = user.getEmail();
+        if (email != null && email.length() > 0) {
+            sb.append("<email>" + email + "</email>");
+        } else {
+            sb.append("<no-email/>");
+        }
+
         String paraResolveGroups = getEnvironment().getRequest().getParameter("resolve-groups");
         boolean resolveGroups = false;
         if (paraResolveGroups != null && paraResolveGroups.equals("true")) {
