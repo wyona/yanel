@@ -369,16 +369,22 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
 
     /**
      * Get operating system
+     * @param userAgent User agent
      */
     public String getOS(String userAgent) {
-        if (userAgent.indexOf("Linux") > 0) {
-            return "unix";
-        } else if (userAgent.indexOf("Mac OS X") > 0) {
-            return "unix";
-        } else if (userAgent.indexOf("Windows") > 0) {
-            return "windows";
+        if (userAgent != null) {
+            if (userAgent.indexOf("Linux") > 0) {
+                return "unix";
+            } else if (userAgent.indexOf("Mac OS X") > 0) {
+                return "unix";
+            } else if (userAgent.indexOf("Windows") > 0) {
+                return "windows";
+            } else {
+                log.warn("Operating System could not be recognized: " + userAgent);
+                return null;
+            }
         } else {
-            log.warn("Operating System could not be recognized: " + userAgent);
+            log.warn("No user agent specified");
             return null;
         }
     }
