@@ -121,11 +121,17 @@ public class TranslationResource extends Resource implements ViewableV2 {
                     xsltHandlers[i].getTransformer().setParameter("yanel.path", currentPath);
                     xsltHandlers[i].getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, currentPath));
                     xsltHandlers[i].getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(currentPath));
+
                     String userAgent = getRequest().getHeader("User-Agent");
-                    String os = getOS(userAgent);
-                    if (os != null) xsltHandlers[i].getTransformer().setParameter("os", os);
-                    String client = getClient(userAgent);
-                    if (client != null) xsltHandlers[i].getTransformer().setParameter("client", client);
+                    if (userAgent != null) {
+                        String os = getOS(userAgent);
+                        if (os != null) xsltHandlers[i].getTransformer().setParameter("os", os);
+                        String client = getClient(userAgent);
+                        if (client != null) xsltHandlers[i].getTransformer().setParameter("client", client);
+                    } else {
+                        log.warn("User agent is null!");
+                    }
+
                     xsltHandlers[i].getTransformer().setParameter("language", getLanguage());
                     xsltHandlers[i].getTransformer().setParameter("currentPath", currentPath);
                 }
