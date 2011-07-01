@@ -393,9 +393,18 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         return node.getCheckoutUserID();
     }
 
+    /**
+     * @see org.wyona.yanel.core.api.attributes.VersionableV2#isCheckedOut()
+     */
     public boolean isCheckedOut() throws Exception {
-        Node node = getRealm().getRepository().getNode(getPath());
-        return node.isCheckedOut();
+        String yanelPath = getResourceConfigProperty("yanel-path");
+        if (yanelPath != null) {
+            log.warn("Check whether checked-out for parameter yanel-path '" + yanelPath + "' not implemented yet!");
+            return false;
+        } else {
+            Node node = getRealm().getRepository().getNode(getPath());
+            return node.isCheckedOut();
+        }
     }
 
     /**
@@ -796,17 +805,21 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             return;
         }
 
-        // INFO: If yanel-path property set, then it's not clear from where annotations should be read, hence let's check first if node (1:1) actually exists
-        if (getRealm().getRepository().existsNode(getPath()) && getRealm().getRepository().getNode(getPath()).hasProperty("annotations")) {
-            String aString = getRealm().getRepository().getNode(getPath()).getProperty("annotations").getString();
-            String[] aArray = aString.split(", ");
-            for(int i = 0; i < aArray.length; i++) {
-                annotations.add(aArray[i]);
-            }
-            annotationRead = true;
-            return;
+        String yanelPath = getResourceConfigProperty("yanel-path");
+        if (yanelPath != null) {
+            log.warn("Read annotations for parameter yanel-path '" + yanelPath + "' not implemented yet!");
         } else {
-            log.warn("No annotations yet: " + getPath());
+            if (getRealm().getRepository().getNode(getPath()).hasProperty("annotations")) {
+                String aString = getRealm().getRepository().getNode(getPath()).getProperty("annotations").getString();
+                String[] aArray = aString.split(", ");
+                for(int i = 0; i < aArray.length; i++) {
+                    annotations.add(aArray[i]);
+                }
+                annotationRead = true;
+                return;
+            } else {
+                log.warn("No annotations yet: " + getPath());
+            }
         }
     }
 
