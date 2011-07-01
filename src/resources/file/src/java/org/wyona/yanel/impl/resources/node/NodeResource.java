@@ -459,7 +459,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
             return "application/x-javascript";
         } else if (suffix.equals("png")) {
             return "image/png";
-        } else if (suffix.equals("jpg")) {
+        } else if (suffix.equals("jpg") || suffix.equals("jpeg")) {
             return "image/jpeg";
         } else if (suffix.equals("gif")) {
             return "image/gif";
@@ -469,6 +469,8 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
             return "application/msword";
         } else if (suffix.equals("odt")) {
             return "application/vnd.oasis.opendocument.text";
+        } else if (suffix.equals("odg")) {
+            return "application/vnd.oasis.opendocument.graphics";
         } else if (suffix.equals("sxc")) {
             return "application/vnd.sun.xml.calc";
         } else if (suffix.equals("xpi")) {
