@@ -796,7 +796,8 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             return;
         }
 
-        if (getRealm().getRepository().getNode(getPath()).hasProperty("annotations")) {
+        // INFO: If yanel-path property set, then it's not clear from where annotations should be read, hence let's check first if node (1:1) actually exists
+        if (getRealm().getRepository().existsNode(getPath()) && getRealm().getRepository().getNode(getPath()).hasProperty("annotations")) {
             String aString = getRealm().getRepository().getNode(getPath()).getProperty("annotations").getString();
             String[] aArray = aString.split(", ");
             for(int i = 0; i < aArray.length; i++) {
