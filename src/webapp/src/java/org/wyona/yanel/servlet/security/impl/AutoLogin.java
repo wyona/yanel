@@ -38,13 +38,17 @@ public class AutoLogin {
     public static Cookie getCookie(HttpServletRequest request) {
         Cookie result = null;
         try {
-            for (Cookie c : request.getCookies()) {
-                if (c.getName().equals(COOKIE_NAME)) {
-                    result = c;
-                    break;
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie c : cookies) {
+                    if (c.getName().equals(COOKIE_NAME)) {
+                        result = c;
+                        break;
+                    }
                 }
+            } else {
+                log.warn("DEBUG: No cookies by browser provided yet!");
             }
-            
         } catch (Exception e) {
             log.error("Error in retrieving cookie from request");
             log.error(e,e);
