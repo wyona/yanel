@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<policy xmlns="http://www.wyona.org/security/1.0" use-inherited-policies="false">
+  <usecase id="view">
+    <user id="lenya" permission="true"/>
+  </usecase>
+  <usecase id="open">
+    <user id="lenya" permission="true"/>
+  </usecase>
+  <usecase id="write">
+    <user id="lenya" permission="true"/>
+  </usecase>
+  <usecase id="resource.create">
+    <user id="lenya" permission="true"/>
+  </usecase>
+  <usecase id="delete">
+    <user id="lenya" permission="true"/>
+  </usecase>
+  <usecase id="yanel.resource.meta">
+    <user id="lenya" permission="true"/>
+  </usecase>
+  <usecase id="introspection">
+    <user id="lenya" permission="true"/>
+  </usecase>
+  <usecase id="toolbar">
+    <user id="lenya" permission="true"/>
+  </usecase>
+  <usecase id="policy.read">
+    <user id="lenya" permission="true"/>
+  </usecase>
+  <usecase id="policy.update">
+    <user id="lenya" permission="true"/>
+  </usecase>
+  <usecase id="workflow.write">
+    <user id="lenya" permission="true"/>
+  </usecase>
+  <usecase id="workflow.approve">
+    <user id="lenya" permission="true"/>
+  </usecase>
+  <usecase id="workflow.publish">
+    <user id="lenya" permission="true"/>
+  </usecase>
+</policy>
