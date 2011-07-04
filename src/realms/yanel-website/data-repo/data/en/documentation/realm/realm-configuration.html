@@ -10,7 +10,7 @@
 <li><a href="#rc-repo">Resource configurations repository</a></li>
 <li>Default language of realm (optional)</li>
 <li>Languages supported by this realm (optional)</li>
-<li>Language handler (optional)</li>
+<li><a href="#language-handler">Language handler</a> (optional)</li>
 <li>Translation manager (optional)</li>
 <li><a href="#yarep-repos">Additional Yarep based repositories</a> (optional)</li>
 <li><a href="#i18n">I18n configuration of this realm</a> (optional)</li>
@@ -37,6 +37,14 @@
 <h2>Resource Configurations Repository</h2>
 <p>The <a href="../resources/resource_type_configuration.html">resource configurations repository</a> is configured as follows:</p>
 <pre>&lt;rti&gt;config/rti-repository.xml&lt;/rti&gt;</pre>
+
+
+<a name="language-handler"> </a>
+<h2>Language handler</h2>
+<p>A custom language handler can be configured as follows:</p>
+<pre>&lt;language-handler class="org.wyona.yanel.impl.StaticLanguageHandler"/&gt;</pre>
+<p>whereas if no custom language handler is set, then the <code>org.wyona.yanel.impl.DefaultLanguageHandler</code> is used (see <code>org.wyona.yanel.core.map.RealmDefaultImpl</code>).</p>
+
 <a name="yarep-repos"> </a>
 <h2>Additional Yarep based Repositories</h2>
 <p>Additional Yarep repositories can be configured as follows</p>
