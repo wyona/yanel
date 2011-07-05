@@ -318,7 +318,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
     }
 
     /**
-     * @see
+     * @see org.wyona.yanel.core.api.attributes.CreatableV2#create(HttpServletRequest)
      */
    public void create(HttpServletRequest request) {
        try {
