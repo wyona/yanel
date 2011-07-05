@@ -40,7 +40,7 @@ public class BasicGenericExceptionHandlerResource extends BasicXMLResource {
 
     /**
      * Generate XML
-     * @param viewid Ignored.
+     * @param viewId Ignored.
      * @see org.wyona.yanel.core.Resource
      */
     @Override
