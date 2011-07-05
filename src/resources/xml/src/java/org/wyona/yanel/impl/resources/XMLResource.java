@@ -754,7 +754,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
     
     /**
-     * @see org.wyona.yanel.core.api.attributes.AnnotatableV1@setAnnotation(String)
+     * @see org.wyona.yanel.core.api.attributes.AnnotatableV1#setAnnotation(String)
      */
     public void setAnnotation(String name) throws Exception {
         readAnnotations();
@@ -780,7 +780,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 
     /**
-     * @see org.wyona.yanel.core.api.attributes.AnnotatableV1@clearAllAnnotations()
+     * @see org.wyona.yanel.core.api.attributes.AnnotatableV1#clearAllAnnotations()
      */
     public void clearAllAnnotations() throws Exception{
         readAnnotations();
@@ -789,7 +789,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 	
     /**
-     * @see org.wyona.yanel.core.api.attributes.AnnotatableV1@getAnnotations()
+     * @see org.wyona.yanel.core.api.attributes.AnnotatableV1#getAnnotations()
      */
     public String[] getAnnotations() throws Exception {
         readAnnotations();
