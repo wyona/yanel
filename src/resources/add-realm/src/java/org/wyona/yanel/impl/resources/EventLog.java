@@ -49,7 +49,6 @@ public class EventLog implements LinkListener, CrawlListener, Serializable {
     
     /**
      * Returns all download events.
-     * @return
      */
     public String getDownloadEvents() {
         StringBuffer buf = new StringBuffer();
@@ -61,7 +60,6 @@ public class EventLog implements LinkListener, CrawlListener, Serializable {
     
     /**
      * Returns all error events.
-     * @return
      */
     public String getErrorEvents() {
         StringBuffer buf = new StringBuffer();
@@ -73,7 +71,6 @@ public class EventLog implements LinkListener, CrawlListener, Serializable {
     
     /**
      * Returns the number of downloaded pages.
-     * @return
      */
     public int getNofDownloads() {
         return this.downloadEvents.size();
