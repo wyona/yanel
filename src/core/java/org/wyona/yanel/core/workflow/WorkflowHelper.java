@@ -450,7 +450,7 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     }
 
     /**
-     * @deprecated Use {@link setWorkflowState(Resource, String, String)} instead
+     * @deprecated Use {@link #setWorkflowState(Resource, String, String)} instead
      * Set workflow state (and date)
      */
     public static void setWorkflowState(Node node, String state, String revision) throws WorkflowException {
@@ -490,7 +490,7 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     }
 
     /**
-     * @deprecated Use {@link getWorkflowDate(Resource, String)} instead
+     * @deprecated Use {@link #getWorkflowDate(Resource, String)} instead
      */
     public static Date getWorkflowDate(Node node, String revision) throws WorkflowException {
         try {
