@@ -174,7 +174,6 @@ public class ImportSiteThread extends Thread {
      * Returns the local path of a dumped file, i.e. the path relative
      * to the root dir of the dump.
      * @param file
-     * @return
      * @throws IOException
      */
     protected String getLocalPath(File file) throws IOException {
@@ -309,7 +308,6 @@ public class ImportSiteThread extends Thread {
      * Returns the mime-type according to the given file extension.
      * Default is application/octet-stream.
      * @param extension
-     * @return
      */
     protected String guessMimeType(String extension) {
         String ext = extension.toLowerCase();
