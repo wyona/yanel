@@ -120,7 +120,7 @@ public class I18nTransformer3 extends AbstractTransformer {
 
     /**
      * @param language Localization or content language
-     * @param userlanguage Localization of user (normally based on user profile setting)
+     * @param userLanguage Localization of user (normally based on user profile setting)
      */
     public I18nTransformer3(String[] catalogues, String language, String userLanguage, String defaultLanguage, URIResolver resolver) {
         this(catalogues, language, defaultLanguage, resolver);
