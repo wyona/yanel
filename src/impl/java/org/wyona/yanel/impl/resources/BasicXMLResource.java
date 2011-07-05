@@ -188,7 +188,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     }
 
     /**
-     * @see org.wyona.yanel.core.api.attributes.ViewableV2#getMimeType(java.lang.String)
+     * Get mime type
      */
     public String getMimeType(String viewId) throws Exception {
         String mimeType = null;
