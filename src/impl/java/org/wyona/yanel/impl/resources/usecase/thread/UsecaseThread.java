@@ -89,7 +89,6 @@ public abstract class UsecaseThread extends Thread implements Serializable {
     /**
      * Creates the key for this thread which is used to store and identify the thread in the session.
      * @param threadID
-     * @return
      */
     protected static String getThreadKey(String threadID) {
         return "yanel.thread." + threadID;
