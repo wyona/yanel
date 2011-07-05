@@ -38,6 +38,7 @@
       <include name="resources/*/src/java/**"/>
       <include name="realms/*/src/java/**"/>
       <exclude name="**/README.txt"/>
+      <exclude name="**/*.properties"/>
     </fileset>
     
     </javadoc>
