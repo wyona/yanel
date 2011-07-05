@@ -767,7 +767,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 
     /**
-     * @see org.wyona.yanel.core.api.attributes.AnnotatableV1@removeAnnotation(String)
+     * @see org.wyona.yanel.core.api.attributes.AnnotatableV1#removeAnnotation(String)
      */
     public void removeAnnotation(String name) throws Exception{
         readAnnotations();
