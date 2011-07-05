@@ -237,7 +237,7 @@ public class Yanel {
     }
     
     /**
-     * @deprecated Use {@link #getResourceManager().getResource()} instead 
+     * @deprecated Use {@link #getResourceManager()} and then the method getResource() of the resource manager instead 
      */
     public Resource getResource(Realm realm, String path) throws Exception {
         return resourceManager.getResource(null, realm, path);
