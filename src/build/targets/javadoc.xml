@@ -1,14 +1,24 @@
 <?xml version="1.0"?>
 
 <project name="javadoc" default="generate-javadoc">
+
   <!-- Generate Javadoc (if not already done) -->
-  <target name="generate-javadoc" depends="init">
+  <target name="generate-javadoc" depends="init" description="Generate javadoc (if it does not exist yet)">
 
     <!-- TODO: The javadoc-not-exists target throws an exception on Windows -->
     <condition property="javadoc-does-not-exist-yet">
-      <not>
-        <available file="${build.dir}/javadoc/index-all.html" type="file"/>
-      </not>
+      <and>
+        <not>
+          <available file="${build.dir}/javadoc/index-all.html" type="file"/>
+        </not>
+        <!-- WARN: On Windows javadoc generation currently fails, please see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=7410 -->
+        <not>
+<!--
+          <os family="mac"/>
+-->
+          <os family="windows"/>
+        </not>
+      </and>
     </condition>
     <antcall target="javadoc-not-exists"/>
 
@@ -39,7 +49,7 @@
   <target name="javadoc-exists" unless="javadoc-does-not-exist-yet">
     <echo/>
     <echo/>
-    <echo>The Javadoc already exists. You should find it under: ${build.dir}/javadoc/index.html</echo>
+    <echo>The Javadoc already exists or you are using Windows (and hence it is disabled). You should find it under: ${build.dir}/javadoc/index.html</echo>
   </target>
   
   <!-- Set javadoc classpath -->
@@ -58,7 +68,9 @@
     <echo>INFO: Classpath to generate Javadoc: ${javadoc.cp}</echo>
   </target>
 
+<!--
   <target name="javadoc" description="generate Javadoc (if not already done)" depends="generate-javadoc"/>
+-->
 
   <target name="clean-javadoc" description="clean javadoc" depends="init">
     <delete dir="${build.dir}/javadoc"/>
