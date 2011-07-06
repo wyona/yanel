@@ -138,6 +138,7 @@ public class YanelServlet extends HttpServlet {
     private YanelHTMLUI yanelUI;
 
     private boolean logAccessEnabled = false;
+    private boolean detectMobilePerRequest = false;
     
     public static final String DEFAULT_ENCODING = "UTF-8";
 
@@ -187,6 +188,11 @@ public class YanelServlet extends HttpServlet {
 
             // TODO: Make this value configurable also per realm or per individual user!
             logAccessEnabled = new Boolean(config.getInitParameter("log-access")).booleanValue();
+
+            // TODO: Make this value configurable also per realm or per individual user!
+            if (config.getInitParameter("detect-mobile-per-request") != null) {
+                detectMobilePerRequest = new Boolean(config.getInitParameter("detect-mobile-per-request")).booleanValue();
+            }
 
             if (yanelInstance.isSchedulerEnabled()) {
                 log.warn("Startup scheduler ...");
@@ -2718,7 +2724,7 @@ public class YanelServlet extends HttpServlet {
     private void doMobile(HttpServletRequest request) {
         HttpSession session = request.getSession(true);
         String mobileDevice = (String) session.getAttribute(MOBILE_KEY);
-        if (mobileDevice == null) {
+        if (detectMobilePerRequest || mobileDevice == null) {
             String userAgent = request.getHeader("User-Agent");
             log.warn("DEBUG: User agent: " + userAgent);
             if (userAgent != null && userAgent.indexOf("iPhone") > 0) { // TODO: Use http://wurfl.sourceforge.net/njava/, http://www.cloudfour.com/comparative-speed-of-wurfl-and-device-atlas/, http://www.id.uzh.ch/zinfo/mobileview.html
