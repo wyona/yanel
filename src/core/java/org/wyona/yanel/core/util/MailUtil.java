@@ -80,7 +80,7 @@ public class MailUtil {
      * @param replyTo email address (if null, then no reply-to will be set)
      * @param charset Charset, e.g. utf-8
      * @param mimeSubType Mime sub-type, e.g. "html" or "plain"
-     * @param fromEmailAdress E-Mail address of sender, e.g. contact@wyona.org
+     * @param fromEmailAddress E-Mail address of sender, e.g. contact@wyona.org
      * @param fromName Name of sender, e.g. Wyona
      */
     public static void send(String smtpHost, int smtpPort, String fromEmailAddress, String fromName, String replyTo, String to, String subject, String content, String charset, String mimeSubType) throws AddressException, MessagingException {
