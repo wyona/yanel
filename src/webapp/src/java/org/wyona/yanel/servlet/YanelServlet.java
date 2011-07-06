@@ -115,6 +115,8 @@ public class YanelServlet extends HttpServlet {
     private String xsltLoginScreenDefault;
     private boolean displayMostRecentVersion = true;
 
+    public static final String MOBILE_KEY = "yanel.mobile";
+
     public static final String IDENTITY_MAP_KEY = "identity-map";
     private static final String TOOLBAR_USECASE = "toolbar"; //TODO is this the same as YanelAuthoringUI.TOOLBAR_KEY?
     public static final String NAMESPACE = "http://www.wyona.org/yanel/1.0";
@@ -227,6 +229,7 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Dispatch requests
+     * @see javax.servlet.http.HttpServlet#service(HttpServletRequest, HttpServletResponse)
      */
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -238,7 +241,7 @@ public class YanelServlet extends HttpServlet {
             String yanelUsecase = request.getParameter(YANEL_USECASE);
             if(yanelUsecase != null && yanelUsecase.equals("logout")) {
                 try {
-                    log.warn("DEBUG: Disable auto login...");
+                    log.warn("DEBUG: Disable auto login..."); // TODO: The cookie is not always deleted!
                     AutoLogin.disableAutoLogin(request, response, getRealm(request).getRepository());
                 } catch (Exception e) {
                     log.error("Exception while disabling auto login: " + e.getMessage(), e);
@@ -286,6 +289,9 @@ public class YanelServlet extends HttpServlet {
                 handleDeleteUsecase(request, response);
                 return;
             }
+
+            // INFO: Check if user agent is mobile device
+            doMobile(request);
 
             // Delegate ...
             String method = request.getMethod();
@@ -2704,5 +2710,25 @@ public class YanelServlet extends HttpServlet {
         sb.append("<message>" + message + "</message>");
         sb.append("</exception>");
         return sb.toString();
+    }
+
+    /**
+     * Check whether user agent is mobile device and if so, then set mobile flag inside session
+     */
+    private void doMobile(HttpServletRequest request) {
+        HttpSession session = request.getSession(true);
+        String mobileDevice = (String) session.getAttribute(MOBILE_KEY);
+        if (mobileDevice == null) {
+            String userAgent = request.getHeader("User-Agent");
+            log.warn("DEBUG: User agent: " + userAgent);
+            if (userAgent != null && userAgent.indexOf("iPhone") > 0) { // TODO: Use http://wurfl.sourceforge.net/njava/, http://www.cloudfour.com/comparative-speed-of-wurfl-and-device-atlas/, http://www.id.uzh.ch/zinfo/mobileview.html
+                session.setAttribute(YanelServlet.MOBILE_KEY, "iphone");
+            } else {
+                //log.debug("This does not seem to be a mobile device: " + userAgent);
+                session.setAttribute(YanelServlet.MOBILE_KEY, "false");
+            }
+        } else {
+            //log.debug("DEBUG: Mobile device detection already done.");
+        }
     }
 }
