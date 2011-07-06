@@ -326,7 +326,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 
     /**
-     * @see org.wyona.yanel.core.api.attributes.VersionableV2#checkin()
+     * @see org.wyona.yanel.core.api.attributes.VersionableV2#checkin(String)
      */
     public void checkin(String comment) throws Exception {
         Node node = getRealm().getRepository().getNode(getPath());
@@ -427,7 +427,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
 
 
     /**
-     * @see org.wyona.yanel.core.api.attributes.CreatableV2#create()
+     * @see org.wyona.yanel.core.api.attributes.CreatableV2#create(HttpServletRequest)
      */
     public void create(HttpServletRequest request) {
         if (log.isDebugEnabled()) log.debug("Create XML resource ...");
