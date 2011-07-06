@@ -237,9 +237,18 @@ public class YanelServlet extends HttpServlet {
 
             String yanelUsecase = request.getParameter(YANEL_USECASE);
             if(yanelUsecase != null && yanelUsecase.equals("logout")) {
-                AutoLogin.removeCookie(request, response);
+                try {
+                    log.warn("DEBUG: Disable auto login...");
+                    AutoLogin.disableAutoLogin(request, response, getRealm(request).getRepository());
+                } catch (Exception e) {
+                    log.error("Exception while disabling auto login: " + e.getMessage(), e);
+                }
                 // INFO: Logout from Yanel
-                if(doLogout(request, response) != null) return;
+                if(doLogout(request, response)) {
+                    return;
+                } else {
+                    log.error("Logout failed!");
+                }
             } else if(yanelUsecase != null && yanelUsecase.equals("create")) { // TODO: Why does that not go through access control?
                 // INFO: Create a new resource
                 if(doCreate(request, response) != null) return;
@@ -1071,17 +1080,24 @@ public class YanelServlet extends HttpServlet {
             throw new ServletException(e.getMessage(), e);
         }
 
-        // Auto-Login
+        // Try Auto-Login
         if (identity == null || (identity != null && identity.isWorld())) {
-            Cookie autoLoginCookie = AutoLogin.getCookie(request);
-            if (autoLoginCookie != null) {
-                try {
-                    if (AutoLogin.matchCookie(autoLoginCookie, realm.getRepository())) {
-                        // TODO: login
+            //log.debug("Not logged in yet, hence try auto login...");
+            try {
+                if (AutoLogin.tryAutoLogin(request, response, realm)) {
+                    log.debug("Auto login successful, hence set identity inside session...");
+                    String username = AutoLogin.getUsername(request);
+                    if (username != null) {
+                        User user = realm.getIdentityManager().getUserManager().getUser(username);
+                        setIdentity(new Identity(user, user.getEmail()), request.getSession(), realm);
+                    } else {
+                        log.error("Auto login successful, but no username available!");
                     }
-                } catch(Exception e) {
-                    log.error(e, e);
+                } else {
+                    //log.debug("No auto login.");
                 }
+            } catch(Exception e) {
+                log.error(e, e);
             }
         }
 
@@ -1404,9 +1420,9 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Do logout
-     * @return null for a regular logout and a Neutron response if auth scheme is Neutron
+     * @return true if logout was successful (and set a "Redirect response" for a regular logout and a "Neutron response" if auth scheme is Neutron)
      */
-    private HttpServletResponse doLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private boolean doLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             if (yanelUI.isToolbarEnabled(request)) {
                 // TODO: Check if WORLD has access to the toolbar
@@ -1435,7 +1451,7 @@ public class YanelServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_OK);
                 PrintWriter writer = response.getWriter();
                 writer.print("Neutron Logout Successful!");
-                return response;
+                return true;
             }
 
             if (log.isDebugEnabled()) log.debug("Regular Logout Successful!");
@@ -1458,9 +1474,9 @@ public class YanelServlet extends HttpServlet {
             response.setHeader("Location", urlWithoutLogoutQS.toString());
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
 
-            return response;
+            return true;
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error(e, e);
             throw new ServletException(e.getMessage(), e);
         }
     }
