@@ -60,7 +60,10 @@ public class AutoLogin {
     }
  
     /**
-     *
+     * Enable auto login by adding a cookie and setting a unique token persistently on the server side
+     * @param username User for which auto login will be enabled
+     * @param response HTTP response to which cookie will be attached
+     * @param realm Realm of repository to which user token will be attached
      */
     public static void enableAutoLogin(String username, HttpServletResponse response, Realm realm) {
         try {
@@ -118,8 +121,8 @@ public class AutoLogin {
                     try {
                         node = realm.getRepository().getNode(yarepPath);
                     } catch (Exception e) {
-                        log.warn("node '"+yarepPath+"' does not exist");
-                        log.warn("We did not login the user automatically although auto login cookie seems to exist!");
+                        // TODO ...
+                        //log.warn("Node '" + yarepPath + "' does not exist. We did not login the user automatically although auto login cookie seems to exist!");
                         return false;
                     }
 
