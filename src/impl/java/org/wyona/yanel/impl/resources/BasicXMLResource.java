@@ -280,6 +280,11 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             tf.setErrorListener(errorListener);
 
             String[] xsltPaths = viewDescriptor.getXSLTPaths();
+            if (viewDescriptor != null) {
+                xsltPaths = viewDescriptor.getXSLTPaths();
+            } else {
+                log.warn("View descriptor is null!");
+            }
             if (xsltPaths == null || xsltPaths.length == 0) {
                 xsltPaths = getXSLTPath(getPath());
             }
