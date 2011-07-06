@@ -1,9 +1,0 @@
-<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>E-Mail/SMTP Configuration</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>
-<h1>E-Mail/SMTP Configuration</h1>
-<p>The default SMTP host and port can be configured within:</p>
-<ul>
-<li>Binary version: <code>WEB-INF/classes/yanel.xml</code> (needs restart of Yanel)</li>
-<li>Source version: <code>conf/yanel.xml or rather conf/local/local.yanel.xml</code> (needs rebuild of Yanel)</li>
-</ul>
-<p>These default settings can be overwritten per resource, e.g. <code>src/contributions/resources/contact-form/resource.xml</code> (See resource properties <code>smtpHost</code> and <code>smtpPort</code>)</p>
-</body></html>

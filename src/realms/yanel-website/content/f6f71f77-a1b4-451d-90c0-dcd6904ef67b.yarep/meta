@@ -1,7 +1,0 @@
-yarep_type<string>:resource
-yarep_isCheckedOut<boolean>:true
-yarep_checkoutDate<date>:2009-02-12T09:33:06+0100
-yarep_size<long>:845
-yarep_checkoutUserID<string>:michi
-yarep_lastModifed<long>:1234427439000
-yarep_checkinDate<date>:2009-02-12T09:30:39+0100
