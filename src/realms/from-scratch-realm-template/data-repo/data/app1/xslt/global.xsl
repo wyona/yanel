@@ -11,7 +11,7 @@
   <xsl:param name="yanel.path.name" select="'NAME_IS_NULL'"/>
   <xsl:param name="yanel.path" select="'PATH_IS_NULL'"/>
   <xsl:param name="yanel.back2context" select="'BACK2CONTEXT_IS_NULL'"/>
-  <xsl:param name="yarep.back2realm" select="'BACK2REALM_IS_NULL'"/>
+  <xsl:param name="yanel.back2realm" select="'BACK2REALM_IS_NULL'"/>
   <xsl:param name="yanel.toolbar-status" select="'TOOLBAR-STATUS_IS_NULL'"/>
   <xsl:param name="yanel.reservedPrefix" select="'RESERVED-PREFIX_IS_NULL'"/>
   <xsl:variable name="name-without-suffix" select="substring-before($yanel.path.name, '.')"/>
@@ -24,10 +24,10 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
-        <link rel="shortcut icon" href="{$yarep.back2realm}favicon.ico" type="image/vnd.microsoft.icon" />
+        <link rel="shortcut icon" href="{$yanel.back2realm}favicon.ico" type="image/vnd.microsoft.icon" />
         <!-- See http://www.w3.org/TR/REC-CSS2/media.html -->
-        <link media="screen" type="text/css" href="{$yarep.back2realm}app1/css/screen.css" rel="stylesheet"/>
-        <link media="print" type="text/css" href="{$yarep.back2realm}app1/css/print.css" rel="stylesheet"/>
+        <link media="screen" type="text/css" href="{$yanel.back2realm}app1/css/screen.css" rel="stylesheet"/>
+        <link media="print" type="text/css" href="{$yanel.back2realm}app1/css/print.css" rel="stylesheet"/>
 
         <!-- The following copy statement is copying for example header stuff from the content source, but also in the case of the TinyMCE or Xinha resource the important javascript and CSS links! -->
         <xsl:copy-of select="/xhtml:html/xhtml:head/*[name(.) != 'title']"/>
@@ -48,16 +48,16 @@
         </title>
 
         <!-- Yanel toolbar zone -->
-        <script type="text/javascript" src="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-js/jquery/1.2.6/jquery.min.js"></script>
-        <script type="text/javascript" src="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-js/toolbar-zone.js"></script>
-        <link media="screen" type="text/css" href="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-css/toolbar-zone.css" rel="stylesheet"/>
+        <script type="text/javascript" src="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-js/jquery/1.2.6/jquery.min.js"></script>
+        <script type="text/javascript" src="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-js/toolbar-zone.js"></script>
+        <link media="screen" type="text/css" href="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-css/toolbar-zone.css" rel="stylesheet"/>
 
       </head>
       <body>
 <xsl:if test="$yanel.toolbar-status = 'off'">
 <div id="yanelToolbarZone">
   <div id="yanelToolbarZoneLink" style="display: none; height: 60px; width: 60px;">
-    <a href="?yanel.toolbar=on" title="Turn on Toolbar" alt="Turn on Toolbar"><img style="position: absolute; right:5px; top:5px;" src="{$yarep.back2realm}{$yanel.reservedPrefix}/yanel-img/yanel_kangaroo.png" height="48" width="109" border="0"/></a>
+    <a href="?yanel.toolbar=on" title="Turn on Toolbar" alt="Turn on Toolbar"><img style="position: absolute; right:5px; top:5px;" src="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-img/yanel_kangaroo.png" height="48" width="109" border="0"/></a>
   </div>
 </div>
 </xsl:if>
@@ -72,9 +72,9 @@ Content Language: <xsl:value-of select="$content-language"/>
 
 
           <div id="header">
-           <a href="{$yarep.back2realm}index.html"><img src="{$yarep.back2realm}app1/images/yanel-logo.png" alt="yanel logo" id="header-logo"/></a>
+           <a href="{$yanel.back2realm}index.html"><img src="{$yanel.back2realm}app1/images/yanel-logo.png" alt="yanel logo" id="header-logo"/></a>
 <!--
-           <img src="{$yarep.back2realm}app1/images/logo.gif"/>
+           <img src="{$yanel.back2realm}app1/images/logo.gif"/>
 -->
 <!--
             <xi:include href="yanelresource:/navigation/breadcrumb-{$content-language}.xml?path={$yanel.path}"/>
@@ -82,7 +82,7 @@ Content Language: <xsl:value-of select="$content-language"/>
 
             <!--
             <div id="breadcrumb">
-              <a href="{$yarep.back2realm}index.html">Home</a>
+              <a href="{$yanel.back2realm}index.html">Home</a>
             </div>
             -->
 
@@ -90,10 +90,10 @@ Content Language: <xsl:value-of select="$content-language"/>
               <xsl:choose>
                 <!-- Use content language instead localization -->
                 <xsl:when test="$content-language = 'de'">
-                  <a href="{$yarep.back2realm}de/kontakt.html">Kontakt</a>
+                  <a href="{$yanel.back2realm}de/kontakt.html">Kontakt</a>
                 </xsl:when>
                 <xsl:otherwise>
-                  <a href="{$yarep.back2realm}en/contact.html">Contact</a>
+                  <a href="{$yanel.back2realm}en/contact.html">Contact</a>
                 </xsl:otherwise>
               </xsl:choose>
 
@@ -107,10 +107,10 @@ Content Language: <xsl:value-of select="$content-language"/>
               <div>
                 <xsl:choose>
                 <xsl:when test="$content-language = 'de'">
-                  <form action="{$yarep.back2realm}de/suche.html" method="GET"><input type="text" name="q"/><input type="submit" value="Suche"/></form>
+                  <form action="{$yanel.back2realm}de/suche.html" method="GET"><input type="text" name="q"/><input type="submit" value="Suche"/></form>
                 </xsl:when>
                 <xsl:otherwise>
-                  <form action="{$yarep.back2realm}en/search.html" method="GET"><input type="text" name="q"/><input type="submit" value="Search"/></form>
+                  <form action="{$yanel.back2realm}en/search.html" method="GET"><input type="text" name="q"/><input type="submit" value="Search"/></form>
                 </xsl:otherwise>
               </xsl:choose>
               </div>
