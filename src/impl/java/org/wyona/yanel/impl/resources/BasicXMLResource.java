@@ -453,7 +453,8 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         String client = getClient(userAgent);
         if (client != null) transformer.setParameter("client", client);
 
-        String mobileDevice = (String) getEnvironment().getRequest().getSession(true).getAttribute(org.wyona.yanel.servlet.YanelServlet.MOBILE_KEY);
+        String mobileDevice = (String) getEnvironment().getRequest().getSession(true).getAttribute("yanel.mobile");
+        //TODO: String mobileDevice = (String) getEnvironment().getRequest().getSession(true).getAttribute(org.wyona.yanel.servlet.YanelServlet.MOBILE_KEY);
         if (mobileDevice != null && !mobileDevice.equals("false")) {
         //if (isMobileDevice(userAgent)) {
             transformer.setParameter("is-mobile-device", "true");
