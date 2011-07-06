@@ -338,7 +338,7 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
 
     /**
      * escape xml
-     * @param String to escape
+     * @param string String to escape
      * @return String escaped
      */
     public String escapeXML(String string) {
