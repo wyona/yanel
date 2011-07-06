@@ -452,7 +452,10 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         if (os != null) transformer.setParameter("os", os);
         String client = getClient(userAgent);
         if (client != null) transformer.setParameter("client", client);
-        if (isMobileDevice(userAgent)) {
+
+        String mobileDevice = (String) getEnvironment().getRequest().getSession(true).getAttribute(org.wyona.yanel.servlet.YanelServlet.MOBILE_KEY);
+        if (mobileDevice != null && !mobileDevice.equals("false")) {
+        //if (isMobileDevice(userAgent)) {
             transformer.setParameter("is-mobile-device", "true");
         } else {
             transformer.setParameter("is-mobile-device", "false");
@@ -494,6 +497,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * Check whether user agent is a mobile device
      * @param userAgent User agent identifier, e.g. "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:2.0.1) Gecko/20100101 Firefox/4.0.1" or "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_3 like Mac OS X; fr-fr) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8F190 Safari/6533.18.5" (also see for example http://deviceatlas.com/node/1826129)
      */
+/*
     private boolean isMobileDevice(String userAgent) {
         //log.debug("Check user agent: " + userAgent);
         if (userAgent.indexOf("iPhone") > 0) {
@@ -503,6 +507,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             return false;
         }
     }
+*/
 
     /**
      * Get operating system
