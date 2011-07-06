@@ -18,6 +18,7 @@
   <xsl:param name="language" select="'LANGUAGE_IS_NULL'"/>
   <xsl:param name="content-language" select="'CONTENT_LANGUAGE_IS_NULL'"/>
   <xsl:param name="languages" select="'LANGUAGES_IS_NULL'"/>
+  <xsl:param name="is-mobile-device" select="'IS_MOBILE_IS_NULL'"/>
 
   <xsl:template match="/">
     <html>
@@ -64,6 +65,7 @@
 
 <xsl:comment>
 DEBUG:
+Is mobile device: <xsl:value-of select="$is-mobile-device"/>
 Localization: <xsl:value-of select="$language"/>
 Toolbar Status: <xsl:value-of select="$yanel.toolbar-status"/>
 Content Language: <xsl:value-of select="$content-language"/>
