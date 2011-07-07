@@ -7,7 +7,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.TransformerHandler;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.EntityResolver;
@@ -18,7 +19,8 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public abstract class AbstractTransformer extends DefaultHandler implements TransformerHandler {
 
-    private static Category log = Category.getInstance(AbstractTransformer.class);
+    private static Logger log = Logger.getLogger(AbstractTransformer.class);
+
     protected EntityResolver entityResolver;
     protected SAXResult result;
     protected ContentHandler resultHandler;
