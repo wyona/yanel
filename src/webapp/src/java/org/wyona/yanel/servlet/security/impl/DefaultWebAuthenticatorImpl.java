@@ -610,7 +610,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             log.warn("TODO: Implement auto-login");
             // Set auto login cookie containing username and secure token, whereas create new secure token per session
             // Implement this as utility method such that it can be re-used independent of the default authenticator!
-            AutoLogin.enableAutoLogin(loginUsername, response, realm);
+            AutoLogin.enableAutoLogin(loginUsername, request, response, realm);
 /*
             Cookie autoLoginCookie = AutoLogin.setCookie(loginUsername, request, response); // TODO: What about openID?!
             //AutoLogin.saveToken(autoLoginCookie, realm.getIdentityManager().getUserManager());

@@ -65,10 +65,10 @@ public class AutoLogin {
      * @param response HTTP response to which cookie will be attached
      * @param realm Realm of repository to which user token will be attached
      */
-    public static void enableAutoLogin(String username, HttpServletResponse response, Realm realm) {
+    public static void enableAutoLogin(String username, HttpServletRequest request, HttpServletResponse response, Realm realm) {
         try {
             //set cookie
-            Cookie cookie = setNewCookie(username, response);
+            Cookie cookie = setNewCookie(username, request, response);
             //save token
             saveToken(cookie, realm.getRepository());
         } catch (Exception e) {
@@ -136,7 +136,7 @@ public class AutoLogin {
                         if (username.equals(savedUsername) && token.equals(savedToken)) {
                             log.debug("retrieved cookie matches for user '"+username+"'");
                             if (hasTokenExpired(expiryString)) {
-                                Cookie newCookie = setNewCookie(username, response);
+                                Cookie newCookie = setNewCookie(username, request, response);
                                 saveToken(newCookie, realm.getRepository());
                                 deleteToken(realm.getRepository(), yarepPath);
                                 log.debug("Token was expired and has been renewed now.");
@@ -166,14 +166,15 @@ public class AutoLogin {
 
     /**
      * Set cookie in response
+     * @param username Name of user for which auto login will be enabled
      */
-    private static Cookie setNewCookie(String username, HttpServletResponse response) {
+    private static Cookie setNewCookie(String username, HttpServletRequest request, HttpServletResponse response) {
         Cookie result = null;
         if (username != null) {
             String token = UUID.randomUUID().toString();
             Cookie cookie = new Cookie(COOKIE_NAME,token+SEP+username);
             cookie.setMaxAge(Integer.MAX_VALUE);
-            cookie.setPath("/");
+            cookie.setPath(request.getContextPath());
             response.addCookie(cookie);
             result = cookie;
         }
