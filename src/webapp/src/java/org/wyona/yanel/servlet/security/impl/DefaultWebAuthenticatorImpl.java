@@ -607,15 +607,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
      */
     private static boolean doAutoLogin(HttpServletRequest request, HttpServletResponse response, String loginUsername, String openID, Realm realm) throws Exception {
         if (request.getParameter("auto-login") != null) {
-            log.warn("TODO: Implement auto-login");
-            // Set auto login cookie containing username and secure token, whereas create new secure token per session
-            // Implement this as utility method such that it can be re-used independent of the default authenticator!
             AutoLogin.enableAutoLogin(loginUsername, request, response, realm);
-/*
-            Cookie autoLoginCookie = AutoLogin.setCookie(loginUsername, request, response); // TODO: What about openID?!
-            //AutoLogin.saveToken(autoLoginCookie, realm.getIdentityManager().getUserManager());
-            AutoLogin.saveToken(autoLoginCookie, realm.getRepository());
-*/
             return true;
         } else {
             log.debug("Ignore auto login...");
