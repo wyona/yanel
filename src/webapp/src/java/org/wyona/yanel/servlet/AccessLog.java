@@ -146,7 +146,14 @@ public class AccessLog {
         Cookie analyticsCookie = new Cookie(ANALYTICS_COOKIE_NAME, "YA-" + UUID.randomUUID().toString());
         analyticsCookie.setMaxAge(31536000); // 1 year
         //analyticsCookie.setMaxAge(86400); // 1 day
-        analyticsCookie.setPath(request.getContextPath());
+
+        String contextPath = request.getContextPath();
+        if (contextPath.length() == 0) { // INFO: http://download.oracle.com/javaee/5/api/javax/servlet/http/HttpServletRequest.html#getContextPath%28%29
+            //log.debug("It seems like Yanel is deployed inside the ROOT context");
+            contextPath = "/";
+        }
+        //log.debug("Context path: " + contextPath);
+        analyticsCookie.setPath(contextPath);
         response.addCookie(analyticsCookie);
         return analyticsCookie;
     }
