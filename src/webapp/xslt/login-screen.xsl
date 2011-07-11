@@ -40,7 +40,7 @@
             Username:<xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-default"><input type="text" name="yanel.login.username" value="{/yanel:yanel-auth-screen/yanel:login-default/@yanel:username}"/></xsl:when><xsl:when test="/yanel:yanel-auth-screen/yanel:login-preset"><input type="text" name="yanel.login.username" value="{/yanel:yanel-auth-screen/yanel:login-preset/@yanel:username}"/></xsl:when><xsl:otherwise><input type="text" name="yanel.login.username"/></xsl:otherwise></xsl:choose>
             Password: <input type="password" name="yanel.login.password"/>(<a id="forgotpw" href="{$yanel.back2realm}{$yanel.reservedPrefix}/user-forgot-pw.html">I forgot my password!</a>)<br/>
             <xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-default"><input type="checkbox" name="remember-my-login-name" checked="checked"/></xsl:when><xsl:otherwise><input type="checkbox" name="remember-my-login-name"/></xsl:otherwise></xsl:choose> Remember my login name (for 1 day (<a href="">More info</a>). Uncheck if on a shared computer!)
-            <br/><input type="checkbox" name="auto-login"/> Keep me signed in (for 1 day (<a href="">More info</a>). Uncheck if on a shared computer!)
+            <br/><input type="checkbox" name="auto-login"/> Keep me signed in (<a href="?yanel.usecase=logout">Logout</a> explicitely in order to remove auto login cookie and hence disable auto login)
             <input type="submit" value="Login" name="regular-login"/>
           </form>
         <xsl:apply-templates select="/yanel:yanel-auth-screen/yanel:ssl"/>
