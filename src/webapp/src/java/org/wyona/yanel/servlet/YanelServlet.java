@@ -2726,7 +2726,7 @@ public class YanelServlet extends HttpServlet {
         String mobileDevice = (String) session.getAttribute(MOBILE_KEY);
         if (detectMobilePerRequest || mobileDevice == null) {
             String userAgent = request.getHeader("User-Agent");
-            log.warn("DEBUG: User agent: " + userAgent);
+            //log.debug("User agent: " + userAgent);
             if (userAgent != null && userAgent.indexOf("iPhone") > 0) { // TODO: Use http://wurfl.sourceforge.net/njava/, http://www.cloudfour.com/comparative-speed-of-wurfl-and-device-atlas/, http://www.id.uzh.ch/zinfo/mobileview.html
                 session.setAttribute(YanelServlet.MOBILE_KEY, "iphone");
             } else {
