@@ -114,6 +114,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     protected static String DEFAULT_VIEW_ID = "default";
     protected static String SOURCE_VIEW_ID = "source";
+    protected static String MOBILE_VIEW_ID = "mobile";
 
     protected HashMap<String, ViewDescriptor> viewDescriptors;
 
@@ -261,6 +262,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     /**
      * @param xmlInputStream XML as input stream
+     * @param viewDescriptor View descriptor
      */
     private InputStream getTransformedInputStream(InputStream xmlInputStream, ConfigurableViewDescriptor viewDescriptor, StringWriter errorWriter) throws Exception {
         //log.debug("View descriptor: " + viewDescriptor.getId());
@@ -316,6 +318,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 }
                 xsltHandlers[i].getTransformer().setURIResolver(uriResolver);
                 xsltHandlers[i].getTransformer().setErrorListener(errorListener);
+                //log.debug("Requested view ID: " + viewDescriptor.getId());
                 passTransformerParameters(xsltHandlers[i].getTransformer());
             }
 
@@ -456,6 +459,28 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             transformer.setParameter("is-mobile-device", "false");
         }
 
+        // INFO: Set whether mobile view should be set to true
+        String queryStringViewId = getEnvironment().getRequest().getParameter("yanel.resource.viewid");
+        if (queryStringViewId != null) {
+            if (queryStringViewId.equals(MOBILE_VIEW_ID)) {
+                if (getViewDescriptor(MOBILE_VIEW_ID) == null) {
+                    log.warn("No mobile view configured, but set 'is-mobile-view' XSLT parameter to true anyway!");
+                }
+                transformer.setParameter("is-mobile-view", "true");
+            } else {
+                transformer.setParameter("is-mobile-view", "false");
+            }
+        } else {
+            if (isMobileView()) {
+                if (getViewDescriptor(MOBILE_VIEW_ID) == null) {
+                    //log.debug("No mobile view configured (" + getPath() + "), but set 'is-mobile-view' XSLT parameter to true anyway!");
+                }
+                transformer.setParameter("is-mobile-view", "true");
+            } else {
+                transformer.setParameter("is-mobile-view", "false");
+            }
+        }
+
         // Set query string
         String queryString = getEnvironment().getRequest().getQueryString();
         if (queryString != null) {
@@ -499,6 +524,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Check whether mobile view is requested. Please overwrite this method in case there exist other rules than just being a mobile device.
+     */
+    protected boolean isMobileView() {
+        return isMobileDevice();
     }
 
     /**
