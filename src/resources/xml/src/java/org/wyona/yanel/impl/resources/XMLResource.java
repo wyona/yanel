@@ -504,7 +504,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     /**
      * Replace the page title (&lt;title&gt;) AND the main header (&lt;h1&gt;) in an XHTML document with another title
      */
-    private void replacePageTitle(Document doc, String title) {
+    protected void replacePageTitle(Document doc, String title) {
         Element rootElement = doc.getDocumentElement();
         if (log.isDebugEnabled()) log.debug("Root element: " + rootElement.getTagName());
         if (log.isDebugEnabled()) log.debug("Title/Header to be set: " + title);
