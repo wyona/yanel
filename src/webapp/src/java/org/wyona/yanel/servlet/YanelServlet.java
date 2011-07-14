@@ -2727,7 +2727,7 @@ public class YanelServlet extends HttpServlet {
         if (detectMobilePerRequest || mobileDevice == null) {
             String userAgent = request.getHeader("User-Agent");
             //log.debug("User agent: " + userAgent);
-            if (userAgent != null && userAgent.indexOf("iPhone") > 0) { // TODO: Use http://wurfl.sourceforge.net/njava/, http://www.cloudfour.com/comparative-speed-of-wurfl-and-device-atlas/, http://www.id.uzh.ch/zinfo/mobileview.html
+            if (userAgent != null && (userAgent.indexOf("iPhone") > 0 || userAgent.indexOf("Android") > 0)) { // TODO: Use http://wurfl.sourceforge.net/njava/, http://www.cloudfour.com/comparative-speed-of-wurfl-and-device-atlas/, http://www.id.uzh.ch/zinfo/mobileview.html
                 session.setAttribute(YanelServlet.MOBILE_KEY, "iphone");
             } else {
                 //log.debug("This does not seem to be a mobile device: " + userAgent);
