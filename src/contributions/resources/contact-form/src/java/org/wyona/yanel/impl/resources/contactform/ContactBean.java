@@ -3,7 +3,8 @@ package org.wyona.yanel.impl.resources.contactform;
 import javax.servlet.http.HttpServletRequest;
 
 public class ContactBean {
-    String company, lastName, firstName, address, city, email, message;
+    String company, lastName, firstName, address, city, email;
+    public String message;
     
     public String getAddress() {
         return address;

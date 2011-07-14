@@ -263,8 +263,9 @@ public class ContactResource extends Resource implements ViewableV1, TrackableV1
                 from = email;
             }
 
-            String content = "";
-            if (contact.getCompany() != null) content = content + "Company: " + contact.getCompany() + "\n";
+            String content = getBody(contact, cookieValue);
+			
+/*            if (contact.getCompany() != null) content = content + "Company: " + contact.getCompany() + "\n";
             if (contact.getFirstName() != null) content = content + "Firstname: " + contact.getFirstName() + "\n";
             if (contact.getLastName() != null) content = content + "Lastname: " + contact.getLastName() + "\n";
             if (contact.getAddress() != null) content = content + "Address: " + contact.getAddress() + "\n";
@@ -272,7 +273,7 @@ public class ContactResource extends Resource implements ViewableV1, TrackableV1
             if (contact.getEmail() != null) content = content + "E-Mail: " + contact.getEmail() + "\n\n";
             if (contact.message != null) content = content + "Message:\n" + contact.message + "\n\n";
             content = content + "Yanel-analytics-cookie: " + cookieValue;
-
+*/
 
             if(to != null) {
                 try {
@@ -375,5 +376,20 @@ public class ContactResource extends Resource implements ViewableV1, TrackableV1
      */
     public void doTrack(org.wyona.yanel.core.attributes.tracking.TrackingInformationV1 trackInfo) {
         this.trackInfo = trackInfo;
+    }
+
+    /**
+     * @see org.wyona.yanel.core.api.attributes.TrackableV1#doTrack(TrackingInformationV1)
+     */
+    protected String getBody(ContactBean contact, String cookieValue){
+        String content = "";
+        if (contact.getCompany() != null) content = content + "Company: " + contact.getCompany() + "\n";
+        if (contact.getFirstName() != null) content = content + "Firstname: " + contact.getFirstName() + "\n";
+        if (contact.getLastName() != null) content = content + "Lastname: " + contact.getLastName() + "\n";
+        if (contact.getAddress() != null) content = content + "Address: " + contact.getAddress() + "\n";
+        if (contact.getCity() != null) content = content + "City: " + contact.getCity() + "\n";
+        if (contact.getEmail() != null) content = content + "E-Mail: " + contact.getEmail() + "\n\n";
+        if (contact.message != null) content = content + "Message:\n" + contact.message + "\n\n";
+        return content + "Yanel-analytics-cookie: " + cookieValue;
     }
 }
