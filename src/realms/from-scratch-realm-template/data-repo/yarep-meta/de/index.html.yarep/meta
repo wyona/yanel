@@ -1,2 +1,9 @@
+yarep_vfs-meta-file-version<string>:1.0
+yarep_lastModified<long>:1310749442000
+yarep_checkinDate<date>:2011-07-15T19\:04\:02\:406+0200
 yarep_type<string>:resource
 yarep_mimeType<string>:application/xhtml+xml
+yarep_checkoutUserID<string>:lenya
+yarep_isCheckedOut<boolean>:false
+yarep_checkoutDate<date>:2011-07-15T19\:03\:10\:994+0200
+live-revision<string>:1310749442306
