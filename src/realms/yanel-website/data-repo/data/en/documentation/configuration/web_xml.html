@@ -3,9 +3,10 @@
 <p>The source file can be found at src/webapp/WEB-INF-/web.xml</p>
 <p>Various webapp parameters can be configured:</p>
 <ul>
-<li>Log access (whereas can be configured within src/build/local.build.properties: log-access property)</li>
-<li>Display most recent version if workflow is configured but page is not live</li>
-<li>Session timeout</li>
+<li><strong><em>log-access</em></strong>: Whether requests should be logged (if enabled, then see <code>logs/access-cnode1.log</code>)</li>
+<li><strong><em>workflow.not-live.most-recent-version</em></strong>: Display most recent version if workflow is configured but page is not live</li>
+<li><strong><em>session-timeout</em></strong>: Session timeout (default is 30 minutes)</li>
+<li><strong><em>detect-mobile-per-request</em></strong>: Whether mobile devices should be detected per request</li>
 </ul>
-<p>In order to overwrite the default settings one can copy the original file to src/webapp/WEB-INF/local.web.xml and the Yanel build process will use this local file.</p>
+<p>In order to overwrite the default settings one should copy the original file to <code>src/webapp/WEB-INF/local.web.xml</code> and the Yanel build process will use this local file.</p>
 </body></html>
