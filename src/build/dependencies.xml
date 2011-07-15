@@ -43,7 +43,7 @@
       <dependency groupId="yarep" artifactId="yarep-core" version="1.0-dev-r58528"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons" version="1.0-dev-r57354"/>
+      <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons" version="1.0-dev-r59402"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="net.sf.ehcache" artifactId="ehcache" version="1.5.0"/>
