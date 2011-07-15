@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head> <title>Homepage (Deutsche Version) - From Scratch Realm</title>
+  </head>
+  <body>
+<h1>Willkommen bei Wyona <br /></h1>
+<p>Dieser Realm zeigt Dir wie man mit Yanel eine neue Website entwickeln kann. It already contains a <strong>user</strong> "lenya" (<strong>password</strong>: levi) and below are some links to get you started. Viel Spass beim Entdecken von Yanel und seinen M&#246;glichkeiten :-)</p>
+<ul>
+<li>Schalten Sie den Yanel <a href="index.html?yanel.toolbar=on">toolbar</a> an (Developers please note that the toolbar can be customized arbitrarily)</li>
+<li><a href="../create-new-page.html">Kreieren einer neuen Seite</a> (Developers please note that one can add arbitrary resource types)</li>
+<li>Bearbeiten Sie diese Seite mit <a href="http://www.yulup.org">Yulup</a></li>
+<li>Change user profile of user <a href="../yanel/users/lenya.html">lenya</a> (or <a href="../lenya.html">here</a>)</li>
+<li><a href="../create-new-page.html?resource-type=http%3A%2F%2Fwww.wyona.org%2Fyanel%2Fresource%2F1.0%3A%3Ayanel-user">Einen neuen Benutzer kreieren<br /></a></li>
+<li>Wechsle das Layout/Design durch Re-Konfiguration von <code>res-configs/my-global.xsl.yanel-rc</code> oder         
+<ul>
+<li><a href="?xslt-version=1">Layout 1</a></li>
+<li><a href="?xslt-version=2">Layout 2</a></li>
+<!-- TODO: There seems to be an issue re xsl:import
+<li><a href="?xslt-version=3" mce_href="?xslt-version=3">Layout 3</a></li>
+--> 
+</ul>
+</li>
+</ul>
+</body>
+</html>
