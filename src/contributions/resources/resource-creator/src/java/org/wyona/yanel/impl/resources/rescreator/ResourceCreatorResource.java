@@ -691,8 +691,8 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
     /**
      * Return sitetree
      */
-    private StringBuffer getLookUp() {
-        StringBuffer sb = new StringBuffer("");
+    private StringBuilder getLookUp() {
+        StringBuilder sb = new StringBuilder("");
         //Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("repo-navigation");
         Sitetree sitetree = getRealm().getRepoNavigation();
         Node node = null;
