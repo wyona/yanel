@@ -2,9 +2,11 @@ package org.wyona.yanel.impl.resources.contactform;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Bean containing contact information
+ */
 public class ContactBean {
-    String company, lastName, firstName, address, city, email;
-    public String message;
+    private String company, lastName, firstName, address, city, email, message;
     
     public String getAddress() {
         return address;
