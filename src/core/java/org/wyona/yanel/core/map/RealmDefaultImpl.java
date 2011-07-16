@@ -517,9 +517,20 @@ public class RealmDefaultImpl implements Realm {
         log.warn("Shutdown realm (and its repositories): " + getName());
 
         repository.close();
+
         rtiRepository.close();
-        identitiesRepository.close();
-        policiesRepository.close();
+
+        if (identitiesRepository != null) {
+            identitiesRepository.close();
+        } else {
+            log.warn("No identities repository to close for realm: " + getID());
+        }
+
+        if (policiesRepository != null) {
+            policiesRepository.close();
+        } else {
+            log.warn("No policies repository to close for realm: " + getID());
+        }
 
         // TODO: Close extra repositories
     }
