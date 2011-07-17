@@ -189,7 +189,7 @@ public class NodeDOMImpl implements Node {
     }
 
     /**
-     * @see
+     * @see org.wyona.yanel.core.navigation.Node#getName()
      */
     public String getName() {
         if (element.getNodeName().equals("sitetree")) {
@@ -200,7 +200,7 @@ public class NodeDOMImpl implements Node {
     }
 
     /**
-     * @see
+     * @see org.wyona.yanel.core.navigation.Node#getLabel()
      */
     public String getLabel() {
         if (element.getNodeName().equals("sitetree")) {
@@ -211,7 +211,7 @@ public class NodeDOMImpl implements Node {
     }
 
     /**
-     * @see
+     * @see org.wyona.yanel.core.navigation.Node#setLabel(String)
      */
     public void setLabel(String label) {
         if (element.getNodeName().equals("sitetree")) {
