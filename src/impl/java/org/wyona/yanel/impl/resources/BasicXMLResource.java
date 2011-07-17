@@ -429,8 +429,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     /**
      * Pass parameters to xslt transformer.
-     * @param transformer
-     * @throws Exception
+     * @param transformer Transformer for which various parameters (e.g. yanel.back2realm) will be set
      */
     protected void passTransformerParameters(Transformer transformer) throws Exception {      
         // Set general parameters
