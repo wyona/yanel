@@ -73,7 +73,7 @@ public class ImageResource extends Resource implements ViewableV2  {
     }
 
     /**
-     * @see
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#getViewDescriptors()
      */
     public ViewDescriptor[] getViewDescriptors() {
         // TODO Auto-generated method stub
@@ -168,7 +168,7 @@ public class ImageResource extends Resource implements ViewableV2  {
             log.warn("No cache root path configured within resource configuration. Use default '" + cacheRootPath + "'!");
         }
 
-        org.wyona.yarep.core.Node cacheNode;
+        Node cacheNode;
         if (!getRealm().getRepository().existsNode(cacheRootPath + getPath())) {
             cacheNode = org.wyona.yarep.util.YarepUtil.addNodes(getRealm().getRepository(), cacheRootPath + getPath(), org.wyona.yarep.core.NodeType.RESOURCE);
             log.warn("Cached image did not exist yet, hence has been created: " + cacheNode.getPath());
