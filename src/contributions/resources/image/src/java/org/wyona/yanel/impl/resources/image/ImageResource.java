@@ -9,6 +9,8 @@ import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
+import org.wyona.yarep.core.Node;
+
 import org.apache.log4j.Logger;
 
 import java.awt.image.BufferedImage;
@@ -60,12 +62,7 @@ public class ImageResource extends Resource implements ViewableV2  {
         double scaleFactor = getScaleFactor(sourceWidth, sourceHeight, destWidth, destHeight); //(double) destHeight / (double) sourceHeight;
         if (log.isDebugEnabled()) log.debug("Scale factor: " + scaleFactor);
 
-        String cacheRootPath = getResourceConfigProperty("cache-root-path");
-        if (cacheRootPath == null) {
-            cacheRootPath = DEFAULT_CACHE_DIRECTORY;
-            log.warn("No cache root path configured within resource configuration. Use default '" + cacheRootPath + "'!");
-        }
-        org.wyona.yarep.core.Node cacheNode = org.wyona.yarep.util.YarepUtil.addNodes(getRealm().getRepository(), cacheRootPath + getPath(), org.wyona.yarep.core.NodeType.RESOURCE);
+        Node cacheNode = getCacheNode();
 
         ImageIO.write(scale(sourceImg, scaleFactor), "JPG", cacheNode.getOutputStream());
 
@@ -75,6 +72,9 @@ public class ImageResource extends Resource implements ViewableV2  {
         return view;
     }
 
+    /**
+     * @see
+     */
     public ViewDescriptor[] getViewDescriptors() {
         // TODO Auto-generated method stub
         return null;
@@ -156,5 +156,25 @@ public class ImageResource extends Resource implements ViewableV2  {
             log.error("We should never get here!");
             return 1;
         }
+    }
+
+    /**
+     * Get cache node
+     */
+    private Node getCacheNode() throws Exception {
+        String cacheRootPath = getResourceConfigProperty("cache-root-path");
+        if (cacheRootPath == null) {
+            cacheRootPath = DEFAULT_CACHE_DIRECTORY;
+            log.warn("No cache root path configured within resource configuration. Use default '" + cacheRootPath + "'!");
+        }
+
+        org.wyona.yarep.core.Node cacheNode;
+        if (!getRealm().getRepository().existsNode(cacheRootPath + getPath())) {
+            cacheNode = org.wyona.yarep.util.YarepUtil.addNodes(getRealm().getRepository(), cacheRootPath + getPath(), org.wyona.yarep.core.NodeType.RESOURCE);
+            log.warn("Cached image did not exist yet, hence has been created: " + cacheNode.getPath());
+        } else {
+            cacheNode = getRealm().getRepository().getNode(cacheRootPath + getPath());
+        }
+        return cacheNode;
     }
 }
