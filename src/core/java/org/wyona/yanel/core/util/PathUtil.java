@@ -19,10 +19,14 @@ package org.wyona.yanel.core.util;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.Resource;
 
+import org.apache.log4j.Logger;
+
 /**
- *
+ * Utility class for path manipulations
  */
 public class PathUtil extends org.wyona.commons.io.PathUtil {
+
+    private static Logger log = Logger.getLogger(PathUtil.class);
 
     /**
      *
@@ -68,11 +72,11 @@ public class PathUtil extends org.wyona.commons.io.PathUtil {
    }
    
    /**
-    * @param path Path relative to realm
+    * Get back to realm path
+    * @param path Path starting at root of realm
     * @return a String with as many ../ as it needs to go back to from current resource to the realm-root
     */
    public static String backToRealm(String path) {
-       StringBuffer backToRealm = new StringBuffer();
        int steps;
        if (path.endsWith("/") && !path.equals("/")) {
            steps =  path.split("/").length - 1;
@@ -80,6 +84,8 @@ public class PathUtil extends org.wyona.commons.io.PathUtil {
            steps =  path.split("/").length - 2;
        }
        if (steps == 0) return "./";
+
+       StringBuilder backToRealm = new StringBuilder();
        for (int i = 0; i < steps; i++) {
            backToRealm.append("../");
        }
