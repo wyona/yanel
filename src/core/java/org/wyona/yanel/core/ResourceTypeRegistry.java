@@ -155,12 +155,19 @@ public class ResourceTypeRegistry {
             
             for (int i = 0; i < resourceTypes.length; i++) {
                 log.debug("Register resource type...");
+                boolean hasPackageAttribute = false;
+                String packageName = null;
                 try {
-                    String packageName = resourceTypes[i].getAttribute("package"); // INFO: This method will throw an exception if no 'package' attribute exists, and hence further down it will try to read the 'src' attribute...
-                    log.debug("Package: " + packageName);
-                    log.info("Package: " + packageName);
+                    packageName = resourceTypes[i].getAttribute("package");
+                    hasPackageAttribute = true;
+                } catch(Exception e) {
+                    log.warn(e.getMessage());
+                    hasPackageAttribute = false;
+                }
+                if (hasPackageAttribute && packageName != null && packageName.trim().length() > 0) {
+                    log.info("Loading resource from package: " + packageName);
 
-                    // TODO: Config itself, e.g. org/wyona/yanel/impl/resources/redirect/my-resource.xml
+                    // TODO: Config itself, e.g. org/wyona/yanel/impl/resources/redirect/my-resource.xml (What does that TODO mean?!)
 
                     URL packageURL = ResourceTypeRegistry.class.getClassLoader().getResource(packageName.replace('.','/'));
                     log.debug("Package: " + packageURL.getFile());
@@ -176,7 +183,7 @@ public class ResourceTypeRegistry {
                         while (entries.hasMoreElements()) {
                             String entryName = ((java.util.zip.ZipEntry) entries.nextElement()).getName();
                             //log.debug("Entry: " + entryName);
-                            if (entryName.indexOf("resource.xml") >= 0 || entryName.indexOf("resource-") >= 0) {
+                            if (entryName.indexOf("resource.xml") >= 0 || entryName.indexOf("resource-") >= 0) { // INFO: see for example src/resources/user-mgmt/
                                 log.info("Resource definition: " + entryName);
                                 URL resourceURL = ResourceTypeRegistry.class.getClassLoader().getResource(entryName);
                                 //URL resourceURL = ResourceTypeRegistry.class.getClassLoader().getResource(packageName.replace('.','/') + "/resource.xml");
@@ -206,41 +213,39 @@ public class ResourceTypeRegistry {
                     } else {
                         log.error("No such file or directory: " + packageURL.getPath());
                     }
-                } catch (Exception e) {
-                    log.error(e.getMessage()); // INFO: Do not show this error message, because it is not really an error in most cases
-                    log.debug("No package attribute, hence try src attribute...");
-                    log.info("No package attribute, hence try src attribute...");
+                } else {
+                    log.info("Resource type element has no package attribute, hence try src attribute...");
                     try {
                         File resConfigFile = new File(resourceTypes[i].getAttribute("src"));
-                        log.info("Source: " + resConfigFile);
+                        log.info("Loading resource from source: " + resConfigFile);
                         if (!resConfigFile.isAbsolute()) {
                             resConfigFile = FileUtil.file(resourceTypeConfigFile.getParentFile().getAbsolutePath(), resourceTypes[i].getAttribute("src"));
                         }
 
-                    if (resConfigFile.isDirectory()) {
-                        File resDir = resConfigFile;
+                        if (resConfigFile.isDirectory()) {
+                            File resDir = resConfigFile;
                     
-                        Iterator iter = FileUtils.listFiles(resDir, new WildcardFilter("resource*.xml"), null).iterator();
-                        while (iter.hasNext()) {
-                            resConfigFile = (File)iter.next();
-                            log.debug("found resource config: " + resConfigFile);
+                            Iterator iter = FileUtils.listFiles(resDir, new WildcardFilter("resource*.xml"), null).iterator();
+                            while (iter.hasNext()) {
+                                resConfigFile = (File)iter.next();
+                                log.debug("found resource config: " + resConfigFile);
+                                ResourceTypeDefinition rtd = new ResourceTypeDefinition(resConfigFile);
+                                if (log.isDebugEnabled()) {
+                                    log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
+                                    log.debug("Classname: " + rtd.getResourceTypeClassname());
+                                }
+                                hm.put(rtd.getResourceTypeUniversalName(), rtd);
+                            }
+                        } else if (resConfigFile.isFile()) {
                             ResourceTypeDefinition rtd = new ResourceTypeDefinition(resConfigFile);
                             if (log.isDebugEnabled()) {
                                 log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
                                 log.debug("Classname: " + rtd.getResourceTypeClassname());
                             }
                             hm.put(rtd.getResourceTypeUniversalName(), rtd);
+                        } else {
+                            log.error("No such file or directory: " + resConfigFile);
                         }
-                    } else if (resConfigFile.isFile()) {
-                        ResourceTypeDefinition rtd = new ResourceTypeDefinition(resConfigFile);
-                        if (log.isDebugEnabled()) {
-                            log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
-                            log.debug("Classname: " + rtd.getResourceTypeClassname());
-                        }
-                        hm.put(rtd.getResourceTypeUniversalName(), rtd);
-                    } else {
-                        log.error("No such file or directory: " + resConfigFile);
-                    }
                     } catch (Exception exception) {
                         log.error(exception, exception);
                     }
