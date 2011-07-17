@@ -47,8 +47,6 @@ public class ImageResource extends Resource implements ViewableV2  {
             throw new org.wyona.yanel.core.ResourceNotFoundException("No such image: " + getPath());
         }
 
-        // TODO: Compare last modified!
-
         BufferedImage sourceImg = ImageIO.read(getRealm().getRepository().getNode(getPath()).getInputStream());
         int sourceWidth = sourceImg.getWidth();
         int sourceHeight = sourceImg.getHeight();
@@ -62,9 +60,15 @@ public class ImageResource extends Resource implements ViewableV2  {
         double scaleFactor = getScaleFactor(sourceWidth, sourceHeight, destWidth, destHeight); //(double) destHeight / (double) sourceHeight;
         if (log.isDebugEnabled()) log.debug("Scale factor: " + scaleFactor);
 
-        Node cacheNode = getCacheNode();
-
-        ImageIO.write(scale(sourceImg, scaleFactor), "JPG", cacheNode.getOutputStream());
+        Node cacheNode;
+        if (existsMoreRecentCacheNode()) {
+            //log.debug("Get image from cache...");
+            cacheNode = getCacheNode();
+        } else {
+            log.debug("Scale image and add scaled version to cache...");
+            cacheNode = createCacheNode();
+            ImageIO.write(scale(sourceImg, scaleFactor), "JPG", cacheNode.getOutputStream());
+        }
 
         View view = new View();
         view.setInputStream(cacheNode.getInputStream());
@@ -159,9 +163,9 @@ public class ImageResource extends Resource implements ViewableV2  {
     }
 
     /**
-     * Get cache node
+     * Create cache node
      */
-    private Node getCacheNode() throws Exception {
+    private Node createCacheNode() throws Exception {
         String cacheRootPath = getResourceConfigProperty("cache-root-path");
         if (cacheRootPath == null) {
             cacheRootPath = DEFAULT_CACHE_DIRECTORY;
@@ -174,7 +178,52 @@ public class ImageResource extends Resource implements ViewableV2  {
             log.warn("Cached image did not exist yet, hence has been created: " + cacheNode.getPath());
         } else {
             cacheNode = getRealm().getRepository().getNode(cacheRootPath + getPath());
+            log.error("The cache already seems to exist: " + cacheNode.getPath());
         }
         return cacheNode;
+    }
+
+    /**
+     * Get cache node
+     */
+    private Node getCacheNode() throws Exception {
+        String cacheRootPath = getResourceConfigProperty("cache-root-path");
+        if (cacheRootPath == null) {
+            cacheRootPath = DEFAULT_CACHE_DIRECTORY;
+            log.debug("No cache root path configured within resource configuration. Use default '" + cacheRootPath + "'!");
+        }
+
+        if (getRealm().getRepository().existsNode(cacheRootPath + getPath())) {
+            return getRealm().getRepository().getNode(cacheRootPath + getPath());
+        } else {
+            log.error("No such cache node: " + cacheRootPath + getPath());
+            return null;
+        }
+    }
+
+    /**
+     * Check whether cache node exists and if so, then compare last modified
+     */
+    private boolean existsMoreRecentCacheNode() throws Exception {
+        String cacheRootPath = getResourceConfigProperty("cache-root-path");
+        if (cacheRootPath == null) {
+            cacheRootPath = DEFAULT_CACHE_DIRECTORY;
+            log.debug("No cache root path configured within resource configuration. Use default '" + cacheRootPath + "'!");
+        }
+
+        if (getRealm().getRepository().existsNode(cacheRootPath + getPath())) {
+            long lastModifiedCacheNode = getRealm().getRepository().getNode(cacheRootPath + getPath()).getLastModified();
+            long lastModifiedOriginalNode = getRealm().getRepository().getNode(getPath()).getLastModified();
+            if (lastModifiedCacheNode > lastModifiedOriginalNode) {
+                //log.debug("Compare last modified: " + lastModifiedCacheNode + ", " + lastModifiedOriginalNode);
+                return true;
+            } else {
+                log.warn("Cached image seems to be out of date: " + cacheRootPath + getPath());
+                return false;
+            }
+        } else {
+            log.error("No such cache node: " + cacheRootPath + getPath());
+            return false;
+        }
     }
 }
