@@ -47,7 +47,7 @@
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/nutch/" compile="true" copy-dir-name="yanel-nutch"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/lookup/" compile="true" copy-dir-name="yanel-lookup"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/tinymce/" compile="true" copy-dir-name="yanel-tinymce"/>
-  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/image/" compile="true" copy-dir-name="yanel-image"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/image/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/xinha/" compile="true" copy-dir-name="yanel-xinha"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/sessionmanager/" compile="true" copy-dir-name="yanel-sessionmanager"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/404/" compile="true"/>
