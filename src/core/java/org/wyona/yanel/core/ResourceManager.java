@@ -22,9 +22,12 @@ import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+
+import org.wyona.yanel.core.api.ResourceTypeMatcherV1;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.util.HttpServletRequestHelper;
 import org.wyona.yanel.core.util.PathUtil;
+
 import org.wyona.yarep.core.NoSuchNodeException;
 
 /**
@@ -37,7 +40,19 @@ public class ResourceManager {
     private static Logger log = Logger.getLogger(ResourceManager.class);
     
     protected ResourceTypeRegistry rtRegistry;
+    private ResourceTypeMatcherV1 resourceTypeMatcher;
+
+    /**
+     * Set default resource type registry and resource type matcher
+     */
+    public ResourceManager() {
+        rtRegistry = new ResourceTypeRegistry();
+        resourceTypeMatcher = new ResourceTypeDefaultMatcher();
+    }
     
+    /**
+     * Set resource type registry
+     */
     public void setResourceTypeRegistry(ResourceTypeRegistry registry) {
         this.rtRegistry = registry;
     }
@@ -107,39 +122,19 @@ public class ResourceManager {
 
     /**
      * Creates a new resource object in the given realm and with the given path.
-     * The chain of responsibility is as follows: One-to-one mapping (RC and then deprecated RTI), RC map, file/node resource type
      *
-     * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
+     * @param environment Yanel environment containing request, response, etc.
+     * @param realm Realm for which resource/controller should handle/process request
+     * @param path Path starting at root of realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
      */
     public Resource getResource(Environment environment, Realm realm, String path) throws Exception {
-        // Check first if a one-to-one mapping exists
-        if (realm.getRTIRepository().existsNode(PathUtil.getRCPath(path))) {
-            ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getNode(PathUtil.getRCPath(path)));
-            if (rc != null) return getResource(environment, realm, path, rc);
+        ResourceConfiguration resConfig = resourceTypeMatcher.getResourceConfiguration(environment, realm, path);
+        if (resConfig != null) {
+            return getResource(environment, realm, path, resConfig);
         }
-
-        // Fallback to deprecated RTI (one-to-one mapping)
-        if (realm.getRTIRepository().existsNode(PathUtil.getRTIPath(path))) {
-            log.warn("DEPRECATED: RTI should be replaced by ResourceConfiguration: " + realm + ", " + path);
-            ResourceTypeIdentifier rti = getResourceTypeIdentifier(realm, path);
-            ResourceConfiguration rc = new RTIbasedResourceConfiguration(rti);
-            return getResource(environment, realm, path, rc);
-        } 
-
-        // Check on resource configuration map
-        String rcPath = ResourceConfigurationMap.getRCPath(realm, path);
-        if (rcPath != null) {
-            if (realm.getRTIRepository().existsNode(rcPath)) {
-                ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getNode(rcPath));
-                if (rc != null) return getResource(environment, realm, path, rc);
-            } else {
-                throw new Exception("Request did match within resource configuration map of realm '" + realm.getName() + "', but no such resource type configuration node exist: " + rcPath);
-            }
-        } 
         
-        // Fallback to file/node resource
+        //log.debug("Fallback to 'file' (aka 'node') resource/controller...");
         return getResource(environment, realm, path, new ResourceConfiguration("file", "http://www.wyona.org/yanel/resource/1.0", null));
-        
     }
 
     /**
