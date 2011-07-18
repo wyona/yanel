@@ -66,7 +66,7 @@
     <yanel:install-jar id="cmdl" sources-dir="${yanel.source.home}/src/core/java"/>
   </target>
 
-  <target name="compile-cmdl" depends="compile-cmdl-classes, install-cmdl-jar"/>
+  <target name="compile-cmdl" depends="compile-cmdl-classes, install-cmdl-jar" description="Compile Java classes of Yanel command line and create cmdl library"/>
   
   <target name="set-cmdl-classpath" description="Set classpath" depends="init, dependencies">
     <echo>INFO: Set classpath ...</echo>
