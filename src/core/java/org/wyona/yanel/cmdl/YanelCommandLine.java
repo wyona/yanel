@@ -105,7 +105,8 @@ public class YanelCommandLine {
     
 
         String[] groupnames = {"admin", "accounting"};
-        if (pm.authorize(path, new Identity("lenya", groupnames, "lenya"), new Role("view"))) {
+        Identity identity = new Identity("lenya", groupnames, "lenya");
+        if (pm.authorize(path, identity, new Role("view"))) {
             System.out.println("Access granted: " + path + " (Realm ID: " + realm.getID() + ")");
         } else {
             // TODO: Deny access resp. start login process!
@@ -137,13 +138,14 @@ public class YanelCommandLine {
         CommandLineRequest request = new CommandLineRequest(url);
         CommandLineResponse response = new CommandLineResponse();
         try {
+            // TODO: res  = yanel.getResourceManager().getResource(new org.wyona.yanel.core.Environment(request, response, identity, org.wyona.yanel.core.StateOfView.LIVE, null), realm, path);
             res = rtr.newResource(rti);
             res.setYanel(yanel);
             res.setRequest(request);
             res.setResponse(response);
             System.out.println("Resource path: " + res.getPath());
         } catch(Exception e) {
-            System.err.println("Exception (also see log4j): " + e);
+            System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
             log.error(e.getMessage(), e);
             return;
         }
