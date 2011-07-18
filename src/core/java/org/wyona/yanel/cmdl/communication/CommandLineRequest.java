@@ -46,11 +46,19 @@ public class CommandLineRequest implements HttpServletRequest {
      */
     private class ParameterNames implements Enumeration<String> {
         private java.util.Vector<String> names;
+
+        /**
+         *
+         */
         public ParameterNames(Enumeration<?> names) {
-            log.debug("Copy parameters: " + names.getClass().getName());
             this.names = new java.util.Vector<String>();
-            while (names.hasMoreElements()) {
-                this.names.add((String)names.nextElement());
+            if (names != null) {
+                log.debug("Copy parameters: " + names.getClass().getName());
+                while (names.hasMoreElements()) {
+                    this.names.add((String)names.nextElement());
+                }
+            } else {
+                log.warn("No parameter names!");
             }
         }
 
@@ -69,11 +77,18 @@ public class CommandLineRequest implements HttpServletRequest {
 
     ParameterNames parameterNames;
     java.util.HashMap<String, String[]> map = new java.util.HashMap<String, String[]>();
-    
+
+    /**
+     *
+     */
     public CommandLineRequest(String url) {
         this.url = url;
+        parameterNames = new ParameterNames(null);
     }
-    
+
+    /**
+     *
+     */
     public CommandLineRequest(HttpServletRequest request) {
         log.debug("Copy request: " + request.getClass().getName());
         Enumeration<?> pn = request.getParameterNames();
