@@ -55,6 +55,8 @@ public class YanelCommandLine {
     static public void main(String[] args) throws Exception {
         System.out.println("Welcome to the Yanel command line interface!\n");
 
+        System.out.println("Loading realms and resources/controllers... (please be patient)\n");
+
         Yanel yanel = Yanel.getInstance();
         yanel.init();
         Map map = yanel.getMapImpl("map");
@@ -76,7 +78,7 @@ public class YanelCommandLine {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         String url = null;
-        if (args.length != 1 || args[0].length() == 0) {
+        if (args.length != 1 || args[0].length() == 0) { // INFO: Check whether an argument has been set
             System.out.println("\nPlease enter a path (e.g. /index.html):");
             try {
                 String value = br.readLine();
@@ -89,8 +91,11 @@ public class YanelCommandLine {
             } catch (Exception e) {
                 System.err.println(e);
             }
+        } else {
+            url = args[0];
         }
 
+        System.out.println("The following URL has been entered: " + url);
       
         Realm realm = map.getRealm(url);
         String path = map.getPath(realm, url);
@@ -106,6 +111,7 @@ public class YanelCommandLine {
             System.out.println("Access denied: " + path);
         }
 
+        // TODO: Deprecated...
         String rti = yanel.getResourceManager().getResourceTypeIdentifier(realm, path).getUniversalName();
         //String rti = map.getResourceTypeIdentifier(path);
         System.out.println("Resource Type Identifier: " + rti);
