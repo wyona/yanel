@@ -5,6 +5,12 @@
 
   <target name="run-yanel-cmdl" description="Run command line tool" depends="init-runtime">
     <echo>Yanel Path: ${yanel.path}</echo>
+
+<!-- DEBUG
+    <property name="run.cp" refid="classpath.run.cmdl"/>
+    <echo>Classpath to run yanel cmdl: ${run.cp}</echo>
+-->
+
     <!--
     <exec executable="java">
       <arg line="-classpath ${run.cp} org.wyona.yanel.cmdl.YanelCommandLine"/>
@@ -32,10 +38,15 @@
         <include name="*.jar"/>
       </fileset>
 
+      <fileset dir="${yanel.source.home}/build/lib">
+        <include name="yanel-cmdl-1.0-dev-rREVISION.jar"/>
+      </fileset>
+
       <!-- All external dependencies -->
       <pathelement path="${maven2.cp}"/>
       <pathelement path="${maven2.compile.cp}"/>
     </path>
+
     <property name="run.cp" refid="classpath.run.cmdl"/>
 <!--
     <echo>Classpath to run yanel cmdl: ${run.cp}</echo>
