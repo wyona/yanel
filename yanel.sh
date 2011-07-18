@@ -94,7 +94,7 @@ fi
   $OUR_ANT "$@"
 
 elif [ "$1" = "cmdl" ]; then
-  $OUR_ANT run-yanel-cmdl -Dyanel.path=$1
+  $OUR_ANT run-yanel-cmdl -Dyanel.path=$2
 else
   echo "----------------------------------------------"
   echo ""
