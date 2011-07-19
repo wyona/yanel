@@ -96,7 +96,21 @@ public class YanelCommandLine {
             url = args[0];
         }
 
-        System.out.println("The following URL has been entered: " + url);
+        String queryString = null;
+        if (url.indexOf("?") >= 0) {
+            queryString = url.substring(url.indexOf("?") + 1);
+            url = url.substring(0, url.indexOf("?"));
+        }
+
+        String viewId = null;
+        if (queryString != null) {
+            System.out.println("The following URL has been entered: " + url + " (Query string: " + queryString + ")");
+            if (queryString.startsWith("yanel.resource.viewid")) {
+                viewId = queryString.split("=")[1];
+            }
+        } else {
+            System.out.println("The following URL has been entered: " + url + " (no query string)");
+        }
       
         Realm realm = map.getRealm(url);
         String path = map.getPath(realm, url);
@@ -138,11 +152,13 @@ public class YanelCommandLine {
         CommandLineRequest request = new CommandLineRequest(url);
         CommandLineResponse response = new CommandLineResponse();
         try {
-            // TODO: res  = yanel.getResourceManager().getResource(new org.wyona.yanel.core.Environment(request, response, identity, org.wyona.yanel.core.StateOfView.LIVE, null), realm, path);
+            res  = yanel.getResourceManager().getResource(new org.wyona.yanel.core.Environment(request, response, identity, org.wyona.yanel.core.StateOfView.LIVE, null), realm, path);
+/*
             res = rtr.newResource(rti);
             res.setYanel(yanel);
             res.setRequest(request);
             res.setResponse(response);
+*/
             System.out.println("Resource path: " + res.getPath());
         } catch(Exception e) {
             System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
@@ -162,7 +178,6 @@ public class YanelCommandLine {
 
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
             System.out.println("View Descriptors: " + ((ViewableV1) res).getViewDescriptors());
-            String viewId = null;
             try {
                 View view = ((ViewableV1) res).getView(new Path(url), viewId);
                 System.out.println("mime-type: " + view.getMimeType());
@@ -184,7 +199,6 @@ public class YanelCommandLine {
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
             System.out.println(res.getClass().getName() + " does implement viewable V2 interface!");
             System.out.println("View Descriptors: " + ((ViewableV2) res).getViewDescriptors());
-            String viewId = null;
             try {
                 View view = ((ViewableV2) res).getView(viewId);
                 System.out.println("mime-type: " + view.getMimeType());
