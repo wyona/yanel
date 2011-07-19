@@ -138,23 +138,6 @@ public class ResourceManager {
     }
 
     /**
-     * Returns the abstraction of the rti file for the given path in the realm.
-     * TODO: move this method to some RTIManager class ?
-     * @deprecated
-     */
-    public ResourceTypeIdentifier getResourceTypeIdentifier(Realm realm, String path) throws Exception {
-        log.debug("Original path: " + path);
-        try {
-            Reader reader = realm.getRTIRepository().getReader(new Path(PathUtil.getRTIPath(path)));
-            return new ResourceTypeIdentifier(reader);
-        } catch(NoSuchNodeException e) {
-            log.warn(e.getMessage());
-            log.warn("TODO: Implement chain of responsibility ...");
-            return new ResourceTypeIdentifier("<{http://www.wyona.org/yanel/resource/1.0}file/>", null);
-        } 
-    }
-    
-    /**
      * Passes request parameter to a resource.
      * String parameters will be decoded.
      * File upload parameters of multipart requests won't be passed.
