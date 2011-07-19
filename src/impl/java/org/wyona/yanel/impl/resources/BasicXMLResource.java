@@ -516,11 +516,17 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * Check whether user agent is a mobile device
      */
     protected boolean isMobileDevice() {
-        String mobileDevice = (String) getEnvironment().getRequest().getSession(true).getAttribute("yanel.mobile");
-        //TODO: String mobileDevice = (String) getEnvironment().getRequest().getSession(true).getAttribute(org.wyona.yanel.servlet.YanelServlet.MOBILE_KEY);
-        if (mobileDevice != null && !mobileDevice.equals("false")) {
-            return true;
+        javax.servlet.http.HttpSession session = getEnvironment().getRequest().getSession(true);
+        if (session != null) {
+            String mobileDevice = (String) session.getAttribute("yanel.mobile");
+            //TODO: String mobileDevice = (String) getEnvironment().getRequest().getSession(true).getAttribute(org.wyona.yanel.servlet.YanelServlet.MOBILE_KEY);
+            if (mobileDevice != null && !mobileDevice.equals("false")) {
+                return true;
+            } else {
+                return false;
+            }
         } else {
+            log.warn("No HTTP session available (maybe because Yanel is used via the command line)!");
             return false;
         }
     }
@@ -580,11 +586,16 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      */
     protected String getToolbarStatus() {
         org.wyona.yanel.core.ToolbarState ts = getEnvironment().getToolbarState();
-        switch(ts) {
-            case ON: return "on";
-            case SUPPRESSED: return "on"; // Strictly backwards compatible
-            //case SUPPRESSED: return "suppressed";
-            default: return "off";
+        if (ts != null) {
+            switch(ts) {
+                case ON: return "on";
+                case SUPPRESSED: return "on"; // Strictly backwards compatible
+                //case SUPPRESSED: return "suppressed";
+                default: return "off";
+            }
+        } else {
+            log.warn("No toolbar state, hence return 'off'!");
+            return "off";
         }
 
 /*
