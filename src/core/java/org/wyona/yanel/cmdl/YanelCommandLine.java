@@ -127,33 +127,16 @@ public class YanelCommandLine {
             System.out.println("Access denied: " + path);
         }
 
-        // TODO: Deprecated...
-        String rti = yanel.getResourceManager().getResourceTypeIdentifier(realm, path).getUniversalName();
-        //String rti = map.getResourceTypeIdentifier(path);
-        System.out.println("Resource Type Identifier: " + rti);
-
-        if (rti == null) {
-            System.err.println("Abort, because resource type identifier is null!");
-            return;
-        }
-
-        ResourceTypeDefinition rtd = rtr.getResourceTypeDefinition(rti);
-        if (rtd == null) {
-            System.err.println("Abort, because no such resource type registered: " + rti);
-            System.err.println("Make sure resource type is registered within " + rtr.getConfigurationFile());
-            return;
-        }
-
-        System.out.println("Local name: " + rtd.getResourceTypeLocalName());
-        System.out.println("Namespace: " + rtd.getResourceTypeNamespace());
-
-
         Resource res = null;
         CommandLineRequest request = new CommandLineRequest(url);
         CommandLineResponse response = new CommandLineResponse();
         try {
             res  = yanel.getResourceManager().getResource(new org.wyona.yanel.core.Environment(request, response, identity, org.wyona.yanel.core.StateOfView.LIVE, null), realm, path);
-/*
+            System.out.println("Resource Type Identifier: " + res.getResourceTypeUniversalName());
+            System.out.println("Local name: " + res.getRTD().getResourceTypeLocalName());
+            System.out.println("Namespace: " + res.getRTD().getResourceTypeNamespace());
+
+/* INFO: Alternative way to init resource (without path in a sense)
             res = rtr.newResource(rti);
             res.setYanel(yanel);
             res.setRequest(request);
