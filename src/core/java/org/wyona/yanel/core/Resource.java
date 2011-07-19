@@ -63,7 +63,7 @@ public abstract class Resource {
     }
 
     /**
-     *
+     * Get resource type definition
      */
     public ResourceTypeDefinition getRTD() {
         return rtd;
