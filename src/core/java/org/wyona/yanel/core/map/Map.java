@@ -19,7 +19,7 @@ package org.wyona.yanel.core.map;
 import org.wyona.yanel.core.Path;
 
 /**
- * Mapping from urls to realms/paths.
+ * Mapping from urls to realms/paths in order to determine which realm is responsible for handling a request
  */
 public interface Map {
 
