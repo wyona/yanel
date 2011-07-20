@@ -50,7 +50,7 @@ public class ResourceConfigurationMapV2 {
      * @return String which contains the path of a rc file
      */
     public static String getRCPath(Realm realm, String path, String queryString) {
-        log.warn("DEBUG: Try to get resource configuration for request: " + path);
+        //log.debug("Try to get resource configuration for request: " + path + ", " + queryString);
 
         InputStream rcMapIS = getRCMap(realm);
         if (rcMapIS == null) {
@@ -70,13 +70,20 @@ public class ResourceConfigurationMapV2 {
                 if (event == XMLStreamConstants.START_ELEMENT) {
                     if (parser.getLocalName().equals("matcher")) {
                         String pattern = parser.getAttributeValue("", "pattern");
-                        if (WildcardMatcherHelper.match(pattern, path) != null) {
+         
+                        String pathToMatch = path;
+                        if (queryString != null && pattern.indexOf("?") >= 0) {
+                            log.warn("DEBUG: Also check/match query string: " + pattern + ", " + queryString);
+                            pathToMatch = path + "?" + queryString;
+                        }
+                        if (WildcardMatcherHelper.match(pattern, pathToMatch) != null) {
                             if (log.isDebugEnabled()) {
-                                log.debug("CoR pattern: '" + pattern + "' matched with path: '" + path + "'. will use following path in the RTIRepository to reach the rc: " + parser.getAttributeValue("", "rcpath"));
+                                log.debug("CoR pattern: '" + pattern + "' matched with path: '" + pathToMatch + "'. will use following path in the RTIRepository to reach the rc: " + parser.getAttributeValue("", "rcpath"));
                             }
-                            log.warn("DEBUG: CoR pattern: '" + pattern + "' matched with path: '" + path + "'. will use following path in the RTIRepository to reach the rc: " + parser.getAttributeValue("", "rcpath"));
                             return parser.getAttributeValue("", "rcpath");
                         }
+                    } else {
+                        //log.debug("No matcher element '" + parser.getLocalName() + "', hence ignore.");
                     }
                 }
             }
