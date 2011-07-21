@@ -64,8 +64,15 @@
 or by specifying a custom menu implementation
 </p>
 <pre>&lt;menu class="org.wyona.yanel.servlet.menu.impl.DefaultMenuV2"/&gt;</pre>
-whereas if neither nor is specified, then the DefaultMenu (version 1) implementation is used, which is set within
-<code>src/webapp/src/java/org/wyona/yanel/servlet/YanelHTMLUI.java</code>
+<p>
+Please note that both versions use the <code>menu</code> element to configure the Java class.
+</p>
+
+<p>
+If neither nor is specified, then the <code>DefaultYanelToolbar</code> class and the <code>DefaultMenu</code> (version 1) class are used, which is set within
+<code>src/webapp/src/java/org/wyona/yanel/servlet/YanelHTMLUI.java</code></p>
+
+<p>More details on developing a custom Toolbar can be found inside the <a href="../yanel-toolbar.html">Toolbar documentation</a>.</p>
 
 <a name="repo-navigation"> </a>
 <h2>Custom Repository Navigation</h2>
