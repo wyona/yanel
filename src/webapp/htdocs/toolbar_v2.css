@@ -27,14 +27,35 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
   position: absolute;
   right:15px;
   float:right;
+  /*top:0px;*/ /* INFO: It's not clear if this is needed, but is contained by previous toolbar.css */
 }
 
 #yaneltoolbar_info {
   position: absolute;
-  right: 100px;
   float: right;
+  right: 100px;
   top: 2px;
+  color: #555555;
+  font-size: 13px;
+  text-decoration: none;
 }
+
+#yaneltoolbar_info a{
+  right: 100px;
+  top: 3px;
+  color: #555555;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+#yaneltoolbar_info a:hover{
+  right: 100px;
+  top: 3px;
+  color: #555555;
+  font-size: 13px;
+  text-decoration: none;
+}
+
 
 /* menu style starts here */
 #yaneltoolbar_menu {
@@ -47,7 +68,7 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
   font-weight: normal;
   font-style: normal;
   font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
-  vertical-align: baseline;
+  /*vertical-align: baseline;*/ /* INFO: This seems to cause trouble with IE9 */
 }
 
 #yaneltoolbar_menu a, #yaneltoolbar_menu #yaneltoolbar_menutitle{
