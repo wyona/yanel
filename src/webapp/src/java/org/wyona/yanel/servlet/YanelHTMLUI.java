@@ -95,10 +95,10 @@ class YanelHTMLUI {
         String menuRealmClassName = resource.getRealm().getMenuClass();
         if (menuRealmClassName != null) {
             Class<?> menuRealmClass = Class.forName(menuRealmClassName);
-            if (Menu.class.isAssignableFrom(menuRealmClass)) {
+            if (Menu.class.isAssignableFrom(menuRealmClass)) { // INFO: Check whether configured class is a Menu implementation
                 Menu menu = (Menu) menuRealmClass.newInstance();
                 yanelToolbar = new DefaultYanelToolbar(menu);
-            } else if (YanelToolbar.class.isAssignableFrom(menuRealmClass)) {
+            } else if (YanelToolbar.class.isAssignableFrom(menuRealmClass)) { // INFO: Check whether configured class is a Toolbar implementation
                 yanelToolbar = (YanelToolbar) menuRealmClass.newInstance();
             } else {
                 new ClassCastException("Realm menu must either subclass org.wyona.yanel.servlet.menu.Menu or implement org.wyona.yanel.servlet.toolbar.YanelToolbar, but is ["
