@@ -8,5 +8,31 @@ The Yanel toolbar can be enabled by appending the query string ?yanel.toolbar=on
 In order to avoid typing the query string one can set a "toolbar zone" within the browser window, which becomes active when hovering with the mouse at such a particular area (see src/realms/from-scratch-realm-template/data-repo/data/app1/xslt/global.xsl) or set a shortcut/redirect.
 </p>
 
-<p>The toolbar can be disabled by appending the query string ?yanel.toolbar=off or by clicking on the toolbar menu &quot;Yanel&quot; and clicking on the menu item &quot;Turn off toolbar&quot;.</p><p>In some cases one might want to suppress the toolbar, for example when using an iframe. One can suppress the toolbar by appending the query string ?yanel.toolbar=suppress.</p><h2>Toolbar Customization</h2>One can customize the toolbar per realm. Take a look at src/realms/yanel-website/realm.xml as an example.</body>
+<p>The toolbar can be disabled by appending the query string ?yanel.toolbar=off or by clicking on the toolbar menu &quot;Yanel&quot; and clicking on the menu item &quot;Turn off toolbar&quot;.</p><p>In some cases one might want to suppress the toolbar, for example when using an iframe. One can suppress the toolbar by appending the query string ?yanel.toolbar=suppress.</p>
+
+<h2>Toolbar Customization</h2>
+<p>One can customize the toolbar per realm, whereas one can either overwrite/implement the Toolbar class/interface itself or just overwrite/implement the Menu class/interface.</p>
+
+<p>The "from scratch" realm provides an example of a Toolbar customization: <code>src/realms/from-scratch-realm-template/realm.xml</code> (see <code>menu</code> element)</p>
+
+<p>The "yanel website" realm provides an example of a Menu customization: <code>src/realms/yanel-website/realm.xml</code> (see <code>menu</code> element)</p>
+
+<p>Please note that both versions use the <code><a href="realm/realm-configuration.html#menu-toolbar">menu</a></code> element to configure the Java class.</p>
+
+<p>
+In order to develop your custom menu please consider the following steps:
+
+<ol>
+  <li>Write your own <code>MyRealmMenu.java</code> class, which for example extends the <code>DefaultMenu.java</code> or <code>DefaultMenuV2.java</code> (see for example <code>src/realms/yanel-website/src/java/org/wyona/yanel/website/menu/impl/YanelWebsiteMenu.java</code>).</li>
+  <li>By convention please add your custom Menu class into the direcotory <code>MY_REALM/src/java</code></li>
+  <li>Make sure that your realm contains a realm build file <code>MY_REALM/build.xml</code> (see for example <code>src/realms/yanel-website/build.xml</code>).</li>
+  <li>Make sure that your realm contains a <code>MY_REALM/src/build/build.properties</code> and <code>MY_REALM/src/build/dependencies.xml</code> files (see for example <code>src/realms/yanel-website/src/build/</code>). Please don't forget to set the webapp library dependency (see for example <code>src/realms/yanel-website/src/build/dependencies.xml</code>)!</li>
+  <li>Build the menu by running inside YANEL_HOME: <code>./build.sh -f MY_REALM/build.xml</code> or just build Yanel itself again.</li>
+  <li>Add <code>&lt;menu class="MyRealmMenu"/&gt;</code> inside the file <code>MY_REALM/realm.xml</code>.</li>
+  <li>Restart Yanel and visit your Realm and activate the toolbar (explained above...)</li>
+  <li>Congratulations! You should see now your customized toolbar. :D</li>
+</ol>
+</p>
+
+</body>
 </html>
