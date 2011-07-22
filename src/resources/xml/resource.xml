@@ -20,4 +20,29 @@ XML whereas an XSLT or multiple XSLTs can be specified and applied
   <property name="check-comments"/> <!-- optional and default is 'false' -->
   <property name="aggregate-comments"/> <!-- optional and default is 'false' -->
 </rtd>
+
+<!-- NOTE: Since the XML resource is creatable one can also specify various parameters for creation, e.g. mime-type, source-mime-type, template.
+           The "resource creator" resource for example can use these parameters as follows:
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="resource-creator" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="lookin" value="/meetings/"/>
+
+  <yanel:custom-config>
+    <rc:resource-types xmlns:rc="http://www.wyona.org/yanel/resource/resource-creator/1.0">
+      <rc:resource-type name="xml" namespace="http://www.wyona.org/yanel/resource/1.0">
+        <rc:display-name>New Meetings Page</rc:display-name>
+
+        <rc:property name="mime-type" value="text/html"/>
+        <rc:property name="source-mime-type" value="application/xhtml+xml"/>
+        <rc:property name="template" value="yanelrepo:/app_v1/meetings-page-template.html"/>
+
+      </rc:resource-type>
+    </rc:resource-types>
+  </yanel:custom-config>
+</yanel:resource-config>
+
+whereas these parameters are being passed with a prefix "rp", e.g. "rp.template" or "rp.title".
+-->
 </resource>
