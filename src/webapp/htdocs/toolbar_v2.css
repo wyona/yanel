@@ -68,7 +68,7 @@ html>body #yaneltoolbar_middlewrap {height:100%;padding:23px 1em;} /* 100 % heig
   font-weight: normal;
   font-style: normal;
   font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
-  /*vertical-align: baseline;*/ /* INFO: This seems to cause trouble with IE9 */
+  vertical-align: baseline;
 }
 
 #yaneltoolbar_menu a, #yaneltoolbar_menu #yaneltoolbar_menutitle{
@@ -200,6 +200,23 @@ div#yaneltoolbar_menu li:hover{
   z-index:500;
   background:lightsteelblue;
 }
+
+/* INFO: If the below lines are missing, then it seems that the toolbar does not work with IE9 */
+div#yaneltoolbar_menu li:hover ul ul,
+div#yaneltoolbar_menu li li:hover ul ul,
+div#yaneltoolbar_menu li li li:hover ul ul,
+div#yaneltoolbar_menu li li li li:hover ul ul
+{display:none;}
+
+div#yaneltoolbar_menu li:hover ul,
+div#yaneltoolbar_menu li li:hover ul,
+div#yaneltoolbar_menu li li li:hover ul,
+div#yaneltoolbar_menu li li li li:hover ul
+{display:block;}
+
+/**************************************************/
+
+
 
 /* End of non-anchor hover selectors */
 
