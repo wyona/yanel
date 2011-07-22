@@ -19,7 +19,7 @@
     <change version="2010042600">'copy-dir-name' attribute added back to 'contact-form' resource-type</change>
     <change version="2010021600">security-api resource type added</change>
     <change version="2009082500">package attribute removed from xml and node/file resources</change>
-    <change version="2009072600">search resource type added</change>
+    <change version="2009072600">search resource type added (whereas re-index is part of it)</change>
     <change version="2009070800">forgotpw resource type added</change>
     <change version="2009051900">copy-dir-name attribute to all resources added</change>
     <change version="2009042700">welcome realm resources commented, because already contained by welcome realm itself</change>
