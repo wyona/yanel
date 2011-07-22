@@ -3,7 +3,7 @@
 <resource xmlns="http://www.wyona.org/yanel/1.0"
   name="reindexer"
   namespace="http://www.wyona.org/yanel/resource/1.0"
-  class="org.wyona.yanel.impl.resources.reindexer.ReindexResource"
+  class="org.wyona.yanel.impl.resources.search.ReindexResource"
   >
 <description>
 A resource in order to re-index repositories.

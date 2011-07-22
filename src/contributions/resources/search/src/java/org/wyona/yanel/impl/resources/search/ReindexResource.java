@@ -1,8 +1,7 @@
-/*-
+/*
  * Copyright 2011 Wyona
  */
-
-package org.wyona.yanel.impl.resources.reindexer;
+package org.wyona.yanel.impl.resources.search;
 
 import org.wyona.yarep.util.YarepUtil;
 import org.wyona.yarep.core.Repository;
