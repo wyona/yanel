@@ -154,7 +154,7 @@ public class ResourceTypeRegistry {
             Configuration resourceTypes[] = config.getChildren("resource-type");
             
             for (int i = 0; i < resourceTypes.length; i++) {
-                log.debug("Register resource type...");
+                log.debug("Try to register resource type(s)...");
                 boolean hasPackageAttribute = false;
                 String packageName = null;
                 try {
@@ -165,7 +165,7 @@ public class ResourceTypeRegistry {
                     hasPackageAttribute = false;
                 }
                 if (hasPackageAttribute && packageName != null && packageName.trim().length() > 0) {
-                    log.info("Loading resource from package: " + packageName);
+                    log.info("Loading resource(s) from package: " + packageName);
 
                     // TODO: Config itself, e.g. org/wyona/yanel/impl/resources/redirect/my-resource.xml (What does that TODO mean?!)
 
@@ -200,9 +200,13 @@ public class ResourceTypeRegistry {
                             }
                         }
                     } else if (new File(packageURL.getPath()).isDirectory()) {
-                        log.warn("TODO: ...");
+                        log.debug("Library seems to be extracted: " + packageURL.getPath());
+                        String[] resourceFilenames = new File(packageURL.getPath()).list(new ResourceFilenameFilter());
+                        if (resourceFilenames != null && resourceFilenames.length > 0) {
+                            for (int k = 0; k < resourceFilenames.length; k++) {
                                 try {
-                                    ResourceTypeDefinition rtd = new ResourceTypeDefinition(new java.io.FileInputStream(new File(packageURL.getPath(), "resource.xml")));
+                                    ResourceTypeDefinition rtd = new ResourceTypeDefinition(new java.io.FileInputStream(new File(packageURL.getPath(), resourceFilenames[k])));
+                                    log.debug("Register resource type from resource definition: " + rtd.getConfigFile());
                                     log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
                                     log.debug("Classname: " + rtd.getResourceTypeClassname());
                                     hm.put(rtd.getResourceTypeUniversalName(), rtd);
@@ -210,6 +214,10 @@ public class ResourceTypeRegistry {
                                     log.error("Exception re registring resource with package '" + packageName + "'!");
                                     log.error(exception, exception);
                                 }
+                            }
+                        } else {
+                            log.error("Extracted jar '" +packageURL.getPath() + "' does not seem to contain any resource definitions!");
+                        }
                     } else {
                         log.error("No such file or directory: " + packageURL.getPath());
                     }
@@ -308,5 +316,21 @@ public class ResourceTypeRegistry {
      */
     public String getConfigurationFile() {
         return CONFIGURATION_FILE;
+    }
+}
+
+/**
+ * File name filter in order to get resource definitions
+ */
+class ResourceFilenameFilter implements java.io.FilenameFilter {
+
+    /**
+     * @see java.io.FilenameFilter#accept(File, String)
+     */
+    public boolean accept(File dir, String name) {
+        if (name.equals("resource.xml") || (name.startsWith("resource-") && name.endsWith(".xml"))) {
+            return true;
+        }
+        return false;
     }
 }
