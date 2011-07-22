@@ -6,11 +6,11 @@
   <directory alternative="index.html" mime-type="application/xhtml+xml"/>
   <meta src="../data-repo/yarep-meta"/>
 
-  <s:search-index xmlns:s="http://www.wyona.org/yarep/search/2.0" indexer-class="org.wyona.yarep.impl.search.lucene.LuceneIndexer" searcher-class="org.wyona.yarep.impl.search.lucene.LuceneSearcher">
+  <s:search-index xmlns:s="http://www.wyona.org/yarep/search/2.0" indexer-class="org.wyona.yarep.impl.search.lucene.LuceneIndexerV2" searcher-class="org.wyona.yarep.impl.search.lucene.LuceneSearcher">
     <index-location file="../data-repo/search-index"/>
     <repo-auto-index-fulltext boolean="true"/>
     <repo-auto-index-properties boolean="true"/>
-    <lucene>
+    <lucene index-revisions="true">
       <!-- The element 'local-tika-config' attribute 'file' is used to patch the default tika config -->
 <!--
       <local-tika-config file="tika-config.xml"/>
@@ -20,7 +20,10 @@
       <fulltext-analyzer class="org.apache.lucene.analysis.standard.StandardAnalyzer"/>
 
       <!-- if property-analyzer/class is not set it will use org.apache.lucene.analysis.WhitespaceAnalyzer-->
+      <property-analyzer class="org.apache.lucene.analysis.standard.StandardAnalyzer"/>
+<!--
       <property-analyzer class="org.apache.lucene.analysis.WhitespaceAnalyzer"/>
+-->
 
       <write-lock-timeout ms="3000"/>
     </lucene>
