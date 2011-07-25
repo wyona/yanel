@@ -2,3 +2,4 @@ yarep_vfs-meta-file-version<string>:1.0
 yarep_lastModified<long>:1305662994000
 yarep_type<string>:resource
 annotations<string>:Konakart
+yarep_mimeType<string>:application/xhtml+xml

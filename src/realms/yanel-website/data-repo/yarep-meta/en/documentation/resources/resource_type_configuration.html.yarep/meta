@@ -5,3 +5,4 @@ yarep_lastModifed<long>:1270818946000
 yarep_checkoutUserID<string>:lenya
 yarep_checkoutDate<date>:2010-04-09T15:15:34:656+0200
 yarep_isCheckedOut<boolean>:false
+yarep_mimeType<string>:application/xhtml+xml

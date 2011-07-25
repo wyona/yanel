@@ -7,3 +7,4 @@ yarep_checkoutUserID<string>:alice
 yarep_isCheckedOut<boolean>:false
 yarep_checkoutDate<date>:2011-02-17T10\:51\:57\:155+0100
 live-revision<string>:1297936320349
+yarep_mimeType<string>:application/xhtml+xml

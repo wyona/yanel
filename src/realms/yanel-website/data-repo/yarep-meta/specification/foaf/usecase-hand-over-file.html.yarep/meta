@@ -2,3 +2,4 @@ yarep_type<string>:resource
 yarep_checkoutUserID<string>:lenya
 yarep_checkoutDate<date>:2007-06-18T14:16:16:000+0200
 yarep_isCheckedOut<boolean>:false
+yarep_mimeType<string>:application/xhtml+xml

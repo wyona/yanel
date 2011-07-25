@@ -5,3 +5,4 @@ yarep_type<string>:resource
 yarep_checkoutUserID<string>:lenya
 yarep_isCheckedOut<boolean>:false
 yarep_checkoutDate<date>:2010-03-24T16:47:20:684+0100
+yarep_mimeType<string>:application/xhtml+xml

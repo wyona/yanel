@@ -1,4 +1,6 @@
+yarep_vfs-meta-file-version<string>:1.0
+yarep_checkinDate<date>:2011-07-22T16\:19\:35\:597+0200
 yarep_type<string>:resource
 yarep_checkoutUserID<string>:lenya
-yarep_checkoutDate<date>:2007-06-06T10:15:42:000+0200
-yarep_isCheckedOut<boolean>:true
+yarep_isCheckedOut<boolean>:false
+yarep_checkoutDate<date>:2007-06-06T10\:15\:42\:000+0200
