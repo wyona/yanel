@@ -2617,12 +2617,16 @@ public class YanelServlet extends HttpServlet {
                 accessLogMessage = accessLogMessage + AccessLog.encodeLogField("a-lang", httpAcceptLanguage);
             }
 
+            HttpSession session = request.getSession(true);
+            if(session != null) {
+                accessLogMessage = accessLogMessage + AccessLog.encodeLogField("sid", session.getId());
+            }
+
             logAccess.info(accessLogMessage);
 
             //log.debug("Referer: " + request.getHeader(HTTP_REFERRER));
 
             // INFO: Store last accessed page in session such that session manager can show user activity.
-            HttpSession session = request.getSession(true);
             if(session != null) {
                 session.setAttribute(YANEL_LAST_ACCESS_ATTR, request.getServletPath()); 
                 //log.debug("Last access: " + request.getServletPath());
