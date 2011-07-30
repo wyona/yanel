@@ -49,8 +49,8 @@ public class ResourceManager {
         rtRegistry = new ResourceTypeRegistry();
 
         // TODO: Make resource matcher configurable!
-        //resourceTypeMatcher = new ResourceTypeDefaultMatcher();
-        resourceTypeMatcher = new ResourceTypeMatcherV1ImplV2();
+        resourceTypeMatcher = new ResourceTypeDefaultMatcher();
+        //resourceTypeMatcher = new ResourceTypeMatcherV1ImplV2();
     }
     
     /**
