@@ -1,0 +1,31 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>
+<title>The structure of the 'Yanel website' data repository:</title>
+<link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/>
+</head>
+	<body>
+		<h1>The structure of the 'Yanel website' data repository</h1>
+		<p class="tutorial_context">(Last updated June, 2011 revision 58670)</p>
+		<p><img src="datarep.png" alt="Data Repository" width="75%" height="75%"/></p>
+		<ul>
+                  <li>The repository is split into three main directories:
+                    <ul>
+                      <li><code>data</code>: Actual content</li>
+                      <li><code>yarep-meta</code>: Meta information</li>
+                      <li><code>search-index</code>: Lucene search index (fulltext and properties)</li>
+                    </ul>
+                  </li>
+                  <li>Inside the <code>yarep-meta</code> directory (1), one will find some additional information about the actual content (e.g. last modified, user who created/updated content)</li>
+                  <li>The root of the <code>data</code> directory (2) contains the webpage index file (<code>index.html</code>), as well as other pages which have the same path as the URL referenced inside the Browser.</li>
+                  <li>The <a href="http://en.wikipedia.org/wiki/Cascading_Style_Sheets">CSS</a> files are located inside the directory <code>data/css</code> (3).</li>
+                  <li>The following files (4) are kind of special:
+                    <ul>
+                      <li>The <code>sitetree.xml</code> file contains the structure of the navigation inclusive their reference.</li>
+                      <li>The <code>translation.xml</code> file associates the various URLs of the same content in different languages.</li>
+                      <li>The <code>introspection</code> files provide the meta information for Neutron based editing tools (e.g. <a href="http://www.yulup.org">Yulup</a>).</li>
+                    </ul>
+                  </li>
+                  <li>The yanel website is using XSLT in order to render pages dynamically. The most important XSLT file <strong>global.xsl</strong> is located in the <code>xslt</code> folder (5).</li>
+		</ul>
+		<p><a href="datarep.odg">ODG</a> created with <a href="http://de.openoffice.org/">OOo</a></p>
+	</body>
+</html>
