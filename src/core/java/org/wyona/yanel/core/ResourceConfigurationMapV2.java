@@ -73,7 +73,7 @@ public class ResourceConfigurationMapV2 {
          
                         String pathToMatch = path;
                         if (queryString != null && pattern.indexOf("?") >= 0) {
-                            log.warn("DEBUG: Also check/match query string: " + pattern + ", " + queryString);
+                            //log.debug("Also check/match query string: " + pattern + ", " + queryString);
                             pathToMatch = path + "?" + queryString;
                         }
                         if (WildcardMatcherHelper.match(pattern, pathToMatch) != null) {
