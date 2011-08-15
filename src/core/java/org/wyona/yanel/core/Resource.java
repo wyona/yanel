@@ -265,9 +265,11 @@ public abstract class Resource {
      */
     public String getContentLanguage() throws Exception {
         String language = null;
+
         TranslationManager translationManager = getRealm().getTranslationManager();
         if (translationManager != null) {
             language = translationManager.getLanguage(this);
+            //log.debug("Use translation manager to determine content language: " + language);
         }
         //if (ResourceAttributeHelper.hasAttributeImplemented(this, "Translatable", "1")) {
         //    language = ((TranslatableV1)this).getLanguage(); 
