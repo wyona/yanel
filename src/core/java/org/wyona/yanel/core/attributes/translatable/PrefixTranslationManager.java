@@ -13,14 +13,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package org.wyona.yanel.core.attributes.translatable;
+
+import org.apache.log4j.Logger;
 
 /**
  * This translation manager works with a path format where the language is
  * a prefix: /en/foo/bar.html
  */
 public class PrefixTranslationManager extends AbstractPathTranslationManager {
+
+    private static Logger log = Logger.getLogger(PrefixTranslationManager.class);
 
     /**
      * Empty constructor. Don't forget to call the init() method.
@@ -35,11 +38,13 @@ public class PrefixTranslationManager extends AbstractPathTranslationManager {
      * @return language or null if the path does not contain 
      */
     protected String getLanguageFromPath(String path) {
+        //log.debug("Try to get language from path: " + path);
         String[] tokens = path.split("/");
         if (tokens.length > 1 && tokens[1].length() == 2) {
             // TODO: should check if it's a valid language?
             return tokens[1];
         }
+        log.warn("Path does not seem to contain a language as prefix: " + path);
         return null;
     }
     
@@ -61,5 +66,4 @@ public class PrefixTranslationManager extends AbstractPathTranslationManager {
         }
         return null;
     }
-    
 }
