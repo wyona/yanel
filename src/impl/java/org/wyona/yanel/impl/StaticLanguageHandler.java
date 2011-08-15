@@ -30,5 +30,4 @@ public class StaticLanguageHandler implements LanguageHandler {
     public String getLocalizationLanguage(Resource resource) throws Exception {
         return resource.getContentLanguage();
     }
-
 }
