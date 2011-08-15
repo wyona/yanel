@@ -44,7 +44,7 @@ public class PrefixTranslationManager extends AbstractPathTranslationManager {
             // TODO: should check if it's a valid language?
             return tokens[1];
         }
-        log.warn("Path does not seem to contain a language as prefix: " + path);
+        //log.debug("Path does not seem to contain a language as prefix: " + path);
         return null;
     }
     
