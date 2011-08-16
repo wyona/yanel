@@ -705,7 +705,7 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * HTTP POST implementation.
+     * @see javax.servlet.http.HttpServlet#doPost(HttpServletRequest, HttpServletResponse)
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -736,7 +736,7 @@ public class YanelServlet extends HttpServlet {
 
             String contentType = request.getContentType();
             // TODO: Check for type (see section 9.2 of APP spec (e.g. draft 16)
-            if (contentType.indexOf("application/atom+xml") >= 0) {
+            if (contentType != null && contentType.indexOf("application/atom+xml") >= 0) {
                 InputStream in = intercept(request.getInputStream());
                 // Create new Atom entry
                 try {
@@ -1468,7 +1468,7 @@ public class YanelServlet extends HttpServlet {
 
             if (log.isDebugEnabled()) log.debug("Regular Logout Successful!");
             URL url = new URL(getRequestURLQS(request, null, false).toString());
-            // TODO: Just remove logout part from query string! (http://127.0.0.1:8080/yanel/test/use-cases/index.xhtml?yanel.resource.usecase=checkout&yanel.usecase=logout)
+            // TODO (see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=8488): Just remove logout part from query string! (http://127.0.0.1:8080/yanel/test/use-cases/index.xhtml?yanel.resource.usecase=checkout&yanel.usecase=logout)
             String urlWithoutLogoutQS = url.toString().substring(0, url.toString().lastIndexOf("?"));
 
 /* INFO: The refresh tag also does not seem to force the client to reload the page itself (tested with Firefox 3)
