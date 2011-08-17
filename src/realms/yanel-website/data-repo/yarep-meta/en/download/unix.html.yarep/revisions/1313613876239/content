@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<!--
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Download (UNIX)</title>
+</head>
+<body>
+<h1>Download (UNIX)</h1>
+<p>You can select to download a source code snapshot from below, or get a checkout of the latest version of Yanel through our Subversion repository. Please note that we have a strong focus on keeping the Subversion repository stable, and source code snapshots can become out of date rather quickly. If you are interested in our development methodology, see the <a href="../development/processes/index.html">page on processes</a>.</p>
+<p><span style="font-size: 15px; font-weight: bold;">Source Code Snapshots</span></p>
+<p>
+<table border="1" cellspacing="0" cellpadding="0" bgcolor="#dddddd">
+<tbody>
+<tr>
+<th>Package</th><th>Size</th><th>Date</th><th>Issues</th>
+</tr>
+<tr>
+<td valign="top"><a href="../../download/source-snapshots/wyona-yanel-1.0-dev-r60079-src.zip">wyona-yanel-1.0-dev-r60079-src.zip</a></td>
+<td valign="top">12MB</td>
+<td valign="top">August 17, 2011</td>
+<td valign="top">No issues reported so far</td>
+</tr>
+</tbody>
+</table>
+</p>
+<h2>Source Code from Subversion Repository</h2>
+<p>See&#160;<a href="../../download/source-repository.html">Wyona's Subversion repository</a>.</p>
+</body>
+</html>

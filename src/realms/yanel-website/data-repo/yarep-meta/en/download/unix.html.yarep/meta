@@ -1,10 +1,11 @@
 yarep_vfs-meta-file-version<string>:1.0
 yarep_size<long>:4259
-yarep_checkinDate<date>:2011-02-17T10\:52\:03\:353+0100
+yarep_lastModified<long>:1313613875000
+yarep_checkinDate<date>:2011-08-17T22\:44\:36\:927+0200
 yarep_type<string>:resource
 yarep_lastModifed<long>:1234355107000
-yarep_checkoutUserID<string>:alice
-yarep_isCheckedOut<boolean>:false
-yarep_checkoutDate<date>:2011-02-17T10\:51\:57\:155+0100
-live-revision<string>:1297936320349
 yarep_mimeType<string>:application/xhtml+xml
+yarep_checkoutUserID<string>:michi
+yarep_isCheckedOut<boolean>:false
+yarep_checkoutDate<date>:2011-08-17T22\:44\:31\:716+0200
+live-revision<string>:1313613876239
