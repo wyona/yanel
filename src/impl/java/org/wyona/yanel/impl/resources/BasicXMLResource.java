@@ -123,6 +123,12 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * @param viewId View id
      */
     protected ViewDescriptor getViewDescriptor(String viewId) {
+        if (viewId == null) {
+            log.debug("View ID is null (" + getPath() + ")");
+            // TODO: Setting the view ID to default would actually make sense, but check for backwards compatibility first!
+            //viewId = DEFAULT_VIEW_ID;
+            return null;
+        }
         ViewDescriptor[] viewDescriptors = getViewDescriptors();
         if (viewDescriptors != null) {
             for (int i = 0; i < viewDescriptors.length; i++) {
@@ -189,13 +195,20 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     }
 
     /**
-     * Get mime type
+     * Get mime type for a specific view ID
      */
     public String getMimeType(String viewId) throws Exception {
+        if (viewId == null) {
+            log.debug("View ID is null (" + getPath() + "), hence use default view ID: " + DEFAULT_VIEW_ID);
+            // TODO: Setting this to default would make sense, but check backwards compatibility first!
+            //viewId = DEFAULT_VIEW_ID;
+        }
         String mimeType = null;
         ViewDescriptor viewDescriptor = getViewDescriptor(viewId);
         if (viewDescriptor != null) {
             mimeType = viewDescriptor.getMimeType();
+        } else {
+            log.debug("No view descriptor for view ID '" + viewId + "' and path '" + getPath() + "'.");
         }
         if (mimeType == null) {
             mimeType = this.getResourceConfigProperty("mime-type");
@@ -223,12 +236,24 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     }
 
     /**
-     *
+     * Apply view ID specific transformers to source XML
+     * @param viewId View ID
+     * @param xmlInputStream Source XML
      */
     public View getXMLView(String viewId, InputStream xmlInputStream) throws Exception {
         View view = new View();
         if (viewId == null) {
-            viewId = DEFAULT_VIEW_ID;
+            if (isMobileView()) {
+                if (getViewDescriptor(MOBILE_VIEW_ID) != null) {
+                    //viewId = DEFAULT_VIEW_ID;
+                    viewId = MOBILE_VIEW_ID;
+                } else {
+                    log.warn("Seems to be a mobile device, but no mobile view configured, hence use default view!");
+                    viewId = DEFAULT_VIEW_ID;
+                }
+            } else {
+                viewId = DEFAULT_VIEW_ID;
+            }
         }
         ConfigurableViewDescriptor viewDescriptor = (ConfigurableViewDescriptor)getViewDescriptor(viewId);
         String mimeType = getMimeType(viewId);
