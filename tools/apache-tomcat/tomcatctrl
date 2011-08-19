@@ -2,8 +2,8 @@
 #
 # Start/stop script for tomcat located at /etc/init.d
 #
-# Author: Michael Wechner <michael.wechner@wyona.com>.
-# Author: Christian Egli <christian.egli@wyona.com>.
+# Author: Michael Wechner <michael.wechner@wyona.com>
+# Author: Christian Egli
 #
 # |||||||||||||||||||| START CONFIGURATION SECTION  ||||||||||||||||||||
 # --------------------                              --------------------
