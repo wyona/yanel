@@ -551,7 +551,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 return false;
             }
         } else {
-            log.warn("No HTTP session available (maybe because Yanel is used via the command line)!");
+            log.warn("No HTTP session available (maybe because Yanel is used via the command line or some custom junit tests do not provide session handling)!");
             return false;
         }
     }
