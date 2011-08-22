@@ -22,6 +22,7 @@
 <xsl:param name="yarep.back2realm" select="'BACK2REALM_IS_NULL'"/>
 <xsl:param name="language" select="'LANGUAGE_IS_NULL'"/>
 <xsl:param name="content-language" select="'CONTENT_LANGUAGE_IS_NULL'"/>
+<xsl:param name="do.not.track" select="'DO_NOT_TRACK_IS_NULL'"/>
 
 <xsl:param name="yanel.meta.language" select="'en'"/>
 
@@ -113,7 +114,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
   <td colspan="2" id="footer">
 
     <i18n:text key="poweredBy"/><xsl:text> </xsl:text><a href="http://yanel.wyona.org">Wyona Yanel</a> | <a href="http://svn.wyona.com/repos/public/tomcat-cluster/">Wyona Balancer</a> | <a href="http://tomcat.apache.org">Apache Tomcat</a> | <a href="http://httpd.apache.org">Apache HTTP Server</a><br/>
-    Copyright &#169; 2011 <a href="http://www.wyona.com">Wyona</a>. <i18n:text key="allRightsReserved"/>. - <a href="?yanel.resource.meta"><i18n:text key="pageInfo"/></a> - <a href="?yanel.toolbar=on">Toolbar</a>
+    Copyright &#169; 2011 <a href="http://www.wyona.com">Wyona</a>. <i18n:text key="allRightsReserved"/>. - <a href="?yanel.resource.meta"><i18n:text key="pageInfo"/></a> - <a href="?yanel.toolbar=on">Toolbar</a> - <a href="http://donottrack.us/" target="_blank">Do not track</a>: <xsl:value-of select="$do.not.track"/>
 
   </td>
 </tr>
