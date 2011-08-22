@@ -2542,6 +2542,11 @@ public class YanelServlet extends HttpServlet {
 */
 
 
+        if ("1".equals(request.getHeader("DNT"))) { // INFO: See http://donottrack.us/
+            log.debug("Do not track...");
+            return;
+        }
+
         try {
             Realm realm = map.getRealm(request.getServletPath());
 
