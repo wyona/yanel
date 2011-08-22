@@ -525,7 +525,15 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
         // Add toolbar status
         String toolbarStatus = getToolbarStatus();
-        if (toolbarStatus != null) transformer.setParameter("yanel.toolbar-status", toolbarStatus);
+        if (toolbarStatus != null) {
+            transformer.setParameter("yanel.toolbar-status", toolbarStatus);
+        }
+
+        if ("1".equals(request.getHeader("DNT"))) { // INFO: See http://donottrack.us/
+            transformer.setParameter("do.not.track", "true");
+        } else {
+            transformer.setParameter("do.not.track", "false");
+        }
     }
 
     /**
