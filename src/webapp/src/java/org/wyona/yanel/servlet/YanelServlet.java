@@ -692,7 +692,12 @@ public class YanelServlet extends HttpServlet {
 
 
         if (view != null) {
-            if (generateResponse(view, res, request, response, doc, size, lastModified, trackInfo) != null) return;
+            if (generateResponse(view, res, request, response, doc, size, lastModified, trackInfo) != null) {
+                //log.debug("Response has been generated :-)");
+                return;
+            } else {
+                log.warn("No response has been generated!");
+            }
         } else {
             String message = "View is null!";
             Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
@@ -2070,6 +2075,14 @@ public class YanelServlet extends HttpServlet {
                 log.debug("set http header: " + name + ": " + value);
             }
             response.setHeader(name, value);
+        }
+
+        // INFO: Confirm DNT (do not track)
+        String dntValue = request.getHeader("DNT");
+        if (dntValue != null) {
+            response.setHeader("DNT", dntValue); // INFO: See spec about response header at http://tools.ietf.org/html/draft-mayer-do-not-track-00
+        } else {
+            //log.debug("No DNT (do not track) header set, hence do not echo.");
         }
             
             // Possibly embed toolbar:
