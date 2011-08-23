@@ -106,24 +106,21 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
         String mimeType = getMimeType(viewId);
         defaultView.setMimeType(mimeType);
 
-        String siteTreePath = null;
-        String language = null;
         String currentPath = null;
         String activePath = null;
         if (getParameters() != null) {
             currentPath = (String)getParameters().get("path");
             activePath = (String)getParameters().get("active-path");
-            language = (String)getParameters().get("language");
         }
         if (currentPath == null) currentPath = getPath();
         if (activePath == null) activePath = currentPath;
 
-        if (language == null) {
-            language = getLanguage();
-        }
+        String language = getLanguage();
+        //log.debug("Language: " + language);
 
         ResourceConfiguration rc = getConfiguration();
         Document customConfigDoc = rc.getCustomConfiguration();
+        String siteTreePath = null;
         if (customConfigDoc != null) {
             Configuration config = ConfigurationUtil.toConfiguration(customConfigDoc.getDocumentElement());
             Configuration[] sourceConfigs = config.getChildren("source");
@@ -225,14 +222,24 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
     }
 
     /**
-     * Get language with the following priorization: 1) yanel.meta.language query string parameter, 2) Accept-Language header, 3) Default en
+     * Get language with the following priorization: 1) 'language' yanel request parameter (e.g. from within XSLT) 2) 'yanel.meta.language' regular HTTP request query string parameter, 3) Accept-Language header, 4) Default language of realm
      */
     private String getLanguage() {
-        String language = getRequest().getParameter("yanel.meta.language");
+        String language = null;
+        if (getParameters() != null) {
+            language = (String)getParameters().get("language");
+        }
+
+        if (language == null) {
+            language = getRequest().getParameter("yanel.meta.language");
+        }
+
         if (language == null) {
             language = getRequest().getParameter("Accept-Language");
         }
+
         if(language != null && language.length() > 0) return language;
+
         return getRealm().getDefaultLanguage();
     }
     
