@@ -13,5 +13,8 @@ Navigation resource (based on XML) for building menus etc.
   <property name="mime-type"/>
   <property name="xslt"/>
   <property name="type"/>
+
+  <!-- INFO: Optional, whereas if set to 'true', then also content language will be matched (see javadoc for more details) -->
+  <property name="match-content-language"/>
 </rtd>
 </resource>
