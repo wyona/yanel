@@ -172,6 +172,7 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
                     String client = getClient(userAgent);
                     if (client != null) xsltHandlers[i].getTransformer().setParameter("client", client);
                     xsltHandlers[i].getTransformer().setParameter("language", language);
+                    xsltHandlers[i].getTransformer().setParameter("content-language", getContentLanguage());
                     xsltHandlers[i].getTransformer().setParameter("currentPath", currentPath);
                     xsltHandlers[i].getTransformer().setParameter("activePath", activePath);
                 }
