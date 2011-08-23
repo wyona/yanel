@@ -222,9 +222,9 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
     }
 
     /**
-     * Get language with the following priorization: 1) 'language' yanel request parameter (e.g. from within XSLT) 2) 'yanel.meta.language' regular HTTP request query string parameter, 3) Accept-Language header, 4) Default language of realm
+     * Get language with the following priorization: 1) 'language' yanel request parameter (e.g. from within XSLT) 2) 'yanel.meta.language' regular HTTP request query string parameter, 3) OPTIONAL (only if resource configuration parameter 'match-content-language' set to true): content language 4) Accept-Language header, 5) Default language of realm
      */
-    private String getLanguage() {
+    private String getLanguage() throws Exception {
         String language = null;
         if (getParameters() != null) {
             language = (String)getParameters().get("language");
@@ -232,6 +232,11 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
 
         if (language == null) {
             language = getRequest().getParameter("yanel.meta.language");
+        }
+
+        String matchContentLanguage = getResourceConfigProperty("match-content-language"); // INFO: In order to stay backwards compatible we need such an optional flag
+        if (matchContentLanguage != null && matchContentLanguage.equals("true") && language == null) {
+            language = getContentLanguage();
         }
 
         if (language == null) {
