@@ -60,16 +60,14 @@ import org.apache.avalon.framework.configuration.ConfigurationUtil;
 
 /**
  * The NavigationResource may be used to generate menu, breadcrumb, or 
- * other navigation elements of a page.
- * Typically it is xincluded into a normal page.
+ * other navigation elements of a page. Typically it is xincluded into a normal page.
  * 
  * Parameters:
- * path:        Current path which is part of the browser url. Links will 
- *              be resolved relative to this path.
- * active-path: Path of the active node (e.g. the node which will be 
- *              highlighted in the menu)
- *              If this parameter is omitted, the path parameter will be used.
- * language:    language
+ *   path:        Current path which is part of the browser url. Links will 
+ *                be resolved relative to this path.
+ *   active-path: Path of the active node (e.g. the node which will be 
+ *                highlighted in the menu). If this parameter is omitted, then path parameter will be used.
+ *   language:    Language of navigation
  */
 public class NavigationResource extends Resource implements ViewableV2, ModifiableV2 {
 
@@ -109,11 +107,17 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
         String currentPath = null;
         String activePath = null;
         if (getParameters() != null) {
-            currentPath = (String)getParameters().get("path");
-            activePath = (String)getParameters().get("active-path");
+            currentPath = (String)getParameters().get("path"); // INFO: See description above inside Javadoc
+            activePath = (String)getParameters().get("active-path"); // INFO: See description inside Javadoc
         }
-        if (currentPath == null) currentPath = getPath();
-        if (activePath == null) activePath = currentPath;
+        if (currentPath == null) {
+            currentPath = getPath();
+            log.warn("No current path set, hence use request path: " + currentPath);
+        }
+        if (activePath == null) {
+            log.warn("No active path set explicitely, hence use current path: " + currentPath);
+            activePath = currentPath;
+        }
 
         String language = getLanguage();
         //log.debug("Language: " + language);
