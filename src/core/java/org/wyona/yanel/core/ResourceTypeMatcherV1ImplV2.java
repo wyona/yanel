@@ -59,7 +59,7 @@ public class ResourceTypeMatcherV1ImplV2 implements ResourceTypeMatcherV1 {
         } 
 
         // Check on resource configuration map
-        String rcPath = ResourceConfigurationMapV2.getRCPath(realm, path, environment.getRequest().getQueryString());
+        String rcPath = ResourceConfigurationMapV2.getRCPath(realm, path, environment.getRequest());
         if (rcPath != null) {
             if (realm.getRTIRepository().existsNode(rcPath)) {
                 ResourceConfiguration rc = new ResourceConfiguration(realm.getRTIRepository().getNode(rcPath));

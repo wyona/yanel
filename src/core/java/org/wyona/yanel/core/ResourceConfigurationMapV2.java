@@ -43,13 +43,18 @@ public class ResourceConfigurationMapV2 {
 
     private static Logger log = Logger.getLogger(ResourceConfigurationMapV2.class);
 
+    private static final String MATCHER_TAG_NAME = "matcher";
+    private static final String PATTERN_ATTR_NAME = "pattern";
+    private static final String CLASS_ATTR_NAME = "class";
+
     /**
      * Get path of resource configuration which matched the path pattern within the resource configuration map
      * @param realm Realm
      * @param path Path of request
      * @return String which contains the path of a rc file
      */
-    public static String getRCPath(Realm realm, String path, String queryString) {
+    public static String getRCPath(Realm realm, String path, javax.servlet.http.HttpServletRequest request) {
+        String queryString = request.getQueryString();
         //log.debug("Try to get resource configuration for request: " + path + ", " + queryString);
 
         InputStream rcMapIS = getRCMap(realm);
@@ -68,27 +73,39 @@ public class ResourceConfigurationMapV2 {
                     break;
                 }
                 if (event == XMLStreamConstants.START_ELEMENT) {
-                    if (parser.getLocalName().equals("matcher")) {
-                        String pattern = parser.getAttributeValue("", "pattern");
-         
-                        String pathToMatch = path;
-                        if (queryString != null && pattern.indexOf("?") >= 0) {
-                            //log.debug("Also check/match query string: " + pattern + ", " + queryString);
-                            pathToMatch = path + "?" + queryString;
-                        }
-                        if (WildcardMatcherHelper.match(pattern, pathToMatch) != null) {
-                            if (log.isDebugEnabled()) {
-                                log.debug("CoR pattern: '" + pattern + "' matched with path: '" + pathToMatch + "'. will use following path in the RTIRepository to reach the rc: " + parser.getAttributeValue("", "rcpath"));
+                    if (parser.getLocalName().equals(MATCHER_TAG_NAME)) {
+                        String pattern = parser.getAttributeValue("", PATTERN_ATTR_NAME);
+                        String clazz = parser.getAttributeValue("", CLASS_ATTR_NAME);
+                        if (pattern != null) {
+                            String pathToMatch = path;
+                            if (queryString != null && pattern.indexOf("?") >= 0) {
+                                //log.debug("Also check/match query string: " + pattern + ", " + queryString);
+                                pathToMatch = path + "?" + queryString;
                             }
-                            return parser.getAttributeValue("", "rcpath");
+                            if (WildcardMatcherHelper.match(pattern, pathToMatch) != null) {
+                                if (log.isDebugEnabled()) {
+                                    log.debug("CoR pattern: '" + pattern + "' matched with path: '" + pathToMatch + "'. will use following path in the RTIRepository to reach the rc: " + parser.getAttributeValue("", "rcpath"));
+                                }
+                                return parser.getAttributeValue("", "rcpath");
+                            }
+                        } else if (clazz != null) {
+                            MatcherV1 customMatcher = (MatcherV1) Class.forName(clazz).newInstance();
+                            if (customMatcher.match(realm, path, request)) {
+                                return parser.getAttributeValue("", "rcpath");
+                            }
+                        } else {
+                            log.warn("There is a matcher element inside resource configuration map of realm '" + realm.getName() + "' which has no pattern attribute, hence ignore!");
                         }
                     } else {
                         //log.debug("No matcher element '" + parser.getLocalName() + "', hence ignore.");
                     }
                 }
             }
-        } catch (XMLStreamException e) {
+        } catch(XMLStreamException e) {
             log.error("error while reading the rc map", e);
+            return null;
+        } catch(Exception e) {
+            log.error(e, e);
             return null;
         }
         return null;
