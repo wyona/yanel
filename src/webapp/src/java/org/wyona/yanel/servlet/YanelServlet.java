@@ -2640,6 +2640,9 @@ public class YanelServlet extends HttpServlet {
                 accessLogMessage = accessLogMessage + AccessLog.encodeLogField("sid", session.getId());
             }
 
+            // INFO: For performance reasons we do not use getRemoteHost(), but rather just log the IP address.
+            accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", request.getRemoteAddr());
+
             logAccess.info(accessLogMessage);
 
             //log.debug("Referer: " + request.getHeader(HTTP_REFERRER));
