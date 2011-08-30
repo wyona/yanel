@@ -684,6 +684,7 @@ public class YanelServlet extends HttpServlet {
                 log.warn("TODO: meta: " + meta);
             } else {
                 log.debug("Show all meta");
+                appendAnnotationsAndTrackingInformation(doc, res, trackInfo);
             }
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             setYanelOutput(request, response, doc);
@@ -2761,5 +2762,70 @@ public class YanelServlet extends HttpServlet {
         } else {
             //log.debug("DEBUG: Mobile device detection already done.");
         }
+    }
+
+    /**
+     * Append annotations and tracking information to page meta document
+     * @param doc Page meta document
+     */
+    private void appendAnnotationsAndTrackingInformation(Document doc, Resource resource, TrackingInformationV1 trackInfo) {
+        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Annotatable", "1")) {
+            AnnotatableV1 anno = (AnnotatableV1) resource;
+            try {
+                String[] tags = anno.getAnnotations();
+                if (tags != null && tags.length > 0) {
+                    //log.debug("Resource has tags: " + tags);
+                    Element annotationsElem = doc.createElementNS(NAMESPACE, "annotations");
+                    doc.getDocumentElement().appendChild(annotationsElem);
+                    for (int i = 0; i < tags.length; i++) {
+                        Element annotationElem = doc.createElementNS(NAMESPACE, "annotation");
+                        annotationElem.appendChild(doc.createTextNode(tags[i]));
+                        annotationsElem.appendChild(annotationElem);
+                    }
+                } else {
+                    Element noAnnotationsYetElem = doc.createElementNS(NAMESPACE, "no-annotations-yet");
+                    noAnnotationsYetElem.setAttribute("annotatable-v1", "true");
+                    doc.getDocumentElement().appendChild(noAnnotationsYetElem);
+                }
+            } catch (Exception ex) {
+                log.error(ex, ex);
+            }
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Resource has no tags yet: " + resource.getPath());
+            }
+            Element noAnnotationsYetElem = doc.createElementNS(NAMESPACE, "no-annotations-yet");
+            noAnnotationsYetElem.setAttribute("annotatable-v1", "false");
+            doc.getDocumentElement().appendChild(noAnnotationsYetElem);
+        }
+
+
+/*
+            if (trackInfo != null) {
+                String[] trackingTags = trackInfo.getTags();
+                if (trackingTags != null && trackingTags.length > 0) {
+                    //accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), trackingTags);
+                } else {
+                    //accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), tags);
+                }
+
+                String pageType = trackInfo.getPageType();
+                if (pageType != null) {
+                    //accessLogMessage = accessLogMessage + AccessLog.encodeLogField("pt", pageType);
+                }
+
+                String requestAction = trackInfo.getRequestAction();
+                if (requestAction != null) {
+                    //accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ra", requestAction);
+                }
+
+                HashMap<String, String> customFields = trackInfo.getCustomFields();
+                if (customFields != null) {
+                    for (java.util.Map.Entry field : customFields.entrySet()) {
+                        //accessLogMessage = accessLogMessage + AccessLog.encodeLogField((String) field.getKey(), (String) field.getValue());
+                    }
+                }
+            }
+*/
     }
 }
