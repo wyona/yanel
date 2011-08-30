@@ -2810,6 +2810,7 @@ public class YanelServlet extends HttpServlet {
         if (trackInfo != null) {
             Element trackInfoElem = doc.createElementNS(NAMESPACE, "tracking-info");
             doc.getDocumentElement().appendChild(trackInfoElem);
+
             String[] trackingTags = trackInfo.getTags();
             if (trackingTags != null && trackingTags.length > 0) {
                 Element interestsElem = doc.createElementNS(NAMESPACE, "interests");
@@ -2820,25 +2821,35 @@ public class YanelServlet extends HttpServlet {
                     interestsElem.appendChild(interestElem);
                 }
             } else {
-                //accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), tags);
+                Element noInterestsElem = doc.createElementNS(NAMESPACE, "no-interests-yet");
+                trackInfoElem.appendChild(noInterestsElem);
             }
 
-                String pageType = trackInfo.getPageType();
-                if (pageType != null) {
-                    //accessLogMessage = accessLogMessage + AccessLog.encodeLogField("pt", pageType);
-                }
+            String pageType = trackInfo.getPageType();
+            if (pageType != null) {
+                Element pageTypeElem = doc.createElementNS(NAMESPACE, "page-type");
+                pageTypeElem.appendChild(doc.createTextNode(pageType));
+                trackInfoElem.appendChild(pageTypeElem);
+            }
 
-                String requestAction = trackInfo.getRequestAction();
-                if (requestAction != null) {
-                    //accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ra", requestAction);
-                }
+            String requestAction = trackInfo.getRequestAction();
+            if (requestAction != null) {
+                Element requestActionElem = doc.createElementNS(NAMESPACE, "request-action");
+                requestActionElem.appendChild(doc.createTextNode(requestAction));
+                trackInfoElem.appendChild(requestActionElem);
+            }
 
-                HashMap<String, String> customFields = trackInfo.getCustomFields();
-                if (customFields != null) {
-                    for (java.util.Map.Entry field : customFields.entrySet()) {
-                        //accessLogMessage = accessLogMessage + AccessLog.encodeLogField((String) field.getKey(), (String) field.getValue());
-                    }
+            HashMap<String, String> customFields = trackInfo.getCustomFields();
+            if (customFields != null) {
+                Element customFieldsElem = doc.createElementNS(NAMESPACE, "custom-fields");
+                trackInfoElem.appendChild(customFieldsElem);
+                for (java.util.Map.Entry field : customFields.entrySet()) {
+                    Element fieldElem = doc.createElementNS(NAMESPACE, "field");
+                    fieldElem.setAttribute("name", (String) field.getKey());
+                    fieldElem.setAttribute("value", (String) field.getValue());
+                    customFieldsElem.appendChild(fieldElem);
                 }
+            }
         } else {
             log.debug("No tracking information.");
             Element noTrackInfoElem = doc.createElementNS(NAMESPACE, "no-tracking-information");
