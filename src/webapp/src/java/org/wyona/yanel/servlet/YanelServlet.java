@@ -684,7 +684,8 @@ public class YanelServlet extends HttpServlet {
                 log.warn("TODO: meta: " + meta);
             } else {
                 log.debug("Show all meta");
-                appendAnnotationsAndTrackingInformation(doc, res, trackInfo);
+                appendAnnotations(doc, res);
+                appendTrackingInformation(doc, trackInfo);
             }
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             setYanelOutput(request, response, doc);
@@ -2765,10 +2766,11 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Append annotations and tracking information to page meta document
+     * Append annotations of resource to page meta document
      * @param doc Page meta document
+     * @param resource Resource which might has some annotations
      */
-    private void appendAnnotationsAndTrackingInformation(Document doc, Resource resource, TrackingInformationV1 trackInfo) {
+    private void appendAnnotations(Document doc, Resource resource) {
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Annotatable", "1")) {
             AnnotatableV1 anno = (AnnotatableV1) resource;
             try {
@@ -2798,16 +2800,28 @@ public class YanelServlet extends HttpServlet {
             noAnnotationsYetElem.setAttribute("annotatable-v1", "false");
             doc.getDocumentElement().appendChild(noAnnotationsYetElem);
         }
+    }
 
-
-/*
-            if (trackInfo != null) {
-                String[] trackingTags = trackInfo.getTags();
-                if (trackingTags != null && trackingTags.length > 0) {
-                    //accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), trackingTags);
-                } else {
-                    //accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), tags);
+    /**
+     * Append tracking information of resource to page meta document
+     * @param doc Page meta document
+     */
+    private void appendTrackingInformation(Document doc, TrackingInformationV1 trackInfo) {
+        if (trackInfo != null) {
+            Element trackInfoElem = doc.createElementNS(NAMESPACE, "tracking-info");
+            doc.getDocumentElement().appendChild(trackInfoElem);
+            String[] trackingTags = trackInfo.getTags();
+            if (trackingTags != null && trackingTags.length > 0) {
+                Element interestsElem = doc.createElementNS(NAMESPACE, "interests");
+                trackInfoElem.appendChild(interestsElem);
+                for (int i = 0; i < trackingTags.length; i++) {
+                    Element interestElem = doc.createElementNS(NAMESPACE, "interest");
+                    interestElem.appendChild(doc.createTextNode(trackingTags[i]));
+                    interestsElem.appendChild(interestElem);
                 }
+            } else {
+                //accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), tags);
+            }
 
                 String pageType = trackInfo.getPageType();
                 if (pageType != null) {
@@ -2825,7 +2839,10 @@ public class YanelServlet extends HttpServlet {
                         //accessLogMessage = accessLogMessage + AccessLog.encodeLogField((String) field.getKey(), (String) field.getValue());
                     }
                 }
-            }
-*/
+        } else {
+            log.debug("No tracking information.");
+            Element noTrackInfoElem = doc.createElementNS(NAMESPACE, "no-tracking-information");
+            doc.getDocumentElement().appendChild(noTrackInfoElem);
+        }
     }
 }
