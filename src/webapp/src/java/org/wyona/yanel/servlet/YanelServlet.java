@@ -2653,7 +2653,16 @@ public class YanelServlet extends HttpServlet {
             }
 
             // INFO: For performance reasons we do not use getRemoteHost(), but rather just log the IP address.
-            accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", request.getRemoteAddr());
+            if (realm.isProxySet()) {
+                String remoteIPAddr = request.getHeader("X-FORWARDED-FOR");
+                if (remoteIPAddr != null) {
+                    accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", remoteIPAddr);
+                } else {
+                    log.warn("No such request header: X-FORWARDED-FOR");
+                }
+            } else {
+                accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", request.getRemoteAddr());
+            }
 
             logAccess.info(accessLogMessage);
 
