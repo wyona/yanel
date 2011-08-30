@@ -681,7 +681,11 @@ public class YanelServlet extends HttpServlet {
         String meta = request.getParameter(RESOURCE_META_ID_PARAM_NAME);
         if (meta != null) {
             if (meta.length() > 0) {
-                log.warn("TODO: meta: " + meta);
+                if (meta.equals("annotations")) {
+                    log.warn("TODO: Remove everything from the page meta document except the annotations");
+                } else {
+                    log.warn("Stripping everything from page meta document but '" + meta + "' not supported!");
+                }
             } else {
                 log.debug("Show all meta");
                 appendAnnotations(doc, res);
@@ -1557,14 +1561,20 @@ public class YanelServlet extends HttpServlet {
         
         try {
             String yanelFormat = request.getParameter("yanel.format");
-            if(yanelFormat != null && yanelFormat.equals("xml")) {
-                response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
-                XMLHelper.writeDocument(doc, response.getOutputStream());
+            if(yanelFormat != null) {
+                if (yanelFormat.equals("xml")) {
+                    response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
+                    XMLHelper.writeDocument(doc, response.getOutputStream());
 /*
-                OutputStream out = response.getOutputStream();
-                javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
-                out.close();
+                    OutputStream out = response.getOutputStream();
+                    javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
+                    out.close();
 */
+                } else if (yanelFormat.equals("json")) {
+                    log.error("TODO: JSON format not implemented yet!");
+                } else {
+                    log.error("No such format '" + yanelFormat + "' supported!");
+                }
             } else {
                 String mimeType = patchMimeType("application/xhtml+xml", request);
                 // TODO: doLogAccess
