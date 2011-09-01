@@ -36,7 +36,7 @@ public class DefaultYanelToolbar implements YanelToolbar {
     }
 
     /**
-     *
+     * @param menu Custom menu instead DefaultMenu
      */
     public DefaultYanelToolbar(Menu menu) {
         this.menu = menu;
