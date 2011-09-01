@@ -8,6 +8,12 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 -->
 
+<!-- TODO: Enhance build process such that it will compare the version attribute of this 'template' with the local configuration local.web.xml
+<changes version="2011090100">
+  <change version="2011090100">list of mobile devices added</change>
+</changes>
+-->
+
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
@@ -67,6 +73,12 @@
       <param-name>detect-mobile-per-request</param-name>
       <param-value>false</param-value> <!--The default value needs to be false because of performance/scalability reasons -->
       <!--<param-value>true</param-value>-->
+    </init-param>
+
+    <!-- List of mobile devices -->
+    <init-param>
+      <param-name>mobile-devices</param-name>
+      <param-value>iPhone,iPod,BlackBerry,PalmSource,PalmOS,Nokia,Sony,SonyEricsson,Samsung,SAMSUNG,Android,Symbian</param-value>
     </init-param>
 
     <!-- Allow client-side caching of static htdocs content. Specify value in hours. -->
