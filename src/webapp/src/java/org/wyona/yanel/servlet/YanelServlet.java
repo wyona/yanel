@@ -161,6 +161,11 @@ public class YanelServlet extends HttpServlet {
 
     private Scheduler scheduler;
 
+    private String[] mobileDevices;
+
+    /**
+     * @see javax.servlet.GenericServlet#init(ServletConfig)
+     */
     @Override
     public void init(ServletConfig config) throws ServletException {
         servletContextRealPath = config.getServletContext().getRealPath("/");
@@ -192,6 +197,13 @@ public class YanelServlet extends HttpServlet {
             // TODO: Make this value configurable also per realm or per individual user!
             if (config.getInitParameter("detect-mobile-per-request") != null) {
                 detectMobilePerRequest = new Boolean(config.getInitParameter("detect-mobile-per-request")).booleanValue();
+            }
+
+            if (config.getInitParameter("mobile-devices") != null) {
+                mobileDevices = org.springframework.util.StringUtils.tokenizeToStringArray(config.getInitParameter("mobile-devices"), ",", true, true);
+            } else {
+                mobileDevices = new String[]{"iPhone", "Android"};
+                log.error("No mobile devices configured! Please make sure to update your web.xml configuration file accordingly. Fallback to hard-coded list: " + mobileDevices);
             }
 
             if (yanelInstance.isSchedulerEnabled()) {
@@ -2778,8 +2790,6 @@ public class YanelServlet extends HttpServlet {
             //log.debug("User agent screen: " + request.getHeader("UA-Pixels")); // INFO: UA-Pixels, UA-Color, UA-OS, UA-CPU
 
             // TODO: Lower case!
-            // TODO: iPhone|iPod|BlackBerry|PalmSource|PalmOS|Nokia|Sony|SonyEricsson|Samsung|SAMSUNG|Android|Symbian
-            String[] mobileDevices = {"iPhone", "Android"};
             session.setAttribute(YanelServlet.MOBILE_KEY, "false"); // INFO: First assume user agent is not a mobile device...
             for (int i = 0; i < mobileDevices.length; i++) {
                 if (userAgent != null && userAgent.indexOf(mobileDevices[i]) > 0) { // TODO: Use http://wurfl.sourceforge.net/njava/, http://www.cloudfour.com/comparative-speed-of-wurfl-and-device-atlas/, http://www.id.uzh.ch/zinfo/mobileview.html
