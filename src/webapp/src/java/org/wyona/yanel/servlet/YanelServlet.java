@@ -2773,14 +2773,28 @@ public class YanelServlet extends HttpServlet {
         if (detectMobilePerRequest || mobileDevice == null) {
             String userAgent = request.getHeader("User-Agent");
             //log.debug("User agent: " + userAgent);
-            if (userAgent != null && (userAgent.indexOf("iPhone") > 0 || userAgent.indexOf("Android") > 0)) { // TODO: Use http://wurfl.sourceforge.net/njava/, http://www.cloudfour.com/comparative-speed-of-wurfl-and-device-atlas/, http://www.id.uzh.ch/zinfo/mobileview.html
-                session.setAttribute(YanelServlet.MOBILE_KEY, "iphone");
-            } else {
-                //log.debug("This does not seem to be a mobile device: " + userAgent);
-                session.setAttribute(YanelServlet.MOBILE_KEY, "false");
+
+            // INFO: In order to get the screen size/resolution please see for example http://www.coderanch.com/t/229905/JME/Mobile/Getting-Screen-size-requesting-mobile, whereas the below does not seem to work!
+            //log.debug("User agent screen: " + request.getHeader("UA-Pixels")); // INFO: UA-Pixels, UA-Color, UA-OS, UA-CPU
+
+            // TODO: Lower case!
+            // TODO: iPhone|iPod|BlackBerry|PalmSource|PalmOS|Nokia|Sony|SonyEricsson|Samsung|SAMSUNG|Android|Symbian
+            String[] mobileDevices = {"iPhone", "Android"};
+            session.setAttribute(YanelServlet.MOBILE_KEY, "false"); // INFO: First assume user agent is not a mobile device...
+            for (int i = 0; i < mobileDevices.length; i++) {
+                if (userAgent != null && userAgent.indexOf(mobileDevices[i]) > 0) { // TODO: Use http://wurfl.sourceforge.net/njava/, http://www.cloudfour.com/comparative-speed-of-wurfl-and-device-atlas/, http://www.id.uzh.ch/zinfo/mobileview.html
+                    session.setAttribute(YanelServlet.MOBILE_KEY, mobileDevices[i]);
+                    //log.debug("This seems to be a mobile device: " + mobileDevices[i]);
+                    break;
+                }
             }
+/*
+            if (((String)session.getAttribute(YanelServlet.MOBILE_KEY)).equals("false")) {
+                log.debug("This does not seem to be a mobile device: " + userAgent);
+            }
+*/
         } else {
-            //log.debug("DEBUG: Mobile device detection already done.");
+            //log.debug("Mobile device detection already done.");
         }
     }
 
