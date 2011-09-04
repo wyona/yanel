@@ -2,7 +2,9 @@
 
 <repository class="org.wyona.yarep.impl.repo.vfs.VirtualFileSystemRepository">
   <name>yanel.org data repository</name>
-  <content src="../data-repo/data"/>
+  <content src="../data-repo/data">
+    <ignore pattern=".*\.svn"/>
+  </content>
   <directory alternative="index.html" mime-type="application/xhtml+xml"/>
   <meta src="../data-repo/yarep-meta"/>
 
