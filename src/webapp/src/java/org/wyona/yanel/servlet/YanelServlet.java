@@ -2670,7 +2670,8 @@ public class YanelServlet extends HttpServlet {
                 if (remoteIPAddr != null) {
                     accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", remoteIPAddr);
                 } else {
-                    log.warn("No such request header: X-FORWARDED-FOR");
+                    log.warn("No such request header: X-FORWARDED-FOR (hence fallback to request.getRemoteAddr())"); // INFO: For example in the case of AJP
+                    accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", request.getRemoteAddr());
                 }
             } else {
                 accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", request.getRemoteAddr());
