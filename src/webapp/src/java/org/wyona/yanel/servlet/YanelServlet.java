@@ -2132,7 +2132,8 @@ public class YanelServlet extends HttpServlet {
                                 }
                             } catch (Exception e) {
                                 String message = "Error merging toolbar into content: " + e.getMessage();
-                                log.error(message, e);
+                                //log.error(message, e);
+                                log.error(e, e);
                                 Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
                                 exceptionElement.appendChild(doc.createTextNode(message));
                                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -2670,7 +2671,9 @@ public class YanelServlet extends HttpServlet {
                 if (remoteIPAddr != null) {
                     accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", remoteIPAddr);
                 } else {
-                    log.warn("No such request header: X-FORWARDED-FOR (hence fallback to request.getRemoteAddr())"); // INFO: For example in the case of AJP
+                    if (log.isDebugEnabled()) {
+                        log.debug("No such request header: X-FORWARDED-FOR (hence fallback to request.getRemoteAddr())"); // INFO: For example in the case of AJP
+                    }
                     accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", request.getRemoteAddr());
                 }
             } else {
