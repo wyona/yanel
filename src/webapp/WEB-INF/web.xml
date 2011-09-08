@@ -78,7 +78,7 @@
     <!-- List of mobile devices -->
     <init-param>
       <param-name>mobile-devices</param-name>
-      <param-value>iPhone,iPod,BlackBerry,PalmSource,PalmOS,Nokia,Sony,SonyEricsson,Samsung,SAMSUNG,Android,Symbian</param-value>
+      <param-value>iPhone,iPod,BlackBerry,PalmSource,PalmOS,Nokia,Sony,SonyEricsson,Samsung,SAMSUNG,Android,Symbian,iemobile,IEMobile</param-value>
     </init-param>
 
     <!-- Allow client-side caching of static htdocs content. Specify value in hours. -->
