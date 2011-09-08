@@ -568,6 +568,14 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * Check whether mobile view is requested. Please overwrite this method in case there exist other rules than just being a mobile device.
      */
     protected boolean isMobileView() {
+        try {
+            String isMobileViewParamValue = getResourceConfigProperty("is-mobile-view");
+            if (isMobileViewParamValue != null && isMobileViewParamValue.equals("false")) { // INFO: In some cases one wants to disable the mobile view completely (including mobile CSS, if applicable)
+                return false;
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+        }
         return isMobileDevice();
     }
 
