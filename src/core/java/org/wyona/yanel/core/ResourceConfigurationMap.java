@@ -66,11 +66,15 @@ public class ResourceConfigurationMap {
                 if (event == XMLStreamConstants.START_ELEMENT) {
                     if (parser.getLocalName().equals("matcher")) {
                         String pattern = parser.getAttributeValue("", "pattern");
-                        if (WildcardMatcherHelper.match(pattern, path) != null) {
-                            if (log.isDebugEnabled()) {
-                                log.debug("CoR pattern: '" + pattern + "' matched with path: '" + path + "'. will use following path int the RTIRepository to reach the rc: " + parser.getAttributeValue("", "rcpath"));
+                        if (pattern != null) {
+                            if (WildcardMatcherHelper.match(pattern, path) != null) {
+                                if (log.isDebugEnabled()) {
+                                    log.debug("CoR pattern: '" + pattern + "' matched with path: '" + path + "'. will use following path int the RTIRepository to reach the rc: " + parser.getAttributeValue("", "rcpath"));
+                                }
+                                return parser.getAttributeValue("", "rcpath");
                             }
-                            return parser.getAttributeValue("", "rcpath");
+                        } else {
+                            log.warn("Matcher has no 'pattern' attribute, hence ignore.");
                         }
                     }
                 }
