@@ -118,6 +118,8 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     protected HashMap<String, ViewDescriptor> viewDescriptors;
 
+    private static final String VIEW_ID_PARAM_NAME = "yanel.resource.viewid";
+
     /**
      * Get view descriptor for a particular view id
      * @param viewId View id
@@ -254,7 +256,10 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             } else {
                 viewId = DEFAULT_VIEW_ID;
             }
+        } else {
+            log.warn("DEBUG: View already set (probably via query string or session attribute): " + viewId);
         }
+
         ConfigurableViewDescriptor viewDescriptor = (ConfigurableViewDescriptor)getViewDescriptor(viewId);
         String mimeType = getMimeType(viewId);
         view.setMimeType(mimeType);
@@ -484,7 +489,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         }
 
         // INFO: Set whether mobile view should be set to true
-        String queryStringViewId = getEnvironment().getRequest().getParameter("yanel.resource.viewid");
+        String queryStringViewId = getViewID();
         if (queryStringViewId != null) {
             if (queryStringViewId.equals(MOBILE_VIEW_ID)) {
                 if (getViewDescriptor(MOBILE_VIEW_ID) == null) {
@@ -571,6 +576,12 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         try {
             String isMobileViewParamValue = getResourceConfigProperty("is-mobile-view");
             if (isMobileViewParamValue != null && isMobileViewParamValue.equals("false")) { // INFO: In some cases one wants to disable the mobile view completely (including mobile CSS, if applicable)
+                return false;
+            }
+
+            String viewIdFromSession = (String) request.getSession(true).getAttribute(VIEW_ID_PARAM_NAME);
+            if (viewIdFromSession != null && !viewIdFromSession.equals("mobile")) {
+                log.warn("It seems like the view id is set inside session, but not set to mobile: " + viewIdFromSession);
                 return false;
             }
         } catch(Exception e) {
@@ -690,5 +701,29 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
              userAgent = "null";
         }
         return userAgent;
+    }
+
+    /**
+     * Determine view ID
+     */
+    private String getViewID() {
+        String viewId = null;
+
+        String viewIdFromSession = (String) getEnvironment().getRequest().getAttribute(VIEW_ID_PARAM_NAME);
+        if (viewIdFromSession != null) {
+            log.warn("It seems like the view id is set inside session: " + viewIdFromSession);
+            viewId = viewIdFromSession;
+        }
+
+        viewId = getEnvironment().getRequest().getParameter(VIEW_ID_PARAM_NAME);
+
+/*
+        if (request.getParameter("yanel.format") != null) { // backwards compatible
+            viewId = request.getParameter("yanel.format");
+            log.warn("For backwards compatibility reasons also consider parameter 'yanel.format', but which is deprecated. Please use '" + VIEW_ID_PARAM_NAME + "' instead.");
+        }
+*/
+
+        return viewId;
     }
 }
