@@ -513,7 +513,7 @@ public class YanelServlet extends HttpServlet {
                     viewElement.setAttributeNS(NAMESPACE, "version", "1");
                     appendViewDescriptors(doc, viewElement, ((ViewableV1) res).getViewDescriptors());
 
-                    String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
+                    String viewId = getViewID(request);
                     try {
                         view = ((ViewableV1) res).getView(request, viewId);
                     } catch (org.wyona.yarep.core.NoSuchNodeException e) {
@@ -548,8 +548,7 @@ public class YanelServlet extends HttpServlet {
                     sizeElement.appendChild(doc.createTextNode(String.valueOf(size)));
 
 
-
-                    String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
+                    String viewId = getViewID(request);
                     try {
                         String revisionName = request.getParameter(YANEL_RESOURCE_REVISION);
                         // NOTE: Check also if usecase is not roll-back, because roll-back is also using the yanel.resource.revision
@@ -1865,12 +1864,8 @@ public class YanelServlet extends HttpServlet {
      * @return true if generation of response was successful or return false otherwise
      */
     private boolean generateResponseFromResourceView(HttpServletRequest request, HttpServletResponse response, Resource resource) throws Exception {
-        String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
+        String viewId = getViewID(request);
 
-        if (request.getParameter("yanel.format") != null) { // backwards compatible
-            viewId = request.getParameter("yanel.format");
-            log.warn("For backwards compatibility reasons also consider parameter 'yanel.format', but which is deprecated. Please use '" + VIEW_ID_PARAM_NAME + "' instead.");
-        }
         View view = ((ViewableV2) resource).getView(viewId);
         if (view != null) {
             log.warn("TODO: Tracking not implemented yet: " + resource.getPath());
@@ -2338,7 +2333,7 @@ public class YanelServlet extends HttpServlet {
      */
     private void doAccessPolicyRequest(HttpServletRequest request, HttpServletResponse response, int version)  throws ServletException, IOException {
         try {
-            String viewId = request.getParameter(VIEW_ID_PARAM_NAME);
+            String viewId = getViewID(request);
             
             Realm realm = map.getRealm(request.getServletPath());
 
@@ -2902,5 +2897,31 @@ public class YanelServlet extends HttpServlet {
             Element noTrackInfoElem = doc.createElementNS(NAMESPACE, "no-tracking-information");
             doc.getDocumentElement().appendChild(noTrackInfoElem);
         }
+    }
+
+    /**
+     * Determine requested view ID
+     */
+    private String getViewID(HttpServletRequest request) {
+        String viewId = null;
+
+        String viewIdFromSession = (String) request.getSession(true).getAttribute(VIEW_ID_PARAM_NAME);
+        if (viewIdFromSession != null) {
+            log.warn("It seems like the view id is set inside session: " + viewIdFromSession);
+            viewId = viewIdFromSession;
+        }
+
+        if (request.getParameter(VIEW_ID_PARAM_NAME) != null) {
+            viewId = request.getParameter(VIEW_ID_PARAM_NAME);
+        }
+
+        if (request.getParameter("yanel.format") != null) { // backwards compatible
+            viewId = request.getParameter("yanel.format");
+            log.warn("For backwards compatibility reasons also consider parameter 'yanel.format', but which is deprecated. Please use '" + VIEW_ID_PARAM_NAME + "' instead.");
+        }
+
+        log.warn("DEBUG: Try to get view id from query string or session attribute: " + viewId);
+
+        return viewId;
     }
 }
