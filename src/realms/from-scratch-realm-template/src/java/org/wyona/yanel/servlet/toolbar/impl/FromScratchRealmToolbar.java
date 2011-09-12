@@ -57,6 +57,9 @@ public class FromScratchRealmToolbar implements YanelToolbar {
         }
     }
 
+    /**
+     * @see org/wyona/yanel/servlet/toolbar/YanelToolbar#getToolbarHeader(Resource, HttpServletRequest, Map, String)
+     */
     public String getToolbarHeader(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) {
 
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
