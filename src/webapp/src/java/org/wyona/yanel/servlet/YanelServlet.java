@@ -2900,14 +2900,14 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Determine requested view ID
+     * Determine requested view ID (try to get it from session or query string)
      */
     private String getViewID(HttpServletRequest request) {
         String viewId = null;
 
         String viewIdFromSession = (String) request.getSession(true).getAttribute(VIEW_ID_PARAM_NAME);
         if (viewIdFromSession != null) {
-            log.warn("It seems like the view id is set inside session: " + viewIdFromSession);
+            //log.debug("It seems like the view id is set inside session: " + viewIdFromSession);
             viewId = viewIdFromSession;
         }
 
@@ -2920,7 +2920,7 @@ public class YanelServlet extends HttpServlet {
             log.warn("For backwards compatibility reasons also consider parameter 'yanel.format', but which is deprecated. Please use '" + VIEW_ID_PARAM_NAME + "' instead.");
         }
 
-        log.warn("DEBUG: Try to get view id from query string or session attribute: " + viewId);
+        //log.debug("Tried to get view id from query string or session attribute: " + viewId);
 
         return viewId;
     }
