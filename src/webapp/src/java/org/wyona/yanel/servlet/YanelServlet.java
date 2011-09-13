@@ -2039,6 +2039,7 @@ public class YanelServlet extends HttpServlet {
 
         // INFO: Check if viewable resource has already created a response
         if (!view.isResponse()) {
+            // TODO: Replace with logAccessIsApplicable(view.getMimeType())
             if(logAccessEnabled) {
                 if (view.getMimeType() != null) {
                     if (isMimeTypeOk(view.getMimeType())) {
@@ -2923,5 +2924,20 @@ public class YanelServlet extends HttpServlet {
         //log.debug("Tried to get view id from query string or session attribute: " + viewId);
 
         return viewId;
+    }
+
+    /**
+     * Check whether access logging makes sense
+     * @param mimeType Content type of requested resource
+     */
+    private boolean logAccessIsApplicable(String mimeType) {
+        if(logAccessEnabled) {
+            if (mimeType != null) {
+                if (isMimeTypeOk(mimeType)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
