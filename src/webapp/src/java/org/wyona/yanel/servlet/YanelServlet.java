@@ -2039,14 +2039,9 @@ public class YanelServlet extends HttpServlet {
 
         // INFO: Check if viewable resource has already created a response
         if (!view.isResponse()) {
-            // TODO: Replace with logAccessIsApplicable(view.getMimeType())
-            if(logAccessEnabled) {
-                if (view.getMimeType() != null) {
-                    if (isMimeTypeOk(view.getMimeType())) {
-                        //log.debug("Mime type '" + view.getMimeType() + "' of request: " + request.getServletPath() + "?" + request.getQueryString());
-                        doLogAccess(request, response, res, trackInfo);
-                    }
-                }
+            if(logAccessIsApplicable(view.getMimeType())) {
+                //log.debug("Mime type '" + view.getMimeType() + "' of request: " + request.getServletPath() + "?" + request.getQueryString());
+                doLogAccess(request, response, res, trackInfo);
             }
             return response;
         }
@@ -2076,13 +2071,9 @@ public class YanelServlet extends HttpServlet {
             }
         }
 
-        if(logAccessEnabled) {
-            if (mimeType != null) {
-                if (isMimeTypeOk(mimeType)) {
-                    //log.debug("Mime type '" + mimeType + "' of request: " + request.getServletPath() + "?" + request.getQueryString());
-                    doLogAccess(request, response, res, trackInfo);
-                }
-            }
+        if(logAccessIsApplicable(mimeType)) {
+            //log.debug("Mime type '" + mimeType + "' of request: " + request.getServletPath() + "?" + request.getQueryString());
+            doLogAccess(request, response, res, trackInfo);
         }
 
         // Set HTTP headers:
@@ -2932,11 +2923,18 @@ public class YanelServlet extends HttpServlet {
      */
     private boolean logAccessIsApplicable(String mimeType) {
         if(logAccessEnabled) {
+            // TODO: Check whether resource is trackable
             if (mimeType != null) {
                 if (isMimeTypeOk(mimeType)) {
                     return true;
+                } else {
+                   //log.debug("Do not track this mime type: " + mimeType);
                 }
+            } else {
+                //log.debug("No mime type, hence do not track.");
             }
+        } else {
+            //log.debug("Tracking disabled globally.");
         }
         return false;
     }
