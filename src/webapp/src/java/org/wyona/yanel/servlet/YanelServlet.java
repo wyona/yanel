@@ -1204,10 +1204,12 @@ public class YanelServlet extends HttpServlet {
                         - Or authentication was successful and web authenticator sends a redirect
                 */
 
-                if(logAccessEnabled) { // INFO: Although authorization has been denied and user first needs to authenticate, let's log the request anyway (TODO: Check mime type, whereas only introspection is currently excluded)
+                // TODO: Check "would be mime type", etc.: if (logAccessIsApplicable(view.getMimeType())) {
+                if(logAccessEnabled) { // INFO: Although authorization has been denied and user first needs to authenticate, let's log the request anyway
                     if (usecase!= null && !usecase.equals("introspection")) {
                         log.debug("Ignore introspection requests ...");
                     } else {
+                        log.info("Authentication not completed yet, but let's log request anyway...");
                         doLogAccess(request, response, null, null);
                     }
                 }
@@ -2039,7 +2041,7 @@ public class YanelServlet extends HttpServlet {
 
         // INFO: Check if viewable resource has already created a response
         if (!view.isResponse()) {
-            if(logAccessIsApplicable(view.getMimeType())) {
+            if(logAccessIsApplicable(view.getMimeType(), res)) {
                 //log.debug("Mime type '" + view.getMimeType() + "' of request: " + request.getServletPath() + "?" + request.getQueryString());
                 doLogAccess(request, response, res, trackInfo);
             }
@@ -2071,7 +2073,7 @@ public class YanelServlet extends HttpServlet {
             }
         }
 
-        if(logAccessIsApplicable(mimeType)) {
+        if(logAccessIsApplicable(mimeType, res)) {
             //log.debug("Mime type '" + mimeType + "' of request: " + request.getServletPath() + "?" + request.getQueryString());
             doLogAccess(request, response, res, trackInfo);
         }
@@ -2920,22 +2922,27 @@ public class YanelServlet extends HttpServlet {
     /**
      * Check whether access logging makes sense
      * @param mimeType Content type of requested resource
+     * @param resource Resource/controller handling request
      */
-    private boolean logAccessIsApplicable(String mimeType) {
+    private boolean logAccessIsApplicable(String mimeType, Resource resource) {
         if(logAccessEnabled) {
             // TODO: Check whether resource is trackable
-            if (mimeType != null) {
-                if (isMimeTypeOk(mimeType)) {
-                    return true;
-                } else {
-                   //log.debug("Do not track this mime type: " + mimeType);
-                }
+            if (isTrackable(resource) || (mimeType != null && isMimeTypeOk(mimeType))) {
+                return true;
             } else {
-                //log.debug("No mime type, hence do not track.");
+                //log.debug("Neither trackable nor a mime type which makes sense, hence do not track.");
             }
         } else {
             //log.debug("Tracking disabled globally.");
         }
         return false;
+    }
+
+    /**
+     * Check whether a resource/controller is trackable
+     * @param resource Resource/controller which might has the trackable interface implemented
+     */
+    private boolean isTrackable(Resource resource) {
+        return ResourceAttributeHelper.hasAttributeImplemented(resource, "Trackable", "1");
     }
 }
