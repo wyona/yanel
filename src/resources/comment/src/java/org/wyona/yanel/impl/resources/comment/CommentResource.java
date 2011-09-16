@@ -30,67 +30,7 @@ public class CommentResource extends BasicXMLResource {
             log.debug("requested viewId: " + viewId);
         }
 
-
-        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
-        String path = getEnvironment().getRequest().getParameter("path");
-        if (path != null) {
-            // TODO: Get resource and check if commentable
-            org.wyona.yanel.core.Resource resource = getYanel().getResourceManager().getResource(getEnvironment(), getRealm(), path);
-            if (resource != null) {
-                if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Commentable", "1")) {
-                    CommentManagerV1 cMan = ((CommentableV1) resource).getCommentManager();
-                    String body = getEnvironment().getRequest().getParameter("body");
-                    if (body != null) {
-                        CommentV1 comment = new CommentV1();
-                        comment.setCommentText(body);
-                        String title = getEnvironment().getRequest().getParameter("title");
-                        if (title != null && title.trim().length() > 0) {
-                            comment.setTitle(title);
-                            comment.setId(title.replace(" ", "_"));
-                        } else {
-                            log.warn("No title set!");
-                        }
-                        String email = getEnvironment().getRequest().getParameter("email");
-                        if (email != null && email.trim().length() > 0) {
-                            comment.setAuthorMail(email);
-                        } else {
-                            log.warn("No author email specified!");
-                        }
-                        String name = getEnvironment().getRequest().getParameter("name");
-                        if (name != null && name.trim().length() > 0) {
-                            comment.setAuthorName(name);
-                        } else {
-                            log.info("No author name specified!");
-                        }
-
-                        // TODO: Validate fields (e.g. email should be mandatory)!
-                        cMan.addComment(getRealm(), path, comment);
-                        notifyAdministrator(path, comment);
-
-                        // INFO: Return content of comment as confirmation of what has been saved
-                        sb.append("<comment path=\"" + path + "\">");
-                        sb.append(body);
-                        sb.append("</comment>");
-                    } else {
-                        sb.append("<no-valid-comment-submitted-yet path=\"" + path + "\"/>");
-                    }
-                } else {
-                    String message = "Resource is not commentable: " + path;
-                    log.error(message);
-                    sb.append("<exception status=\"resource-not-commentable\">" + message + "</exception>");
-                }
-            } else {
-                String message = "No such resource: " + path;
-                log.error(message);
-                sb.append("<exception status=\"no-such-resource\">" + message + "</exception>");
-            }
-        } else {
-            String message = "No path of commentable resource specified!";
-            log.error(message);
-            sb.append("<exception status=\"no-path\">" + message + "</exception>");
-        }
-
-        return new ByteArrayInputStream(sb.toString().getBytes());
+        return new ByteArrayInputStream(generateXML().toString().getBytes());
     }
 
     /**
@@ -129,5 +69,87 @@ public class CommentResource extends BasicXMLResource {
         } else {
             log.warn("No email addresses (either 'to' or 'from') are configured in order to notify 'administrator' re a new comment!");
         }
+    }
+
+    /**
+     * Generate XML expressing that no valid comment has been submitted yet
+     * @param path Path of commentable resource
+     * @param message Message why comment might not be valid
+     */
+    private String generateNoValidCommentSubmittedYetXML(String path, String message) {
+        StringBuilder sb = new StringBuilder("<no-valid-comment-submitted-yet path=\"" + path + "\">");
+        if (message != null) {
+            sb.append("<message>" + message + "</message>");
+        }
+        sb.append("</no-valid-comment-submitted-yet>");
+        return sb.toString();
+    }
+
+    /**
+     * Generate XML and save comment if applicable
+     */
+    private StringBuilder generateXML() throws Exception {
+        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
+        String path = getEnvironment().getRequest().getParameter("path");
+        if (path != null) {
+            // TODO: Get resource and check if commentable
+            org.wyona.yanel.core.Resource resource = getYanel().getResourceManager().getResource(getEnvironment(), getRealm(), path);
+            if (resource != null) {
+                if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Commentable", "1")) {
+                    CommentManagerV1 cMan = ((CommentableV1) resource).getCommentManager();
+                    String body = getEnvironment().getRequest().getParameter("body");
+                    if (body != null) {
+                        CommentV1 comment = new CommentV1();
+                        comment.setCommentText(body);
+                        String title = getEnvironment().getRequest().getParameter("title");
+                        if (title != null && title.trim().length() > 0) {
+                            comment.setTitle(title);
+                            comment.setId(title.replace(" ", "_"));
+                        } else {
+                            log.warn("No title set!");
+                        }
+                        String email = getEnvironment().getRequest().getParameter("email");
+                        if (email != null && email.trim().length() > 0) {
+                            comment.setAuthorMail(email);
+                        } else {
+                            String message = "No author email specified!";
+                            log.warn(message);
+                            sb.append(generateNoValidCommentSubmittedYetXML(path, message));
+                            return sb;
+                        }
+                        String name = getEnvironment().getRequest().getParameter("name");
+                        if (name != null && name.trim().length() > 0) {
+                            comment.setAuthorName(name);
+                        } else {
+                            log.info("No author name specified!");
+                        }
+
+                        // TODO: Validate fields (e.g. email should be mandatory)!
+                        cMan.addComment(getRealm(), path, comment);
+                        notifyAdministrator(path, comment);
+
+                        // INFO: Return content of comment as confirmation of what has been saved
+                        sb.append("<comment path=\"" + path + "\">");
+                        sb.append(body);
+                        sb.append("</comment>");
+                    } else {
+                        sb.append(generateNoValidCommentSubmittedYetXML(path, null));
+                    }
+                } else {
+                    String message = "Resource is not commentable: " + path;
+                    log.error(message);
+                    sb.append("<exception status=\"resource-not-commentable\">" + message + "</exception>");
+                }
+            } else {
+                String message = "No such resource: " + path;
+                log.error(message);
+                sb.append("<exception status=\"no-such-resource\">" + message + "</exception>");
+            }
+        } else {
+            String message = "No path of commentable resource specified!";
+            log.error(message);
+            sb.append("<exception status=\"no-path\">" + message + "</exception>");
+        }
+        return sb;
     }
 }

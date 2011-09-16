@@ -31,8 +31,8 @@
       <body>
         <xsl:apply-templates select="/exception"/>
 
-        <h2>Add comment re page '<xsl:value-of select="/no-comment-yet/@path"/><xsl:value-of select="/comment/@path"/>'</h2>
-        <xsl:apply-templates select="/no-comment-yet"/>
+        <h2>Add comment re page '<xsl:value-of select="/no-valid-comment-submitted-yet/@path"/><xsl:value-of select="/comment/@path"/>'</h2>
+        <xsl:apply-templates select="/no-valid-comment-submitted-yet"/>
         <xsl:apply-templates select="/comment"/>
       </body>
     </html>
@@ -42,7 +42,12 @@
     <div style="color: red;">EXCEPTION: <xsl:value-of select="."/></div>
   </xsl:template>
 
-  <xsl:template match="no-comment-yet">
+  <xsl:template match="message">
+    <div style="color: red;"><xsl:value-of select="."/></div>
+  </xsl:template>
+
+  <xsl:template match="no-valid-comment-submitted-yet">
+    <xsl:apply-templates select="message"/>
     <p>Please enter your comment below:</p>
     <form>
       <input type="hidden" name="path" value="{@path}"/>
