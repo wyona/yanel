@@ -10,8 +10,8 @@ A resource in order to comment other resources by users
 </description>
 
 <rtd>
-<!--
-  <property name="foo" default-value="bar"/>
--->
+  <!-- Optional: These e-mail addresses (to and from) will be used in order to notify an "administrator" about a new comment -->
+  <property name="email-to"/>
+  <property name="email-from"/>
 </rtd>
 </resource>
