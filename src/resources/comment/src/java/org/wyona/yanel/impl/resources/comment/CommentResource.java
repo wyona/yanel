@@ -75,11 +75,28 @@ public class CommentResource extends BasicXMLResource {
      * Generate XML expressing that no valid comment has been submitted yet
      * @param path Path of commentable resource
      * @param message Message why comment might not be valid
+     * @param comment Comment which might has been submitted, but is not valid
      */
-    private String generateNoValidCommentSubmittedYetXML(String path, String message) {
+    private String generateNoValidCommentSubmittedYetXML(String path, String message, CommentV1 comment) {
         StringBuilder sb = new StringBuilder("<no-valid-comment-submitted-yet path=\"" + path + "\">");
         if (message != null) {
             sb.append("<message>" + message + "</message>");
+        }
+        if (comment != null) {
+            if (comment.getTitle() != null) {
+                sb.append("<title>" + comment.getTitle() + "</title>");
+            }
+            if (comment.getCommentText() != null) {
+                sb.append("<text>" + comment.getCommentText() + "</text>");
+            }
+            if (comment.getAuthorMail() != null) {
+                sb.append("<author-email-address>" + comment.getAuthorMail() + "</author-email-address>");
+            }
+            if (comment.getAuthorName() != null) {
+                sb.append("<author-name>" + comment.getAuthorName() + "</author-name>");
+            }
+        } else {
+            sb.append("<no-comment-data-available-yet/>");
         }
         sb.append("</no-valid-comment-submitted-yet>");
         return sb.toString();
@@ -108,15 +125,7 @@ public class CommentResource extends BasicXMLResource {
                         } else {
                             log.warn("No title set!");
                         }
-                        String email = getEnvironment().getRequest().getParameter("email");
-                        if (email != null && email.trim().length() > 0) {
-                            comment.setAuthorMail(email);
-                        } else {
-                            String message = "No author email specified!";
-                            log.warn(message);
-                            sb.append(generateNoValidCommentSubmittedYetXML(path, message));
-                            return sb;
-                        }
+
                         String name = getEnvironment().getRequest().getParameter("name");
                         if (name != null && name.trim().length() > 0) {
                             comment.setAuthorName(name);
@@ -124,7 +133,22 @@ public class CommentResource extends BasicXMLResource {
                             log.info("No author name specified!");
                         }
 
-                        // TODO: Validate fields (e.g. email should be mandatory)!
+                        String email = getEnvironment().getRequest().getParameter("email");
+                        if (email != null && email.trim().length() > 0) {
+                            comment.setAuthorMail(email);
+                            if (email.indexOf("@") <= 0) {
+                                String message = "Author email does not seem to be a valid email address!"; // TODO: i18n
+                                log.warn(message);
+                                sb.append(generateNoValidCommentSubmittedYetXML(path, message, comment));
+                                return sb;
+                            }
+                        } else {
+                            String message = "No author email specified!"; // TODO: i18n
+                            log.warn(message);
+                            sb.append(generateNoValidCommentSubmittedYetXML(path, message, comment));
+                            return sb;
+                        }
+
                         cMan.addComment(getRealm(), path, comment);
                         notifyAdministrator(path, comment);
 
@@ -133,7 +157,7 @@ public class CommentResource extends BasicXMLResource {
                         sb.append(body);
                         sb.append("</comment>");
                     } else {
-                        sb.append(generateNoValidCommentSubmittedYetXML(path, null));
+                        sb.append(generateNoValidCommentSubmittedYetXML(path, null, null));
                     }
                 } else {
                     String message = "Resource is not commentable: " + path;

@@ -52,16 +52,23 @@
     <form>
       <input type="hidden" name="path" value="{@path}"/>
       Title<br/>
-      <input type="text" name="title"/>
+      <input type="text" name="title" value="{title}"/>
       <br/><br/>
       Body<br/>
-      <textarea cols="50" rows="10" name="body"/>
+      <xsl:choose>
+        <xsl:when test="text">
+          <textarea cols="50" rows="10" name="body"><xsl:value-of select="text"/></textarea>
+        </xsl:when>
+        <xsl:otherwise>
+          <textarea cols="50" rows="10" name="body"/>
+        </xsl:otherwise>
+      </xsl:choose>
       <br/><br/>
       E-Mail (please note that your email will not be displayed to the public)<br/>
-      <input type="text" name="email"/>
+      <input type="text" name="email" value="{author-email-address}"/>
       <br/><br/>
       Name (optional, whereas please note that your name will not be displayed to the public)<br/>
-      <input type="text" name="name"/>
+      <input type="text" name="name" value="{author-name}"/>
       <br/><br/>
       <input type="submit" value="Add comment"/>
     </form>
