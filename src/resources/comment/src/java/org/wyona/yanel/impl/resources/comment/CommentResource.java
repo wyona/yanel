@@ -15,7 +15,7 @@ import java.io.InputStream;
 import org.apache.log4j.Logger;
 
 /**
- * A resource in order to create and edit comments
+ * A resource in order to create and edit comments of a commentable resource (which is referenced by a path parameter)
  */
 public class CommentResource extends BasicXMLResource {
     
@@ -55,7 +55,11 @@ public class CommentResource extends BasicXMLResource {
                         String name = getEnvironment().getRequest().getParameter("name");
                         if (name != null) comment.setAuthorName(name);
 
+                        // TODO: Validate fields (e.g. email should be mandatory)!
                         cMan.addComment(getRealm(), path, comment);
+                        log.warn("TODO: Send an email to administrator that a new comment has been added to : " + path);
+
+                        // INFO: Return content of comment as confirmation of what has been saved
                         sb.append("<comment path=\"" + path + "\">");
                         sb.append(body);
                         sb.append("</comment>");
@@ -73,7 +77,7 @@ public class CommentResource extends BasicXMLResource {
                 sb.append("<exception status=\"no-such-resource\">" + message + "</exception>");
             }
         } else {
-            String message = "No path!";
+            String message = "No path of commentable resource specified!";
             log.error(message);
             sb.append("<exception status=\"no-path\">" + message + "</exception>");
         }
