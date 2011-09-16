@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
-<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
 
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="comment" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="email-to" value="michael.wechner@wyona.com"/>
+  <yanel:property name="email-from" value="yanel@wyona.com"/>
 
   <yanel:custom-config>
     <views>
