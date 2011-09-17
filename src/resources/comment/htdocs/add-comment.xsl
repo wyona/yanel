@@ -76,7 +76,8 @@
 
   <xsl:template match="comment">
     <p>The following comment has been added successfully:</p>
-    <p><xsl:value-of select="."/></p>
+    <p>Title: <xsl:value-of select="title"/></p>
+    <p>Text: <xsl:value-of select="text"/></p>
     <p>Return to <a href="{$yarep.back2realm}{substring-after(@path, '/')}">page</a></p>
   </xsl:template>
 

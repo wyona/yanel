@@ -154,7 +154,8 @@ public class CommentResource extends BasicXMLResource {
 
                         // INFO: Return content of comment as confirmation of what has been saved
                         sb.append("<comment path=\"" + path + "\">");
-                        sb.append(body);
+                        sb.append("<title>" + comment.getTitle() + "</title>");
+                        sb.append("<text>" + comment.getCommentText() + "</text>");
                         sb.append("</comment>");
                     } else {
                         sb.append(generateNoValidCommentSubmittedYetXML(path, null, null));
