@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project SYSTEM "../dtd/Project.dtd">
+
+<project name="add.comment" default="test">
+
+  <import file="../definitions.xml"/>
+
+  <target name="test" depends="wt.defineMacros">
+    <tstamp>
+      <format property="CURRENT_DATE" pattern="yyyy-MM-dd_hhmmss"/>
+    </tstamp>
+    <property name="TITLE" value="Hello comment"/>
+    <property name="BODY_TEXT" value="Is this anybody going to read? (Current date: ${CURRENT_DATE})"/>
+
+    <webtest name="Add Comment">
+      &config;
+      <!--<login/>-->
+      <invoke description="Get the page: " url="/${realm.prefix}en/about.html"/>
+      <verifyText description="Verify that page which we want to comment on exists" text="add a comment"/>
+      <clickLink description="Click link to start adding a comment" label="add a comment"/>
+      <verifyText description="Verify that 'add comment' form exists" text="Please enter your comment below:"/>
+      <setInputField description="Set title of comment" name="title" value="${TITLE}"/>
+      <setInputField description="Set text/body of comment" name="body" value="${BODY_TEXT}"/>
+      <clickButton description="Submit comment" label="Add comment"/>
+      <verifyText description="Verify that 'add comment' failed, because no email has been set yet" text="No author email specified!"/>
+      <setInputField description="Set non-valid email address of author of comment" name="email" value="foo.bar"/>
+      <clickButton description="Submit comment" label="Add comment"/>
+      <verifyText description="Verify that 'add comment' failed, because email is not valid" text="Author email does not seem to be a valid email address!"/>
+      <setInputField description="Set valid email address of author of comment" name="email" value="alice@foo.bar"/>
+      <clickButton description="Submit comment" label="Add comment"/>
+      <verifyText description="Verify that 'add comment' is working now" text="The following comment has been added successfully:"/>
+<!-- TODO
+      <verifyText description="Verify that title is confirmed" text="${TITLE}"/>
+-->
+      <verifyText description="Verify that text/body is confirmed" text="${BODY_TEXT}"/>
+      <clickLink description="Back to original page" label="page"/>
+      <verifyText description="Verify that title has been set on original page" text="${TITLE}"/>
+      <verifyText description="Verify that text/body has been set on original page" text="${BODY_TEXT}"/>
+      <!--<logout/>-->
+    </webtest>
+  </target>
+
+</project>
