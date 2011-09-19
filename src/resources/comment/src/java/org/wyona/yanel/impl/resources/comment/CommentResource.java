@@ -34,6 +34,36 @@ public class CommentResource extends BasicXMLResource {
     }
 
     /**
+     * Send author of comment a confirmation by email
+     * @param path Path of commentable resource
+     * @param comment Comment which has been added to commentable resource
+     */
+    private void sendConfirmationToAuthor(String path, CommentV1 comment) throws Exception {
+        String emailTo = getResourceConfigProperty("email-to");
+        String emailFrom = getResourceConfigProperty("email-from");
+        if (emailTo != null && emailFrom != null) {
+            String from = emailFrom;
+            String name = "yanel.org"; // TODO: Make this configurable
+            String replyTo = from; // TODO: Make this configurable
+            String to = comment.getAuthorMail();
+            String subject = "New comment added"; // TODO: Make this configurable
+
+            StringBuilder content = new StringBuilder("Commented page URL: " + path);
+            if (comment.getAuthorName() != null) {
+                content.append("\n\nName of author of comment: " + comment.getAuthorName());
+            } else {
+                content.append("\n\nNo name of author available.");
+            }
+            content.append("\n\nComment title: " + comment.getTitle());
+            content.append("\n\nComment text:\n" + comment.getCommentText());
+
+            org.wyona.yanel.core.util.MailUtil.send(from, name, replyTo, to, subject, content.toString());
+        } else {
+            log.warn("No email addresses (either 'to' or 'from') are configured in order to notify 'administrator' re a new comment!");
+        }
+    }
+
+    /**
      * Notify an "administrator" by email re a new comment
      * @param path Path of commentable resource
      * @param comment Comment which has been added to commentable resource
@@ -106,7 +136,6 @@ public class CommentResource extends BasicXMLResource {
      * Generate XML and save comment if applicable
      */
     private StringBuilder generateXML() throws Exception {
-        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         String path = getEnvironment().getRequest().getParameter("path");
         if (path != null) {
             // TODO: Get resource and check if commentable
@@ -116,10 +145,12 @@ public class CommentResource extends BasicXMLResource {
                     CommentManagerV1 cMan = ((CommentableV1) resource).getCommentManager();
                     String body = getEnvironment().getRequest().getParameter("body");
                     if (body != null) {
+                        body = toPlainText(body);
                         CommentV1 comment = new CommentV1();
                         comment.setCommentText(body);
                         String title = getEnvironment().getRequest().getParameter("title");
                         if (title != null && title.trim().length() > 0) {
+                            title = toPlainText(title);
                             comment.setTitle(title);
                             comment.setId(title.replace(" ", "_"));
                         } else {
@@ -128,6 +159,7 @@ public class CommentResource extends BasicXMLResource {
 
                         String name = getEnvironment().getRequest().getParameter("name");
                         if (name != null && name.trim().length() > 0) {
+                            name = toPlainText(name);
                             comment.setAuthorName(name);
                         } else {
                             log.info("No author name specified!");
@@ -139,42 +171,66 @@ public class CommentResource extends BasicXMLResource {
                             if (email.indexOf("@") <= 0) {
                                 String message = "Author email does not seem to be a valid email address!"; // TODO: i18n
                                 log.warn(message);
+                                StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
                                 sb.append(generateNoValidCommentSubmittedYetXML(path, message, comment));
                                 return sb;
                             }
                         } else {
                             String message = "No author email specified!"; // TODO: i18n
                             log.warn(message);
+                            StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
                             sb.append(generateNoValidCommentSubmittedYetXML(path, message, comment));
                             return sb;
                         }
 
+                        sendConfirmationToAuthor(path, comment);
+
                         cMan.addComment(getRealm(), path, comment);
+
                         notifyAdministrator(path, comment);
 
                         // INFO: Return content of comment as confirmation of what has been saved
+                        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
                         sb.append("<comment path=\"" + path + "\">");
                         sb.append("<title>" + comment.getTitle() + "</title>");
                         sb.append("<text>" + comment.getCommentText() + "</text>");
                         sb.append("</comment>");
-                    } else {
+                        return sb;
+                    } else { // INFO: No comment submitted yet, just display empty form to enter comment
+                        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
                         sb.append(generateNoValidCommentSubmittedYetXML(path, null, null));
+                        return sb;
                     }
                 } else {
                     String message = "Resource is not commentable: " + path;
                     log.error(message);
+                    StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
                     sb.append("<exception status=\"resource-not-commentable\">" + message + "</exception>");
+                    return sb;
                 }
             } else {
                 String message = "No such resource: " + path;
                 log.error(message);
+                StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
                 sb.append("<exception status=\"no-such-resource\">" + message + "</exception>");
+                return sb;
             }
         } else {
             String message = "No path of commentable resource specified!";
             log.error(message);
+            StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
             sb.append("<exception status=\"no-path\">" + message + "</exception>");
+            return sb;
         }
-        return sb;
+    }
+
+    /**
+     * Strip all tags from string (in order to avoid script injection, etc.)
+     * @param s Possible semi-structured string to be coverted to plain text
+     */
+    private String toPlainText(String s) {
+        String plain = s.replaceAll("<[^>]*>", ""); // INFO: This works only for well-formed text
+        plain = plain.replaceAll("<", "").replaceAll(">", ""); // INFO: Replace remaining "non-closed" ...
+        return plain;
     }
 }
