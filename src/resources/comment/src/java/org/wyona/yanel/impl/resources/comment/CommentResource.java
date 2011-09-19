@@ -38,10 +38,9 @@ public class CommentResource extends BasicXMLResource {
      * @param path Path of commentable resource
      * @param comment Comment which has been added to commentable resource
      */
-    private void sendConfirmationToAuthor(String path, CommentV1 comment) throws Exception {
-        String emailTo = getResourceConfigProperty("email-to");
+    private void sendEmailToAuthorForConfirmingComment(String path, CommentV1 comment) throws Exception {
         String emailFrom = getResourceConfigProperty("email-from");
-        if (emailTo != null && emailFrom != null) {
+        if (comment.getAuthorMail() != null && emailFrom != null) {
             String from = emailFrom;
             String name = "yanel.org"; // TODO: Make this configurable
             String replyTo = from; // TODO: Make this configurable
@@ -50,9 +49,9 @@ public class CommentResource extends BasicXMLResource {
 
             StringBuilder content = new StringBuilder("Commented page URL: " + path);
             if (comment.getAuthorName() != null) {
-                content.append("\n\nName of author of comment: " + comment.getAuthorName());
+                content.append("\n\nYour name: " + comment.getAuthorName());
             } else {
-                content.append("\n\nNo name of author available.");
+                content.append("\n\nNo name entered.");
             }
             content.append("\n\nComment title: " + comment.getTitle());
             content.append("\n\nComment text:\n" + comment.getCommentText());
@@ -145,7 +144,7 @@ public class CommentResource extends BasicXMLResource {
                     CommentManagerV1 cMan = ((CommentableV1) resource).getCommentManager();
                     String body = getEnvironment().getRequest().getParameter("body");
                     if (body != null) {
-                        body = toPlainText(body);
+                        body = toPlainText(body); // TODO: Set a limit on text size
                         CommentV1 comment = new CommentV1();
                         comment.setCommentText(body);
                         String title = getEnvironment().getRequest().getParameter("title");
@@ -183,7 +182,8 @@ public class CommentResource extends BasicXMLResource {
                             return sb;
                         }
 
-                        sendConfirmationToAuthor(path, comment);
+                        // INFO: According to http://www.velocityreviews.com/forums/t128486-re-can-javamail-detect-a-non-existant-email-address.html one cannot detect the existence of an email address, but we can force the author to confirm the comment (otherwise we don't publish it)
+                        sendEmailToAuthorForConfirmingComment(path, comment); // TODO: Only accept comment if it was confirmed by author (similar to "forgot password"
 
                         cMan.addComment(getRealm(), path, comment);
 
