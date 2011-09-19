@@ -48,7 +48,7 @@
 
   <xsl:template match="no-valid-comment-submitted-yet">
     <xsl:apply-templates select="message"/>
-    <p>Please enter your comment below:</p>
+    <p>Please enter your comment below (<strong>NOTE:</strong> Only plain text will be accepted!):</p>
     <form>
       <input type="hidden" name="path" value="{@path}"/>
       Title<br/>
