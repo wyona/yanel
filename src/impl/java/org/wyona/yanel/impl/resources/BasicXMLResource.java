@@ -679,13 +679,17 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         String language = getRequestedLanguage();
         String userID = identity.getUsername();
         if (userID != null) {
-            String userLanguage = getRealm().getIdentityManager().getUserManager().getUser(userID).getLanguage();
-            //log.debug("User language: " + userLanguage);
-            if(userLanguage != null) {
-                language = userLanguage;
-                log.debug("Use user profile language: " + language);
+            if (getRealm().getIdentityManager().getUserManager().existsUser(userID)) { // INFO: It might be possible that a user ID is still referenced by a session, but has been deleted "persistently" in the meantime
+                String userLanguage = getRealm().getIdentityManager().getUserManager().getUser(userID).getLanguage();
+                //log.debug("User language: " + userLanguage);
+                if(userLanguage != null) {
+                    language = userLanguage;
+                    log.debug("Use user profile language: " + language);
+                } else {
+                    log.debug("Use requested language: " + language);
+                }
             } else {
-                log.debug("Use requested language: " + language);
+                log.warn("No such user '" + userID + "', hence use requested language: " + language);
             }
         }
         return language;
