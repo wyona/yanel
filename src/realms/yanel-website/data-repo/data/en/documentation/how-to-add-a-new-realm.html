@@ -30,7 +30,7 @@ as $YANEL_HOME and $YULUP_WEBSITE .
   </li>
   <li>Alternatively, you can add the realm node directly into $YANEL_HOME/conf/local/local.realms.xml. If you do not have this file, copy $YANEL_HOME/conf/realms.xml to $YANEL_HOME/conf/local/local.realms.xml first<br/>
     <pre>&lt;realm id=&quot;yulup&quot; mount-point=&quot;/yulup/&quot;&gt;<br/>  &lt;name&gt;Yulup Website&lt;/name&gt;<br/>  &lt;config src=&quot;$YULUP_WEBSITE/yanel/config/yanel-realm-config.xml&quot;/&gt;<br/>&lt;/realm&gt;</pre>
-    <b>NOTE for Windows users:</b> Also use forward slashes, e.g. 
+    <b>NOTE for Windows users:</b> Also use forward slashes, e.g.
     <pre>D:/realms/foo/yanel/config/yanel-realm-config.xml<br/></pre>
     </li>
 <li>Rebuild Yanel</li>
@@ -42,18 +42,15 @@ Please note that the order of the realms doesn't matter. A request is dispatched
 <p>
 Also note that IIRC the root attribute (see the welcome realm configuration) is used for inheritance. For example, if a realm
 does not specify a proxy configuration, it will inherit this
-configuration from the root realm. 
+configuration from the root realm.
 </p>
-</div>
+
 <h2>Some publicly available Third-Party realms</h2>
-<ul><li>
-            <a href="http://svn.wyona.com/repos/public/yulup/website/yanel/config/yanel-realm-config.xml">Yulup Website</a> (U: anonymous, P: anonymous)</li>
-          <li>
-            <a href="http://svn.wyona.com/repos/public/yulup/demo/yanel/config/yanel-realm-config.xml">Yulup Demo</a> (U: anonymous, P: anonymous)</li>
-          <li>
-            <a href="http://svn.wyona.com/repos/public/osr-101/trunk/yanel/config/yanel-realm-config.xml">OSR-101 (Neutron Protocol Website)</a> (U: anonymous, P: anonymous)</li>
-          <li>
-            <a href="http://svn.wyona.com/repos/public/yanel/trunk/src/realms/from-scratch-realm-template/yanel/config/yanel-realm-config.xml">Yanel from Scratch Realm</a> (U: anonymous, P: anonymous)</li>
+<ul>
+  <li><a href="http://svn.wyona.com/repos/public/yulup/website/yanel/config/yanel-realm-config.xml">Yulup Website</a></li>
+  <li><a href="http://svn.wyona.com/repos/public/yulup/demo/yanel/config/yanel-realm-config.xml">Yulup Demo</a></li>
+  <li><a href="http://svn.wyona.com/repos/public/osr-101/trunk/yanel/config/yanel-realm-config.xml">OSR-101 (Neutron Protocol Website)</a> </li>
+  <li><a href="http://svn.wyona.com/repos/public/yanel/trunk/src/realms/from-scratch-realm-template/yanel/config/yanel-realm-config.xml">Yanel from Scratch Realm</a> (U: anonymous, P: anonymous)</li>
 </ul>
 
 <h1>Developer Notes</h1>
@@ -76,6 +73,6 @@ This is where the target "add-realm is defined and configured. Inside this eleme
 The "classname" attribute defines the java class that will be executed for the "add-realm" target:<br/>
 <pre>$YANEL_HOME/src/build/java/org/wyona/yanel/ant/AddRealmTask.java</pre>
 </p>
-
+</div>
 </body>
 </html>
