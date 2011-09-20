@@ -6,37 +6,47 @@
 <body>
 <div class="instructions">
 <h1>How-to write english documentation for Yanel<br /></h1>
-<p class="tutorial_context">(Last updated June, 2011.  Tutorial written using Yanel revision 58670)</p>
+
+<p class="tutorial_context">(Last updated September 19, 2011.  Tutorial written using Yanel revision 58670)</p>
+
 <p>The purpose of this tutorial is to get started on Yanel by demonstrating a way to to create, edit and contribute documentation.  Please keep in mind that Yanel is functional but not polished.</p>
+
 <p>This tutorial assumes that you've <a href="../../../../download/source-repository.html">installed the source distibution</a> of Yanel with support for SSL in /usr/local/wyona and are able to view content in your Browser. (If you are using IE9 you might not be able to edit with one of the provided editors.)
 </p>
+
 <h3>Create the new page/resource</h3>
 <ol>
-<li>Start Yanel.</li>
-<li>Visit the website "http://127.0.0.1:8080/yanel/" or "http://localhost/yanel/".</li>
-<li>Click on the 'Yanel Website' link in the <em>Registered Realms</em> section.</li>
-<li>Click on 'Learn more about Yanel'.</li>
-<li>Click on 'Documentation'.</li>
-<li>Click on the link 'Toolbar' at the bottom of the page. You will be redirected a login page for the <em>Yanel Website</em> realm.</li>
-<li>Enter 'alice' as your Username and 'levi' as your password.</li>
-<li>After successfully logging in you will be redirected to the Documentation site with the additional Yanel 'Toolbar' on the top.</li>
-<li>Take a moment to consider how your contribution fits into the existing documentation structure.<br /> You need to decide what page/resource type you want to create, where it will be placed and how to link to it.<br />For this tutorial, we will create a new tutorial called 'Adding Some Content' which will be placed at<br /> http://127.0.0.1:8080/yanel/yanel-website/en/documentation/tutorials/add-some-content/index.html</li>
+  <li>Start Yanel.</li>
+  <li>Visit <a href="http://127.0.0.1:8080/yanel/">http://127.0.0.1:8080/yanel/</a> or <a href="http://localhost:8080/yanel/">http://localhost:8080/yanel/</a>.</li>
+  <li>Click on the 'Yanel Website' link in the <em>Registered Realms</em> section.</li>
+  <li>Click on 'Learn more about Yanel'.</li>
+  <li>Click on 'Documentation'.</li>
+  <li>Click on the link 'Toolbar' at the bottom of the page. You will be redirected a login page for the <em>Yanel Website</em> realm.</li>
+  <li>Enter 'alice' as your Username and 'levi' as your password.</li>
+  <li>After successfully logging in you will be redirected to the Documentation site with the additional Yanel 'Toolbar' on the top.</li>
+  <li>Take a moment to consider how your contribution fits into the existing documentation structure.
+    <br />
+    You need to decide what page/resource type you want to create, where it will be placed and how to link to it.
+    <br />
+    For this tutorial, we will create a new tutorial called 'Adding Some Content' which will be placed at<br /> <a href="http://127.0.0.1:8080/yanel/yanel-website/en/documentation/tutorials/add-some-content/index.html">http://127.0.0.1:8080/yanel/yanel-website/en/documentation/tutorials/add-some-content/index.html</a></li>
 <li>Select in the Yanel 'menu': file - new - Standard Page (XHTML)</li>
 <li>You are redirected to the <em>first step</em> of creating a new page.<br /><br />In the 'title:' property text box enter the title that you would like to have for the page <em>Adding some content</em>. <br /><br />In 'Save as:' use the directory tree to navigate to where the new content is to be placed.  For this tutorial this means, <em>/en/documentation/</em><br /><br /> Be very careful as there are currently no warnings about overwriting. If you do overwrite something, you may want to make<br /> use of <a href="http://www.google.com/search?q=subversion+revert">subversion's revert command</a> to restore what was overwritten.<br /><br /> In the 'New name:' text box enter <em>tutorials/add-some-content/index.html</em><br /><br /> Review your work and the click on the 'Save new resource' button.  This will create the resource and move you to a confirmation and summary page.</li>
 <li>Now that you've created the new page/resource, you may view it by clicking on the link on the confirmation/summary page.</li>
 </ol>
+
 <h3>Edit the content</h3>
 <p>There are two possibilities two edit your page. Either you alter the page in your browser or you alter the source file directly. First we will have a look at how to use the editors.</p>
 <h4>1. Using the editors</h4>
 <ul>
-<li>Choose one of the editors provided in the Yanel 'menu'.
-<ol>
-  <li>Select in the Yanel 'menu': edit - open with -  WYSIWYG editor - edit page with XXX</li>
-  <li>Now you need to decide if you prefer to edit your page with Xinha or tinyMCE.</li>
-  <li>According to your previous decision your document will be loaded into the editor interface.</li>
-  <li>Edit the document by exploring the facilities provided by the editor.</li>
-</ol>
+  <li>Choose one of the editors provided in the Yanel 'menu'.</li>
+  <ol>
+    <li>Select in the Yanel 'menu': edit - open with -  WYSIWYG editor - edit page with XXX</li>
+    <li>Now you need to decide if you prefer to edit your page with Xinha or tinyMCE.</li>
+    <li>According to your previous decision your document will be loaded into the editor interface.</li>
+    <li>Edit the document by exploring the facilities provided by the editor.</li>
+  </ol>
 </ul>
+
 <h4>2. Altering the source file</h4>
 <ol>
 <li>Open  the "conf" folder in your YANEL_HOME directory. (cd .../YANEL_HOME/conf)</li>
