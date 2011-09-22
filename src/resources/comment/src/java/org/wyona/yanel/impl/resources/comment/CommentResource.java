@@ -9,10 +9,15 @@ import org.wyona.yanel.core.attributes.commentable.CommentV1;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
 
+import org.wyona.commons.xml.XMLHelper;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.apache.log4j.Logger;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * A resource in order to create and edit comments of a commentable resource (which is referenced by a path parameter)
@@ -106,8 +111,9 @@ public class CommentResource extends BasicXMLResource {
      * @param message Message why comment might not be valid
      * @param comment Comment which might has been submitted, but is not valid
      */
-    private String generateNoValidCommentSubmittedYetXML(String path, String message, CommentV1 comment) {
-        StringBuilder sb = new StringBuilder("<no-valid-comment-submitted-yet path=\"" + path + "\">");
+    private StringBuilder generateNoValidCommentSubmittedYetXML(String path, String message, CommentV1 comment) {
+        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
+        sb.append("<no-valid-comment-submitted-yet path=\"" + path + "\">");
         if (message != null) {
             sb.append("<message>" + message + "</message>");
         }
@@ -128,7 +134,7 @@ public class CommentResource extends BasicXMLResource {
             sb.append("<no-comment-data-available-yet/>");
         }
         sb.append("</no-valid-comment-submitted-yet>");
-        return sb.toString();
+        return sb;
     }
 
     /**
@@ -170,16 +176,12 @@ public class CommentResource extends BasicXMLResource {
                             if (email.indexOf("@") <= 0) {
                                 String message = "Author email does not seem to be a valid email address!"; // TODO: i18n
                                 log.warn(message);
-                                StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
-                                sb.append(generateNoValidCommentSubmittedYetXML(path, message, comment));
-                                return sb;
+                                return generateNoValidCommentSubmittedYetXML(path, message, comment);
                             }
                         } else {
                             String message = "No author email specified!"; // TODO: i18n
                             log.warn(message);
-                            StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
-                            sb.append(generateNoValidCommentSubmittedYetXML(path, message, comment));
-                            return sb;
+                            return generateNoValidCommentSubmittedYetXML(path, message, comment);
                         }
 
                         // INFO: According to http://www.velocityreviews.com/forums/t128486-re-can-javamail-detect-a-non-existant-email-address.html one cannot detect the existence of an email address, but we can force the author to confirm the comment (otherwise we don't publish it)
@@ -190,37 +192,35 @@ public class CommentResource extends BasicXMLResource {
                         notifyAdministrator(path, comment);
 
                         // INFO: Return content of comment as confirmation of what has been saved
-                        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
-                        sb.append("<comment path=\"" + path + "\">");
-                        sb.append("<title>" + comment.getTitle() + "</title>");
-                        sb.append("<text>" + comment.getCommentText() + "</text>");
-                        sb.append("</comment>");
-                        return sb;
+                        Document doc = XMLHelper.createDocument(null, "comment");
+                        doc.getDocumentElement().setAttribute("path", path);
+
+                        Element titleElem = doc.createElement("title");
+                        titleElem.appendChild(doc.createTextNode(comment.getTitle()));
+                        doc.getDocumentElement().appendChild(titleElem);
+
+                        Element textElem = doc.createElement("text");
+                        textElem.appendChild(doc.createTextNode(comment.getCommentText()));
+                        doc.getDocumentElement().appendChild(textElem);
+
+                        return new StringBuilder(XMLHelper.documentToString(doc, false, false, null));
                     } else { // INFO: No comment submitted yet, just display empty form to enter comment
-                        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
-                        sb.append(generateNoValidCommentSubmittedYetXML(path, null, null));
-                        return sb;
+                        return generateNoValidCommentSubmittedYetXML(path, null, null);
                     }
                 } else {
                     String message = "Resource is not commentable: " + path;
                     log.error(message);
-                    StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
-                    sb.append("<exception status=\"resource-not-commentable\">" + message + "</exception>");
-                    return sb;
+                    return getExceptionAsXML("resource-not-commentable", message);
                 }
             } else {
                 String message = "No such resource: " + path;
                 log.error(message);
-                StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
-                sb.append("<exception status=\"no-such-resource\">" + message + "</exception>");
-                return sb;
+                return getExceptionAsXML("no-such-resource", message);
             }
         } else {
             String message = "No path of commentable resource specified!";
             log.error(message);
-            StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
-            sb.append("<exception status=\"no-path\">" + message + "</exception>");
-            return sb;
+            return getExceptionAsXML("no-path", message);
         }
     }
 
@@ -232,5 +232,17 @@ public class CommentResource extends BasicXMLResource {
         String plain = s.replaceAll("<[^>]*>", ""); // INFO: This works only for well-formed text
         plain = plain.replaceAll("<", "").replaceAll(">", ""); // INFO: Replace remaining "non-closed" ...
         return plain;
+    }
+
+    /**
+     * Get exception as XML
+     * @param status Error code
+     * @param message Human readable error message
+     */
+    private StringBuilder getExceptionAsXML(String status, String message) {
+        Document doc = XMLHelper.createDocument(null, "exception");
+        doc.getDocumentElement().setAttribute("status", status);
+        doc.getDocumentElement().appendChild(doc.createTextNode(message));
+        return new StringBuilder(XMLHelper.documentToString(doc, false, false, null));
     }
 }
