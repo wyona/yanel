@@ -35,7 +35,7 @@ public class CommentResource extends BasicXMLResource {
             log.debug("requested viewId: " + viewId);
         }
 
-        return new ByteArrayInputStream(generateXML().toString().getBytes());
+        return XMLHelper.getInputStream(generateXML(), false, false, null);
     }
 
     /**
@@ -111,51 +111,49 @@ public class CommentResource extends BasicXMLResource {
      * @param message Message why comment might not be valid
      * @param comment Comment which might has been submitted, but is not valid
      */
-    private StringBuilder generateNoValidCommentSubmittedYetXML(String path, String message, CommentV1 comment) {
-/* TODO ...
+    private Document generateNoValidCommentSubmittedYetXML(String path, String message, CommentV1 comment) {
         Document doc = XMLHelper.createDocument(null, "no-valid-comment-submitted-yet");
         Element rootElem = doc.getDocumentElement();
         rootElem.setAttribute("path", path);
 
         if (message != null) {
-            sb.append("<message>" + message + "</message>");
             Element messageElem = doc.createElement("message");
             messageElem.appendChild(doc.createTextNode(message));
             rootElem.appendChild(messageElem);
         }
 
-        return new StringBuilder(XMLHelper.documentToString(doc, false, false, null));
-*/
-
-        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
-        sb.append("<no-valid-comment-submitted-yet path=\"" + path + "\">");
-        if (message != null) {
-            sb.append("<message>" + message + "</message>");
-        }
         if (comment != null) {
             if (comment.getTitle() != null) {
-                sb.append("<title>" + comment.getTitle() + "</title>");
+                Element elem = doc.createElement("title");
+                elem.appendChild(doc.createTextNode(comment.getTitle()));
+                rootElem.appendChild(elem);
             }
             if (comment.getCommentText() != null) {
-                sb.append("<text>" + comment.getCommentText() + "</text>");
+                Element elem = doc.createElement("text");
+                elem.appendChild(doc.createTextNode(comment.getCommentText()));
+                rootElem.appendChild(elem);
             }
             if (comment.getAuthorMail() != null) {
-                sb.append("<author-email-address>" + comment.getAuthorMail() + "</author-email-address>");
+                Element elem = doc.createElement("author-email-address");
+                elem.appendChild(doc.createTextNode(comment.getAuthorMail()));
+                rootElem.appendChild(elem);
             }
             if (comment.getAuthorName() != null) {
-                sb.append("<author-name>" + comment.getAuthorName() + "</author-name>");
+                Element elem = doc.createElement("author-name");
+                elem.appendChild(doc.createTextNode(comment.getAuthorName()));
+                rootElem.appendChild(elem);
             }
         } else {
-            sb.append("<no-comment-data-available-yet/>");
+            rootElem.appendChild(doc.createElement("no-comment-data-available-yet"));
         }
-        sb.append("</no-valid-comment-submitted-yet>");
-        return sb;
+
+        return doc;
     }
 
     /**
      * Generate XML and save comment if applicable
      */
-    private StringBuilder generateXML() throws Exception {
+    private Document generateXML() throws Exception {
         String path = getEnvironment().getRequest().getParameter("path");
         if (path != null) {
             // TODO: Get resource and check if commentable
@@ -218,7 +216,7 @@ public class CommentResource extends BasicXMLResource {
                         textElem.appendChild(doc.createTextNode(comment.getCommentText()));
                         doc.getDocumentElement().appendChild(textElem);
 
-                        return new StringBuilder(XMLHelper.documentToString(doc, false, false, null));
+                        return doc;
                     } else { // INFO: No comment submitted yet, just display empty form to enter comment
                         return generateNoValidCommentSubmittedYetXML(path, null, null);
                     }
@@ -254,10 +252,10 @@ public class CommentResource extends BasicXMLResource {
      * @param status Error code
      * @param message Human readable error message
      */
-    private StringBuilder getExceptionAsXML(String status, String message) {
+    private Document getExceptionAsXML(String status, String message) {
         Document doc = XMLHelper.createDocument(null, "exception");
         doc.getDocumentElement().setAttribute("status", status);
         doc.getDocumentElement().appendChild(doc.createTextNode(message));
-        return new StringBuilder(XMLHelper.documentToString(doc, false, false, null));
+        return doc;
     }
 }
