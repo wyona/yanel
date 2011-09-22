@@ -170,6 +170,9 @@ public class ResourceTypeRegistry {
                     // TODO: Config itself, e.g. org/wyona/yanel/impl/resources/redirect/my-resource.xml (What does that TODO mean?!)
 
                     URL packageURL = ResourceTypeRegistry.class.getClassLoader().getResource(packageName.replace('.','/'));
+                    if (packageURL == null) { // TODO: Make more fault tolerant!
+                        throw new ConfigurationException("Could not determine package URL for package name: " + packageName + " (Probably package name is wrong/misspelt (check WEB-INF/classes/resource-types.xml) or corresponding library/resource does not exists (check WEB-INF/lib))!)");
+                    }
                     log.debug("Package: " + packageURL.getFile());
                     //log.info("Package: " + packageURL.getFile());
                     File jarFile = null;
