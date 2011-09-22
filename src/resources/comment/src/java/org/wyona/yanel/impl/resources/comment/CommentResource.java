@@ -112,6 +112,21 @@ public class CommentResource extends BasicXMLResource {
      * @param comment Comment which might has been submitted, but is not valid
      */
     private StringBuilder generateNoValidCommentSubmittedYetXML(String path, String message, CommentV1 comment) {
+/* TODO ...
+        Document doc = XMLHelper.createDocument(null, "no-valid-comment-submitted-yet");
+        Element rootElem = doc.getDocumentElement();
+        rootElem.setAttribute("path", path);
+
+        if (message != null) {
+            sb.append("<message>" + message + "</message>");
+            Element messageElem = doc.createElement("message");
+            messageElem.appendChild(doc.createTextNode(message));
+            rootElem.appendChild(messageElem);
+        }
+
+        return new StringBuilder(XMLHelper.documentToString(doc, false, false, null));
+*/
+
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<no-valid-comment-submitted-yet path=\"" + path + "\">");
         if (message != null) {
