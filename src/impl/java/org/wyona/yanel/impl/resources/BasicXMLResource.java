@@ -257,7 +257,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 viewId = DEFAULT_VIEW_ID;
             }
         } else {
-            log.warn("DEBUG: View already set (probably via query string or session attribute): " + viewId);
+            log.info("View already set (probably via query string or session attribute): " + viewId);
         }
 
         ConfigurableViewDescriptor viewDescriptor = (ConfigurableViewDescriptor)getViewDescriptor(viewId);
