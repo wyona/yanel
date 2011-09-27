@@ -44,7 +44,7 @@
         <h2>Getting Started</h2>
         <p>
           <ul>
-            <li><a href="yanel-website/en/documentation/what-is-a-realm.html">What is a realm?</a></li>
+            <li><a href="yanel-website/en/documentation/what-is-a-realm.html">What is a 'realm' (or why we prefer not to use the term 'website')?</a></li>
             <li>Add a realm
 	      <ul>
                 <li>Create a realm <a href="add-realm-from-scratch.html">from scratch.</a></li>
@@ -52,22 +52,17 @@
                 <li>Add an existing <a href="yanel-website/en/documentation/how-to-add-a-new-realm.html">third-party realm.</a></li>
               </ul>
             </li>
-            <li>More information can be found within the Yanel <a href="yanel-website/en/documentation/index.html">documentation</a>.</li>
-            <li>Turn on <a href="?yanel.toolbar=on">toolbar</a> </li>
-            <li><a href="update-webapp.html">Find Updates</a></li>
-            <li><a href="reload-realms.html">Reload realms</a></li>
-            <li><a href="yanel/session-manager.html">Session Manager</a></li>
-            <li>Download <a href="http://www.yulup.org">Yulup</a> for editing web-pages independently of Yanel.</li>
+            <li>More information on Yanel can be found inside the <a href="yanel-website/en/documentation/index.html">documentation</a>.</li>
+            <li>Turn on the Yanel <a href="?yanel.toolbar=on">toolbar</a> to administrate this realm ('Yanel Welcome and Admin Realm').</li>
+            <!-- TODO: Move this into Yanel tool bar -->
+            <li><a href="update-webapp.html">Find updates of Yanel</a></li>
+            <li><a href="reload-realms.html">Reload realms configurations</a></li>
+            <li>Have a look at the <a href="yanel/session-manager.html">session manager</a> to check how many sessions are currently active.</li>
 
-<!--
+<!-- TODO: Move this to the resources
             <li>What is a resource resp. resource type?</li>
             <li><a href="yanel-website/en/documentation/create-new-resource.html">Create a new resource type from scratch.</a></li>
             <li>Add an existing third-party resource type.</li>
--->
-
-<!-- TODO: Move this into Yanel tool bar -->
-<!--
-            <li>Find Updates.</li>
 -->
           </ul>
         </p>
@@ -85,7 +80,7 @@
   
   <xsl:template match="realms">
     <p>
-      Configuration File: <code><xsl:value-of select="@config"/></code>
+      The realms listed below are registered inside the configuration file: <code><xsl:value-of select="@config"/></code>
     </p>
     <ul>
       <xsl:apply-templates select="realm"/>
