@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="mobile-image"
+  namespace="http://www.wyona.org/yanel/resource/1.0"
+  class="org.wyona.yanel.impl.resources.image.MobileImageResource"
+  >
+<description>
+Image resource which scales jpeg images if requested by a mobile device
+</description>
+
+<rtd>
+  <property name="width"/> <!-- Either width or height, one of these properties is required in order to determine the scale factor -->
+  <property name="height"/>
+  <property name="cache-root-path" default-value="/cached-images"/> <!-- optional, whereas if not configured then the default value will be used -->
+</rtd>
+</resource>
