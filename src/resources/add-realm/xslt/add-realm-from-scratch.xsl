@@ -28,6 +28,8 @@
           <xsl:apply-templates select="/yanel:add-realm/yanel:from-scratch/yanel:valid"/>
           <xsl:apply-templates select="/yanel:add-realm/yanel:from-scratch/yanel:exception"/>
           <p>Please enter a realm ID (which is used as URL prefix but also as internal reference ID) and a human readable realm name:</p>
+
+          <p><b>NOTE:</b> The parameter 'fslocation' tells you where your new realm will be located on the file system.</p>
       <form>
         <xsl:if test="/yanel:add-realm/yanel:from-scratch/yanel:valid">
           <input type="hidden" name="confirm" value="true"/>
