@@ -15,20 +15,19 @@
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>Add Realm From Scratch</title>
+        <title>Create a new realm (aka 'website') from scratch</title>
       </head>
       <body>
-      <h1>Add Realm From Scratch</h1>
-      <a href="?yanel.resource.viewid=xml">Show XML</a>
-
+      <h1>Create a new realm (aka 'website') from scratch</h1>
       <xsl:choose>
         <xsl:when test="/yanel:add-realm/yanel:from-scratch/yanel:realm-created">
           <p>Realm has been created and registered. Please see the <a href="index.html">list of registered realms</a>.</p>
         </xsl:when>
         <xsl:otherwise>
-      <xsl:apply-templates select="/yanel:add-realm/yanel:from-scratch/yanel:not-valid"/>
-      <xsl:apply-templates select="/yanel:add-realm/yanel:from-scratch/yanel:valid"/>
-      <xsl:apply-templates select="/yanel:add-realm/yanel:from-scratch/yanel:exception"/>
+          <xsl:apply-templates select="/yanel:add-realm/yanel:from-scratch/yanel:not-valid"/>
+          <xsl:apply-templates select="/yanel:add-realm/yanel:from-scratch/yanel:valid"/>
+          <xsl:apply-templates select="/yanel:add-realm/yanel:from-scratch/yanel:exception"/>
+          <p>Please enter a realm ID (which is used as URL prefix but also as internal reference ID) and a human readable realm name:</p>
       <form>
         <xsl:if test="/yanel:add-realm/yanel:from-scratch/yanel:valid">
           <input type="hidden" name="confirm" value="true"/>
@@ -48,6 +47,8 @@
       </form>
         </xsl:otherwise>
         </xsl:choose>
+<hr/>
+      <a href="?yanel.resource.viewid=xml">Show XML</a>
       </body>
     </html>
   </xsl:template>
@@ -60,7 +61,7 @@
       </xsl:when>
       <xsl:otherwise>
         <tr><td><b><xsl:value-of select="@yanel:name"/></b></td><td><input type="text" name="{@yanel:name}" value="{@yanel:value}"/> <xsl:apply-templates select="@yanel:required"/></td></tr>
-        <tr><td>&#160;</td><td align="right">(i.e. <xsl:value-of select="@yanel:sample-value"/>)</td></tr>
+        <tr><td>&#160;</td><td align="right">(for example '<i><xsl:value-of select="@yanel:sample-value"/></i>')</td></tr>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
