@@ -1,0 +1,13 @@
+# local configurations
+src/webapp/WEB-INF/local.web.xml
+conf/local
+
+# build directories
+build
+#src/resources/xml/build
+#src/resources/workflow-dashboard/build
+#src/resources/user-mgmt/build/
+
+# canoo results
+src/realms/use-cases/yanel/src/test/canoo/results/
+src/realms/yanel-website/src/test/canoo/results/
