@@ -1,0 +1,60 @@
+/* Generic style */
+
+/* */
+/*
+.gwt-Button {
+  font-size: 150%;
+}
+*/
+
+/* Custom style */
+
+#access-policy-editor-hook {
+  border-style: hidden;
+/*
+  border-style: solid;
+  border-width: 3px;
+  border-color: red;
+*/
+}
+
+/* Because some other CSS already sets "#content table td", we need to set #content as well in order to overwrite */
+#content .gwt-wyona-main-vp tr td {
+  border-style: hidden;
+/*
+  border-style: solid;
+  border-width: 3px;
+  border-color: green;
+*/
+}
+
+#content .gwt-wyona-search-hp tr td {
+  border-style: hidden;
+/*
+  border-style: solid;
+  border-width: 3px;
+  border-color: green;
+*/
+}
+
+/* */
+.gwt-wyona-AddRemoveWidget {
+  margin: 20px;
+  font-size: 300%;
+*/
+
+/* */
+/*
+.gwt-wyona-SaveButton {
+  font-size: 300%;
+  width: 200px;
+}
+*/
+
+/* */
+/*
+.gwt-wyona-CancelButton {
+  font-size: 300%;
+  width: 200px;
+}
+*/

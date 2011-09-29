@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<!-- TODO: See src/access-policy-editor/java/org/wyona/security/gwt/accesspolicyeditor/client/I18n.java -->
+<messages>
+  <message key="search-box-label">
+    <text language="de">Suche Benutzer/Gruppen: </text>
+    <text language="en">Search users and groups: </text>
+  </message>
+  <message key="inherit-rights-label">
+    <text language="de">Uebernehme vererbte Rechte der Eltern-Policies</text>
+    <text language="en">Inherit rights from parent policies</text>
+  </message>
+</messages>

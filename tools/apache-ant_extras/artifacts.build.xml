@@ -1,0 +1,51 @@
+<project name="wyona-artifacts-tools"
+ xmlns:artifact="antlib:org.apache.maven.artifact.ant"
+>
+
+  <!-- TODO: Install a partial JAR: core, impl, etc. -->
+
+  <!-- Install Wyona JAR -->
+  <macrodef name="install-jar" uri="http://www.wyona.org/tools/1.0">
+   <attribute name="source-home"/>
+   <attribute name="id"/>
+   <attribute name="name" default="wyona-@{id}"/>
+   <attribute name="version"/>
+   <attribute name="package-dir" default="@{id}"/>
+   <attribute name="package-root-path" default="org/wyona/@{package-dir}"/>
+   <attribute name="classes-dir" default="${classes.dir}"/>
+   <attribute name="sources-dir" default="@{source-home}/src/@{package-dir}/java"/>
+   <element name="jar-elements" optional="true" implicit="true"/>
+   <sequential>
+
+    <mkdir dir="@{source-home}/build/lib"/>
+    <jar destfile="@{source-home}/build/lib/@{name}-@{version}.jar"
+      basedir="@{classes-dir}"
+      includes="@{package-root-path}/**"
+    >
+      <jar-elements/>
+    </jar>
+
+    <copy file="@{source-home}/src/@{id}/pom.xml" tofile="@{source-home}/build/lib/pom-@{id}.xml"/>
+    <replace file="@{source-home}/build/lib/pom-@{id}.xml" value="@{version}">
+      <replacetoken>@VERSION@</replacetoken>
+    </replace>
+
+    <mkdir dir="@{source-home}/build/lib"/>
+    <jar destfile="@{source-home}/build/lib/@{name}-@{version}-sources.jar"
+      basedir="@{sources-dir}"
+      includes="@{package-root-path}/**"
+    >
+      <jar-elements/>
+    </jar>
+
+    <artifact:pom id="@{id}.project" file="@{source-home}/build/lib/pom-@{id}.xml"/>
+
+    <artifact:install file="@{source-home}/build/lib/@{name}-@{version}.jar">
+      <pom refid="@{id}.project"/>
+      <attach file="@{source-home}/build/lib/@{name}-@{version}-sources.jar" classifier="sources"/>
+    </artifact:install>
+
+   </sequential>
+  </macrodef>
+
+</project>

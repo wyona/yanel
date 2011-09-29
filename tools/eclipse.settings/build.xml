@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<project name="eclipse"
+>
+
+  <property name="classpath.file"
+   value="${classpath.dir}/.classpath"/>
+
+  <target name="check-classpath-file">
+    <available file="${classpath.file}"
+     property="classpath.file.exists"/>
+  </target>
+
+  <target name="set-classpath-template-file" depends="check-classpath-file" if="classpath.file.exists">
+    <property name="classpath.template.file" value="${classpath.file}"/>
+  </target>
+
+  <target name="update-classpath" depends="set-classpath-template-file">
+
+    <property name="classpath.template.file"
+     value="empty.classpath"/>
+    <echo level="debug">classpath template file: ${classpath.template.file}</echo>
+
+    <pathconvert property="CLASSPATH"
+     refId="classpath.ref"/>
+    <echo level="verbose">CLASSPATH: ${CLASSPATH}</echo>
+    <condition property="CLASSPATH-separator" value=";" else=":">
+      <os family="dos"/>
+    </condition>
+
+    <!-- we need an intermediary file because XSLT processors
+     do nothing or bork when using a file both as input and output: -->
+    <property name="classpath.new.file"
+     value="${classpath.dir}/new.classpath"/>
+
+    <!-- generate the new classpath file: -->
+    <property name="eclipse.classpath.xslt"
+     value="CLASSPATH2classpath.xslt"/>
+    <xslt
+     in="${eclipse.classpath.xslt}"
+     style="${eclipse.classpath.xslt}"
+     out="${classpath.new.file}"
+    >
+      <param name="CLASSPATH" expression="${CLASSPATH}"/>
+      <param name="Eclipse-classpath-doc-URL" expression="${classpath.template.file}"/>
+      <param name="CLASSPATH-separator" expression="${CLASSPATH-separator}"/>
+      <param name="classes-dir" expression="${classes.dir}"/>
+      <param name="source-dirs" expression="${source.dirs}"/>
+    </xslt>
+
+    <!-- we need another intermediary file to swap the original file
+     and the new one, which also can be handy if something goes wrong: -->
+    <property name="classpath.old.file"
+     value="${classpath.dir}/OLD.classpath"/>
+
+    <move file="${classpath.file}" tofile="${classpath.old.file}"
+     failonerror="false"/>
+    <move file="${classpath.new.file}" tofile="${classpath.file}"/>
+  </target>
+</project>
