@@ -6,11 +6,12 @@ conf/local
 local
 logs
 
-# build directories
-build
-#src/resources/xml/build
-#src/resources/workflow-dashboard/build
-#src/resources/user-mgmt/build/
+# local Yanel build configuration
+src/build/local.build.properties
+
+# build directories of resources
+*/*/*/build
+*/*/*/*/build
 
 # local Canoo build configurations
 src/realms/yanel-website/src/test/canoo/local.build.properties
