@@ -38,9 +38,10 @@
 -->
 
     <repository>
+      <!-- TODO: SVNRepository needs to be replaced by Git -->
       <SVNRepository>
-        <location rdf:resource="http://svn.wyona.com/repos/public/yanel/trunk/"/>
-        <browse rdf:resource="http://svn.wyona.com/repos/public/yanel/trunk/"/>
+        <location rdf:resource="https://github.com/wyona/yanel/"/>
+        <browse rdf:resource="https://github.com/wyona/yanel/"/>
       </SVNRepository>
     </repository>
 
