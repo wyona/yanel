@@ -1,6 +1,10 @@
-# local configurations
+# local Yanel configurations
 src/webapp/WEB-INF/local.web.xml
 conf/local
+
+# local Tomcat installation and Yanel logs
+local
+logs
 
 # build directories
 build
@@ -8,10 +12,10 @@ build
 #src/resources/workflow-dashboard/build
 #src/resources/user-mgmt/build/
 
-# canoo local build configurations
+# local Canoo build configurations
 src/realms/yanel-website/src/test/canoo/local.build.properties
 src/realms/use-cases/yanel/src/test/canoo/local.build.properties
 
-# canoo results
+# Canoo results
 src/realms/use-cases/yanel/src/test/canoo/results/
 src/realms/yanel-website/src/test/canoo/results/
