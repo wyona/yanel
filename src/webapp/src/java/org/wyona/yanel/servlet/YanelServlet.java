@@ -2654,19 +2654,14 @@ public class YanelServlet extends HttpServlet {
                 accessLogMessage = accessLogMessage + AccessLog.encodeLogField("sid", session.getId());
             }
 
-            // INFO: For performance reasons we do not use getRemoteHost(), but rather just log the IP address.
-            if (realm.isProxySet()) {
-                String remoteIPAddr = request.getHeader("X-FORWARDED-FOR");
-                if (remoteIPAddr != null) {
-                    accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", remoteIPAddr);
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("No such request header: X-FORWARDED-FOR (hence fallback to request.getRemoteAddr())"); // INFO: For example in the case of AJP
-                    }
-                    accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", request.getRemoteAddr());
-                }
+            String remoteIPAddr = request.getHeader("X-FORWARDED-FOR");
+            if (remoteIPAddr != null) { // INFO: We do not need to check realm.isProxySet() additionally, because some deployments are using a proxy without having set the Yanel proxy configuration, hence it is sufficient to just check whether an X-FORWARDED-FOR header is set
+                accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", remoteIPAddr);
             } else {
-                accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", request.getRemoteAddr());
+                if (log.isDebugEnabled()) {
+                    log.debug("No such request header: X-FORWARDED-FOR (hence fallback to request.getRemoteAddr())"); // INFO: For example in the case of AJP or if no proxy is used
+                }
+                accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", request.getRemoteAddr()); // INFO: For performance reasons we do not use getRemoteHost(), but rather just log the IP address.
             }
 
             logAccess.info(accessLogMessage);
