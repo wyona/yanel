@@ -2,6 +2,6 @@
 
 <policy xmlns="http://www.wyona.org/security/1.0" use-inherited-policies="false">
   <usecase id="view">
-    <user id="lenya" permission="true"/>
+    <group id="admin" permission="true"/>
   </usecase>
 </policy>

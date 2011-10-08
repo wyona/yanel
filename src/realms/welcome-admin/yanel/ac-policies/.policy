@@ -7,27 +7,27 @@
   </usecase>
 
   <usecase id="toolbar">
-    <user id="lenya" permission="true"/>
+    <group id="admin" permission="true"/>
   </usecase>
 
   <usecase id="yanel.resource.meta">
-    <user id="lenya" permission="true"/>
+    <group id="admin" permission="true"/>
   </usecase>
 
   <usecase id="policy.read">
-    <user id="lenya" permission="true"/>
+    <group id="admin" permission="true"/>
   </usecase>
 
   <usecase id="open">
-    <user id="lenya" permission="true"/>
+    <group id="admin" permission="true"/>
   </usecase>
 
   <usecase id="write">
-    <user id="lenya" permission="true"/>
+    <group id="admin" permission="true"/>
   </usecase>
 
   <usecase id="create">
-    <user id="lenya" permission="true"/>
+    <group id="admin" permission="true"/>
   </usecase>
 
 </policy>
