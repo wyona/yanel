@@ -2355,14 +2355,22 @@ public class YanelServlet extends HttpServlet {
         String confirmed = request.getParameter("confirmed");
         if (confirmed != null) {
             String path = getResource(request, response).getPath();
-            log.warn("Really delete " + path);
+            log.warn("Really delete resource at " + path);
             doDelete(request, response);
             return;
         } else {
-            log.warn("Delete has not been confirmed by client yet!");
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             response.setContentType("text/html" + "; charset=" + "UTF-8");
-            StringBuilder sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Do you really want to delete this page? <a href=\"?" + YANEL_RESOURCE_USECASE + "=delete&confirmed\">YES</a>, <a href=\"" + request.getHeader("referer") + "\">no</a></body></html>");
+            StringBuilder sb = new StringBuilder();
+            Resource res = getResource(request, response);
+            if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
+                log.info("Delete has not been confirmed by client yet!");
+                sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Do you really want to delete this page? <a href=\"?" + YANEL_RESOURCE_USECASE + "=delete&confirmed\">YES</a>, <a href=\"" + request.getHeader("referer") + "\">no</a></body></html>");
+            } else {
+                String message = "Resource '" + res.getPath() + "' cannot be deleted, because it does not implement interface ModifiableV2!";
+                log.warn(message);
+                sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body><p>WARNING: " + message + "</p></body></html>");
+            }
             PrintWriter w = response.getWriter();
             w.print(sb);
             return;
