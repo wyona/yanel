@@ -9,5 +9,7 @@
 <aliases>
 <alias id="yanel"/>
 </aliases>
-<groups/>
+<groups>
+  <group id="admin"/>
+</groups>
 </user>
