@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<group id="admin" xmlns="http://www.wyona.org/security/1.0">
+  <name>Administrators</name>
+
+  <members>
+    <member id="lenya" type="user"/>
+  </members>
+
+  <parent-groups/>
+</group>
