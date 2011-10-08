@@ -1,11 +1,13 @@
-<?xml version="1.0"?>
-
-<user id="lenya" xmlns="http://www.wyona.org/security/1.0">
-  <name>Lenya</name>
-  <description>Test User</description>
-  <email>lenya@wyona.org</email>
-  <password type="md5">8e07dafd13495561db9063ebe4db4b27</password>
-
-  <language>en</language>
-  <expire>2069-02-16T00:00:00</expire>
+<?xml version="1.0" encoding="UTF-8"?>
+<user xmlns="http://www.wyona.org/security/1.0" id="lenya">
+<name>Lenya</name>
+<email>lenya@wyona.org</email>
+<language>en</language>
+<password algorithm="MD5">8e07dafd13495561db9063ebe4db4b27</password>
+<description>Test User</description>
+<expire>2069-02-16T00:00:00</expire>
+<aliases>
+<alias id="yanel"/>
+</aliases>
+<groups/>
 </user>
