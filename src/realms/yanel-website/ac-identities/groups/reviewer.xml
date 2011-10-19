@@ -1,8 +1,8 @@
-<?xml version="1.0"?>
-
+<?xml version="1.0" encoding="UTF-8"?>
 <group id="reviewer">
-  <name>My Reviewers</name>
-  <members>
-    <member id="alice"/>
-  </members>
+<name>My Reviewers</name>
+<members>
+<member id="alice" type="user"/>
+</members>
+<parent-groups/>
 </group>
