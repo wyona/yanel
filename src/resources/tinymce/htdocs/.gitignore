@@ -1,0 +1,2 @@
+# A particular TinyMCE version is downloaded via Maven (see src/resources/tinymce/src/build/dependencies.xml) and put into the "tinymce" directory
+tinymce
