@@ -13,7 +13,7 @@
       <script language="javascript" type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/js/tinymceinit.js"></script>
 
       <!-- INFO: TinyMCE 3.3.5.1 -->
-<!-- QUESTION: Why is 3.2.1.1 still used and not 3.3.5.1?
+<!-- QUESTION: Why is 3.2.1.1 still used and not 3.3.5.1? (IMPORTANT: Also update src/resources/tinymce/src/build/dependencies.xml)
       <script language="javascript" type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/tinymce_3_3_5_1/jscripts/tiny_mce/tiny_mce.js"></script>
       <script language="javascript">
         var BACK2REALM = '${yanel.back2realm}';
