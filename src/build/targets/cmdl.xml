@@ -33,11 +33,12 @@
       <!-- Properties files -->
       <pathelement path="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/classes"/>
 
-      <!-- All from source generated libs -->
+      <!-- All from source generated libs (except the cmdl library) -->
       <fileset dir="${yanel.source.home}/build/webapps/${servlet.context.prefix}/WEB-INF/lib">
         <include name="*.jar"/>
       </fileset>
 
+      <!-- The cmdl line library is not copied into the webapp, hence we need to reference it specifically -->
       <fileset dir="${yanel.source.home}/build/lib">
         <include name="yanel-cmdl-${yanel.version}-r${yanel.revision}.jar"/>
       </fileset>
