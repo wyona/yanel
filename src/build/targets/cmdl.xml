@@ -39,7 +39,7 @@
       </fileset>
 
       <fileset dir="${yanel.source.home}/build/lib">
-        <include name="yanel-cmdl-1.0-dev-rREVISION.jar"/>
+        <include name="yanel-cmdl-${yanel.version}-r${yanel.revision}.jar"/>
       </fileset>
 
       <!-- All external dependencies -->
