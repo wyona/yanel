@@ -43,7 +43,7 @@ public class Yanel {
     private ResourceManager resourceManager;
     private boolean isInitialized = false;
     
-    private static final String SPRING_CONFIG_FILE = "spring-*-config.xml";
+    private static final String SPRING_CONFIG_FILE = "/spring-yanel-config.xml";
 
     public static final String DEFAULT_CONFIGURATION_FILE = "yanel.properties";
     public static final String DEFAULT_CONFIGURATION_FILE_XML = "yanel.xml";
