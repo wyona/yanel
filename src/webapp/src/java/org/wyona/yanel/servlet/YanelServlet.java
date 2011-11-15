@@ -163,6 +163,8 @@ public class YanelServlet extends HttpServlet {
 
     private String[] mobileDevices;
 
+    private static String ACCESS_LOG_TAG_SEPARATOR;
+
     /**
      * @see javax.servlet.GenericServlet#init(ServletConfig)
      */
@@ -193,6 +195,18 @@ public class YanelServlet extends HttpServlet {
 
             // TODO: Make this value configurable also per realm or per individual user!
             logAccessEnabled = new Boolean(config.getInitParameter("log-access")).booleanValue();
+
+            String TAG_SEP_PARAM_NAME = "access-log-tag-separator";
+            if (config.getInitParameter(TAG_SEP_PARAM_NAME) != null) {
+                 if (config.getInitParameter(TAG_SEP_PARAM_NAME).equals("SPACE")) { // Note that the leading and trailing space around the parameter value is trimmed, hence we denote the space sign by SPACE.
+                     ACCESS_LOG_TAG_SEPARATOR = " ";
+                 } else {
+                     ACCESS_LOG_TAG_SEPARATOR = config.getInitParameter(TAG_SEP_PARAM_NAME);
+                 }
+            } else {
+                 ACCESS_LOG_TAG_SEPARATOR = ",";
+                 log.warn("No access log tag separator parameter '" + TAG_SEP_PARAM_NAME + "' configured, hence use default: " + ACCESS_LOG_TAG_SEPARATOR);
+            }
 
             // TODO: Make this value configurable also per realm or per individual user!
             if (config.getInitParameter("detect-mobile-per-request") != null) {
@@ -2608,9 +2622,9 @@ public class YanelServlet extends HttpServlet {
             if (trackInfo != null) {
                 String[] trackingTags = trackInfo.getTags();
                 if (trackingTags != null && trackingTags.length > 0) {
-                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), trackingTags);
+                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), trackingTags, ACCESS_LOG_TAG_SEPARATOR);
                 } else {
-                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), tags);
+                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), tags, ACCESS_LOG_TAG_SEPARATOR);
                 }
 
                 String pageType = trackInfo.getPageType();
@@ -2630,7 +2644,7 @@ public class YanelServlet extends HttpServlet {
                     }
                 }
             } else {
-                accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), tags);
+                accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), tags, ACCESS_LOG_TAG_SEPARATOR);
             }
             
             // TBD/TODO: What if user has logged out, but still has a persistent cookie?!

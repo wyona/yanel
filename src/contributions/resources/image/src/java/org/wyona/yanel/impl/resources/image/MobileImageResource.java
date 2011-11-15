@@ -33,18 +33,18 @@ public class MobileImageResource extends ImageResource  {
         if (isMobileView()) {
             BufferedImage sourceImg = ImageIO.read(getRealm().getRepository().getNode(getPath()).getInputStream());
             int sourceWidth = sourceImg.getWidth();
-            if (sourceWidth > 300) {
-                log.warn("DEBUG: Scale image for mobile view...");
+            if (sourceWidth > 300) { // TODO: Make limit of 300 configurable
+                //log.debug("Scale image for mobile view...");
                 return super.getView(viewId);
             } else {
-                log.warn("DEBUG: Get original image, because original image width <= 300 (" + sourceWidth + ")");
+                //log.debug("Get original image, because original image width <= 300 (" + sourceWidth + ")");
                 View view = new View();
                 view.setInputStream(getRealm().getRepository().getNode(getPath()).getInputStream());
                 view.setMimeType("image/jpeg");
                 return view;
             }
         } else {
-            log.warn("DEBUG: Get original image, because mobile view not requested...");
+            //log.debug("Get original image, because mobile view not requested...");
             View view = new View();
             view.setInputStream(getRealm().getRepository().getNode(getPath()).getInputStream());
             view.setMimeType("image/jpeg");

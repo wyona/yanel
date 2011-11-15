@@ -9,7 +9,8 @@
 -->
 
 <!-- TODO: Enhance build process such that it will compare the version attribute of this 'template' with the local configuration local.web.xml
-<changes version="2011090100">
+<changes version="2011111000">
+  <change version="2011111000">access log tag separator added</change>
   <change version="2011090100">list of mobile devices added</change>
 </changes>
 -->
@@ -66,6 +67,15 @@
       <param-name>log-access</param-name>
       <param-value>false</param-value> <!--The default value needs to be false because of performance/scalability reasons -->
       <!--<param-value>true</param-value>-->
+    </init-param>
+
+    <!-- Access log tag separator -->
+    <init-param>
+      <param-name>access-log-tag-separator</param-name>
+      <param-value>SPACE</param-value> <!-- Note that the leading and trailing space around the parameter value is trimmed, hence we denote the space sign by SPACE. -->
+<!--
+      <param-value>,</param-value>
+-->
     </init-param>
 
     <!-- Detect mobile devices for every request -->

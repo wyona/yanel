@@ -40,7 +40,7 @@
       <!-- TODO: Add checksum file to server -->
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="yarep" artifactId="yarep-core" version="1.0-dev-r58528"/>
+      <dependency groupId="yarep" artifactId="yarep-core" version="1.0-dev-rfb5ff05f92fa91672a54c447ef78d7b66b858b46"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons" version="1.0-dev-r59402"/>
@@ -83,7 +83,7 @@
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="0.3-dev-r58517"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="0.3-dev-r58517"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="yarep" artifactId="yarep-impl" version="1.0-dev-r58528"/>
+      <dependency groupId="yarep" artifactId="yarep-impl" version="1.0-dev-rfb5ff05f92fa91672a54c447ef78d7b66b858b46"/>
       <dependency groupId="spring" artifactId="spring"
                   version="2.0"/>
       <dependency groupId="svnkit" artifactId="svnkit"
@@ -129,13 +129,10 @@
 
 
       <!-- INFO: Contains resource: org.wyona.yanel.impl.resources.jellyadapterofcmdv3 -->
-      <dependency groupId="wyona-org-yanel" artifactId="yanel-resource-creatable-modifiable-deletable-v3" version="0.1-dev-r58140"/>
-<!--
-      <dependency groupId="wyona-org-yanel" artifactId="yanel-resource-creatable-modifiable-deletable-v3" version="0.1-dev-r56925"/>
--->
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-resource-creatable-modifiable-deletable-v3" version="0.1-dev-re534f851072e373b86624d7d6710fa7f1c81f240"/>
 
       <!-- INFO: Log into ActiveMQ Java Messaging System -->
-      <dependency groupId="wyona-com-boost" artifactId="Log4JAppender" version="2.0.1-r59544"/>
+      <dependency groupId="wyona-com-boost" artifactId="Log4JAppender" version="2.0.1-r8daa82d945f2d6185d166ab766303ab6c7dbb33a"/>
       <dependency groupId="org.apache.activemq" artifactId="activemq-core" version="5.4.2"/>
       <dependency groupId="org.apache.geronimo.specs" artifactId="geronimo-j2ee-management_1.1_spec" version="1.0.1"/>
       <dependency groupId="org.apache.geronimo.specs" artifactId="geronimo-jms_1.1_spec" version="1.1.1"/>

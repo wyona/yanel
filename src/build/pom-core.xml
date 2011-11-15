@@ -28,13 +28,13 @@
       <groupId>yarep</groupId>
       <artifactId>yarep-core</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>1.0-dev-r58528</version>
+      <version>1.0-dev-rfb5ff05f92fa91672a54c447ef78d7b66b858b46</version>
     </dependency>
     <dependency>
       <groupId>yarep</groupId>
       <artifactId>yarep-impl</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>1.0-dev-r58528</version>
+      <version>1.0-dev-rfb5ff05f92fa91672a54c447ef78d7b66b858b46</version>
     </dependency>
     <dependency>
       <groupId>wyona-org-commons</groupId>
@@ -83,10 +83,7 @@
     <dependency>
       <groupId>wyona-org-yanel</groupId>
       <artifactId>yanel-resource-creatable-modifiable-deletable-v3</artifactId>
-      <version>0.1-dev-r58140</version>
-<!--
-      <version>0.1-dev-r56925</version>
--->
+      <version>0.1-dev-re534f851072e373b86624d7d6710fa7f1c81f240</version>
     </dependency>
   </dependencies>
 </project>

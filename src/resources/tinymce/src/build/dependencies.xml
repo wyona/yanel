@@ -6,16 +6,17 @@
     <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
 
     
-    <!--     get tinyMCE by maven -->    
+    <!-- INFO: Get tinyMCE by maven (also see src/resources/tinymce/htdocs/tinymce.jelly) -->
     <artifact:dependencies filesetId="maven2.tinymce.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
       <dependency groupId="moxiecode" artifactId="tinymce" version="3.2.1.1" scope="provided" type="zip"/>
+<!--
+      <dependency groupId="moxiecode" artifactId="tinymce" version="3.3.5.1" scope="provided" type="zip"/>
+-->
     </artifact:dependencies>
-    
     <unzip dest="htdocs">
       <fileset refid="maven2.tinymce.fileset"/>
     </unzip>
-    <!--     get tinyMCE by maven -->
     
     
     <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">

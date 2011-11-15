@@ -35,15 +35,16 @@ public class AccessLog {
      * @param referer Referer
      * @param userAgent User agent, e.g. Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.0.19) Gecko/2010031218 Firefox/3.0.19
      * @param tags The current annotations of the page as csv 
+     * @param TAG_SEPARATOR Tag delimiter
      */
-    private static String getLogMessage(String requestURL, String realmID, String cookieValue, String referer, String userAgent, String[] tags) {
+    private static String getLogMessage(String requestURL, String realmID, String cookieValue, String referer, String userAgent, String[] tags, String TAG_SEPARATOR) {
         
     	String tagsFlat = null;
 
         if (tags != null && tags.length > 0) {
             tagsFlat = "";
             for (String m : tags) {
-                if (!tagsFlat.equals("")) tagsFlat += ",";
+                if (!tagsFlat.equals("")) tagsFlat += TAG_SEPARATOR; // INFO: Do not add separator ahead of the first tag.
                 tagsFlat += m;
             }
             //log.debug("Tags: " + tagsFlat);
@@ -85,8 +86,9 @@ public class AccessLog {
 
     /**
      * Get log message, whereas set Yanel analytics cookie if it does not exist yet as persistent cookie
+     * @param TAG_SEPARATOR Tag delimiter
      */
-    public static String getLogMessage(HttpServletRequest request, HttpServletResponse response, String realmID, String[] tags) {
+    public static String getLogMessage(HttpServletRequest request, HttpServletResponse response, String realmID, String[] tags, String TAG_SEPARATOR) {
         Cookie cookie = getSetYanelAnalyticsCookie(request, response);
         try {
             org.wyona.security.core.api.Identity identity = YanelServlet.getIdentity(request.getSession(true), realmID);
@@ -94,19 +96,20 @@ public class AccessLog {
         } catch(Exception e) {
             log.error(e, e);
         }
-        return getLogMessage(getURLInclQueryString(request), realmID, cookie.getValue(), request.getHeader("referer"), request.getHeader("User-Agent"),tags);
+        return getLogMessage(getURLInclQueryString(request), realmID, cookie.getValue(), request.getHeader("referer"), request.getHeader("User-Agent"),tags, TAG_SEPARATOR);
     }
 
     /**
      * Get log message
+     * @param TAG_SEPARATOR Tag delimiter
      */
-    public static String getLogMessage(HttpServletRequest request, String realmID, String[] tags) {
+    public static String getLogMessage(HttpServletRequest request, String realmID, String[] tags, String TAG_SEPARATOR) {
         Cookie cookie = getYanelAnalyticsCookie(request);
         String cookieValue = null;
         if (cookie != null) {
             cookieValue = cookie.getValue();
         }
-        return getLogMessage(getURLInclQueryString(request), realmID, cookieValue, request.getHeader("referer"), request.getHeader("User-Agent"), tags);
+        return getLogMessage(getURLInclQueryString(request), realmID, cookieValue, request.getHeader("referer"), request.getHeader("User-Agent"), tags, TAG_SEPARATOR);
     }
 
     /**
@@ -114,7 +117,8 @@ public class AccessLog {
      * @deprecated Please use getLogMessage(HttpServletRequest, String, String[]) instead
      */
     public static String getLogMessage(HttpServletRequest request, String realmID) {
-        return getLogMessage(request, realmID, null);
+        log.warn("DEPRECATED");
+        return getLogMessage(request, realmID, null, null);
     }
 
     /**
