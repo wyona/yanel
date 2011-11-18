@@ -40,7 +40,7 @@
       <!-- TODO: Add checksum file to server -->
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="yarep" artifactId="yarep-core" version="1.0-dev-rfb5ff05f92fa91672a54c447ef78d7b66b858b46"/>
+      <dependency groupId="yarep" artifactId="yarep-core" version="1.0-dev-r4ae21e6cdad49e50d4ed2849f469d1789579af0b"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons" version="1.0-dev-r59402"/>
@@ -83,7 +83,7 @@
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="0.3-dev-r58517"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="0.3-dev-r58517"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="yarep" artifactId="yarep-impl" version="1.0-dev-rfb5ff05f92fa91672a54c447ef78d7b66b858b46"/>
+      <dependency groupId="yarep" artifactId="yarep-impl" version="1.0-dev-r4ae21e6cdad49e50d4ed2849f469d1789579af0b"/>
       <dependency groupId="spring" artifactId="spring"
                   version="2.0"/>
       <dependency groupId="svnkit" artifactId="svnkit"
