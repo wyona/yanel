@@ -132,7 +132,8 @@
       <dependency groupId="wyona-org-yanel" artifactId="yanel-resource-creatable-modifiable-deletable-v3" version="0.1-dev-re534f851072e373b86624d7d6710fa7f1c81f240"/>
 
       <!-- INFO: Log into ActiveMQ Java Messaging System -->
-      <dependency groupId="wyona-com-boost" artifactId="Log4JAppender" version="2.0.1-r8daa82d945f2d6185d166ab766303ab6c7dbb33a"/>
+      <dependency groupId="wyona-com-boost" artifactId="Log4JAppender" version="2.0.1-r432b439c5c7f3fbbdff9c1dccef66300faf0cab9"/>
+      <dependency groupId="wyona-com-boost" artifactId="Log4JParsingUtils" version="2.0.1-r432b439c5c7f3fbbdff9c1dccef66300faf0cab9"/>
       <dependency groupId="org.apache.activemq" artifactId="activemq-core" version="5.4.2"/>
       <dependency groupId="org.apache.geronimo.specs" artifactId="geronimo-j2ee-management_1.1_spec" version="1.0.1"/>
       <dependency groupId="org.apache.geronimo.specs" artifactId="geronimo-jms_1.1_spec" version="1.1.1"/>
