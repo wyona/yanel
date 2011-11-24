@@ -55,7 +55,7 @@ public class AccessLog {
         // TODO: Move log field names (e.g. url, ref, ua) to org.wyona.boost.log.LogConstants
     	String result =
             encodeLogField("url", requestURL) +
-            encodeLogField("r", realmID) +
+            encodeLogField("d", realmID) +
             encodeLogField("c", cookieValue) +
             encodeLogField("ref", referer) +
             encodeLogField("ua", userAgent) + 
