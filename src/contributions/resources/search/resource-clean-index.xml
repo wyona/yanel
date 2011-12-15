@@ -13,5 +13,7 @@ A resource in order to clean an index, such as for example remove index entries,
   <property name="allow-default-repos"/> <!-- INFO: Enable cleaning of index of default repositories. Optional and default is 'false'. -->
 
   <property name="repository-id"/> <!-- INFO: Allows cleaning of index of additonal repositories (see http://www.yanel.org/en/documentation/realm/realm-configuration.html#yarep-repos). The property is optional. -->
+
+  <property name="list-size-limit"/> <!-- INFO: The property is optional, whereas if not set, then it means no limit -->
 </rtd>
 </resource>
