@@ -43,12 +43,14 @@
   </xsl:template>
 
   <xsl:template match="y:missing-nodes">
-    <h3>Missing nodes</h3>
+    <h3>Missing nodes inside repository: <xsl:value-of select="/y:clean-index/y:repository"/></h3>
     <ul>
     <xsl:for-each select="y:path">
       <li><xsl:value-of select="."/></li>
     </xsl:for-each>
     </ul>
+
+    <a href="?repository={/y:clean-index/y:repository/@id}&amp;delete=true">Clean index</a>
   </xsl:template>
 
 </xsl:stylesheet>
