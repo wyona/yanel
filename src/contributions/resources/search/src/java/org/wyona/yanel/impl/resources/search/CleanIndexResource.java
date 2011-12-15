@@ -25,6 +25,8 @@ public class CleanIndexResource extends BasicXMLResource {
 
     private static String REPO_NAME = "repository";
     private static String REINDEX_XMLNS = "http://www.wyona.org/yanel/clean-index/1.0";
+
+    private static final String LIST_SIZE_LIMIT_PARAM_NAME = "list-size-limit";
     
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -99,7 +101,7 @@ public class CleanIndexResource extends BasicXMLResource {
                 if (getEnvironment().getRequest().getParameter("delete") != null) {
                     delete = new Boolean(getEnvironment().getRequest().getParameter("delete")).booleanValue();
                 }
-                String[] missingNodePaths = luceneSearcher.getMissingNodes(delete);
+                String[] missingNodePaths = luceneSearcher.getMissingNodes(delete, getListSizeLimit());
                 sb.append("<r:message>Cleaning means that " + missingNodePaths.length + " index entries should be removed, because the corresponding content nodes do not seem to exist anymore inside the repository '" + repo.getName() + "'</r:message>");
 
                 if (missingNodePaths.length > 0) {
@@ -130,5 +132,27 @@ public class CleanIndexResource extends BasicXMLResource {
      */
     public boolean exists() throws Exception {
         return true;
+    }
+
+    /**
+     * Get list size limit
+     */
+    private int getListSizeLimit() {
+        String listSizeLimit = getEnvironment().getRequest().getParameter(LIST_SIZE_LIMIT_PARAM_NAME);
+        if (listSizeLimit != null) {
+            return new Integer(listSizeLimit).intValue();
+        }
+
+        try {
+            listSizeLimit = getResourceConfigProperty(LIST_SIZE_LIMIT_PARAM_NAME);
+            if (listSizeLimit != null) {
+                return new Integer(listSizeLimit).intValue();
+            }
+        } catch(Exception e) {
+            log.warn(e.getMessage());
+        }
+
+        log.warn("List size limit is not configured, neither inside query string nor resource configuration, hence set no limit!");
+        return -1;
     }
 }
