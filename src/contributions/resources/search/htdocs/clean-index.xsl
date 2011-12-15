@@ -4,9 +4,9 @@
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
-  xmlns:y="http://www.wyona.org/yanel/reindex/1.0">
+  xmlns:y="http://www.wyona.org/yanel/clean-index/1.0">
 
-  <xsl:template match="/y:reindex">
+  <xsl:template match="/y:clean-index">
     <html>
       <head>
         <title>Clean index of repository</title>
@@ -15,6 +15,7 @@
         <h1>Clean index of repository</h1>
         <xsl:apply-templates select="y:exception"/>
         <xsl:apply-templates select="y:message"/>
+        <xsl:apply-templates select="y:missing-nodes"/>
 
 <!--
         <xsl:if test="not(y:exception or y:message)">
@@ -39,6 +40,15 @@
 
   <xsl:template match="y:message">
     <p style="color:green;"><xsl:value-of select="."/></p>
+  </xsl:template>
+
+  <xsl:template match="y:missing-nodes">
+    <h3>Missing nodes</h3>
+    <ul>
+    <xsl:for-each select="y:path">
+      <li><xsl:value-of select="."/></li>
+    </xsl:for-each>
+    </ul>
   </xsl:template>
 
 </xsl:stylesheet>

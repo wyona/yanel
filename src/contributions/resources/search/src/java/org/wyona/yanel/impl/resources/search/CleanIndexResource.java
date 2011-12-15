@@ -5,6 +5,7 @@ package org.wyona.yanel.impl.resources.search;
 
 import org.wyona.yarep.util.YarepUtil;
 import org.wyona.yarep.core.Repository;
+import org.wyona.yarep.impl.search.lucene.LuceneSearcher;
 
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
@@ -17,13 +18,13 @@ import org.apache.log4j.Logger;
 /**
  * This resource can be used to clean the index of a repository.
  * If you configure this resource in your realm, make sure to protect it because you
- * most likely don't want your users to start re-indexing processes.
+ * most likely don't want your users to clean the index.
  */
 public class CleanIndexResource extends BasicXMLResource {
     private static Logger log = Logger.getLogger(CleanIndexResource.class);
 
     private static String REPO_NAME = "repository";
-    private static String REINDEX_XMLNS = "http://www.wyona.org/yanel/reindex/1.0";
+    private static String REINDEX_XMLNS = "http://www.wyona.org/yanel/clean-index/1.0";
     
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -31,19 +32,19 @@ public class CleanIndexResource extends BasicXMLResource {
     protected InputStream getContentXML(String viewId) throws Exception {
         // Build output document
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
-        sb.append("<r:reindex xmlns:r=\"");
+        sb.append("<r:clean-index xmlns:r=\"");
         sb.append(REINDEX_XMLNS);
         sb.append("\">");
 
-        // Which repo needs to be re-indexed?
-        String reindexRepo = getEnvironment().getRequest().getParameter(REPO_NAME); 
+        // Which repo needs to be cleaned?
+        String selectedRepo = getEnvironment().getRequest().getParameter(REPO_NAME); 
 
-        // Are we allowed to re-index this repository?
-        // Only default repositories and the ones listed in the resource configuration are allowed to be re-indexed
+        // Are we allowed to clean this repository?
+        // Only default repositories and the ones listed in the resource configuration are allowed to be cleaned
         boolean allowed = false;
 
         // List default repositories
-        // Only show them if we're allowed to re-index them
+        // Only show them if we're allowed to clean them
         String defaultRepos = getResourceConfigProperty("allow-default-repos");
         if("true".equals(defaultRepos)) {
             sb.append("<r:repository id=\"yanel_data\">Realm's data repository</r:repository>");
@@ -61,17 +62,17 @@ public class CleanIndexResource extends BasicXMLResource {
                 sb.append("\">Configured repository with id '");
                 sb.append(repoId);
                 sb.append("'</r:repository>");
-                // Check  if repo that should be re-indexed is listed in resource configuration (see property 'repository-id')
-                if(!allowed && repoId.equals(reindexRepo)) allowed = true;
+                // Check  if repo that should be cleaned is listed in resource configuration (see property 'repository-id')
+                if(!allowed && repoId.equals(selectedRepo)) allowed = true;
             }
         }
 
-        // Check if repo that should be re-indexed is default repo
+        // Check if repo that should be cleaned is default repo
         if(!allowed && "true".equals(defaultRepos) &&
-          ("yanel_data".equals(reindexRepo) || 
-           "yanel_ac-policies".equals(reindexRepo) || 
-           "yanel_ac-identities".equals(reindexRepo) || 
-           "yanel_res-configs".equals(reindexRepo))) {
+          ("yanel_data".equals(selectedRepo) || 
+           "yanel_ac-policies".equals(selectedRepo) || 
+           "yanel_ac-identities".equals(selectedRepo) || 
+           "yanel_res-configs".equals(selectedRepo))) {
                 allowed = true;
         }
 
@@ -79,7 +80,7 @@ public class CleanIndexResource extends BasicXMLResource {
         Repository repo = null;
         if(allowed) {
             try {
-                repo = getRealm().getRepository(reindexRepo);
+                repo = getRealm().getRepository(selectedRepo);
             } catch(Exception e) {
                 sb.append("<r:exception>Opening repo failed with exception: ");
                 sb.append(e.getMessage());
@@ -87,23 +88,36 @@ public class CleanIndexResource extends BasicXMLResource {
             }
         }
 
-        // Perform re-indexing now
+        // INFO: Check what would/should be cleaned
         if(repo != null) {
             YarepUtil yu = new YarepUtil();
 
             try {
-                yu.indexRepository(repo);
-                sb.append("<r:message>Re-indexing was successful.</r:message>");
+                log.warn("DEBUG: Check for nodes which still exist inside the search index, but do not exist anymore inside the repository: " + repo.getName());
+                LuceneSearcher luceneSearcher = (LuceneSearcher) repo.getSearcher();
+                String[] missingNodePaths = luceneSearcher.getMissingNodes();
+                sb.append("<r:message>Cleaning means that " + missingNodePaths.length + " index entries should be removed, because the corresponding content nodes do not seem to exist anymore inside the repository '" + repo.getName() + "'</r:message>");
+
+                if (missingNodePaths.length > 0) {
+                    sb.append("<r:missing-nodes>");
+                    for (int i = 0; i < missingNodePaths.length; i++) {
+                        sb.append("<r:path>" + missingNodePaths[i] + "</r:path>");
+                    }
+                    sb.append("</r:missing-nodes>");
+                } else {
+                    sb.append("<r:no-missing-nodes/>");
+                }
+
+                //sb.append("<r:message>Cleaning index was successful.</r:message>");
             } catch(Exception e) {
-                sb.append("<r:exception>Re-indexing failed with exception: ");
-                sb.append(e.getMessage());
-                sb.append("</r:exception>");
+                log.error(e, e);
+                sb.append("<r:exception>" + e.getMessage() + "</r:exception>");
             }
-        } else if(reindexRepo != null) {
-            sb.append("<r:exception>Repository '" + reindexRepo + "' does either not exist or is not configured in order to be re-indexed.</r:exception>");
+        } else if(selectedRepo != null) {
+            sb.append("<r:exception>Repository '" + selectedRepo + "' does either not exist or is not configured in order to be cleaned.</r:exception>");
         }
 
-        sb.append("</r:reindex>");
+        sb.append("</r:clean-index>");
         return new ByteArrayInputStream(sb.toString().getBytes());
     }
 
