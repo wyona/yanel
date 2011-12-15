@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="clean-index"
+  namespace="http://www.wyona.org/yanel/resource/1.0"
+  class="org.wyona.yanel.impl.resources.search.CleanIndexResource"
+  >
+<description>
+A resource in order to clean an index, such as for example remove index entries, which have no corresponding content node inside the repository anymore or remove 'duplicated' index entries (index entries with the same _PATH except the difference of a trailing slash)
+</description>
+
+<rtd>
+  <property name="allow-default-repos"/> <!-- INFO: Enable cleaning of index of default repositories. Optional and default is 'false'. -->
+
+  <property name="repository-id"/> <!-- INFO: Allows cleaning of index of additonal repositories (see http://www.yanel.org/en/documentation/realm/realm-configuration.html#yarep-repos). The property is optional. -->
+</rtd>
+</resource>
