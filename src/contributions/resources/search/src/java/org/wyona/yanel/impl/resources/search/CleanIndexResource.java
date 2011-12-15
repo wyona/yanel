@@ -95,7 +95,11 @@ public class CleanIndexResource extends BasicXMLResource {
             try {
                 log.warn("DEBUG: Check for nodes which still exist inside the search index, but do not exist anymore inside the repository: " + repo.getName());
                 LuceneSearcher luceneSearcher = (LuceneSearcher) repo.getSearcher();
-                String[] missingNodePaths = luceneSearcher.getMissingNodes();
+                boolean delete = false;
+                if (getEnvironment().getRequest().getParameter("delete") != null) {
+                    delete = new Boolean(getEnvironment().getRequest().getParameter("delete")).booleanValue();
+                }
+                String[] missingNodePaths = luceneSearcher.getMissingNodes(delete);
                 sb.append("<r:message>Cleaning means that " + missingNodePaths.length + " index entries should be removed, because the corresponding content nodes do not seem to exist anymore inside the repository '" + repo.getName() + "'</r:message>");
 
                 if (missingNodePaths.length > 0) {
