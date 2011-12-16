@@ -102,10 +102,19 @@ public class CleanIndexResource extends BasicXMLResource {
                     delete = new Boolean(getEnvironment().getRequest().getParameter("delete")).booleanValue();
                 }
                 String[] missingNodePaths = luceneSearcher.getMissingNodes(delete, getListSizeLimit());
-                sb.append("<r:message>Cleaning means that " + missingNodePaths.length + " index entries should be removed, because the corresponding content nodes do not seem to exist anymore inside the repository '" + repo.getName() + "'</r:message>");
+
+                if (delete) {
+                    sb.append("<r:message>The following '" + missingNodePaths.length + "' index entries have been removed from the index</r:message>");
+                } else {
+                    sb.append("<r:message>Cleaning means that the following '" + missingNodePaths.length + "' index entries should be removed, because the corresponding content nodes do not seem to exist anymore inside the repository '" + repo.getName() + "'</r:message>");
+                }
 
                 if (missingNodePaths.length > 0) {
-                    sb.append("<r:missing-nodes>");
+                    if (delete) {
+                        sb.append("<r:missing-nodes delete=\"true\">");
+                    } else {
+                        sb.append("<r:missing-nodes>");
+                    }
                     for (int i = 0; i < missingNodePaths.length; i++) {
                         sb.append("<r:path>" + missingNodePaths[i] + "</r:path>");
                     }
