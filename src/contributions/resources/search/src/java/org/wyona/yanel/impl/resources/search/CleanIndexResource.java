@@ -111,7 +111,7 @@ public class CleanIndexResource extends BasicXMLResource {
 
                 if (missingNodePaths.length > 0) {
                     if (delete) {
-                        sb.append("<r:missing-nodes delete=\"true\">");
+                        sb.append("<r:missing-nodes deleted=\"true\">");
                     } else {
                         sb.append("<r:missing-nodes>");
                     }
