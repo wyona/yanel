@@ -1,0 +1,2 @@
+# A particular xhina version is downloaded via Maven (see src/contributions/resources/xinha/src/build/dependencies.xml) and put into the "xinha" directory
+xinha
