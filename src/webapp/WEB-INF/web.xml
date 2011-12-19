@@ -65,8 +65,7 @@
     <!-- Log access -->
     <init-param>
       <param-name>log-access</param-name>
-      <param-value>false</param-value> <!--The default value needs to be false because of performance/scalability reasons -->
-      <!--<param-value>true</param-value>-->
+      <param-value>true</param-value> <!-- INFO: For privacy or performance/scalability reasons you might want to set this parameter to false in order to disable access logging -->
     </init-param>
 
     <!-- Access log tag separator -->
