@@ -71,10 +71,8 @@
     <!-- Access log tag separator -->
     <init-param>
       <param-name>access-log-tag-separator</param-name>
-      <param-value>SPACE</param-value> <!-- Note that the leading and trailing space around the parameter value is trimmed, hence we denote the space sign by SPACE. -->
-<!--
+      <!--<param-value>SPACE</param-value>--> <!-- Note that the leading and trailing space around the parameter value is trimmed, hence we denote the space sign by SPACE. -->
       <param-value>,</param-value>
--->
     </init-param>
 
     <!-- Detect mobile devices for every request -->
