@@ -65,7 +65,7 @@
     <!-- Log access -->
     <init-param>
       <param-name>log-access</param-name>
-      <param-value>true</param-value> <!-- INFO: For privacy or performance/scalability reasons you might want to set this parameter to false in order to disable access logging -->
+      <param-value>true</param-value> <!-- INFO: For privacy or performance/scalability reasons you might want to set this parameter to false in order to disable access logging. IMPORTANT: Please note that if a client/browser has DNT (Do Not Track) enabled, then access won't be logged even if log-access is set to true! -->
     </init-param>
 
     <!-- Access log tag separator -->
