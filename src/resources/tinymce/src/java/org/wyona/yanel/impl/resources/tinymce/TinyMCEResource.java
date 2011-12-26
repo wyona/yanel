@@ -439,14 +439,14 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
     }
 
     /**
-     * Check wheter resource is checked-out
+     * Check whether resource is checked-out
      */
     private boolean isResToEditCheckedOut()  {
         try {
             if (isResToEditVersionableV2()) {
                 VersionableV2 versionable = (VersionableV2) getResToEdit();
                 if (versionable.isCheckedOut()) {
-                    log.warn("Resource '" + getResToEdit().getPath() + "' is checked-out.");
+                    log.debug("Resource '" + getResToEdit().getPath() + "' is checked-out.");
                     return true;
                 }
             }     
