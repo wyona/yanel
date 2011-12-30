@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Case Study: Scalability/Performance issues re lucene indexing</title>
+  </head>
+  <body>
+    <h1>Case Study: Scalability/Performance issues re lucene indexing</h1>
+    <h2>Introduction</h2>
+<p>
+The following case study describes the performance/scalability issues of an existing custom implementation, which
+allows editorial stuff to query for existing content elements, select a particular element and add it to a specific web page.
+A content element is typically made up of a title, subtitle, image and a short text. The goal of this functionality is to allow
+editorial stuff to re-use the same content elements on various web pages. For example a teaser about a meal/recipe which fits
+together with certain red wines, whereas each red wine would have its own web page describing the details of the particular red wine.
+</p>
+    <h2>Symptoms</h2>
+<p>
+TODO
+</p>
+    <h2>Root Cause</h2>
+<p>
+TODO
+</p>
+    <h2>Quick Fix</h2>
+<p>
+<ul>
+  <li>Disable automatic lucene indexing (for example set the parameters <code>repo-auto-index-fulltext</code> and <code>repo-auto-index-properties</code> inside the Yarep repository configuration to <code>false</code>.)</li>
+  <li>Index explicitely by using for example <code>org.wyona.yarep.core.Repository#getIndexer()</code> and in particular the methods <code>index(Node)</code> and <code>removeFromIndex(Node)</code> within the custom code.</li>
+</ul>
+</p>
+    <h2>Long term solution</h2>
+<p>
+TODO
+</p>
+    <h2>Lesson learned</h2>
+<p>
+<ul>
+  <li>Do not get distracted, but try to stay focused on the most important issues.</li>
+  <li>Make sure to analyze and really understand the problem and don't start hunting ghosts.</li>
+</ul>
+</p>
+  </body>
+</html>
