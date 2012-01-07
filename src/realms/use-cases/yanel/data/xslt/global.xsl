@@ -91,7 +91,7 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <tr>
   <td colspan="3" id="footer">
 
-    <i18n:text key="poweredBy"/><xsl:text> </xsl:text><a href="http://yanel.wyona.org">Wyona Yanel</a> | <a href="https://svn.wyona.org/repos/public/tomcat-cluster/">Wyona Balancer</a> | <a href="http://tomcat.apache.org">Apache Tomcat</a> | <a href="http://httpd.apache.org">Apache HTTP Server</a><br/>
+    <i18n:text key="poweredBy"/><xsl:text> </xsl:text><a href="http://www.yanel.org">Wyona Yanel</a> | <a href="https://github.com/wyona/tomcat-cluster">Wyona Balancer</a> | <a href="http://tomcat.apache.org">Apache Tomcat</a> | <a href="http://httpd.apache.org">Apache HTTP Server</a><br/>
     Copyright &#169; 2006 <a href="http://www.wyona.com">Wyona</a>. <i18n:text key="allRightsReserved"/>. - <a href="?yanel.resource.meta"><i18n:text key="pageInfo"/></a>
 
   </td>
