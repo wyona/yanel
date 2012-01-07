@@ -13,7 +13,7 @@
     <um:creator>Wyona</um:creator>
     <um:homepageURL>http://www.yanel.org/</um:homepageURL>
     
-    <!-- INFO: The document update.rdf is located within a sub-realm of the yanel-website realm (https://svn.wyona.com/repos/public/yanel/contributions/realms/downloads) -->
+    <!-- INFO: The document update.rdf is located within a sub-realm of the yanel-website realm (Also see https://github.com/wyona/yanel-contributions/blob/master/realms/downloads/data/update.rdf) -->
     <um:updateURL>http://www.yanel.org/downloads/update.rdf</um:updateURL>
 <!--
     <um:updateURL>http://127.0.0.1:8080/yanel/yanel-website/downloads/update.rdf</um:updateURL>
