@@ -179,12 +179,7 @@
   </target>
 
   <target name="source-snapshot" description="Create a source code snapshot" depends="init">
-
-    <!-- DOCU: http://subclipse.tigris.org/svnant/svn.html -->
-    <svnant:svn username="anonymous" password="anonymous">
-      <info target="http://svn.wyona.com/repos/public/yanel/trunk" verbose="false"/>
-    </svnant:svn>
-    <echo>Most recent revision on remote server: ${svn.info.rev}</echo>
+    <echo>Most recent revision on remote server: https://github.com/wyona/yanel</echo>
 
     <fail message="No revision specified yet! Please configure property 'yanel.revision' within 'src/build/local.build.properties'.">
       <condition>
@@ -201,16 +196,15 @@
     </fail>
     <mkdir dir="${build.dir}/source-snapshots"/>
 
-<!-- Start exporting source code from Subversion -->
-    <echo>Start exporting source from SVN, revision: ${yanel.revision}</echo>
-    <svnant:svn username="anonymous" password="anonymous">
-      <export
-       revision="${yanel.revision}"
-       srcUrl="http://svn.wyona.com/repos/public/yanel/trunk"
-       destPath="${snapshot.dir}"
-      />
-    </svnant:svn>
-<!-- End exporting source code from SVN -->
+<!-- Start exporting source code from SCM -->
+    <echo>Start exporting most recent source from 'github', revision: ${yanel.revision}</echo>
+    <exec executable="git">
+      <arg value="clone"/>
+      <arg value="git@github.com:wyona/yanel.git"/>
+      <arg value="${snapshot.dir}"/>
+    </exec>
+    <delete dir="${snapshot.dir}/.git"/>
+<!-- End exporting source code from SCM -->
 
     <replace file="${snapshot.dir}/src/build/build.properties" value="${yanel.revision}">
       <replacetoken>REVISION</replacetoken>
