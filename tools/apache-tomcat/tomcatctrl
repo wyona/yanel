@@ -1,6 +1,10 @@
 #!/bin/sh
 #
-# Start/stop script for tomcat located at /etc/init.d
+# Start/stop script for tomcat located at /etc/init.d/tomcatctrl, whereas symbolic links should be set for the various runlevels, for example
+#    cd /etc/rc0.d
+#    ln -s ../init.d/tomcatctrl K09tomcat
+#    cd /etc/rc4.d
+#    ln -s ../init.d/tomcatctrl S91tomcat
 #
 # Author: Michael Wechner <michael.wechner@wyona.com>
 # Author: Christian Egli
