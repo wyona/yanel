@@ -32,7 +32,7 @@
            <li>openssl req -new -x509 -nodes -sha1 -days 365 -key /usr/local/httpd-2.2.3/conf/server.key &gt; /usr/local/httpd-2.2.3/conf/server.crt</li>
          </ul></li>
        <li>Uncomment SSL config within /usr/local/httpd-2.2.3/conf/httpd.conf (Include conf/extra/httpd-ssl.conf)</li>
-       <li>Configure virtual hosts within /usr/local/httpd-2.2.3/conf/extra/httpd-vhosts.conf</li><ul><li>A sample can be found at <a href="https://svn.wyona.org/repos/public/yanel/trunk/src/httpd-2.2.3/conf/extra/httpd-vhosts_WITH_SSL.conf">yanel/trunk/src/httpd-2.2.3/conf/extra/httpd-vhosts_WITH_SSL.conf</a></li></ul>
+       <li>Configure virtual hosts within /usr/local/httpd-2.2.3/conf/extra/httpd-vhosts.conf</li><ul><li>A sample can be found at <a href="https://github.com/wyona/yanel/blob/master/src/httpd-2.2.3/conf/extra/httpd-vhosts_WITH_SSL.conf">YANEL_HOME/src/httpd-2.2.3/conf/extra/httpd-vhosts_WITH_SSL.conf</a></li></ul>
        <li>Uncomment vhosts config within /usr/local/httpd-2.2.3/conf/httpd.conf (Include conf/extra/httpd-vhosts.conf)</li>
        <li>Startup Apache: /usr/local/httpd-2.2.3/bin/apachectl start</li>
        <li>Test SSL: https://127.0.0.1:443</li>
