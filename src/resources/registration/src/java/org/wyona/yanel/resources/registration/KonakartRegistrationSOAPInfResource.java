@@ -23,9 +23,9 @@ import com.konakart.appif.KKEngIf;
 /**
  * A simple Resource which extends BasicXMLResource
  */
-public class KonakartRegistrationSOAPInfResource extends BasicXMLResource {
+public class UserRegistrationResource extends BasicXMLResource {
     
-    private static Logger log = Logger.getLogger(KonakartRegistrationSOAPInfResource.class);
+    private static Logger log = Logger.getLogger(UserRegistrationResource.class);
 
     private static String KONAKART_NAMESPACE = "http://www.konakart.com/1.0";
     
