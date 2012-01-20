@@ -69,11 +69,12 @@ public class ForgotPassword extends BasicXMLResource {
     private static final String SUBMITFORGOTPASSWORD = "submitForgotPW";
     private static final String SUBMITNEWPW = "submitNewPW";
     private static final String NAMESPACE = "http://www.wyona.org/yanel/1.0";
-    private static final long  DEFAULT_TOTAL_VALID_HRS = 24L;
 
     private static final String SMTP_HOST_PROPERTY_NAME = "smtpHost";
+    private static final String SMTP_PORT_PROPERTY_NAME = "smtpPort";
 
     private static final String HOURS_VALID_PROPERTY_NAME = "num-hrs-valid";
+    private static final long  DEFAULT_TOTAL_VALID_HRS = 24L;
 
     /**
      * This is the main method that handles all view request. The first time the request
@@ -88,13 +89,12 @@ public class ForgotPassword extends BasicXMLResource {
             if(hrsValid != null && !hrsValid.equals("")) {
                 totalValidHrs = Long.parseLong(hrsValid);
             } else {
-                totalValidHrs = DEFAULT_TOTAL_VALID_HRS ;
+                totalValidHrs = DEFAULT_TOTAL_VALID_HRS;
             }
         } catch(Exception ex) {
             log.error("num-hrs-valid flag not properly set: " + ex, ex);
             totalValidHrs = DEFAULT_TOTAL_VALID_HRS;
         }
-        //Node xsltNode = getRealm().getRepository().getNode(getResourceConfigProperty("src"));
         Document adoc = XMLHelper.createDocument(NAMESPACE, "yanel-forgotpw");
         processUserAction(request, adoc);
         DOMSource source = new DOMSource(adoc);
@@ -144,7 +144,8 @@ public class ForgotPassword extends BasicXMLResource {
         } else {
             log.debug("default handler");
             String smtpEmailServer = getResourceConfigProperty(SMTP_HOST_PROPERTY_NAME);
-            if (smtpEmailServer != null || (getYanel().getSMTPHost() != null && getYanel().getSMTPPort() >= 0)) {
+            String smtpEmailServerPort = getResourceConfigProperty(SMTP_PORT_PROPERTY_NAME);
+            if ((smtpEmailServer != null && smtpEmailServerPort != null) || (getYanel().getSMTPHost() != null && getYanel().getSMTPPort() >= 0)) {
                 String from = getResourceConfigProperty("smtpFrom");
                 if (from != null) {
                     rootElement.appendChild(adoc.createElementNS(NAMESPACE, "requestemail"));
@@ -154,7 +155,7 @@ public class ForgotPassword extends BasicXMLResource {
                     if (getConfiguration().getNode() != null) {
                         resConfigFilename = getConfiguration().getNode().getPath(); 
                     }
-                    exceptionElement.setTextContent("The FROM address has not been configured yet. Please make sure to configure the FROM address within: " + resConfigFilename);
+                    exceptionElement.setTextContent("The FROM address has not been configured yet. Please make sure to configure the FROM address inside the resource configuration '" + resConfigFilename + "' (either globally or per realm)");
                 }
             } else {
                 Element exceptionElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "exception"));
@@ -162,7 +163,7 @@ public class ForgotPassword extends BasicXMLResource {
                 if (getConfiguration().getNode() != null) {
                     resConfigFilename = getConfiguration().getNode().getPath(); 
                 }
-                exceptionElement.setTextContent("SMTP host has not been configured yet. Please make sure to configure the various smtp properties at: " + resConfigFilename + " (Or within WEB-INF/classes/yanel.xml)");
+                exceptionElement.setTextContent("SMTP host/port has not been configured yet. Please make sure to configure the various smtp properties at: " + resConfigFilename + " (Or within WEB-INF/classes/yanel.xml)");
             }
         }
     }
@@ -411,6 +412,9 @@ public class ForgotPassword extends BasicXMLResource {
         String emailSubject = "Reset password request needs your confirmation";
         String emailBody = "Please go to the following URL to reset password: <" + getURL() + "?" + PW_RESET_ID + "=" + guid + ">.";
         String hrsValid = getResourceConfigProperty(HOURS_VALID_PROPERTY_NAME);
+        if (hrsValid == null) {
+            hrsValid = "" + DEFAULT_TOTAL_VALID_HRS;
+        }
         emailBody = emailBody + "\n\nNOTE: This link is only available during the next " + hrsValid + " hours!";
         if (log.isDebugEnabled()) log.debug(emailBody);
         String from = getResourceConfigProperty("smtpFrom");
@@ -418,7 +422,7 @@ public class ForgotPassword extends BasicXMLResource {
 
         String emailServer = getResourceConfigProperty(SMTP_HOST_PROPERTY_NAME);
         if (emailServer != null) {
-            int port = Integer.parseInt(getResourceConfigProperty("smtpPort"));
+            int port = Integer.parseInt(getResourceConfigProperty(SMTP_PORT_PROPERTY_NAME));
             org.wyona.yanel.core.util.MailUtil.send(emailServer, port, from, to, emailSubject, emailBody);
         } else {
             org.wyona.yanel.core.util.MailUtil.send(from, to, emailSubject, emailBody);
