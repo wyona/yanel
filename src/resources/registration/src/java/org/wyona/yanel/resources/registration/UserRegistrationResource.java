@@ -21,20 +21,18 @@ import com.konakart.appif.KKEngIf;
 */
 
 /**
- * A simple Resource which extends BasicXMLResource
+ * A resource to register new users
  */
 public class UserRegistrationResource extends BasicXMLResource {
     
     private static Logger log = Logger.getLogger(UserRegistrationResource.class);
 
-    private static String KONAKART_NAMESPACE = "http://www.konakart.com/1.0";
+    private static String NAMESPACE = "http://www.wyona.org/yanel/user-registration/1.0";
     
     /**
-     * This method overrides the method to create the InputStream called by BasicXMLResource
-     * Since you extend the BasicXMLResource this has to contain well-formed xml.
-     * Should return a InputStream which contains XML. 
-     * Use String, StingBuffer, dom, jdom, org.apache.commons.io.IOUtils and so on to generate the XML.
+     * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
      */
+    @Override
     protected InputStream getContentXML(String viewId) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("requested viewId: " + viewId);
@@ -48,7 +46,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         // Build document
         org.w3c.dom.Document doc = null;
         try {
-            doc = org.wyona.commons.xml.XMLHelper.createDocument(KONAKART_NAMESPACE, "registration");
+            doc = org.wyona.commons.xml.XMLHelper.createDocument(NAMESPACE, "registration");
         } catch (Exception e) {
             throw new Exception(e.getMessage(), e);
         }
@@ -60,115 +58,115 @@ public class UserRegistrationResource extends BasicXMLResource {
         if (email != null) {
             boolean inputsValid = true;
             if (!isEmailValid(email)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "email-not-valid"));
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-not-valid"));
                 inputsValid = false;
             } else {
 /*
                 if(kkEngine.doesCustomerExistForEmail(email)) {
-                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "email-in-use"));
+                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-in-use"));
                     inputsValid = false;
                 } 
 */
-                Element emailE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "email"));
+                Element emailE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email"));
                 emailE.appendChild(doc.createTextNode("" + email)); 
             }
 
             String password = getEnvironment().getRequest().getParameter("password");
             if (!isPasswordValid(password) || password.length() < 5) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "password-not-valid"));
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "password-not-valid"));
                 inputsValid = false;
             }
             String confirmedPassword = getEnvironment().getRequest().getParameter("password2");
             if (password != null && confirmedPassword != null && !password.equals(confirmedPassword)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "passwords-do-not-match"));
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "passwords-do-not-match"));
                 inputsValid = false;
             }
 
             String firstname = getEnvironment().getRequest().getParameter("firstname");
             if (!isFirstnameValid(firstname)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "firstname-not-valid"));
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname-not-valid"));
                 inputsValid = false;
             } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "firstname"));
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname"));
                 fnE.appendChild(doc.createTextNode("" + firstname)); 
             }
 
             String lastname = getEnvironment().getRequest().getParameter("lastname");
             if (!isLastnameValid(lastname)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "lastname-not-valid"));
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname-not-valid"));
                 inputsValid = false;
             } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "lastname"));
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname"));
                 fnE.appendChild(doc.createTextNode("" + lastname)); 
             }
 
             String gender = isGenderValid(getEnvironment().getRequest().getParameter("salutation"));
             if (gender == null) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "gender-not-valid"));
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "gender-not-valid"));
                 inputsValid = false;
             } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "gender"));
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "gender"));
                 fnE.appendChild(doc.createTextNode("" + gender)); 
             }
 
             String company = isCompanyValid(getEnvironment().getRequest().getParameter("company"));
             if (company != null && company.length() > 0) {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "company"));
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "company"));
                 fnE.appendChild(doc.createTextNode("" + company)); 
             }
 
             String fax = isFaxValid(getEnvironment().getRequest().getParameter("fax"));
             if (fax != null && fax.length() > 0) {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "fax"));
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "fax"));
                 fnE.appendChild(doc.createTextNode("" + fax)); 
             }
 
             String street = getEnvironment().getRequest().getParameter("street");
             if (!isStreetValid(street)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "street-not-valid"));
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street-not-valid"));
                 inputsValid = false;
             } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "street"));
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street"));
                 fnE.appendChild(doc.createTextNode("" + street)); 
             }
 
             String zip = getEnvironment().getRequest().getParameter("zip");
             if (!isZipValid(zip)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "zip-not-valid"));
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
                 inputsValid = false;
             } else {
                 Pattern pzip = Pattern.compile("[1-9][0-9]{3}");
                 Matcher mzip = pzip.matcher(zip);
                 if(mzip.find()) {
                     zip = mzip.group(0);
-                    Element fnE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "zip"));
+                    Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip"));
                     fnE.appendChild(doc.createTextNode("" + mzip.group(0))); 
                 } else {
-                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "zip-not-valid"));
+                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
                     inputsValid = false;
                 }
             }
 
             String city = getEnvironment().getRequest().getParameter("location");
             if (!isCityValid(city)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "city-not-valid"));
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city-not-valid"));
                 inputsValid = false;
             } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "city"));
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city"));
                 fnE.appendChild(doc.createTextNode("" + city)); 
             }
 
             String phone = getEnvironment().getRequest().getParameter("phone");
             if (!isPhoneValid(phone)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "phone-not-valid"));
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone-not-valid"));
                 inputsValid = false;
             } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "phone"));
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone"));
                 fnE.appendChild(doc.createTextNode("" + phone)); 
             }
 
             if (inputsValid) {
-                Element valildE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "all-inputs-valid"));
+                Element valildE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "all-inputs-valid"));
 /*
                 CustomerRegistrationIf cr = new com.konakart.app.CustomerRegistration();
                 cr.setEmailAddr(email);
@@ -197,18 +195,23 @@ public class UserRegistrationResource extends BasicXMLResource {
                 }
 */
 
-
-                try {
-                    // INFO: KonaKart registration
-                    //int customerID = kkEngine.registerCustomer(cr);
-                    long customerID = new java.util.Date().getTime();
+                boolean emailConfigurationRequired = true;
+                if (getResourceConfigProperty("email-confirmation") != null) {
+                    emailConfigurationRequired = new Boolean(getResourceConfigProperty("email-confirmation")).booleanValue();
+                }
+                if (!emailConfigurationRequired) {
+                    log.warn("User will be registered without email configuration!");
+                    try {
+                        // INFO: KonaKart registration
+                        //int customerID = kkEngine.registerCustomer(cr);
+                        long customerID = new java.util.Date().getTime();
 
                     // INFO: Yanel registration
                     org.wyona.security.core.api.User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, firstname + " " + lastname, email, password);
                     org.wyona.security.core.api.User alias = getRealm().getIdentityManager().getUserManager().createAlias(email, "" + customerID);
 
-                    Element ncE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "new-customer-registered"));
-                    ncE.setAttributeNS(KONAKART_NAMESPACE, "id", "" + customerID);
+                    Element ncE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "new-customer-registered"));
+                    ncE.setAttributeNS(NAMESPACE, "id", "" + customerID);
 
                     javax.servlet.http.HttpSession httpSession = getEnvironment().getRequest().getSession(true);
 
@@ -217,31 +220,34 @@ public class UserRegistrationResource extends BasicXMLResource {
                     String konakartSessionID = shared.login(email, password, getRealm(), httpSession);
                     if (konakartSessionID != null && konakartSessionID.length() > 0) {
                         httpSession.setAttribute(shared.KONAKART_SESSION_ID, konakartSessionID);
-                        Element succE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "login-successful"));
-                        succE.setAttributeNS(KONAKART_NAMESPACE, "username", "" + email);
+                        Element succE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "login-successful"));
+                        succE.setAttributeNS(NAMESPACE, "username", "" + email);
                         // TODO: Copy/paste shopping cart (???)
                     } else {
-                        Element errE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "login-failed"));
-                        errE.setAttributeNS(KONAKART_NAMESPACE, "username", "" + email);
+                        Element errE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "login-failed"));
+                        errE.setAttributeNS(NAMESPACE, "username", "" + email);
                         log.error("Login failed for new user: " + email);
                     }
 */
 /*
-                } catch(com.konakart.app.KKUserExistsException e) { // WARN: It seems that KonaKart is using nested exceptions and hence this one is not caught!
-                    log.warn(e.getMessage());
-                    Element fnE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "user-already-exists"));
-                    fnE.appendChild(doc.createTextNode("" + e.getMessage())); 
+                    } catch(com.konakart.app.KKUserExistsException e) { // WARN: It seems that KonaKart is using nested exceptions and hence this one is not caught!
+                        log.warn(e.getMessage());
+                        Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "user-already-exists"));
+                        fnE.appendChild(doc.createTextNode("" + e.getMessage())); 
 */
-                } catch(Exception e) {
-                    log.error(e, e);
-                    Element fnE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "registration-failed"));
-                    fnE.appendChild(doc.createTextNode("" + e.getMessage())); 
+                    } catch(Exception e) {
+                        log.error(e, e);
+                        Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "registration-failed"));
+                        fnE.appendChild(doc.createTextNode("" + e.getMessage())); 
+                    }
+                } else {
+                    sendConfirmationLinkEmail();
                 }
             } else {
-                Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "one-or-more-inputs-not-valid"));
+                Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
             }
         } else {
-            Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(KONAKART_NAMESPACE, "no-input-yet"));
+            Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "no-input-yet"));
         }
  
         java.io.ByteArrayOutputStream baout = new java.io.ByteArrayOutputStream();
@@ -372,5 +378,12 @@ public class UserRegistrationResource extends BasicXMLResource {
      */
     public boolean exists() {
         return true;
+    }
+
+    /**
+     * Send email containing a confirmation link
+     */
+    private void sendConfirmationLinkEmail() {
+        log.warn("DEBUG: Do not register user right away, but send an email containing a confirmation link...");
     }
 }
