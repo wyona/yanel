@@ -3,8 +3,13 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="forgotpw" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
-  <!--<yanel:property name="change-password-requests-path" value="change-password-requests"/>-->
+<!-- INFO: Override if you don't want to use default location
+  <yanel:property name="change-password-requests-path" value="/forgot-password-requests"/>
+-->
+
+<!-- INFO: Override if you don't want to use default time period
   <yanel:property name="num-hrs-valid" value="48"/>
+-->
 
   <yanel:property name="smtpFrom" value="no-reply@wyona.com"/>
 
