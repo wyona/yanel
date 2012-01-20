@@ -3,15 +3,14 @@
 <resource xmlns="http://www.wyona.org/yanel/1.0"
   name="registration"
   namespace="http://www.wyona.com/yanel/resource/1.0"
-  class="org.wyona.yanel.resources.registration.KonakartRegistrationSOAPInfResource"
+  class="org.wyona.yanel.resources.registration.UserRegistrationResource"
   >
 <description>
 User registration
 </description>
 
 <rtd>
-<!--
-  <property name="foo" default-value="bar"/>
--->
+  <!-- Optional -->
+  <property name="email-confirmation" default-value="true"/>
 </rtd>
 </resource>
