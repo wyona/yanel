@@ -77,11 +77,17 @@ public class MailUtil {
     }
 
     /**
-     * @param replyTo email address (if null, then no reply-to will be set)
-     * @param charset Charset, e.g. utf-8
-     * @param mimeSubType Mime sub-type, e.g. "html" or "plain"
+     * Send email
+     * @param smtpHost Alternative SMTP mail server host name, whereas if set to null, then the default/global configuration of Yanel will be used
+     * @param smtpPort Alternative SMTP mail server port, whereas if set to smaller than 0, then the default/global configuration of Yanel will be used
      * @param fromEmailAddress E-Mail address of sender, e.g. contact@wyona.org
      * @param fromName Name of sender, e.g. Wyona
+     * @param replyTo email address (if null, then no reply-to will be set)
+     * @param to To address
+     * @param subject Subject of email
+     * @param content Body of email
+     * @param charset Charset, e.g. utf-8
+     * @param mimeSubType Mime sub-type, e.g. "html" or "plain"
      */
     public static void send(String smtpHost, int smtpPort, String fromEmailAddress, String fromName, String replyTo, String to, String subject, String content, String charset, String mimeSubType) throws AddressException, MessagingException {
         // Create a mail session
