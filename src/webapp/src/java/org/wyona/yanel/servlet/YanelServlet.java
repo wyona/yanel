@@ -1884,10 +1884,12 @@ public class YanelServlet extends HttpServlet {
 
         View view = ((ViewableV2) resource).getView(viewId);
         if (view != null) {
-            log.warn("TODO: Tracking not implemented yet: " + resource.getPath());
             TrackingInformationV1 trackInfo = null;
-            if (generateResponse(view, resource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1, trackInfo) != null) return true;
+            if (generateResponse(view, resource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1, trackInfo) != null) {
+                return true;
+            }
         }
+        log.warn("No response has been generated: " + resource.getPath());
         return false;
     }
 
@@ -2051,7 +2053,7 @@ public class YanelServlet extends HttpServlet {
     private HttpServletResponse generateResponse(View view, Resource res, HttpServletRequest request, HttpServletResponse response, Document doc, long size, long lastModified, TrackingInformationV1 trackInfo) throws ServletException, IOException {
         //log.debug("Generate response: " + res.getPath());
 
-        // TODO: There seem like no header fields are being set (e.g. Content-Length, ...). Please see below ...
+        // TODO: It seems like no header fields are being set (e.g. Content-Length, ...). Please see below ...
 
         // INFO: Check if viewable resource has already created a response
         if (!view.isResponse()) {
@@ -2059,6 +2061,7 @@ public class YanelServlet extends HttpServlet {
                 //log.debug("Mime type '" + view.getMimeType() + "' of request: " + request.getServletPath() + "?" + request.getQueryString());
                 doLogAccess(request, response, res, trackInfo);
             }
+            log.debug("It seems that resource '" + res.getPath() + "' has directly created the response.");
             return response;
         }
             
