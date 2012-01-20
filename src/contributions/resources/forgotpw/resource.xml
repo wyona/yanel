@@ -6,12 +6,18 @@
   class="org.wyona.yanel.impl.resources.forgotpw.ForgotPassword"
   >
 <description>
-manage forgot pw resource
+Manage forgot password resource
 </description>
 
 <rtd>
-<!--
-  <property name="foo" default-value="bar"/>
--->
+  <!-- Mandatory -->
+  <property name="smtpFrom"/>
+
+  <!-- Optional -->
+  <property name="smtpHost"/>
+  <property name="smtpPort"/>
+
+  <property name="change-password-requests-path" default-value="/reset-password-requests"/>
+  <property name="num-hrs-valid" default-value="24"/>
 </rtd>
 </resource>
