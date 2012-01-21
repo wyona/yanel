@@ -60,7 +60,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         KKEngIf kkEngine = shared.getKonakartEngineImpl();
 */
 
-        // Build document
+        // INFO: Build response document
         Document doc = null;
         try {
             doc = org.wyona.commons.xml.XMLHelper.createDocument(NAMESPACE, "registration");
@@ -72,160 +72,14 @@ public class UserRegistrationResource extends BasicXMLResource {
         Element rootElement = doc.getDocumentElement();
 
         String email = getEnvironment().getRequest().getParameter("email");
+        String uuid = getEnvironment().getRequest().getParameter("uuid");
         if (email != null) {
-            boolean inputsValid = true;
-            if (!isEmailValid(email)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-not-valid"));
-                inputsValid = false;
+            processRegistrationRequest(doc, email);
+        } else if (uuid != null) {
+            if(activateRegistration(uuid)) {
+                Element activateSuccessfulE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-successful"));
             } else {
-/*
-                if(kkEngine.doesCustomerExistForEmail(email)) {
-                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-in-use"));
-                    inputsValid = false;
-                } 
-*/
-                Element emailE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email"));
-                emailE.appendChild(doc.createTextNode("" + email)); 
-            }
-
-            String password = getEnvironment().getRequest().getParameter("password");
-            if (!isPasswordValid(password) || password.length() < 5) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "password-not-valid"));
-                inputsValid = false;
-            }
-            String confirmedPassword = getEnvironment().getRequest().getParameter("password2");
-            if (password != null && confirmedPassword != null && !password.equals(confirmedPassword)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "passwords-do-not-match"));
-                inputsValid = false;
-            }
-
-            String firstname = getEnvironment().getRequest().getParameter("firstname");
-            if (!isFirstnameValid(firstname)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname-not-valid"));
-                inputsValid = false;
-            } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname"));
-                fnE.appendChild(doc.createTextNode("" + firstname)); 
-            }
-
-            String lastname = getEnvironment().getRequest().getParameter("lastname");
-            if (!isLastnameValid(lastname)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname-not-valid"));
-                inputsValid = false;
-            } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname"));
-                fnE.appendChild(doc.createTextNode("" + lastname)); 
-            }
-
-            String gender = isGenderValid(getEnvironment().getRequest().getParameter("salutation"));
-            if (gender == null) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "gender-not-valid"));
-                inputsValid = false;
-            } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "gender"));
-                fnE.appendChild(doc.createTextNode("" + gender)); 
-            }
-
-            String company = isCompanyValid(getEnvironment().getRequest().getParameter("company"));
-            if (company != null && company.length() > 0) {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "company"));
-                fnE.appendChild(doc.createTextNode("" + company)); 
-            }
-
-            String fax = isFaxValid(getEnvironment().getRequest().getParameter("fax"));
-            if (fax != null && fax.length() > 0) {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "fax"));
-                fnE.appendChild(doc.createTextNode("" + fax)); 
-            }
-
-            String street = getEnvironment().getRequest().getParameter("street");
-            if (!isStreetValid(street)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street-not-valid"));
-                inputsValid = false;
-            } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street"));
-                fnE.appendChild(doc.createTextNode("" + street)); 
-            }
-
-            String zip = getEnvironment().getRequest().getParameter("zip");
-            if (!isZipValid(zip)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
-                inputsValid = false;
-            } else {
-                Pattern pzip = Pattern.compile("[1-9][0-9]{3}");
-                Matcher mzip = pzip.matcher(zip);
-                if(mzip.find()) {
-                    zip = mzip.group(0);
-                    Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip"));
-                    fnE.appendChild(doc.createTextNode("" + mzip.group(0))); 
-                } else {
-                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
-                    inputsValid = false;
-                }
-            }
-
-            String city = getEnvironment().getRequest().getParameter("location");
-            if (!isCityValid(city)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city-not-valid"));
-                inputsValid = false;
-            } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city"));
-                fnE.appendChild(doc.createTextNode("" + city)); 
-            }
-
-            String phone = getEnvironment().getRequest().getParameter("phone");
-            if (!isPhoneValid(phone)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone-not-valid"));
-                inputsValid = false;
-            } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone"));
-                fnE.appendChild(doc.createTextNode("" + phone)); 
-            }
-
-            if (inputsValid) {
-                Element valildE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "all-inputs-valid"));
-/*
-                CustomerRegistrationIf cr = new com.konakart.app.CustomerRegistration();
-                cr.setEmailAddr(email);
-                cr.setPassword(password);
-                cr.setFirstName(firstname);
-                cr.setLastName(lastname);
-                cr.setGender(gender);
-                cr.setBirthDate(new java.util.GregorianCalendar(1992, 1, 1, 0, 0)); // INFO: No birthday necessary, hence invent something
-                cr.setTelephoneNumber(phone);
-                if (fax != null) {
-                    cr.setFaxNumber(fax);
-                }
-                cr.setStreetAddress(street);
-                cr.setCity(city);
-                cr.setPostcode(zip);
-                cr.setState(getResourceConfigProperty("default-zone"));
-                com.konakart.appif.CountryIf cn = kkEngine.getCountryPerName("Switzerland");
-                if(cn == null) {
-                    com.konakart.appif.CountryIf[] cns = kkEngine.getAllCountries(); // We use the first country in the database.
-                    cr.setCountryId(cns[0].getId());
-                } else {
-                    cr.setCountryId(cn.getId());
-                }
-                if (company != null) {
-                    cr.setCompany(company);
-                }
-*/
-
-                boolean emailConfigurationRequired = true;
-                if (getResourceConfigProperty("email-confirmation") != null) {
-                    emailConfigurationRequired = new Boolean(getResourceConfigProperty("email-confirmation")).booleanValue();
-                }
-                if (!emailConfigurationRequired) {
-                    log.warn("User will be registered without email configuration!");
-                    registerUser(doc, firstname, lastname, email, password);
-                } else {
-                    String uuid = java.util.UUID.randomUUID().toString();
-                    saveRegistrationRequest(uuid, firstname, lastname, email, city, phone);
-                    sendConfirmationLinkEmail(doc, uuid, firstname, lastname, email);
-                }
-            } else {
-                Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
+                Element activationFailedE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-failed"));
             }
         } else {
             Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "no-input-yet"));
@@ -503,5 +357,183 @@ public class UserRegistrationResource extends BasicXMLResource {
             log.warn("No proxy set.");
         }
         return url.toString();
+    }
+
+    /**
+     *
+     */
+    private void processRegistrationRequest(Document doc, String email) throws Exception {
+        Element rootElement = doc.getDocumentElement();
+            boolean inputsValid = true;
+            if (!isEmailValid(email)) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-not-valid"));
+                inputsValid = false;
+            } else {
+/*
+                if(kkEngine.doesCustomerExistForEmail(email)) {
+                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-in-use"));
+                    inputsValid = false;
+                } 
+*/
+                Element emailE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email"));
+                emailE.appendChild(doc.createTextNode("" + email)); 
+            }
+
+            String password = getEnvironment().getRequest().getParameter("password");
+            if (!isPasswordValid(password) || password.length() < 5) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "password-not-valid"));
+                inputsValid = false;
+            }
+            String confirmedPassword = getEnvironment().getRequest().getParameter("password2");
+            if (password != null && confirmedPassword != null && !password.equals(confirmedPassword)) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "passwords-do-not-match"));
+                inputsValid = false;
+            }
+
+            String firstname = getEnvironment().getRequest().getParameter("firstname");
+            if (!isFirstnameValid(firstname)) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname-not-valid"));
+                inputsValid = false;
+            } else {
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname"));
+                fnE.appendChild(doc.createTextNode("" + firstname)); 
+            }
+
+            String lastname = getEnvironment().getRequest().getParameter("lastname");
+            if (!isLastnameValid(lastname)) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname-not-valid"));
+                inputsValid = false;
+            } else {
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname"));
+                fnE.appendChild(doc.createTextNode("" + lastname)); 
+            }
+
+            String gender = isGenderValid(getEnvironment().getRequest().getParameter("salutation"));
+            if (gender == null) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "gender-not-valid"));
+                inputsValid = false;
+            } else {
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "gender"));
+                fnE.appendChild(doc.createTextNode("" + gender)); 
+            }
+
+            String company = isCompanyValid(getEnvironment().getRequest().getParameter("company"));
+            if (company != null && company.length() > 0) {
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "company"));
+                fnE.appendChild(doc.createTextNode("" + company)); 
+            }
+
+            String fax = isFaxValid(getEnvironment().getRequest().getParameter("fax"));
+            if (fax != null && fax.length() > 0) {
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "fax"));
+                fnE.appendChild(doc.createTextNode("" + fax)); 
+            }
+
+            String street = getEnvironment().getRequest().getParameter("street");
+            if (!isStreetValid(street)) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street-not-valid"));
+                inputsValid = false;
+            } else {
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street"));
+                fnE.appendChild(doc.createTextNode("" + street)); 
+            }
+
+            String zip = getEnvironment().getRequest().getParameter("zip");
+            if (!isZipValid(zip)) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
+                inputsValid = false;
+            } else {
+                Pattern pzip = Pattern.compile("[1-9][0-9]{3}");
+                Matcher mzip = pzip.matcher(zip);
+                if(mzip.find()) {
+                    zip = mzip.group(0);
+                    Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip"));
+                    fnE.appendChild(doc.createTextNode("" + mzip.group(0))); 
+                } else {
+                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
+                    inputsValid = false;
+                }
+            }
+
+            String city = getEnvironment().getRequest().getParameter("location");
+            if (!isCityValid(city)) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city-not-valid"));
+                inputsValid = false;
+            } else {
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city"));
+                fnE.appendChild(doc.createTextNode("" + city)); 
+            }
+
+            String phone = getEnvironment().getRequest().getParameter("phone");
+            if (!isPhoneValid(phone)) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone-not-valid"));
+                inputsValid = false;
+            } else {
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone"));
+                fnE.appendChild(doc.createTextNode("" + phone)); 
+            }
+
+            if (inputsValid) {
+                Element valildE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "all-inputs-valid"));
+/*
+                CustomerRegistrationIf cr = new com.konakart.app.CustomerRegistration();
+                cr.setEmailAddr(email);
+                cr.setPassword(password);
+                cr.setFirstName(firstname);
+                cr.setLastName(lastname);
+                cr.setGender(gender);
+                cr.setBirthDate(new java.util.GregorianCalendar(1992, 1, 1, 0, 0)); // INFO: No birthday necessary, hence invent something
+                cr.setTelephoneNumber(phone);
+                if (fax != null) {
+                    cr.setFaxNumber(fax);
+                }
+                cr.setStreetAddress(street);
+                cr.setCity(city);
+                cr.setPostcode(zip);
+                cr.setState(getResourceConfigProperty("default-zone"));
+                com.konakart.appif.CountryIf cn = kkEngine.getCountryPerName("Switzerland");
+                if(cn == null) {
+                    com.konakart.appif.CountryIf[] cns = kkEngine.getAllCountries(); // We use the first country in the database.
+                    cr.setCountryId(cns[0].getId());
+                } else {
+                    cr.setCountryId(cn.getId());
+                }
+                if (company != null) {
+                    cr.setCompany(company);
+                }
+*/
+
+                boolean emailConfigurationRequired = true;
+                if (getResourceConfigProperty("email-confirmation") != null) {
+                    emailConfigurationRequired = new Boolean(getResourceConfigProperty("email-confirmation")).booleanValue();
+                }
+                if (!emailConfigurationRequired) {
+                    log.warn("User will be registered without email configuration!");
+                    registerUser(doc, firstname, lastname, email, password);
+                } else {
+                    String uuid = java.util.UUID.randomUUID().toString();
+                    saveRegistrationRequest(uuid, firstname, lastname, email, city, phone);
+                    sendConfirmationLinkEmail(doc, uuid, firstname, lastname, email);
+                }
+            } else {
+                Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
+            }
+    }
+
+    /**
+     *
+     */
+    private boolean activateRegistration(String uuid) {
+        try {
+            String path = "/" + uuid;
+            if (getRealm().getRepository().existsNode(path)) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+            return false;
+        }
     }
 }
