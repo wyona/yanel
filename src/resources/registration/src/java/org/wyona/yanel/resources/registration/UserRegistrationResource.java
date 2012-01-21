@@ -18,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.net.URL;
 import java.util.Date;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -42,6 +43,8 @@ public class UserRegistrationResource extends BasicXMLResource {
     private static String NAMESPACE = "http://www.wyona.org/yanel/user-registration/1.0";
 
     private static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
+
+    private static final long  DEFAULT_TOTAL_VALID_HRS = 24L;
     
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -367,8 +370,9 @@ public class UserRegistrationResource extends BasicXMLResource {
 
         try {
             String from = "no-reply@wyona.com";
-            MailUtil.send(from, email, "Registration request", "http://127.0.0.1:8080/yanel/from-scratch-realm/confirm-user-registration.html?uuid=" + uuid);
+            MailUtil.send(from, email, "Activate User Registration", getActivationURL() + "?uuid=" + uuid);
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email-sent"));
+            element.setAttribute("hours-valid", "" + DEFAULT_TOTAL_VALID_HRS);
         } catch(Exception e) {
             log.error(e, e);
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email-not-sent"));
@@ -466,5 +470,38 @@ public class UserRegistrationResource extends BasicXMLResource {
         rootElem.appendChild(emailElem);
 
         return doc;
+    }
+
+    /**
+     * Get activation URL which will be sent via E-Mail (also see YanelServlet#getRequestURLQS(HttpServletRequest, String, boolean))
+     */
+    public String getActivationURL() throws Exception {
+        //https://192.168.1.69:8443/yanel" + request.getServletPath().toString()
+        URL url = new URL(request.getRequestURL().toString());
+        org.wyona.yanel.core.map.Realm realm = getRealm();
+        if (realm.isProxySet()) {
+            // TODO: Finish proxy settings replacement
+
+            String proxyHostName = realm.getProxyHostName();
+            log.debug("Proxy host name: " + proxyHostName);
+            if (proxyHostName != null) {
+                url = new URL(url.getProtocol(), proxyHostName, url.getPort(), url.getFile());
+            }
+
+            int proxyPort = realm.getProxyPort();
+            if (proxyPort >= 0) {
+                url = new URL(url.getProtocol(), url.getHost(), proxyPort, url.getFile());
+            } else {
+                url = new URL(url.getProtocol(), url.getHost(), url.getDefaultPort(), url.getFile());
+            }
+
+            String proxyPrefix = realm.getProxyPrefix();
+            if (proxyPrefix != null) {
+                url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile().substring(proxyPrefix.length()));
+            }
+        } else {
+            log.warn("No proxy set.");
+        }
+        return url.toString();
     }
 }
