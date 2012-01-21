@@ -1,18 +1,30 @@
 /*
  * Copyright 2010 Wyona
  */
-
 package org.wyona.yanel.resources.registration;
+
+import org.wyona.yanel.core.util.MailUtil;
 
 import org.wyona.yanel.impl.resources.BasicXMLResource;
 //import org.wyona.yanel.resources.konakart.shared.SharedResource;
 
+import org.wyona.commons.xml.XMLHelper;
+
+import org.wyona.yarep.core.Node;
+import org.wyona.yarep.core.NodeType;
+import org.wyona.yarep.util.YarepUtil;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /*
@@ -28,6 +40,8 @@ public class UserRegistrationResource extends BasicXMLResource {
     private static Logger log = Logger.getLogger(UserRegistrationResource.class);
 
     private static String NAMESPACE = "http://www.wyona.org/yanel/user-registration/1.0";
+
+    private static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
     
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -44,7 +58,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 */
 
         // Build document
-        org.w3c.dom.Document doc = null;
+        Document doc = null;
         try {
             doc = org.wyona.commons.xml.XMLHelper.createDocument(NAMESPACE, "registration");
         } catch (Exception e) {
@@ -201,47 +215,11 @@ public class UserRegistrationResource extends BasicXMLResource {
                 }
                 if (!emailConfigurationRequired) {
                     log.warn("User will be registered without email configuration!");
-                    try {
-                        // INFO: KonaKart registration
-                        //int customerID = kkEngine.registerCustomer(cr);
-                        long customerID = new java.util.Date().getTime();
-
-                    // INFO: Yanel registration
-                    org.wyona.security.core.api.User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, firstname + " " + lastname, email, password);
-                    org.wyona.security.core.api.User alias = getRealm().getIdentityManager().getUserManager().createAlias(email, "" + customerID);
-
-                    Element ncE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "new-customer-registered"));
-                    ncE.setAttributeNS(NAMESPACE, "id", "" + customerID);
-
-                    javax.servlet.http.HttpSession httpSession = getEnvironment().getRequest().getSession(true);
-
-                    // Login
-/*
-                    String konakartSessionID = shared.login(email, password, getRealm(), httpSession);
-                    if (konakartSessionID != null && konakartSessionID.length() > 0) {
-                        httpSession.setAttribute(shared.KONAKART_SESSION_ID, konakartSessionID);
-                        Element succE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "login-successful"));
-                        succE.setAttributeNS(NAMESPACE, "username", "" + email);
-                        // TODO: Copy/paste shopping cart (???)
-                    } else {
-                        Element errE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "login-failed"));
-                        errE.setAttributeNS(NAMESPACE, "username", "" + email);
-                        log.error("Login failed for new user: " + email);
-                    }
-*/
-/*
-                    } catch(com.konakart.app.KKUserExistsException e) { // WARN: It seems that KonaKart is using nested exceptions and hence this one is not caught!
-                        log.warn(e.getMessage());
-                        Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "user-already-exists"));
-                        fnE.appendChild(doc.createTextNode("" + e.getMessage())); 
-*/
-                    } catch(Exception e) {
-                        log.error(e, e);
-                        Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "registration-failed"));
-                        fnE.appendChild(doc.createTextNode("" + e.getMessage())); 
-                    }
+                    registerUser(doc, firstname, lastname, email, password);
                 } else {
-                    sendConfirmationLinkEmail();
+                    String uuid = java.util.UUID.randomUUID().toString();
+                    saveRegistrationRequest(uuid, firstname, lastname, email, city, phone);
+                    sendConfirmationLinkEmail(doc, uuid, firstname, lastname, email);
                 }
             } else {
                 Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
@@ -383,7 +361,110 @@ public class UserRegistrationResource extends BasicXMLResource {
     /**
      * Send email containing a confirmation link
      */
-    private void sendConfirmationLinkEmail() {
+    private void sendConfirmationLinkEmail(Document doc, String uuid, String firstame, String lastname, String email) {
         log.warn("DEBUG: Do not register user right away, but send an email containing a confirmation link...");
+        Element rootElement = doc.getDocumentElement();
+
+        try {
+            String from = "no-reply@wyona.com";
+            MailUtil.send(from, email, "Registration request", "http://127.0.0.1:8080/yanel/from-scratch-realm/confirm-user-registration.html?uuid=" + uuid);
+            Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email-sent"));
+        } catch(Exception e) {
+            log.error(e, e);
+            Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email-not-sent"));
+            element.setAttribute("exception-message", e.getMessage());
+        }
+    }
+
+    /**
+     * Register user
+     */
+    private void registerUser(Document doc, String firstname, String lastname, String email, String password) {
+        Element rootElement = doc.getDocumentElement();
+
+        try {
+            // INFO: KonaKart registration
+            //int customerID = kkEngine.registerCustomer(cr);
+            long customerID = new java.util.Date().getTime();
+
+            // INFO: Yanel registration
+            org.wyona.security.core.api.User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, firstname + " " + lastname, email, password);
+            org.wyona.security.core.api.User alias = getRealm().getIdentityManager().getUserManager().createAlias(email, "" + customerID);
+
+            Element ncE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "new-customer-registered"));
+            ncE.setAttributeNS(NAMESPACE, "id", "" + customerID);
+
+            javax.servlet.http.HttpSession httpSession = getEnvironment().getRequest().getSession(true);
+
+            // Login
+/*
+                        String konakartSessionID = shared.login(email, password, getRealm(), httpSession);
+                        if (konakartSessionID != null && konakartSessionID.length() > 0) {
+                            httpSession.setAttribute(shared.KONAKART_SESSION_ID, konakartSessionID);
+                            Element succE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "login-successful"));
+                            succE.setAttributeNS(NAMESPACE, "username", "" + email);
+                            // TODO: Copy/paste shopping cart (???)
+                        } else {
+                            Element errE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "login-failed"));
+                            errE.setAttributeNS(NAMESPACE, "username", "" + email);
+                            log.error("Login failed for new user: " + email);
+                        }
+*/
+
+/*
+                    } catch(com.konakart.app.KKUserExistsException e) { // WARN: It seems that KonaKart is using nested exceptions and hence this one is not caught!
+                        log.warn(e.getMessage());
+                        Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "user-already-exists"));
+                        fnE.appendChild(doc.createTextNode("" + e.getMessage())); 
+*/
+        } catch(Exception e) {
+            log.error(e, e);
+            Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "registration-failed"));
+            fnE.appendChild(doc.createTextNode("" + e.getMessage())); 
+        }
+    }
+
+    /**
+     * Save registration request persistently
+     * @param email E-Mail address of user
+     */
+    private void saveRegistrationRequest(String uuid, String firstname, String lastname, String email, String city, String phone) {
+        Document doc = getRegistrationRequestAsXML(uuid, firstname, lastname, email, city, phone);
+        Node node = null;
+        try {
+            String path = "/" + uuid;
+            if (!getRealm().getRepository().existsNode(path)) {
+                node = YarepUtil.addNodes(getRealm().getRepository(), path, NodeType.RESOURCE);
+            } else {
+                log.error("Node already exists: " + "TODO");
+                return;
+            }
+            XMLHelper.writeDocument(doc, node.getOutputStream());
+        } catch(Exception e) {
+            log.error(e, e);
+        }
+    }
+
+    /**
+     * Generate registration request as XML
+     * @param email E-Mail address of user
+     */
+    private Document getRegistrationRequestAsXML(String uuid, String firstname, String lastname, String email, String city, String phone) {
+        Document doc = XMLHelper.createDocument(NAMESPACE, "registration-request");
+        Element rootElem = doc.getDocumentElement();
+        rootElem.setAttribute("uuid", uuid);
+
+        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+        rootElem.setAttribute("request-time", df.format(new Date().getTime()));
+
+        Element firstnameElem = doc.createElementNS(NAMESPACE, "firstname");
+        firstnameElem.setTextContent(firstname);
+        rootElem.appendChild(firstnameElem);
+
+        Element emailElem = doc.createElementNS(NAMESPACE, "email");
+        emailElem.setTextContent(email);
+        rootElem.appendChild(emailElem);
+
+        return doc;
     }
 }
