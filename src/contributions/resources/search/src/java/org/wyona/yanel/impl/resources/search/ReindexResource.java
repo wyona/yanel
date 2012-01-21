@@ -93,7 +93,11 @@ public class ReindexResource extends BasicXMLResource {
             YarepUtil yu = new YarepUtil();
 
             try {
-                yu.indexRepository(repo);
+                String path = "/";
+                if (getEnvironment().getRequest().getParameter("path") != null) {
+                    path = getEnvironment().getRequest().getParameter("path"); // INFO: Allows to re-index sub-tree, for example http://127.0.0.1:8080/yanel/yanel-website/re-index.html?repository=yanel_data&path=/en/documentation
+                }
+                yu.indexRepository(repo, path);
                 sb.append("<r:message>Re-indexing was successful.</r:message>");
             } catch(Exception e) {
                 sb.append("<r:exception>Re-indexing failed with exception: ");
