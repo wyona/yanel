@@ -251,6 +251,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 
             // INFO: Yanel registration
             org.wyona.security.core.api.User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, firstname + " " + lastname, email, password);
+            user.setLanguage(getContentLanguage());
             org.wyona.security.core.api.User alias = getRealm().getIdentityManager().getUserManager().createAlias(email, "" + customerID);
             // TODO: Move adding to groups into separated method
             String groupsCSV = getResourceConfigProperty("groups");
