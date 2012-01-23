@@ -28,6 +28,10 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
 /*
 import com.konakart.appif.CustomerRegistrationIf;
 import com.konakart.appif.KKEngIf;
@@ -40,7 +44,7 @@ public class UserRegistrationResource extends BasicXMLResource {
     
     private static Logger log = Logger.getLogger(UserRegistrationResource.class);
 
-    private static String NAMESPACE = "http://www.wyona.org/yanel/user-registration/1.0";
+    static String NAMESPACE = "http://www.wyona.org/yanel/user-registration/1.0";
 
     private static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
@@ -538,13 +542,9 @@ public class UserRegistrationResource extends BasicXMLResource {
             String path = getActivationNodePath(uuid);
             if (getRealm().getRepository().existsNode(path)) {
 
-                // TODO: Get values from activation request node
-                String firstname = "Foo";
-                String lastname = "Bar";
-                String email = "foo@bar.com";
-                String password = "hugo123";
+                UserRegistrationBean urBean = readRegistrationRequest(getRealm().getRepository().getNode(path));
 
-                registerUser(doc, firstname, lastname, email, password);
+                registerUser(doc, urBean.getFirstname(), urBean.getLastname(), urBean.getEmail(), urBean.getPassword());
                 getRealm().getRepository().getNode(path).delete();
                 return true;
             } else {
@@ -562,5 +562,64 @@ public class UserRegistrationResource extends BasicXMLResource {
      */
     private String getActivationNodePath(String uuid) {
         return "/user-registration-requests/" + uuid + ".xml";
+    }
+
+    /**
+     * Read user registration request from repository node
+     * @param node Repository node containing firstname, lastname, etc.
+     */
+    private UserRegistrationBean readRegistrationRequest(Node node) throws Exception {
+        Document doc = XMLHelper.readDocument(node.getInputStream());
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        xpath.setNamespaceContext(new UserRegistrationNamespaceContext());
+
+        // TODO: Get creation date to determine expire date!
+        String firstname = (String) xpath.evaluate("/ur:registration-request/ur:firstname", doc, XPathConstants.STRING);
+        String lastname = (String) xpath.evaluate("/ur:registration-request/ur:lastname", doc, XPathConstants.STRING);
+        String email = (String) xpath.evaluate("/ur:registration-request/ur:email", doc, XPathConstants.STRING);
+        String password = (String) xpath.evaluate("/ur:registration-request/ur:password", doc, XPathConstants.STRING);
+        UserRegistrationBean urBean = new UserRegistrationBean(firstname, lastname, email, password);
+        return urBean;
+    }
+}
+
+/**
+ *
+ */
+class UserRegistrationNamespaceContext implements javax.xml.namespace.NamespaceContext {
+
+    /**
+     *
+     */
+    public String getNamespaceURI(String prefix) {
+        if (prefix == null) {
+            throw new IllegalArgumentException("No prefix provided!");
+        } else if (prefix.equals("ur")) {
+            return UserRegistrationResource.NAMESPACE;
+        } else if (prefix.equals("xhtml")) {
+            return "http://www.w3.org/1999/xhtml";
+        } else if (prefix.equals("dc")) {
+            return "http://purl.org/dc/elements/1.1/";
+        } else if (prefix.equals("dcterms")) {
+            return "http://purl.org/dc/terms/";
+        } else {
+            return javax.xml.XMLConstants.NULL_NS_URI;
+        }
+    }
+
+    /**
+     *
+     */
+    public String getPrefix(String namespaceURI) {
+        // Not needed in this context.
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     *
+     */
+    public java.util.Iterator getPrefixes(String namespaceURI) {
+        // Not needed in this context.
+        throw new UnsupportedOperationException();
     }
 }
