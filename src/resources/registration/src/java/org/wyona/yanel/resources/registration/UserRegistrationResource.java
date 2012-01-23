@@ -252,32 +252,49 @@ public class UserRegistrationResource extends BasicXMLResource {
             // INFO: Yanel registration
             org.wyona.security.core.api.User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, firstname + " " + lastname, email, password);
             org.wyona.security.core.api.User alias = getRealm().getIdentityManager().getUserManager().createAlias(email, "" + customerID);
+            // TODO: Move adding to groups into separated method
+            String groupsCSV = getResourceConfigProperty("groups");
+            if (groupsCSV != null) {
+                String[] groupIDs = null;
+                if (groupsCSV.indexOf(",") >= 0) {
+                    groupIDs = groupsCSV.split(",");
+                } else {
+                    groupIDs = new String[1];
+                    groupIDs[0] = groupsCSV;
+                }
+                for (int i = 0; i < groupIDs.length; i++) {
+                    if (getRealm().getIdentityManager().getGroupManager().existsGroup(groupIDs[i])) {
+                        getRealm().getIdentityManager().getGroupManager().getGroup(groupIDs[i]).addMember(user);
+                    } else {
+                        log.warn("No such group: " + groupIDs[i]);
+                    }
+                }
+            }
 
             Element ncE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "new-customer-registered"));
             ncE.setAttributeNS(NAMESPACE, "id", "" + customerID);
 
-            javax.servlet.http.HttpSession httpSession = getEnvironment().getRequest().getSession(true);
-
-            // Login
 /*
-                        String konakartSessionID = shared.login(email, password, getRealm(), httpSession);
-                        if (konakartSessionID != null && konakartSessionID.length() > 0) {
-                            httpSession.setAttribute(shared.KONAKART_SESSION_ID, konakartSessionID);
-                            Element succE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "login-successful"));
-                            succE.setAttributeNS(NAMESPACE, "username", "" + email);
-                            // TODO: Copy/paste shopping cart (???)
-                        } else {
-                            Element errE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "login-failed"));
-                            errE.setAttributeNS(NAMESPACE, "username", "" + email);
-                            log.error("Login failed for new user: " + email);
-                        }
+            // Login
+            javax.servlet.http.HttpSession httpSession = getEnvironment().getRequest().getSession(true);
+            String konakartSessionID = shared.login(email, password, getRealm(), httpSession);
+            if (konakartSessionID != null && konakartSessionID.length() > 0) {
+                httpSession.setAttribute(shared.KONAKART_SESSION_ID, konakartSessionID);
+                Element succE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "login-successful"));
+                succE.setAttributeNS(NAMESPACE, "username", "" + email);
+                // TODO: Copy/paste shopping cart (???)
+            } else {
+                Element errE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "login-failed"));
+                errE.setAttributeNS(NAMESPACE, "username", "" + email);
+                log.error("Login failed for new user: " + email);
+            }
 */
 
 /*
-                    } catch(com.konakart.app.KKUserExistsException e) { // WARN: It seems that KonaKart is using nested exceptions and hence this one is not caught!
-                        log.warn(e.getMessage());
-                        Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "user-already-exists"));
-                        fnE.appendChild(doc.createTextNode("" + e.getMessage())); 
+        } catch(com.konakart.app.KKUserExistsException e) { // WARN: It seems that KonaKart is using nested exceptions and hence this one is not caught!
+            log.warn(e.getMessage());
+            Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "user-already-exists"));
+            fnE.appendChild(doc.createTextNode("" + e.getMessage())); 
 */
         } catch(Exception e) {
             log.error(e, e);
