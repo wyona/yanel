@@ -76,7 +76,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         if (email != null) {
             processRegistrationRequest(doc, email);
         } else if (uuid != null) {
-            if(activateRegistration(uuid)) {
+            if(activateRegistration(uuid, doc)) {
                 Element activateSuccessfulE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-successful"));
             } else {
                 Element activationFailedE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-failed"));
@@ -286,11 +286,11 @@ public class UserRegistrationResource extends BasicXMLResource {
      * Save registration request persistently
      * @param email E-Mail address of user
      */
-    private void saveRegistrationRequest(String uuid, String firstname, String lastname, String email, String city, String phone) {
-        Document doc = getRegistrationRequestAsXML(uuid, firstname, lastname, email, city, phone);
+    private void saveRegistrationRequest(String uuid, String firstname, String lastname, String email, String city, String phone, String password) {
+        Document doc = getRegistrationRequestAsXML(uuid, firstname, lastname, email, city, phone, password);
         Node node = null;
         try {
-            String path = "/" + uuid;
+            String path = getActivationNodePath(uuid);
             if (!getRealm().getRepository().existsNode(path)) {
                 node = YarepUtil.addNodes(getRealm().getRepository(), path, NodeType.RESOURCE);
             } else {
@@ -307,13 +307,22 @@ public class UserRegistrationResource extends BasicXMLResource {
      * Generate registration request as XML
      * @param email E-Mail address of user
      */
-    private Document getRegistrationRequestAsXML(String uuid, String firstname, String lastname, String email, String city, String phone) {
+    private Document getRegistrationRequestAsXML(String uuid, String firstname, String lastname, String email, String city, String phone, String password) {
         Document doc = XMLHelper.createDocument(NAMESPACE, "registration-request");
         Element rootElem = doc.getDocumentElement();
         rootElem.setAttribute("uuid", uuid);
 
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
         rootElem.setAttribute("request-time", df.format(new Date().getTime()));
+
+        // IMPORTANT TODO: Password needs to be encrypted!
+        Element passwordElem = doc.createElementNS(NAMESPACE, "password");
+        passwordElem.setTextContent(password);
+        rootElem.appendChild(passwordElem);
+
+        Element lastnameElem = doc.createElementNS(NAMESPACE, "lastname");
+        lastnameElem.setTextContent(lastname);
+        rootElem.appendChild(lastnameElem);
 
         Element firstnameElem = doc.createElementNS(NAMESPACE, "firstname");
         firstnameElem.setTextContent(firstname);
@@ -512,7 +521,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     registerUser(doc, firstname, lastname, email, password);
                 } else {
                     String uuid = java.util.UUID.randomUUID().toString();
-                    saveRegistrationRequest(uuid, firstname, lastname, email, city, phone);
+                    saveRegistrationRequest(uuid, firstname, lastname, email, city, phone, password);
                     sendConfirmationLinkEmail(doc, uuid, firstname, lastname, email);
                 }
             } else {
@@ -521,19 +530,37 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
-     *
+     * Try to activate user registration
+     * @param uuid UUID of user registration activation request
      */
-    private boolean activateRegistration(String uuid) {
+    private boolean activateRegistration(String uuid, Document doc) {
         try {
-            String path = "/" + uuid;
+            String path = getActivationNodePath(uuid);
             if (getRealm().getRepository().existsNode(path)) {
+
+                // TODO: Get values from activation request node
+                String firstname = "Foo";
+                String lastname = "Bar";
+                String email = "foo@bar.com";
+                String password = "hugo123";
+
+                registerUser(doc, firstname, lastname, email, password);
+                getRealm().getRepository().getNode(path).delete();
                 return true;
             } else {
+                log.error("No such activation request node: " + path);
                 return false;
             }
         } catch(Exception e) {
             log.error(e, e);
             return false;
         }
+    }
+
+    /**
+     *
+     */
+    private String getActivationNodePath(String uuid) {
+        return "/user-registration-requests/" + uuid + ".xml";
     }
 }
