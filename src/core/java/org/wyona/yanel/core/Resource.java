@@ -301,7 +301,13 @@ public abstract class Resource {
      */
     public String getResourceConfigProperty(String name) throws Exception {
         ResourceConfiguration rc = getConfiguration();
+
+        if (yanel.getTargetEnvironment() != null) {
+            log.warn("DEBUG: Get property value of '" + name + "' for target environment: " + yanel.getTargetEnvironment());
+        }
         if (rc != null) return rc.getProperty(name);
+
+        // INFO: For backwards compatibility reasons...
         return getRTI().getProperty(name);
     }
     
