@@ -53,6 +53,8 @@ public class ResourceConfiguration {
     protected LinkedHashMap properties;
     protected Document customConfig;
     
+    private static final String NAMESPACE_1_0 = "http://www.wyona.org/yanel/rti/1.0";
+    private static final String NAMESPACE_1_1 = "http://www.wyona.org/yanel/rti/1.1"; // INFO: According to http://semver.org we have increased the minor version because we have introduced the backwards compatible functionality of a 'target environment'
     
     /**
      * Creates a resource configuration from a yarep node.
@@ -106,14 +108,21 @@ public class ResourceConfiguration {
     }
     
     /**
-     * Loads resource configuration from a stream.
-     * @param in
+     * Read resource configuration.
+     * @param in Input stream containing resource configuration as XML
      * @throws Exception
      */
     public void load(InputStream in) throws Exception {
         this.properties = new LinkedHashMap();
         DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder(true);
         DefaultConfiguration config = (DefaultConfiguration) builder.build(in);
+        String rcNamespace = config.getNamespace();
+
+        if (!rcNamespace.equals(NAMESPACE_1_0) && !rcNamespace.equals(NAMESPACE_1_1)) {
+            log.error("Namespace is not supported: " + rcNamespace);
+            throw new Exception("Namespace is not supported: " + rcNamespace);
+        }
+
         Configuration rtiConfig = config.getChild("rti");
         this.name = rtiConfig.getAttribute("name");
         this.namespace = rtiConfig.getAttribute("namespace");
@@ -125,11 +134,17 @@ public class ResourceConfiguration {
 
         LinkedHashMap listProperties = new LinkedHashMap();
         
-        // read properties into a map of arraylists:
+        // INFO: Read properties into a map of arraylists:
         Configuration[] props = config.getChildren("property");
         for (int i = 0; i < props.length; i++) {
             String name = props[i].getAttribute("name");
             String value = props[i].getAttribute("value");
+            String targetEnv = props[i].getAttribute("target-environment", null);
+
+            if (rcNamespace.equals(NAMESPACE_1_1) && targetEnv!= null) {
+                log.warn("Property '" + name + "' has set target environment: " + targetEnv);
+            }
+
             if (listProperties.containsKey(name)) {
                 ArrayList arrayList = (ArrayList)listProperties.get(name);
                 arrayList.add(value);
@@ -197,6 +212,7 @@ public class ResourceConfiguration {
      * @return value for this key or null if no value exists for this key.
      */
     public String getProperty(String key) throws Exception {
+        log.warn("DEBUG: Get property value of key '" + key + "'...");
         Object obj = this.properties.get(key);
         if (obj instanceof String) {
             return (String)obj; 
@@ -278,26 +294,25 @@ public class ResourceConfiguration {
         if (this.node == null) {
             throw new Exception("cannot save resource configuration because the node is null.");
         }
-        String ns = "http://www.wyona.org/yanel/rti/1.0";
         Document document;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder parser = dbf.newDocumentBuilder();
         DOMImplementation impl = parser.getDOMImplementation();
         DocumentType doctype = null;
-        document = impl.createDocument(ns, "yanel:resource-config", doctype);
+        document = impl.createDocument(NAMESPACE_1_0, "yanel:resource-config", doctype);
 
         Element rootElement = document.getDocumentElement();
-        rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:yanel", ns);
+        rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:yanel", NAMESPACE_1_0);
         
-        Element rtiElement = document.createElementNS(ns, "yanel:rti");
+        Element rtiElement = document.createElementNS(NAMESPACE_1_0, "yanel:rti");
         rtiElement.setAttribute("name", this.name);
         rtiElement.setAttribute("namespace", this.namespace);
         rootElement.appendChild(rtiElement);
         
         // add encoding:
         if (this.encoding != null) {
-            Element encodingElement = document.createElementNS(ns, "yanel:encoding");
+            Element encodingElement = document.createElementNS(NAMESPACE_1_0, "yanel:encoding");
             encodingElement.setNodeValue(this.encoding);
             rootElement.appendChild(encodingElement);
         }
@@ -308,14 +323,14 @@ public class ResourceConfiguration {
             String key = (String) keyIterator.next();
             Object obj = properties.get(key);
             if (obj instanceof String) {
-                Element property = document.createElementNS(ns, "yanel:property");
+                Element property = document.createElementNS(NAMESPACE_1_0, "yanel:property");
                 property.setAttribute("name", key);
                 property.setAttribute("value", (String) obj);
                 rootElement.appendChild(property);
             } else if (obj instanceof String[]) {
                 String[] values = (String[])obj;
                 for (int i = 0; i < values.length; i++) {
-                    Element property = document.createElementNS(ns, "yanel:property");
+                    Element property = document.createElementNS(NAMESPACE_1_0, "yanel:property");
                     property.setAttribute("name", key);
                     property.setAttribute("value", values[i]);
                     rootElement.appendChild(property);
@@ -326,7 +341,7 @@ public class ResourceConfiguration {
         // add custom config:
         if (this.customConfig != null) {
             org.w3c.dom.Node customNode = document.importNode(this.customConfig.getDocumentElement(), true);
-            Element customElement = document.createElementNS(ns, "yanel:custom-config");
+            Element customElement = document.createElementNS(NAMESPACE_1_0, "yanel:custom-config");
             NodeList children = customNode.getChildNodes();
             for (int i = 0; i < children.getLength(); i++) {
                 customElement.appendChild(children.item(i));
