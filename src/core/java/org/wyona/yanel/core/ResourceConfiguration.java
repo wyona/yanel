@@ -206,10 +206,9 @@ public class ResourceConfiguration {
     }
     
     /**
-     * Gets a property.
-     * If the property is multivalued, the first value will be returned.
-     * @param key
-     * @return value for this key or null if no value exists for this key.
+     * Get the value of a particular property. If the property is multi-valued, the first value will be returned.
+     * @param key Name of property
+     * @return value of property with a particular key/name or null if no value exists for this key/name.
      */
     public String getProperty(String key) throws Exception {
         log.warn("DEBUG: Get property value of key '" + key + "'...");
@@ -235,10 +234,10 @@ public class ResourceConfiguration {
     }
     
     /**
-     * Gets a multivalued property.
-     * If the property is not multivalued, it will be return as an array of length one.
-     * @param key
-     * @return value for this key or empty array if no value exists for this key.
+     * Get the values of a multi-valued property.
+     * If the property is not multi-valued, then it will return an array of length one.
+     * @param key Name of property
+     * @return value(s) for this key or an empty array if no value(s) exists for this key.
      */
     public String[] getProperties(String key) throws Exception {
         Object obj = this.properties.get(key);
