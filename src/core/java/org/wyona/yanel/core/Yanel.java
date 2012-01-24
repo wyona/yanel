@@ -56,6 +56,7 @@ public class Yanel {
     private String version = null;
     private String revision = null;
     private String reservedPrefix = null;
+    private String targetEnv = null;
     private boolean schedulerEnabled;
 
     private String smtpUsername, smtpPassword;
@@ -132,6 +133,13 @@ public class Yanel {
            log.info("Mailserver default session (available to all code executing in the same JVM): " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
        } else {
            log.warn("Mail server not configured within configuration: " + configFile);
+       }
+
+       if (config.getChild("target-environment", false) != null) {
+           targetEnv = config.getChild("target-environment").getValue();
+       } else {
+           log.warn("Target environment not configured within configuration: " + configFile);
+           targetEnv = null;
        }
 
        isInitialized = true;
@@ -276,6 +284,13 @@ public class Yanel {
      */
     public String getReservedPrefix() {
         return reservedPrefix;
+    }
+
+    /**
+     * Get target environment
+     */
+    public String getTargetEnvironment() {
+        return targetEnv;
     }
 
     /**
