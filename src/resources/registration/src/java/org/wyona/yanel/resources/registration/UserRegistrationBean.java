@@ -8,6 +8,7 @@ package org.wyona.yanel.resources.registration;
  */
 public class UserRegistrationBean {
 
+    private String gender;
     private String firstname;
     private String lastname;
     private String email;
@@ -16,11 +17,19 @@ public class UserRegistrationBean {
     /**
      *
      */
-    public UserRegistrationBean(String firstname, String lastname, String email, String password) {
+    public UserRegistrationBean(String gender, String firstname, String lastname, String email, String password) {
+        this.gender = gender;
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
         this.password = password;
+    }
+
+    /**
+     *
+     */
+    public String getGender() {
+        return gender;
     }
 
     /**
