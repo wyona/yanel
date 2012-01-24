@@ -28,6 +28,10 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
 /*
 import com.konakart.appif.CustomerRegistrationIf;
 import com.konakart.appif.KKEngIf;
@@ -40,7 +44,7 @@ public class UserRegistrationResource extends BasicXMLResource {
     
     private static Logger log = Logger.getLogger(UserRegistrationResource.class);
 
-    private static String NAMESPACE = "http://www.wyona.org/yanel/user-registration/1.0";
+    static String NAMESPACE = "http://www.wyona.org/yanel/user-registration/1.0";
 
     private static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
@@ -76,7 +80,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         if (email != null) {
             processRegistrationRequest(doc, email);
         } else if (uuid != null) {
-            if(activateRegistration(uuid)) {
+            if(activateRegistration(uuid, doc)) {
                 Element activateSuccessfulE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-successful"));
             } else {
                 Element activationFailedE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-failed"));
@@ -219,7 +223,7 @@ public class UserRegistrationResource extends BasicXMLResource {
      * Send email containing a confirmation link
      */
     private void sendConfirmationLinkEmail(Document doc, String uuid, String firstame, String lastname, String email) {
-        log.warn("DEBUG: Do not register user right away, but send an email containing a confirmation link...");
+        log.warn("DEBUG: Do not register user right away, but send an email to '" + email + "' containing a confirmation link...");
         Element rootElement = doc.getDocumentElement();
 
         try {
@@ -247,33 +251,51 @@ public class UserRegistrationResource extends BasicXMLResource {
 
             // INFO: Yanel registration
             org.wyona.security.core.api.User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, firstname + " " + lastname, email, password);
+            user.setLanguage(getContentLanguage());
             org.wyona.security.core.api.User alias = getRealm().getIdentityManager().getUserManager().createAlias(email, "" + customerID);
+            // TODO: Move adding to groups into separated method
+            String groupsCSV = getResourceConfigProperty("groups");
+            if (groupsCSV != null) {
+                String[] groupIDs = null;
+                if (groupsCSV.indexOf(",") >= 0) {
+                    groupIDs = groupsCSV.split(",");
+                } else {
+                    groupIDs = new String[1];
+                    groupIDs[0] = groupsCSV;
+                }
+                for (int i = 0; i < groupIDs.length; i++) {
+                    if (getRealm().getIdentityManager().getGroupManager().existsGroup(groupIDs[i])) {
+                        getRealm().getIdentityManager().getGroupManager().getGroup(groupIDs[i]).addMember(user);
+                    } else {
+                        log.warn("No such group: " + groupIDs[i]);
+                    }
+                }
+            }
 
             Element ncE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "new-customer-registered"));
             ncE.setAttributeNS(NAMESPACE, "id", "" + customerID);
 
-            javax.servlet.http.HttpSession httpSession = getEnvironment().getRequest().getSession(true);
-
-            // Login
 /*
-                        String konakartSessionID = shared.login(email, password, getRealm(), httpSession);
-                        if (konakartSessionID != null && konakartSessionID.length() > 0) {
-                            httpSession.setAttribute(shared.KONAKART_SESSION_ID, konakartSessionID);
-                            Element succE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "login-successful"));
-                            succE.setAttributeNS(NAMESPACE, "username", "" + email);
-                            // TODO: Copy/paste shopping cart (???)
-                        } else {
-                            Element errE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "login-failed"));
-                            errE.setAttributeNS(NAMESPACE, "username", "" + email);
-                            log.error("Login failed for new user: " + email);
-                        }
+            // Login
+            javax.servlet.http.HttpSession httpSession = getEnvironment().getRequest().getSession(true);
+            String konakartSessionID = shared.login(email, password, getRealm(), httpSession);
+            if (konakartSessionID != null && konakartSessionID.length() > 0) {
+                httpSession.setAttribute(shared.KONAKART_SESSION_ID, konakartSessionID);
+                Element succE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "login-successful"));
+                succE.setAttributeNS(NAMESPACE, "username", "" + email);
+                // TODO: Copy/paste shopping cart (???)
+            } else {
+                Element errE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "login-failed"));
+                errE.setAttributeNS(NAMESPACE, "username", "" + email);
+                log.error("Login failed for new user: " + email);
+            }
 */
 
 /*
-                    } catch(com.konakart.app.KKUserExistsException e) { // WARN: It seems that KonaKart is using nested exceptions and hence this one is not caught!
-                        log.warn(e.getMessage());
-                        Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "user-already-exists"));
-                        fnE.appendChild(doc.createTextNode("" + e.getMessage())); 
+        } catch(com.konakart.app.KKUserExistsException e) { // WARN: It seems that KonaKart is using nested exceptions and hence this one is not caught!
+            log.warn(e.getMessage());
+            Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "user-already-exists"));
+            fnE.appendChild(doc.createTextNode("" + e.getMessage())); 
 */
         } catch(Exception e) {
             log.error(e, e);
@@ -286,11 +308,11 @@ public class UserRegistrationResource extends BasicXMLResource {
      * Save registration request persistently
      * @param email E-Mail address of user
      */
-    private void saveRegistrationRequest(String uuid, String firstname, String lastname, String email, String city, String phone) {
-        Document doc = getRegistrationRequestAsXML(uuid, firstname, lastname, email, city, phone);
+    private void saveRegistrationRequest(String uuid, String firstname, String lastname, String email, String city, String phone, String password) {
+        Document doc = getRegistrationRequestAsXML(uuid, firstname, lastname, email, city, phone, password);
         Node node = null;
         try {
-            String path = "/" + uuid;
+            String path = getActivationNodePath(uuid);
             if (!getRealm().getRepository().existsNode(path)) {
                 node = YarepUtil.addNodes(getRealm().getRepository(), path, NodeType.RESOURCE);
             } else {
@@ -307,13 +329,22 @@ public class UserRegistrationResource extends BasicXMLResource {
      * Generate registration request as XML
      * @param email E-Mail address of user
      */
-    private Document getRegistrationRequestAsXML(String uuid, String firstname, String lastname, String email, String city, String phone) {
+    private Document getRegistrationRequestAsXML(String uuid, String firstname, String lastname, String email, String city, String phone, String password) {
         Document doc = XMLHelper.createDocument(NAMESPACE, "registration-request");
         Element rootElem = doc.getDocumentElement();
         rootElem.setAttribute("uuid", uuid);
 
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
         rootElem.setAttribute("request-time", df.format(new Date().getTime()));
+
+        // IMPORTANT TODO: Password needs to be encrypted!
+        Element passwordElem = doc.createElementNS(NAMESPACE, "password");
+        passwordElem.setTextContent(password);
+        rootElem.appendChild(passwordElem);
+
+        Element lastnameElem = doc.createElementNS(NAMESPACE, "lastname");
+        lastnameElem.setTextContent(lastname);
+        rootElem.appendChild(lastnameElem);
 
         Element firstnameElem = doc.createElementNS(NAMESPACE, "firstname");
         firstnameElem.setTextContent(firstname);
@@ -369,6 +400,11 @@ public class UserRegistrationResource extends BasicXMLResource {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-not-valid"));
                 inputsValid = false;
             } else {
+                if (getRealm().getIdentityManager().getUserManager().existsAlias(email)) {
+                    log.warn("E-Mail '" + email + "' is already used as alias!");
+                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-in-use"));
+                    inputsValid = false;
+                }
 /*
                 if(kkEngine.doesCustomerExistForEmail(email)) {
                     Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-in-use"));
@@ -512,7 +548,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     registerUser(doc, firstname, lastname, email, password);
                 } else {
                     String uuid = java.util.UUID.randomUUID().toString();
-                    saveRegistrationRequest(uuid, firstname, lastname, email, city, phone);
+                    saveRegistrationRequest(uuid, firstname, lastname, email, city, phone, password);
                     sendConfirmationLinkEmail(doc, uuid, firstname, lastname, email);
                 }
             } else {
@@ -521,19 +557,102 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
-     *
+     * Try to activate user registration
+     * @param uuid UUID of user registration activation request
      */
-    private boolean activateRegistration(String uuid) {
+    private boolean activateRegistration(String uuid, Document doc) {
         try {
-            String path = "/" + uuid;
+            String path = getActivationNodePath(uuid);
             if (getRealm().getRepository().existsNode(path)) {
+
+                UserRegistrationBean urBean = readRegistrationRequest(getRealm().getRepository().getNode(path));
+
+                registerUser(doc, urBean.getFirstname(), urBean.getLastname(), urBean.getEmail(), urBean.getPassword());
+                getRealm().getRepository().getNode(path).delete();
+
+                Element rootElement = doc.getDocumentElement();
+                // TODO: Add gender/salutation
+                Element emailE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email"));
+                emailE.appendChild(doc.createTextNode(urBean.getEmail()));
+                Element firstnameE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname"));
+                firstnameE.appendChild(doc.createTextNode(urBean.getFirstname()));
+                Element lastnameE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname"));
+                lastnameE.appendChild(doc.createTextNode(urBean.getLastname()));
+
                 return true;
             } else {
+                log.error("No such activation request node: " + path);
                 return false;
             }
         } catch(Exception e) {
             log.error(e, e);
             return false;
         }
+    }
+
+    /**
+     *
+     */
+    private String getActivationNodePath(String uuid) {
+        return "/user-registration-requests/" + uuid + ".xml";
+    }
+
+    /**
+     * Read user registration request from repository node
+     * @param node Repository node containing firstname, lastname, etc.
+     */
+    private UserRegistrationBean readRegistrationRequest(Node node) throws Exception {
+        Document doc = XMLHelper.readDocument(node.getInputStream());
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        xpath.setNamespaceContext(new UserRegistrationNamespaceContext());
+
+        // TODO: Get creation date to determine expire date!
+        String firstname = (String) xpath.evaluate("/ur:registration-request/ur:firstname", doc, XPathConstants.STRING);
+        String lastname = (String) xpath.evaluate("/ur:registration-request/ur:lastname", doc, XPathConstants.STRING);
+        String email = (String) xpath.evaluate("/ur:registration-request/ur:email", doc, XPathConstants.STRING);
+        String password = (String) xpath.evaluate("/ur:registration-request/ur:password", doc, XPathConstants.STRING);
+        UserRegistrationBean urBean = new UserRegistrationBean(firstname, lastname, email, password);
+        return urBean;
+    }
+}
+
+/**
+ *
+ */
+class UserRegistrationNamespaceContext implements javax.xml.namespace.NamespaceContext {
+
+    /**
+     *
+     */
+    public String getNamespaceURI(String prefix) {
+        if (prefix == null) {
+            throw new IllegalArgumentException("No prefix provided!");
+        } else if (prefix.equals("ur")) {
+            return UserRegistrationResource.NAMESPACE;
+        } else if (prefix.equals("xhtml")) {
+            return "http://www.w3.org/1999/xhtml";
+        } else if (prefix.equals("dc")) {
+            return "http://purl.org/dc/elements/1.1/";
+        } else if (prefix.equals("dcterms")) {
+            return "http://purl.org/dc/terms/";
+        } else {
+            return javax.xml.XMLConstants.NULL_NS_URI;
+        }
+    }
+
+    /**
+     *
+     */
+    public String getPrefix(String namespaceURI) {
+        // Not needed in this context.
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     *
+     */
+    public java.util.Iterator getPrefixes(String namespaceURI) {
+        // Not needed in this context.
+        throw new UnsupportedOperationException();
     }
 }
