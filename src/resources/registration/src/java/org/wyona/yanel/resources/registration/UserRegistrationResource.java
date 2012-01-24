@@ -400,6 +400,11 @@ public class UserRegistrationResource extends BasicXMLResource {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-not-valid"));
                 inputsValid = false;
             } else {
+                if (getRealm().getIdentityManager().getUserManager().existsAlias(email)) {
+                    log.warn("E-Mail '" + email + "' is already used as alias!");
+                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-in-use"));
+                    inputsValid = false;
+                }
 /*
                 if(kkEngine.doesCustomerExistForEmail(email)) {
                     Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-in-use"));
