@@ -564,6 +564,16 @@ public class UserRegistrationResource extends BasicXMLResource {
 
                 registerUser(doc, urBean.getFirstname(), urBean.getLastname(), urBean.getEmail(), urBean.getPassword());
                 getRealm().getRepository().getNode(path).delete();
+
+                Element rootElement = doc.getDocumentElement();
+                // TODO: Add gender/salutation
+                Element emailE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email"));
+                emailE.appendChild(doc.createTextNode(urBean.getEmail()));
+                Element firstnameE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname"));
+                firstnameE.appendChild(doc.createTextNode(urBean.getFirstname()));
+                Element lastnameE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname"));
+                lastnameE.appendChild(doc.createTextNode(urBean.getLastname()));
+
                 return true;
             } else {
                 log.error("No such activation request node: " + path);
