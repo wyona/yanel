@@ -49,6 +49,8 @@ public class UserRegistrationResource extends BasicXMLResource {
     private static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
     private static final long  DEFAULT_TOTAL_VALID_HRS = 24L;
+
+    private static final String FROM_ADDRESS = "no-reply@wyona.com";
     
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -227,8 +229,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         Element rootElement = doc.getDocumentElement();
 
         try {
-            String from = "no-reply@wyona.com";
-            MailUtil.send(from, email, "Activate User Registration", getActivationURL() + "?uuid=" + uuid);
+            MailUtil.send(FROM_ADDRESS, email, "Activate User Registration", getActivationURL() + "?uuid=" + uuid);
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email-sent"));
             element.setAttribute("hours-valid", "" + DEFAULT_TOTAL_VALID_HRS);
         } catch(Exception e) {
@@ -569,6 +570,8 @@ public class UserRegistrationResource extends BasicXMLResource {
 
                 registerUser(doc, urBean.getFirstname(), urBean.getLastname(), urBean.getEmail(), urBean.getPassword());
                 getRealm().getRepository().getNode(path).delete();
+
+                MailUtil.send(FROM_ADDRESS, urBean.getEmail(), "User Registration Successful", getActivationURL().replace("registration", "index"));
 
                 Element rootElement = doc.getDocumentElement();
                 // TODO: Add gender/salutation
