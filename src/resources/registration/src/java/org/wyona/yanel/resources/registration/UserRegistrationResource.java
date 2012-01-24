@@ -223,7 +223,7 @@ public class UserRegistrationResource extends BasicXMLResource {
      * Send email containing a confirmation link
      */
     private void sendConfirmationLinkEmail(Document doc, String uuid, String firstame, String lastname, String email) {
-        log.warn("DEBUG: Do not register user right away, but send an email containing a confirmation link...");
+        log.warn("DEBUG: Do not register user right away, but send an email to '" + email + "' containing a confirmation link...");
         Element rootElement = doc.getDocumentElement();
 
         try {
