@@ -6,7 +6,9 @@
   <yanel:property name="xslt" value="/xslt/global.xsl"/>
   <yanel:property name="mime-type" value="application/xhtml+xml"/>
   <yanel:property name="subject" value="Yanel Website (yanel.org): I am interested in Yanel, please get in touch with me"/>
+
   <yanel:property name="to" value="contact@wyona.com"/>
+  <yanel:property name="to" value="michael.wechner@wyona.com" target-environment="dev"/>
 
   <!-- Alternative SMTP configuration. If the below is commented, then the default settings of Yanel will be used which are configured within WEB-INF/classes/yanel.xml (also see the source configuration at conf/yanel.xml or rather make a copy at conf/local/local.yanel.xml) -->
 <!--
