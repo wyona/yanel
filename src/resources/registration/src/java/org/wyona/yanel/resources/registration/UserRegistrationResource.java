@@ -49,6 +49,8 @@ public class UserRegistrationResource extends BasicXMLResource {
     private static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
     private static final long  DEFAULT_TOTAL_VALID_HRS = 24L;
+
+    private static final String FROM_ADDRESS = "no-reply@wyona.com";
     
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -227,8 +229,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         Element rootElement = doc.getDocumentElement();
 
         try {
-            String from = "no-reply@wyona.com";
-            MailUtil.send(from, email, "Activate User Registration", getActivationURL() + "?uuid=" + uuid);
+            MailUtil.send(FROM_ADDRESS, email, "Activate User Registration", getActivationURL() + "?uuid=" + uuid);
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email-sent"));
             element.setAttribute("hours-valid", "" + DEFAULT_TOTAL_VALID_HRS);
         } catch(Exception e) {
@@ -240,8 +241,9 @@ public class UserRegistrationResource extends BasicXMLResource {
 
     /**
      * Register user
+     * @param gender Gender of user
      */
-    private void registerUser(Document doc, String firstname, String lastname, String email, String password) {
+    private void registerUser(Document doc, String gender, String firstname, String lastname, String email, String password) {
         Element rootElement = doc.getDocumentElement();
 
         try {
@@ -251,6 +253,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 
             // INFO: Yanel registration
             org.wyona.security.core.api.User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, firstname + " " + lastname, email, password);
+            // TODO: user.setProperty("gender", gender);
             user.setLanguage(getContentLanguage());
             org.wyona.security.core.api.User alias = getRealm().getIdentityManager().getUserManager().createAlias(email, "" + customerID);
             // TODO: Move adding to groups into separated method
@@ -308,8 +311,8 @@ public class UserRegistrationResource extends BasicXMLResource {
      * Save registration request persistently
      * @param email E-Mail address of user
      */
-    private void saveRegistrationRequest(String uuid, String firstname, String lastname, String email, String city, String phone, String password) {
-        Document doc = getRegistrationRequestAsXML(uuid, firstname, lastname, email, city, phone, password);
+    private void saveRegistrationRequest(String uuid, String gender, String firstname, String lastname, String email, String city, String phone, String password) {
+        Document doc = getRegistrationRequestAsXML(uuid, gender, firstname, lastname, email, city, phone, password);
         Node node = null;
         try {
             String path = getActivationNodePath(uuid);
@@ -329,7 +332,7 @@ public class UserRegistrationResource extends BasicXMLResource {
      * Generate registration request as XML
      * @param email E-Mail address of user
      */
-    private Document getRegistrationRequestAsXML(String uuid, String firstname, String lastname, String email, String city, String phone, String password) {
+    private Document getRegistrationRequestAsXML(String uuid, String gender, String firstname, String lastname, String email, String city, String phone, String password) {
         Document doc = XMLHelper.createDocument(NAMESPACE, "registration-request");
         Element rootElem = doc.getDocumentElement();
         rootElem.setAttribute("uuid", uuid);
@@ -341,6 +344,10 @@ public class UserRegistrationResource extends BasicXMLResource {
         Element passwordElem = doc.createElementNS(NAMESPACE, "password");
         passwordElem.setTextContent(password);
         rootElem.appendChild(passwordElem);
+
+        Element genderElem = doc.createElementNS(NAMESPACE, "gender");
+        genderElem.setTextContent(gender);
+        rootElem.appendChild(genderElem);
 
         Element lastnameElem = doc.createElementNS(NAMESPACE, "lastname");
         lastnameElem.setTextContent(lastname);
@@ -545,10 +552,10 @@ public class UserRegistrationResource extends BasicXMLResource {
                 }
                 if (!emailConfigurationRequired) {
                     log.warn("User will be registered without email configuration!");
-                    registerUser(doc, firstname, lastname, email, password);
+                    registerUser(doc, gender, firstname, lastname, email, password);
                 } else {
                     String uuid = java.util.UUID.randomUUID().toString();
-                    saveRegistrationRequest(uuid, firstname, lastname, email, city, phone, password);
+                    saveRegistrationRequest(uuid, gender, firstname, lastname, email, city, phone, password);
                     sendConfirmationLinkEmail(doc, uuid, firstname, lastname, email);
                 }
             } else {
@@ -567,8 +574,10 @@ public class UserRegistrationResource extends BasicXMLResource {
 
                 UserRegistrationBean urBean = readRegistrationRequest(getRealm().getRepository().getNode(path));
 
-                registerUser(doc, urBean.getFirstname(), urBean.getLastname(), urBean.getEmail(), urBean.getPassword());
+                registerUser(doc, urBean.getGender(), urBean.getFirstname(), urBean.getLastname(), urBean.getEmail(), urBean.getPassword());
                 getRealm().getRepository().getNode(path).delete();
+
+                MailUtil.send(FROM_ADDRESS, urBean.getEmail(), "User Registration Successful", getActivationURL().replace("registration", "index"));
 
                 Element rootElement = doc.getDocumentElement();
                 // TODO: Add gender/salutation
@@ -607,11 +616,14 @@ public class UserRegistrationResource extends BasicXMLResource {
         xpath.setNamespaceContext(new UserRegistrationNamespaceContext());
 
         // TODO: Get creation date to determine expire date!
+        String gender = (String) xpath.evaluate("/ur:registration-request/ur:gender", doc, XPathConstants.STRING);
         String firstname = (String) xpath.evaluate("/ur:registration-request/ur:firstname", doc, XPathConstants.STRING);
         String lastname = (String) xpath.evaluate("/ur:registration-request/ur:lastname", doc, XPathConstants.STRING);
         String email = (String) xpath.evaluate("/ur:registration-request/ur:email", doc, XPathConstants.STRING);
         String password = (String) xpath.evaluate("/ur:registration-request/ur:password", doc, XPathConstants.STRING);
-        UserRegistrationBean urBean = new UserRegistrationBean(firstname, lastname, email, password);
+
+        UserRegistrationBean urBean = new UserRegistrationBean(gender, firstname, lastname, email, password);
+
         return urBean;
     }
 }
