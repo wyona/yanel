@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 
-<yanel xmlns="http://www.wyona.org/yanel/1.0" version="2010012600">
+<yanel xmlns="http://www.wyona.org/yanel/1.0" version="2012012400">
 
   <changes>
+    <change version="20120124">target environment configuration added</change>
     <change version="20100126">smtp configuration added</change>
   </changes>
 
@@ -29,6 +30,14 @@
   -->
 <!--
   <smtp host="mail.foo.bar" port="25" username="foo" password="bar"/>
+-->
+
+  <!-- # Target environment configuration (Please note that one is free to choose the name of a target environment, but it's recommended to use the below names by convention: prod = production, ua-test = user acceptance test, ci-test = continuous integration test, dev = development) -->
+<!--
+  <target-environment>prod</target-environment>
+  <target-environment>ua-test</target-environment>
+  <target-environment>ci-test</target-environment>
+  <target-environment>dev</target-environment>
 -->
 
 </yanel>
