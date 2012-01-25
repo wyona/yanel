@@ -20,12 +20,29 @@
         <xsl:if test="not(y:exception or y:message)">
 -->
           <p>Choose which repository you would like to re-index:</p>
+<!--
           <ul>
             <xsl:for-each select="y:repository">
               <li>
                 <a href="?repository={@id}"><xsl:value-of select="."/></a></li>
             </xsl:for-each>
           </ul>
+-->
+<p>
+
+<!-- repository=yanel_data&path=/projects/where-have-all-the-rabbits-gone/footage -->
+<form method="get">
+          <select name="repository">
+            <xsl:for-each select="y:repository">
+              <option value="{@id}"><xsl:value-of select="."/></option>
+            </xsl:for-each>
+          </select>
+  <br/>
+  Path: <input type="text" name="path" value="/"/>
+  <br/>
+  <input type="submit" value="Re-Index"/>
+</form>
+</p>
 <!--
         </xsl:if>
 -->
