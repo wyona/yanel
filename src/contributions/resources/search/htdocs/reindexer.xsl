@@ -30,15 +30,23 @@
 -->
 <p>
 
-<!-- repository=yanel_data&path=/projects/where-have-all-the-rabbits-gone/footage -->
+<!-- For example: ...?repository=yanel_data&path=/projects/where-have-all-the-rabbits-gone/footage -->
 <form method="get">
           <select name="repository">
             <xsl:for-each select="y:repository">
+<!-- TODO: Set selected option based on y:selected-repository/@id -->
               <option value="{@id}"><xsl:value-of select="."/></option>
             </xsl:for-each>
           </select>
   <br/>
+<xsl:choose>
+  <xsl:when test="y:selected-path">
+  Path: <input type="text" name="path" value="{y:selected-path}"/>
+  </xsl:when>
+  <xsl:otherwise>
   Path: <input type="text" name="path" value="/"/>
+  </xsl:otherwise>
+</xsl:choose>
   <br/>
   <input type="submit" value="Re-Index"/>
 </form>
