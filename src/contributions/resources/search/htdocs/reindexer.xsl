@@ -20,12 +20,42 @@
         <xsl:if test="not(y:exception or y:message)">
 -->
           <p>Choose which repository you would like to re-index:</p>
-          <ul>
+
+<!--
+<p>
+DEBUG: Selected repository ID: <xsl:value-of select="y:selected-repository/@id"/>
+</p>
+-->
+
+<p>
+
+<!-- For example: ...?repository=yanel_data&path=/projects/where-have-all-the-rabbits-gone/footage -->
+<form method="get">
+          <select name="repository">
             <xsl:for-each select="y:repository">
-              <li>
-                <a href="?repository={@id}"><xsl:value-of select="."/></a></li>
+<xsl:choose>
+  <xsl:when test="../y:selected-repository and ../y:selected-repository/@id = @id">
+              <option value="{@id}" selected="selected"><xsl:value-of select="."/></option>
+  </xsl:when>
+  <xsl:otherwise>
+              <option value="{@id}"><xsl:value-of select="."/></option>
+  </xsl:otherwise>
+</xsl:choose>
             </xsl:for-each>
-          </ul>
+          </select>
+  <br/>
+<xsl:choose>
+  <xsl:when test="y:selected-path">
+  Path: <input type="text" name="path" value="{y:selected-path}"/>
+  </xsl:when>
+  <xsl:otherwise>
+  Path: <input type="text" name="path" value="/"/>
+  </xsl:otherwise>
+</xsl:choose>
+  <br/>
+  <input type="submit" value="Re-Index"/>
+</form>
+</p>
 <!--
         </xsl:if>
 -->

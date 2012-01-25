@@ -92,15 +92,18 @@ public class ReindexResource extends BasicXMLResource {
         if(repo != null) {
             YarepUtil yu = new YarepUtil();
 
+            String path = "/";
+            if (getEnvironment().getRequest().getParameter("path") != null) {
+                path = getEnvironment().getRequest().getParameter("path"); // INFO: Allows to re-index sub-tree, for example http://127.0.0.1:8080/yanel/yanel-website/re-index.html?repository=yanel_data&path=/en/documentation
+            }
+
             try {
-                String path = "/";
-                if (getEnvironment().getRequest().getParameter("path") != null) {
-                    path = getEnvironment().getRequest().getParameter("path"); // INFO: Allows to re-index sub-tree, for example http://127.0.0.1:8080/yanel/yanel-website/re-index.html?repository=yanel_data&path=/en/documentation
-                }
                 yu.indexRepository(repo, path);
-                sb.append("<r:message>Re-indexing was successful.</r:message>");
+                sb.append("<r:message>Re-indexing of repository '" + repo.getName() + "' starting at path '" + path + "' was successful :-)</r:message>");
+                sb.append("<r:selected-repository id=\"" + reindexRepo + "\">" + repo.getName() + "</r:selected-repository>");
+                sb.append("<r:selected-path>" + path + "</r:selected-path>");
             } catch(Exception e) {
-                sb.append("<r:exception>Re-indexing failed with exception: ");
+                sb.append("<r:exception>Re-indexing of repository '" + repo.getName() + "' starting at path '" + path + "' failed with exception: ");
                 sb.append(e.getMessage());
                 sb.append("</r:exception>");
             }
