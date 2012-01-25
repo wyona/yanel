@@ -100,6 +100,8 @@ public class ReindexResource extends BasicXMLResource {
             try {
                 yu.indexRepository(repo, path);
                 sb.append("<r:message>Re-indexing of repository '" + repo.getName() + "' starting at path '" + path + "' was successful :-)</r:message>");
+                sb.append("<r:selected-repository id=\"" + repo.getID() + "\">" + repo.getName() + "</r:selected-repository>");
+                sb.append("<r:selected-path>" + path + "</r:selected-path>");
             } catch(Exception e) {
                 sb.append("<r:exception>Re-indexing of repository '" + repo.getName() + "' starting at path '" + path + "' failed with exception: ");
                 sb.append(e.getMessage());
