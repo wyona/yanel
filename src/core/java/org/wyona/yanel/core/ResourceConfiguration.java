@@ -145,11 +145,12 @@ public class ResourceConfiguration {
                 log.warn("Property '" + name + "' has set target environment: " + targetEnv);
             }
 
-            if (listProperties.containsKey(name)) {
+            if (listProperties.containsKey(name)) { // INFO: Seems to be a multi-valued property
+                log.warn("DEBUG: Seems to be a multi-valued property: " + name + ", " + value);
                 ArrayList arrayList = (ArrayList)listProperties.get(name);
                 arrayList.add(value);
             } else {
-                ArrayList arrayList = new ArrayList();
+                ArrayList arrayList = new ArrayList(); // INFO: No list exists yet for property of a particular name, hence create list, whereas doesn't matter whether single- or multi-valued
                 arrayList.add(value);
                 listProperties.put(name, arrayList);
             }
