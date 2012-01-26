@@ -740,15 +740,13 @@ public class NutchResource extends Resource implements ViewableV1 {
             org.jdom.Document jdomDocument = new org.jdom.input.DOMBuilder().build(customConfig);
 
             XPath xpath = XPath.newInstance("/yanel:custom-config/nr:groups/nr:group[@name='" + group + "']/nr:nutch-config/@name");
-            xpath.addNamespace("yanel", "http://www.wyona.org/yanel/resource-config/1.0");
-            //xpath.addNamespace("yanel", "http://www.wyona.org/yanel/rti/1.0");
+            xpath.addNamespace("yanel", "http://www.wyona.org/yanel/rti/1.0");
             xpath.addNamespace("nr", "http://www.wyona.org/yanel/resource/nutch-resource/1.0");
             Attribute nameAttr = (Attribute) xpath.selectSingleNode(jdomDocument);
             if (nameAttr != null) {
                 String nutchConfigName = nameAttr.getValue();
                 xpath = org.jdom.xpath.XPath.newInstance("/yanel:custom-config/nr:configs/nr:config[@name='" + nutchConfigName + "']/@src");
-                xpath.addNamespace("yanel", "http://www.wyona.org/yanel/resource-config/1.0");
-                //xpath.addNamespace("yanel", "http://www.wyona.org/yanel/rti/1.0");
+                xpath.addNamespace("yanel", "http://www.wyona.org/yanel/rti/1.0");
                 xpath.addNamespace("nr", "http://www.wyona.org/yanel/resource/nutch-resource/1.0");
 
                 Attribute srcAttribute = (Attribute) xpath.selectSingleNode(jdomDocument);
