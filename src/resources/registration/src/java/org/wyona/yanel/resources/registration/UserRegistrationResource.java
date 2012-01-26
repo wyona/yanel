@@ -225,13 +225,17 @@ public class UserRegistrationResource extends BasicXMLResource {
      * Send email containing a confirmation link
      */
     private void sendConfirmationLinkEmail(Document doc, String uuid, String firstame, String lastname, String email) {
-        log.warn("DEBUG: Do not register user right away, but send an email to '" + email + "' containing a confirmation link...");
+        log.info("Do not register user right away, but send an email to '" + email + "' containing a confirmation link...");
         Element rootElement = doc.getDocumentElement();
 
         try {
-            MailUtil.send(FROM_ADDRESS, email, "Activate User Registration", getActivationURL() + "?uuid=" + uuid);
+            MailUtil.send(FROM_ADDRESS, email, "Activate User Registration", getActivationURL(uuid));
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email-sent"));
             element.setAttribute("hours-valid", "" + DEFAULT_TOTAL_VALID_HRS);
+            if (getResourceConfigProperty("include-activation-link") != null && getResourceConfigProperty("include-activation-link").equals("true")) {
+                log.warn("Activation link will be part of response! Because of security reasons this should only be done for development or testing environments.");
+                element.setAttribute("activation-link", getActivationURL(uuid));
+            }
         } catch(Exception e) {
             log.error(e, e);
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email-not-sent"));
@@ -366,8 +370,9 @@ public class UserRegistrationResource extends BasicXMLResource {
 
     /**
      * Get activation URL which will be sent via E-Mail (also see YanelServlet#getRequestURLQS(HttpServletRequest, String, boolean))
+     * @param uuid Unique identifier to activate registration
      */
-    public String getActivationURL() throws Exception {
+    public String getActivationURL(String uuid) throws Exception {
         //https://192.168.1.69:8443/yanel" + request.getServletPath().toString()
         URL url = new URL(request.getRequestURL().toString());
         org.wyona.yanel.core.map.Realm realm = getRealm();
@@ -394,7 +399,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         } else {
             log.warn("No proxy set.");
         }
-        return url.toString();
+        return url.toString() + "?uuid=" + uuid;
     }
 
     /**
@@ -551,7 +556,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     emailConfigurationRequired = new Boolean(getResourceConfigProperty("email-confirmation")).booleanValue();
                 }
                 if (!emailConfigurationRequired) {
-                    log.warn("User will be registered without email configuration!");
+                    log.warn("User will be registered without email configuration! Because of security reasons this should only be done for development or testing environments.");
                     registerUser(doc, gender, firstname, lastname, email, password);
                 } else {
                     String uuid = java.util.UUID.randomUUID().toString();
@@ -577,7 +582,9 @@ public class UserRegistrationResource extends BasicXMLResource {
                 registerUser(doc, urBean.getGender(), urBean.getFirstname(), urBean.getLastname(), urBean.getEmail(), urBean.getPassword());
                 getRealm().getRepository().getNode(path).delete();
 
-                MailUtil.send(FROM_ADDRESS, urBean.getEmail(), "User Registration Successful", getActivationURL().replace("registration", "index"));
+                String homepageURL = getActivationURL(null).replace("registration", "index"); // TODO: Misuse getActivationURL ...
+                homepageURL = homepageURL.substring(0, homepageURL.indexOf("?"));
+                MailUtil.send(FROM_ADDRESS, urBean.getEmail(), "User Registration Successful", homepageURL);
 
                 Element rootElement = doc.getDocumentElement();
                 // TODO: Add gender/salutation
