@@ -10,6 +10,9 @@ User registration
 </description>
 
 <rtd>
+  <!-- Mandatory -->
+  <property name="fromEmail"/> <!-- For example 'noreply@wyona.com' -->
+
   <!-- Optional -->
   <property name="email-confirmation" default-value="true"/> <!-- INFO: Set to false if no email confirmation/activation should re required. -->
   <property name="groups"/> <!-- INFO: Comma separated list of group IDs, to which user shall be added automatically during registration -->

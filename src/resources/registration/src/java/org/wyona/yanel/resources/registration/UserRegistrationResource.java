@@ -50,7 +50,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 
     private static final long  DEFAULT_TOTAL_VALID_HRS = 24L;
 
-    private static final String FROM_ADDRESS = "no-reply@wyona.com";
+    private static final String FROM_ADDRESS_PROP_NAME = "fromEmail";
     
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -229,7 +229,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         Element rootElement = doc.getDocumentElement();
 
         try {
-            MailUtil.send(FROM_ADDRESS, email, "Activate User Registration", getActivationURL(uuid));
+            MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), email, "Activate User Registration", getActivationURL(uuid));
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email-sent"));
             element.setAttribute("hours-valid", "" + DEFAULT_TOTAL_VALID_HRS);
             if (getResourceConfigProperty("include-activation-link") != null && getResourceConfigProperty("include-activation-link").equals("true")) {
@@ -587,7 +587,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 
                 String homepageURL = getActivationURL(null).replace("registration", "index"); // TODO: Misuse getActivationURL ...
                 homepageURL = homepageURL.substring(0, homepageURL.indexOf("?"));
-                MailUtil.send(FROM_ADDRESS, urBean.getEmail(), "User Registration Successful", homepageURL);
+                MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "User Registration Successful", homepageURL);
 
                 Element rootElement = doc.getDocumentElement();
                 // TODO: Add gender/salutation
