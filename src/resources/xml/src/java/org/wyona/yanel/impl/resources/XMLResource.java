@@ -488,7 +488,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                 writer.write("</head>");
                 writer.write("<body>");
                 writer.write("  <h1>" + title + "</h1>");
-                writer.write("  <p>Edit this text with <a href=\"http://www.yulup.org\">Yulup</a>!</p>");
+                writer.write("  <p>Edit this text by selecting an editing tool from the Yanel <a href=\"?yanel.toolbar=on\">toolbar</a>!</p>");
                 if (templatePath != null && src == null) {
                     writer.write("  <p>WARNING: There seems to be a template '" + templatePath + "' configured, but which does not exist!</p>");
                 }
