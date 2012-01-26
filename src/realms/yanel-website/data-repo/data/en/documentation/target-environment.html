@@ -1,5 +1,46 @@
 <?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Configuring a target environment</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Configuring a target environment</h1>
 
-<p>It is often the case that one wants to use different configuration values for different environments. For example ...</p>
+<p>
+It is often the case that one wants to use different configuration values for different environments. For example in the case of
+a contact form one wants to use a different email address for developement/testing than for production.
+The following resource configuration example
+<br/><br/>
+<code>src/realms/yanel-website/res-configs-repo/data/en/contact.html.yanel-rc</code>
+<br/><br/>
+has set the email address twice:
+<pre>
+&lt;yanel:property name="to" value="contact@wyona.com"/&gt;
+&lt;yanel:property name="to" value="michael.wechner@wyona.com" target-environment="dev"/&gt;
+</pre>
+Once for the default (by convention the production environment) and once for the development environment.
+</p>
+<p>
+<b>IMPORTANT:</b> Because the 'target environment' functionality has been introduced at some later stage, one needs to increase the version number of the particular resource configuration XML from 1.0 to 1.1 or higher, e.g.
+<pre>
+&lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.1"&gt;
+</pre>
+</p>
+
+<p>
+The environment of a Yanel instance can be configured inside
+<br/><br/>
+<code>WEB-INF/classes/yanel.xml</code>
+<br/><br/>
+by setting for example
+<pre>
+&lt;target-environment&gt;dev&lt;/target-environment&gt;
+</pre>
+Please note that the build process (from source) might overwrite this configuration unless set inside
+<br/><br/>
+<code>YANEL_HOME/conf/local/local.yanel.xml</code>
+<br/><br/>
+One is free to choose the name of a target environment, but it's recommended to use the below names by convention: 
+<ul>
+<li>prod = production</li>
+<li>ua-test = user acceptance test</li>
+<li>ci-test = continuous integration test</li>
+<li>dev = development</li>
+</ul>
+</p>
 </body>
 </html>
