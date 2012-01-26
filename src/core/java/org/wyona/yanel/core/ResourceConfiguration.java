@@ -55,6 +55,8 @@ public class ResourceConfiguration {
     
     private static final String NAMESPACE_1_0 = "http://www.wyona.org/yanel/rti/1.0";
     private static final String NAMESPACE_1_1 = "http://www.wyona.org/yanel/rti/1.1"; // INFO: According to http://semver.org we have increased the minor version because we have introduced the backwards compatible functionality of a 'target environment'
+
+    private static final String SEPARATOR = "::";
     
     /**
      * Creates a resource configuration from a yarep node.
@@ -141,18 +143,32 @@ public class ResourceConfiguration {
             String value = props[i].getAttribute("value");
             String targetEnv = props[i].getAttribute("target-environment", null);
 
-            if (rcNamespace.equals(NAMESPACE_1_1) && targetEnv!= null) {
-                log.warn("Property '" + name + "' has set target environment: " + targetEnv);
+            if (rcNamespace.equals(NAMESPACE_1_0) && targetEnv!= null) {
+                throw new Exception("Property '" + name + "' has target environment set, but namespace '" + rcNamespace + "' of resource configuration is not correct! Namespace should be '" + NAMESPACE_1_1 + "' or higher...");
             }
 
-            if (listProperties.containsKey(name)) { // INFO: Seems to be a multi-valued property
-                log.warn("DEBUG: Seems to be a multi-valued property: " + name + ", " + value);
+/*
+            if (rcNamespace.equals(NAMESPACE_1_1) && targetEnv!= null) {
+                log.debug("Property '" + name + "' has set target environment: " + targetEnv);
+            }
+*/
+
+            if (rcNamespace.equals(NAMESPACE_1_1) && targetEnv!= null && listProperties.containsKey(targetEnv + SEPARATOR + name)) { // INFO: Seems to be a multi-valued property and target environment set
+                //log.debug("Seems to be a multi-valued property with target environment: " + name + ", " + value + ", " + targetEnv);
+                ArrayList arrayList = (ArrayList)listProperties.get(targetEnv + SEPARATOR + name);
+                arrayList.add(value);
+            } else if (listProperties.containsKey(name) && targetEnv == null) { // INFO: Seems to be a multi-valued property, but no target environment set
+                //log.debug("Seems to be a multi-valued property without target environment: " + name + ", " + value);
                 ArrayList arrayList = (ArrayList)listProperties.get(name);
                 arrayList.add(value);
             } else {
                 ArrayList arrayList = new ArrayList(); // INFO: No list exists yet for property of a particular name, hence create list, whereas doesn't matter whether single- or multi-valued
                 arrayList.add(value);
-                listProperties.put(name, arrayList);
+                if (rcNamespace.equals(NAMESPACE_1_1) && targetEnv!= null) {
+                    listProperties.put(targetEnv + SEPARATOR + name, arrayList);
+                } else {
+                    listProperties.put(name, arrayList);
+                }
             }
         }
         
@@ -205,15 +221,33 @@ public class ResourceConfiguration {
     public String getEncoding() {
         return this.encoding;
     }
-    
+
     /**
      * Get the value of a particular property. If the property is multi-valued, the first value will be returned.
      * @param key Name of property
      * @return value of property with a particular key/name or null if no value exists for this key/name.
      */
     public String getProperty(String key) throws Exception {
-        log.warn("DEBUG: Get property value of key '" + key + "'...");
+        //log.debug("Get property value of key '" + key + "'...");
         Object obj = this.properties.get(key);
+        if (obj instanceof String) {
+            return (String)obj; 
+        } else if (obj instanceof String[]) {
+            return ((String[])obj)[0];
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the value of a particular property. If the property is multi-valued, the first value will be returned.
+     * @param key Name of property
+     * @param targetEnv Target environment
+     * @return value of property with a particular key/name or null if no value exists for this key/name.
+     */
+    public String getProperty(String key, String targetEnv) throws Exception {
+        //log.debug("Get property value of key '" + key + "' of target environment '" + targetEnv + "'...");
+        Object obj = this.properties.get(targetEnv + SEPARATOR + key);
         if (obj instanceof String) {
             return (String)obj; 
         } else if (obj instanceof String[]) {
@@ -233,7 +267,7 @@ public class ResourceConfiguration {
     public void setProperty(String key, String value) throws Exception {
         this.properties.put(key, value);
     }
-    
+
     /**
      * Get the values of a multi-valued property.
      * If the property is not multi-valued, then it will return an array of length one.
@@ -250,6 +284,26 @@ public class ResourceConfiguration {
             return array;
         } else {
             return new String[0];
+        }
+    }
+
+    /**
+     * Get the values of a multi-valued property for a particular target environment.
+     * If the property is not multi-valued, then it will return an array of length one.
+     * @param key Name of property
+     * @param targetEnv Target environment
+     * @return value(s) for this key or null if no value(s) exists for this key.
+     */
+    public String[] getProperties(String key, String targetEnv) throws Exception {
+        Object obj = this.properties.get(targetEnv + SEPARATOR + key);
+        if (obj instanceof String[]) {
+            return (String[])obj;
+        } else if (obj instanceof String) {
+            String[] array = new String[1];
+            array[0] = (String)obj;
+            return array;
+        } else {
+            return null;
         }
     }
     
