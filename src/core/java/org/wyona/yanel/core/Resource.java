@@ -302,9 +302,16 @@ public abstract class Resource {
     public String getResourceConfigProperty(String name) throws Exception {
         ResourceConfiguration rc = getConfiguration();
 
-        if (yanel.getTargetEnvironment() != null) {
-            log.warn("DEBUG: Get property value of '" + name + "' for target environment: " + yanel.getTargetEnvironment());
+        if (yanel.getTargetEnvironment() != null && rc !=  null) {
+            log.debug("Try to get property value of '" + name + "' for target environment: " + yanel.getTargetEnvironment());
+            String value = rc.getProperty(name, yanel.getTargetEnvironment());
+            if (value != null) {
+                return value;
+            } else {
+                log.debug("There seems to be me no property '" + name + "' with target environment '" + yanel.getTargetEnvironment() + "' set, hence fallback to property without target environment...");
+            }
         }
+
         if (rc != null) return rc.getProperty(name);
 
         // INFO: For backwards compatibility reasons...
@@ -316,7 +323,19 @@ public abstract class Resource {
      */
     public String[] getResourceConfigProperties(String name) throws Exception {
         ResourceConfiguration rc = getConfiguration();
+
+        if (yanel.getTargetEnvironment() != null && rc !=  null) {
+            log.debug("Try to get values of multi-valued property '" + name + "' for target environment: " + yanel.getTargetEnvironment());
+            String[] values = rc.getProperties(name, yanel.getTargetEnvironment());
+            if (values != null) {
+                return values;
+            } else {
+                log.debug("There seems to be me no multi-valued property '" + name + "' with target environment '" + yanel.getTargetEnvironment() + "' set, hence fallback to property without target environment...");
+            }
+        }
+
         if (rc != null) return rc.getProperties(name);
+
         return getRTI().getProperties(name);
     }
 
