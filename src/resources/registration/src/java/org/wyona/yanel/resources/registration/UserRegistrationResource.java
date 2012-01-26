@@ -247,7 +247,7 @@ public class UserRegistrationResource extends BasicXMLResource {
      * Register user
      * @param gender Gender of user
      */
-    private void registerUser(Document doc, String gender, String firstname, String lastname, String email, String password) {
+    private void registerUser(Document doc, String gender, String firstname, String lastname, String email, String password) throws Exception {
         Element rootElement = doc.getDocumentElement();
 
         try {
@@ -256,6 +256,9 @@ public class UserRegistrationResource extends BasicXMLResource {
             long customerID = new java.util.Date().getTime();
 
             // INFO: Yanel registration
+            if (getRealm().getIdentityManager().getUserManager().existsAlias(email)) {
+                throw new Exception("Alias '" + email + "' already exists, hence do not create user: " + firstname + " " + lastname);
+            }
             org.wyona.security.core.api.User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, firstname + " " + lastname, email, password);
             // TODO: user.setProperty("gender", gender);
             user.setLanguage(getContentLanguage());
