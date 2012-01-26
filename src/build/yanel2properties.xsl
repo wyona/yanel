@@ -20,6 +20,7 @@
       <xsl:copy-of select="/yanel:yanel/yanel:reserved-prefix"/>
       <xsl:copy-of select="/yanel:yanel/yanel:scheduler"/>
       <xsl:copy-of select="/yanel:yanel/yanel:smtp"/>
+      <xsl:copy-of select="/yanel:yanel/yanel:target-environment"/>
     </yanel>
   </xsl:template>
 
