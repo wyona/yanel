@@ -32,13 +32,14 @@ import org.wyona.commons.xml.XMLHelper;
 
 import org.wyona.neutron.XMLExceptionV1;
 
-import org.wyona.yanel.core.ResourceTypeIdentifier;
-import org.wyona.yanel.core.StateOfView;
 import org.wyona.yanel.core.Environment;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
+import org.wyona.yanel.core.ResourceNotFoundException;
+import org.wyona.yanel.core.ResourceTypeIdentifier;
 import org.wyona.yanel.core.ResourceTypeRegistry;
+import org.wyona.yanel.core.StateOfView;
 import org.wyona.yanel.core.ToolbarState;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.api.attributes.AnnotatableV1;
@@ -260,7 +261,6 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Dispatch requests
      * @see javax.servlet.http.HttpServlet#service(HttpServletRequest, HttpServletResponse)
      */
     @Override
@@ -335,7 +335,7 @@ public class YanelServlet extends HttpServlet {
                 doPost(request, response);
             } else if (method.equals(METHOD_PUT)) {
                 doPut(request, response);
-          } else if (method.equals(METHOD_DELETE)) {
+            } else if (method.equals(METHOD_DELETE)) {
                 doDelete(request, response);
             } else if (method.equals(METHOD_OPTIONS)) {
                 doOptions(request, response);
@@ -353,16 +353,17 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * HTTP GET implementation.
+     * @see javax.servlet.http.HttpServlet#doGet(HttpServletRequest, HttpServletResponse)
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // INFO: Init session in case it does not exist yet
         HttpSession session = request.getSession(true);
-        Resource resource = getResource(request, response);
         
-        // Enable or disable toolbar
+        // INFO: Enable or disable toolbar
         yanelUI.switchToolbar(request);
         
+        // INFO: Handle workflow transitions
         String transition = request.getParameter(YANEL_RESOURCE_WORKFLOW_TRANSITION);
         if (transition != null) {
             executeWorkflowTransition(request,
@@ -372,13 +373,17 @@ public class YanelServlet extends HttpServlet {
             return;
         }
 
-        // Check for requests refered by WebDAV
+        // INFO: Init resource
+        Resource resource = getResource(request, response);
+
+        // INFO: Check for requests refered by WebDAV
         String yanelWebDAV = request.getParameter("yanel.webdav");
         if(yanelWebDAV != null && yanelWebDAV.equals("propfind1")) {
             log.info("WebDAV client (" + request.getHeader("User-Agent") + ") requests to \"edit\" a resource: " + resource.getRealm() + ", " + resource.getPath());
             //return;
         }
-        
+ 
+        // INFO: Handle first specific Yanel usecase requests and then at the very end all other requests
         String value = request.getParameter(YANEL_RESOURCE_USECASE);
         try {
             if (value != null && value.equals(RELEASE_LOCK)) {
@@ -426,6 +431,7 @@ public class YanelServlet extends HttpServlet {
                 getContent(request, response);
                 return;
             } else {
+                //log.debug("Handle all other GET requests...");
                 getContent(request, response);
                 return;
             }
@@ -458,7 +464,7 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Get view of resource
+     * Generate response from view of resource
      */
     private void getContent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         View view = null;
@@ -546,7 +552,7 @@ public class YanelServlet extends HttpServlet {
                         return;
                     }
                 } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
-                    if (log.isDebugEnabled()) log.debug("Resource is viewable V2");
+                    if (log.isDebugEnabled()) log.debug("Resource '" + res.getPath() + "' is viewable V2");
                     viewElement.setAttributeNS(NAMESPACE, "version", "2");
                     appendViewDescriptors(doc, viewElement, ((ViewableV2) res).getViewDescriptors());
 
@@ -557,9 +563,13 @@ public class YanelServlet extends HttpServlet {
                         //return;
                     }
 
-                    size = ((ViewableV2) res).getSize();
-                    Element sizeElement = (Element) resourceElement.appendChild(doc.createElement("size"));
-                    sizeElement.appendChild(doc.createTextNode(String.valueOf(size)));
+                    try {
+                        size = ((ViewableV2) res).getSize();
+                        Element sizeElement = (Element) resourceElement.appendChild(doc.createElement("size"));
+                        sizeElement.appendChild(doc.createTextNode(String.valueOf(size)));
+                    } catch(ResourceNotFoundException e) {
+                        log.error(e, e); // INFO: Let's be fault tolerant such that a 404 can be handled more gracefully further down
+                    }
 
 
                     String viewId = getViewID(request);
@@ -603,7 +613,7 @@ public class YanelServlet extends HttpServlet {
                         log.warn(message, e);
                         do404(request, response, doc, message);
                         return;
-                    } catch (org.wyona.yanel.core.ResourceNotFoundException e) {
+                    } catch (ResourceNotFoundException e) {
                         String message = e.getMessage();
                         log.warn(message, e);
                         do404(request, response, doc, message);
@@ -697,7 +707,6 @@ public class YanelServlet extends HttpServlet {
             return;
         } catch (Exception e) {
             log.error(e, e);
-            response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             handleException(request, response, e);
             return;
         }
@@ -723,7 +732,7 @@ public class YanelServlet extends HttpServlet {
 
 
         if (view != null) {
-            if (generateResponse(view, res, request, response, doc, size, lastModified, trackInfo) != null) {
+            if (generateResponse(view, res, request, response, -1, doc, size, lastModified, trackInfo) != null) {
                 //log.debug("Response has been generated :-)");
                 return;
             } else {
@@ -1224,7 +1233,7 @@ public class YanelServlet extends HttpServlet {
                         log.debug("Ignore introspection requests ...");
                     } else {
                         log.info("Authentication not completed yet, but let's log request anyway...");
-                        doLogAccess(request, response, null, null);
+                        doLogAccess(request, response, HttpServletResponse.SC_UNAUTHORIZED, null, null);
                     }
                 }
 
@@ -1820,7 +1829,7 @@ public class YanelServlet extends HttpServlet {
                         log.warn("HTTP BASIC Authentication failed for " + username + " (True ID: '" + trueID + "')!");
 /*
                         response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
-                        response.sendError(response.SC_UNAUTHORIZED);
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                         PrintWriter writer = response.getWriter();
                         writer.print("BASIC Authentication Failed!");
                         return response;
@@ -1833,7 +1842,7 @@ public class YanelServlet extends HttpServlet {
                 log.error("DIGEST is not implemented");
 /*
                 authorized = false;
-                response.sendError(response.SC_UNAUTHORIZED);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setHeader("WWW-Authenticate", "DIGEST realm=\"" + realm.getName() + "\"");
                 PrintWriter writer = response.getWriter();
                 writer.print("DIGEST is not implemented!");
@@ -1862,13 +1871,15 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Generate response using a resource configuration
+     * @param response Response which is being generated/completed
+     * @param statusCode HTTP response status code (because one is not able to get status code from response)
      * @param rc Resource configuration
      * @return true if generation of response was successful or return false otherwise
      */
-    private boolean generateResponseFromRTview(HttpServletRequest request, HttpServletResponse response, ResourceConfiguration rc, String path) throws ServletException {
+    private boolean generateResponseFromRTview(HttpServletRequest request, HttpServletResponse response, int statusCode, ResourceConfiguration rc, String path) throws ServletException {
         try {
             Resource resource = yanelInstance.getResourceManager().getResource(getEnvironment(request, response), getRealm(request), path, rc);
-            return generateResponseFromResourceView(request, response, resource);
+            return generateResponseFromResourceView(request, response, statusCode, resource);
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -1876,16 +1887,17 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Generate response using a resource configuration
+     * @param statusCode HTTP response status code (because one is not able to get status code from response)
      * @param resource Resource
      * @return true if generation of response was successful or return false otherwise
      */
-    private boolean generateResponseFromResourceView(HttpServletRequest request, HttpServletResponse response, Resource resource) throws Exception {
+    private boolean generateResponseFromResourceView(HttpServletRequest request, HttpServletResponse response, int statusCode, Resource resource) throws Exception {
         String viewId = getViewID(request);
 
         View view = ((ViewableV2) resource).getView(viewId);
         if (view != null) {
             TrackingInformationV1 trackInfo = null;
-            if (generateResponse(view, resource, request, response, getDocument(NAMESPACE, "yanel"), -1, -1, trackInfo) != null) {
+            if (generateResponse(view, resource, request, response, statusCode, getDocument(NAMESPACE, "yanel"), -1, -1, trackInfo) != null) {
                 return true;
             }
         }
@@ -1921,7 +1933,9 @@ public class YanelServlet extends HttpServlet {
         }
 
         if (rc != null) {
-            if (generateResponseFromRTview(request, response, rc, path)) return;
+            if (generateResponseFromRTview(request, response, -1, rc, path)) {
+                return;
+            }
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
             return;
         } else if (path.equals(ABOUT_PAGE_PATH)) {
@@ -2048,9 +2062,10 @@ public class YanelServlet extends HttpServlet {
     /**
      * Generate response from a resource view, whereas it will be checked first if the resource already wrote the response (if so, then just return)
      * @param res Resource which handles the request in order to generate a response
+     * @param statusCode HTTP response status code (because one is not able to get status code from response)
      * @param trackInfo Tracking information bean which might be updated by resource if resource is implementing trackable
      */
-    private HttpServletResponse generateResponse(View view, Resource res, HttpServletRequest request, HttpServletResponse response, Document doc, long size, long lastModified, TrackingInformationV1 trackInfo) throws ServletException, IOException {
+    private HttpServletResponse generateResponse(View view, Resource res, HttpServletRequest request, HttpServletResponse response, int statusCode, Document doc, long size, long lastModified, TrackingInformationV1 trackInfo) throws ServletException, IOException {
         //log.debug("Generate response: " + res.getPath());
 
         // TODO: It seems like no header fields are being set (e.g. Content-Length, ...). Please see below ...
@@ -2059,7 +2074,7 @@ public class YanelServlet extends HttpServlet {
         if (!view.isResponse()) {
             if(logAccessIsApplicable(view.getMimeType(), res)) {
                 //log.debug("Mime type '" + view.getMimeType() + "' of request: " + request.getServletPath() + "?" + request.getQueryString());
-                doLogAccess(request, response, res, trackInfo);
+                doLogAccess(request, response, statusCode, res, trackInfo);
             }
             log.debug("It seems that resource '" + res.getPath() + "' has directly created the response.");
             return response;
@@ -2092,7 +2107,7 @@ public class YanelServlet extends HttpServlet {
 
         if(logAccessIsApplicable(mimeType, res)) {
             //log.debug("Mime type '" + mimeType + "' of request: " + request.getServletPath() + "?" + request.getQueryString());
-            doLogAccess(request, response, res, trackInfo);
+            doLogAccess(request, response, statusCode, res, trackInfo);
         }
 
         // Set HTTP headers:
@@ -2355,7 +2370,9 @@ public class YanelServlet extends HttpServlet {
                 rc = getGlobalResourceConfiguration("policy-manager_yanel-rc.xml", realm);
             }
             String path = map.getPath(realm, request.getServletPath());
-            if (generateResponseFromRTview(request, response, rc, path)) return;
+            if (generateResponseFromRTview(request, response, -1, rc, path)) {
+                return;
+            }
 
             log.error("Something went terribly wrong!");
             response.getWriter().print("Something went terribly wrong!");
@@ -2419,7 +2436,9 @@ public class YanelServlet extends HttpServlet {
             BasicGenericExceptionHandlerResource resource = (BasicGenericExceptionHandlerResource) yanelInstance.getResourceManager().getResource(getEnvironment(request, response), getRealm(request), path, rc);
             resource.setException(ex);
 
-            boolean hasBeenHandled = generateResponseFromResourceView(request, response, resource);
+            int statusCode = javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            response.setStatus(statusCode);
+            boolean hasBeenHandled = generateResponseFromResourceView(request, response, statusCode, resource);
 
             if(!hasBeenHandled) {
                 log.error("Generic exception handler is broken!");
@@ -2436,34 +2455,33 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Generate a graceful 404 response
+     * @param doc Debug/Meta document
      */
     private void do404(HttpServletRequest request, HttpServletResponse response, Document doc, String exceptionMessage) throws ServletException {
         log404.info("Referer: " + request.getHeader("referer"));
         log404.warn(request.getRequestURL().toString());
+
+        // TODO: Log 404 per realm
         //org.wyona.yarep.core.Node node = realm.getRepository().getNode("/yanel-logs/404.txt");
 
         String message = "No such node/resource exception: " + exceptionMessage;
         log.warn(message);
 
-/*
         Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
         exceptionElement.appendChild(doc.createTextNode(message));
         exceptionElement.setAttributeNS(NAMESPACE, "status", "404");
-        response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
-        setYanelOutput(request, response, doc);
-        return;
-*/
 
-        // TODO: Finish the XML (as it used to be before)!
-        response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_FOUND);
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         try {
             Realm realm = yanelInstance.getMap().getRealm(request.getServletPath());
             String path = getResource(request, response).getPath();
 
             ResourceConfiguration rc = getGlobalResourceConfiguration("404_yanel-rc.xml", realm);
-            if (generateResponseFromRTview(request, response, rc, path)) return;
-            log.error("404 seems to be broken!");
+            if (generateResponseFromRTview(request, response, HttpServletResponse.SC_NOT_FOUND, rc, path)) {
+                return;
+            }
+            log.error("404 response seems to be broken!");
             return;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -2578,9 +2596,10 @@ public class YanelServlet extends HttpServlet {
     /**
      * Log browser history of each user
      * @param resource Resource which handles the request
+     * @param statusCode HTTP response status code (because one is not able to get status code from response)
      * @param trackInfo Tracking information bean
      */
-    private void doLogAccess(HttpServletRequest request, HttpServletResponse response, Resource resource, TrackingInformationV1 trackInfo) {
+    private void doLogAccess(HttpServletRequest request, HttpServletResponse response, int statusCode, Resource resource, TrackingInformationV1 trackInfo) {
         // TBD: What about a cluster, performance/scalability? See for example http://www.oreillynet.com/cs/user/view/cs_msg/17399 (also see Tomcat conf/server.xml <Valve className="AccessLogValve" and className="FastCommonAccessLogValve")
         // See apache-tomcat-5.5.33/logs/localhost_access_log.2009-11-07.txt
         // 127.0.0.1 - - [07/Nov/2009:01:24:09 +0100] "GET /yanel/from-scratch-realm/de/index.html HTTP/1.1" 200 4464
@@ -2679,7 +2698,11 @@ public class YanelServlet extends HttpServlet {
                 accessLogMessage = accessLogMessage + AccessLog.encodeLogField("sid", session.getId());
             }
 
-            accessLogMessage = accessLogMessage + AccessLog.encodeLogField("http-status", "200"); // TODO: Replace hard-coded 200
+            if (statusCode >= 0) {
+                accessLogMessage = accessLogMessage + AccessLog.encodeLogField("http-status", "" + statusCode);
+            } else {
+                accessLogMessage = accessLogMessage + AccessLog.encodeLogField("http-status", "" + HttpServletResponse.SC_OK);
+            }
 
             String remoteIPAddr = request.getHeader("X-FORWARDED-FOR");
             if (remoteIPAddr != null) { // INFO: We do not need to check realm.isProxySet() additionally, because some deployments are using a proxy without having set the Yanel proxy configuration, hence it is sufficient to just check whether an X-FORWARDED-FOR header is set
