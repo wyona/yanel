@@ -239,6 +239,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         } catch(Exception e) {
             log.error(e, e);
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email-not-sent"));
+            element.setAttribute("email", email);
             element.setAttribute("exception-message", e.getMessage());
         }
     }
