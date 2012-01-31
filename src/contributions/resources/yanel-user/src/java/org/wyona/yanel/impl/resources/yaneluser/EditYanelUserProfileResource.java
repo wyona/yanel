@@ -15,6 +15,11 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import org.wyona.commons.xml.XMLHelper;
+
 /**
  * A resource to edit/update the profile of a user
  */
@@ -60,25 +65,37 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         String userId = getUserId();
         if (userId != null) {
             User user = realm.getIdentityManager().getUserManager().getUser(userId);
-            StringBuilder sb = new StringBuilder();
 
-            sb.append("<?xml version=\"1.0\"?>");
-            sb.append("<user id=\"" + userId + "\" email=\"" + user.getEmail() + "\" language=\"" + user.getLanguage() + "\">");
-            sb.append("  <name>" + user.getName() + "</name>");
-            sb.append("  <expiration-date>" + user.getExpirationDate() + "</expiration-date>");
-            sb.append("  <description>" + user.getDescription() + "</description>");
+            Document doc = XMLHelper.createDocument(null, "user");
+            Element rootEl = doc.getDocumentElement();
+            rootEl.setAttribute("id", userId);
+            rootEl.setAttribute("email", user.getEmail());
+            rootEl.setAttribute("lamguage", user.getLanguage());
+
+            Element nameEl = doc.createElement("name");
+            nameEl.setTextContent(user.getName());
+            rootEl.appendChild(nameEl);
+
+            Element expirationDateEl = doc.createElement("expiration-date");
+            expirationDateEl.setTextContent("" + user.getExpirationDate());
+            rootEl.appendChild(expirationDateEl);
+
+            Element descEl = doc.createElement("description");
+            descEl.setTextContent("" + user.getDescription());
+            rootEl.appendChild(descEl);
 
             org.wyona.security.core.api.Group[] groups = user.getGroups();
             if (groups !=  null && groups.length > 0) {
-                sb.append("  <groups>");
+                Element groupsEl = doc.createElement("groups");
+                rootEl.appendChild(groupsEl);
                 for (int i = 0; i < groups.length; i++) {
-                    sb.append("  <group id=\"" + groups[i].getID() + "\"/>");
+                    Element groupEl = doc.createElement("group");
+                    groupEl.setAttribute("id", groups[i].getID());
+                    groupsEl.appendChild(groupEl);
                 }
-                sb.append("  </groups>");
             }
-            sb.append("</user>");
 
-            return new java.io.StringBufferInputStream(sb.toString());
+            return XMLHelper.getInputStream(doc, false, true, null);
         } else {
             return new java.io.StringBufferInputStream("<no-user-id/>");
         }
