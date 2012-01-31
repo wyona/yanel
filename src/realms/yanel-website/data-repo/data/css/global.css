@@ -85,8 +85,9 @@ a:hover  {
 } 
 
 a:visited  { 
-  text-decoration:none; 
-  color:#777777
+  text-decoration: none;
+  /*color: #A0522D;*/
+  color: #0066CC;
 } 
 
 a:visited:hover  { 
