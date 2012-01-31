@@ -24,6 +24,8 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
 
     private String transformerParameterName;
     private String transformerParameterValue;
+
+    private static final String USER_PROP_NAME = "user";
     
     /*
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -91,24 +93,25 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         // 1)
         userId = getEnvironment().getRequest().getParameter("id");
         if (userId != null) {
+                return userId;
+/*
             if (getRealm().getPolicyManager().authorize("/yanel/users/" + userId + ".html", getEnvironment().getIdentity(), new org.wyona.security.core.api.Usecase("view"))) { // INFO: Because the policymanager has no mean to check (or interpret) query strings we need to recheck programmatically
                 return userId;
             } else {
                 //throw new Exception("User '" + getEnvironment().getIdentity().getUsername() + "' tries to access user profile '" + userId + "', but is not authorized!");
                 log.warn("User '" + getEnvironment().getIdentity().getUsername() + "' tries to access user profile '" + userId + "', but is not authorized!");
             }
+*/
+        } else {
+            log.debug("User ID is not part of query string.");
         }
 
         // 2)
-        ResourceConfiguration resConfig = getConfiguration();
-        if(resConfig != null) {
-            userId = getConfiguration().getProperty("user");
-        } else {
-            log.warn("DEPRECATED: Do not use RTI but rather a resource configuration");
-            userId = getRTI().getProperty("user");
-        }
+        userId = getResourceConfigProperty(USER_PROP_NAME);
         if (userId != null) {
             return userId;
+        } else {
+            log.debug("User ID is not configured inside resource configuration.");
         }
 
         // 3)
@@ -116,8 +119,18 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         if (userId != null && getRealm().getIdentityManager().getUserManager().existsUser(userId)) {
             return userId;
         } else {
-            throw new Exception("No such user '" + userId + "'");
+            log.debug("Could not retrieve user ID from URL.");
         }
+
+        // 4)
+        userId = getEnvironment().getIdentity().getUsername();
+        if (userId != null) {
+            return userId;
+        } else {
+            log.warn("User does not seem to be signed in!");
+        }
+
+        throw new Exception("Cannot retrieve user ID!");
     }
 
     /**
