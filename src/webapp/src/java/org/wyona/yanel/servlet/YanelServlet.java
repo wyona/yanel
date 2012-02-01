@@ -290,7 +290,7 @@ public class YanelServlet extends HttpServlet {
             }
 
             // Check authorization and if authorization failed, then try to authenticate
-            if(doAccessControl(request, response) != null) {
+            if (doAccessControl(request, response) != null) {
                 // INFO: Either redirect (after successful authentication) or access denied (and response will send the login screen)
                 return;
             } else {
@@ -942,7 +942,7 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * HTTP DELETE implementation.
+     * @see javax.servlet.http.HttpServlet#doDelete(HttpServletRequest, HttpServletResponse);
      */
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -961,14 +961,14 @@ public class YanelServlet extends HttpServlet {
                     w.print(sb);
                     return;
                 } else {
-                    log.warn("Resource could not be deleted: " + res);
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    log.warn("Deletable (or rather ModifiableV2) resource '" + res + "' could not be deleted!");
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     return;
                 }
             } else {
                 log.error("Resource '" + res + "' has interface ModifiableV2 not implemented." );
                 response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
-                return;
+                return; // QUESTION: According to the spec http://docs.oracle.com/javaee/1.4/api/javax/servlet/http/HttpServlet.html#doDelete%28javax.servlet.http.HttpServletRequest,%20javax.servlet.http.HttpServletResponse%29 one should rather throw a ServletException, right?
             }
         } catch (Exception e) {
             throw new ServletException("Could not delete resource with URL <" + request.getRequestURL() + ">: " + e.getMessage(), e);
@@ -1122,10 +1122,7 @@ public class YanelServlet extends HttpServlet {
      */
     private HttpServletResponse doAccessControl(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        // Get usecase
-        Usecase usecase = getUsecase(request);
-
-        // Get identity, realm, path
+        // INFO: Get identity, realm, path
         Identity identity;
         Realm realm;
         String path;
@@ -1137,7 +1134,7 @@ public class YanelServlet extends HttpServlet {
             throw new ServletException(e.getMessage(), e);
         }
 
-        // Try Auto-Login
+        // INFO: Try Auto-Login
         if (identity == null || (identity != null && identity.isWorld())) {
             //log.debug("Not logged in yet, hence try auto login...");
             try {
@@ -1158,8 +1155,9 @@ public class YanelServlet extends HttpServlet {
             }
         }
 
-        // Check Authorization
+        // INFO: Check Authorization
         boolean authorized = false;
+        Usecase usecase = getUsecase(request);
         try {
             if (log.isDebugEnabled()) log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity + ", Usecase: " + usecase.getName());
             authorized = realm.getPolicyManager().authorize(path, identity, usecase);
@@ -1183,9 +1181,9 @@ public class YanelServlet extends HttpServlet {
             return null; // INFO: Return null in order to indicate that access is granted
         } else {
             log.warn("Access denied: " + getRequestURLQS(request, null, false) + " (Path of request: " + path + "; Identity: " + identity + "; Usecase: " + usecase + ")");
-
             // TODO: Implement HTTP BASIC/DIGEST response (see above)
 
+            // INFO: If request is not via SSL and SSL is configured, then redirect to SSL connection.
             if(!request.isSecure()) {
                 if(sslPort != null) {
                     log.info("Redirect to SSL ...");
@@ -1215,11 +1213,11 @@ public class YanelServlet extends HttpServlet {
                     log.warn("SSL does not seem to be configured!");
                 }
             } else {
-                log.info("This connection is via SSL.");
+                log.info("This connection is already via SSL.");
             }
 
-            if(doAuthenticate(request, response) != null) {
-                log.info("Return response of web authenticator.");
+            if (doAuthenticate(request, response) != null) {
+                log.info("Access denied and not authenticated yet, hence return response of web authenticator.");
                 /*
 		  NOTE: Such a response can have different reasons:
                         - Either no credentials provided yet and web authenticator is generating a response to fetch credentials
@@ -1229,10 +1227,10 @@ public class YanelServlet extends HttpServlet {
 
                 // TODO: Check "would be mime type", etc.: if (logAccessIsApplicable(view.getMimeType())) {
                 if(logAccessEnabled) { // INFO: Although authorization has been denied and user first needs to authenticate, let's log the request anyway
-                    if (usecase!= null && !usecase.equals("introspection")) {
-                        log.debug("Ignore introspection requests ...");
+                    if (usecase != null && usecase.getName().equals("introspection")) {
+                        log.debug("Ignore introspection request: " + getRequestURLQS(request, null, false));
                     } else {
-                        log.info("Authentication not completed yet, but let's log request anyway...");
+                        log.info("Access denied and authentication not completed yet, hence let's log request '" + getRequestURLQS(request, null, false) + "'");
                         doLogAccess(request, response, HttpServletResponse.SC_UNAUTHORIZED, null, null);
                     }
                 }
