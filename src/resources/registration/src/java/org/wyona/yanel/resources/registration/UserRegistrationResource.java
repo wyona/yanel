@@ -229,8 +229,13 @@ public class UserRegistrationResource extends BasicXMLResource {
         Element rootElement = doc.getDocumentElement();
 
         try {
-            MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), email, "Activate User Registration", getActivationURL(uuid));
-            Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email-sent"));
+            Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email"));
+            if (sendNotificationsEnabled()) {
+                MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), email, "Activate User Registration", getActivationURL(uuid));
+                element.setAttribute("sent", "true");
+            } else {
+                element.setAttribute("sent", "false");
+            }
             element.setAttribute("hours-valid", "" + DEFAULT_TOTAL_VALID_HRS);
             if (getResourceConfigProperty("include-activation-link") != null && getResourceConfigProperty("include-activation-link").equals("true")) {
                 log.warn("Activation link will be part of response! Because of security reasons this should only be done for development or testing environments.");
@@ -239,6 +244,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         } catch(Exception e) {
             log.error(e, e);
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email-not-sent"));
+            element.setAttribute("email", email);
             element.setAttribute("exception-message", e.getMessage());
         }
     }
@@ -262,7 +268,6 @@ public class UserRegistrationResource extends BasicXMLResource {
             org.wyona.security.core.api.User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, firstname + " " + lastname, email, password);
             // TODO: user.setProperty("gender", gender);
             user.setLanguage(getContentLanguage());
-            org.wyona.security.core.api.User alias = getRealm().getIdentityManager().getUserManager().createAlias(email, "" + customerID);
             // TODO: Move adding to groups into separated method
             String groupsCSV = getResourceConfigProperty("groups");
             if (groupsCSV != null) {
@@ -281,6 +286,8 @@ public class UserRegistrationResource extends BasicXMLResource {
                     }
                 }
             }
+            user.save(); // INFO: User needs to be saved persistently before adding an alias, because otherwise one can add an alias though, but the 'link' from the user to the alias will not be created!
+            org.wyona.security.core.api.User alias = getRealm().getIdentityManager().getUserManager().createAlias(email, "" + customerID);
 
             Element ncE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "new-customer-registered"));
             ncE.setAttributeNS(NAMESPACE, "id", "" + customerID);
@@ -587,7 +594,9 @@ public class UserRegistrationResource extends BasicXMLResource {
 
                 String homepageURL = getActivationURL(null).replace("registration", "index"); // TODO: Misuse getActivationURL ...
                 homepageURL = homepageURL.substring(0, homepageURL.indexOf("?"));
-                MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "User Registration Successful", homepageURL);
+                if (sendNotificationsEnabled()) {
+                    MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "User Registration Successful", homepageURL);
+                }
 
                 Element rootElement = doc.getDocumentElement();
                 // TODO: Add gender/salutation
@@ -635,6 +644,21 @@ public class UserRegistrationResource extends BasicXMLResource {
         UserRegistrationBean urBean = new UserRegistrationBean(gender, firstname, lastname, email, password);
 
         return urBean;
+    }
+
+    /**
+     * Check whether notification emails should be sent (In the case of a "continuous integration" environment one might not want to send emails)
+     */
+    private boolean sendNotificationsEnabled() {
+        try {
+            String value = getResourceConfigProperty("send-notification-emails");
+            if (value != null && value.equals("false")) {
+                return false;
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+        }
+        return true;
     }
 }
 

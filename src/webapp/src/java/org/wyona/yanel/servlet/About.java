@@ -11,7 +11,16 @@ public class About {
     public static String toHTML(String version, String revision) {
         StringBuilder sb = new StringBuilder("<html>");
         sb.append("<head><title>About Yanel</title></head>");
-        sb.append("<body><h1>About Yanel</h1><p>Version " + version + "-r" + revision + "</p><p>Copyright &#169; 2005 - " + getYear() + " Wyona. All rights reserved.</p></body>");
+        sb.append("<body><h1>About Yanel</h1>");
+        sb.append("<p>Yanel Version: <code>" + version + "-r" + revision + "</code></p>");
+        sb.append("<p>Java Version: <code>" + System.getProperty("java.version") + "</code></p>");
+        sb.append("<p>Java Home: <code>" + System.getProperty("java.home") + "</code></p>");
+        String catalinaHome = System.getProperty("catalina.home");
+        if (catalinaHome != null) {
+            sb.append("<p>Tomcat Home: <code>" + catalinaHome + "</code></p>");
+        }
+        sb.append("<p>Copyright &#169; 2005 - " + getYear() + " <a href=\"http://www.wyona.com\">Wyona</a>. All rights reserved.</p>");
+        sb.append("</body>");
         sb.append("</html>");
         return sb.toString();
     }

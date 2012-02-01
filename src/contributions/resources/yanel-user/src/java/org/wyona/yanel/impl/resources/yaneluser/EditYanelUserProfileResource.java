@@ -15,6 +15,11 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import org.wyona.commons.xml.XMLHelper;
+
 /**
  * A resource to edit/update the profile of a user
  */
@@ -24,6 +29,8 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
 
     private String transformerParameterName;
     private String transformerParameterValue;
+
+    private static final String USER_PROP_NAME = "user";
     
     /*
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -58,25 +65,37 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         String userId = getUserId();
         if (userId != null) {
             User user = realm.getIdentityManager().getUserManager().getUser(userId);
-            StringBuilder sb = new StringBuilder();
 
-            sb.append("<?xml version=\"1.0\"?>");
-            sb.append("<user id=\"" + userId + "\" email=\"" + user.getEmail() + "\" language=\"" + user.getLanguage() + "\">");
-            sb.append("  <name>" + user.getName() + "</name>");
-            sb.append("  <expiration-date>" + user.getExpirationDate() + "</expiration-date>");
-            sb.append("  <description>" + user.getDescription() + "</description>");
+            Document doc = XMLHelper.createDocument(null, "user");
+            Element rootEl = doc.getDocumentElement();
+            rootEl.setAttribute("id", userId);
+            rootEl.setAttribute("email", user.getEmail());
+            rootEl.setAttribute("lamguage", user.getLanguage());
+
+            Element nameEl = doc.createElement("name");
+            nameEl.setTextContent(user.getName());
+            rootEl.appendChild(nameEl);
+
+            Element expirationDateEl = doc.createElement("expiration-date");
+            expirationDateEl.setTextContent("" + user.getExpirationDate());
+            rootEl.appendChild(expirationDateEl);
+
+            Element descEl = doc.createElement("description");
+            descEl.setTextContent("" + user.getDescription());
+            rootEl.appendChild(descEl);
 
             org.wyona.security.core.api.Group[] groups = user.getGroups();
             if (groups !=  null && groups.length > 0) {
-                sb.append("  <groups>");
+                Element groupsEl = doc.createElement("groups");
+                rootEl.appendChild(groupsEl);
                 for (int i = 0; i < groups.length; i++) {
-                    sb.append("  <group id=\"" + groups[i].getID() + "\"/>");
+                    Element groupEl = doc.createElement("group");
+                    groupEl.setAttribute("id", groups[i].getID());
+                    groupsEl.appendChild(groupEl);
                 }
-                sb.append("  </groups>");
             }
-            sb.append("</user>");
 
-            return new java.io.StringBufferInputStream(sb.toString());
+            return XMLHelper.getInputStream(doc, false, true, null);
         } else {
             return new java.io.StringBufferInputStream("<no-user-id/>");
         }
@@ -91,24 +110,25 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         // 1)
         userId = getEnvironment().getRequest().getParameter("id");
         if (userId != null) {
+                return userId;
+/*
             if (getRealm().getPolicyManager().authorize("/yanel/users/" + userId + ".html", getEnvironment().getIdentity(), new org.wyona.security.core.api.Usecase("view"))) { // INFO: Because the policymanager has no mean to check (or interpret) query strings we need to recheck programmatically
                 return userId;
             } else {
                 //throw new Exception("User '" + getEnvironment().getIdentity().getUsername() + "' tries to access user profile '" + userId + "', but is not authorized!");
                 log.warn("User '" + getEnvironment().getIdentity().getUsername() + "' tries to access user profile '" + userId + "', but is not authorized!");
             }
+*/
+        } else {
+            log.debug("User ID is not part of query string.");
         }
 
         // 2)
-        ResourceConfiguration resConfig = getConfiguration();
-        if(resConfig != null) {
-            userId = getConfiguration().getProperty("user");
-        } else {
-            log.warn("DEPRECATED: Do not use RTI but rather a resource configuration");
-            userId = getRTI().getProperty("user");
-        }
+        userId = getResourceConfigProperty(USER_PROP_NAME);
         if (userId != null) {
             return userId;
+        } else {
+            log.debug("User ID is not configured inside resource configuration.");
         }
 
         // 3)
@@ -116,8 +136,18 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         if (userId != null && getRealm().getIdentityManager().getUserManager().existsUser(userId)) {
             return userId;
         } else {
-            throw new Exception("No such user '" + userId + "'");
+            log.debug("Could not retrieve user ID from URL.");
         }
+
+        // 4)
+        userId = getEnvironment().getIdentity().getUsername();
+        if (userId != null) {
+            return userId;
+        } else {
+            log.warn("User does not seem to be signed in!");
+        }
+
+        throw new Exception("Cannot retrieve user ID!");
     }
 
     /**
@@ -155,9 +185,9 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
     }
 
     /**
-     * Updates the user profile
+     * Update the email address (and possibly also the alias) inside user profile
      *
-     * @param email E-Mail address of user
+     * @param email New email address of user (and possibly also alias)
      */
     private void updateProfile(String email) {
         if (email == null || ("").equals(email)) {
@@ -167,12 +197,24 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         } else {
             try {
                 String userId = getUserId();
-                User user = realm.getIdentityManager().getUserManager().getUser(userId);
-                user.setEmail(getEnvironment().getRequest().getParameter("email"));
-                user.setName(getEnvironment().getRequest().getParameter("userName"));
-                user.setLanguage(getEnvironment().getRequest().getParameter("user-profile-language"));
+                org.wyona.security.core.api.UserManager userManager = realm.getIdentityManager().getUserManager();
+                User user = userManager.getUser(userId);
+                String previousEmailAddress = user.getEmail();
+                user.setEmail(email);
+                //user.setName(getEnvironment().getRequest().getParameter("userName"));
+                //user.setLanguage(getEnvironment().getRequest().getParameter("user-profile-language"));
                 user.save();
-                setTransformerParameter("success", "Profile updated successfully");
+
+                String[] aliases = user.getAliases();
+                for (int i = 0; i < aliases.length; i++) {
+                    if (aliases[i].equals(previousEmailAddress)) {
+                        userManager.createAlias(email, userId);
+                        userManager.removeAlias(previousEmailAddress);
+                        log.warn("Alias updated, which means user needs to use new email '" + email + "' to login.");
+                    }
+                }
+
+                setTransformerParameter("success", "E-Mail (and alias) updated successfully");
             } catch (Exception e) {
                 log.error(e, e);
                 setTransformerParameter("error", e.getMessage());
