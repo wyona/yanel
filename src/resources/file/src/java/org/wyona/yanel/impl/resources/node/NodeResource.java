@@ -17,6 +17,7 @@
 package org.wyona.yanel.impl.resources.node;
 
 import org.wyona.yanel.core.Resource;
+import org.wyona.yanel.core.ResourceNotFoundException;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
@@ -52,7 +53,6 @@ import org.apache.commons.fileupload.util.Streams;
  * Generic Node Resource
  */
 public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, IntrospectableV1, WorkflowableV1, CreatableV2 {
-//public class NodeResource extends Resource implements ViewableV2, ModifiableV2, VersionableV2, CreatableV2 {
 
     private static Logger log = Logger.getLogger(NodeResource.class);
 
@@ -71,7 +71,11 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         return null;
     }
 
+    /**
+     * @see org.wyona.yanel.core.api.attributes.VersionableV2#getView(String, String)
+     */
     public View getView(String viewId, String revisionName) throws Exception {
+        // TODO: Check first whether revision of node exists...
         View view = new View();
 
         view.setInputStream(getNode().getRevision(revisionName).getInputStream());
@@ -82,9 +86,12 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes/ViewableV2#getView(String)
      */
     public View getView(String viewId) throws Exception {
+        if (!exists()) {
+            throw new ResourceNotFoundException("No such repository node: " + getRepoPath());
+        }
         View view = new View();
 
         view.setInputStream(getNode().getInputStream());
@@ -267,8 +274,11 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         return node.isCheckedOut();
     }
 
+    /**
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#exists()
+     */
     public boolean exists() throws Exception {
-        return getRealm().getRepository().existsNode(getPath());
+        return getRealm().getRepository().existsNode(getRepoPath());
     }
 
     /**
@@ -588,22 +598,30 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     /**
-     *
+     * Get repository node
      */
-    private Node getNode() throws org.wyona.yanel.core.ResourceNotFoundException {
+    private Node getNode() throws ResourceNotFoundException {
         try {
-            String path = getPath();
-            if (getResourceConfigProperty("src") != null) {
-                path = getResourceConfigProperty("src");
-            }
+            String path = getRepoPath();
             try {
                 return getRealm().getRepository().getNode(path);
             } catch (org.wyona.yarep.core.NoSuchNodeException e) {
-                throw new org.wyona.yanel.core.ResourceNotFoundException(path);
-                //throw new org.wyona.yanel.core.ResourceNotFoundException(path, getRealm(), getRealm().getRepository());
+                throw new ResourceNotFoundException(path);
+                //throw new ResourceNotFoundException(path, getRealm(), getRealm().getRepository());
             }
         } catch (Exception e) {
-            throw new org.wyona.yanel.core.ResourceNotFoundException(e);
+            throw new ResourceNotFoundException(e);
         }
+    }
+
+    /**
+     * Get repository path (We do not overwrite the getPath() method, because it's still used inside this class at many places without checking for the 'src' property!)
+     */
+    private String getRepoPath() throws Exception {
+        String path = getPath();
+        if (getResourceConfigProperty("src") != null) {
+            path = getResourceConfigProperty("src");
+        }
+        return path;
     }
 }
