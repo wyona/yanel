@@ -146,7 +146,7 @@ public class YanelUserResourceWebTest extends AbstractHtmlUnitTest {
         final HtmlTextInput newEmailField1 = (HtmlTextInput)form1.getInputByName("email");        
         newEmailField1.setValueAttribute("michi@wyona.org");     
         click(button1);  
-        assertPageContainsText("Profile updated successfully");  
+        assertPageContainsText("E-Mail (and alias) updated successfully");  
 
         // INFO: Reset user profile
         loadHtmlPage("test/use-cases/alice"); 
@@ -157,7 +157,7 @@ public class YanelUserResourceWebTest extends AbstractHtmlUnitTest {
         final HtmlTextInput newEmailField2 = (HtmlTextInput)form2.getInputByName("email");        
         newEmailField2.setValueAttribute("alice@foo.bar");     
         click(button2);  
-        assertPageContainsText("Profile updated successfully");  
+        assertPageContainsText("E-Mail (and alias) updated successfully");  
     }
     
     /**
