@@ -185,9 +185,9 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
     }
 
     /**
-     * Updates the user profile
+     * Update the email address (and possibly also the alias) inside user profile
      *
-     * @param email E-Mail address of user
+     * @param email New email address of user (and possibly also alias)
      */
     private void updateProfile(String email) {
         if (email == null || ("").equals(email)) {
@@ -197,12 +197,24 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         } else {
             try {
                 String userId = getUserId();
-                User user = realm.getIdentityManager().getUserManager().getUser(userId);
-                user.setEmail(getEnvironment().getRequest().getParameter("email"));
-                user.setName(getEnvironment().getRequest().getParameter("userName"));
-                user.setLanguage(getEnvironment().getRequest().getParameter("user-profile-language"));
+                org.wyona.security.core.api.UserManager userManager = realm.getIdentityManager().getUserManager();
+                User user = userManager.getUser(userId);
+                String previousEmailAddress = user.getEmail();
+                user.setEmail(email);
+                //user.setName(getEnvironment().getRequest().getParameter("userName"));
+                //user.setLanguage(getEnvironment().getRequest().getParameter("user-profile-language"));
                 user.save();
-                setTransformerParameter("success", "Profile updated successfully");
+
+                String[] aliases = user.getAliases();
+                for (int i = 0; i < aliases.length; i++) {
+                    if (aliases[i].equals(previousEmailAddress)) {
+                        userManager.createAlias(email, userId);
+                        userManager.removeAlias(previousEmailAddress);
+                        log.warn("Alias updated, which means user needs to use new email '" + email + "' to login.");
+                    }
+                }
+
+                setTransformerParameter("success", "E-Mail (and alias) updated successfully");
             } catch (Exception e) {
                 log.error(e, e);
                 setTransformerParameter("error", e.getMessage());
