@@ -268,7 +268,6 @@ public class UserRegistrationResource extends BasicXMLResource {
             org.wyona.security.core.api.User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, firstname + " " + lastname, email, password);
             // TODO: user.setProperty("gender", gender);
             user.setLanguage(getContentLanguage());
-            org.wyona.security.core.api.User alias = getRealm().getIdentityManager().getUserManager().createAlias(email, "" + customerID);
             // TODO: Move adding to groups into separated method
             String groupsCSV = getResourceConfigProperty("groups");
             if (groupsCSV != null) {
@@ -287,6 +286,8 @@ public class UserRegistrationResource extends BasicXMLResource {
                     }
                 }
             }
+            user.save(); // INFO: User needs to be saved persistently before adding an alias, because otherwise one can add an alias though, but the 'link' from the user to the alias will not be created!
+            org.wyona.security.core.api.User alias = getRealm().getIdentityManager().getUserManager().createAlias(email, "" + customerID);
 
             Element ncE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "new-customer-registered"));
             ncE.setAttributeNS(NAMESPACE, "id", "" + customerID);
