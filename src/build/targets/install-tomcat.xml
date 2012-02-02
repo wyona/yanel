@@ -47,6 +47,9 @@
       <equals arg1="${ant.java.version}" arg2="1.4"/>
     </condition>
     <antcall target="copy-java1.4-libs"/>
+
+    <!-- INFO: Set ALLOW_ENCODED_SLASH to 'true' -->
+    <copy file="${yanel.source.home}/tools/apache-tomcat/${tomcat.version}/bin/catalina.sh" todir="${default.tomcat.home.dir}/bin"/>
     
     <replace file="${yanel.source.home}/src/build/local.build.properties" value="tomcat1.home.dir=${default.tomcat.home.dir.forward.slashes}">
       <replacetoken>#tomcat1.home.dir=../tomcat-cluster/build/jakarta-tomcat-5.0.30-cnode1</replacetoken>
