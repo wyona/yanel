@@ -4,7 +4,7 @@ echo "Stop Yanel ..."
 
 rem ----- Ignore system CATALINA_HOME variable
 set ORIGINAL_CATALINA_HOME=%CATALINA_HOME%
-set CATALINA_HOME=apache-tomcat-5.5.20
+set CATALINA_HOME=apache-tomcat-7.0.25
 
 :: Check if JAVA_HOME is set or goto end
 if not "%JAVA_HOME%" == "" goto gotJavaHome

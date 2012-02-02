@@ -74,8 +74,8 @@ Section -Main SEC0000
     SetOutPath $INSTDIR
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\yanel start.lnk" "$INSTDIR\start.bat" "" "$INSTDIR\start.ico" 
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\yanel stop.lnk" "$INSTDIR\stop.bat" "" "$INSTDIR\stop.ico" 
-    SetOutPath $INSTDIR\apache-tomcat-5.5.20
-    File /r apache-tomcat-5.5.20\*
+    SetOutPath $INSTDIR\apache-tomcat-7.0.25
+    File /r apache-tomcat-7.0.25\*
     SetOutPath $INSTDIR
     File LICENSE.txt
     File NOTICE.txt
@@ -123,7 +123,7 @@ Section /o un.Main UNSEC0000
     Delete /REBOOTOK $INSTDIR\README.txt
     Delete /REBOOTOK $INSTDIR\NOTICE.txt
     Delete /REBOOTOK $INSTDIR\LICENSE.txt
-    RmDir /r /REBOOTOK $INSTDIR\apache-tomcat-5.5.20
+    RmDir /r /REBOOTOK $INSTDIR\apache-tomcat-7.0.25
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\yanel stop.lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\yanel start.lnk"
     Delete /REBOOTOK $INSTDIR\stop.bat
