@@ -12,7 +12,7 @@
 <ol>
 <li>Environment variable (YANEL_REALMS_HOME)</li>
 <li>User home directory (user.home)</li>
-<li><a href="http://tomcat.apache.org/tomcat-5.5-doc/config/context.html#Environment_Entries">Environment entry</a> (e.g. within apache-tomcat/conf/context.xml: &lt;Environment name="yanel/realms-config-file" type="java.lang.String" value="/Users/alice/realms.xml"/&gt;)</li>
+<li><a href="http://tomcat.apache.org/tomcat-7.0-doc/config/context.html#Environment_Entries">Environment entry</a> (e.g. within apache-tomcat-7.0.25/conf/context.xml: &lt;Environment name="yanel/realms-config-file" type="java.lang.String" value="/Users/alice/realms.xml"/&gt;)</li>
 <li>Yanel configuration (yanel.xml)</li>
 </ol>
 <h2>Examples</h2>
@@ -36,7 +36,7 @@
 &lt;/realms&gt;        
     <br /><br /></pre>
 <h2>Environment variable YANEL_REALMS_HOME<br /></h2>
-<p>The environment variable can for example be set within <code>apache-tomcat-5.5.20/bin/catalina.sh</code> of Tomcat</p>
+<p>The environment variable can for example be set within <code>apache-tomcat-7.0.25/bin/catalina.sh</code> of Tomcat</p>
 <p><code>export YANEL_REALMS_HOME=/Users/michaelwechner/src/realms</code></p>
 <p>whereas Yanel will then try to find a file</p>
 <p><code>/Users/michaelwechner/src/realms/realms.xml</code></p>
