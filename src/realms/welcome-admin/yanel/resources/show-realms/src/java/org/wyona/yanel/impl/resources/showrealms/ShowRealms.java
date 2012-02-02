@@ -127,12 +127,21 @@ public class ShowRealms extends Resource implements ViewableV2 {
         for (int i = 0; i < rtds.length; i++) {
             sb.append("<resourcetype>");
             try {
-                String rtYanelHtdocPath = PathUtil.getGlobalHtdocsPath(this) + "resource-types/" + rtds[i].getResourceTypeNamespace().replaceAll("/", "%2f").replaceAll(":", "%3a") + "%3a%3a" + rtds[i].getResourceTypeLocalName() + "/" + yanel.getReservedPrefix() + "/";
-                // TODO: Use utility class
-                //String rtYanelHtdocPath = PathUtil.getResourcesHtdocsPathURLencoded(ResourceManager.getResource(rtds[i])) + yanel.getReservedPrefix() + "/";
                 sb.append("<localname>" + rtds[i].getResourceTypeLocalName() + "</localname>");
                 sb.append("<namespace>" + rtds[i].getResourceTypeNamespace() + "</namespace>");
                 sb.append("<description>" + rtds[i].getResourceTypeDescription() + "</description>");
+
+
+                StringBuilder rtYanelHtdocPath = new StringBuilder(PathUtil.getGlobalHtdocsPath(this) + "resource-types/");
+                rtYanelHtdocPath.append(rtds[i].getResourceTypeNamespace().replaceAll("/", "%2f").replaceAll(":", "%3a") + "%3a%3a" + rtds[i].getResourceTypeLocalName());
+                rtYanelHtdocPath.append("/" + yanel.getReservedPrefix() + "/");
+                //log.debug("Encoded resource path: " + rtYanelHtdocPath);
+/*
+                // TODO: Use utility class
+                String rtYanelHtdocPath = PathUtil.getResourcesHtdocsPathURLencoded(getYanel().getResourceManager().getResource(rtds[i]));
+                rtYanelHtdocPath = rtYanelHtdocPath + "/" + yanel.getReservedPrefix() + "/";
+*/
+
                 sb.append("<icon alt=\"" + rtds[i].getResourceTypeLocalName() + " resource-type\">" + rtYanelHtdocPath + "icons/32x32/rt-icon.png" + "</icon>");
                 sb.append("<docu>" + rtYanelHtdocPath + "doc/index.html" + "</docu>");
             } catch(Exception e) {

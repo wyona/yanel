@@ -1914,7 +1914,7 @@ public class YanelServlet extends HttpServlet {
         final String pathPrefix = "/" + reservedPrefix + "/";
         final String ABOUT_PAGE_PATH = pathPrefix + "about.html"; // About Yanel
         final String ABOUT_REALM_PAGE_PATH = pathPrefix + "about-realm.html"; // About realm
-        final String resourceTypesPathPrefix = pathPrefix + "resource-types/";
+        final String RESOURCE_TYPES_PATH_PREFIX = pathPrefix + "resource-types/";
 
         //XXX REFACTORME: in the cases where we simply use a resource-type's view
         // we should implement org.wyona.yanel.core.api.ResourceTypeMatcherV1 ( cf. http://lists.wyona.org/pipermail/yanel-development/2009-June/003749.html )
@@ -1950,14 +1950,15 @@ public class YanelServlet extends HttpServlet {
             PrintWriter w = response.getWriter();
             w.print(AboutRealm.toHTML(realm));
             return;
-        } else if (path.startsWith(resourceTypesPathPrefix)) {
-            final String[] namespaceURI_and_rest = path.substring(resourceTypesPathPrefix.length()).split("::", 2);
+        } else if (path.startsWith(RESOURCE_TYPES_PATH_PREFIX)) {
+            final String[] namespaceURI_and_rest = path.substring(RESOURCE_TYPES_PATH_PREFIX.length()).split("::", 2);
             final String namespaceURI = namespaceURI_and_rest[0];
             final String[] name_and_rest = namespaceURI_and_rest[1].split("/", 2);
             final String name = name_and_rest[0];
 
             // INFO: Decode URL, e.g. /yanel/resource-types/^http:^2f^2fwww.wyona.org^2fyanel^2fresource^2f1.0::user-admin/dummy.css
             final String decoded_namespaceURI = HttpServletRequestHelper.decodeURIinURLpath('^', namespaceURI);
+            log.debug("decoded_namespaceURI: " + decoded_namespaceURI);
             if (log.isDebugEnabled()) log.debug("decoded_namespaceURI: "+decoded_namespaceURI);
             // The request (see resource.getPath()) seems to replace 'http://' or 'http%3a%2f%2f' by 'http:/', so let's change this back
             final String namespace = ! decoded_namespaceURI.equals(namespaceURI) ? decoded_namespaceURI : namespaceURI.replaceAll("http:/", "http://");
