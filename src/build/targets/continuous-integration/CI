@@ -14,7 +14,7 @@ WEBTEST_HOME_DIR=$5
 #WEBTEST_HOME_DIR=/home/michi/local/canoo-DEV_R_1721
 
 
-TOMCAT_HOME=../../local/apache-tomcat-5.5.20 #NOTE: Relative to tools/apache-tomcat/ directory
+TOMCAT_HOME=../../local/apache-tomcat-7.0.25 #NOTE: Relative to tools/apache-tomcat/ directory
 
 YANEL_SOURCE_HOME=`dirname $0`/../../../..
 cd $YANEL_SOURCE_HOME
