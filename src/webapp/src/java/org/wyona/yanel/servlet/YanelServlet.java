@@ -1941,7 +1941,7 @@ public class YanelServlet extends HttpServlet {
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
             response.setHeader("Content-Type", "text/html");
             PrintWriter w = response.getWriter();
-            w.print(About.toHTML(yanelInstance.getVersion(), yanelInstance.getRevision()));
+            w.print(About.toHTML(yanelInstance.getVersion(), yanelInstance.getRevision(), yanelInstance.getTargetEnvironment()));
             return;
         } else if (path.equals(ABOUT_REALM_PAGE_PATH)) {
             //XXX REFACTORME: we should define an "about-realm" resource-type instead!
