@@ -7,8 +7,10 @@ public class About {
 
     /**
      * Get XHTML of about statement
+     * @param targetEnv Target environment
+     * @return About Yanel information as XHTML
      */
-    public static String toHTML(String version, String revision) {
+    public static String toHTML(String version, String revision, String targetEnv) {
         StringBuilder sb = new StringBuilder("<html>");
         sb.append("<head><title>About Yanel</title></head>");
         sb.append("<body><h1>About Yanel</h1>");
@@ -18,6 +20,11 @@ public class About {
         String catalinaHome = System.getProperty("catalina.home");
         if (catalinaHome != null) {
             sb.append("<p>Tomcat Home: <code>" + catalinaHome + "</code></p>");
+        }
+        if (targetEnv != null) {
+            sb.append("<p>Target Environment: <code>" + targetEnv + "</code></p>");
+        } else {
+            sb.append("<p>Target Environment: No target environment configured inside <code>yanel.xml</code></p>");
         }
         sb.append("<p>Copyright &#169; 2005 - " + getYear() + " <a href=\"http://www.wyona.com\">Wyona</a>. All rights reserved.</p>");
         sb.append("</body>");
