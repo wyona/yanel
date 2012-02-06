@@ -23,7 +23,7 @@
     ErrorLog ${APACHE_LOG_DIR}/yanel.org-error_log
     CustomLog ${APACHE_LOG_DIR}/yanel.org-access_log combined
 
-    ProxyPassReverseCookiePath /ulysses /
+    ProxyPassReverseCookiePath /yanel /
 
     ProxyPass           /javadoc  http://YANEL_HOSTNAME:PORT/yanel/yanel-website/javadoc/
     ProxyPassReverse    /javadoc  http://YANEL_HOSTNAME:PORT/yanel/yanel-website/javadoc/
