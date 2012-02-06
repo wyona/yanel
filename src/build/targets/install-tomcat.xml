@@ -72,7 +72,7 @@
   </target>
   
   <target name="copy-catalina-script" if="isTomcat7.0.25" description="Copy patched catalina script for 7.0.25" depends="init">
-    <copy file="${yanel.source.home}/tools/apache-tomcat/7.0.25/bin/catalina.sh" todir="${default.tomcat.home.dir}/bin"/>
+    <copy file="${yanel.source.home}/tools/apache-tomcat/7.0.25/bin/catalina.sh" todir="${default.tomcat.home.dir}/bin" failonerror="true"/>
   </target>
     
 </project>
