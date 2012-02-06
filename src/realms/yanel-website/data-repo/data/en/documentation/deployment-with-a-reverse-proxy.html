@@ -1,5 +1,45 @@
 <?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Deployment of Yanel behind a reverse proxy</title></head><body>
 <h1>Deployment of Yanel behind a reverse proxy</h1>
+
+<h2>Using aptitude</h2>
+<ul>
+  <li>sudo apt-get update</li>
+  <li>sudo apt-get install apache2</li>
+  <li>netstat -nt -l</li>
+  <li>http://PROXY_HOSTNAME:80</li>
+  <li>sudo /etc/init.d/apache2 stop</li>
+  <li>sudo a2enmod proxy</li>
+  <li>sudo a2enmod proxy_http</li>
+  <li>sudo /etc/init.d/apache2 start</li>
+  <li>http://PROXY_HOSTNAME:80</li>
+  <li>sudo vi /etc/apache2/sites-available/yanel.org</li>
+</ul>
+<pre>
+&lt;VirtualHost *:80&gt;
+    ServerAdmin michael.wechner@wyona.com
+    ServerName yanel.wyona.org
+    ServerAlias www.yanel.org
+    ServerAlias yanel.org
+    ErrorLog ${APACHE_LOG_DIR}/yanel.org-error_log
+    CustomLog ${APACHE_LOG_DIR}/yanel.org-access_log combined
+
+    ProxyPassReverseCookiePath /ulysses /
+
+    ProxyPass           /javadoc  http://YANEL_HOSTNAME:PORT/yanel/yanel-website/javadoc/
+    ProxyPassReverse    /javadoc  http://YANEL_HOSTNAME:PORT/yanel/yanel-website/javadoc/
+    ProxyPass           /  http://YANEL_HOSTNAME:PORT/yanel/yanel-website/
+    ProxyPassReverse    /  http://YANEL_HOSTNAME:PORT/yanel/yanel-website/
+&lt;/VirtualHost&gt;
+</pre>
+<ul>
+  <li>sudo a2ensite yanel.org</li>
+  <li>ls -l /etc/apache2/sites-enabled</li>
+  <li>sudo /etc/init.d/apache2 reload</li>
+  <li>Update DNS accordingly</li>
+  <li><a href="http://www.yanel.org">http://www.yanel.org</a></li>
+</ul>
+
+<h2>From source</h2>
 <ul>
   <li>Requirements for Ubuntu
     <ul>
