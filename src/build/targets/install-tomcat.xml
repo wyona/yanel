@@ -49,7 +49,10 @@
     <antcall target="copy-java1.4-libs"/>
 
     <!-- INFO: Set ALLOW_ENCODED_SLASH to 'true' -->
-    <copy file="${yanel.source.home}/tools/apache-tomcat/${tomcat.version}/bin/catalina.sh" todir="${default.tomcat.home.dir}/bin"/>
+    <condition property="isTomcat7.0.25">
+      <equals arg1="${tomcat.version}" arg2="7.0.25"/>
+    </condition>
+    <antcall target="copy-catalina-script"/>
     
     <replace file="${yanel.source.home}/src/build/local.build.properties" value="tomcat1.home.dir=${default.tomcat.home.dir.forward.slashes}">
       <replacetoken>#tomcat1.home.dir=../tomcat-cluster/build/jakarta-tomcat-5.0.30-cnode1</replacetoken>
@@ -66,6 +69,10 @@
   
   <target name="copy-java1.4-libs" if="isJava1.4" description="Copy jars specific to java 1.4" depends="init">
     <copy file="${yanel.source.home}/tools/apache-tomcat/java-1.4/apache-tomcat-${tomcat.version}/bin/jmx.jar" todir="${default.tomcat.home.dir}/bin"/>
+  </target>
+  
+  <target name="copy-catalina-script" if="isTomcat7.0.25" description="Copy patched catalina script for 7.0.25" depends="init">
+    <copy file="${yanel.source.home}/tools/apache-tomcat/7.0.25/bin/catalina.sh" todir="${default.tomcat.home.dir}/bin"/>
   </target>
     
 </project>
