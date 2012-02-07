@@ -38,7 +38,7 @@
       <dependency groupId="log4j" artifactId="log4j" version="1.2.16"/>
 
       <!-- INFO: JAXB implementation -->
-      <dependency groupId="org.eclipse.persistence" artifactId="org.eclipse.persistence.moxy" version="2.3.0"/>
+      <dependency groupId="org.eclipse.persistence" artifactId="org.eclipse.persistence.moxy" version="2.3.2"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="yarep" artifactId="yarep-core" version="1.0-dev-rad19798901b2280b7236e915ae96746ab630fcc1"/>
