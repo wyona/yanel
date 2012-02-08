@@ -68,10 +68,12 @@
 <ul>
 <li>You can view the newly created resource by visiting <code>http://localhost:8080/yanel/test/use-cases/my-resource.html</code>. </li>
 </ul>
-<h2>Note for SVN</h2>
+<h2>Ignoring the build directory</h2>
 <ul>
-<li>If you are using subversion for version control, note that the first time you build your new resource, the directory build will be created in the resource's home directory. To make svn ignore this directory, in the resource's home directory do: <br />
+<li>If you are using svn or git for version control, note that the first time you build your new resource, the directory <code>build</code> will be created in the resource's home directory. To make svn ignore this directory, in the resource's home directory do: <br/>
 <pre>svn propset svn:ignore build</pre>
+Or to make git ignore this directory, 
+create a .gitignore file containing 'build' as a directory to be ignored.
 </li>
 </ul>
 </body>
