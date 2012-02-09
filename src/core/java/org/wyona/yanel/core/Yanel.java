@@ -78,6 +78,12 @@ public class Yanel {
        if (isInitialized) {
            return;
        }
+
+       File configFile = new File(Yanel.class.getClassLoader().getResource(DEFAULT_CONFIGURATION_FILE_XML).getFile());
+       DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+       Configuration config = builder.buildFromFile(configFile);
+
+       configureSMTP(config, configFile);
        
        map = (Map) applicationContext.getBean("map");
        realmConfig = new RealmManager();
@@ -87,9 +93,6 @@ public class Yanel {
        resourceManager = new ResourceManager();
        resourceManager.setResourceTypeRegistry(rtr);
        
-       File configFile = new File(Yanel.class.getClassLoader().getResource(DEFAULT_CONFIGURATION_FILE_XML).getFile());
-       DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
-       Configuration config = builder.buildFromFile(configFile);
        Configuration versionConfig = config.getChild("version");
        version = versionConfig.getAttribute("version");
        revision = versionConfig.getAttribute("revision");
@@ -100,39 +103,6 @@ public class Yanel {
        } else {
            log.warn("Scheduler not configured within configuration: " + configFile);
            schedulerEnabled = false;
-       }
-
-       if (config.getChild("smtp", false) != null) {
-
-           String smtpPortSt = config.getChild("smtp").getAttribute("port");
-           try {
-               smtpPort = Integer.parseInt(smtpPortSt);
-           } catch(NumberFormatException e) {
-               log.warn("Mail server not configured, because SMTP port '" + smtpPortSt + "' does not seem to be a number! Check within configuration: " + configFile);
-           }
-
-           smtpHost = config.getChild("smtp").getAttribute("host");
-
-           // INFO: SMTP Authentication (optional), which is normally necessary in order to relay messages to other hosts/domains
-           smtpUsername = config.getChild("smtp").getAttribute("username", null);
-           smtpPassword = config.getChild("smtp").getAttribute("password", null);
-
-           java.util.Properties props = new java.util.Properties();
-           props.put("mail.smtp.host", smtpHost);
-           props.put("mail.smtp.port", smtpPortSt);
-           // http://java.sun.com/products/javamail/javadocs/javax/mail/Session.html
-           javax.mail.Session session = null;
-           if (smtpUsername != null && smtpPassword != null) {
-               log.info("SMTP authentication enabled using username: " + smtpUsername);
-               props.put("mail.smtp.auth", "true");
-               session = javax.mail.Session.getDefaultInstance(props, new YanelMailAuthenticator(smtpUsername, smtpPassword));
-           } else {
-               log.info("No SMTP authentication configured.");
-               session = javax.mail.Session.getDefaultInstance(props, null);
-           }
-           log.info("Mailserver default session (available to all code executing in the same JVM): " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
-       } else {
-           log.warn("Mail server not configured within configuration: " + configFile);
        }
 
        if (config.getChild("target-environment", false) != null) {
@@ -308,6 +278,44 @@ public class Yanel {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Configure SMTP host and port
+     */
+    private void configureSMTP(Configuration config, File configFile) throws Exception {
+       if (config.getChild("smtp", false) != null) {
+
+           String smtpPortSt = config.getChild("smtp").getAttribute("port");
+           try {
+               smtpPort = Integer.parseInt(smtpPortSt);
+           } catch(NumberFormatException e) {
+               log.warn("Mail server not configured, because SMTP port '" + smtpPortSt + "' does not seem to be a number! Check within configuration: " + configFile);
+           }
+
+           smtpHost = config.getChild("smtp").getAttribute("host");
+
+           // INFO: SMTP Authentication (optional), which is normally necessary in order to relay messages to other hosts/domains
+           smtpUsername = config.getChild("smtp").getAttribute("username", null);
+           smtpPassword = config.getChild("smtp").getAttribute("password", null);
+
+           java.util.Properties props = new java.util.Properties();
+           props.put("mail.smtp.host", smtpHost);
+           props.put("mail.smtp.port", smtpPortSt);
+           // http://java.sun.com/products/javamail/javadocs/javax/mail/Session.html
+           javax.mail.Session session = null;
+           if (smtpUsername != null && smtpPassword != null) {
+               log.info("SMTP authentication enabled using username: " + smtpUsername);
+               props.put("mail.smtp.auth", "true");
+               session = javax.mail.Session.getDefaultInstance(props, new YanelMailAuthenticator(smtpUsername, smtpPassword));
+           } else {
+               log.info("No SMTP authentication configured.");
+               session = javax.mail.Session.getDefaultInstance(props, null);
+           }
+           log.info("Mailserver default session (available to all code executing in the same JVM): " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
+       } else {
+           log.warn("Mail server not configured within configuration: " + configFile);
+       }
     }
 }
 
