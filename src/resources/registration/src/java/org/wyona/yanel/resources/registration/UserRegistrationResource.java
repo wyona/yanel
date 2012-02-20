@@ -325,7 +325,7 @@ public class UserRegistrationResource extends BasicXMLResource {
      * Save registration request persistently
      * @param email E-Mail address of user
      */
-    private void saveRegistrationRequest(String uuid, String gender, String firstname, String lastname, String email, String city, String phone, String password) {
+    protected void saveRegistrationRequest(String uuid, String gender, String firstname, String lastname, String email, String city, String phone, String password) {
         Document doc = getRegistrationRequestAsXML(uuid, gender, firstname, lastname, email, city, phone, password);
         Node node = null;
         try {
@@ -422,6 +422,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-not-valid"));
                 inputsValid = false;
             } else {
+                // TODO: if (getRealm().getIdentityManager().getUserManager().existsUser(email)) {
                 if (getRealm().getIdentityManager().getUserManager().existsAlias(email)) {
                     log.warn("E-Mail '" + email + "' is already used as alias!");
                     Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-in-use"));
@@ -532,34 +533,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             }
 
             if (inputsValid) {
-                Element valildE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "all-inputs-valid"));
-/*
-                CustomerRegistrationIf cr = new com.konakart.app.CustomerRegistration();
-                cr.setEmailAddr(email);
-                cr.setPassword(password);
-                cr.setFirstName(firstname);
-                cr.setLastName(lastname);
-                cr.setGender(gender);
-                cr.setBirthDate(new java.util.GregorianCalendar(1992, 1, 1, 0, 0)); // INFO: No birthday necessary, hence invent something
-                cr.setTelephoneNumber(phone);
-                if (fax != null) {
-                    cr.setFaxNumber(fax);
-                }
-                cr.setStreetAddress(street);
-                cr.setCity(city);
-                cr.setPostcode(zip);
-                cr.setState(getResourceConfigProperty("default-zone"));
-                com.konakart.appif.CountryIf cn = kkEngine.getCountryPerName("Switzerland");
-                if(cn == null) {
-                    com.konakart.appif.CountryIf[] cns = kkEngine.getAllCountries(); // We use the first country in the database.
-                    cr.setCountryId(cns[0].getId());
-                } else {
-                    cr.setCountryId(cn.getId());
-                }
-                if (company != null) {
-                    cr.setCompany(company);
-                }
-*/
+                rootElement.appendChild(doc.createElementNS(NAMESPACE, "all-inputs-valid"));
 
                 boolean emailConfigurationRequired = true;
                 if (getResourceConfigProperty("email-confirmation") != null) {
@@ -581,6 +555,7 @@ public class UserRegistrationResource extends BasicXMLResource {
     /**
      * Try to activate user registration
      * @param uuid UUID of user registration activation request
+     * @return true if user registration activation was successful, otherwise return false if actication failed
      */
     private boolean activateRegistration(String uuid, Document doc) {
         try {
