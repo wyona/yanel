@@ -319,7 +319,7 @@ public class RealmManager {
                     realm = new RealmWithConfigurationExceptionImpl(realmLabel, realmId, mountPoint, realmConfigFile, e);
                 }
 
-                realm.setBoostDomain(rcc[i].getBoostDomain());
+                realm.setUserTrackingDomain(rcc[i].getUserTrackingDomain());
                     
                 log.info("Realm: " + realm);
                 _realms.put(realmId, realm);

@@ -89,16 +89,16 @@ public class RealmContextConfig {
     }
 
     /**
-     * Set Boost domain 
+     * Set user tracking domain 
      */
-    void setBoostDomain(String domain) {
+    void setUserTrackingDomain(String domain) {
         this.domain = domain;
     }
 
     /**
-     * Get Boost domain
+     * Get user tracking domain
      */
-    public String getBoostDomain() {
+    String getUserTrackingDomain() {
         return domain;
     }
 

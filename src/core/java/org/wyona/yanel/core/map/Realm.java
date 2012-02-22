@@ -190,12 +190,13 @@ public interface Realm {
     public String getI18nCatalogue();
 
     /**
-     * Set optional Boost domain
+     * Set optional user tracking domain
+     * @param domain Domain ID, e.g. 'boost-0123456789'
      */
-    public void setBoostDomain(String domain);
+    public void setUserTrackingDomain(String domain);
 
     /**
-     * Get optional Boost domain
+     * Get optional user tracking domain
      */
-    public String getBoostDomain();
+    public String getUserTrackingDomain();
 }

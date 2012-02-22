@@ -609,16 +609,16 @@ public class RealmDefaultImpl implements Realm {
     }
 
     /**
-     * @see org.wyona.yanel.core.map.Realm#setBoostDomain(String)
+     * @see org.wyona.yanel.core.map.Realm#setUserTrackingDomain(String)
      */
-    public void setBoostDomain(String domain) {
+    public void setUserTrackingDomain(String domain) {
         this.domain = domain;
     }
 
     /**
-     * @see org.wyona.yanel.core.map.Realm#getBoostDomain()
+     * @see org.wyona.yanel.core.map.Realm#getUserTrackingDomain()
      */
-    public String getBoostDomain() {
+    public String getUserTrackingDomain() {
         if (domain != null) {
             return domain;
         } else {
