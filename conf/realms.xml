@@ -5,6 +5,7 @@
 <realms xmlns="http://www.wyona.org/yanel/1.0" version="2009042800">
 
 <changes>
+  <change version="2012022200">Optional 'boost-domain' attribute added (but has no impact on version attribute)</change>
   <change version="2010022100">Downloads realm containing update.rdf added (but has no impact on version attribute)</change>
   <change version="2010020400">Order changed (but has no impact on version attribute)</change>
   <change version="2009042800">Test realm config moved</change>
@@ -41,7 +42,7 @@
 -->
 </realm>
 
-<realm id="yanel-website" mount-point="/yanel-website/">
+<realm id="yanel-website" mount-point="/yanel-website/" boost-domain="boost-0123456789">
   <config src="@REALMS_DIR@/yanel-website/"/>
 
 <!--
