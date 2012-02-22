@@ -51,6 +51,7 @@ public class RealmWithConfigurationExceptionImpl implements Realm {
 
     private static Logger log = Logger.getLogger(RealmWithConfigurationExceptionImpl.class);
 
+    private String domain;
     private String name;
     private String id;
     private String mountPoint;
@@ -372,5 +373,17 @@ public class RealmWithConfigurationExceptionImpl implements Realm {
         return this.i18nCatalogue;
     }
 
+    /**
+     * @see org.wyona.yanel.core.map.Realm#setBoostDomain(String)
+     */
+    public void setBoostDomain(String domain) {
+        this.domain = domain;
+    }
 
+    /**
+     * @see org.wyona.yanel.core.map.Realm#getBoostDomain()
+     */
+    public String getBoostDomain() {
+        return domain;
+    }
 }

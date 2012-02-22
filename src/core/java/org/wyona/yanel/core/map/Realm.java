@@ -188,4 +188,14 @@ public interface Realm {
      * @return i18n catalogue
      */
     public String getI18nCatalogue();
+
+    /**
+     * Set optional Boost domain
+     */
+    public void setBoostDomain(String domain);
+
+    /**
+     * Get optional Boost domain
+     */
+    public String getBoostDomain();
 }

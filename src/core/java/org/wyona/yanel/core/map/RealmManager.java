@@ -318,6 +318,8 @@ public class RealmManager {
                     //throw new ConfigurationException(errorMsg, e);
                     realm = new RealmWithConfigurationExceptionImpl(realmLabel, realmId, mountPoint, realmConfigFile, e);
                 }
+
+                realm.setBoostDomain(rcc[i].getBoostDomain());
                     
                 log.info("Realm: " + realm);
                 _realms.put(realmId, realm);

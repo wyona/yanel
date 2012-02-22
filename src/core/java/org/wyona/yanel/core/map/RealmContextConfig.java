@@ -33,6 +33,7 @@ public class RealmContextConfig {
     private File unresolvedRealmConfigFile;
 
     private String label;
+    private String domain;
     private ReverseProxyConfig reverseProxyConfig;
 
     /**
@@ -85,6 +86,20 @@ public class RealmContextConfig {
      */
     public String getLabel() {
         return label;
+    }
+
+    /**
+     * Set Boost domain 
+     */
+    void setBoostDomain(String domain) {
+        this.domain = domain;
+    }
+
+    /**
+     * Get Boost domain
+     */
+    public String getBoostDomain() {
+        return domain;
     }
 
     /**

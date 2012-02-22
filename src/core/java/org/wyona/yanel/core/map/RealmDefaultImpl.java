@@ -42,7 +42,7 @@ import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 import org.apache.log4j.Logger;
 
 /**
- *
+ * Default realm implementation
  */
 public class RealmDefaultImpl implements Realm {
 
@@ -51,6 +51,7 @@ public class RealmDefaultImpl implements Realm {
 
     private static Logger log = Logger.getLogger(RealmDefaultImpl.class);
 
+    private String domain;
     private String name;
     private String id;
     private String mountPoint;
@@ -604,6 +605,25 @@ public class RealmDefaultImpl implements Realm {
                 identityManager = imFactory.newIdentityManager(identitiesRepository);
             }
             setIdentityManager(identityManager);
+        }
+    }
+
+    /**
+     * @see org.wyona.yanel.core.map.Realm#setBoostDomain(String)
+     */
+    public void setBoostDomain(String domain) {
+        this.domain = domain;
+    }
+
+    /**
+     * @see org.wyona.yanel.core.map.Realm#getBoostDomain()
+     */
+    public String getBoostDomain() {
+        if (domain != null) {
+            return domain;
+        } else {
+            log.debug("No domain configured, hence use realm ID...");
+            return getID();
         }
     }
 }
