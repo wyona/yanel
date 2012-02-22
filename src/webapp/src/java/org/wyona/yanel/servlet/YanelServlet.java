@@ -2645,9 +2645,9 @@ public class YanelServlet extends HttpServlet {
             if (trackInfo != null) {
                 String[] trackingTags = trackInfo.getTags();
                 if (trackingTags != null && trackingTags.length > 0) {
-                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getBoostDomain(), trackingTags, ACCESS_LOG_TAG_SEPARATOR);
+                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getUserTrackingDomain(), trackingTags, ACCESS_LOG_TAG_SEPARATOR);
                 } else {
-                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getBoostDomain(), tags, ACCESS_LOG_TAG_SEPARATOR);
+                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getUserTrackingDomain(), tags, ACCESS_LOG_TAG_SEPARATOR);
                 }
 
                 String pageType = trackInfo.getPageType();
@@ -2667,7 +2667,7 @@ public class YanelServlet extends HttpServlet {
                     }
                 }
             } else {
-                accessLogMessage = AccessLog.getLogMessage(request, response, realm.getBoostDomain(), tags, ACCESS_LOG_TAG_SEPARATOR);
+                accessLogMessage = AccessLog.getLogMessage(request, response, realm.getUserTrackingDomain(), tags, ACCESS_LOG_TAG_SEPARATOR);
             }
             
             // TBD/TODO: What if user has logged out, but still has a persistent cookie?!
