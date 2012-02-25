@@ -34,6 +34,13 @@ public class UserRegistrationBean {
     /**
      *
      */
+    public void setUUID(String uuid) {
+        this.uuid = uuid;
+    }
+
+    /**
+     *
+     */
     public String getUUID() {
         return uuid;
     }
