@@ -224,14 +224,14 @@ public class UserRegistrationResource extends BasicXMLResource {
     /**
      * Send email containing a confirmation link
      */
-    private void sendConfirmationLinkEmail(Document doc, String uuid, String firstame, String lastname, String email) {
-        log.info("Do not register user right away, but send an email to '" + email + "' containing a confirmation link...");
+    private void sendConfirmationLinkEmail(Document doc, UserRegistrationBean userRegBean) {
+        log.info("Do not register user right away, but send an email to '" + userRegBean.getEmail() + "' containing a confirmation link...");
         Element rootElement = doc.getDocumentElement();
 
         try {
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email"));
             if (sendNotificationsEnabled()) {
-                MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), email, "Activate User Registration", getActivationURL(uuid));
+                MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), userRegBean.getEmail(), "Activate User Registration", getActivationURL(userRegBean.getUUID()));
                 element.setAttribute("sent", "true");
             } else {
                 element.setAttribute("sent", "false");
@@ -239,12 +239,12 @@ public class UserRegistrationResource extends BasicXMLResource {
             element.setAttribute("hours-valid", "" + DEFAULT_TOTAL_VALID_HRS);
             if (getResourceConfigProperty("include-activation-link") != null && getResourceConfigProperty("include-activation-link").equals("true")) {
                 log.warn("Activation link will be part of response! Because of security reasons this should only be done for development or testing environments.");
-                element.setAttribute("activation-link", getActivationURL(uuid));
+                element.setAttribute("activation-link", getActivationURL(userRegBean.getUUID()));
             }
         } catch(Exception e) {
             log.error(e, e);
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email-not-sent"));
-            element.setAttribute("email", email);
+            element.setAttribute("email", userRegBean.getEmail());
             element.setAttribute("exception-message", e.getMessage());
         }
     }
@@ -257,14 +257,11 @@ public class UserRegistrationResource extends BasicXMLResource {
         Element rootElement = doc.getDocumentElement();
 
         try {
-            // INFO: KonaKart registration
-            //int customerID = kkEngine.registerCustomer(cr);
-            long customerID = new java.util.Date().getTime();
-
             // INFO: Yanel registration
             if (getRealm().getIdentityManager().getUserManager().existsAlias(email)) {
                 throw new Exception("Alias '" + email + "' already exists, hence do not create user: " + firstname + " " + lastname);
             }
+            long customerID = new java.util.Date().getTime();
             org.wyona.security.core.api.User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, firstname + " " + lastname, email, password);
             // TODO: user.setProperty("gender", gender);
             user.setLanguage(getContentLanguage());
@@ -281,6 +278,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                 }
                 for (int i = 0; i < groupIDs.length; i++) {
                     if (getRealm().getIdentityManager().getGroupManager().existsGroup(groupIDs[i])) {
+                        log.warn("DEBUG: Add user '" + user.getEmail() + "' to group: " + groupIDs[i]);
                         getRealm().getIdentityManager().getGroupManager().getGroup(groupIDs[i]).addMember(user);
                     } else {
                         log.warn("No such group: " + groupIDs[i]);
@@ -524,7 +522,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     UserRegistrationBean userRegBean = new UserRegistrationBean(uuid, gender, firstname, lastname, email, password, city, phone);
                     try {
                         saveRegistrationRequest(userRegBean);
-                        sendConfirmationLinkEmail(doc, uuid, firstname, lastname, email);
+                        sendConfirmationLinkEmail(doc, userRegBean);
                     } catch(Exception e) {
                         log.error(e, e);
                         Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
