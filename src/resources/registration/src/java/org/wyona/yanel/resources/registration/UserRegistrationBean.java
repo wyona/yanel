@@ -20,8 +20,7 @@ public class UserRegistrationBean {
     /**
      *
      */
-    public UserRegistrationBean(String uuid, String gender, String firstname, String lastname, String email, String password, String city, String phone) {
-        this.uuid = uuid;
+    public UserRegistrationBean(String gender, String firstname, String lastname, String email, String password, String city, String phone) {
         this.gender = gender;
         this.firstname = firstname;
         this.lastname = lastname;

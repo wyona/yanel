@@ -251,18 +251,18 @@ public class UserRegistrationResource extends BasicXMLResource {
 
     /**
      * Register user
-     * @param gender Gender of user
+     * @param userRegBean User registration bean containing gender, firstname, etc.
      */
-    private void registerUser(Document doc, String gender, String firstname, String lastname, String email, String password) throws Exception {
+    private void registerUser(Document doc, UserRegistrationBean userRegBean) throws Exception {
         Element rootElement = doc.getDocumentElement();
 
         try {
             // INFO: Yanel registration
-            if (getRealm().getIdentityManager().getUserManager().existsAlias(email)) {
-                throw new Exception("Alias '" + email + "' already exists, hence do not create user: " + firstname + " " + lastname);
+            if (getRealm().getIdentityManager().getUserManager().existsAlias(userRegBean.getEmail())) {
+                throw new Exception("Alias '" + userRegBean.getEmail() + "' already exists, hence do not create user: " + userRegBean.getFirstname() + " " + userRegBean.getLastname());
             }
             long customerID = new java.util.Date().getTime();
-            org.wyona.security.core.api.User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, firstname + " " + lastname, email, password);
+            org.wyona.security.core.api.User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, userRegBean.getFirstname() + " " + userRegBean.getLastname(), userRegBean.getEmail(), userRegBean.getPassword());
             // TODO: user.setProperty("gender", gender);
             user.setLanguage(getContentLanguage());
 
@@ -287,7 +287,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             }
 
             user.save(); // INFO: User needs to be saved persistently before adding an alias, because otherwise one can add an alias though, but the 'link' from the user to the alias will not be created!
-            org.wyona.security.core.api.User alias = getRealm().getIdentityManager().getUserManager().createAlias(email, "" + customerID);
+            org.wyona.security.core.api.User alias = getRealm().getIdentityManager().getUserManager().createAlias(userRegBean.getEmail(), "" + customerID);
 
             Element ncE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "new-customer-registered"));
             ncE.setAttributeNS(NAMESPACE, "id", "" + customerID);
@@ -514,12 +514,13 @@ public class UserRegistrationResource extends BasicXMLResource {
                 if (getResourceConfigProperty("email-confirmation") != null) {
                     emailConfigurationRequired = new Boolean(getResourceConfigProperty("email-confirmation")).booleanValue();
                 }
+                UserRegistrationBean userRegBean = new UserRegistrationBean(gender, firstname, lastname, email, password, city, phone);
                 if (!emailConfigurationRequired) {
                     log.warn("User will be registered without email configuration! Because of security reasons this should only be done for development or testing environments.");
-                    registerUser(doc, gender, firstname, lastname, email, password);
+                    registerUser(doc, userRegBean);
                 } else {
                     String uuid = java.util.UUID.randomUUID().toString();
-                    UserRegistrationBean userRegBean = new UserRegistrationBean(uuid, gender, firstname, lastname, email, password, city, phone);
+                    userRegBean.setUUID(uuid);
                     try {
                         saveRegistrationRequest(userRegBean);
                         sendConfirmationLinkEmail(doc, userRegBean);
@@ -548,7 +549,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 
                 UserRegistrationBean urBean = readRegistrationRequest(getRealm().getRepository().getNode(path));
 
-                registerUser(doc, urBean.getGender(), urBean.getFirstname(), urBean.getLastname(), urBean.getEmail(), urBean.getPassword());
+                registerUser(doc, urBean);
                 getRealm().getRepository().getNode(path).delete();
 
                 String homepageURL = getActivationURL(null).replace("registration", "index"); // TODO: Misuse getActivationURL ...
@@ -601,7 +602,8 @@ public class UserRegistrationResource extends BasicXMLResource {
         String email = (String) xpath.evaluate("/ur:registration-request/ur:email", doc, XPathConstants.STRING);
         String password = (String) xpath.evaluate("/ur:registration-request/ur:password", doc, XPathConstants.STRING);
 
-        UserRegistrationBean urBean = new UserRegistrationBean(uuid, gender, firstname, lastname, email, password, "TODO", "TODO");
+        UserRegistrationBean urBean = new UserRegistrationBean(gender, firstname, lastname, email, password, "TODO", "TODO");
+        urBean.setUUID(uuid);
 
         return urBean;
     }
