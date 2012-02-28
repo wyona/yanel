@@ -14,6 +14,8 @@ import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.NodeType;
 import org.wyona.yarep.util.YarepUtil;
 
+import org.wyona.security.core.api.User;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -261,41 +263,33 @@ public class UserRegistrationResource extends BasicXMLResource {
             if (getRealm().getIdentityManager().getUserManager().existsAlias(userRegBean.getEmail())) {
                 throw new Exception("Alias '" + userRegBean.getEmail() + "' already exists, hence do not create user: " + userRegBean.getFirstname() + " " + userRegBean.getLastname());
             }
-            long customerID = new java.util.Date().getTime();
-            org.wyona.security.core.api.User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, userRegBean.getFirstname() + " " + userRegBean.getLastname(), userRegBean.getEmail(), userRegBean.getPassword());
-            // TODO: user.setProperty("gender", gender);
-            user.setLanguage(getContentLanguage());
 
-            // TODO: Move adding to groups into separated method
-            String groupsCSV = getResourceConfigProperty("groups");
-            if (groupsCSV != null) {
-                String[] groupIDs = null;
-                if (groupsCSV.indexOf(",") >= 0) {
-                    groupIDs = groupsCSV.split(",");
-                } else {
-                    groupIDs = new String[1];
-                    groupIDs[0] = groupsCSV;
-                }
-                for (int i = 0; i < groupIDs.length; i++) {
-                    if (getRealm().getIdentityManager().getGroupManager().existsGroup(groupIDs[i])) {
-                        log.warn("DEBUG: Add user '" + user.getEmail() + "' to group: " + groupIDs[i]);
-                        getRealm().getIdentityManager().getGroupManager().getGroup(groupIDs[i]).addMember(user);
-                    } else {
-                        log.warn("No such group: " + groupIDs[i]);
-                    }
-                }
-            }
+            User user = activateUser(userRegBean);
 
-            user.save(); // INFO: User needs to be saved persistently before adding an alias, because otherwise one can add an alias though, but the 'link' from the user to the alias will not be created!
-            org.wyona.security.core.api.User alias = getRealm().getIdentityManager().getUserManager().createAlias(userRegBean.getEmail(), "" + customerID);
+            addUserToGroups(user);
+
+            User alias = getRealm().getIdentityManager().getUserManager().createAlias(userRegBean.getEmail(), user.getID());
 
             Element ncE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "new-customer-registered"));
-            ncE.setAttributeNS(NAMESPACE, "id", "" + customerID);
+            ncE.setAttributeNS(NAMESPACE, "id", user.getID());
         } catch(Exception e) {
             log.error(e, e);
             Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "registration-failed"));
             fnE.appendChild(doc.createTextNode("" + e.getMessage())); 
         }
+    }
+
+    /**
+     * Activate user
+     * @param userRegBean User registration bean containing gender, firstname, etc.
+     */
+    protected User activateUser(UserRegistrationBean userRegBean) throws Exception {
+        long customerID = new java.util.Date().getTime();
+        User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, userRegBean.getFirstname() + " " + userRegBean.getLastname(), userRegBean.getEmail(), userRegBean.getPassword());
+        // TODO: user.setProperty("gender", gender);
+        user.setLanguage(getContentLanguage());
+        user.save(); // INFO: User needs to be saved persistently before adding an alias, because otherwise one can add an alias though, but the 'link' from the user to the alias will not be created!
+       return user;
     }
 
     /**
@@ -621,6 +615,31 @@ public class UserRegistrationResource extends BasicXMLResource {
             log.error(e, e);
         }
         return true;
+    }
+
+    /**
+     * Add registered user to particular groups by default
+     * @param user User to be added to groups
+     */
+    private void addUserToGroups(User user) throws Exception {
+        String groupsCSV = getResourceConfigProperty("groups");
+        if (groupsCSV != null) {
+                String[] groupIDs = null;
+                if (groupsCSV.indexOf(",") >= 0) {
+                    groupIDs = groupsCSV.split(",");
+                } else {
+                    groupIDs = new String[1];
+                    groupIDs[0] = groupsCSV;
+                }
+                for (int i = 0; i < groupIDs.length; i++) {
+                    if (getRealm().getIdentityManager().getGroupManager().existsGroup(groupIDs[i])) {
+                        log.warn("DEBUG: Add user '" + user.getEmail() + "' to group: " + groupIDs[i]);
+                        getRealm().getIdentityManager().getGroupManager().getGroup(groupIDs[i]).addMember(user);
+                    } else {
+                        log.warn("No such group: " + groupIDs[i]);
+                    }
+                }
+        }
     }
 }
 
