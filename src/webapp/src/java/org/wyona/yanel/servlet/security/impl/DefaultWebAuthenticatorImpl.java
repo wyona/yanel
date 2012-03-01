@@ -101,8 +101,8 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             if(loginUsername != null) {
                 try {
                     String loginPassword = request.getParameter("yanel.login.password");
-                    if (loginPassword != null && authenticate(loginUsername, loginPassword, realm, session)) {
-                        log.debug("Login was successful");
+                    if (loginPassword != null && authenticateUser(loginUsername, loginPassword, realm, session)) {
+                        log.debug("Login of user '" + loginUsername + "' was successful");
                         doAutoLogin(request, response, loginUsername, openID, realm);
                         return null;
                     }
@@ -654,7 +654,21 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
-     * Default authentication
+     * Default authentication. Overwrite this method in order to implement a custom user authentication.
+     *
+     * @param username Login username, which might be an alias
+     * @param password Plain text password
+     * @param realm Realm
+     * @param session HTTP session
+     *
+     * @return true if authentication was successful and else false
+     */
+    protected boolean authenticateUser(String username, String password, Realm realm, HttpSession session) throws Exception {
+        return authenticate(username, password, realm, session);
+    }
+
+    /**
+     * Default authentication. WARN: This method is used by realms/konakart-yanel-realm/res-types/shared/src/java/org/wyona/yanel/resources/konakart/shared/SharedResource.java, whereas it was probably a mistake to make this method public! Do not use it, but rather implement a custom web authenticator.
      *
      * @param username Login username, which might be an alias
      * @param password Plain text password
@@ -672,6 +686,8 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             log.warn("Authentication was successful for user: " + user.getID());
             log.warn("TODO: Add user to session listener!");
             return true;
+        } else {
+            log.warn("Authentication failed for user: " + user.getID());
         }
         return false;
     }
