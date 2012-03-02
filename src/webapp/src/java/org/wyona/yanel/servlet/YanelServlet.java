@@ -2132,7 +2132,7 @@ public class YanelServlet extends HttpServlet {
             // Possibly embed toolbar:
             // TODO: Check if user is authorized to actually see toolbar (Current flaw: Enabled Toolbar, Login, Toolbar is enabled, Logout, Toolbar is still visible!)
             if (yanelUI.isToolbarEnabled(request)) {
-                // TODO: if ("suppress".equals(res.getResConfiguration("yanel.toolbar"))) {
+                // TODO: Check whether resource configuration has toolbar configured as suppressed: if ("suppress".equals(res.getResConfiguration("yanel.toolbar"))) {
                 if (mimeType != null && mimeType.indexOf("html") > 0) {
                     // TODO: What about other query strings or frames or TinyMCE (e.g. link.htm)?
                     if (request.getParameter(YANEL_RESOURCE_USECASE) == null) { // INFO: In the case of a yanel resource usecase do NOT add the toolbar
