@@ -2,7 +2,8 @@ package org.wyona.yanel.core.serialization;
 
 import java.io.IOException;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -14,9 +15,10 @@ import org.xml.sax.SAXException;
  */
 public class XMLSerializer extends AbstractSerializer {
 
-    private static Category log = Category.getInstance(XMLSerializer.class);
+    private static Logger log = Logger.getLogger(XMLSerializer.class);
     protected String pendingElement = null;
     protected boolean doIndent;
+    protected boolean omitDoctype;
     
     
     public XMLSerializer() {
@@ -28,16 +30,21 @@ public class XMLSerializer extends AbstractSerializer {
             if (omitXMLDeclaration != null && !omitXMLDeclaration.equals("yes")) {
                 print("<?xml version=\"1.0\"?>\n");
             }
+
+            this.omitDoctype = this.properties.getProperty("omit-doctype", "false").equals("true"); // INFO: If omitDoctype set to true inside a resource configuration, then do not add doctype to result. This is useful if just a (X)HTML snippets need to be delivered.
             String doctypePublic = this.properties.getProperty("doctype-public");
             String doctypeSystem = this.properties.getProperty("doctype-system");
             String method = this.properties.getProperty("method", "xml");
-            if (doctypePublic != null) {
+            if (!omitDoctype && doctypePublic != null) {
                 print("<!DOCTYPE " + method + " PUBLIC \"" + doctypePublic);
                 if (doctypeSystem != null) {
                     print("\" \"" + doctypeSystem);
                 }
                 print("\">\n");
+            } else {
+                log.warn("No doctype added to result.");
             }
+
             this.doIndent = this.properties.getProperty("indent", "no").equals("yes");
         } catch (RuntimeException e) {
             log.error(e.getMessage(), e);
