@@ -533,6 +533,11 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         if (toolbarStatus != null) {
             transformer.setParameter("yanel.toolbar-status", toolbarStatus);
         }
+        if (isToolbarSuppressed()) {
+            transformer.setParameter("yanel.toolbar-is-suppressed", "true");
+        } else {
+            transformer.setParameter("yanel.toolbar-is-suppressed", "false");
+        }
 
         if ("1".equals(request.getHeader("DNT"))) { // INFO: See http://donottrack.us/
             transformer.setParameter("do.not.track", "true");
@@ -635,13 +640,14 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     /**
      * Get toolbar status from session
+     * @return 'on' if toolbar is enabled, but also 'on' if suppressed (for backwards compatibility reasons) and otherwise 'off' 
      */
     protected String getToolbarStatus() {
         org.wyona.yanel.core.ToolbarState ts = getEnvironment().getToolbarState();
         if (ts != null) {
             switch(ts) {
                 case ON: return "on";
-                case SUPPRESSED: return "on"; // Strictly backwards compatible
+                case SUPPRESSED: return "on"; // Strictly backwards compatible.
                 //case SUPPRESSED: return "suppressed";
                 default: return "off";
             }
@@ -649,16 +655,23 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             log.warn("No toolbar state, hence return 'off'!");
             return "off";
         }
+    }
 
-/*
-        // TODO: Use YanelServlet.TOOLBAR_KEY instead "toolbar"!
-        javax.servlet.http.HttpSession session = getEnvironment().getRequest().getSession(true);
-        if (session != null) {
-            return (String) session.getAttribute("toolbar");
+    /**
+     * Check whether toolbar is suppressed
+     * @return true if toolbar is suppressed and false otherwise
+     */
+    private boolean isToolbarSuppressed() {
+        org.wyona.yanel.core.ToolbarState ts = getEnvironment().getToolbarState();
+        if (ts != null) {
+            switch(ts) {
+                case SUPPRESSED: return true;
+                default: return false;
+            }
+        } else {
+            log.warn("No toolbar state, hence return 'false'!");
+            return false;
         }
-        log.warn("No session exists or could be created!");
-        return null;
-*/
     }
 
     /**

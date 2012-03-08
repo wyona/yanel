@@ -1009,7 +1009,7 @@ public class YanelServlet extends HttpServlet {
             }
             //log.debug("State of view: " + stateOfView);
             Environment environment = new Environment(request, response, identity, stateOfView, null);
-            if (yanelUI.isToolbarEnabled(request)) {
+            if (yanelUI.isToolbarEnabled(request)) { // INFO: Please note that isToolbarEnabled() also checks whether toolbar is suppressed...
                 environment.setToolbarState(ToolbarState.ON);
             } else if (yanelUI.isToolbarSuppressed(request)) {
                 environment.setToolbarState(ToolbarState.SUPPRESSED);

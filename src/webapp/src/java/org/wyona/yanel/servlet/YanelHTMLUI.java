@@ -252,7 +252,7 @@ class YanelHTMLUI {
         if (toolbarStatus != null && toolbarStatus.equals("on")) {
             String yanelToolbar = request.getParameter(TOOLBAR_PARAM_NAME);
             if (yanelToolbar != null && request.getParameter(TOOLBAR_PARAM_NAME).equals("suppress")) {
-                log.info("Toolbar is actually enabled but suppressed.");
+                log.info("Toolbar is actually enabled, but suppressed.");
                 return false;
             }
             return true;
