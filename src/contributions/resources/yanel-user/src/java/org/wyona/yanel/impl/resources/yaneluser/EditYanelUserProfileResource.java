@@ -189,7 +189,7 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
      *
      * @param email New email address of user (and possibly also alias)
      */
-    private void updateProfile(String email) {
+    protected void updateProfile(String email) {
         if (email == null || ("").equals(email)) {
             setTransformerParameter("error", "emailNotSet");
         } else if (!validateEmail(email)) {
