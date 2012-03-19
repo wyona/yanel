@@ -6,12 +6,15 @@ import java.util.Iterator;
 import org.wyona.security.core.api.Identity;
 
 /**
- * Identity map to get a nice toString() output
+ * Identity map associating the identities of a user with the realms the user might be signed in (A user can be signed in to multiple realms with different indentities)
  */
 public class IdentityMap extends HashMap {
 
+    /**
+     * @see java.lang.Object#toString()
+     */
     public String toString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         Iterator iter = this.keySet().iterator();
         while (iter.hasNext()) {
             Object key = iter.next();
