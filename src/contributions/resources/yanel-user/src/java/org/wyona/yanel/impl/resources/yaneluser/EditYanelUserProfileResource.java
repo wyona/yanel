@@ -46,12 +46,13 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         }
 
         String email = getEnvironment().getRequest().getParameter("email");
+        boolean emailUpdated = false;
         if (email != null) {
-            updateProfile(email);
+            emailUpdated = updateProfile(email);
         }
 
         try {
-            return getXMLAsStream();
+            return getXMLAsStream(emailUpdated);
         } catch(Exception e) {
             log.error(e, e);
             return null;
@@ -60,8 +61,9 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
 
     /**
      * Get user profile as XML as stream
+     * @param emailUpdated Flag whether email got updated successfully
      */
-    private java.io.InputStream getXMLAsStream() throws Exception {
+    private java.io.InputStream getXMLAsStream(boolean emailUpdated) throws Exception {
         String userId = getUserId();
         if (userId != null) {
             User user = realm.getIdentityManager().getUserManager().getUser(userId);
@@ -71,6 +73,9 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
             rootEl.setAttribute("id", userId);
             rootEl.setAttribute("email", user.getEmail());
             rootEl.setAttribute("lamguage", user.getLanguage());
+            if (emailUpdated) {
+                rootEl.setAttribute("email-saved-successfully", "true");
+            }
 
             Element nameEl = doc.createElement("name");
             nameEl.setTextContent(user.getName());
@@ -186,14 +191,16 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
 
     /**
      * Update the email address (and possibly also the alias) inside user profile
-     *
      * @param email New email address of user (and possibly also alias)
+     * @return true if update was successful and false otherwise
      */
-    protected void updateProfile(String email) {
+    protected boolean updateProfile(String email) {
         if (email == null || ("").equals(email)) {
             setTransformerParameter("error", "emailNotSet");
+            return false;
         } else if (!validateEmail(email)) {
             setTransformerParameter("error", "emailNotValid");
+            return false;
         } else {
             try {
                 String userId = getUserId();
@@ -215,9 +222,11 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                 }
 
                 setTransformerParameter("success", "E-Mail (and alias) updated successfully");
+                return true;
             } catch (Exception e) {
                 log.error(e, e);
                 setTransformerParameter("error", e.getMessage());
+                return false;
             }
         }
     }
