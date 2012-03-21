@@ -139,7 +139,7 @@
     <yanel:install-jar id="core"/>
   </target>
 
-  <target name="compile-core" depends="compile-core-classes, install-core-jar">
+  <target name="compile-core" description="Compile Java classes of Yanel core and copy jar to local Maven repository" depends="compile-core-classes, install-core-jar">
   </target>
 
   <target name="compile-neutron-classes" description="Compile Java classes of Neutron implementation" depends="init, set-classpath">
