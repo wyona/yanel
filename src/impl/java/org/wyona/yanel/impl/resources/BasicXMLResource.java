@@ -522,10 +522,10 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         // language of this translation
         transformer.setParameter("content-language", getContentLanguage());
 
-        // username
-        String username = getUsername();
-        if (username != null) transformer.setParameter("username", username);
+        // INFO: user ID, firstname, etc.
+        addUserInfo(transformer);
 
+        // INFO: Reserved yanel prefix
         transformer.setParameter("yanel.reservedPrefix", this.getYanel().getReservedPrefix());
 
         // Add toolbar status
@@ -630,7 +630,33 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     }
 
     /**
-     * Get username from session
+     * Add user ID, firstname, etc. as parameters to transformer
+     * @param transformer Transformer to which user information as parameters will be added
+     */
+    private void addUserInfo(Transformer transformer) {
+        Identity identity = getEnvironment().getIdentity();
+        if (identity != null) {
+            String userID = identity.getUsername();
+            if (userID != null) transformer.setParameter("username", userID);
+
+            String firstname = identity.getFirstname();
+            if (firstname != null) {
+                transformer.setParameter("firstname", firstname);
+            } else {
+                log.warn("No firstname (user ID: " + userID + ")!");
+            }
+
+            String lastname = identity.getLastname();
+            if (lastname != null) {
+                transformer.setParameter("lastname", lastname);
+            } else {
+                log.warn("No lastname (user ID: " + userID + ")!");
+            }
+        }
+    }
+
+    /**
+     * Get user ID from session
      */
     protected String getUsername() {
         Identity identity = getEnvironment().getIdentity();
@@ -688,9 +714,10 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * Get user language (order: profile, browser, ...)
      */
     private String getUserLanguage() throws Exception {
-        Identity identity = getEnvironment().getIdentity();
         String language = getRequestedLanguage();
-        String userID = identity.getUsername();
+
+        Identity identity = getEnvironment().getIdentity();
+        String userID = identity.getUsername(); // WARN: Do not use the protected method getUsername(), because it might be overwritten and hence backwards compatibility might fail!
         if (userID != null) {
             if (getRealm().getIdentityManager().getUserManager().existsUser(userID)) { // INFO: It might be possible that a user ID is still referenced by a session, but has been deleted "persistently" in the meantime
                 String userLanguage = getRealm().getIdentityManager().getUserManager().getUser(userID).getLanguage();
