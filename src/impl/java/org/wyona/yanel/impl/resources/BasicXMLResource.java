@@ -637,20 +637,22 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         Identity identity = getEnvironment().getIdentity();
         if (identity != null) {
             String userID = identity.getUsername();
-            if (userID != null) transformer.setParameter("username", userID);
+            if (userID != null) {
+                transformer.setParameter("username", userID);
 
-            String firstname = identity.getFirstname();
-            if (firstname != null) {
-                transformer.setParameter("firstname", firstname);
-            } else {
-                log.warn("No firstname (user ID: " + userID + ")!");
-            }
+                String firstname = identity.getFirstname();
+                if (firstname != null) {
+                    transformer.setParameter("firstname", firstname);
+                } else {
+                    log.warn("No firstname (user ID: " + userID + ")!");
+                }
 
-            String lastname = identity.getLastname();
-            if (lastname != null) {
-                transformer.setParameter("lastname", lastname);
-            } else {
-                log.warn("No lastname (user ID: " + userID + ")!");
+                String lastname = identity.getLastname();
+                if (lastname != null) {
+                    transformer.setParameter("lastname", lastname);
+                } else {
+                    log.warn("No lastname (user ID: " + userID + ")!");
+                }
             }
         }
     }
