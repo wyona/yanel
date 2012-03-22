@@ -1783,7 +1783,8 @@ public class YanelServlet extends HttpServlet {
                 identityMap = new IdentityMap();
                 session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
             }
-            identityMap.put(realm.getID(), identity); // INFO: Please note that the constructor Identity(User, String) is resolving group IDs (including parent group IDs) and hence these are "attached" to the session in order to improve performance during authorizatio n checks
+            //log.debug("Firstname: " + identity.getFirstname());
+            identityMap.put(realm.getID(), identity); // INFO: Please note that the constructor Identity(User, String) is resolving group IDs (including parent group IDs) and hence these are "attached" to the session in order to improve performance during authorization checks
         } else {
             log.warn("Session is null!");
         }
