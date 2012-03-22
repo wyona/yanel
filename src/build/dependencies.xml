@@ -62,7 +62,7 @@
 -->
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="1.0.0-ra39c3787dc6300c4e1917b037c48a46729aee4cc"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="1.1.0-r82caa162322a14e1803ee9abb6ab006d3d28de6c"/>
 
       <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
@@ -85,8 +85,8 @@
 <!-- IMPORTANT: Please also see src/build/targets/webapp/webapp.xml re ambiguous libs -->
       <dependency groupId="xalan" artifactId="xalan" version="2.7.0"/>
 
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="1.0.0-ra39c3787dc6300c4e1917b037c48a46729aee4cc"/>
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="1.0.0-ra39c3787dc6300c4e1917b037c48a46729aee4cc"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="1.1.0-r82caa162322a14e1803ee9abb6ab006d3d28de6c"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="1.1.0-r82caa162322a14e1803ee9abb6ab006d3d28de6c"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="yarep" artifactId="yarep-impl" version="1.0-dev-rad19798901b2280b7236e915ae96746ab630fcc1"/>
       <dependency groupId="spring" artifactId="spring"
