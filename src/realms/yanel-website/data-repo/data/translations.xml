@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 
+<!-- IMPORTANT: Please make sure to restart Yanel after updating this file! (also see http://wyona.com/pipermail/yanel-development/2007-April/000662.html) -->
+
 <pages>
   <page>
     <translation path="/en/about.html" uuid="" language="en"/>
