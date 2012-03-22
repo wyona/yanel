@@ -31,9 +31,11 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
+
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
+
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.TranslatableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
@@ -47,6 +49,9 @@ import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 import org.wyona.yarep.core.Repository;
+
+import org.wyona.security.core.api.Identity;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -56,7 +61,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 public class TranslationResource extends Resource implements ViewableV2 {
 
-    private static Category log = Category.getInstance(TranslationResource.class);
+    private static Logger log = Logger.getLogger(TranslationResource.class);
 
     public static final String NS_URI = "http://www.wyona.org/yanel/1.0";
     /**
@@ -122,6 +127,14 @@ public class TranslationResource extends Resource implements ViewableV2 {
                     xsltHandlers[i].getTransformer().setParameter("yanel.back2context", PathUtil.backToContext(realm, currentPath));
                     xsltHandlers[i].getTransformer().setParameter("yarep.back2realm", PathUtil.backToRealm(currentPath));
 
+                    Identity identity = getEnvironment().getIdentity();
+                    if (identity != null) {
+                        String userID = identity.getUsername();
+                        if (userID != null) {
+                            xsltHandlers[i].getTransformer().setParameter("username", userID);
+                        }
+                    }
+
                     String userAgent = getRequest().getHeader("User-Agent");
                     if (userAgent != null) {
                         String os = getOS(userAgent);
@@ -175,9 +188,12 @@ public class TranslationResource extends Resource implements ViewableV2 {
 
         return defaultView;
     }
-    
+
+    /**
+     *
+     */
     public InputStream getTranslationXML(Resource resource, String currentLanguage) throws Exception {
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<translations xmlns=\"" + NS_URI + "\">");
         
         String[] realmLanguages = resource.getRealm().getLanguages();
