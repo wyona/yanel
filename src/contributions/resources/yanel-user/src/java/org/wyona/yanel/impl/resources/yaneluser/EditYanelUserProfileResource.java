@@ -49,6 +49,7 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         boolean emailUpdated = false;
         if (email != null) {
             emailUpdated = updateProfile(email);
+            log.info("Email '" + email + "' has been updated: " + emailUpdated);
         }
 
         try {
@@ -197,9 +198,11 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
     protected boolean updateProfile(String email) {
         if (email == null || ("").equals(email)) {
             setTransformerParameter("error", "emailNotSet");
+            log.warn("No email (or empty email) specified, hence do not update email address!");
             return false;
         } else if (!validateEmail(email)) {
             setTransformerParameter("error", "emailNotValid");
+            log.warn("Email '" + email + "' is not valid!");
             return false;
         } else {
             try {
