@@ -3,7 +3,7 @@
 #  the server is not stopped at the end, but at the start, to make it available between each script invocation for testing purposes.
 
 # should allow Yanel to keep running past the end of Hudson jobs,
-# disabled because of http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6893 unfortunately:
+# disabled because of https://github.com/wyona/yanel/issues/17 ("wiki resource test seems to leak which prevents app servers to stop and so blows up (Hudson) CI server") unfortunately:
 #BUILD_ID=dontKillMe
 
 if [ $# -lt 4 ]; then
