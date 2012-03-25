@@ -61,6 +61,9 @@ public class Yanel {
 
     private String smtpUsername, smtpPassword;
 
+    // TODO: It would be good to have an administrative contact per Yanel instance
+    //private String adminName, adminEmail;
+
     private static Logger log = Logger.getLogger(Yanel.class);
 
     /**
@@ -112,6 +115,17 @@ public class Yanel {
            targetEnv = null;
        }
 
+/* TODO: It would be good to have an administrative contact per Yanel instance
+       if (config.getChild("administrator", false) != null) {
+           adminName = config.getChild("administrator").getValue();
+           adminEmail = config.getChild("administrator").getAttribute("email");
+       } else {
+           log.warn("Administrator not configured inside global yanel configuration: " + configFile);
+           adminName = null;
+           adminEmail = null;
+       }
+*/
+
        isInitialized = true;
     }
 
@@ -121,12 +135,14 @@ public class Yanel {
     public void destroy() {
        Realm[] realms = realmConfig.getRealms();
        for (int i = 0; i < realms.length; i++) {
+           log.warn("Try to destroy realm: " + realms[i].getName() + " (" + (i + 1) + " of " + realms.length + ")");
            try {
                realms[i].destroy();
            } catch(Exception e) {
                log.error(e, e);
            }
        }
+       log.warn("All realms destroyed.");
     }
 
     /**
