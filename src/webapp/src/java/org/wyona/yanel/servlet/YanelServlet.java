@@ -2237,15 +2237,20 @@ public class YanelServlet extends HttpServlet {
             }
     }
 
+    /**
+     * @see javax.servlet.GenericServlet#destroy()
+     */
     @Override
     public void destroy() {
         super.destroy();
 
         yanelInstance.destroy();
 
+        log.warn("Yanel instance destroyed.");
+
         if (scheduler != null) {
             try {
-                log.warn("Shutdown scheduler ...");
+                log.info("Shutdown scheduler ...");
                 scheduler.shutdown();
                 //scheduler.shutdown(true); // INFO: true means to wait until all jobs have completed
             } catch(Exception e) {
@@ -2253,7 +2258,29 @@ public class YanelServlet extends HttpServlet {
             }
         }
 
-        log.warn("Yanel webapp has been shut down.");
+        File shutdownLogFile = new File(System.getProperty("java.io.tmpdir"), "shutdown.log");
+        log.warn("Trying to shutdown log4j loggers... (if shutdown successful, then loggers won't be available anymore. Hence see shutdown log file '" + shutdownLogFile.getAbsolutePath() + "' for final messages)");
+        org.apache.log4j.LogManager.shutdown();
+
+/* INFO: After closing the loggers/appenders, these won't be available anymore, hence the following log statements don't make any sense.
+        log.info("Shutdown of access logger completed.");
+        log.info("Yanel webapp has been shut down: " + new Date());
+*/
+
+        try {
+            if (!shutdownLogFile.exists()) {
+                shutdownLogFile.createNewFile();
+            }
+            java.io.FileWriter fw= new java.io.FileWriter(shutdownLogFile);
+            java.io.BufferedWriter bw = new java.io.BufferedWriter(fw);
+            bw.write("Yanel webapp has been shut down: " + new Date());
+            bw.close();
+            fw.close();
+        } catch(java.io.FileNotFoundException e) {
+            System.err.println(e.getMessage());
+        } catch(java.io.IOException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     /**
