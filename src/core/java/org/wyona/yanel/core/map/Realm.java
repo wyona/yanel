@@ -119,8 +119,14 @@ public interface Realm {
      */
     public void setWebAuthenticator(WebAuthenticator wa);
 
+    /**
+     *
+     */
     public IdentityManager getIdentityManager();
 
+    /**
+     *
+     */
     public void setIdentityManager(IdentityManager identityManager);
 
     /**
