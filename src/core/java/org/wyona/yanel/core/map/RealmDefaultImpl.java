@@ -393,6 +393,9 @@ public class RealmDefaultImpl implements Realm {
         return privateIdentityManager;
     }
 
+    /**
+     * @see org.wyona.yanel.core.map.Realm#setIdentityManager(IdentityManager)
+     */
     public void setIdentityManager(IdentityManager identityManager) {
         this.privateIdentityManager = identityManager;
     }
@@ -593,6 +596,7 @@ public class RealmDefaultImpl implements Realm {
             	imFactory = (IdentityManagerFactory) Class.forName(customIdentityManagerFactoryImplClassName).newInstance();
 
                 // INFO: ConfigurationUtil generates a DOM Document with the root node called "identity-manager-config" which wraps/contains the custom indentities configuration
+                log.warn("TODO: Pass target environment in identity manager: " + yanel.getTargetEnvironment());
                 identityManager = imFactory.newIdentityManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "identity-manager-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
 
                 log.debug("Custom identity manager " + identityManager.getClass().getName() + " has been set for realm: " + getName());
