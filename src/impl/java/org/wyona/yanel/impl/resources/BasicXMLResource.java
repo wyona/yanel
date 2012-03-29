@@ -169,6 +169,8 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 }
                 return this.viewDescriptors.values().toArray(new ViewDescriptor[this.viewDescriptors.size()]);
             }
+
+            log.warn("No custom view descriptors set within resource configuration (Resource path: " + getPath() + "), hence use default ones: " + DEFAULT_VIEW_ID + ", " + SOURCE_VIEW_ID);
             // no custom config
             ConfigurableViewDescriptor[] vd = new ConfigurableViewDescriptor[2];
             vd[0] = new ConfigurableViewDescriptor(DEFAULT_VIEW_ID);
@@ -260,7 +262,6 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             log.info("View already set (probably via query string or session attribute): " + viewId);
         }
 
-        ConfigurableViewDescriptor viewDescriptor = (ConfigurableViewDescriptor)getViewDescriptor(viewId);
         String mimeType = getMimeType(viewId);
         view.setMimeType(mimeType);
 
@@ -273,6 +274,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             }
 
             // write result into view:
+            ConfigurableViewDescriptor viewDescriptor = (ConfigurableViewDescriptor)getViewDescriptor(viewId);
             view.setInputStream(getTransformedInputStream(xmlInputStream, viewDescriptor, errorWriter));
             return view;
         } catch(Exception e) {
@@ -311,7 +313,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             tf.setURIResolver(uriResolver);
             tf.setErrorListener(errorListener);
 
-            String[] xsltPaths = viewDescriptor.getXSLTPaths();
+            String[] xsltPaths = null;
             if (viewDescriptor != null) {
                 xsltPaths = viewDescriptor.getXSLTPaths();
             } else {
@@ -386,8 +388,8 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     }
 
     /**
-     * Creates an html or xml serializer for the given view id.
-     * @param viewId
+     * Creates an html or xml serializer for the given view descriptor
+     * @param viewdDescriptor
      * @return serializer
      * @throws Exception
      */
