@@ -716,9 +716,12 @@ public class YanelServlet extends HttpServlet {
         if (meta != null) {
             if (meta.length() > 0) {
                 if (meta.equals("annotations")) {
-                    log.warn("TODO: Remove everything from the page meta document except the annotations");
+                    log.debug("Remove everything from the page meta document except the annotations");
+                    cleanMetaDoc(doc);
+                    appendAnnotations(doc, res);
+                    appendTrackingInformation(doc, trackInfo);
                 } else {
-                    log.warn("Stripping everything from page meta document but '" + meta + "' not supported!");
+                    log.warn("TODO: Stripping everything from page meta document but, '" + meta + "' not supported!");
                 }
             } else {
                 log.debug("Show all meta");
@@ -3018,5 +3021,16 @@ public class YanelServlet extends HttpServlet {
      */
     private boolean isTrackable(Resource resource) {
         return ResourceAttributeHelper.hasAttributeImplemented(resource, "Trackable", "1");
+    }
+
+    /**
+     * Clean meta document
+     */
+    private void cleanMetaDoc(Document doc) {
+        Element rootElem = doc.getDocumentElement();
+        org.w3c.dom.NodeList children = rootElem.getChildNodes();
+        for (int i = children.getLength() - 1; i >= 0; i--) {
+            rootElem.removeChild(children.item(i));
+        }
     }
 }
