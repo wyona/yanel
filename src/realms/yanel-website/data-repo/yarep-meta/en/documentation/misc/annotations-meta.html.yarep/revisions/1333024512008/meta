@@ -1,0 +1,11 @@
+yarep_vfs-meta-file-version<string>:1.0
+workflow-state<string>:draft
+yarep_lastModified<long>:1333024511000
+yarep_type<string>:resource
+yarep_revisionCreator<string>:lenya
+yarep_checkoutUserID<string>:lenya
+workflow-date<date>:2012-03-29T14\:35\:12\:159+0200
+yarep_isCheckedOut<boolean>:false
+yarep_checkoutDate<date>:2012-03-29T14\:32\:59\:936+0200
+yarep_revisionCreationDate<date>:2012-03-29T14\:35\:12\:008+0200
+yarep_revisionComment<string>:Updated with tinyMCE

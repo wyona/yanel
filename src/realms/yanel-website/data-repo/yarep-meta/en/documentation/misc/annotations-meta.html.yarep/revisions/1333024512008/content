@@ -1,0 +1,9 @@
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Annotations, Meta and Tracking Information</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>
+<h1>Annotations, Meta and Tracking Information</h1>
+<p>The annotations, meta and tracking information of each page can be viewed by adding one of the following query strings</p>
+<ul>
+<li><a href="?yanel.resource.meta">?yanel.resource.meta</a></li>
+<li><a href="?yanel.resource.meta&amp;yanel.resource.meta.format=xml">?yanel.resource.meta&amp;yanel.resource.meta.format=xml</a></li>
+<li><a href="?yanel.resource.meta=annotations&amp;yanel.resource.meta.format=xml">?yanel.resource.meta=annotations&amp;yanel.resource.meta.format=xml</a></li>
+</ul>
+</body></html>
