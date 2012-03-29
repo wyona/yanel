@@ -765,13 +765,6 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
         viewId = getEnvironment().getRequest().getParameter(VIEW_ID_PARAM_NAME);
 
-/*
-        if (request.getParameter("yanel.format") != null) { // backwards compatible
-            viewId = request.getParameter("yanel.format");
-            log.warn("For backwards compatibility reasons also consider parameter 'yanel.format', but which is deprecated. Please use '" + VIEW_ID_PARAM_NAME + "' instead.");
-        }
-*/
-
         return viewId;
     }
 }
