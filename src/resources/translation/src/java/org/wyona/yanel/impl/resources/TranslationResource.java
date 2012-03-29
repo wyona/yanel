@@ -60,7 +60,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
- *
+ * Generate language dependent URLs/Paths 
  */
 public class TranslationResource extends Resource implements ViewableV2 {
 
@@ -208,6 +208,7 @@ public class TranslationResource extends Resource implements ViewableV2 {
         
         if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Translatable", "1")) {
             TranslatableV1 translatable = ((TranslatableV1) resource);
+            //log.debug("Resource is translatable: " + resource.getPath());
             
             List existingLanguages = Arrays.asList(translatable.getLanguages());
             
@@ -230,6 +231,7 @@ public class TranslationResource extends Resource implements ViewableV2 {
             // this makes sense e.g. with the PrefixTranslationManager because in that
             // case assumptions can be made about how the paths look like.
             TranslationManager translationMgr = getRealm().getTranslationManager();
+            //log.debug("Translation manager used: " + translationMgr);
             List existingLanguages = Arrays.asList(translationMgr.getLanguages(resource));
             
             for (int i = 0; i < realmLanguages.length; i++) {
@@ -348,10 +350,10 @@ public class TranslationResource extends Resource implements ViewableV2 {
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#exists()
      */
     public boolean exists() throws Exception {
-        log.warn("Not implemented yet!");
+        log.warn("TODO: Finish implementation (depending on translation manager implementation or implemented translatable interface)!");
         return true; 
     }
 
