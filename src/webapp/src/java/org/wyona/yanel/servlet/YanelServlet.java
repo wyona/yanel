@@ -1597,16 +1597,11 @@ public class YanelServlet extends HttpServlet {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(path);
         
         try {
-            String yanelFormat = request.getParameter("yanel.format");
+            String yanelFormat = request.getParameter("yanel.resource.meta.format");
             if(yanelFormat != null) {
                 if (yanelFormat.equals("xml")) {
                     response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     XMLHelper.writeDocument(doc, response.getOutputStream());
-/*
-                    OutputStream out = response.getOutputStream();
-                    javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
-                    out.close();
-*/
                 } else if (yanelFormat.equals("json")) {
                     log.error("TODO: JSON format not implemented yet!");
                 } else {
