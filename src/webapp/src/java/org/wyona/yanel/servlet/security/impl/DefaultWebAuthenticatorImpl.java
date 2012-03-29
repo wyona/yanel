@@ -439,7 +439,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 presetLoginElement.setAttributeNS(YanelServlet.NAMESPACE, "username", loginUsername);
             }
             
-            String yanelFormat = request.getParameter("yanel.format");
+            String yanelFormat = request.getParameter("yanel.login.format");
             if(yanelFormat != null && yanelFormat.equals("xml")) {
                 response.setContentType("application/xml; charset=" + YanelServlet.DEFAULT_ENCODING);
                 //OutputStream out = response.getOutputStream();
