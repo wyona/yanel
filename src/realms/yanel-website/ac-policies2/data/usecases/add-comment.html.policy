@@ -4,6 +4,9 @@
 
   <role id="view">
     <world permission="true"/>
+<!-- INFO: On the productive environment we currently have comments disabled because of spam
+    <world permission="false"/>
+-->
   </role>
 
   <role id="yanel.resource.meta">
