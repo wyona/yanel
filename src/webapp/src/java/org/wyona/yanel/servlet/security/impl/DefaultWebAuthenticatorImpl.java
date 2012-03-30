@@ -687,7 +687,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             log.warn("TODO: Add user to session listener!");
             return true;
         } else {
-            log.warn("Authentication failed for user: " + user.getID());
+            log.warn("Authentication failed for user: " + username + " (Realm: " + realm.getName() + ")");
         }
         return false;
     }
