@@ -46,7 +46,7 @@ public class UserRegistrationResource extends BasicXMLResource {
     
     private static Logger log = Logger.getLogger(UserRegistrationResource.class);
 
-    static String NAMESPACE = "http://www.wyona.org/yanel/user-registration/1.0";
+    private static String NAMESPACE = "http://www.wyona.org/yanel/user-registration/1.0";
 
     private static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
@@ -62,11 +62,6 @@ public class UserRegistrationResource extends BasicXMLResource {
         if (log.isDebugEnabled()) {
             log.debug("requested viewId: " + viewId);
         }
-
-/*
-        SharedResource shared = new SharedResource();
-        KKEngIf kkEngine = shared.getKonakartEngineImpl();
-*/
 
         // INFO: Build response document
         Document doc = null;
@@ -285,6 +280,7 @@ public class UserRegistrationResource extends BasicXMLResource {
      */
     protected User activateUser(UserRegistrationBean userRegBean) throws Exception {
         long customerID = new java.util.Date().getTime();
+        // TODO: Use encrypted password
         User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, userRegBean.getFirstname() + " " + userRegBean.getLastname(), userRegBean.getEmail(), userRegBean.getPassword());
         // TODO: user.setProperty("gender", gender);
         user.setLanguage(getContentLanguage());
@@ -317,7 +313,7 @@ public class UserRegistrationResource extends BasicXMLResource {
      * Generate registration request as XML
      * @param urb User registration bean containing E-Mail address of user, etc.
      */
-    private Document getRegistrationRequestAsXML(UserRegistrationBean urb) {
+    private Document getRegistrationRequestAsXML(UserRegistrationBean urb) { // TODO: What about custom fields?!
         Document doc = XMLHelper.createDocument(NAMESPACE, "registration-request");
         Element rootElem = doc.getDocumentElement();
         rootElem.setAttribute("uuid", urb.getUUID());
@@ -327,7 +323,13 @@ public class UserRegistrationResource extends BasicXMLResource {
 
         // IMPORTANT TODO: Password needs to be encrypted!
         Element passwordElem = doc.createElementNS(NAMESPACE, "password");
+        passwordElem.setAttribute("algorithm", "plaintext");
         passwordElem.setTextContent(urb.getPassword());
+/*
+        passwordElem.setAttribute("algorithm", "SHA-256");
+        passwordElem.setTextContent(encrypt(urb.getPassword()));
+        // TODO: What about salt?!
+*/
         rootElem.appendChild(passwordElem);
 
         Element genderElem = doc.createElementNS(NAMESPACE, "gender");
@@ -384,7 +386,7 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
-     *
+     * @email E-Mail of user which will be used as username/alias
      */
     private void processRegistrationRequest(Document doc, String email) throws Exception {
         Element rootElement = doc.getDocumentElement();
@@ -399,12 +401,6 @@ public class UserRegistrationResource extends BasicXMLResource {
                     Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-in-use"));
                     inputsValid = false;
                 }
-/*
-                if(kkEngine.doesCustomerExistForEmail(email)) {
-                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-in-use"));
-                    inputsValid = false;
-                } 
-*/
                 Element emailE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email"));
                 emailE.appendChild(doc.createTextNode("" + email)); 
             }
@@ -416,6 +412,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             }
             String confirmedPassword = getEnvironment().getRequest().getParameter("password2");
             if (password != null && confirmedPassword != null && !password.equals(confirmedPassword)) {
+                log.warn("Passwords do not match!");
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "passwords-do-not-match"));
                 inputsValid = false;
             }
@@ -517,6 +514,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     userRegBean.setUUID(uuid);
                     try {
                         saveRegistrationRequest(userRegBean);
+                        // TODO: Already create user, because of password encryption, but disable via expire?!
                         sendConfirmationLinkEmail(doc, userRegBean);
                     } catch(Exception e) {
                         log.error(e, e);
