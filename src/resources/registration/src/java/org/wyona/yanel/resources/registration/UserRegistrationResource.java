@@ -46,7 +46,7 @@ public class UserRegistrationResource extends BasicXMLResource {
     
     private static Logger log = Logger.getLogger(UserRegistrationResource.class);
 
-    private static String NAMESPACE = "http://www.wyona.org/yanel/user-registration/1.0";
+    static String NAMESPACE = "http://www.wyona.org/yanel/user-registration/1.0";
 
     private static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
@@ -63,33 +63,8 @@ public class UserRegistrationResource extends BasicXMLResource {
             log.debug("requested viewId: " + viewId);
         }
 
-        // INFO: Build response document
-        Document doc = null;
-        try {
-            doc = org.wyona.commons.xml.XMLHelper.createDocument(NAMESPACE, "registration");
-        } catch (Exception e) {
-            throw new Exception(e.getMessage(), e);
-        }
-
-        // Root element
-        Element rootElement = doc.getDocumentElement();
-
-        String email = getEnvironment().getRequest().getParameter("email");
-        String uuid = getEnvironment().getRequest().getParameter("uuid");
-        if (email != null) {
-            processRegistrationRequest(doc, email);
-        } else if (uuid != null) {
-            if(activateRegistration(uuid, doc)) {
-                Element activateSuccessfulE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-successful"));
-            } else {
-                Element activationFailedE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-failed"));
-            }
-        } else {
-            Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "no-input-yet"));
-        }
- 
         java.io.ByteArrayOutputStream baout = new java.io.ByteArrayOutputStream();
-        org.wyona.commons.xml.XMLHelper.writeDocument(doc, baout);
+        org.wyona.commons.xml.XMLHelper.writeDocument(generateResponseDocument(), baout);
         return new java.io.ByteArrayInputStream(baout.toByteArray());
     }
 
@@ -638,6 +613,41 @@ public class UserRegistrationResource extends BasicXMLResource {
                     }
                 }
         }
+    }
+
+    /**
+     * Generate document which is used for response
+     */
+    protected Document generateResponseDocument() throws Exception {
+        Document doc = getEmptyDocument();
+        Element rootElement = doc.getDocumentElement();
+        String email = getEnvironment().getRequest().getParameter("email");
+        String uuid = getEnvironment().getRequest().getParameter("uuid");
+        if (email != null) {
+            processRegistrationRequest(doc, email);
+        } else if (uuid != null) {
+            if(activateRegistration(uuid, doc)) {
+                rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-successful"));
+            } else {
+                rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-failed"));
+            }
+        } else {
+            rootElement.appendChild(doc.createElementNS(NAMESPACE, "no-input-yet"));
+        }
+        return doc;
+    }
+
+    /**
+     * Get empty document to start with
+     */
+    private Document getEmptyDocument() throws Exception {
+        Document doc = null;
+        try {
+            doc = org.wyona.commons.xml.XMLHelper.createDocument(NAMESPACE, "registration");
+        } catch (Exception e) {
+            throw new Exception(e.getMessage(), e);
+        }
+        return doc;
     }
 }
 
