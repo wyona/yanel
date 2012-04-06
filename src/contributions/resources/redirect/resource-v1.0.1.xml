@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="redirect"
+  namespace="http://www.wyona.org/yanel/resource/1.0.1"
+  class="org.wyona.yanel.impl.resources.redirect.RedirectResourceV101"
+  >
+<description>
+Redirect resource, whereas redirects can also be configured user and device specific within custom config
+</description>
+
+<rtd>
+  <!-- INFO: Default redirect -->
+  <property name="href"/>
+
+<!-- INFO: The device attribute is optional and was introduced with version 1.0.1, whereas the value 'web.xml:mobile-devices' refers to the mobile device list inside WEB-INF/web.xml -->
+<!--
+  <yanel:custom-config xmlns:rd="http://www.wyona.org/yanel/resource/redirect-resource/1.0">
+    <rd:user name="bob" href="bob/index.html"/>
+    <rd:user name="alice" href="alice/index.html"/>
+    <rd:language code="de" device="web.xml:mobile-devices" href="mobile/de/index.html"/>
+    <rd:language code="de" href="de/index.html"/>
+  </yanel:custom-config>
+-->
+
+<!-- TODO: Also see syntax of Cocoon matchers and selectors: http://cocoon.apache.org/2.0/userdocs/concepts/matchers_selectors.html -->
+<!--
+  <yanel:custom-config xmlns:rd="http://www.wyona.org/yanel/resource/redirect-resource/2.0.0">
+    <rd:match type="user" pattern="bob"/>
+      <rd:match type="language" pattern="de"/>
+        <rd:match type="device" pattern="ipad"/>
+          <rd:redirect href="ipad/de/bob/index.html"/>
+        </rd:match>
+      </rd:match>
+    </rd:match>
+  </yanel:custom-config>
+-->
+</rtd>
+</resource>
