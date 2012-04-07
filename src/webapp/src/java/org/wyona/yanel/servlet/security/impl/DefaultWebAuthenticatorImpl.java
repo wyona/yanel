@@ -182,7 +182,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
-     * @see org.wyona.yanel.core.api.security.WebAuthenticator#doAuthenticate(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.wyona.yanel.core.map.Map, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     * Do Neutron authentication
      */
     private static HttpServletResponse handleNeutronAuthAuthenticationRequest(HttpServletRequest request, HttpServletResponse response, Map map, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort) throws Exception {
         Realm realm = map.getRealm(request.getServletPath());
@@ -371,8 +371,11 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
     /**
      * Custom XHTML Form for authentication
+     * @param xsltLoginScreenDefault Path of default XSLT
      */
     public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException {
+
+        // TODO: Enhance with global resource, which will make it more flexible
 
         if(log.isDebugEnabled()) log.debug("Default authentication form implementation!");
 
@@ -380,65 +383,8 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(pathRelativeToRealm);
         
         try {
-            org.w3c.dom.Document adoc = YanelServlet.getDocument(YanelServlet.NAMESPACE, "yanel-auth-screen");
-            
-            Element rootElement = adoc.getDocumentElement();
-            
-            if (message != null) {
-                Element messageElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "message"));
-                messageElement.appendChild(adoc.createTextNode(message)); 
-            }
-            
-            Element requestElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "request"));
-            requestElement.setAttributeNS(YanelServlet.NAMESPACE, "urlqs", getRequestURLQS(request, null, true, map));
+            org.w3c.dom.Document adoc = generateAuthenticationScreenXML(request, realm, message, sslPort, map);
 
-            if (request.getQueryString() != null) {
-                requestElement.setAttributeNS(YanelServlet.NAMESPACE, "qs", request.getQueryString().replaceAll("&", "&amp;"));
-            }
-            
-            Element realmElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "realm"));
-            realmElement.setAttributeNS(YanelServlet.NAMESPACE, "name", realm.getName());
-            realmElement.setAttributeNS(YanelServlet.NAMESPACE, "mount-point", realm.getMountPoint().toString());  
-
-            String currentUserId = null;
-            Identity identity = YanelServlet.getIdentity(request.getSession(true), realm);
-            if (identity != null) {
-                currentUserId = identity.getUsername();
-            }
-            //String currentUserId = getCurrentUserId(request.getSession(true), realm);
-            if (currentUserId != null) {
-                Element userElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "user"));
-                userElement.setAttributeNS(YanelServlet.NAMESPACE, "id", currentUserId);
-            }
-            
-            Element sslElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "ssl"));            
-            if(sslPort != null) {
-                sslElement.setAttributeNS(YanelServlet.NAMESPACE, "status", "ON");   
-            } else {
-                sslElement.setAttributeNS(YanelServlet.NAMESPACE, "status", "OFF");
-            }
-
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) { // INFO: Check cookies if login name was set to be remembered
-                for (int i = 0; i < cookies.length; i++) {
-                    log.debug("Cookie: " + cookies[i].getName() + ", " + cookies[i].getValue());
-                    // TODO: Parse realm and login name (see method doRememberMyLoginName())
-                    if (cookies[i].getName().equals(LOGIN_DEFAULT_COOKIE_NAME)) {
-                        Element loginDefaultElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-default"));            
-                        loginDefaultElement.setAttributeNS(YanelServlet.NAMESPACE, "username", cookies[i].getValue());
-                    } else if (cookies[i].getName().equals(LOGIN_OPENID_COOKIE_NAME)) {
-                        Element loginOpenIDElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-openid"));            
-                        loginOpenIDElement.setAttributeNS(YanelServlet.NAMESPACE, "openid", cookies[i].getValue());
-                    }
-                }
-            }
-
-            String loginUsername = request.getParameter(LOGIN_USER_REQUEST_PARAM_NAME); // INFO: Check request parameter for login name
-            if (loginUsername != null) {
-                Element presetLoginElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-preset"));
-                presetLoginElement.setAttributeNS(YanelServlet.NAMESPACE, "username", loginUsername);
-            }
-            
             String yanelFormat = request.getParameter("yanel.login.format");
             if(yanelFormat != null && yanelFormat.equals("xml")) {
                 response.setContentType("application/xml; charset=" + YanelServlet.DEFAULT_ENCODING);
@@ -690,5 +636,76 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             log.warn("Authentication failed for user: " + username + " (Realm: " + realm.getName() + ")");
         }
         return false;
+    }
+
+    /**
+     * Generate XML of authentication/login screen
+     * @param request
+     * @param realm
+     * @param message Error message, e.g. "Login failed"
+     * @param sslPort
+     * @param map
+     */
+    protected org.w3c.dom.Document generateAuthenticationScreenXML(HttpServletRequest request, Realm realm, String message, String sslPort, Map map) throws Exception {
+        log.debug("Generate authentication screen XML...");
+        org.w3c.dom.Document adoc = YanelServlet.getDocument(YanelServlet.NAMESPACE, "yanel-auth-screen");
+        Element rootElement = adoc.getDocumentElement();
+            
+        if (message != null) {
+            Element messageElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "message"));
+            messageElement.appendChild(adoc.createTextNode(message)); 
+        }
+            
+        Element requestElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "request"));
+        requestElement.setAttributeNS(YanelServlet.NAMESPACE, "urlqs", getRequestURLQS(request, null, true, map));
+
+        if (request.getQueryString() != null) {
+            requestElement.setAttributeNS(YanelServlet.NAMESPACE, "qs", request.getQueryString().replaceAll("&", "&amp;"));
+        }
+            
+        Element realmElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "realm"));
+        realmElement.setAttributeNS(YanelServlet.NAMESPACE, "name", realm.getName());
+        realmElement.setAttributeNS(YanelServlet.NAMESPACE, "mount-point", realm.getMountPoint().toString());  
+
+        String currentUserId = null;
+        Identity identity = YanelServlet.getIdentity(request.getSession(true), realm);
+        if (identity != null) {
+            currentUserId = identity.getUsername();
+        }
+        //String currentUserId = getCurrentUserId(request.getSession(true), realm);
+        if (currentUserId != null) {
+            Element userElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "user"));
+            userElement.setAttributeNS(YanelServlet.NAMESPACE, "id", currentUserId);
+        }
+            
+        Element sslElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "ssl"));            
+        if(sslPort != null) {
+            sslElement.setAttributeNS(YanelServlet.NAMESPACE, "status", "ON");   
+        } else {
+            sslElement.setAttributeNS(YanelServlet.NAMESPACE, "status", "OFF");
+        }
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) { // INFO: Check cookies if login name was set to be remembered
+            for (int i = 0; i < cookies.length; i++) {
+                log.debug("Cookie: " + cookies[i].getName() + ", " + cookies[i].getValue());
+                // TODO: Parse realm and login name (see method doRememberMyLoginName())
+                if (cookies[i].getName().equals(LOGIN_DEFAULT_COOKIE_NAME)) {
+                    Element loginDefaultElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-default"));            
+                    loginDefaultElement.setAttributeNS(YanelServlet.NAMESPACE, "username", cookies[i].getValue());
+                } else if (cookies[i].getName().equals(LOGIN_OPENID_COOKIE_NAME)) {
+                    Element loginOpenIDElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-openid"));            
+                    loginOpenIDElement.setAttributeNS(YanelServlet.NAMESPACE, "openid", cookies[i].getValue());
+                }
+            }
+        }
+
+        String loginUsername = request.getParameter(LOGIN_USER_REQUEST_PARAM_NAME); // INFO: Check request parameter for login name
+        if (loginUsername != null) {
+            Element presetLoginElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-preset"));
+            presetLoginElement.setAttributeNS(YanelServlet.NAMESPACE, "username", loginUsername);
+        }
+
+        return adoc;
     }
 }
