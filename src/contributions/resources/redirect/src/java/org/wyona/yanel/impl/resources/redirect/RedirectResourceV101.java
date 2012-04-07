@@ -94,13 +94,30 @@ public class RedirectResourceV101 extends Resource implements ViewableV2, Creata
             log.debug("Localization: " + localizationLanguage);
             for (int i = 0; i < languageRedirectConfigs.length; i++) {
                 try {
-                    String device = languageRedirectConfigs[i].getAttribute("device", null);
-                    if (device != null) {
-                        log.warn("DEBUG: Device: " + device);
-                    }
                     if (languageRedirectConfigs[i].getAttribute("code").equals(localizationLanguage)) {
                         response.setStatus(307);
-                        response.setHeader("Location", languageRedirectConfigs[i].getAttribute("href"));
+                        String href = languageRedirectConfigs[i].getAttribute("href");
+                        response.setHeader("Location", href);
+
+                        String device = languageRedirectConfigs[i].getAttribute("device", null);
+                        if (device != null) {
+                            if (device.equals("web.xml:mobile-devices")) {
+                                log.warn("DEBUG: Client language '" + localizationLanguage + "' matched and device '" + device + "' is supported. Let's check whether client is a mobile device ...");
+                                if (isMobileDevice()) {
+                                    log.warn("DEBUG: Client is mobile device, hence redirect to: " + href);
+                                    return view;
+                                } else {
+                                    log.warn("DEBUG: Client is not a mobile device.");
+                                    continue;
+                                }
+                            } else {
+                                log.warn("DEBUG: Device '" + device + "' not supported.");
+                                continue;
+                            }
+                        } else {
+                            log.warn("DEBUG: No device specified (Language: " + localizationLanguage + ").");
+                        }
+                        return view;
                     }
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
@@ -219,5 +236,24 @@ public class RedirectResourceV101 extends Resource implements ViewableV2, Creata
         String[] pn = new String[1];
         pn[0] = REDIRECT_URL;
         return pn;
+    }
+
+    /**
+     * Check whether user agent is a mobile device
+     */
+    private boolean isMobileDevice() {
+        javax.servlet.http.HttpSession session = getEnvironment().getRequest().getSession(true);
+        if (session != null) {
+            String mobileDevice = (String) session.getAttribute("yanel.mobile");
+            //TODO: String mobileDevice = (String) getEnvironment().getRequest().getSession(true).getAttribute(org.wyona.yanel.servlet.YanelServlet.MOBILE_KEY);
+            if (mobileDevice != null && !mobileDevice.equals("false")) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            log.warn("No HTTP session available (maybe because Yanel is used via the command line or some custom junit tests do not provide session handling)!");
+            return false;
+        }
     }
 }
