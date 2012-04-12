@@ -88,6 +88,16 @@
   </xsl:template>
 
   <xsl:template match="yanel:show-message">
+<!-- TODO: Implement status check
+    <xsl:choose>
+      <xsl:when test="@status = '200'">
+        <p><xsl:value-of select="." /></p>
+      </xsl:when>
+      <xsl:otherwise>
+        <p>Exception: <xsl:value-of select="." /></p>
+      </xsl:otherwise>
+    </xsl:choose>
+-->
         <h4>
           <xsl:value-of select="." />
         </h4>
