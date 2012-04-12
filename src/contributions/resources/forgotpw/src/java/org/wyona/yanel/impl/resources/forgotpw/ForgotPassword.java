@@ -118,8 +118,10 @@ public class ForgotPassword extends BasicXMLResource {
         Element rootElement = adoc.getDocumentElement();
         if (action.equals(SUBMITFORGOTPASSWORD)) {
             String uuid = UUID.randomUUID().toString();
-            String message = generateForgotPasswordRequest(request.getParameter("email"), uuid);
+            String email = request.getParameter("email");
+            String message = generateForgotPasswordRequest(email, uuid);
             Element statusElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message"));
+            statusElement.setAttribute("submitted-email", email);
             if(!message.equals(SUCCESS)) {
                 statusElement.setTextContent(message);
                 statusElement.setAttribute("status", "400");
