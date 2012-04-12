@@ -6,6 +6,10 @@
   <yanel:property name="change-password-requests-path" value="change-password-requests"/>
   <yanel:property name="num-hrs-valid" value="1"/>
 
+  <!-- WARN: Because of security reasons please do not enable this property for a productive environment, but only set to 'true' for development or a continuous integration environment! -->
+  <yanel:property name="include-change-password-link" value="true" target-environment="ci-test"/>
+  <yanel:property name="include-change-password-link" value="true" target-environment="dev"/>
+
   <!-- Override/Uncomment the smtp properties below for your custom setup, whereas if already configured within yanel.xml, then these smtp properties are optional (cf. YANEL_HOME/src/webapp/global-resource-configs/README.txt for rationale): -->
 <!--
   <yanel:property name="smtpHost" value="mail.wyona.com"/>
