@@ -436,7 +436,7 @@ public class ForgotPassword extends BasicXMLResource {
      * Send email to user requesting to reset the password
      * @param guid UUID which is part of the change password link
      */
-    private void sendEmail(String guid, String emailAddress) throws Exception {
+    protected void sendEmail(String guid, String emailAddress) throws Exception {
         String emailSubject = "Reset password request needs your confirmation";
 
         String emailBody = generateEmailBody(guid);
