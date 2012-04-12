@@ -120,17 +120,18 @@ public class ForgotPassword extends BasicXMLResource {
             String uuid = UUID.randomUUID().toString();
             String email = request.getParameter("email");
             String message = generateForgotPasswordRequest(email, uuid);
-            Element statusElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message"));
-            statusElement.setAttribute("submitted-email", email);
+            Element messageElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message"));
+            Element cpeElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "change-password-email"));
+            cpeElement.setAttribute("submitted-email", email);
             if(!message.equals(SUCCESS)) {
-                statusElement.setTextContent(message);
-                statusElement.setAttribute("status", "400");
+                messageElement.setTextContent(message);
+                cpeElement.setAttribute("status", "400");
             } else {
-                statusElement.setTextContent("Password change request was successful. Please check your email for further instructions on how to complete your request.");
-                statusElement.setAttribute("status", "200");
+                messageElement.setTextContent("Password change request was successful. Please check your email for further instructions on how to complete your request.");
+                cpeElement.setAttribute("status", "200");
                 if (getResourceConfigProperty("include-change-password-link") != null && getResourceConfigProperty("include-change-password-link").equals("true")) {
                     log.warn("Change password link will be part of response! Because of security reasons this should only be done for development or testing environments.");
-                    statusElement.setAttribute("change-password-link", getURL(uuid));
+                    cpeElement.setAttribute("change-password-link", getURL(uuid));
                 }
             }
         } else if (request.getParameter(PW_RESET_ID) != null && !request.getParameter(PW_RESET_ID).equals("") && !action.equals(SUBMITNEWPW)){
