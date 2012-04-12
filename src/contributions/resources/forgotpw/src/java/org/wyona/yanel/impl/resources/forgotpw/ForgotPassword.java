@@ -145,12 +145,15 @@ public class ForgotPassword extends BasicXMLResource {
                 guidElement.setTextContent(guid);
             }
         } else if(action.equals(SUBMITNEWPW)) {
-            String retStr = updatePassword(request);
-            Element statusElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message"));
+            String retStr = updatePassword(request.getParameter("newPassword"), request.getParameter("newPasswordConfirmation"), request.getParameter("guid"));
+            Element messageElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message")); // INFO: We need to keep this element for backwards compatibility reasons!
+            Element pwUpdateElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "password-update")); // INFO: We have introduced this element, because the "show-message" element is ambiguous, because it is also used while generating a password change request
             if(!retStr.equals(SUCCESS)) {
-                statusElement.setTextContent(retStr);
+                messageElement.setTextContent(retStr);
+                pwUpdateElement.setAttribute("status", "400");
             } else {
-                statusElement.setTextContent("Password has been successfully reset. Please login with your new password.");
+                messageElement.setTextContent("Password has been successfully reset. Please login with your new password.");
+                pwUpdateElement.setAttribute("status", "200");
             }
         } else {
             log.debug("default handler");
@@ -337,28 +340,38 @@ public class ForgotPassword extends BasicXMLResource {
     }
 
     /**
-     * Change user password.
+     * Validate and change new user password.
+     * @return "success" if validation and updating new user password was successful, otherwise return exception message
      */
-    private String updatePassword(HttpServletRequest request) throws Exception {
-        String plainPassword = request.getParameter("newPassword");
-        boolean confirmation = plainPassword.equals(request.getParameter("newPasswordConfirmation"));
-        if (confirmation && !plainPassword.equals("")) {
-            String guid = request.getParameter("guid");
-            User user = getUserForRequest(guid, totalValidHrs);
-            if(user !=null) {
-                user.setPassword(plainPassword);
-                user.save();
-                getRealm().getRepository().delete(new org.wyona.yarep.core.Path(getPersistentRequestPath(guid))); // DEPRECATED
-                //TODO: YarepUtil.deleteNode(getRealm().getRepository(), getPersistentRequestPath(guid));
-                return SUCCESS;
-            } else {
-                return "Unable to find user for password reset.";
-            }
+    private String updatePassword(String newPassword, String confirmedPassword, String uuid) throws Exception {
+        if (newPassword == null || newPassword.length() == 0) {
+            String exceptionMsg = "No password was submitted!";
+            log.warn(exceptionMsg);
+            return exceptionMsg;
+        }
+
+        // INFO: The confirmed password is optional, but if provided, then it will be compared
+        if (confirmedPassword != null && !newPassword.equals(confirmedPassword)) {
+            String exceptionMsg = "Password and confirmed password do not match!";
+            log.warn(exceptionMsg);
+            return exceptionMsg;
+        }
+
+        User user = getUserForRequest(uuid, totalValidHrs);
+        if(user !=null) {
+            user.setPassword(newPassword);
+            user.save();
+            getRealm().getRepository().delete(new org.wyona.yarep.core.Path(getPersistentRequestPath(uuid))); // DEPRECATED
+            //TODO: YarepUtil.deleteNode(getRealm().getRepository(), getPersistentRequestPath(uuid));
+            return SUCCESS;
         } else {
-            return "Either no new password was supplied or the password supplied and its confirmation password do not match.";
+            return "Unable to find user for password reset UUID: " + uuid;
         }
     }
 
+    /**
+     * @see
+     */
     @Override
     public boolean exists() throws Exception {
         return true;
