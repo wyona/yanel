@@ -23,6 +23,15 @@
             <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:requestnewpw"/>
             <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:show-message"/>
 
+<!-- TODO: Implement new elements, which are less ambigious than show-message
+                                        <xsl:if test="/yanel:yanel-forgotpw/yanel:requestemail">
+                                          <xsl:call-template name="requestemail"/>
+                                        </xsl:if>
+                                        <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:change-password-email"/>
+                                        <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:requestnewpw"/>
+                                        <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:password-update"/>
+-->
+
           </body>
     </html>
   </xsl:template>
@@ -88,16 +97,6 @@
   </xsl:template>
 
   <xsl:template match="yanel:show-message">
-<!-- TODO: Implement status check
-    <xsl:choose>
-      <xsl:when test="@status = '200'">
-        <p><xsl:value-of select="." /></p>
-      </xsl:when>
-      <xsl:otherwise>
-        <p>Exception: <xsl:value-of select="." /></p>
-      </xsl:otherwise>
-    </xsl:choose>
--->
         <h4>
           <xsl:value-of select="." />
         </h4>
