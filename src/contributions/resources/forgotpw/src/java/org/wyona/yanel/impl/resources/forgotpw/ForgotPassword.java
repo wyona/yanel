@@ -257,10 +257,11 @@ public class ForgotPassword extends BasicXMLResource {
      * @return "success" if user with specific email address exists and email was sent, return exception message otherwise
      */
     private String generateForgotPasswordRequest(String email, String uuid) throws Exception {
+        String exceptionMsg;
         if (email == null || ("").equals(email)) {
-            return "E-mail address is empty.";
+            exceptionMsg = "E-mail address is empty.";
         } else if (! EmailValidator.getInstance().isValid(email)) {
-            return email + " is not a valid E-mail address.";
+            exceptionMsg = email + " is not a valid E-mail address.";
         } else {
             log.warn("TODO: Checking every user by her/his email does not scale!");
             User[] userList = realm.getIdentityManager().getUserManager().getUsers(true);
@@ -274,8 +275,10 @@ public class ForgotPassword extends BasicXMLResource {
                     return SUCCESS;
                 }
             }
-            return "Unable to find user based on the " + email + " E-mail address.";
+            exceptionMsg = "Unable to find user based on the " + email + " E-mail address.";
         }
+        log.warn(exceptionMsg);
+        return exceptionMsg;
     }
 
     /**
