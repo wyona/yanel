@@ -76,6 +76,8 @@ public class ForgotPassword extends BasicXMLResource {
     private static final String HOURS_VALID_PROPERTY_NAME = "num-hrs-valid";
     private static final long  DEFAULT_TOTAL_VALID_HRS = 24L;
 
+    private static final String SUCCESS = "success";
+
     /**
      * This is the main method that handles all view request. The first time the request
      * is made to enter the data.
@@ -115,12 +117,19 @@ public class ForgotPassword extends BasicXMLResource {
 
         Element rootElement = adoc.getDocumentElement();
         if (action.equals(SUBMITFORGOTPASSWORD)) {
-            String strVal = processForgotPW(request);
+            String uuid = UUID.randomUUID().toString();
+            String message = generateForgotPasswordRequest(request.getParameter("email"), uuid);
             Element statusElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message"));
-            if(!strVal.equals("success")) {
-                statusElement.setTextContent(strVal);
+            if(!message.equals(SUCCESS)) {
+                statusElement.setTextContent(message);
+                statusElement.setAttribute("status", "400");
             } else {
                 statusElement.setTextContent("Password change request was successful. Please check your email for further instructions on how to complete your request.");
+                statusElement.setAttribute("status", "200");
+                if (getResourceConfigProperty("include-change-password-link") != null && getResourceConfigProperty("include-change-password-link").equals("true")) {
+                    log.warn("Change password link will be part of response! Because of security reasons this should only be done for development or testing environments.");
+                    statusElement.setAttribute("uuid", uuid);
+                }
             }
         } else if (request.getParameter(PW_RESET_ID) != null && !request.getParameter(PW_RESET_ID).equals("") && !action.equals(SUBMITNEWPW)){
             String guid = request.getParameter(PW_RESET_ID);
@@ -136,7 +145,7 @@ public class ForgotPassword extends BasicXMLResource {
         } else if(action.equals(SUBMITNEWPW)) {
             String retStr = updatePassword(request);
             Element statusElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message"));
-            if(!retStr.equals("success")) {
+            if(!retStr.equals(SUCCESS)) {
                 statusElement.setTextContent(retStr);
             } else {
                 statusElement.setTextContent("Password has been successfully reset. Please login with your new password.");
@@ -242,29 +251,27 @@ public class ForgotPassword extends BasicXMLResource {
    }
 
     /**
-     * Updates the user profile
-     *
-     * @param request The request containing the data to update
+     * Generate password change request
+     * @param email E-Mail address of user
+     * @param uuid
+     * @return "success" if user with specific email address exists and email was sent, return exception message otherwise
      */
-    private String processForgotPW(HttpServletRequest request) throws Exception {
-        String email = request.getParameter("email");
+    private String generateForgotPasswordRequest(String email, String uuid) throws Exception {
         if (email == null || ("").equals(email)) {
             return "E-mail address is empty.";
         } else if (! EmailValidator.getInstance().isValid(email)) {
             return email + " is not a valid E-mail address.";
         } else {
+            log.warn("TODO: Checking every user by her/his email does not scale!");
             User[] userList = realm.getIdentityManager().getUserManager().getUsers(true);
             for(int i=0; i< userList.length; i++) {
                 if (userList[i].getEmail().equals(email)) {
-                    String guid = UUID.randomUUID().toString();
+                    ResetPWExpire pwexp = new ResetPWExpire(userList[i].getID(), new Date().getTime(), uuid, userList[i].getEmail());
 
-                    ResetPWExpire pwexp = new ResetPWExpire(userList[i].getID(), new Date().getTime(), guid, userList[i].getEmail());
+                    sendEmail(uuid, userList[i].getEmail());
 
-                    sendEmail(guid, userList[i].getEmail());
-
-                    writeXMLOutput(getPersistentRequestPath(guid), generateXML(pwexp));
-                    //writeXMLOutput(getResetPasswordRequestsBasePath() + "/" + pwexp.getUserId() + ".xml", generateXML(pwexp));
-                    return "success";
+                    writeXMLOutput(getPersistentRequestPath(uuid), generateXML(pwexp));
+                    return SUCCESS;
                 }
             }
             return "Unable to find user based on the " + email + " E-mail address.";
@@ -338,7 +345,7 @@ public class ForgotPassword extends BasicXMLResource {
                 user.save();
                 getRealm().getRepository().delete(new org.wyona.yarep.core.Path(getPersistentRequestPath(guid))); // DEPRECATED
                 //TODO: YarepUtil.deleteNode(getRealm().getRepository(), getPersistentRequestPath(guid));
-                return "success";
+                return SUCCESS;
             } else {
                 return "Unable to find user for password reset.";
             }
