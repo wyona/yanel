@@ -130,7 +130,7 @@ public class ForgotPassword extends BasicXMLResource {
                 statusElement.setAttribute("status", "200");
                 if (getResourceConfigProperty("include-change-password-link") != null && getResourceConfigProperty("include-change-password-link").equals("true")) {
                     log.warn("Change password link will be part of response! Because of security reasons this should only be done for development or testing environments.");
-                    statusElement.setAttribute("uuid", uuid);
+                    statusElement.setAttribute("change-password-link", getURL(uuid));
                 }
             }
         } else if (request.getParameter(PW_RESET_ID) != null && !request.getParameter(PW_RESET_ID).equals("") && !action.equals(SUBMITNEWPW)){
@@ -367,7 +367,7 @@ public class ForgotPassword extends BasicXMLResource {
     /**
      * Get forgot password URL which will be sent via E-Mail (also see YanelServlet#getRequestURLQS(HttpServletRequest, String, boolean))
      */
-    public String getURL() throws Exception {
+    public String getURL(String uuid) throws Exception {
         //https://192.168.1.69:8443/yanel" + request.getServletPath().toString()
         URL url = new URL(request.getRequestURL().toString());
         org.wyona.yanel.core.map.Realm realm = getRealm();
@@ -394,7 +394,8 @@ public class ForgotPassword extends BasicXMLResource {
         } else {
             log.warn("No proxy set.");
         }
-        return url.toString();
+
+        return url.toString() + "?" + PW_RESET_ID + "=" + uuid;
     }
 
     /**
@@ -419,16 +420,13 @@ public class ForgotPassword extends BasicXMLResource {
 
     /**
      * Send email to user requesting to reset the password
+     * @param guid UUID which is part of the change password link
      */
     private void sendEmail(String guid, String emailAddress) throws Exception {
         String emailSubject = "Reset password request needs your confirmation";
-        String emailBody = "Please go to the following URL to reset password: <" + getURL() + "?" + PW_RESET_ID + "=" + guid + ">.";
-        String hrsValid = getResourceConfigProperty(HOURS_VALID_PROPERTY_NAME);
-        if (hrsValid == null) {
-            hrsValid = "" + DEFAULT_TOTAL_VALID_HRS;
-        }
-        emailBody = emailBody + "\n\nNOTE: This link is only available during the next " + hrsValid + " hours!";
-        if (log.isDebugEnabled()) log.debug(emailBody);
+
+        String emailBody = generateEmailBody(guid);
+
         String from = getResourceConfigProperty("smtpFrom");
         String to =  emailAddress;
 
@@ -446,5 +444,19 @@ public class ForgotPassword extends BasicXMLResource {
      */
     private String getPersistentRequestPath(String guid) throws Exception {
         return getResetPasswordRequestsBasePath() + "/" + guid + ".xml";
+    }
+
+    /**
+     * Generate email body
+     */
+    private String generateEmailBody(String uuid) throws Exception {
+        String emailBody = "Please go to the following URL to reset password: <" + getURL(uuid) + ">.";
+        String hrsValid = getResourceConfigProperty(HOURS_VALID_PROPERTY_NAME);
+        if (hrsValid == null) {
+            hrsValid = "" + DEFAULT_TOTAL_VALID_HRS;
+        }
+        emailBody = emailBody + "\n\nNOTE: This link is only available during the next " + hrsValid + " hours!";
+        if (log.isDebugEnabled()) log.debug(emailBody);
+        return emailBody;
     }
 }
