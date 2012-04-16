@@ -134,12 +134,19 @@ public class PageMetaDataManager extends ExecutableUsecaseResource {
                     for(String t:tokens){
                         anno.setAnnotation(t.trim());
                     }
-                    addInfoMessage("The following annotations have been saved: " + metadata);
+                    String msg = "The following annotations have been saved: " + metadata;
+                    log.warn("DEBUG: Message: " + msg);
+                    addInfoMessage(msg);
                 } catch (Exception e) {
+                    log.error(e, e);
                     addError(e.getMessage());
                 }
 				
+            } else {
+                log.warn("Pre-conditions check failed for meta data content: " + metadata);
             }
+        } else {
+            log.warn("contentToEdit is null!");
         }
         setParameter(PARAMETER_CONTINUE_PATH, PathUtil.backToRealm(getPath()) + getEditPath().substring(1));
     }
