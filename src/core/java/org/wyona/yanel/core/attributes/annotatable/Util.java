@@ -13,20 +13,20 @@ public class Util {
 
     /**
      * Read annotations
+     * @return annotations, whereas return empty list if there are no annotations yet
      */
     public static java.util.Set<String> readAnnotations(org.wyona.yarep.core.Repository repo, String path) throws Exception {
         java.util.Set<String> annotations  = new java.util.HashSet<String>();
-            if (repo.existsNode(path) && repo.getNode(path).hasProperty(ANNOTATIONS_PROP_NAME)) {
-                String aString = repo.getNode(path).getProperty(ANNOTATIONS_PROP_NAME).getString();
-                String[] aArray = aString.split(", ");
-                for(int i = 0; i < aArray.length; i++) {
-                    annotations.add(aArray[i]);
-                }
-                return annotations;
-            } else {
-                log.warn("No annotations yet: " + path);
-                return null;
+        if (repo.existsNode(path) && repo.getNode(path).hasProperty(ANNOTATIONS_PROP_NAME)) {
+            String aString = repo.getNode(path).getProperty(ANNOTATIONS_PROP_NAME).getString();
+            String[] aArray = aString.split(", ");
+            for(int i = 0; i < aArray.length; i++) {
+                annotations.add(aArray[i]);
             }
+        } else {
+           log.warn("No annotations yet: " + path);
+        }
+        return annotations;
     }
 
     /**
