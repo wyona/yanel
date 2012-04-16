@@ -730,6 +730,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * @see org.wyona.yanel.core.api.attributes.AnnotatableV1#setAnnotation(String)
      */
     public void setAnnotation(String name) throws Exception {
+        // TODO: Use org.wyona.yanel.core.attributes.annotatable.Util.saveAnnotations(...)
         readAnnotations();
         if(name != null && !annotations.contains(name)){
             annotations.add(name);
@@ -782,6 +783,14 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         if (yanelPath != null) {
             log.warn("Read annotations for parameter yanel-path '" + yanelPath + "' not implemented yet!");
         } else {
+            annotations = org.wyona.yanel.core.attributes.annotatable.Util.readAnnotations(getRealm().getRepository(), getPath());
+            if (annotations != null) {
+                annotationRead = true;
+                return;
+            } else {
+                log.warn("No annotations yet: " + getPath());
+            }
+/* OBSOLETE
             if (getRealm().getRepository().getNode(getPath()).hasProperty("annotations")) {
                 String aString = getRealm().getRepository().getNode(getPath()).getProperty("annotations").getString();
                 String[] aArray = aString.split(", ");
@@ -793,6 +802,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             } else {
                 log.warn("No annotations yet: " + getPath());
             }
+*/
         }
     }
 
