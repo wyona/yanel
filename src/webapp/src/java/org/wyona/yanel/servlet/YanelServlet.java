@@ -2648,31 +2648,13 @@ public class YanelServlet extends HttpServlet {
         try {
             Realm realm = map.getRealm(request.getServletPath());
 
-            String[] tags = null;
-            if (resource != null) {
-                if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Annotatable", "1")) {
-                    AnnotatableV1 anno = (AnnotatableV1) resource;
-                    try {
-                        tags = anno.getAnnotations();
-                        //log.debug("Resource has tags: " + tags);
-                    } catch (Exception ex) {
-                        log.error(ex, ex);
-                    }
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Resource has no tags yet: " + resource.getPath());
-                    }
-                }
-            } else {
-                log.debug("Resource is null because access was probably denied: " + request.getServletPath());
-            }
-
             String accessLogMessage;
             if (trackInfo != null) {
                 String[] trackingTags = trackInfo.getTags();
-                if (trackingTags != null && trackingTags.length > 0) {
+                if (trackingTags != null && trackingTags.length > 0) { // INFO: Either/Or, but not both. If you want both, then make sure that that your resource adds its annotations to the tracking information.
                     accessLogMessage = AccessLog.getLogMessage(request, response, realm.getUserTrackingDomain(), trackingTags, ACCESS_LOG_TAG_SEPARATOR);
                 } else {
+                    String[] tags = getTagsFromAnnotatableResource(resource, request.getServletPath());
                     accessLogMessage = AccessLog.getLogMessage(request, response, realm.getUserTrackingDomain(), tags, ACCESS_LOG_TAG_SEPARATOR);
                 }
 
@@ -2693,6 +2675,7 @@ public class YanelServlet extends HttpServlet {
                     }
                 }
             } else {
+                String[] tags = getTagsFromAnnotatableResource(resource, request.getServletPath());
                 accessLogMessage = AccessLog.getLogMessage(request, response, realm.getUserTrackingDomain(), tags, ACCESS_LOG_TAG_SEPARATOR);
             }
             
@@ -3027,5 +3010,35 @@ public class YanelServlet extends HttpServlet {
         for (int i = children.getLength() - 1; i >= 0; i--) {
             rootElem.removeChild(children.item(i));
         }
+    }
+
+    /**
+     * Get tags from annotatable resource
+     * @param resource Resource which might provide annotations
+     * @param servletPath Servlet path of requested resource
+     * @return tags/annotations if resource is annotatable, null otherwise
+     */
+    private String[] getTagsFromAnnotatableResource(Resource resource, String servletPath) {
+        String[] tags = null;
+        if (resource != null) {
+            if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Annotatable", "1")) {
+                AnnotatableV1 anno = (AnnotatableV1) resource;
+                try {
+                    tags = anno.getAnnotations();
+                    if (tags != null) {
+                        log.debug("Resource '" + resource.getPath() + "' (Servlet path: " + servletPath + ") has '" + tags.length + "' tags.");
+                    }
+                } catch (Exception ex) {
+                    log.error(ex, ex);
+                }
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Resource has no tags yet: " + resource.getPath());
+                }
+            }
+        } else {
+            log.debug("Resource is null because access was probably denied: " + servletPath);
+        }
+        return tags;
     }
 }
