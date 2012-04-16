@@ -56,10 +56,12 @@ public class PageMetaDataManager extends ExecutableUsecaseResource {
 
                 contentToEdit = "";
                 String[] meta = anno.getAnnotations();
-                for (String m : meta) {
-                    if (!contentToEdit.equals(""))
-                    setContentToEdit(contentToEdit + ", ");
-                    setContentToEdit(contentToEdit + m);
+                if (meta != null) {
+                    for (String m : meta) {
+                        if (!contentToEdit.equals(""))
+                        setContentToEdit(contentToEdit + ", ");
+                        setContentToEdit(contentToEdit + m);
+                    }
                 }
             } catch (Exception e) {
                 log.error(e, e);
