@@ -13,6 +13,8 @@ public class Util {
 
     /**
      * Read annotations
+     * @param repo Repository containing annotations
+     * @param path Path for which annotations are associated with
      * @return annotations, whereas return empty list if there are no annotations yet
      */
     public static java.util.Set<String> readAnnotations(org.wyona.yarep.core.Repository repo, String path) throws Exception {
@@ -30,10 +32,26 @@ public class Util {
     }
 
     /**
+     * Save one particular annotation
+     * @param annotation Annotation to be set/saved
+     * @param repo Repository containing annotation
+     * @param path Path for which annotation is associated with
+     */
+    public static void saveAnnotation(String annotation, org.wyona.yarep.core.Repository repo, String path) throws Exception {
+        java.util.Set<String> existingAnnotations = readAnnotations(repo, path);
+        if(annotation != null && !existingAnnotations.contains(annotation)){
+            existingAnnotations.add(annotation);
+            saveAnnotations(existingAnnotations, repo, path);
+        } else {
+            log.warn("Either no annotation or annotation already exists: " + annotation + " (Repository node path: " + path + ")");
+        }
+    }
+
+    /**
      * Save annotations
-     * @param annotations TODO
-     * @param repo Repository
-     * @param path TODO
+     * @param annotations Annotations to be set/saved
+     * @param repo Repository containing annotations
+     * @param path Path for which annotations are associated with
      */
     public static void saveAnnotations(java.util.Set<String> annotations, org.wyona.yarep.core.Repository repo, String path) throws Exception {
         String[] aArray = annotations.toArray(new String[0]);
