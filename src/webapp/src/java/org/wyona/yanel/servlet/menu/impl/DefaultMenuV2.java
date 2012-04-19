@@ -26,6 +26,7 @@ public class DefaultMenuV2 extends DefaultMenu {
 
     /**
      * Implements the new tinymce suffix
+     * @see org.wyona.yanel.servlet.menu.impl.DefaultMenu#getEditMenu(Resource)
      */
     @Override
     public String getEditMenu(Resource resource) throws Exception {
