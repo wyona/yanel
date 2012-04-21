@@ -11,11 +11,11 @@
 <ul>
 <li>Install Apache-Httpd with SSL support 
   <ul>
-       <li>Download <a href="http://www.openssl.org">Open-SSL</a> version 0.9.8d or higher<br/></li>
+       <li>Download <a href="http://www.openssl.org">Open-SSL</a> version 1.0.1a or higher<br/></li>
        <li>Build Open-SSL
        <ul>
          <li>./config</li>
-         <li>make</li>
+         <li>make (NOTE: You might have to install gcc first)</li>
          <li>make install (will install at /usr/local/ssl by default, see INSTALL file for more details)</li>
        </ul></li>
        <li>Test Open-SSL installation by typing &quot;/usr/local/ssl/bin/openssl version&quot;. As a response one should receive something like &quot;OpenSSL 0.9.8d 28 Sep 2006&quot;</li>
