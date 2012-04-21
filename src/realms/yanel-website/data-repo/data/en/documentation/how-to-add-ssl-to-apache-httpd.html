@@ -16,15 +16,15 @@
        <ul>
          <li>./config</li>
          <li>make (NOTE: You might have to install gcc first)</li>
-         <li>make install (will install at /usr/local/ssl by default, see INSTALL file for more details)</li>
+         <li>sudo make install (will install at /usr/local/ssl by default, see INSTALL file for more details)</li>
        </ul></li>
-       <li>Test Open-SSL installation by typing &quot;/usr/local/ssl/bin/openssl version&quot;. As a response one should receive something like &quot;OpenSSL 0.9.8d 28 Sep 2006&quot;</li>
+       <li>Test Open-SSL installation by typing &quot;/usr/local/ssl/bin/openssl version&quot;. As a response one should receive something like &quot;OpenSSL 1.0.1a 19 Apr 2012&quot;</li>
        <li>Download <a href="http://httpd.apache.org">Apache-Httpd</a> version 2.2.3 or higher</li>
        <li>Build Apache-Httpd with SSL
          <ul>
        <li>./configure --prefix=/usr/local/httpd-2.2.3 --enable-ssl=shared --with-ssl=/usr/local/ssl --enable-proxy --enable-proxy-http<br/></li>
        <li>make</li>
-       <li>make install (will install at /usr/local/httpd-2.2.3)<br/></li>
+       <li>sudo make install (will install at /usr/local/httpd-2.2.3)<br/></li>
          </ul></li>
        <li>Create SSL-Key
          <ul>
