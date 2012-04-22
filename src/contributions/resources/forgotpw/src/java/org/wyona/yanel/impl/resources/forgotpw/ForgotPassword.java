@@ -109,7 +109,7 @@ public class ForgotPassword extends BasicXMLResource {
     }
 
     /**
-     *
+     * @param adoc XML DOM Document which will be used to generate response
      */
     private void processUserAction(HttpServletRequest request, Document adoc) throws Exception {
         String action = determineAction(request);
@@ -117,23 +117,27 @@ public class ForgotPassword extends BasicXMLResource {
 
         Element rootElement = adoc.getDocumentElement();
         if (action.equals(SUBMITFORGOTPASSWORD)) {
-            String uuid = UUID.randomUUID().toString();
             String email = request.getParameter("email");
-            String message = generateForgotPasswordRequest(email, uuid);
             Element messageElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message"));
             Element cpeElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "change-password-email"));
             cpeElement.setAttribute("submitted-email", email);
-            if(!message.equals(SUCCESS)) {
-                messageElement.setTextContent(message);
-                cpeElement.setAttribute("status", "400");
-            } else {
-                messageElement.setTextContent("Password change request was successful. Please check your email for further instructions on how to complete your request.");
-                cpeElement.setAttribute("status", "200");
-                if (getResourceConfigProperty("include-change-password-link") != null && getResourceConfigProperty("include-change-password-link").equals("true")) {
-                    log.warn("Change password link will be part of response! Because of security reasons this should only be done for development or testing environments.");
-                    cpeElement.setAttribute("change-password-link", getURL(uuid));
+            try {
+                String uuid = generateForgotPasswordRequest(email);
+                if (uuid != null) {
+                    messageElement.setTextContent("Password change request was successful. Please check your email for further instructions on how to complete your request.");
+                    cpeElement.setAttribute("status", "200");
+                    if (getResourceConfigProperty("include-change-password-link") != null && getResourceConfigProperty("include-change-password-link").equals("true")) {
+                        log.warn("Change password link will be part of response! Because of security reasons this should only be done for development or testing environments.");
+                        cpeElement.setAttribute("change-password-link", getURL(uuid));
+                    }
+                } else {
+                    log.warn("No forgot password request UUID!");
                 }
+            } catch(Exception e) {
+                messageElement.setTextContent(e.getMessage());
+                cpeElement.setAttribute("status", "400");
             }
+
         } else if (request.getParameter(PW_RESET_ID) != null && !request.getParameter(PW_RESET_ID).equals("") && !action.equals(SUBMITNEWPW)){
             String guid = request.getParameter(PW_RESET_ID);
             User usr = getUserForRequest(guid, totalValidHrs);
@@ -259,10 +263,9 @@ public class ForgotPassword extends BasicXMLResource {
     /**
      * Generate password change request
      * @param email E-Mail address of user
-     * @param uuid
-     * @return "success" if user with specific email address exists and email was sent, return exception message otherwise
+     * @return request UUID if user with specific email address exists and email was sent, return null or throw an exception otherwise
      */
-    private String generateForgotPasswordRequest(String email, String uuid) throws Exception {
+    private String generateForgotPasswordRequest(String email) throws Exception {
         String exceptionMsg;
         if (email == null || ("").equals(email)) {
             exceptionMsg = "E-mail address is empty.";
@@ -273,18 +276,23 @@ public class ForgotPassword extends BasicXMLResource {
             User[] userList = realm.getIdentityManager().getUserManager().getUsers(true);
             for(int i=0; i< userList.length; i++) {
                 if (userList[i].getEmail().equals(email)) {
-                    ResetPWExpire pwexp = new ResetPWExpire(userList[i].getID(), new Date().getTime(), uuid, userList[i].getEmail());
-
-                    sendEmail(uuid, userList[i].getEmail());
-
-                    writeXMLOutput(getPersistentRequestPath(uuid), generateXML(pwexp));
-                    return SUCCESS;
+                    String uuid = UUID.randomUUID().toString();
+                    uuid = sendEmail(uuid, userList[i].getEmail());
+                    if (uuid != null) {
+                        ResetPWExpire pwexp = new ResetPWExpire(userList[i].getID(), new Date().getTime(), uuid, userList[i].getEmail());
+                        writeXMLOutput(getPersistentRequestPath(uuid), generateXML(pwexp));
+                        return uuid;
+                    } else {
+                        exceptionMsg = "No forgot password request UUID was generated (please check log file to check what went wrong)";
+                        log.warn(exceptionMsg);
+                        throw new Exception(exceptionMsg);
+                    }
                 }
             }
             exceptionMsg = "Unable to find user based on the " + email + " E-mail address.";
         }
         log.warn(exceptionMsg);
-        return exceptionMsg;
+        throw new Exception(exceptionMsg);
     }
 
     /**
@@ -435,8 +443,9 @@ public class ForgotPassword extends BasicXMLResource {
     /**
      * Send email to user requesting to reset the password
      * @param guid UUID which is part of the change password link
+     * @return UUID
      */
-    protected void sendEmail(String guid, String emailAddress) throws Exception {
+    protected String sendEmail(String guid, String emailAddress) throws Exception {
         String emailSubject = "Reset password request needs your confirmation";
 
         String emailBody = generateEmailBody(guid);
@@ -451,6 +460,7 @@ public class ForgotPassword extends BasicXMLResource {
         } else {
             org.wyona.yanel.core.util.MailUtil.send(from, to, emailSubject, emailBody);
         }
+        return guid;
     }
 
     /**
