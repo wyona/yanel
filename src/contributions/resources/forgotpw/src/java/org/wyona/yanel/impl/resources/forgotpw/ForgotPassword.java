@@ -116,6 +116,7 @@ public class ForgotPassword extends BasicXMLResource {
         log.debug("action performed: " + action);
 
         Element rootElement = adoc.getDocumentElement();
+        String resetPasswordRequestUUID = getForgotPasswordRequestUUID(request);
         if (action.equals(SUBMITFORGOTPASSWORD)) {
             String email = request.getParameter("email");
             Element messageElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message"));
@@ -138,16 +139,15 @@ public class ForgotPassword extends BasicXMLResource {
                 cpeElement.setAttribute("status", "400");
             }
 
-        } else if (request.getParameter(PW_RESET_ID) != null && !request.getParameter(PW_RESET_ID).equals("") && !action.equals(SUBMITNEWPW)){
-            String guid = request.getParameter(PW_RESET_ID);
-            User usr = getUserForRequest(guid, totalValidHrs);
+        } else if (resetPasswordRequestUUID != null && !resetPasswordRequestUUID.equals("") && !action.equals(SUBMITNEWPW)){
+            User usr = getUserForRequest(resetPasswordRequestUUID, totalValidHrs);
             if(usr == null) {
                 Element statusElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message"));
-                statusElement.setTextContent("Unable to find forgot password request with request ID '" + guid + "'. Maybe request ID has a typo or request has expired. Please try again.");
+                statusElement.setTextContent("Unable to find forgot password request with request ID '" + resetPasswordRequestUUID + "'. Maybe request ID has a typo or request has expired. Please try again.");
             } else {
                 Element requestpwElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "requestnewpw"));
                 Element guidElement = (Element) requestpwElement.appendChild(adoc.createElementNS(NAMESPACE, "guid"));
-                guidElement.setTextContent(guid);
+                guidElement.setTextContent(resetPasswordRequestUUID);
             }
         } else if(action.equals(SUBMITNEWPW)) {
             String retStr = updatePassword(request.getParameter("newPassword"), request.getParameter("newPasswordConfirmation"), request.getParameter("guid"));
@@ -388,8 +388,9 @@ public class ForgotPassword extends BasicXMLResource {
 
     /**
      * Get forgot password URL which will be sent via E-Mail (also see YanelServlet#getRequestURLQS(HttpServletRequest, String, boolean))
+     * @param uuid UUID of forgot password request
      */
-    public String getURL(String uuid) throws Exception {
+    private String getURL(String uuid) throws Exception {
         //https://192.168.1.69:8443/yanel" + request.getServletPath().toString()
         URL url = new URL(request.getRequestURL().toString());
         org.wyona.yanel.core.map.Realm realm = getRealm();
@@ -438,6 +439,14 @@ public class ForgotPassword extends BasicXMLResource {
             basePath = DEFAULT_BASE_PATH;
         }
         return basePath;
+    }
+
+    /**
+     * Get forgot password request UUID. Overwrite this method in case you have a different query string parameter for the UUID
+     * @param request HTTP request containing the UUID
+     */
+    protected String getForgotPasswordRequestUUID(HttpServletRequest request) {
+        return request.getParameter(PW_RESET_ID);
     }
 
     /**
