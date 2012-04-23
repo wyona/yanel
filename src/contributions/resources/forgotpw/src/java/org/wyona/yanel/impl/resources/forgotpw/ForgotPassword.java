@@ -76,8 +76,6 @@ public class ForgotPassword extends BasicXMLResource {
     private static final String HOURS_VALID_PROPERTY_NAME = "num-hrs-valid";
     private static final long  DEFAULT_TOTAL_VALID_HRS = 24L;
 
-    private static final String SUCCESS = "success";
-
     /**
      * This is the main method that handles all view request. The first time the request
      * is made to enter the data.
@@ -117,6 +115,7 @@ public class ForgotPassword extends BasicXMLResource {
 
         Element rootElement = adoc.getDocumentElement();
         String resetPasswordRequestUUID = getForgotPasswordRequestUUID(request);
+        log.debug("Reset password request UUID: " + resetPasswordRequestUUID);
         if (action.equals(SUBMITFORGOTPASSWORD)) {
             String email = request.getParameter("email");
             Element messageElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message"));
@@ -130,6 +129,7 @@ public class ForgotPassword extends BasicXMLResource {
                     if (getResourceConfigProperty("include-change-password-link") != null && getResourceConfigProperty("include-change-password-link").equals("true")) {
                         log.warn("Change password link will be part of response! Because of security reasons this should only be done for development or testing environments.");
                         cpeElement.setAttribute("change-password-link", getURL(uuid));
+                        cpeElement.setAttribute("uuid", uuid);
                     }
                 } else {
                     log.warn("No forgot password request UUID!");
@@ -150,15 +150,16 @@ public class ForgotPassword extends BasicXMLResource {
                 guidElement.setTextContent(resetPasswordRequestUUID);
             }
         } else if(action.equals(SUBMITNEWPW)) {
-            String retStr = updatePassword(request.getParameter("newPassword"), request.getParameter("newPasswordConfirmation"), request.getParameter("guid"));
             Element messageElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message")); // INFO: We need to keep this element for backwards compatibility reasons!
             Element pwUpdateElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "password-update")); // INFO: We have introduced this element, because the "show-message" element is ambiguous, because it is also used while generating a password change request
-            if(!retStr.equals(SUCCESS)) {
-                messageElement.setTextContent(retStr);
-                pwUpdateElement.setAttribute("status", "400");
-            } else {
+
+            try {
+                updatePassword(request.getParameter("newPassword"), request.getParameter("newPasswordConfirmation"), request.getParameter("guid"));
                 messageElement.setTextContent("Password has been successfully reset. Please login with your new password.");
                 pwUpdateElement.setAttribute("status", "200");
+            } catch(Exception e) {
+                messageElement.setTextContent(e.getMessage());
+                pwUpdateElement.setAttribute("status", "400");
             }
         } else {
             log.debug("default handler");
@@ -350,20 +351,23 @@ public class ForgotPassword extends BasicXMLResource {
 
     /**
      * Validate and change new user password.
+     * @param newPassword New password
+     * @param confirmedPassword New password confirmed
+     * @param uuid UUID of forgot password request
      * @return "success" if validation and updating new user password was successful, otherwise return exception message
      */
-    private String updatePassword(String newPassword, String confirmedPassword, String uuid) throws Exception {
+    protected void updatePassword(String newPassword, String confirmedPassword, String uuid) throws Exception {
         if (newPassword == null || newPassword.length() == 0) {
             String exceptionMsg = "No password was submitted!";
             log.warn(exceptionMsg);
-            return exceptionMsg;
+            throw new Exception(exceptionMsg);
         }
 
         // INFO: The confirmed password is optional, but if provided, then it will be compared
         if (confirmedPassword != null && !newPassword.equals(confirmedPassword)) {
             String exceptionMsg = "Password and confirmed password do not match!";
             log.warn(exceptionMsg);
-            return exceptionMsg;
+            throw new Exception(exceptionMsg);
         }
 
         User user = getUserForRequest(uuid, totalValidHrs);
@@ -372,9 +376,8 @@ public class ForgotPassword extends BasicXMLResource {
             user.save();
             getRealm().getRepository().delete(new org.wyona.yarep.core.Path(getPersistentRequestPath(uuid))); // DEPRECATED
             //TODO: YarepUtil.deleteNode(getRealm().getRepository(), getPersistentRequestPath(uuid));
-            return SUCCESS;
         } else {
-            return "Unable to find user for password reset UUID: " + uuid;
+            throw new Exception("Unable to find user for password reset UUID: " + uuid);
         }
     }
 
