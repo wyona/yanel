@@ -14,6 +14,8 @@ public class UserRegistrationBean {
     private String lastname;
     private String email;
     private String password;
+    private String streetName;
+    private String zip;
     private String city;
     private String phone;
 
@@ -77,6 +79,36 @@ public class UserRegistrationBean {
      */
     public String getPassword() {
         return password;
+    }
+
+    /**
+     * Set street name
+     * @param name Street name
+     */
+    public void setStreetName(String name) {
+        this.streetName = name;
+    }
+
+    /**
+     * Get street name
+     */
+    public String getStreetName() {
+        return streetName;
+    }
+
+    /**
+     * Set ZIP code
+     * @param number ZIP code
+     */
+    public void setZipCode(String number) {
+        this.zip = number;
+    }
+
+    /**
+     * Get ZIP code
+     */
+    public String getZipCode() {
+        return zip;
     }
 
     /**
