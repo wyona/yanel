@@ -365,7 +365,9 @@ public class UserRegistrationResource extends BasicXMLResource {
      */
     private void processRegistrationRequest(Document doc, String email) throws Exception {
         Element rootElement = doc.getDocumentElement();
-            boolean inputsValid = true;
+        boolean inputsValid = true;
+
+        // INFO: Check email
             if (!isEmailValid(email)) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-not-valid"));
                 inputsValid = false;
@@ -380,11 +382,13 @@ public class UserRegistrationResource extends BasicXMLResource {
                 emailE.appendChild(doc.createTextNode("" + email)); 
             }
 
+        // INFO: Check password
             String password = getEnvironment().getRequest().getParameter("password");
             if (!isPasswordValid(password) || password.length() < 5) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "password-not-valid"));
                 inputsValid = false;
             }
+        // INFO: Check password confirmed
             String confirmedPassword = getEnvironment().getRequest().getParameter("password2");
             if (password != null && confirmedPassword != null && !password.equals(confirmedPassword)) {
                 log.warn("Passwords do not match!");
@@ -392,6 +396,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                 inputsValid = false;
             }
 
+        // INFO: Check firstname
             String firstname = getEnvironment().getRequest().getParameter("firstname");
             if (!isFirstnameValid(firstname)) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname-not-valid"));
@@ -401,6 +406,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                 fnE.appendChild(doc.createTextNode("" + firstname)); 
             }
 
+        // INFO: Check lastname
             String lastname = getEnvironment().getRequest().getParameter("lastname");
             if (!isLastnameValid(lastname)) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname-not-valid"));
@@ -410,6 +416,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                 fnE.appendChild(doc.createTextNode("" + lastname)); 
             }
 
+        // INFO: Check gender (mandatory)
             String gender = isGenderValid(getEnvironment().getRequest().getParameter("salutation"));
             if (gender == null) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "gender-not-valid"));
@@ -419,27 +426,31 @@ public class UserRegistrationResource extends BasicXMLResource {
                 fnE.appendChild(doc.createTextNode("" + gender)); 
             }
 
+        // INFO: Check company (optional)
             String company = isCompanyValid(getEnvironment().getRequest().getParameter("company"));
             if (company != null && company.length() > 0) {
                 Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "company"));
                 fnE.appendChild(doc.createTextNode("" + company)); 
             }
 
+        // INFO: Check fax (optional)
             String fax = isFaxValid(getEnvironment().getRequest().getParameter("fax"));
             if (fax != null && fax.length() > 0) {
                 Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "fax"));
                 fnE.appendChild(doc.createTextNode("" + fax)); 
             }
 
-            String street = getEnvironment().getRequest().getParameter("street");
-            if (!isStreetValid(street)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street-not-valid"));
-                inputsValid = false;
-            } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street"));
-                fnE.appendChild(doc.createTextNode("" + street)); 
-            }
+        // INFO: Check street
+        String street = getEnvironment().getRequest().getParameter("street");
+        if (!isStreetValid(street)) {
+            Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street-not-valid"));
+            inputsValid = false;
+        } else {
+            Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street"));
+            fnE.appendChild(doc.createTextNode("" + street)); 
+        }
 
+        // INFO: Check zip
             String zip = getEnvironment().getRequest().getParameter("zip");
             if (!isZipValid(zip)) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
@@ -457,6 +468,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                 }
             }
 
+        // INFO: Check city
             String city = getEnvironment().getRequest().getParameter("location");
             if (!isCityValid(city)) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city-not-valid"));
@@ -466,6 +478,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                 fnE.appendChild(doc.createTextNode("" + city)); 
             }
 
+        // INFO: Check phone
             String phone = getEnvironment().getRequest().getParameter("phone");
             if (!isPhoneValid(phone)) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone-not-valid"));
@@ -481,6 +494,8 @@ public class UserRegistrationResource extends BasicXMLResource {
                     emailConfigurationRequired = new Boolean(getResourceConfigProperty("email-confirmation")).booleanValue();
                 }
                 UserRegistrationBean userRegBean = new UserRegistrationBean(gender, firstname, lastname, email, password, city, phone);
+                userRegBean.setStreetName(street);
+                userRegBean.setZipCode(zip);
                 if (!emailConfigurationRequired) {
                     log.warn("User will be registered without email configuration! Because of security reasons this should only be done for development or testing environments.");
                     registerUser(doc, userRegBean);
