@@ -27,7 +27,9 @@
   <ac-identities>config/ac-identities-repository.xml</ac-identities>
 
 <!-- INFO: If no class attribute is set, then IdentityManagerFactoryImpl will be used as default (see src/core/java/org/wyona/yanel/core/map/RealmDefaultImpl.java)
-  <ac-identities class="org.wyona.security.impl.IdentityManagerFactoryImpl">config/ac-identities-repository.xml</ac-identities>
+  <ac-identities class="org.wyona.security.impl.IdentityManagerFactoryImpl" xmlns:yarep="http://www.wyona.org/yarep/1.0.0">
+    <yarep:repository-config>config/ac-identities-repository.xml</yarep:repository-config>
+  </ac-identities>
 -->
 
 <!-- INFO: As an alternative identities manager, one might want to use the LDAP based identities manager
