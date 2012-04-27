@@ -365,158 +365,34 @@ public class UserRegistrationResource extends BasicXMLResource {
      */
     private void processRegistrationRequest(Document doc, String email) throws Exception {
         Element rootElement = doc.getDocumentElement();
-        boolean inputsValid = true;
 
-        // INFO: Check email
-            if (!isEmailValid(email)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-not-valid"));
-                inputsValid = false;
+        UserRegistrationBean userRegBean = areSubmittedValuesValid(doc, email);
+        if (userRegBean != null) {
+            boolean emailConfigurationRequired = true;
+            if (getResourceConfigProperty("email-confirmation") != null) {
+                emailConfigurationRequired = new Boolean(getResourceConfigProperty("email-confirmation")).booleanValue();
+            }
+            if (!emailConfigurationRequired) {
+                log.warn("User will be registered without email configuration! Because of security reasons this should only be done for development or testing environments.");
+                registerUser(doc, userRegBean);
             } else {
-                // TODO: if (getRealm().getIdentityManager().getUserManager().existsUser(email)) {
-                if (getRealm().getIdentityManager().getUserManager().existsAlias(email)) {
-                    log.warn("E-Mail '" + email + "' is already used as alias!");
-                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-in-use"));
-                    inputsValid = false;
+                String uuid = java.util.UUID.randomUUID().toString();
+                userRegBean.setUUID(uuid);
+                try {
+                    saveRegistrationRequest(userRegBean);
+                    // TODO: Already create user, because of password encryption, but disable via expire?!
+                    sendConfirmationLinkEmail(doc, userRegBean);
+                } catch(Exception e) {
+                   log.error(e, e);
+                    Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
+                    invalidE.appendChild(doc.createTextNode(e.getMessage())); 
+                    return;
                 }
-                Element emailE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email"));
-                emailE.appendChild(doc.createTextNode("" + email)); 
             }
-
-        // INFO: Check password
-            String password = getEnvironment().getRequest().getParameter("password");
-            if (!isPasswordValid(password) || password.length() < 5) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "password-not-valid"));
-                inputsValid = false;
-            }
-        // INFO: Check password confirmed
-            String confirmedPassword = getEnvironment().getRequest().getParameter("password2");
-            if (password != null && confirmedPassword != null && !password.equals(confirmedPassword)) {
-                log.warn("Passwords do not match!");
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "passwords-do-not-match"));
-                inputsValid = false;
-            }
-
-        // INFO: Check firstname
-            String firstname = getEnvironment().getRequest().getParameter("firstname");
-            if (!isFirstnameValid(firstname)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname-not-valid"));
-                inputsValid = false;
-            } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname"));
-                fnE.appendChild(doc.createTextNode("" + firstname)); 
-            }
-
-        // INFO: Check lastname
-            String lastname = getEnvironment().getRequest().getParameter("lastname");
-            if (!isLastnameValid(lastname)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname-not-valid"));
-                inputsValid = false;
-            } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname"));
-                fnE.appendChild(doc.createTextNode("" + lastname)); 
-            }
-
-        // INFO: Check gender (mandatory)
-            String gender = isGenderValid(getEnvironment().getRequest().getParameter("salutation"));
-            if (gender == null) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "gender-not-valid"));
-                inputsValid = false;
-            } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "gender"));
-                fnE.appendChild(doc.createTextNode("" + gender)); 
-            }
-
-        // INFO: Check company (optional)
-            String company = isCompanyValid(getEnvironment().getRequest().getParameter("company"));
-            if (company != null && company.length() > 0) {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "company"));
-                fnE.appendChild(doc.createTextNode("" + company)); 
-            }
-
-        // INFO: Check fax (optional)
-            String fax = isFaxValid(getEnvironment().getRequest().getParameter("fax"));
-            if (fax != null && fax.length() > 0) {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "fax"));
-                fnE.appendChild(doc.createTextNode("" + fax)); 
-            }
-
-        // INFO: Check street
-        String street = getEnvironment().getRequest().getParameter("street");
-        if (!isStreetValid(street)) {
-            Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street-not-valid"));
-            inputsValid = false;
+            rootElement.appendChild(doc.createElementNS(NAMESPACE, "all-inputs-valid"));
         } else {
-            Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street"));
-            fnE.appendChild(doc.createTextNode("" + street)); 
+            rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
         }
-
-        // INFO: Check zip
-            String zip = getEnvironment().getRequest().getParameter("zip");
-            if (!isZipValid(zip)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
-                inputsValid = false;
-            } else {
-                Pattern pzip = Pattern.compile("[1-9][0-9]{3}");
-                Matcher mzip = pzip.matcher(zip);
-                if(mzip.find()) {
-                    zip = mzip.group(0);
-                    Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip"));
-                    fnE.appendChild(doc.createTextNode("" + mzip.group(0))); 
-                } else {
-                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
-                    inputsValid = false;
-                }
-            }
-
-        // INFO: Check city
-            String city = getEnvironment().getRequest().getParameter("location");
-            if (!isCityValid(city)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city-not-valid"));
-                inputsValid = false;
-            } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city"));
-                fnE.appendChild(doc.createTextNode("" + city)); 
-            }
-
-        // INFO: Check phone
-            String phone = getEnvironment().getRequest().getParameter("phone");
-            if (!isPhoneValid(phone)) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone-not-valid"));
-                inputsValid = false;
-            } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone"));
-                fnE.appendChild(doc.createTextNode("" + phone)); 
-            }
-
-            if (inputsValid) {
-                boolean emailConfigurationRequired = true;
-                if (getResourceConfigProperty("email-confirmation") != null) {
-                    emailConfigurationRequired = new Boolean(getResourceConfigProperty("email-confirmation")).booleanValue();
-                }
-                UserRegistrationBean userRegBean = new UserRegistrationBean(gender, firstname, lastname, email, password, city, phone);
-                userRegBean.setStreetName(street);
-                userRegBean.setZipCode(zip);
-                if (!emailConfigurationRequired) {
-                    log.warn("User will be registered without email configuration! Because of security reasons this should only be done for development or testing environments.");
-                    registerUser(doc, userRegBean);
-                } else {
-                    String uuid = java.util.UUID.randomUUID().toString();
-                    userRegBean.setUUID(uuid);
-                    try {
-                        saveRegistrationRequest(userRegBean);
-                        // TODO: Already create user, because of password encryption, but disable via expire?!
-                        sendConfirmationLinkEmail(doc, userRegBean);
-                    } catch(Exception e) {
-                        log.error(e, e);
-                        Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
-                        invalidE.appendChild(doc.createTextNode(e.getMessage())); 
-                        return;
-                    }
-                }
-                rootElement.appendChild(doc.createElementNS(NAMESPACE, "all-inputs-valid"));
-            } else {
-                rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
-            }
     }
 
     /**
@@ -663,6 +539,144 @@ public class UserRegistrationResource extends BasicXMLResource {
             throw new Exception(e.getMessage(), e);
         }
         return doc;
+    }
+
+    /**
+     * Check whether submitted fields are valid
+     */
+    protected UserRegistrationBean areSubmittedValuesValid(Document doc, String email) throws Exception {
+        boolean inputsValid = true;
+        Element rootElement = doc.getDocumentElement();
+        // INFO: Check email
+            if (!isEmailValid(email)) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-not-valid"));
+                inputsValid = false;
+            } else {
+                // TODO: if (getRealm().getIdentityManager().getUserManager().existsUser(email)) {
+                if (getRealm().getIdentityManager().getUserManager().existsAlias(email)) {
+                    log.warn("E-Mail '" + email + "' is already used as alias!");
+                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-in-use"));
+                    inputsValid = false;
+                }
+                Element emailE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email"));
+                emailE.appendChild(doc.createTextNode("" + email)); 
+            }
+
+        // INFO: Check password
+            String password = getEnvironment().getRequest().getParameter("password");
+            if (!isPasswordValid(password) || password.length() < 5) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "password-not-valid"));
+                inputsValid = false;
+            }
+        // INFO: Check password confirmed
+            String confirmedPassword = getEnvironment().getRequest().getParameter("password2");
+            if (password != null && confirmedPassword != null && !password.equals(confirmedPassword)) {
+                log.warn("Passwords do not match!");
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "passwords-do-not-match"));
+                inputsValid = false;
+            }
+
+        // INFO: Check firstname
+            String firstname = getEnvironment().getRequest().getParameter("firstname");
+            if (!isFirstnameValid(firstname)) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname-not-valid"));
+                inputsValid = false;
+            } else {
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname"));
+                fnE.appendChild(doc.createTextNode("" + firstname)); 
+            }
+
+        // INFO: Check lastname
+            String lastname = getEnvironment().getRequest().getParameter("lastname");
+            if (!isLastnameValid(lastname)) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname-not-valid"));
+                inputsValid = false;
+            } else {
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname"));
+                fnE.appendChild(doc.createTextNode("" + lastname)); 
+            }
+
+        // INFO: Check gender (mandatory)
+            String gender = isGenderValid(getEnvironment().getRequest().getParameter("salutation"));
+            if (gender == null) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "gender-not-valid"));
+                inputsValid = false;
+            } else {
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "gender"));
+                fnE.appendChild(doc.createTextNode("" + gender)); 
+            }
+
+        // INFO: Check company (optional)
+            String company = isCompanyValid(getEnvironment().getRequest().getParameter("company"));
+            if (company != null && company.length() > 0) {
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "company"));
+                fnE.appendChild(doc.createTextNode("" + company)); 
+            }
+
+        // INFO: Check fax (optional)
+            String fax = isFaxValid(getEnvironment().getRequest().getParameter("fax"));
+            if (fax != null && fax.length() > 0) {
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "fax"));
+                fnE.appendChild(doc.createTextNode("" + fax)); 
+            }
+
+        // INFO: Check street
+        String street = getEnvironment().getRequest().getParameter("street");
+        if (!isStreetValid(street)) {
+            Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street-not-valid"));
+            inputsValid = false;
+        } else {
+            Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street"));
+            fnE.appendChild(doc.createTextNode("" + street)); 
+        }
+
+        // INFO: Check zip
+            String zip = getEnvironment().getRequest().getParameter("zip");
+            if (!isZipValid(zip)) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
+                inputsValid = false;
+            } else {
+                Pattern pzip = Pattern.compile("[1-9][0-9]{3}");
+                Matcher mzip = pzip.matcher(zip);
+                if(mzip.find()) {
+                    zip = mzip.group(0);
+                    Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip"));
+                    fnE.appendChild(doc.createTextNode("" + mzip.group(0))); 
+                } else {
+                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
+                    inputsValid = false;
+                }
+            }
+
+        // INFO: Check city
+            String city = getEnvironment().getRequest().getParameter("location");
+            if (!isCityValid(city)) {
+                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city-not-valid"));
+                inputsValid = false;
+            } else {
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city"));
+                fnE.appendChild(doc.createTextNode("" + city)); 
+            }
+
+        // INFO: Check phone
+        String phone = getEnvironment().getRequest().getParameter("phone");
+        if (!isPhoneValid(phone)) {
+            Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone-not-valid"));
+            inputsValid = false;
+        } else {
+            Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone"));
+            fnE.appendChild(doc.createTextNode("" + phone)); 
+        }
+
+        if (inputsValid) {
+            UserRegistrationBean userRegBean = new UserRegistrationBean(gender, firstname, lastname, email, password, city, phone);
+            userRegBean.setStreetName(street);
+            userRegBean.setZipCode(zip);
+            return userRegBean;
+        } else {
+            return null;
+        }
+
     }
 }
 
