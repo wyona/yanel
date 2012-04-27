@@ -361,7 +361,7 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
-     * @email E-Mail of user which will be used as username/alias
+     * @param email E-Mail of user which will be used as username/alias
      */
     private void processRegistrationRequest(Document doc, String email) throws Exception {
         Element rootElement = doc.getDocumentElement();
@@ -543,6 +543,9 @@ public class UserRegistrationResource extends BasicXMLResource {
 
     /**
      * Check whether submitted fields are valid
+     * @param doc DOM document to generate response
+     * @param email E-Mail of user which will be used as username/alias
+     * @return user registration information if all fields are valid, otherwise return null (and add errors to DOM document)
      */
     protected UserRegistrationBean areSubmittedValuesValid(Document doc, String email) throws Exception {
         boolean inputsValid = true;
