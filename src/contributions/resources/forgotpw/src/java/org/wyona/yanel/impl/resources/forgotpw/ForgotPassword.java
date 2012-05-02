@@ -168,7 +168,11 @@ public class ForgotPassword extends BasicXMLResource {
             if ((smtpEmailServer != null && smtpEmailServerPort != null) || (getYanel().getSMTPHost() != null && getYanel().getSMTPPort() >= 0)) {
                 String from = getResourceConfigProperty("smtpFrom");
                 if (from != null) {
-                    rootElement.appendChild(adoc.createElementNS(NAMESPACE, "requestemail"));
+                    Element requestEmailElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "requestemail")); // INFO: A phone application might have cached the email address and hence wants to auto-complete the form...
+                    String emailAddress = getEnvironment().getRequest().getParameter("email");
+                    if (emailAddress != null) {
+                        requestEmailElement.appendChild(adoc.createTextNode(emailAddress));
+                    }
                 } else {
                     Element exceptionElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "exception"));
                     String resConfigFilename = "global-resource-configs/user-forgot-pw_yanel-rc.xml";
