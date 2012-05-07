@@ -203,7 +203,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         try {
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email"));
             if (sendNotificationsEnabled()) {
-                MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), userRegBean.getEmail(), "Activate User Registration", getActivationURL(userRegBean.getUUID()));
+                MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), userRegBean.getEmail(), "Activate User Registration", getActivationURL(userRegBean));
                 element.setAttribute("sent", "true");
             } else {
                 element.setAttribute("sent", "false");
@@ -211,7 +211,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             element.setAttribute("hours-valid", "" + DEFAULT_TOTAL_VALID_HRS);
             if (getResourceConfigProperty("include-activation-link") != null && getResourceConfigProperty("include-activation-link").equals("true")) {
                 log.warn("Activation link will be part of response! Because of security reasons this should only be done for development or testing environments.");
-                element.setAttribute("activation-link", getActivationURL(userRegBean.getUUID()));
+                element.setAttribute("activation-link", getActivationURL(userRegBean));
             }
         } catch(Exception e) {
             log.error(e, e);
@@ -328,9 +328,9 @@ public class UserRegistrationResource extends BasicXMLResource {
 
     /**
      * Get activation URL which will be sent via E-Mail (also see YanelServlet#getRequestURLQS(HttpServletRequest, String, boolean))
-     * @param uuid Unique identifier to activate registration
+     * @param userRegBean User registration bean containing 'all' information about registration request
      */
-    public String getActivationURL(String uuid) throws Exception {
+    public String getActivationURL(UserRegistrationBean userRegBean) throws Exception {
         //https://192.168.1.69:8443/yanel" + request.getServletPath().toString()
         URL url = new URL(request.getRequestURL().toString());
         org.wyona.yanel.core.map.Realm realm = getRealm();
@@ -357,7 +357,42 @@ public class UserRegistrationResource extends BasicXMLResource {
         } else {
             log.warn("No proxy set.");
         }
+        String uuid = userRegBean.getUUID();
         return url.toString() + "?uuid=" + uuid;
+    }
+
+    /**
+     * Get homepage URL which will be sent via E-Mail (also see YanelServlet#getRequestURLQS(HttpServletRequest, String, boolean))
+     */
+    public String getHomepageURL() throws Exception {
+        //https://192.168.1.69:8443/yanel" + request.getServletPath().toString()
+        URL url = new URL(request.getRequestURL().toString());
+
+        if (realm.isProxySet()) {
+            org.wyona.yanel.core.map.Realm realm = getRealm();
+            // TODO: Finish proxy settings replacement
+
+            String proxyHostName = realm.getProxyHostName();
+            log.debug("Proxy host name: " + proxyHostName);
+            if (proxyHostName != null) {
+                url = new URL(url.getProtocol(), proxyHostName, url.getPort(), url.getFile());
+            }
+
+            int proxyPort = realm.getProxyPort();
+            if (proxyPort >= 0) {
+                url = new URL(url.getProtocol(), url.getHost(), proxyPort, url.getFile());
+            } else {
+                url = new URL(url.getProtocol(), url.getHost(), url.getDefaultPort(), url.getFile());
+            }
+
+            String proxyPrefix = realm.getProxyPrefix();
+            if (proxyPrefix != null) {
+                url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile().substring(proxyPrefix.length()));
+            }
+        } else {
+            log.warn("No proxy set.");
+        }
+        return url.toString().replace("registration", "index"); // TODO: Replace hardcoded registration...
     }
 
     /**
@@ -410,8 +445,8 @@ public class UserRegistrationResource extends BasicXMLResource {
                 registerUser(doc, urBean);
                 getRealm().getRepository().getNode(path).delete();
 
-                String homepageURL = getActivationURL(null).replace("registration", "index"); // TODO: Misuse getActivationURL ...
-                homepageURL = homepageURL.substring(0, homepageURL.indexOf("?"));
+                String homepageURL = getHomepageURL();
+
                 if (sendNotificationsEnabled()) {
                     MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "User Registration Successful", homepageURL);
                 }
