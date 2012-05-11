@@ -277,27 +277,41 @@ public class ForgotPassword extends BasicXMLResource {
         } else if (! EmailValidator.getInstance().isValid(email)) {
             exceptionMsg = email + " is not a valid E-mail address.";
         } else {
-            log.warn("TODO: Checking every user by her/his email does not scale!");
-            User[] userList = realm.getIdentityManager().getUserManager().getUsers(true);
-            for(int i=0; i< userList.length; i++) {
-                if (userList[i].getEmail().equals(email)) {
-                    String uuid = UUID.randomUUID().toString();
-                    uuid = sendEmail(uuid, userList[i].getEmail());
-                    if (uuid != null) {
-                        ResetPWExpire pwexp = new ResetPWExpire(userList[i].getID(), new Date().getTime(), uuid, userList[i].getEmail());
-                        writeXMLOutput(getPersistentRequestPath(uuid), generateXML(pwexp));
-                        return uuid;
-                    } else {
-                        exceptionMsg = "No forgot password request UUID was generated (please check log file to check what went wrong)";
-                        log.warn(exceptionMsg);
-                        throw new Exception(exceptionMsg);
-                    }
+            User user = getUser(email);
+            if (user == null) {
+                exceptionMsg = "Unable to find user based on the " + email + " E-mail address.";
+            } else {
+                String uuid = UUID.randomUUID().toString();
+                uuid = sendEmail(uuid, user.getEmail());
+                if (uuid != null) {
+                    ResetPWExpire pwexp = new ResetPWExpire(user.getID(), new Date().getTime(), uuid, user.getEmail());
+                    writeXMLOutput(getPersistentRequestPath(uuid), generateXML(pwexp));
+                    return uuid;
+                } else {
+                    exceptionMsg = "No forgot password request UUID was generated (please check log file to check what went wrong)";
+                    log.warn(exceptionMsg);
+                    throw new Exception(exceptionMsg);
                 }
             }
-            exceptionMsg = "Unable to find user based on the " + email + " E-mail address.";
         }
         log.warn(exceptionMsg);
         throw new Exception(exceptionMsg);
+    }
+
+    /**
+     * Get user which is associated with an email address
+     * @param email Email address of user
+     */
+    protected User getUser(String email) throws Exception {
+        log.warn("TODO: Checking every user by her/his email does not scale!");
+        User[] userList = realm.getIdentityManager().getUserManager().getUsers(true);
+        for(int i=0; i< userList.length; i++) {
+            if (userList[i].getEmail().equals(email)) {
+                return userList[i];
+            }
+        }
+        log.warn("No user found with email addres: " + email);
+        return null;
     }
 
     /**
