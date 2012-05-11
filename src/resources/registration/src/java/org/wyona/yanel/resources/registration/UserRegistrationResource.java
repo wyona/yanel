@@ -195,6 +195,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 
     /**
      * Send email containing a confirmation link
+     * @param userRegBean Bean containing all information about user registration
      */
     private void sendConfirmationLinkEmail(Document doc, UserRegistrationBean userRegBean) {
         log.info("Do not register user right away, but send an email to '" + userRegBean.getEmail() + "' containing a confirmation link...");
@@ -238,7 +239,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 
             addUserToGroups(user);
 
-            User alias = getRealm().getIdentityManager().getUserManager().createAlias(userRegBean.getEmail(), user.getID());
+            getRealm().getIdentityManager().getUserManager().createAlias(userRegBean.getEmail(), user.getID());
 
             Element ncE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "new-customer-registered"));
             ncE.setAttributeNS(NAMESPACE, "id", user.getID());
