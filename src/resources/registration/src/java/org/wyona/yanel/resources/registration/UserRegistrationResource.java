@@ -436,7 +436,7 @@ public class UserRegistrationResource extends BasicXMLResource {
      * @param uuid UUID of user registration activation request
      * @return true if user registration activation was successful, otherwise return false if actication failed
      */
-    private boolean activateRegistration(String uuid, Document doc) {
+    protected boolean activateRegistration(String uuid, Document doc) {
         try {
             String path = getActivationNodePath(uuid);
             if (getRealm().getRepository().existsNode(path)) {
