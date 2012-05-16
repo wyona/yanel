@@ -115,7 +115,6 @@ public class ForgotPassword extends BasicXMLResource {
 
         Element rootElement = adoc.getDocumentElement();
         String resetPasswordRequestUUID = getForgotPasswordRequestUUID(request);
-        log.debug("Reset password request UUID: " + resetPasswordRequestUUID);
         if (action.equals(SUBMITFORGOTPASSWORD)) {
             String email = request.getParameter("email");
             Element messageElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message"));
@@ -140,10 +139,13 @@ public class ForgotPassword extends BasicXMLResource {
             }
 
         } else if (resetPasswordRequestUUID != null && !resetPasswordRequestUUID.equals("") && !action.equals(SUBMITNEWPW)){
+            log.debug("Reset password request UUID: " + resetPasswordRequestUUID);
             User usr = getUserForRequest(resetPasswordRequestUUID, totalValidHrs);
             if(usr == null) {
+                String errorMsg ="Unable to find forgot password request with request UUID '" + resetPasswordRequestUUID + "'. Maybe request UUID has a typo or request has expired or got deleted by administrator. Please try again.";
+                log.warn(errorMsg);
                 Element statusElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message"));
-                statusElement.setTextContent("Unable to find forgot password request with request ID '" + resetPasswordRequestUUID + "'. Maybe request ID has a typo or request has expired. Please try again.");
+                statusElement.setTextContent(errorMsg);
             } else {
                 Element requestpwElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "requestnewpw"));
                 Element guidElement = (Element) requestpwElement.appendChild(adoc.createElementNS(NAMESPACE, "guid"));
