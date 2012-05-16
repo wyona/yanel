@@ -67,13 +67,27 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
     private java.io.InputStream getXMLAsStream(boolean emailUpdated) throws Exception {
         String userId = getUserId();
         if (userId != null) {
-            User user = realm.getIdentityManager().getUserManager().getUser(userId);
+            Document doc = getUserProfile(userId, emailUpdated);
+            return XMLHelper.getInputStream(doc, false, true, null);
+        } else {
+            return new java.io.StringBufferInputStream("<no-user-id/>");
+        }
+    }
 
-            Document doc = XMLHelper.createDocument(null, "user");
-            Element rootEl = doc.getDocumentElement();
+    /**
+     * Get user profile as DOM XML
+     * @param userID ID of user
+     * @param emailUpdated Flag whether email got updated successfully
+     */
+    protected Document getUserProfile(String userId, boolean emailUpdated) throws Exception {
+        User user = realm.getIdentityManager().getUserManager().getUser(userId);
+
+        Document doc = XMLHelper.createDocument(null, "user");
+        Element rootEl = doc.getDocumentElement();
             rootEl.setAttribute("id", userId);
             rootEl.setAttribute("email", user.getEmail());
-            rootEl.setAttribute("lamguage", user.getLanguage());
+            rootEl.setAttribute("lamguage", user.getLanguage()); // DEPRECATED
+            rootEl.setAttribute("language", user.getLanguage());
             if (emailUpdated) {
                 rootEl.setAttribute("email-saved-successfully", "true");
             }
@@ -101,10 +115,7 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                 }
             }
 
-            return XMLHelper.getInputStream(doc, false, true, null);
-        } else {
-            return new java.io.StringBufferInputStream("<no-user-id/>");
-        }
+            return doc;
     }
 
     /**
