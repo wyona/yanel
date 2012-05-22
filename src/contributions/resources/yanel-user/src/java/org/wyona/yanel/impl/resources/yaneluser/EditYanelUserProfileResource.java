@@ -119,9 +119,9 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
     }
 
     /**
-     * Get user id from resource configuration
+     * Get user ID, whereas check various options, such as 1) query string, 2) resource configuration, 3) URL and 4) session
      */
-    private String getUserId() throws Exception {
+    protected String getUserId() throws Exception {
         String userId = null;
 
         // 1)
