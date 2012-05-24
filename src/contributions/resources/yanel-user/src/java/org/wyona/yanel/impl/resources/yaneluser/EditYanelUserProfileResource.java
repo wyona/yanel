@@ -35,14 +35,16 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
     /*
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
      */
-    protected InputStream getContentXML(String viewId) {
+    protected InputStream getContentXML(String viewId) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("requested viewId: " + viewId);
         }
 
         String oldPassword = getEnvironment().getRequest().getParameter("oldPassword");
         if (oldPassword != null) {
-            updatePassword(oldPassword);
+            String newPassword = getEnvironment().getRequest().getParameter("newPassword");
+            String newPasswordConfirmed = getEnvironment().getRequest().getParameter("newPasswordConfirmation");
+            updatePassword(oldPassword, newPassword, newPasswordConfirmed);
         }
 
         String email = getEnvironment().getRequest().getParameter("email");
@@ -169,35 +171,28 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
 
     /**
      * Change user password
-     *
      * @param oldPassword Existing current password
      */
-    private void updatePassword(String oldPassword) {
-        try {
-            String userId = getUserId();
+    protected void updatePassword(String oldPassword, String newPassword, String newPasswordConfirmed) throws Exception {
+        String userId = getUserId();
 
-            if (!getRealm().getIdentityManager().getUserManager().getUser(userId).authenticate(oldPassword)) {
-                setTransformerParameter("error", "Authentication of user '" +userId + "' failed!");
-                log.error("Authentication of user '" + userId + "' failed!");
-                return;
-            }
+        if (!getRealm().getIdentityManager().getUserManager().getUser(userId).authenticate(oldPassword)) {
+            setTransformerParameter("error", "Authentication of user '" +userId + "' failed!");
+            log.error("Authentication of user '" + userId + "' failed!");
+            return;
+        }
 
-            String newPassword = getEnvironment().getRequest().getParameter("newPassword");
-            String newPasswordConfirmed = getEnvironment().getRequest().getParameter("newPasswordConfirmation");
-            if (newPassword != null && !newPassword.equals("")) {
-                if (newPassword.equals(newPasswordConfirmed)) {
-                    User user = getRealm().getIdentityManager().getUserManager().getUser(userId);
-                    user.setPassword(newPassword);
-                    user.save();
-                    setTransformerParameter("success", "Password updated successfully");
-                } else {
-                    setTransformerParameter("error", "New password and its confirmation do not match!");
-                }
+        if (newPassword != null && !newPassword.equals("")) {
+            if (newPassword.equals(newPasswordConfirmed)) {
+                User user = getRealm().getIdentityManager().getUserManager().getUser(userId);
+                user.setPassword(newPassword);
+                user.save();
+                setTransformerParameter("success", "Password updated successfully");
             } else {
-                setTransformerParameter("error", "No new password was specified!");
+                setTransformerParameter("error", "New password and its confirmation do not match!");
             }
-        } catch (Exception e) {
-            log.error(e, e);
+        } else {
+            setTransformerParameter("error", "No new password was specified!");
         }
     }
 
