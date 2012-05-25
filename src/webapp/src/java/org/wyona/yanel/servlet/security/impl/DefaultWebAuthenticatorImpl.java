@@ -379,9 +379,6 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
         if(log.isDebugEnabled()) log.debug("Default authentication form implementation!");
 
-        String pathRelativeToRealm = request.getServletPath().replaceFirst(realm.getMountPoint(),"/");
-        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(pathRelativeToRealm);
-        
         try {
             org.w3c.dom.Document adoc = generateAuthenticationScreenXML(request, realm, message, sslPort, map);
 
@@ -392,6 +389,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.stream.StreamResult(response.getOutputStream()));
                 //out.close();
             } else {
+                //String mimeType = YanelServlet.patchMimeType("text/html", request);
                 String mimeType = YanelServlet.patchMimeType("application/xhtml+xml", request);
                 response.setContentType(mimeType + "; charset=" + YanelServlet.DEFAULT_ENCODING);
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
@@ -402,9 +400,20 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 if (!xsltLoginScreen.isFile()) xsltLoginScreen = org.wyona.commons.io.FileUtil.file(servletContextRealPath, xsltLoginScreenDefault);
 
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltLoginScreen));
+
+                String pathRelativeToRealm = request.getServletPath().replaceFirst(realm.getMountPoint(),"/"); // INFO: For example "/en/index.html"
+                //log.debug("Path relative to realm: " + pathRelativeToRealm);
+                String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(pathRelativeToRealm);
                 transformer.setParameter("yanel.back2realm", backToRealm);
+
                 transformer.setParameter("yanel.reservedPrefix", reservedPrefix);
+
+                //transformer.setParameter("language", "TODO"); // INFO: resource.getRequestedLanguage()
+                transformer.setParameter("content-language", getContentLanguage(pathRelativeToRealm)); // INFO: resource.getContentLanguage()
+
                 transformer.transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
+
+                // TODO: i18n
             }
 
             
@@ -707,5 +716,19 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
         }
 
         return adoc;
+    }
+
+    /**
+     * Get content language from path
+     * @param path Path such as for example "/en/index.html"
+     * @return two-letter language code, e.g. "en"
+     */
+    private String getContentLanguage(String path) {
+        if (path.length() >= 3 && path.charAt(0) == '/' && path.charAt(3) == '/') {
+            return path.substring(1,3);
+        } else {
+            log.warn("No two-letter language code detected inside: " + path);
+            return null;
+        }
     }
 }
