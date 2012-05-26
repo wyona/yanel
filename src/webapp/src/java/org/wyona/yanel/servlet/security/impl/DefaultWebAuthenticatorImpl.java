@@ -409,7 +409,10 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 transformer.setParameter("yanel.reservedPrefix", reservedPrefix);
 
                 //transformer.setParameter("language", "TODO"); // INFO: resource.getRequestedLanguage()
-                transformer.setParameter("content-language", getContentLanguage(pathRelativeToRealm)); // INFO: resource.getContentLanguage()
+                String twoLetterLangCode = getContentLanguage(pathRelativeToRealm);
+                if (twoLetterLangCode != null) {
+                    transformer.setParameter("content-language", twoLetterLangCode); // INFO: resource.getContentLanguage()
+                }
 
                 transformer.transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
 
