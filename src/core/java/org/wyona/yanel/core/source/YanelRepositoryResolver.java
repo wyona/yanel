@@ -32,10 +32,20 @@ public class YanelRepositoryResolver implements URIResolver {
 
     private static final String SCHEME = "yanelrepo";
     
-    private Resource resource;
-    
+    private Realm realm;
+
+    /**
+     * @param resource Resource which is associated with a realm, which contains various repositories
+     */
     public YanelRepositoryResolver(Resource resource) {
-        this.resource = resource;
+        realm = resource.getRealm();
+    }
+
+    /**
+     * @param realm Realm containing repositories
+     */
+    public YanelRepositoryResolver(Realm realm) {
+        this.realm = realm;
     }
 
     public Source resolve(String href, String base) throws SourceException {
@@ -69,11 +79,11 @@ public class YanelRepositoryResolver implements URIResolver {
         }
 
         try {
-            Realm realm;
+            //Realm realm;
             if (realmID != null) {
                 realm = Yanel.getInstance().getRealmConfiguration().getRealm(realmID);
             } else {
-                realm = resource.getRealm();
+                // INFO: Use realm given as argument to constructor
             }
             Repository repo;
             if (repoID != null) {
