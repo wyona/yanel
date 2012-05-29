@@ -7,6 +7,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 
 import org.apache.log4j.Logger;
+
 import org.wyona.yanel.core.Resource;
 import org.wyona.commons.io.PathUtil;
 
@@ -22,7 +23,10 @@ public class SourceResolver implements URIResolver {
     
     private HashMap<String, URIResolver> resolvers;
     private Resource resource;
-    
+
+    /**
+     * @param resource
+     */
     public SourceResolver(Resource resource) {
         this.resource = resource;
         this.resolvers = new HashMap<String, URIResolver>();
@@ -87,7 +91,7 @@ public class SourceResolver implements URIResolver {
                 resolver = new ResourceResolver(this.resource);
                 this.resolvers.put(scheme, resolver);
             } else if (scheme.equals("yanelrepo")) {
-                resolver = new YanelRepositoryResolver(this.resource);
+                resolver = new YanelRepositoryResolver(this.resource.getRealm());
                 this.resolvers.put(scheme, resolver);
                 //resolver = new RepositoryResolver(this.resource);
             } else if (scheme.equals("http")) {
