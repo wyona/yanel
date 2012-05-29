@@ -1,7 +1,10 @@
 package org.wyona.yanel.servlet.security.impl;
 
+import org.wyona.commons.io.MimeTypeUtil;
+
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.core.transformation.I18nTransformer3;
 import org.wyona.yanel.servlet.YanelServlet;
 import org.wyona.yanel.core.api.security.WebAuthenticator;
 
@@ -20,19 +23,19 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.util.ArrayList;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
-import java.net.URL;
-
 import org.w3c.dom.Element;
-
-import org.apache.log4j.Logger;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
+import org.apache.log4j.Logger;
+import org.apache.xml.resolver.tools.CatalogResolver;
 
 // JOID is an alternative openid impl
 /*
@@ -389,7 +392,6 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.stream.StreamResult(response.getOutputStream()));
                 //out.close();
             } else {
-                //String mimeType = YanelServlet.patchMimeType("text/html", request);
                 String mimeType = YanelServlet.patchMimeType("application/xhtml+xml", request);
                 response.setContentType(mimeType + "; charset=" + YanelServlet.DEFAULT_ENCODING);
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
@@ -408,18 +410,37 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
                 transformer.setParameter("yanel.reservedPrefix", reservedPrefix);
 
-                //transformer.setParameter("language", "TODO"); // INFO: resource.getRequestedLanguage()
-                String twoLetterLangCode = getContentLanguage(pathRelativeToRealm);
-                if (twoLetterLangCode != null) {
-                    transformer.setParameter("content-language", twoLetterLangCode); // INFO: resource.getContentLanguage()
+                String browserLanguage = getBrowserLanguage(request);
+                if (browserLanguage != null) {
+                    transformer.setParameter("language", browserLanguage); // INFO: resource.getRequestedLanguage()
+                }
+                String contentLang = getContentLanguage(pathRelativeToRealm);
+                if (contentLang != null) {
+                    transformer.setParameter("content-language", contentLang); // INFO: resource.getContentLanguage()
                 }
 
-                transformer.transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
 
-                // TODO: i18n
+                if (contentLang != null || browserLanguage != null || realm.getDefaultLanguage() != null) {
+                    // INFO: Create i18n transformer:
+                    javax.xml.transform.URIResolver resolver = new org.wyona.yanel.core.source.YanelRepositoryResolver(realm);
+                    I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(realm), contentLang, browserLanguage, realm.getDefaultLanguage(), resolver);
+                    CatalogResolver catalogResolver = new CatalogResolver();
+                    i18nTransformer.setEntityResolver(catalogResolver);
+
+                    org.apache.xml.serializer.Serializer serializer;
+                    if (MimeTypeUtil.isHTML(mimeType) && ! MimeTypeUtil.isXML(mimeType)) {
+                        serializer = org.wyona.yanel.core.serialization.SerializerFactory.getSerializer(org.wyona.yanel.core.serialization.SerializerFactory.HTML_TRANSITIONAL);
+                    } else {
+                        serializer = org.wyona.yanel.core.serialization.SerializerFactory.getSerializer(org.wyona.yanel.core.serialization.SerializerFactory.XHTML_STRICT);
+                    }
+                    serializer.setOutputStream(response.getOutputStream());
+                    i18nTransformer.setResult(new javax.xml.transform.sax.SAXResult(serializer.asContentHandler()));
+                    transformer.transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.sax.SAXResult(i18nTransformer));
+                } else {
+                    log.warn("No content, nor browser, nor default language, hence do not use i18n...");
+                    transformer.transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
+                }
             }
-
-            
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage());
@@ -733,5 +754,41 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             log.warn("No two-letter language code detected inside: " + path);
             return null;
         }
+    }
+
+    /**
+     * Gets the names of the i18n message catalogues used for the i18n transformation.
+     * Uses the following priorization:
+     * 1. realm i18n-catalogue
+     * 2. 'global'
+     * @return i18n catalogue name
+     */
+    private String[] getI18NCatalogueNames(Realm realm) throws Exception {
+        ArrayList<String> catalogues = new ArrayList<String>();
+        String realmCatalogue = realm.getI18nCatalogue();
+        if (realmCatalogue != null) {
+            catalogues.add(realmCatalogue);
+        }
+        catalogues.add("global");
+        return catalogues.toArray(new String[catalogues.size()]);
+    }
+
+    /**
+     * Get language accepted by browser
+     */
+    private String getBrowserLanguage(HttpServletRequest request) {
+        String language = request.getHeader("Accept-Language");
+        if (language != null) {
+            if (language.indexOf(",") > 0) {
+                language = language.substring(0, language.indexOf(","));
+            }
+            int dashIndex = language.indexOf("-");
+            if (dashIndex > 0) {
+                language = language.substring(0, dashIndex);
+            }
+
+            return language;
+        }
+        return null;
     }
 }
