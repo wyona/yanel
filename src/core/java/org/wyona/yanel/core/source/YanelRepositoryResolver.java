@@ -4,7 +4,9 @@ import java.io.InputStream;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.URIResolver;
-import org.apache.log4j.Category;
+
+import org.apache.log4j.Logger;
+
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.map.Realm;
@@ -28,13 +30,14 @@ import org.wyona.yarep.core.Repository;
  */
 public class YanelRepositoryResolver implements URIResolver {
 
-    private static Category log = Category.getInstance(YanelRepositoryResolver.class);
+    private static Logger log = Logger.getLogger(YanelRepositoryResolver.class);
 
     private static final String SCHEME = "yanelrepo";
     
     private Realm realm;
 
     /**
+     * @deprecated Use YanelRepositoryResolver(Realm) instead
      * @param resource Resource which is associated with a realm, which contains various repositories
      */
     public YanelRepositoryResolver(Resource resource) {
