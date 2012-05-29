@@ -404,6 +404,8 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltLoginScreen));
 
                 String pathRelativeToRealm = request.getServletPath().replaceFirst(realm.getMountPoint(),"/"); // INFO: For example "/en/index.html"
+                transformer.setParameter("yanel.path", pathRelativeToRealm);
+
                 //log.debug("Path relative to realm: " + pathRelativeToRealm);
                 String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(pathRelativeToRealm);
                 transformer.setParameter("yanel.back2realm", backToRealm);
