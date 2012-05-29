@@ -140,8 +140,7 @@ public class ForgotPassword extends BasicXMLResource {
 
         } else if (resetPasswordRequestUUID != null && !resetPasswordRequestUUID.equals("") && !action.equals(SUBMITNEWPW)){
             log.debug("Reset password request UUID: " + resetPasswordRequestUUID);
-            User usr = getUserForRequest(resetPasswordRequestUUID, totalValidHrs);
-            if(usr == null) {
+            if(!existsRequestUUID(resetPasswordRequestUUID)) {
                 String errorMsg ="Unable to find forgot password request with request UUID '" + resetPasswordRequestUUID + "'. Maybe request UUID has a typo or request has expired or got deleted by administrator. Please try again.";
                 log.warn(errorMsg);
                 Element statusElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message"));
@@ -191,6 +190,20 @@ public class ForgotPassword extends BasicXMLResource {
                 }
                 exceptionElement.setTextContent("SMTP host/port has not been configured yet. Please make sure to configure the various smtp properties at: " + resConfigFilename + " (Or within WEB-INF/classes/yanel.xml)");
             }
+        }
+    }
+
+    /**
+     * Check whether password forgot request UUID still exists (For example it might has expired)
+     * @param uuid Password forgot request UUID
+     */
+    protected boolean existsRequestUUID(String uuid) throws Exception {
+        User usr = getUserForRequest(uuid, totalValidHrs);
+        if(usr != null) {
+            return true;
+        } else {
+            log.warn("Password forgot request with UUID '" + uuid + "' does not exist (maybe has expired)");
+            return false;
         }
     }
 
