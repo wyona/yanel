@@ -12,6 +12,7 @@
   <xsl:output method="xhtml" encoding="UTF-8"/>
 -->
 
+  <xsl:param name="yanel.path" select="'PATH_IS_NULL'"/>
   <xsl:param name="yanel.back2realm" select="'BACK2REALM_IS_NULL'"/>
   <xsl:param name="yanel.reservedPrefix" select="'RESERVEDPREFIX_IS_NULL'"/>
   <xsl:param name="content-language" select="'CONTENT_LANGUAGE_IS_NULL'"/>
@@ -84,6 +85,8 @@
 
   <xsl:template match="yanel:request">
     Request: <xsl:value-of select="@yanel:urlqs"/>
+    <br/>
+    Path starting at realm: <xsl:value-of select="$yanel.path"/>
     <br/>
     Content language: <xsl:value-of select="$content-language"/>
     <br/>
