@@ -71,9 +71,7 @@
   </yarep-repositories>
 -->
 
-<!--
   <i18n-catalogue>yanelrepo:/i18n-from-scratch-realm.xml</i18n-catalogue>
--->
 
   <menu class="org.wyona.yanel.servlet.toolbar.impl.FromScratchRealmToolbar"/>
 <!--
