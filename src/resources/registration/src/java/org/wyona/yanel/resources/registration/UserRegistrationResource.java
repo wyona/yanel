@@ -205,9 +205,9 @@ public class UserRegistrationResource extends BasicXMLResource {
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email"));
             if (sendNotificationsEnabled()) {
                 MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), userRegBean.getEmail(), "Activate User Registration (sent by Yanel)", getActivationURL(userRegBean));
-                element.setAttribute("sent", "true");
+                element.setAttribute("sent-by-yanel", "true");
             } else {
-                element.setAttribute("sent", "false");
+                element.setAttribute("sent-by-yanel", "false");
             }
             element.setAttribute("hours-valid", "" + DEFAULT_TOTAL_VALID_HRS);
             if (getResourceConfigProperty("include-activation-link") != null && getResourceConfigProperty("include-activation-link").equals("true")) {
