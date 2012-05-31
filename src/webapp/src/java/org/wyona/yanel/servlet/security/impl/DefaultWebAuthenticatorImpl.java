@@ -118,12 +118,16 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                     }
                     return response;
                 } catch (ExpiredIdentityException e) {
-                    log.warn("Login failed: [" + loginUsername + "] " + e);
+                    log.warn("Login failed: [" + loginUsername + "], because the account has expired: " + e);
                     getXHTMLAuthenticationForm(request, response, realm, "The account has expired!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                     return response;
                 } catch (AccessManagementException e) {
-                    log.warn("Login failed: [" + loginUsername + "] " + e);
-                    getXHTMLAuthenticationForm(request, response, realm, "Login failed!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                    log.warn("Login failed: [" + loginUsername + "]: " + e);
+                    getXHTMLAuthenticationForm(request, response, realm, e.getMessage(), reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                    return response;
+                } catch (Exception e) {
+                    log.warn("Login failed: [" + loginUsername + "]: " + e);
+                    getXHTMLAuthenticationForm(request, response, realm, e.getMessage(), reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                     return response;
                 }
             } else if (openID != null) {
@@ -375,6 +379,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     /**
      * Custom XHTML Form for authentication
      * @param xsltLoginScreenDefault Path of default XSLT
+     * @param message Information or error message
      */
     public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException {
 
