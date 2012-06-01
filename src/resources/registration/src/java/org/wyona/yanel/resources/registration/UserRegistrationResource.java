@@ -119,13 +119,29 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
-     * Check whether zip code is valid
+     * Check whether zip code is neither null nor has zero length
      */
-    private boolean isZipValid(String zipCode) {
+    private boolean isZipNotEmpty(String zipCode) {
         if (zipCode != null && zipCode.length() > 0) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Check whether format of zip code is valid
+     * @param zipCode ZIP code
+     * @return valid zip code or null if not valid
+     */
+    protected String isZipValid(String zipCode) {
+        Pattern pzip = Pattern.compile("[1-9][0-9]{3}"); // INFO: Example of valid ZIP: 1234, Example of not-valid ZIP: 01234
+        Matcher mzip = pzip.matcher(zipCode);
+        if(mzip.find()) {
+            return mzip.group(0);
+        } else {
+            log.warn("Format of ZIP '" + zipCode + "' is not valid!");
+            return null;
+        }
     }
 
     /**
@@ -670,22 +686,27 @@ public class UserRegistrationResource extends BasicXMLResource {
         }
 
         // INFO: Check zip
-            String zip = getEnvironment().getRequest().getParameter("zip");
-            if (!isZipValid(zip)) {
+        String zip = getEnvironment().getRequest().getParameter("zip");
+        if (!isZipNotEmpty(zip)) {
+            log.warn("ZIP '" + zip + "' is not valid!");
+            Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
+            inputsValid = false;
+        } else {
+            log.warn("DEBUG: Submitted ZIP: " + zip);
+            String formattedZip = isZipValid(zip);
+            if (formattedZip != null) {
+                log.warn("DEBUG: Formatted ZIP: " + formattedZip);
+                if (!zip.equals(formattedZip)) {
+                    log.warn("Submitted zip code '" + zip + "' has been modified: " + formattedZip);
+                }
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip"));
+                fnE.appendChild(doc.createTextNode(formattedZip)); 
+            } else {
+                log.warn("Format of ZIP '" + zip + "' is not valid!");
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
                 inputsValid = false;
-            } else {
-                Pattern pzip = Pattern.compile("[1-9][0-9]{3}");
-                Matcher mzip = pzip.matcher(zip);
-                if(mzip.find()) {
-                    zip = mzip.group(0);
-                    Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip"));
-                    fnE.appendChild(doc.createTextNode("" + mzip.group(0))); 
-                } else {
-                    Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
-                    inputsValid = false;
-                }
             }
+        }
 
         // INFO: Check city
             String city = getEnvironment().getRequest().getParameter("location");
