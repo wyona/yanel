@@ -6,7 +6,6 @@ package org.wyona.yanel.resources.registration;
 import org.wyona.yanel.core.util.MailUtil;
 
 import org.wyona.yanel.impl.resources.BasicXMLResource;
-//import org.wyona.yanel.resources.konakart.shared.SharedResource;
 
 import org.wyona.commons.xml.XMLHelper;
 
@@ -33,11 +32,6 @@ import org.w3c.dom.Element;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
-
-/*
-import com.konakart.appif.CustomerRegistrationIf;
-import com.konakart.appif.KKEngIf;
-*/
 
 /**
  * A resource to register new users
@@ -283,8 +277,10 @@ public class UserRegistrationResource extends BasicXMLResource {
     /**
      * Save registration request persistently
      * @param urb User registration bean containing E-Mail address of user, etc.
+     * @throws ValidationException if during saving the registration request more validation errors occur, which might be the case if third-party system is involved
+     * @throws Exception if some generic error occurs
      */
-    protected void saveRegistrationRequest(UserRegistrationBean urb) throws Exception {
+    protected void saveRegistrationRequest(UserRegistrationBean urb) throws ValidationException, Exception {
         Document doc = getRegistrationRequestAsXML(urb);
         Node node = null;
         try {
@@ -434,8 +430,13 @@ public class UserRegistrationResource extends BasicXMLResource {
                     saveRegistrationRequest(userRegBean);
                     // TODO: Already create user, because of password encryption, but disable via expire?!
                     sendConfirmationLinkEmail(doc, userRegBean);
+                } catch(ValidationException e) {
+                    log.error(e, e);
+                    Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
+                    invalidE.appendChild(doc.createTextNode("Validation errors: " + e.getMessage())); 
+                    return;
                 } catch(Exception e) {
-                   log.error(e, e);
+                    log.error(e, e);
                     Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
                     invalidE.appendChild(doc.createTextNode(e.getMessage())); 
                     return;
