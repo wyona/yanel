@@ -57,6 +57,8 @@ public class Yanel {
     private String revision = null;
     private String reservedPrefix = null;
     private String targetEnv = null;
+    private String truststoreSrc = null;
+    private String truststorePwd = null;
     private boolean schedulerEnabled;
 
     private String smtpUsername, smtpPassword;
@@ -87,6 +89,7 @@ public class Yanel {
        Configuration config = builder.buildFromFile(configFile);
 
        configureSMTP(config, configFile);
+       configureSSLTruststore(config, configFile);
        
        map = (Map) applicationContext.getBean("map");
        realmConfig = new RealmManager();
@@ -331,6 +334,27 @@ public class Yanel {
            log.info("Mailserver default session (available to all code executing in the same JVM): " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
        } else {
            log.warn("Mail server not configured within configuration: " + configFile);
+       }
+    }
+
+    /**
+     * Configure trust-store location and password
+     */
+    private void configureSSLTruststore(Configuration config, File configFile) throws Exception {
+       if (config.getChild("trust-store", false) != null) {
+
+           truststoreSrc = config.getChild("trust-store").getAttribute("src");
+           if (!new File(truststoreSrc).exists()) {
+               log.error("No such trust-store file: " + truststoreSrc);
+               return;
+           }
+           truststorePwd = config.getChild("trust-store").getAttribute("password");
+           // TODO: Validate password, e.g. null check
+
+           System.setProperty("javax.net.ssl.trustStore", truststoreSrc);
+           System.setProperty("javax.net.ssl.keyStorePassword", truststorePwd);
+       } else {
+           log.warn("SSL trust-store not configured within configuration: " + configFile);
        }
     }
 }
