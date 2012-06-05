@@ -16,6 +16,7 @@
 Within the file <i>src/build/(local.)build.properties</i> one can set the parameters <i>tomcat1.ssl.port=8443</i> and <i>tomcat2.ssl.port=8443</i>. Then re-configure Tomcat (run &quot;configure&quot; to turn on SSL for Tomcat resp. patch &quot;conf/server.xml&quot;) resp. re-build (run &quot;build&quot; to patch the &quot;web.xml&quot; file) Yanel
 </p>
 
+<a name="trust-store"></a>
 <h2>Yanel connects via SSL to third-party server</h2>
 <p>In some cases Yanel might has to access third-party servers which are only accessible via SSL (e.g. ActiveMQ). In order to do so one can configure a trust-store inside Yanel as described in the following paragraphs:</p>
 
