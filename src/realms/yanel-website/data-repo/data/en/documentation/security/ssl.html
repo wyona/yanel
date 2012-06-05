@@ -28,7 +28,7 @@ Within the file <i>src/build/(local.)build.properties</i> one can set the parame
 <p>One can configure the location of the trust-store file and its password inside <a href="../configuration/yanel_xml.html"><code>yanel.xml</code></a>. Yanel is reading this configuration at startup and will set the java system properties '<code>javax.net.ssl.trustStore</code>' and '<code>javax.net.ssl.keyStorePassword</code>' accordingly.</p>
 
 <h3>Using the trust-store configuration</h3>
-<p>Your custom Yanel code (e.g. to init javax.net.ssl.TrustManager[] ...) might access the trust-store configuration by using</p>
+<p>Your custom Yanel code (e.g. to init <code>javax.net.ssl.TrustManager[] ...</code>) might access the trust-store configuration by using</p>
 <code>System.getProperty("javax.net.ssl.trustStore");</code>
 <br/>
 <code>System.getProperty("javax.net.ssl.keyStorePassword");</code>
