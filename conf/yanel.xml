@@ -42,7 +42,8 @@
   <target-environment>dev</target-environment>
 -->
 
-<!-- # Optional trust-store configuration. See http://www.yanel.org/en/documentation/security/ssl.html for more details
+<!-- # Optional trust-store configuration. See http://www.yanel.org/en/documentation/security/ssl.html for more details -->
+<!--
   <trust-store src="/foo/bar/truststore.jks" password="MY_PASSWORD"/>
 -->
 
