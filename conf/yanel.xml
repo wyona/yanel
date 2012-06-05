@@ -43,7 +43,7 @@
 -->
 
 <!-- # Optional trust-store configuration. See http://www.yanel.org/en/documentation/security/ssl.html for more details
-  <trust-store src="" password=""/>
+  <trust-store src="/foo/bar/truststore.jks" password="MY_PASSWORD"/>
 -->
 
 </yanel>
