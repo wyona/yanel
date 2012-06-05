@@ -1,5 +1,6 @@
-<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Created from template ...</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  
-<h2>SSL</h2>
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>SSL</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  
+<h1>SSL</h1>
+<h2>Browser connects via SSL to Tomcat/Yanel</h2>
 <h3>Binary Version</h3>
 <p>Within the file <i>TOMCAT/webapps/yanel/WEB-INF/web.xml</i> one can set</p>
 <p>
@@ -14,5 +15,26 @@
 <p>
 Within the file <i>src/build/(local.)build.properties</i> one can set the parameters <i>tomcat1.ssl.port=8443</i> and <i>tomcat2.ssl.port=8443</i>. Then re-configure Tomcat (run &quot;configure&quot; to turn on SSL for Tomcat resp. patch &quot;conf/server.xml&quot;) resp. re-build (run &quot;build&quot; to patch the &quot;web.xml&quot; file) Yanel
 </p>
+
+<h2>Yanel connects via SSL to third-party server</h2>
+<p>In some cases Yanel might has to access third-party servers which are only accessible via SSL (e.g. ActiveMQ). In order to do so one can configure a trust-store inside Yanel as described in the following paragraphs:</p>
+
+<h3>Creating a trust-store file called 'truststore.jks'</h3>
+<p>Assuming that you have a certificate (named 'CA_CERTIFICATE') from the <a href="http://en.wikipedia.org/wiki/Certificate_authority">CA</a> that signed the third-party server's certificate. One can create a trust-store file (named 'truststore.jks') by executing the following command:</p>
+<code>keytool -importcert -v -alias MY_CERTIFICATE_AUTHORITY_ALIAS -file CA_CERTIFICATE -storepass MY_PASSWORD -keystore truststore.jks</code>
+
+<h3>Configuring the location of the trust-store</h3>
+<p>One can configure the location of the trust-store file and its password inside <a href="../configuration/yanel_xml.html"><code>yanel.xml</code></a>. Yanel is reading this configuration at startup and will set the java system properties '<code>javax.net.ssl.trustStore</code>' and '<code>javax.net.ssl.keyStorePassword</code>' accordingly.</p>
+
+<h3>Using the trust-store configuration</h3>
+<p>Your custom Yanel code (e.g. to init javax.net.ssl.TrustManager[] ...) might access the trust-store configuration by using</p>
+<code>System.getProperty("javax.net.ssl.trustStore");</code>
+<br/>
+<code>System.getProperty("javax.net.ssl.keyStorePassword");</code>
+
+<h3>Misc</h3>
+<ul>
+  <li><a href="http://www.cyberciti.biz/faq/firefox-adding-trusted-ca/">Add a trusted CA to Firefox</a> (for example for testing the certificate)</li>
+</ul>
 </body>
 </html>
