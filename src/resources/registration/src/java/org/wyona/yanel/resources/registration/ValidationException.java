@@ -8,25 +8,30 @@ package org.wyona.yanel.resources.registration;
  */
 public class ValidationException extends Exception {
 
-    private String key;
-    private String value;
-    private String errorCode;
-
-    //java.util.List<ValidationError> ves;
+    java.util.List<ValidationError> ves;
 
     /**
      *
      */
     public ValidationException() {
+        ves = new java.util.ArrayList<ValidationError>();
     }
 
     /**
-     *
+     * Add validation error
+     * @param key Field name
+     * @param value Field value
+     * @param errorCode Type of error
      */
     public void appendValidationError(String key, String value, String errorCode) {
-        this.key = key;
-        this.value = value;
-        this.errorCode = errorCode;
+        ves.add(new ValidationError(key, value, errorCode));
+    }
+
+    /**
+     * Get validation errors
+     */
+    public ValidationError[] getValidationErrors() {
+        return ves.toArray(new ValidationError[0]);
     }
 
     /**
@@ -34,27 +39,11 @@ public class ValidationException extends Exception {
      */
     @Override
     public String getMessage() {
-        return key + ", " + value + ", " + errorCode;
-    }
-
-    /**
-     * Get key
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * Get value
-     */
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * Get error code
-     */
-    public String getErrorCode() {
-        return errorCode;
+        if (ves != null && ves.size() > 0) {
+            ValidationError ve = (ValidationError) ves.get(0);
+            return ve.getKey() + ", " + ve.getValue() + ", " + ve.getErrorCode();
+        } else {
+            return "No validation errors!";
+        }
     }
 }

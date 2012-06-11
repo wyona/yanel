@@ -435,10 +435,16 @@ public class UserRegistrationResource extends BasicXMLResource {
                     Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
                     invalidE.appendChild(doc.createTextNode("Validation errors: " + e.getMessage())); 
 
-                    Element validationErrorEl = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "validation-error"));
-                    validationErrorEl.setAttributeNS(NAMESPACE, "key", e.getKey());
-                    validationErrorEl.setAttributeNS(NAMESPACE, "value", e.getValue());
-                    validationErrorEl.setAttributeNS(NAMESPACE, "code", e.getErrorCode());
+                    ValidationError[] ves = e.getValidationErrors();
+                    if (ves != null) {
+                        for (int i = 0; i < ves.length; i++) {
+                            Element validationErrorEl = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "validation-error"));
+                            validationErrorEl.setAttributeNS(NAMESPACE, "key", ves[i].getKey());
+                            validationErrorEl.setAttributeNS(NAMESPACE, "value", ves[i].getValue());
+                            validationErrorEl.setAttributeNS(NAMESPACE, "code", ves[i].getErrorCode());
+                        }
+                    }
+
                     return;
                 } catch(Exception e) {
                     log.error(e, e);
