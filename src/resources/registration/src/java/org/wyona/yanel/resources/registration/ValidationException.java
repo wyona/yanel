@@ -12,10 +12,18 @@ public class ValidationException extends Exception {
     private String value;
     private String errorCode;
 
+    //java.util.List<ValidationError> ves;
+
     /**
      *
      */
-    public ValidationException(String key, String value, String errorCode) {
+    public ValidationException() {
+    }
+
+    /**
+     *
+     */
+    public void appendValidationError(String key, String value, String errorCode) {
         this.key = key;
         this.value = value;
         this.errorCode = errorCode;
