@@ -28,4 +28,25 @@ public class ValidationException extends Exception {
     public String getMessage() {
         return key + ", " + value + ", " + errorCode;
     }
+
+    /**
+     * Get key
+     */
+    public String getKey() {
+        return key;
+    }
+
+    /**
+     * Get value
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * Get error code
+     */
+    public String getErrorCode() {
+        return errorCode;
+    }
 }
