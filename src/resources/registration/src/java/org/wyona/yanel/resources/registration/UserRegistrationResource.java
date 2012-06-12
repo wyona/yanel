@@ -631,7 +631,9 @@ public class UserRegistrationResource extends BasicXMLResource {
 
         // INFO: Check password
             String password = getEnvironment().getRequest().getParameter("password");
-            if (!isPasswordValid(password) || password.length() < 5) {
+            int minPwdLength = getMinPwdLength();
+            int maxPwdLength = getMaxPwdLength();
+            if (!isPasswordValid(password) || password.length() < minPwdLength || password.length() > maxPwdLength) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "password-not-valid"));
                 inputsValid = false;
             }
@@ -748,7 +750,32 @@ public class UserRegistrationResource extends BasicXMLResource {
         } else {
             return null;
         }
+    }
 
+    /**
+     * Get minimum password length
+     */
+    private int getMinPwdLength() throws Exception {
+        String minPwdLengthSt = getResourceConfigProperty("min-password-length");
+        if (minPwdLengthSt != null) {
+            return new Integer(minPwdLengthSt).intValue();
+        }
+        int DEFAULT_MIN_PWD_LENGTH = 5;
+        log.warn("No minimal password length configured, hence use default value: " + DEFAULT_MIN_PWD_LENGTH);
+        return DEFAULT_MIN_PWD_LENGTH;
+    }
+
+    /**
+     * Get maximum password length
+     */
+    private int getMaxPwdLength() throws Exception {
+        String maxPwdLengthSt = getResourceConfigProperty("max-password-length");
+        if (maxPwdLengthSt != null) {
+            return new Integer(maxPwdLengthSt).intValue();
+        }
+        int DEFAULT_MAX_PWD_LENGTH = 15;
+        log.warn("No maximum password length configured, hence use default value: " + DEFAULT_MAX_PWD_LENGTH);
+        return DEFAULT_MAX_PWD_LENGTH;
     }
 }
 
