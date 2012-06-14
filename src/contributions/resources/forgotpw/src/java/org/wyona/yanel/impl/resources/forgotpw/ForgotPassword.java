@@ -153,12 +153,14 @@ public class ForgotPassword extends BasicXMLResource {
         } else if(action.equals(SUBMITNEWPW)) {
             Element messageElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message")); // INFO: We need to keep this element for backwards compatibility reasons!
             Element pwUpdateElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "password-update")); // INFO: We have introduced this element, because the "show-message" element is ambiguous, because it is also used while generating a password change request
+            pwUpdateElement.setAttribute("guid", request.getParameter("guid"));
 
             try {
                 updatePassword(request.getParameter("newPassword"), request.getParameter("newPasswordConfirmation"), request.getParameter("guid"));
                 messageElement.setTextContent("Password has been successfully reset. Please login with your new password.");
                 pwUpdateElement.setAttribute("status", "200");
             } catch(Exception e) {
+                log.warn(e.getMessage());
                 messageElement.setTextContent(e.getMessage());
                 pwUpdateElement.setAttribute("status", "400");
             }
