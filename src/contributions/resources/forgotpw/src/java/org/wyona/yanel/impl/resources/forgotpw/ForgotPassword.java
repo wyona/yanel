@@ -76,6 +76,9 @@ public class ForgotPassword extends BasicXMLResource {
     private static final String HOURS_VALID_PROPERTY_NAME = "num-hrs-valid";
     private static final long  DEFAULT_TOTAL_VALID_HRS = 24L;
 
+    private static final String UUID_TAG = "guid";
+    private static final String UUID_PARAM = "guid";
+
     /**
      * This is the main method that handles all view request. The first time the request
      * is made to enter the data.
@@ -147,16 +150,16 @@ public class ForgotPassword extends BasicXMLResource {
                 statusElement.setTextContent(errorMsg);
             } else {
                 Element requestpwElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "requestnewpw"));
-                Element guidElement = (Element) requestpwElement.appendChild(adoc.createElementNS(NAMESPACE, "guid"));
+                Element guidElement = (Element) requestpwElement.appendChild(adoc.createElementNS(NAMESPACE, UUID_TAG));
                 guidElement.setTextContent(resetPasswordRequestUUID);
             }
         } else if(action.equals(SUBMITNEWPW)) {
             Element messageElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "show-message")); // INFO: We need to keep this element for backwards compatibility reasons!
             Element pwUpdateElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "password-update")); // INFO: We have introduced this element, because the "show-message" element is ambiguous, because it is also used while generating a password change request
-            pwUpdateElement.setAttribute("guid", request.getParameter("guid"));
+            pwUpdateElement.setAttribute(UUID_TAG, request.getParameter(UUID_PARAM));
 
             try {
-                updatePassword(request.getParameter("newPassword"), request.getParameter("newPasswordConfirmation"), request.getParameter("guid"));
+                updatePassword(request.getParameter("newPassword"), request.getParameter("newPasswordConfirmation"), request.getParameter(UUID_PARAM));
                 messageElement.setTextContent("Password has been successfully reset. Please login with your new password.");
                 pwUpdateElement.setAttribute("status", "200");
             } catch(Exception e) {
@@ -347,7 +350,7 @@ public class ForgotPassword extends BasicXMLResource {
         java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
         startTimeElement.setTextContent(dateFormat.format(resetObj.getDateTime()));
 
-        Element guidElement = (Element) userElement.appendChild(adoc.createElement("guid"));
+        Element guidElement = (Element) userElement.appendChild(adoc.createElement(UUID_TAG));
         guidElement.setTextContent(resetObj.getGuid());
 
 
