@@ -137,6 +137,7 @@ public class ForgotPassword extends BasicXMLResource {
                     log.warn("No forgot password request UUID!");
                 }
             } catch(Exception e) {
+                log.warn(e.getMessage());
                 messageElement.setTextContent(e.getMessage());
                 cpeElement.setAttribute("status", "400");
             }
