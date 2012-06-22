@@ -201,7 +201,7 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
      * @param email New email address of user (and possibly also alias)
      * @return true if update was successful and false otherwise
      */
-    protected boolean updateProfile(String email) {
+    protected boolean updateProfile(String email) throws Exception {
         if (email == null || ("").equals(email)) {
             setTransformerParameter("error", "emailNotSet");
             log.warn("No email (or empty email) specified, hence do not update email address!");
