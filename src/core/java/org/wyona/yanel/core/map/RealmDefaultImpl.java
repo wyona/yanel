@@ -123,6 +123,8 @@ public class RealmDefaultImpl implements Realm {
             name = nameConfigElement.getValue();
         }
 
+        // Filter by target environment
+        config = ConfigurationUtil.filterEnvironment(config, yanel.getTargetEnvironment());
 
         initIdentityManager(config, yanel);
         initPolicyManager(config, yanel);
@@ -586,6 +588,7 @@ public class RealmDefaultImpl implements Realm {
      */
     protected void initIdentityManager(Configuration config, Yanel yanel) throws Exception {
         Configuration repoConfigElement = config.getChild("ac-identities", false);
+
         if (repoConfigElement != null) {
 
             IdentityManagerFactory imFactory = null;
@@ -596,7 +599,6 @@ public class RealmDefaultImpl implements Realm {
             	imFactory = (IdentityManagerFactory) Class.forName(customIdentityManagerFactoryImplClassName).newInstance();
 
                 // INFO: ConfigurationUtil generates a DOM Document with the root node called "identity-manager-config" which wraps/contains the custom indentities configuration
-                log.warn("TODO: Pass target environment in identity manager: " + yanel.getTargetEnvironment());
                 identityManager = imFactory.newIdentityManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "identity-manager-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
 
                 log.debug("Custom identity manager " + identityManager.getClass().getName() + " has been set for realm: " + getName());

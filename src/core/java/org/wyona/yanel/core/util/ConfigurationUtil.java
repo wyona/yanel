@@ -18,19 +18,100 @@ package org.wyona.yanel.core.util;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.avalon.framework.configuration.Configuration;
-import org.apache.log4j.Category;
+import org.apache.avalon.framework.configuration.ConfigurationException;
+import org.apache.avalon.framework.configuration.DefaultConfiguration;
+import org.apache.avalon.framework.configuration.MutableConfiguration;
+
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Queue;
+import java.util.LinkedList;
+
 /**
- * Configuration utility to copy an avalon configuration into a DOM document
+ * Configuration utility to deal with Avalon configuration elements.
  */
 public class ConfigurationUtil {
 
     /**
      * The log category instance
      */
-    private static final Category log = Category.getInstance(ConfigurationUtil.class);
+    private static final Logger log = Logger.getLogger(ConfigurationUtil.class);
+    
+    /**
+     * Filter elements by target environment
+     * @param repoConfigElement The config element.
+     * @param targetEnvironment The target environment.
+     */
+    public static Configuration filterEnvironment(Configuration repoConfigElement, String targetEnvironment) throws ConfigurationException {
+        DefaultConfiguration rootElement = new DefaultConfiguration(repoConfigElement);
+
+        Queue<MutableConfiguration> roots = new LinkedList<MutableConfiguration>();
+        Queue<MutableConfiguration> children = new LinkedList<MutableConfiguration>();
+        
+        // Push the first root element
+        roots.add(rootElement);
+
+        while(roots.size() > 0) {
+            // Examine every currently available root element.
+            MutableConfiguration current = roots.remove();
+
+            // Push children of the current element
+            for(MutableConfiguration mc : current.getMutableChildren()) {
+                children.add(mc);
+            }            
+
+            // Map of previous elements
+            Map<String, Queue<MutableConfiguration>> prevMap = 
+                    new HashMap<String, Queue<MutableConfiguration>>();
+
+            while(children.size() > 0) {
+                // Examine every child of the current root element.
+                MutableConfiguration child = children.remove();
+
+                String name = child.getName();
+                Queue<MutableConfiguration> prev;
+                if(prevMap.containsKey(name)) {
+                    prev = prevMap.get(name);
+                } else {
+                    prev = new LinkedList<MutableConfiguration>();
+                    prevMap.put(name, prev);
+                }
+
+                try {
+                    String env = child.getAttribute("target-environment");
+                    if(targetEnvironment.equals(env)) { 
+                        // Target env matches - remove previous objects
+                        // with the same name (this overrides previous elements).
+                        for(MutableConfiguration mc : prev) {
+                            current.removeChild(mc);
+                        }
+                        prev.clear();
+                    } else {
+                        // Target env does not match - remove object.
+                        current.removeChild(child);
+                    }
+                } catch(ConfigurationException e) {
+                    // We receive a configuration exception is there could
+                    // be no target-env attribute found. In this case, we keep
+                    // the element in all target environments.
+                }
+
+                // Push to prev element list
+                prev.add(child);
+            }
+
+            // All remaining children are now root elements
+            for(MutableConfiguration mc : current.getMutableChildren()) {
+                roots.add(mc);
+            }
+        }
+
+        return rootElement;
+    }
 
     /**
      * Create a DOM Document from a custom config element modelled with avalon
