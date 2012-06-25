@@ -47,9 +47,8 @@ public class ConfigurationUtil {
      * @param targetEnvironment The target environment.
      */
     public static Configuration filterEnvironment(Configuration repoConfigElement, String targetEnvironment) throws ConfigurationException {
-        if(targetEnvironment == null || "".equals(targetEnvironment)) {
-            // If the target environment is not set, do not perform filtering.
-            return repoConfigElement;
+        if(targetEnvironment == null) {
+        	targetEnvironment = "";
         }
 
         DefaultConfiguration rootElement = new DefaultConfiguration(repoConfigElement);
@@ -70,7 +69,7 @@ public class ConfigurationUtil {
             }            
 
             // Map of previous elements
-            Map<String, Queue<MutableConfiguration>> prevMap = 
+            Map<String, Queue<MutableConfiguration>> elementsMap = 
                     new HashMap<String, Queue<MutableConfiguration>>();
 
             while(children.size() > 0) {
@@ -78,35 +77,39 @@ public class ConfigurationUtil {
                 MutableConfiguration child = children.remove();
 
                 String name = child.getName();
-                Queue<MutableConfiguration> prev;
-                if(prevMap.containsKey(name)) {
-                    prev = prevMap.get(name);
+                Queue<MutableConfiguration> elements;
+                if(elementsMap.containsKey(name)) {
+                    elements = elementsMap.get(name);
                 } else {
-                    prev = new LinkedList<MutableConfiguration>();
-                    prevMap.put(name, prev);
+                    elements = new LinkedList<MutableConfiguration>();
+                    elementsMap.put(name, elements);
                 }
+                
+                elements.add(child);
+            }
 
-                try {
-                    String env = child.getAttribute("target-environment");
-                    if(targetEnvironment.equals(env)) { 
-                        // Target env matches - remove previous objects
-                        // with the same name (this overrides previous elements).
-                        for(MutableConfiguration mc : prev) {
-                            current.removeChild(mc);
+            for(Map.Entry<String, Queue<MutableConfiguration>> entry : elementsMap.entrySet()) {
+            	// Look at every element we found
+            	Queue<MutableConfiguration> elements = entry.getValue();
+            	int count = elements.size();
+            	
+            	for(MutableConfiguration child : elements) {
+            		String name = child.getName();
+                    try {
+                        String env = child.getAttribute("target-environment");
+                    
+                        if(!targetEnvironment.equals(env)) { 
+                        	// Target env does not match - remove this child.
+                        	current.removeChild(child);
                         }
-                        prev.clear();
-                    } else {
-                        // Target env does not match - remove object.
-                        current.removeChild(child);
-                    }
-                } catch(ConfigurationException e) {
-                    // We receive a configuration exception is there could
-                    // be no target-env attribute found. In this case, we keep
-                    // the element in all target environments.
-                }
-
-                // Push to prev element list
-                prev.add(child);
+                	} catch(ConfigurationException e) {
+                		// No target environment set - keep child, but only
+                		// if there are no others.
+                		if(count > 1 && !"".equals(targetEnvironment)) {
+                			current.removeChild(child);
+                		}
+                	}
+            	}
             }
 
             // All remaining children are now root elements
