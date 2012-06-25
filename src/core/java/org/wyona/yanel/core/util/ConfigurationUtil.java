@@ -94,7 +94,6 @@ public class ConfigurationUtil {
             	int count = elements.size();
             	
             	for(MutableConfiguration child : elements) {
-            		String name = child.getName();
                     try {
                         String env = child.getAttribute("target-environment");
                     
