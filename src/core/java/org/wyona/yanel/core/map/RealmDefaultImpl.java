@@ -81,7 +81,7 @@ public class RealmDefaultImpl implements Realm {
      * Init realm
      */
     public RealmDefaultImpl(String name, String id, String mountPoint, File configFile) throws Exception {
-        // TODO: Get realm name from config if name is null (see method configure())!
+        // INFO: If name is null, then get realm name from config (see method configure(Configuration)).
         this.name = name;
 
         this.id = id;
@@ -98,6 +98,8 @@ public class RealmDefaultImpl implements Realm {
             try {
                 config = builder.buildFromFile(configFile);
                 configure(config);
+                // INFO: Dump ...
+                new org.apache.avalon.framework.configuration.DefaultConfigurationSerializer().serialize(new java.io.FileOutputStream(new File(configFile.getAbsolutePath() + ".filtered")), config);
             } catch (SAXException e) {
                 // TODO: CascadingSAXException cse = new CascadingSAXException(e);
                 log.error(e, e);
@@ -113,6 +115,7 @@ public class RealmDefaultImpl implements Realm {
 
     /**
      * Configure realm based on configuration
+     * @param config Configuration
      */
     protected void configure(Configuration config) throws Exception {
         Yanel yanel = Yanel.getInstance();
