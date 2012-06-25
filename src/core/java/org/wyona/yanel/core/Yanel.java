@@ -87,6 +87,13 @@ public class Yanel {
        File configFile = new File(Yanel.class.getClassLoader().getResource(DEFAULT_CONFIGURATION_FILE_XML).getFile());
        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
        Configuration config = builder.buildFromFile(configFile);
+       
+       if (config.getChild("target-environment", false) != null) {
+           targetEnv = config.getChild("target-environment").getValue();
+       } else {
+           log.warn("Target environment not configured within configuration: " + configFile);
+           targetEnv = null;
+       }
 
        configureSMTP(config, configFile);
        configureSSLTruststore(config, configFile);
@@ -109,13 +116,6 @@ public class Yanel {
        } else {
            log.warn("Scheduler not configured within configuration: " + configFile);
            schedulerEnabled = false;
-       }
-
-       if (config.getChild("target-environment", false) != null) {
-           targetEnv = config.getChild("target-environment").getValue();
-       } else {
-           log.warn("Target environment not configured within configuration: " + configFile);
-           targetEnv = null;
        }
 
 /* TODO: It would be good to have an administrative contact per Yanel instance
