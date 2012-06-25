@@ -47,6 +47,11 @@ public class ConfigurationUtil {
      * @param targetEnvironment The target environment.
      */
     public static Configuration filterEnvironment(Configuration repoConfigElement, String targetEnvironment) throws ConfigurationException {
+        if(targetEnvironment == null || "".equals(targetEnvironment)) {
+            // If the target environment is not set, do not perform filtering.
+            return repoConfigElement;
+        }
+
         DefaultConfiguration rootElement = new DefaultConfiguration(repoConfigElement);
 
         Queue<MutableConfiguration> roots = new LinkedList<MutableConfiguration>();
