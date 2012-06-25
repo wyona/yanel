@@ -123,8 +123,8 @@ public class RealmDefaultImpl implements Realm {
             name = nameConfigElement.getValue();
         }
 
-        // Filter by target environment
-        config = ConfigurationUtil.filterEnvironment(config, yanel.getTargetEnvironment());
+        // TODO: Filter by target environment (also see https://github.com/wyona/yanel/issues/20)
+        //config = ConfigurationUtil.filterEnvironment(config, yanel.getTargetEnvironment());
 
         initIdentityManager(config, yanel);
         initPolicyManager(config, yanel);
