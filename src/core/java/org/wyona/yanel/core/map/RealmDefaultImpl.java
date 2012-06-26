@@ -120,14 +120,14 @@ public class RealmDefaultImpl implements Realm {
     protected void configure(Configuration config) throws Exception {
         Yanel yanel = Yanel.getInstance();
 
+        // Filter by target environment
+        config = ConfigurationUtil.filterEnvironment(config, yanel.getTargetEnvironment());
+        
         // Set name if not already set by yanel realms registration config
         Configuration nameConfigElement = config.getChild("name", false);
         if (name == null && nameConfigElement != null) {
             name = nameConfigElement.getValue();
         }
-
-        // Filter by target environment
-        config = ConfigurationUtil.filterEnvironment(config, yanel.getTargetEnvironment());
 
         initIdentityManager(config, yanel);
         initPolicyManager(config, yanel);
