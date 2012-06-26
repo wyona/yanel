@@ -84,30 +84,36 @@ public class ConfigurationUtil {
                     elements = new LinkedList<MutableConfiguration>();
                     elementsMap.put(name, elements);
                 }
-                
+
                 elements.add(child);
             }
 
             for(Map.Entry<String, Queue<MutableConfiguration>> entry : elementsMap.entrySet()) {
             	// Look at every element we found
             	Queue<MutableConfiguration> elements = entry.getValue();
-            	int count = elements.size();
+            	boolean needsFiltering = false;
             	
             	for(MutableConfiguration child : elements) {
                     try {
-                        String env = child.getAttribute("target-environment");
-                    
-                        if(!targetEnvironment.equals(env)) { 
-                        	// Target env does not match - remove this child.
-                        	current.removeChild(child);
-                        }
+                        child.getAttribute("target-environment");
+                        needsFiltering = true;
                 	} catch(ConfigurationException e) {
-                		// No target environment set - keep child, but only
-                		// if there are no others.
-                		if(count > 1 && !"".equals(targetEnvironment)) {
-                			current.removeChild(child);
-                		}
+                		// No target-environment attribute: Exception is 
+                		// thrown if attribute is not set.
                 	}
+            	}
+            	
+            	if(needsFiltering) {
+            		for(MutableConfiguration child : elements) {
+                        try {
+                            String env = child.getAttribute("target-environment");
+                            if(!targetEnvironment.equals(env)) {
+                            	current.removeChild(child);
+                            }
+                    	} catch(ConfigurationException e) {
+                    		current.removeChild(child);
+                    	}
+            		}
             	}
             }
 
