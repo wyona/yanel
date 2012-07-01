@@ -57,6 +57,9 @@ public class UpdateUserResource extends ExecutableUsecaseResource {
         // don't do anything
     }
 
+    /**
+     * @see org.wyona.yanel.impl.resources.usecase.UsecaseResource#init()
+     */
     @Override
     protected void init() throws UsecaseException {
         super.init();
@@ -67,12 +70,16 @@ public class UpdateUserResource extends ExecutableUsecaseResource {
                 setParameter(PARAM_NAME, user.getName());
                 setParameter(PARAM_EMAIL, user.getEmail());
                 Group[] groups = user.getGroups();
-                String[] groupIDs = new String[groups.length];
-                for (int i = 0; i < groups.length; i++) {
-                    groupIDs[i] = groups[i].getID();
+                if (groups != null) {
+                    String[] groupIDs = new String[groups.length];
+                    for (int i = 0; i < groups.length; i++) {
+                        groupIDs[i] = groups[i].getID();
+                    }
+                    setParameter(PARAM_GROUPS, groupIDs);
+                    setParameter(PARAM_USECASE_STATE, "initialized");
+                } else {
+                    log.warn("User '" + user.getID() + "' has no groups yet!");
                 }
-                setParameter(PARAM_GROUPS, groupIDs);
-                setParameter(PARAM_USECASE_STATE, "initialized");
             }
         } catch (AccessManagementException e) {
             throw new UsecaseException(e.getMessage(), e);
