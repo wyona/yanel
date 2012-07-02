@@ -1815,7 +1815,7 @@ public class YanelServlet extends HttpServlet {
                 String[] up = userpassDecoded.split(":");
                 String username = up[0];
                 String password = up[1];
-                log.warn("DEBUG: Get identity from BASIC authorization header and try to authenticate user '" + username + "' for request '" + request.getServletPath() + "'");
+                log.debug("Get identity from BASIC authorization header and try to authenticate user '" + username + "' for request '" + request.getServletPath() + "'");
                 try {
                     String trueID = realm.getIdentityManager().getUserManager().getTrueId(username);
                     User user = realm.getIdentityManager().getUserManager().getUser(trueID);
