@@ -1806,7 +1806,6 @@ public class YanelServlet extends HttpServlet {
         if (log.isDebugEnabled()) log.debug("No identity attached to session, hence check request authorization header: " + authorizationHeader);
         if (authorizationHeader != null) {
             if (authorizationHeader.toUpperCase().startsWith("BASIC")) {
-                log.warn("Using BASIC authorization ..."); // TODO: Reformulate text ...
                 // Get encoded user and password, comes after "BASIC "
                 String userpassEncoded = authorizationHeader.substring(6);
                 // Decode it, using any base 64 decoder
@@ -1816,15 +1815,16 @@ public class YanelServlet extends HttpServlet {
                 String[] up = userpassDecoded.split(":");
                 String username = up[0];
                 String password = up[1];
-                log.debug("username: " + username + ", password: " + password);
+                log.warn("DEBUG: Get identity from BASIC authorization header and try to authenticate user '" + username + "' for request '" + request.getServletPath() + "'");
                 try {
                     String trueID = realm.getIdentityManager().getUserManager().getTrueId(username);
                     User user = realm.getIdentityManager().getUserManager().getUser(trueID);
                     if (user != null && user.authenticate(password)) {
                         return new Identity(user, username);
                     } else {
-                        log.warn("HTTP BASIC Authentication failed for " + username + " (True ID: '" + trueID + "')!");
-/*
+                        log.warn("HTTP BASIC Authentication failed for " + username + " (True ID: '" + trueID + "') and request '" + request.getServletPath() + "', hence set identity to WORLD!");
+                        return new Identity();
+/* INFO: Do not return unauthorized response, but rather just return 'WORLD' as identity...
                         response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                         PrintWriter writer = response.getWriter();
@@ -1836,7 +1836,8 @@ public class YanelServlet extends HttpServlet {
                     throw new ServletException(e.getMessage(), e);
                 }
             } else if (authorizationHeader.toUpperCase().startsWith("DIGEST")) {
-                log.error("DIGEST is not implemented");
+                log.error("DIGEST is not implemented (Request: " + request.getServletPath() + "), hence set identity to WORLD!");
+                return new Identity();
 /*
                 authorized = false;
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -1846,12 +1847,13 @@ public class YanelServlet extends HttpServlet {
 */
             } else {
                 log.warn("No such authorization type implemented: " + authorizationHeader);
+                return new Identity();
             }
+        } else {
+            if (log.isDebugEnabled()) log.debug("Neither identity inside session yet nor authorization header based identity for request '" + request.getServletPath() + "', hence set identity to WORLD...");
+            // TBD: Should we add WORLD identity for performance reasons to the session?
+            return new Identity();
         }
-	
-        if(log.isDebugEnabled()) log.debug("No identity yet (Neither session nor header based! Identity is set to WORLD!)");
-        // TBD: Should add world identity to the session?
-        return new Identity();
     }
 
     /**
