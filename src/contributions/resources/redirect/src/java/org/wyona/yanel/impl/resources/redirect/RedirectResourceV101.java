@@ -102,20 +102,20 @@ public class RedirectResourceV101 extends Resource implements ViewableV2, Creata
                         String device = languageRedirectConfigs[i].getAttribute("device", null);
                         if (device != null) {
                             if (device.equals("web.xml:mobile-devices")) {
-                                log.warn("DEBUG: Client language '" + localizationLanguage + "' matched and device '" + device + "' is supported. Let's check whether client is a mobile device ...");
+                                //log.debug("Client language '" + localizationLanguage + "' matched and device '" + device + "' is supported. Let's check whether client is a mobile device ...");
                                 if (isMobileDevice()) {
-                                    log.warn("DEBUG: Client is mobile device, hence redirect to: " + href);
+                                    //log.debug("Client is mobile device, hence redirect to: " + href);
                                     return view;
                                 } else {
-                                    log.warn("DEBUG: Client is not a mobile device.");
+                                    //log.debug("Client is not a mobile device.");
                                     continue;
                                 }
                             } else {
-                                log.warn("DEBUG: Device '" + device + "' not supported.");
+                                log.warn("Device configuration '" + device + "' not supported yet.");
                                 continue;
                             }
                         } else {
-                            log.warn("DEBUG: No device specified (Language: " + localizationLanguage + ").");
+                            //log.debug("No device specified (Language: " + localizationLanguage + ").");
                         }
                         return view;
                     }
