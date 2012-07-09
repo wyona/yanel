@@ -48,7 +48,8 @@ public class ConfigurationUtil {
      */
     public static Configuration filterEnvironment(Configuration repoConfigElement, String targetEnvironment) throws ConfigurationException {
         if(targetEnvironment == null) {
-        	targetEnvironment = "";
+            log.warn("DEBUG: No target environment configured.");
+            targetEnvironment = "";
         }
 
         DefaultConfiguration rootElement = new DefaultConfiguration(repoConfigElement);
@@ -89,31 +90,42 @@ public class ConfigurationUtil {
             }
 
             for(Map.Entry<String, Queue<MutableConfiguration>> entry : elementsMap.entrySet()) {
-            	// Look at every element we found
+            	log.warn("DEBUG: Look at every element with the same name '" + entry.getKey() + "' we found...");
             	Queue<MutableConfiguration> elements = entry.getValue();
-            	boolean needsFiltering = false;
-            	
+            	boolean targetEnvMatched = false;
+
+                // INFO: Check first whether there are elements with the same that have an attribute named target-environment, because otherwise we might remove too much
             	for(MutableConfiguration child : elements) {
                     try {
-                        child.getAttribute("target-environment");
-                        needsFiltering = true;
-                	} catch(ConfigurationException e) {
-                		// No target-environment attribute: Exception is 
-                		// thrown if attribute is not set.
-                	}
+                        String env = child.getAttribute("target-environment");
+                        log.warn("DEBUG: Element '" + child.getName()+ "' has target environment attribute set: " + child.getAttribute("target-environment"));
+                        if(targetEnvironment.equals(env)) {
+                            log.warn("DEBUG: The target environment of the element '" + child.getName() + "' did match: " + env);
+                            if (targetEnvMatched) {
+                                log.warn("There are two elements with the same name '" + child.getName() + "' which matched the target environment: " + env);
+                            }
+                            targetEnvMatched = true;
+                        } else {
+                            current.removeChild(child);
+                        }
+                    } catch(ConfigurationException e) {
+                        // No target-environment attribute: Exception is thrown if attribute is not set.
+                        log.warn("DEBUG: Element '" + child.getName()+ "' has no target environment attribute set.");
+                    }
             	}
             	
-            	if(needsFiltering) {
-            		for(MutableConfiguration child : elements) {
+            	if(targetEnvMatched) {
+                    for(MutableConfiguration child : elements) {
                         try {
                             String env = child.getAttribute("target-environment");
                             if(!targetEnvironment.equals(env)) {
-                            	current.removeChild(child);
+                                log.warn("There should be no more element '" + child.getName() + "' where target environment attribute does not match: " + child.getAttribute("target-environment"));
                             }
                     	} catch(ConfigurationException e) {
-                    		current.removeChild(child);
+                            log.warn("DEBUG: Remove element '" + child.getName() + "' without target environment attribute.");
+                            current.removeChild(child);
                     	}
-            		}
+                    }
             	}
             }
 
