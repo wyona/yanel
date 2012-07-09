@@ -43,83 +43,78 @@ public class ConfigurationUtil {
     
     /**
      * Filter elements by target environment
-     * @param repoConfigElement The config element.
+     * @param configElement The config element.
      * @param targetEnvironment The target environment.
      */
-    public static Configuration filterEnvironment(Configuration repoConfigElement, String targetEnvironment) throws ConfigurationException {
+    public static Configuration filterEnvironment(MutableConfiguration configElement, String targetEnvironment) throws ConfigurationException {
         if(targetEnvironment == null) {
-        	targetEnvironment = "";
+            log.debug("No target environment configured, hence remove all elements which have a target environment attribute...");
+            targetEnvironment = ""; // INFO: Assuming that there are no empty target environment attributes (!), we set it to empty, such that the attribute values won't match, and hence those elements will be removed...
         }
 
-        DefaultConfiguration rootElement = new DefaultConfiguration(repoConfigElement);
-
-        Queue<MutableConfiguration> roots = new LinkedList<MutableConfiguration>();
-        Queue<MutableConfiguration> children = new LinkedList<MutableConfiguration>();
-        
-        // Push the first root element
-        roots.add(rootElement);
-
-        while(roots.size() > 0) {
-            // Examine every currently available root element.
-            MutableConfiguration current = roots.remove();
-
-            // Push children of the current element
-            for(MutableConfiguration mc : current.getMutableChildren()) {
-                children.add(mc);
-            }            
-
-            // Map of previous elements
-            Map<String, Queue<MutableConfiguration>> elementsMap = 
-                    new HashMap<String, Queue<MutableConfiguration>>();
-
-            while(children.size() > 0) {
-                // Examine every child of the current root element.
-                MutableConfiguration child = children.remove();
-
-                String name = child.getName();
-                Queue<MutableConfiguration> elements;
-                if(elementsMap.containsKey(name)) {
-                    elements = elementsMap.get(name);
-                } else {
-                    elements = new LinkedList<MutableConfiguration>();
-                    elementsMap.put(name, elements);
-                }
-                
-                elements.add(child);
+        Configuration[] children = configElement.getChildren();
+        // INFO: Generate map of children with same name
+        Map<String, Queue<Configuration>> elementsMap = new HashMap<String, Queue<Configuration>>();
+        for (int i = 0; i < children.length; i++) {
+            String name = children[i].getName();
+            Queue<Configuration> elements;
+            if(elementsMap.containsKey(name)) {
+                elements = elementsMap.get(name);
+            } else {
+                elements = new LinkedList<Configuration>();
+                elementsMap.put(name, elements);
             }
+            elements.add(children[i]);
+        }
 
-            for(Map.Entry<String, Queue<MutableConfiguration>> entry : elementsMap.entrySet()) {
-            	// Look at every element we found
-            	Queue<MutableConfiguration> elements = entry.getValue();
-            	int count = elements.size();
+        for(Map.Entry<String, Queue<Configuration>> entry : elementsMap.entrySet()) {
+            log.debug("Look at every element with the same name '" + entry.getKey() + "' we found...");
+            Queue<Configuration> elements = entry.getValue();
+            boolean targetEnvMatched = false;
+
+            // INFO: Check first whether there are elements with the same that have an attribute named target-environment, because otherwise we might remove too much
+            for(Configuration child : elements) {
+                try {
+                    String env = child.getAttribute("target-environment");
+                    log.debug("Element '" + child.getName()+ "' has target environment attribute set: " + child.getAttribute("target-environment"));
+                    if(targetEnvironment.equals(env)) {
+                        log.debug("The target environment of the element '" + child.getName() + "' did match: " + env);
+                        if (targetEnvMatched) {
+                            log.warn("There are two elements with the same name '" + child.getName() + "' which matched the target environment: " + env);
+                        }
+                        targetEnvMatched = true;
+                    } else {
+                        configElement.removeChild(child);
+                    }
+                } catch(ConfigurationException e) {
+                    // No target-environment attribute: Exception is thrown if attribute is not set.
+                    log.debug("Element '" + child.getName()+ "' has no target environment attribute set.");
+                }
+            }
             	
-            	for(MutableConfiguration child : elements) {
+            if(targetEnvMatched) {
+                for(Configuration child : elements) {
                     try {
                         String env = child.getAttribute("target-environment");
-                    
-                        if(!targetEnvironment.equals(env)) { 
-                        	// Target env does not match - remove this child.
-                        	current.removeChild(child);
+                        if(!targetEnvironment.equals(env)) {
+                            log.warn("There should be no more element '" + child.getName() + "' where target environment attribute does not match: " + child.getAttribute("target-environment"));
                         }
-                	} catch(ConfigurationException e) {
-                		// No target environment set - keep child, but only
-                		// if there are no others.
-                		if(count > 1 && !"".equals(targetEnvironment)) {
-                			current.removeChild(child);
-                		}
-                	}
-            	}
-            }
-
-            // All remaining children are now root elements
-            for(MutableConfiguration mc : current.getMutableChildren()) {
-                roots.add(mc);
+                    } catch(ConfigurationException e) {
+                        log.debug("Remove element '" + child.getName() + "' without target environment attribute.");
+                        configElement.removeChild(child);
+                    }
+                }
             }
         }
 
-        return rootElement;
-    }
+        // INFO: Filter elements recursively
+        for (int i = 0; i < children.length; i++) {
+            children[i] = filterEnvironment((MutableConfiguration) children[i], targetEnvironment);
+        }
 
+        return configElement;
+    }
+    
     /**
      * Create a DOM Document from a custom config element modelled with avalon
      *

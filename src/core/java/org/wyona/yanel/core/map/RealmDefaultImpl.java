@@ -79,9 +79,10 @@ public class RealmDefaultImpl implements Realm {
 
     /**
      * Init realm
+     * @param configFile Realm configuration file
      */
     public RealmDefaultImpl(String name, String id, String mountPoint, File configFile) throws Exception {
-        // TODO: Get realm name from config if name is null (see method configure())!
+        // INFO: If name is null, then get realm name from config (see method configure(Configuration)).
         this.name = name;
 
         this.id = id;
@@ -98,6 +99,13 @@ public class RealmDefaultImpl implements Realm {
             try {
                 config = builder.buildFromFile(configFile);
                 configure(config);
+
+                // INFO: Dump filtered config...
+                if (log.isDebugEnabled()) {
+                    org.apache.avalon.framework.configuration.DefaultConfigurationSerializer dcs = new org.apache.avalon.framework.configuration.DefaultConfigurationSerializer();
+                    dcs.setIndent(true);
+                    dcs.serialize(new java.io.FileOutputStream(new File(configFile.getAbsolutePath() + ".DEBUG")), config);
+                }
             } catch (SAXException e) {
                 // TODO: CascadingSAXException cse = new CascadingSAXException(e);
                 log.error(e, e);
@@ -113,18 +121,21 @@ public class RealmDefaultImpl implements Realm {
 
     /**
      * Configure realm based on configuration
+     * @param config Realm configuration
      */
     protected void configure(Configuration config) throws Exception {
         Yanel yanel = Yanel.getInstance();
 
-        // Set name if not already set by yanel realms registration config
+        // INFO: Filter by target environment
+        config = ConfigurationUtil.filterEnvironment((org.apache.avalon.framework.configuration.MutableConfiguration) config, yanel.getTargetEnvironment());
+        
+        // INFO: Set realm name if not already set by yanel realms registration config (conf/local/local.realms.xml)
         Configuration nameConfigElement = config.getChild("name", false);
         if (name == null && nameConfigElement != null) {
             name = nameConfigElement.getValue();
+        } else {
+            log.warn("Realm name '" + name + "' already set inside Yanel's realms configuration, instead inside realm configuration: " + configFile);
         }
-
-        // TODO: Filter by target environment (also see https://github.com/wyona/yanel/issues/20)
-        //config = ConfigurationUtil.filterEnvironment(config, yanel.getTargetEnvironment());
 
         initIdentityManager(config, yanel);
         initPolicyManager(config, yanel);
