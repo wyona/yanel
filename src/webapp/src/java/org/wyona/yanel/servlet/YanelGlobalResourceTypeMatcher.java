@@ -39,6 +39,7 @@ class YanelGlobalResourceTypeMatcher {
 
         globalRCmap.put("workflow-dashboard.html", "workflow-dashboard_yanel-rc.xml");
         globalRCmap.put("session-manager.html", "session-manager_yanel-rc.xml");
+        globalRCmap.put("scheduler/index.html", "scheduler_yanel-rc.xml");
         globalRCmap.put("search.html", "search_yanel-rc.xml");
         globalRCmap.put("data-repository-sitetree.html", "data-repo-sitetree_yanel-rc.xml");
         globalRCmap.put("user-forgot-pw.html", "user-forgot-pw_yanel-rc.xml");
