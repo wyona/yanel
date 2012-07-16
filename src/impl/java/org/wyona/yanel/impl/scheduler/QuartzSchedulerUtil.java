@@ -4,7 +4,7 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
-import org.quartz.impl.JobDetailImpl;
+//import org.quartz.impl.JobDetailImpl;
 
 import java.util.Date;
 
