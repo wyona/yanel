@@ -237,10 +237,11 @@ public class YanelServlet extends HttpServlet {
             }
 
             if (yanelInstance.isSchedulerEnabled()) {
-                log.warn("Startup scheduler ...");
-                scheduler = StdSchedulerFactory.getDefaultScheduler();
+                try {
+                    log.warn("DEBUG: Startup scheduler ...");
+                    scheduler = StdSchedulerFactory.getDefaultScheduler();
       
-                Realm[] realms = yanelInstance.getRealmConfiguration().getRealms();
+                    Realm[] realms = yanelInstance.getRealmConfiguration().getRealms();
                 for (int i = 0; i < realms.length; i++) {
                     if (realms[i] instanceof org.wyona.yanel.core.map.RealmWithConfigurationExceptionImpl) {
                         String eMessage = ((org.wyona.yanel.core.map.RealmWithConfigurationExceptionImpl) realms[i]).getConfigurationException().getMessage();
@@ -267,7 +268,12 @@ public class YanelServlet extends HttpServlet {
                 scheduler.scheduleJob(jobDetail, trigger);
 */
 
-                scheduler.start();
+                    scheduler.start();
+                } catch(Exception e) {
+                    log.error(e, e); // INFO: Let's be fault tolerant in case the scheduler should not start
+                }
+            } else {
+                log.info("The scheduler is currently disabled.");
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
