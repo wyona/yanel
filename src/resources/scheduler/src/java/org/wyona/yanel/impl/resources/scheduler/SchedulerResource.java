@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
+import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 
 /**
@@ -46,8 +47,21 @@ public class SchedulerResource extends BasicXMLResource {
             java.util.Set keys = scheduler.getJobKeys(GroupMatcher.jobGroupEquals(name));
             java.util.Iterator keysIt = keys.iterator();
             while(keysIt.hasNext()) {
-                JobDetail jd = scheduler.getJobDetail((JobKey)keysIt.next());
+                JobKey jobKey = (JobKey)keysIt.next();
+                JobDetail jd = scheduler.getJobDetail(jobKey);
+
+                java.util.Set triggerKeys = scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(name));
+                java.util.Iterator triggerKeysIt = triggerKeys.iterator();
+                while(triggerKeysIt.hasNext()) {
+                    TriggerKey triggerKey = (TriggerKey) triggerKeysIt.next();
+                    //log.warn("DEBUG: Check whether trigger's job key '" + scheduler.getTrigger(triggerKey).getJobKey() + "' and job key '" + jobKey + "' match...");
+                    if (scheduler.getTrigger(triggerKey).getJobKey().toString().equals(jobKey.toString())) {
+                        log.warn("DEBUG: Trigger and job '" + jd.getDescription() + "' matched: " + scheduler.getTrigger(triggerKey).getNextFireTime());
+                    }
+                }
+
                 sb.append("<job>" + jd.getDescription() + "</job>");
+                // TODO: Display scheduled execution time... getTriggers and compare JobKey of each Trigger with current Job and then display getNextFireTime()
             }
         }
         sb.append("</scheduler>");
