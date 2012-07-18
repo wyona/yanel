@@ -91,6 +91,7 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
 -->
             <xsl:apply-templates select="/yanel:yanel/resource"/>
             <xsl:apply-templates select="child::node()/revisions"/>
+            <xsl:apply-templates select="child::node()/no-revisions-yet"/>
 
 <h4>Annotations</h4>
             <xsl:apply-templates select="/yanel:yanel/yanel:annotations"/>
@@ -206,6 +207,10 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
 
   <xsl:template match="yanel:no-tracking-information">
     <p>No tracking information.</p>
+  </xsl:template>
+
+  <xsl:template match="no-revisions-yet">
+    <li>No revisions yet.</li>
   </xsl:template>
 
   <xsl:template match="revisions">
