@@ -602,8 +602,13 @@ public class YanelServlet extends HttpServlet {
                     try {
                         String revisionName = request.getParameter(YANEL_RESOURCE_REVISION);
                         // NOTE: Check also if usecase is not roll-back, because roll-back is also using the yanel.resource.revision
-                        if (revisionName != null && ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2") && !isRollBack(request)) {
-                            view = ((VersionableV2) res).getView(viewId, revisionName);
+                        if (revisionName != null && !isRollBack(request)) {
+                            if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
+                                view = ((VersionableV2) res).getView(viewId, revisionName);
+                            } else {
+                                log.warn("Resource '" + res.getPath() + "' has not VersionableV2 implemented, hence we cannot generate view for revision: " + revisionName);
+                                view = ((ViewableV2) res).getView(viewId);
+                            }
                         } else if (environment.getStateOfView().equals(StateOfView.LIVE) && ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1") && WorkflowHelper.getWorkflow(res) != null) { // TODO: Instead using the WorkflowHelper the Workflowable interface should have a method to check if the resource actually has a workflow assigned, see http://lists.wyona.org/pipermail/yanel-development/2009-June/003709.html
                             // TODO: Check if resource actually exists (see the exist problem above), because even it doesn't exist, the workflowable interfaces can return something although it doesn't really make sense. For example if a resource type is workflowable, but it has no workflow associated with it, then WorkflowHelper.isLive will nevertheless return true, whereas WorkflowHelper.getLiveView will throw an exception!
                             if (!((ViewableV2) res).exists()) {
