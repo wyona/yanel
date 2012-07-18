@@ -62,7 +62,9 @@ import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.TranslatableV1;
+import org.wyona.yanel.core.api.attributes.VersionableV1;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
+import org.wyona.yanel.core.api.attributes.VersionableV3;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
@@ -180,6 +182,9 @@ public class YanelServlet extends HttpServlet {
     private String[] mobileDevices;
 
     private static String ACCESS_LOG_TAG_SEPARATOR;
+
+    private static final String REVISIONS_TAG_NAME = "revisions";
+    private static final String NO_REVISIONS_TAG_NAME = "no-revisions-yet";
 
     /**
      * @see javax.servlet.GenericServlet#init(ServletConfig)
@@ -662,7 +667,7 @@ public class YanelServlet extends HttpServlet {
                     Element noLastModifiedElement = (Element) resourceElement.appendChild(doc.createElement("no-last-modified"));
                 }
 
-                // Get the revisions, but only in the meta usecase (because of performance reasons)
+                // INFO: Get the revisions, but only in the meta usecase (because of performance reasons)
                 if (request.getParameter(RESOURCE_META_ID_PARAM_NAME) != null) {
                     appendRevisionsAndWorkflow(doc, resourceElement, res, request);
                 }
@@ -2762,7 +2767,8 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Append revisions and workflow of a resource to the meta document
+     * @param doc Meta document
      */
     private void appendRevisionsAndWorkflow(Document doc, Element resourceElement, Resource res, HttpServletRequest request) throws Exception {
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
@@ -2777,30 +2783,12 @@ public class YanelServlet extends HttpServlet {
             }
 
             RevisionInformation[] revisionsInfo = ((VersionableV2)res).getRevisions();
-            Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement("revisions"));
             if (revisionsInfo != null && revisionsInfo.length > 0) {
+                Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement(REVISIONS_TAG_NAME));
                 for (int i = revisionsInfo.length - 1; i >= 0; i--) {
-                    Element revisionElement = (Element) revisionsElement.appendChild(doc.createElement("revision"));
-                    log.debug("Revision: " + revisionsInfo[i].getName());
-                    revisionElement.appendChild(XMLHelper.createTextElement(doc, "name", revisionsInfo[i].getName(), null));
-                    log.debug("Date: " + revisionsInfo[i].getDate());
-                    revisionElement.appendChild(XMLHelper.createTextElement(doc, "date", "" + revisionsInfo[i].getDate(), null));
-     
-                    if (revisionsInfo[i].getUser() != null) {
-                        log.debug("User: " + revisionsInfo[i].getUser());
-                        revisionElement.appendChild(XMLHelper.createTextElement(doc, "user", revisionsInfo[i].getUser(), null));
-                    } else {
-                        revisionElement.appendChild(doc.createElement("no-user"));
-                    }
+                    Element revisionElement = appendRevision(revisionsElement, revisionsInfo[i]);
 
-                    if (revisionsInfo[i].getComment() != null) {
-                        log.debug("Comment: " + revisionsInfo[i].getComment());
-                        revisionElement.appendChild(XMLHelper.createTextElement(doc, "comment", revisionsInfo[i].getComment(), null));
-                    } else {
-                        revisionElement.appendChild(doc.createElement("no-comment"));
-                    }
-
-                    // Add workflow info
+                    // INFO: Add workflow info
                     if (workflowableResource != null && workflow != null) {
                         Element revisionWorkflowElement = (Element) revisionElement.appendChild(doc.createElement("workflow-state"));
                         String wfState = workflowableResource.getWorkflowState(revisionsInfo[i].getName());
@@ -2815,11 +2803,58 @@ public class YanelServlet extends HttpServlet {
                     }
                 }
             } else {
-                Element noRevisionsYetElement = (Element) resourceElement.appendChild(doc.createElement("no-revisions-yet"));
+                resourceElement.appendChild(doc.createElement(NO_REVISIONS_TAG_NAME));
             }
+        } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "3")) {
+            java.util.Iterator<RevisionInformation> it = ((VersionableV3)res).getRevisions(false);
+            if (it != null) {
+                if (it.hasNext()) {
+                    Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement(REVISIONS_TAG_NAME));
+                    while(it.hasNext()) {
+                        appendRevision(revisionsElement, (RevisionInformation)it.next()); 
+                    }
+                } else {
+                    resourceElement.appendChild(doc.createElement(NO_REVISIONS_TAG_NAME));
+                }
+            } else {
+                resourceElement.appendChild(doc.createElement(NO_REVISIONS_TAG_NAME));
+            }
+        } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "1")) {
+            log.warn("TODO: Implement VersionableV1 interface, deprecated though!");
+            String[] revisionIDs = ((VersionableV1)res).getRevisions();
         } else {
             Element notVersionableElement = (Element) resourceElement.appendChild(doc.createElement("not-versionable"));
         }
+    }
+
+    /**
+     * Append individual revisions to meta document
+     * @param revisionsEl Parent revisions DOM element
+     * @param ri Detailed information about this particular revision
+     */
+    private Element appendRevision(Element revisionsEl, RevisionInformation ri) {
+        Document doc = revisionsEl.getOwnerDocument();
+        Element revisionElement = (Element) revisionsEl.appendChild(doc.createElement("revision"));
+        log.debug("Revision: " + ri.getName());
+        revisionElement.appendChild(XMLHelper.createTextElement(doc, "name", ri.getName(), null));
+        log.debug("Date: " + ri.getDate());
+        revisionElement.appendChild(XMLHelper.createTextElement(doc, "date", "" + ri.getDate(), null));
+     
+        if (ri.getUser() != null) {
+            log.debug("User: " + ri.getUser());
+            revisionElement.appendChild(XMLHelper.createTextElement(doc, "user", ri.getUser(), null));
+        } else {
+            revisionElement.appendChild(doc.createElement("no-user"));
+        }
+
+        if (ri.getComment() != null) {
+            log.debug("Comment: " + ri.getComment());
+            revisionElement.appendChild(XMLHelper.createTextElement(doc, "comment", ri.getComment(), null));
+        } else {
+            revisionElement.appendChild(doc.createElement("no-comment"));
+        }
+
+        return revisionElement;
     }
 
     /**
