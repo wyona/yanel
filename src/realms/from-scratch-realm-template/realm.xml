@@ -5,6 +5,7 @@
 <realm-config class="org.wyona.yanel.impl.map.FOAFRealm" xmlns="http://www.wyona.org/yanel/realm/1.0">
 -->
   <name>Yanel From Scratch Realm</name>
+  <name target-environment="dev">Yanel From Scratch Realm (Development)</name>
 
   <rti>config/rti-repository.xml</rti>
 <!--
@@ -25,10 +26,15 @@
 -->
 
   <ac-identities>config/ac-identities-repository.xml</ac-identities>
-<!--
-  <ac-identities class="org.wyona.security.impl.IdentityManagerFactoryImpl">config/ac-identities-repository.xml</ac-identities>
+
+<!-- INFO: If no class attribute is set, then IdentityManagerFactoryImpl will be used as default (see src/core/java/org/wyona/yanel/core/map/RealmDefaultImpl.java)
+  <ac-identities class="org.wyona.security.impl.IdentityManagerFactoryImpl" xmlns:yarep="http://www.wyona.org/yarep/1.0.0">
+    <yarep:repository-config>config/ac-identities-repository.xml</yarep:repository-config>
+    <yarep:group-implementation class="org.wyona.security.impl.yarep.YarepGroupImplV2"/>
+  </ac-identities>
 -->
-<!--
+
+<!-- INFO: As an alternative identities manager, one might want to use the LDAP based identities manager
   <ac-identities class="org.wyona.security.impl.ldap.LDAPIdentityManagerFactoryImpl">
     <ldap:config xmlns:ldap="http://www.wyona.org/security/identity/1.0">
       <ldap:yarep-repo>config/ac-identities-repository.xml</ldap:yarep-repo>
@@ -43,6 +49,8 @@
   </ac-identities>
 -->
 
+
+
 <!--
   <web-authenticator class="org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl"/>
 -->
@@ -52,6 +60,7 @@
     <language>en</language>
     <language>de</language>
     <!--<language>es</language>--> <!-- Also data-repo/data/translations.xml -->
+    <language target-environment="no-such-target-env-hence-drop-it">de</language>
   </languages>
   <translation-manager class="org.wyona.yanel.core.attributes.translatable.PrefixTranslationManager"/>
 <!--
@@ -64,9 +73,7 @@
   </yarep-repositories>
 -->
 
-<!--
   <i18n-catalogue>yanelrepo:/i18n-from-scratch-realm.xml</i18n-catalogue>
--->
 
   <menu class="org.wyona.yanel.servlet.toolbar.impl.FromScratchRealmToolbar"/>
 <!--

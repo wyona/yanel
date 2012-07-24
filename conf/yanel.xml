@@ -11,7 +11,7 @@
 
   <!-- # Yanel version: Will be added during the build process (see src/build/(local.)build.properties and src/build/yanel2properties.xsl) -->
 <!--
-  <version revision="REVISION" version="1.0-dev"/>
+  <version revision="REVISION" version="VERSION"/>
 -->
   
   <!-- # Realms configuration -->
@@ -40,6 +40,11 @@
   <target-environment>ua-test</target-environment>
   <target-environment>ci-test</target-environment>
   <target-environment>dev</target-environment>
+-->
+
+<!-- # Optional trust-store configuration. See http://www.yanel.org/en/documentation/security/ssl.html for more details -->
+<!--
+  <trust-store src="/foo/bar/truststore.jks" password="MY_PASSWORD"/>
 -->
 
 </yanel>

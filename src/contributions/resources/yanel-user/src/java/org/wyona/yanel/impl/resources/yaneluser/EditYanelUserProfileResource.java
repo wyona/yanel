@@ -35,23 +35,27 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
     /*
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
      */
-    protected InputStream getContentXML(String viewId) {
+    protected InputStream getContentXML(String viewId) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("requested viewId: " + viewId);
         }
 
         String oldPassword = getEnvironment().getRequest().getParameter("oldPassword");
         if (oldPassword != null) {
-            updatePassword(oldPassword);
+            String newPassword = getEnvironment().getRequest().getParameter("newPassword");
+            String newPasswordConfirmed = getEnvironment().getRequest().getParameter("newPasswordConfirmation");
+            updatePassword(oldPassword, newPassword, newPasswordConfirmed);
         }
 
         String email = getEnvironment().getRequest().getParameter("email");
+        boolean emailUpdated = false;
         if (email != null) {
-            updateProfile(email);
+            emailUpdated = updateProfile(email);
+            log.info("Email '" + email + "' has been updated: " + emailUpdated);
         }
 
         try {
-            return getXMLAsStream();
+            return getXMLAsStream(emailUpdated);
         } catch(Exception e) {
             log.error(e, e);
             return null;
@@ -60,17 +64,35 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
 
     /**
      * Get user profile as XML as stream
+     * @param emailUpdated Flag whether email got updated successfully
      */
-    private java.io.InputStream getXMLAsStream() throws Exception {
+    private java.io.InputStream getXMLAsStream(boolean emailUpdated) throws Exception {
         String userId = getUserId();
         if (userId != null) {
-            User user = realm.getIdentityManager().getUserManager().getUser(userId);
+            Document doc = getUserProfile(userId, emailUpdated);
+            return XMLHelper.getInputStream(doc, false, true, null);
+        } else {
+            return new java.io.StringBufferInputStream("<no-user-id/>");
+        }
+    }
 
-            Document doc = XMLHelper.createDocument(null, "user");
-            Element rootEl = doc.getDocumentElement();
+    /**
+     * Get user profile as DOM XML
+     * @param userID ID of user
+     * @param emailUpdated Flag whether email got updated successfully
+     */
+    protected Document getUserProfile(String userId, boolean emailUpdated) throws Exception {
+        User user = realm.getIdentityManager().getUserManager().getUser(userId);
+
+        Document doc = XMLHelper.createDocument(null, "user");
+        Element rootEl = doc.getDocumentElement();
             rootEl.setAttribute("id", userId);
             rootEl.setAttribute("email", user.getEmail());
-            rootEl.setAttribute("lamguage", user.getLanguage());
+            rootEl.setAttribute("lamguage", user.getLanguage()); // DEPRECATED
+            rootEl.setAttribute("language", user.getLanguage());
+            if (emailUpdated) {
+                rootEl.setAttribute("email-saved-successfully", "true");
+            }
 
             Element nameEl = doc.createElement("name");
             nameEl.setTextContent(user.getName());
@@ -95,16 +117,13 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                 }
             }
 
-            return XMLHelper.getInputStream(doc, false, true, null);
-        } else {
-            return new java.io.StringBufferInputStream("<no-user-id/>");
-        }
+            return doc;
     }
 
     /**
-     * Get user id from resource configuration
+     * Get user ID, whereas check various options, such as 1) query string, 2) resource configuration, 3) URL and 4) session
      */
-    private String getUserId() throws Exception {
+    protected String getUserId() throws Exception {
         String userId = null;
 
         // 1)
@@ -152,48 +171,45 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
 
     /**
      * Change user password
-     *
      * @param oldPassword Existing current password
      */
-    private void updatePassword(String oldPassword) {
-        try {
-            String userId = getUserId();
+    protected void updatePassword(String oldPassword, String newPassword, String newPasswordConfirmed) throws Exception {
+        String userId = getUserId();
 
-            if (!getRealm().getIdentityManager().getUserManager().getUser(userId).authenticate(oldPassword)) {
-                setTransformerParameter("error", "Authentication of user '" +userId + "' failed!");
-                log.error("Authentication of user '" + userId + "' failed!");
-                return;
-            }
+        if (!getRealm().getIdentityManager().getUserManager().getUser(userId).authenticate(oldPassword)) {
+            setTransformerParameter("error", "Authentication of user '" +userId + "' failed!");
+            log.error("Authentication of user '" + userId + "' failed!");
+            return;
+        }
 
-            String newPassword = getEnvironment().getRequest().getParameter("newPassword");
-            String newPasswordConfirmed = getEnvironment().getRequest().getParameter("newPasswordConfirmation");
-            if (newPassword != null && !newPassword.equals("")) {
-                if (newPassword.equals(newPasswordConfirmed)) {
-                    User user = getRealm().getIdentityManager().getUserManager().getUser(userId);
-                    user.setPassword(newPassword);
-                    user.save();
-                    setTransformerParameter("success", "Password updated successfully");
-                } else {
-                    setTransformerParameter("error", "New password and its confirmation do not match!");
-                }
+        if (newPassword != null && !newPassword.equals("")) {
+            if (newPassword.equals(newPasswordConfirmed)) {
+                User user = getRealm().getIdentityManager().getUserManager().getUser(userId);
+                user.setPassword(newPassword);
+                user.save();
+                setTransformerParameter("success", "Password updated successfully");
             } else {
-                setTransformerParameter("error", "No new password was specified!");
+                setTransformerParameter("error", "New password and its confirmation do not match!");
             }
-        } catch (Exception e) {
-            log.error(e, e);
+        } else {
+            setTransformerParameter("error", "No new password was specified!");
         }
     }
 
     /**
      * Update the email address (and possibly also the alias) inside user profile
-     *
      * @param email New email address of user (and possibly also alias)
+     * @return true if update was successful and false otherwise
      */
-    private void updateProfile(String email) {
+    protected boolean updateProfile(String email) throws Exception {
         if (email == null || ("").equals(email)) {
             setTransformerParameter("error", "emailNotSet");
+            log.warn("No email (or empty email) specified, hence do not update email address!");
+            return false;
         } else if (!validateEmail(email)) {
             setTransformerParameter("error", "emailNotValid");
+            log.warn("Email '" + email + "' is not valid!");
+            return false;
         } else {
             try {
                 String userId = getUserId();
@@ -215,9 +231,11 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                 }
 
                 setTransformerParameter("success", "E-Mail (and alias) updated successfully");
+                return true;
             } catch (Exception e) {
                 log.error(e, e);
                 setTransformerParameter("error", e.getMessage());
+                return false;
             }
         }
     }

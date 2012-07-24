@@ -1,2 +1,17 @@
-<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Created from template ...</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Login Screen Customization</h1><ul><li>Create a directory $REALM_DIR/src/webapp/xslt</li><li>Copy $YANEL_SRC/src/webapp/xslt/login-screen.xsl into $REALM_DIR/src/webapp/xslt</li><li>Start customizing $REALM_DIR/src/webapp/xslt/login-screen.xsl</li></ul><b>NOTE</b>: The realm dir ($REALM_DIR) is being resolved based on the Realm.getRootDir() and Realm.getConfigFile() resp. see the YanelServlet for further details.</body>
+<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Login Screen Customization</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Login Screen Customization</h1>
+
+<ul>
+<li>Create a directory <code>$REALM_DIR/src/webapp/xslt</code></li>
+<li>Copy <code>$YANEL_SRC/src/webapp/xslt/login-screen.xsl</code> into <code>$REALM_DIR/src/webapp/xslt</code></li>
+<li>Start customizing <code>$REALM_DIR/src/webapp/xslt/login-screen.xsl</code></li>
+</ul>
+
+<p>
+whereas the filename <code>xslt/login-screen.xsl</code> is configurable globally inside <code>WEB-INF/web.xml</code> (See parameter <code>login-screen-xslt</code>).
+</p>
+
+<p>
+<b>NOTE for Developers</b>: The realm dir ($REALM_DIR) is being resolved based on the <code>Realm.getRootDir()</code> and <code>Realm.getConfigFile()</code> or rather see the <code>YanelServlet</code> and in particular <code>org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl#getXHTMLAuthenticationForm(...)</code> for further details.
+</p>
+</body>
 </html>

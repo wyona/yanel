@@ -1,3 +1,18 @@
+/*
+ * See the NOTICE.txt file distributed with
+ * this work for additional information regarding copyright ownership.
+ * Wyona licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.wyona.yanel.servlet;
 
 import java.io.ByteArrayInputStream;
@@ -47,7 +62,9 @@ import org.wyona.yanel.core.api.attributes.IntrospectableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.TranslatableV1;
+import org.wyona.yanel.core.api.attributes.VersionableV1;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
+import org.wyona.yanel.core.api.attributes.VersionableV3;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
@@ -166,6 +183,9 @@ public class YanelServlet extends HttpServlet {
 
     private static String ACCESS_LOG_TAG_SEPARATOR;
 
+    private static final String REVISIONS_TAG_NAME = "revisions";
+    private static final String NO_REVISIONS_TAG_NAME = "no-revisions-yet";
+
     /**
      * @see javax.servlet.GenericServlet#init(ServletConfig)
      */
@@ -222,10 +242,11 @@ public class YanelServlet extends HttpServlet {
             }
 
             if (yanelInstance.isSchedulerEnabled()) {
-                log.warn("Startup scheduler ...");
-                scheduler = StdSchedulerFactory.getDefaultScheduler();
+                try {
+                    log.warn("DEBUG: Startup scheduler ...");
+                    scheduler = StdSchedulerFactory.getDefaultScheduler();
       
-                Realm[] realms = yanelInstance.getRealmConfiguration().getRealms();
+                    Realm[] realms = yanelInstance.getRealmConfiguration().getRealms();
                 for (int i = 0; i < realms.length; i++) {
                     if (realms[i] instanceof org.wyona.yanel.core.map.RealmWithConfigurationExceptionImpl) {
                         String eMessage = ((org.wyona.yanel.core.map.RealmWithConfigurationExceptionImpl) realms[i]).getConfigurationException().getMessage();
@@ -252,7 +273,12 @@ public class YanelServlet extends HttpServlet {
                 scheduler.scheduleJob(jobDetail, trigger);
 */
 
-                scheduler.start();
+                    scheduler.start();
+                } catch(Exception e) {
+                    log.error(e, e); // INFO: Let's be fault tolerant in case the scheduler should not start
+                }
+            } else {
+                log.info("The scheduler is currently disabled.");
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -576,8 +602,13 @@ public class YanelServlet extends HttpServlet {
                     try {
                         String revisionName = request.getParameter(YANEL_RESOURCE_REVISION);
                         // NOTE: Check also if usecase is not roll-back, because roll-back is also using the yanel.resource.revision
-                        if (revisionName != null && ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2") && !isRollBack(request)) {
-                            view = ((VersionableV2) res).getView(viewId, revisionName);
+                        if (revisionName != null && !isRollBack(request)) {
+                            if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
+                                view = ((VersionableV2) res).getView(viewId, revisionName);
+                            } else {
+                                log.warn("Resource '" + res.getPath() + "' has not VersionableV2 implemented, hence we cannot generate view for revision: " + revisionName);
+                                view = ((ViewableV2) res).getView(viewId);
+                            }
                         } else if (environment.getStateOfView().equals(StateOfView.LIVE) && ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1") && WorkflowHelper.getWorkflow(res) != null) { // TODO: Instead using the WorkflowHelper the Workflowable interface should have a method to check if the resource actually has a workflow assigned, see http://lists.wyona.org/pipermail/yanel-development/2009-June/003709.html
                             // TODO: Check if resource actually exists (see the exist problem above), because even it doesn't exist, the workflowable interfaces can return something although it doesn't really make sense. For example if a resource type is workflowable, but it has no workflow associated with it, then WorkflowHelper.isLive will nevertheless return true, whereas WorkflowHelper.getLiveView will throw an exception!
                             if (!((ViewableV2) res).exists()) {
@@ -641,7 +672,7 @@ public class YanelServlet extends HttpServlet {
                     Element noLastModifiedElement = (Element) resourceElement.appendChild(doc.createElement("no-last-modified"));
                 }
 
-                // Get the revisions, but only in the meta usecase (because of performance reasons)
+                // INFO: Get the revisions, but only in the meta usecase (because of performance reasons)
                 if (request.getParameter(RESOURCE_META_ID_PARAM_NAME) != null) {
                     appendRevisionsAndWorkflow(doc, resourceElement, res, request);
                 }
@@ -716,9 +747,12 @@ public class YanelServlet extends HttpServlet {
         if (meta != null) {
             if (meta.length() > 0) {
                 if (meta.equals("annotations")) {
-                    log.warn("TODO: Remove everything from the page meta document except the annotations");
+                    log.debug("Remove everything from the page meta document except the annotations");
+                    cleanMetaDoc(doc);
+                    appendAnnotations(doc, res);
+                    appendTrackingInformation(doc, trackInfo);
                 } else {
-                    log.warn("Stripping everything from page meta document but '" + meta + "' not supported!");
+                    log.warn("TODO: Stripping everything from page meta document but, '" + meta + "' not supported!");
                 }
             } else {
                 log.debug("Show all meta");
@@ -1009,7 +1043,7 @@ public class YanelServlet extends HttpServlet {
             }
             //log.debug("State of view: " + stateOfView);
             Environment environment = new Environment(request, response, identity, stateOfView, null);
-            if (yanelUI.isToolbarEnabled(request)) {
+            if (yanelUI.isToolbarEnabled(request)) { // INFO: Please note that isToolbarEnabled() also checks whether toolbar is suppressed...
                 environment.setToolbarState(ToolbarState.ON);
             } else if (yanelUI.isToolbarSuppressed(request)) {
                 environment.setToolbarState(ToolbarState.SUPPRESSED);
@@ -1594,16 +1628,11 @@ public class YanelServlet extends HttpServlet {
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(path);
         
         try {
-            String yanelFormat = request.getParameter("yanel.format");
+            String yanelFormat = request.getParameter("yanel.resource.meta.format");
             if(yanelFormat != null) {
                 if (yanelFormat.equals("xml")) {
                     response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     XMLHelper.writeDocument(doc, response.getOutputStream());
-/*
-                    OutputStream out = response.getOutputStream();
-                    javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(doc), new javax.xml.transform.stream.StreamResult(out));
-                    out.close();
-*/
                 } else if (yanelFormat.equals("json")) {
                     log.error("TODO: JSON format not implemented yet!");
                 } else {
@@ -1783,7 +1812,8 @@ public class YanelServlet extends HttpServlet {
                 identityMap = new IdentityMap();
                 session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
             }
-            identityMap.put(realm.getID(), identity); // INFO: Please note that the constructor Identity(User, String) is resolving group IDs (including parent group IDs) and hence these are "attached" to the session in order to improve performance during authorizatio n checks
+            //log.debug("Firstname: " + identity.getFirstname());
+            identityMap.put(realm.getID(), identity); // INFO: Please note that the constructor Identity(User, String) is resolving group IDs (including parent group IDs) and hence these are "attached" to the session in order to improve performance during authorization checks
         } else {
             log.warn("Session is null!");
         }
@@ -1807,7 +1837,6 @@ public class YanelServlet extends HttpServlet {
         if (log.isDebugEnabled()) log.debug("No identity attached to session, hence check request authorization header: " + authorizationHeader);
         if (authorizationHeader != null) {
             if (authorizationHeader.toUpperCase().startsWith("BASIC")) {
-                log.warn("Using BASIC authorization ..."); // TODO: Reformulate text ...
                 // Get encoded user and password, comes after "BASIC "
                 String userpassEncoded = authorizationHeader.substring(6);
                 // Decode it, using any base 64 decoder
@@ -1817,15 +1846,16 @@ public class YanelServlet extends HttpServlet {
                 String[] up = userpassDecoded.split(":");
                 String username = up[0];
                 String password = up[1];
-                log.debug("username: " + username + ", password: " + password);
+                log.debug("Get identity from BASIC authorization header and try to authenticate user '" + username + "' for request '" + request.getServletPath() + "'");
                 try {
                     String trueID = realm.getIdentityManager().getUserManager().getTrueId(username);
                     User user = realm.getIdentityManager().getUserManager().getUser(trueID);
                     if (user != null && user.authenticate(password)) {
                         return new Identity(user, username);
                     } else {
-                        log.warn("HTTP BASIC Authentication failed for " + username + " (True ID: '" + trueID + "')!");
-/*
+                        log.warn("HTTP BASIC Authentication failed for " + username + " (True ID: '" + trueID + "') and request '" + request.getServletPath() + "', hence set identity to WORLD!");
+                        return new Identity();
+/* INFO: Do not return unauthorized response, but rather just return 'WORLD' as identity...
                         response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                         PrintWriter writer = response.getWriter();
@@ -1837,7 +1867,8 @@ public class YanelServlet extends HttpServlet {
                     throw new ServletException(e.getMessage(), e);
                 }
             } else if (authorizationHeader.toUpperCase().startsWith("DIGEST")) {
-                log.error("DIGEST is not implemented");
+                log.error("DIGEST is not implemented (Request: " + request.getServletPath() + "), hence set identity to WORLD!");
+                return new Identity();
 /*
                 authorized = false;
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -1847,12 +1878,13 @@ public class YanelServlet extends HttpServlet {
 */
             } else {
                 log.warn("No such authorization type implemented: " + authorizationHeader);
+                return new Identity();
             }
+        } else {
+            if (log.isDebugEnabled()) log.debug("Neither identity inside session yet nor authorization header based identity for request '" + request.getServletPath() + "', hence set identity to WORLD...");
+            // TBD: Should we add WORLD identity for performance reasons to the session?
+            return new Identity();
         }
-	
-        if(log.isDebugEnabled()) log.debug("No identity yet (Neither session nor header based! Identity is set to WORLD!)");
-        // TBD: Should add world identity to the session?
-        return new Identity();
     }
 
     /**
@@ -2132,7 +2164,7 @@ public class YanelServlet extends HttpServlet {
             // Possibly embed toolbar:
             // TODO: Check if user is authorized to actually see toolbar (Current flaw: Enabled Toolbar, Login, Toolbar is enabled, Logout, Toolbar is still visible!)
             if (yanelUI.isToolbarEnabled(request)) {
-                // TODO: if ("suppress".equals(res.getResConfiguration("yanel.toolbar"))) {
+                // TODO: Check whether resource configuration has toolbar configured as suppressed: if ("suppress".equals(res.getResConfiguration("yanel.toolbar"))) {
                 if (mimeType != null && mimeType.indexOf("html") > 0) {
                     // TODO: What about other query strings or frames or TinyMCE (e.g. link.htm)?
                     if (request.getParameter(YANEL_RESOURCE_USECASE) == null) { // INFO: In the case of a yanel resource usecase do NOT add the toolbar
@@ -2164,7 +2196,7 @@ public class YanelServlet extends HttpServlet {
                             log.info("Toolbar has been disabled. Please check web.xml!");
                         }
                     } else {
-                        log.warn("Yanel resource usecase is not null, but set to '" + request.getParameter(YANEL_RESOURCE_USECASE) + "' and hence Yanel toolbar is not displayed in order to avoid that users are leaving the usecase because they might click on some toolbar menu item.");
+                        log.warn("Yanel resource usecase is not null, but set to '" + request.getParameter(YANEL_RESOURCE_USECASE) + "' and hence Yanel toolbar is suppressed/omitted in order to avoid that users are leaving the usecase because they might click on some toolbar menu item.");
                     }
                 } else {
                     log.info("No HTML related mime type: " + mimeType);
@@ -2236,15 +2268,20 @@ public class YanelServlet extends HttpServlet {
             }
     }
 
+    /**
+     * @see javax.servlet.GenericServlet#destroy()
+     */
     @Override
     public void destroy() {
         super.destroy();
 
         yanelInstance.destroy();
 
+        log.warn("Yanel instance destroyed.");
+
         if (scheduler != null) {
             try {
-                log.warn("Shutdown scheduler ...");
+                log.info("Shutdown scheduler ...");
                 scheduler.shutdown();
                 //scheduler.shutdown(true); // INFO: true means to wait until all jobs have completed
             } catch(Exception e) {
@@ -2252,7 +2289,29 @@ public class YanelServlet extends HttpServlet {
             }
         }
 
-        log.warn("Yanel webapp has been shut down.");
+        File shutdownLogFile = new File(System.getProperty("java.io.tmpdir"), "shutdown.log");
+        log.warn("Trying to shutdown log4j loggers... (if shutdown successful, then loggers won't be available anymore. Hence see shutdown log file '" + shutdownLogFile.getAbsolutePath() + "' for final messages)");
+        org.apache.log4j.LogManager.shutdown();
+
+/* INFO: After closing the loggers/appenders, these won't be available anymore, hence the following log statements don't make any sense.
+        log.info("Shutdown of access logger completed.");
+        log.info("Yanel webapp has been shut down: " + new Date());
+*/
+
+        try {
+            if (!shutdownLogFile.exists()) {
+                shutdownLogFile.createNewFile();
+            }
+            java.io.FileWriter fw= new java.io.FileWriter(shutdownLogFile);
+            java.io.BufferedWriter bw = new java.io.BufferedWriter(fw);
+            bw.write("Yanel webapp has been shut down: " + new Date());
+            bw.close();
+            fw.close();
+        } catch(java.io.FileNotFoundException e) {
+            System.err.println(e.getMessage());
+        } catch(java.io.IOException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     /**
@@ -2613,39 +2672,23 @@ public class YanelServlet extends HttpServlet {
 
 
         if ("1".equals(request.getHeader("DNT"))) { // INFO: See http://donottrack.us/
-            log.debug("Do not track...");
+            if (log.isDebugEnabled()) {
+                log.debug("Do not track: " + request.getRemoteAddr());
+            }
             return;
         }
 
         try {
             Realm realm = map.getRealm(request.getServletPath());
 
-            String[] tags = null;
-            if (resource != null) {
-                if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Annotatable", "1")) {
-                    AnnotatableV1 anno = (AnnotatableV1) resource;
-                    try {
-                        tags = anno.getAnnotations();
-                        //log.debug("Resource has tags: " + tags);
-                    } catch (Exception ex) {
-                        log.error(ex, ex);
-                    }
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Resource has no tags yet: " + resource.getPath());
-                    }
-                }
-            } else {
-                log.debug("Resource is null because access was probably denied: " + request.getServletPath());
-            }
-
             String accessLogMessage;
             if (trackInfo != null) {
                 String[] trackingTags = trackInfo.getTags();
-                if (trackingTags != null && trackingTags.length > 0) {
-                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), trackingTags, ACCESS_LOG_TAG_SEPARATOR);
+                if (trackingTags != null && trackingTags.length > 0) { // INFO: Either/Or, but not both. If you want both, then make sure that that your resource adds its annotations to the tracking information.
+                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getUserTrackingDomain(), trackingTags, ACCESS_LOG_TAG_SEPARATOR);
                 } else {
-                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), tags, ACCESS_LOG_TAG_SEPARATOR);
+                    String[] tags = getTagsFromAnnotatableResource(resource, request.getServletPath());
+                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getUserTrackingDomain(), tags, ACCESS_LOG_TAG_SEPARATOR);
                 }
 
                 String pageType = trackInfo.getPageType();
@@ -2665,7 +2708,8 @@ public class YanelServlet extends HttpServlet {
                     }
                 }
             } else {
-                accessLogMessage = AccessLog.getLogMessage(request, response, realm.getID(), tags, ACCESS_LOG_TAG_SEPARATOR);
+                String[] tags = getTagsFromAnnotatableResource(resource, request.getServletPath());
+                accessLogMessage = AccessLog.getLogMessage(request, response, realm.getUserTrackingDomain(), tags, ACCESS_LOG_TAG_SEPARATOR);
             }
             
             // TBD/TODO: What if user has logged out, but still has a persistent cookie?!
@@ -2728,7 +2772,8 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Append revisions and workflow of a resource to the meta document
+     * @param doc Meta document
      */
     private void appendRevisionsAndWorkflow(Document doc, Element resourceElement, Resource res, HttpServletRequest request) throws Exception {
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
@@ -2743,30 +2788,12 @@ public class YanelServlet extends HttpServlet {
             }
 
             RevisionInformation[] revisionsInfo = ((VersionableV2)res).getRevisions();
-            Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement("revisions"));
             if (revisionsInfo != null && revisionsInfo.length > 0) {
+                Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement(REVISIONS_TAG_NAME));
                 for (int i = revisionsInfo.length - 1; i >= 0; i--) {
-                    Element revisionElement = (Element) revisionsElement.appendChild(doc.createElement("revision"));
-                    log.debug("Revision: " + revisionsInfo[i].getName());
-                    revisionElement.appendChild(XMLHelper.createTextElement(doc, "name", revisionsInfo[i].getName(), null));
-                    log.debug("Date: " + revisionsInfo[i].getDate());
-                    revisionElement.appendChild(XMLHelper.createTextElement(doc, "date", "" + revisionsInfo[i].getDate(), null));
-     
-                    if (revisionsInfo[i].getUser() != null) {
-                        log.debug("User: " + revisionsInfo[i].getUser());
-                        revisionElement.appendChild(XMLHelper.createTextElement(doc, "user", revisionsInfo[i].getUser(), null));
-                    } else {
-                        revisionElement.appendChild(doc.createElement("no-user"));
-                    }
+                    Element revisionElement = appendRevision(revisionsElement, revisionsInfo[i]);
 
-                    if (revisionsInfo[i].getComment() != null) {
-                        log.debug("Comment: " + revisionsInfo[i].getComment());
-                        revisionElement.appendChild(XMLHelper.createTextElement(doc, "comment", revisionsInfo[i].getComment(), null));
-                    } else {
-                        revisionElement.appendChild(doc.createElement("no-comment"));
-                    }
-
-                    // Add workflow info
+                    // INFO: Add workflow info
                     if (workflowableResource != null && workflow != null) {
                         Element revisionWorkflowElement = (Element) revisionElement.appendChild(doc.createElement("workflow-state"));
                         String wfState = workflowableResource.getWorkflowState(revisionsInfo[i].getName());
@@ -2781,11 +2808,58 @@ public class YanelServlet extends HttpServlet {
                     }
                 }
             } else {
-                Element noRevisionsYetElement = (Element) resourceElement.appendChild(doc.createElement("no-revisions-yet"));
+                resourceElement.appendChild(doc.createElement(NO_REVISIONS_TAG_NAME));
             }
+        } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "3")) {
+            java.util.Iterator<RevisionInformation> it = ((VersionableV3)res).getRevisions(false);
+            if (it != null) {
+                if (it.hasNext()) {
+                    Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement(REVISIONS_TAG_NAME));
+                    while(it.hasNext()) {
+                        appendRevision(revisionsElement, (RevisionInformation)it.next()); 
+                    }
+                } else {
+                    resourceElement.appendChild(doc.createElement(NO_REVISIONS_TAG_NAME));
+                }
+            } else {
+                resourceElement.appendChild(doc.createElement(NO_REVISIONS_TAG_NAME));
+            }
+        } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "1")) {
+            log.warn("TODO: Implement VersionableV1 interface, deprecated though!");
+            String[] revisionIDs = ((VersionableV1)res).getRevisions();
         } else {
             Element notVersionableElement = (Element) resourceElement.appendChild(doc.createElement("not-versionable"));
         }
+    }
+
+    /**
+     * Append individual revisions to meta document
+     * @param revisionsEl Parent revisions DOM element
+     * @param ri Detailed information about this particular revision
+     */
+    private Element appendRevision(Element revisionsEl, RevisionInformation ri) {
+        Document doc = revisionsEl.getOwnerDocument();
+        Element revisionElement = (Element) revisionsEl.appendChild(doc.createElement("revision"));
+        log.debug("Revision: " + ri.getName());
+        revisionElement.appendChild(XMLHelper.createTextElement(doc, "name", ri.getName(), null));
+        log.debug("Date: " + ri.getDate());
+        revisionElement.appendChild(XMLHelper.createTextElement(doc, "date", "" + ri.getDate(), null));
+     
+        if (ri.getUser() != null) {
+            log.debug("User: " + ri.getUser());
+            revisionElement.appendChild(XMLHelper.createTextElement(doc, "user", ri.getUser(), null));
+        } else {
+            revisionElement.appendChild(doc.createElement("no-user"));
+        }
+
+        if (ri.getComment() != null) {
+            log.debug("Comment: " + ri.getComment());
+            revisionElement.appendChild(XMLHelper.createTextElement(doc, "comment", ri.getComment(), null));
+        } else {
+            revisionElement.appendChild(doc.createElement("no-comment"));
+        }
+
+        return revisionElement;
     }
 
     /**
@@ -2988,5 +3062,46 @@ public class YanelServlet extends HttpServlet {
      */
     private boolean isTrackable(Resource resource) {
         return ResourceAttributeHelper.hasAttributeImplemented(resource, "Trackable", "1");
+    }
+
+    /**
+     * Clean meta document
+     */
+    private void cleanMetaDoc(Document doc) {
+        Element rootElem = doc.getDocumentElement();
+        org.w3c.dom.NodeList children = rootElem.getChildNodes();
+        for (int i = children.getLength() - 1; i >= 0; i--) {
+            rootElem.removeChild(children.item(i));
+        }
+    }
+
+    /**
+     * Get tags from annotatable resource
+     * @param resource Resource which might provide annotations
+     * @param servletPath Servlet path of requested resource
+     * @return tags/annotations if resource is annotatable, null otherwise
+     */
+    private String[] getTagsFromAnnotatableResource(Resource resource, String servletPath) {
+        String[] tags = null;
+        if (resource != null) {
+            if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Annotatable", "1")) {
+                AnnotatableV1 anno = (AnnotatableV1) resource;
+                try {
+                    tags = anno.getAnnotations();
+                    if (tags != null) {
+                        log.debug("Resource '" + resource.getPath() + "' (Servlet path: " + servletPath + ") has '" + tags.length + "' tags.");
+                    }
+                } catch (Exception ex) {
+                    log.error(ex, ex);
+                }
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Resource has no tags yet: " + resource.getPath());
+                }
+            }
+        } else {
+            log.debug("Resource is null because access was probably denied: " + servletPath);
+        }
+        return tags;
     }
 }

@@ -75,6 +75,14 @@ public class RealmManagerConfig {
                 Configuration nameConfig = realmElements[i].getChild("name", false);
                 if (nameConfig != null) rcc.setLabel(nameConfig.getValue());
 
+                String boostDomain = realmElements[i].getAttribute("user-tracking-domain-id", null);
+                if (boostDomain != null) {
+                    rcc.setUserTrackingDomain(boostDomain);
+                } else {
+                    log.warn("No user tracking domain configured inside realms configuration, hence use realm ID...");
+                    rcc.setUserTrackingDomain(realmId);
+                }
+
                 Configuration proxy = realmElements[i].getChild("reverse-proxy", false);
                 if (proxy != null) {
                     int proxyPort = new Integer(proxy.getChild("port").getValue("-1")).intValue();

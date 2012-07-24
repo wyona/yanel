@@ -4,6 +4,7 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
+//import org.quartz.impl.JobDetailImpl;
 
 import java.util.Date;
 
@@ -16,7 +17,7 @@ import org.w3c.dom.NodeList;
 import org.wyona.yanel.core.map.Realm;
 
 /**
- *
+ * Utility class to schedule jobs per realm
  */
 public class QuartzSchedulerUtil {
 
@@ -24,9 +25,9 @@ public class QuartzSchedulerUtil {
 
     /**
      * Schedule jobs based on XML configuration
-     * @param scheduler Scheduler
-     * @param doc XML document containing jobs configuration
-     * @param realm Realm
+     * @param scheduler Scheduler instance
+     * @param doc XML document containing job configurations
+     * @param realm Realm which job(s) is(are) associated with
      */
     public static void schedule(Scheduler scheduler, Document doc, Realm realm) throws Exception {
         String groupName = realm.getID();
@@ -45,7 +46,19 @@ public class QuartzSchedulerUtil {
             Element jobE = (Element) jobElements.item(i);
             log.info("Add job with class: " + jobE.getAttribute("class"));
             String jobName = jobE.getAttribute("name");
-            JobDetail jobDetail = new JobDetail(jobName, groupName, Class.forName(jobE.getAttribute("class")));
+
+            String jobDesc = jobE.getAttribute("description");
+            if (jobDesc != null && jobDesc.length() > 0) {
+                // INFO: Leave job description as it is.
+            } else {
+                jobDesc = jobName;
+            }
+
+            Class<? extends org.quartz.Job> jobClass = Class.forName(jobE.getAttribute("class")).asSubclass(org.quartz.Job.class);
+            //JobDetailImpl jobDetail = new org.quartz.impl.JobDetailImpl(jobName, groupName, jobClass);
+            //jobDetail.setDescription(jobDesc);
+            JobDetail jobDetail = org.quartz.JobBuilder.newJob(jobClass).withIdentity(jobName, groupName).withDescription(jobDesc).build();
+
             jobDetail.getJobDataMap().put("realm", realm);
 
             Element triggerElement = (Element) jobE.getElementsByTagName("trigger").item(0);
@@ -101,7 +114,7 @@ public class QuartzSchedulerUtil {
                 }
             }
 
-            Trigger trigger = new SimpleTrigger(jobName + "Trigger", groupName, startDate, endDate, count, interval);
+            Trigger trigger = new org.quartz.impl.triggers.SimpleTriggerImpl(jobName + "Trigger", groupName, startDate, endDate, count, interval);
             scheduler.scheduleJob(jobDetail, trigger);
         }
     }

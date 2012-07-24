@@ -29,7 +29,7 @@ as $YANEL_HOME and $YULUP_WEBSITE .
     </p>
   </li>
   <li>Alternatively, you can add the realm node directly into $YANEL_HOME/conf/local/local.realms.xml. If you do not have this file, copy $YANEL_HOME/conf/realms.xml to $YANEL_HOME/conf/local/local.realms.xml first<br/>
-    <pre>&lt;realm id=&quot;yulup&quot; mount-point=&quot;/yulup/&quot;&gt;<br/>  &lt;name&gt;Yulup Website&lt;/name&gt;<br/>  &lt;config src=&quot;$YULUP_WEBSITE/yanel/config/yanel-realm-config.xml&quot;/&gt;<br/>&lt;/realm&gt;</pre>
+    <pre>&lt;realm id=&quot;yulup&quot; mount-point=&quot;/yulup/&quot; user-tracking-domain-id=&quot;boost-0123456789&quot;&gt;<br/>  &lt;name&gt;Yulup Website&lt;/name&gt;<br/>  &lt;config src=&quot;$YULUP_WEBSITE/yanel/config/yanel-realm-config.xml&quot;/&gt;<br/>&lt;/realm&gt;</pre>
     <b>NOTE for Windows users:</b> Also use forward slashes, e.g.
     <pre>D:/realms/foo/yanel/config/yanel-realm-config.xml<br/></pre>
     </li>
@@ -43,6 +43,9 @@ Please note that the order of the realms doesn't matter. A request is dispatched
 Also note that IIRC the root attribute (see the welcome realm configuration) is used for inheritance. For example, if a realm
 does not specify a proxy configuration, it will inherit this
 configuration from the root realm.
+</p>
+<p>
+The attribute 'user-tracking-domain-id' is optional and if not set, then the realm ID will be used instead. The attribute 'user-tracking-domain-id' is used for user tracking (see access log).
 </p>
 
 <h2>Some publicly available Third-Party realms</h2>

@@ -318,6 +318,8 @@ public class RealmManager {
                     //throw new ConfigurationException(errorMsg, e);
                     realm = new RealmWithConfigurationExceptionImpl(realmLabel, realmId, mountPoint, realmConfigFile, e);
                 }
+
+                realm.setUserTrackingDomain(rcc[i].getUserTrackingDomain());
                     
                 log.info("Realm: " + realm);
                 _realms.put(realmId, realm);

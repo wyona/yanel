@@ -19,5 +19,7 @@ Manage forgot password resource
 
   <property name="change-password-requests-path" default-value="/reset-password-requests"/>
   <property name="num-hrs-valid" default-value="24"/>
+
+  <property name="include-change-password-link" default-value="false"/> <!-- WARN: Because of security reasons please do not enable this property for a productive environment, but only set to 'true' for development or a continuous integration environment! -->
 </rtd>
 </resource>

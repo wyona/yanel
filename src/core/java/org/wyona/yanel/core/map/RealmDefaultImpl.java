@@ -42,7 +42,7 @@ import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 import org.apache.log4j.Logger;
 
 /**
- *
+ * Default realm implementation
  */
 public class RealmDefaultImpl implements Realm {
 
@@ -51,6 +51,7 @@ public class RealmDefaultImpl implements Realm {
 
     private static Logger log = Logger.getLogger(RealmDefaultImpl.class);
 
+    private String domain;
     private String name;
     private String id;
     private String mountPoint;
@@ -78,9 +79,10 @@ public class RealmDefaultImpl implements Realm {
 
     /**
      * Init realm
+     * @param configFile Realm configuration file
      */
     public RealmDefaultImpl(String name, String id, String mountPoint, File configFile) throws Exception {
-        // TODO: Get realm name from config if name is null (see method configure())!
+        // INFO: If name is null, then get realm name from config (see method configure(Configuration)).
         this.name = name;
 
         this.id = id;
@@ -97,6 +99,13 @@ public class RealmDefaultImpl implements Realm {
             try {
                 config = builder.buildFromFile(configFile);
                 configure(config);
+
+                // INFO: Dump filtered config...
+                if (log.isDebugEnabled()) {
+                    org.apache.avalon.framework.configuration.DefaultConfigurationSerializer dcs = new org.apache.avalon.framework.configuration.DefaultConfigurationSerializer();
+                    dcs.setIndent(true);
+                    dcs.serialize(new java.io.FileOutputStream(new File(configFile.getAbsolutePath() + ".DEBUG")), config);
+                }
             } catch (SAXException e) {
                 // TODO: CascadingSAXException cse = new CascadingSAXException(e);
                 log.error(e, e);
@@ -112,16 +121,21 @@ public class RealmDefaultImpl implements Realm {
 
     /**
      * Configure realm based on configuration
+     * @param config Realm configuration
      */
     protected void configure(Configuration config) throws Exception {
         Yanel yanel = Yanel.getInstance();
 
-        // Set name if not already set by yanel realms registration config
+        // INFO: Filter by target environment
+        config = ConfigurationUtil.filterEnvironment((org.apache.avalon.framework.configuration.MutableConfiguration) config, yanel.getTargetEnvironment());
+        
+        // INFO: Set realm name if not already set by yanel realms registration config (conf/local/local.realms.xml)
         Configuration nameConfigElement = config.getChild("name", false);
         if (name == null && nameConfigElement != null) {
             name = nameConfigElement.getValue();
+        } else {
+            log.warn("Realm name '" + name + "' already set inside Yanel's realms configuration, instead inside realm configuration: " + configFile);
         }
-
 
         initIdentityManager(config, yanel);
         initPolicyManager(config, yanel);
@@ -392,6 +406,9 @@ public class RealmDefaultImpl implements Realm {
         return privateIdentityManager;
     }
 
+    /**
+     * @see org.wyona.yanel.core.map.Realm#setIdentityManager(IdentityManager)
+     */
     public void setIdentityManager(IdentityManager identityManager) {
         this.privateIdentityManager = identityManager;
     }
@@ -582,6 +599,7 @@ public class RealmDefaultImpl implements Realm {
      */
     protected void initIdentityManager(Configuration config, Yanel yanel) throws Exception {
         Configuration repoConfigElement = config.getChild("ac-identities", false);
+
         if (repoConfigElement != null) {
 
             IdentityManagerFactory imFactory = null;
@@ -604,6 +622,25 @@ public class RealmDefaultImpl implements Realm {
                 identityManager = imFactory.newIdentityManager(identitiesRepository);
             }
             setIdentityManager(identityManager);
+        }
+    }
+
+    /**
+     * @see org.wyona.yanel.core.map.Realm#setUserTrackingDomain(String)
+     */
+    public void setUserTrackingDomain(String domain) {
+        this.domain = domain;
+    }
+
+    /**
+     * @see org.wyona.yanel.core.map.Realm#getUserTrackingDomain()
+     */
+    public String getUserTrackingDomain() {
+        if (domain != null) {
+            return domain;
+        } else {
+            log.debug("No domain configured, hence use realm ID...");
+            return getID();
         }
     }
 }

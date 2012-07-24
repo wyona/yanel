@@ -18,20 +18,103 @@ package org.wyona.yanel.core.util;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.avalon.framework.configuration.Configuration;
-import org.apache.log4j.Category;
+import org.apache.avalon.framework.configuration.ConfigurationException;
+import org.apache.avalon.framework.configuration.DefaultConfiguration;
+import org.apache.avalon.framework.configuration.MutableConfiguration;
+
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Queue;
+import java.util.LinkedList;
+
 /**
- * Configuration utility to copy an avalon configuration into a DOM document
+ * Configuration utility to deal with Avalon configuration elements.
  */
 public class ConfigurationUtil {
 
     /**
      * The log category instance
      */
-    private static final Category log = Category.getInstance(ConfigurationUtil.class);
+    private static final Logger log = Logger.getLogger(ConfigurationUtil.class);
+    
+    /**
+     * Filter elements by target environment
+     * @param configElement The config element.
+     * @param targetEnvironment The target environment.
+     */
+    public static Configuration filterEnvironment(MutableConfiguration configElement, String targetEnvironment) throws ConfigurationException {
+        if(targetEnvironment == null) {
+            log.debug("No target environment configured, hence remove all elements which have a target environment attribute...");
+            targetEnvironment = ""; // INFO: Assuming that there are no empty target environment attributes (!), we set it to empty, such that the attribute values won't match, and hence those elements will be removed...
+        }
 
+        Configuration[] children = configElement.getChildren();
+        // INFO: Generate map of children with same name
+        Map<String, Queue<Configuration>> elementsMap = new HashMap<String, Queue<Configuration>>();
+        for (int i = 0; i < children.length; i++) {
+            String name = children[i].getName();
+            Queue<Configuration> elements;
+            if(elementsMap.containsKey(name)) {
+                elements = elementsMap.get(name);
+            } else {
+                elements = new LinkedList<Configuration>();
+                elementsMap.put(name, elements);
+            }
+            elements.add(children[i]);
+        }
+
+        for(Map.Entry<String, Queue<Configuration>> entry : elementsMap.entrySet()) {
+            log.debug("Look at every element with the same name '" + entry.getKey() + "' we found...");
+            Queue<Configuration> elements = entry.getValue();
+            boolean targetEnvMatched = false;
+
+            // INFO: Check first whether there are elements with the same that have an attribute named target-environment, because otherwise we might remove too much
+            for(Configuration child : elements) {
+                try {
+                    String env = child.getAttribute("target-environment");
+                    log.debug("Element '" + child.getName()+ "' has target environment attribute set: " + child.getAttribute("target-environment"));
+                    if(targetEnvironment.equals(env)) {
+                        log.debug("The target environment of the element '" + child.getName() + "' did match: " + env);
+                        if (targetEnvMatched) {
+                            log.warn("There are two elements with the same name '" + child.getName() + "' which matched the target environment: " + env);
+                        }
+                        targetEnvMatched = true;
+                    } else {
+                        configElement.removeChild(child);
+                    }
+                } catch(ConfigurationException e) {
+                    // No target-environment attribute: Exception is thrown if attribute is not set.
+                    log.debug("Element '" + child.getName()+ "' has no target environment attribute set.");
+                }
+            }
+            	
+            if(targetEnvMatched) {
+                for(Configuration child : elements) {
+                    try {
+                        String env = child.getAttribute("target-environment");
+                        if(!targetEnvironment.equals(env)) {
+                            log.warn("There should be no more element '" + child.getName() + "' where target environment attribute does not match: " + child.getAttribute("target-environment"));
+                        }
+                    } catch(ConfigurationException e) {
+                        log.debug("Remove element '" + child.getName() + "' without target environment attribute.");
+                        configElement.removeChild(child);
+                    }
+                }
+            }
+        }
+
+        // INFO: Filter elements recursively
+        for (int i = 0; i < children.length; i++) {
+            children[i] = filterEnvironment((MutableConfiguration) children[i], targetEnvironment);
+        }
+
+        return configElement;
+    }
+    
     /**
      * Create a DOM Document from a custom config element modelled with avalon
      *

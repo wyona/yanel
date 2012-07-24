@@ -169,6 +169,8 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 }
                 return this.viewDescriptors.values().toArray(new ViewDescriptor[this.viewDescriptors.size()]);
             }
+
+            log.warn("No custom view descriptors set within resource configuration (Resource path: " + getPath() + "), hence use default ones: " + DEFAULT_VIEW_ID + ", " + SOURCE_VIEW_ID);
             // no custom config
             ConfigurableViewDescriptor[] vd = new ConfigurableViewDescriptor[2];
             vd[0] = new ConfigurableViewDescriptor(DEFAULT_VIEW_ID);
@@ -260,7 +262,6 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             log.info("View already set (probably via query string or session attribute): " + viewId);
         }
 
-        ConfigurableViewDescriptor viewDescriptor = (ConfigurableViewDescriptor)getViewDescriptor(viewId);
         String mimeType = getMimeType(viewId);
         view.setMimeType(mimeType);
 
@@ -273,6 +274,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             }
 
             // write result into view:
+            ConfigurableViewDescriptor viewDescriptor = (ConfigurableViewDescriptor)getViewDescriptor(viewId);
             view.setInputStream(getTransformedInputStream(xmlInputStream, viewDescriptor, errorWriter));
             return view;
         } catch(Exception e) {
@@ -311,7 +313,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             tf.setURIResolver(uriResolver);
             tf.setErrorListener(errorListener);
 
-            String[] xsltPaths = viewDescriptor.getXSLTPaths();
+            String[] xsltPaths = null;
             if (viewDescriptor != null) {
                 xsltPaths = viewDescriptor.getXSLTPaths();
             } else {
@@ -386,8 +388,8 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     }
 
     /**
-     * Creates an html or xml serializer for the given view id.
-     * @param viewId
+     * Creates an html or xml serializer for the given view descriptor
+     * @param viewdDescriptor
      * @return serializer
      * @throws Exception
      */
@@ -522,16 +524,21 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         // language of this translation
         transformer.setParameter("content-language", getContentLanguage());
 
-        // username
-        String username = getUsername();
-        if (username != null) transformer.setParameter("username", username);
+        // INFO: user ID, firstname, etc.
+        addUserInfo(transformer);
 
+        // INFO: Reserved yanel prefix
         transformer.setParameter("yanel.reservedPrefix", this.getYanel().getReservedPrefix());
 
         // Add toolbar status
         String toolbarStatus = getToolbarStatus();
         if (toolbarStatus != null) {
             transformer.setParameter("yanel.toolbar-status", toolbarStatus);
+        }
+        if (isToolbarSuppressed()) {
+            transformer.setParameter("yanel.toolbar-is-suppressed", "true");
+        } else {
+            transformer.setParameter("yanel.toolbar-is-suppressed", "false");
         }
 
         if ("1".equals(request.getHeader("DNT"))) { // INFO: See http://donottrack.us/
@@ -625,7 +632,35 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     }
 
     /**
-     * Get username from session
+     * Add user ID, firstname, etc. as parameters to transformer
+     * @param transformer Transformer to which user information as parameters will be added
+     */
+    private void addUserInfo(Transformer transformer) {
+        Identity identity = getEnvironment().getIdentity();
+        if (identity != null) {
+            String userID = identity.getUsername();
+            if (userID != null) {
+                transformer.setParameter("username", userID);
+
+                String firstname = identity.getFirstname();
+                if (firstname != null) {
+                    transformer.setParameter("firstname", firstname);
+                } else {
+                    log.warn("No firstname (user ID: " + userID + ")!");
+                }
+
+                String lastname = identity.getLastname();
+                if (lastname != null) {
+                    transformer.setParameter("lastname", lastname);
+                } else {
+                    log.warn("No lastname (user ID: " + userID + ")!");
+                }
+            }
+        }
+    }
+
+    /**
+     * Get user ID from session
      */
     protected String getUsername() {
         Identity identity = getEnvironment().getIdentity();
@@ -635,13 +670,14 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     /**
      * Get toolbar status from session
+     * @return 'on' if toolbar is enabled, but also 'on' if suppressed (for backwards compatibility reasons) and otherwise 'off' 
      */
     protected String getToolbarStatus() {
         org.wyona.yanel.core.ToolbarState ts = getEnvironment().getToolbarState();
         if (ts != null) {
             switch(ts) {
                 case ON: return "on";
-                case SUPPRESSED: return "on"; // Strictly backwards compatible
+                case SUPPRESSED: return "on"; // Strictly backwards compatible.
                 //case SUPPRESSED: return "suppressed";
                 default: return "off";
             }
@@ -649,16 +685,23 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             log.warn("No toolbar state, hence return 'off'!");
             return "off";
         }
+    }
 
-/*
-        // TODO: Use YanelServlet.TOOLBAR_KEY instead "toolbar"!
-        javax.servlet.http.HttpSession session = getEnvironment().getRequest().getSession(true);
-        if (session != null) {
-            return (String) session.getAttribute("toolbar");
+    /**
+     * Check whether toolbar is suppressed
+     * @return true if toolbar is suppressed and false otherwise
+     */
+    private boolean isToolbarSuppressed() {
+        org.wyona.yanel.core.ToolbarState ts = getEnvironment().getToolbarState();
+        if (ts != null) {
+            switch(ts) {
+                case SUPPRESSED: return true;
+                default: return false;
+            }
+        } else {
+            log.warn("No toolbar state, hence return 'false'!");
+            return false;
         }
-        log.warn("No session exists or could be created!");
-        return null;
-*/
     }
 
     /**
@@ -675,9 +718,10 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * Get user language (order: profile, browser, ...)
      */
     private String getUserLanguage() throws Exception {
-        Identity identity = getEnvironment().getIdentity();
         String language = getRequestedLanguage();
-        String userID = identity.getUsername();
+
+        Identity identity = getEnvironment().getIdentity();
+        String userID = identity.getUsername(); // WARN: Do not use the protected method getUsername(), because it might be overwritten and hence backwards compatibility might fail!
         if (userID != null) {
             if (getRealm().getIdentityManager().getUserManager().existsUser(userID)) { // INFO: It might be possible that a user ID is still referenced by a session, but has been deleted "persistently" in the meantime
                 String userLanguage = getRealm().getIdentityManager().getUserManager().getUser(userID).getLanguage();
@@ -720,13 +764,6 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         }
 
         viewId = getEnvironment().getRequest().getParameter(VIEW_ID_PARAM_NAME);
-
-/*
-        if (request.getParameter("yanel.format") != null) { // backwards compatible
-            viewId = request.getParameter("yanel.format");
-            log.warn("For backwards compatibility reasons also consider parameter 'yanel.format', but which is deprecated. Please use '" + VIEW_ID_PARAM_NAME + "' instead.");
-        }
-*/
 
         return viewId;
     }

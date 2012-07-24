@@ -8,7 +8,7 @@
   <body>
 <div class="instructions">
 <h1>Configuration of yanel.xml</h1>
-<p>The file <code>yanel.xml</code> (or previously but deprecated <code>yanel.properties</code>) is the very first configuration file which is read by Yanel if one startups Yanel. It contains global parameters , whereas some of them can be overwritten per realm or per resource (e.g. the mail host) or some of them can be overwritten by using environment variables (e.g. realms.xml).</p>
+<p>The file <code><a href="https://github.com/wyona/yanel/blob/master/conf/yanel.xml">yanel.xml</a></code> (or previously but deprecated <code>yanel.properties</code>) is the very first configuration file which is read by Yanel if one startups Yanel. It contains global parameters , whereas some of them can be overwritten per realm or per resource (e.g. the mail host) or some of them can be overwritten by using environment variables (e.g. realms.xml).</p>
 <p>The productive version of this configuration file is normally located at <code>WEB-INF/classes/yanel.xml</code>.</p>
 <h2>Examples</h2>
 <pre>&lt;?xml version="1.0"?&gt;
@@ -29,6 +29,19 @@
 
   &lt;!-- # Mail server configuration --&gt;
   &lt;smtp host="mail.foo.com" port="25"/&gt;
+&lt;-- INFO: Username and password are optional
+  &lt;smtp host="mail.foo.com" port="25" username="foo" password="bar"/&gt;
+--&gt;
+
+  &lt;!-- # <a href="../target-environment.html">Target environment configuration</a> --&gt;
+&lt;-- INFO: Target environment is optional
+  &lt;target-environment&gt;dev&lt;/target-environment&gt;
+--&gt;
+
+  &lt;!-- # <a href="../security/ssl.html#trust-store">Optional trust-store configuration</a> --&gt;
+&lt;--
+  &lt;trust-store src="/foor/bar/truststore.jks" password="MY_PASSWORD"/&gt;
+--&gt;
 
 &lt;/yanel&gt;</pre>
 <p><strong>Note 1:</strong> If one is using Yanel from source, then one should edit <code>conf/local/local.yanel.xml</code> rather than <code>conf/yanel.xml</code>.</p>

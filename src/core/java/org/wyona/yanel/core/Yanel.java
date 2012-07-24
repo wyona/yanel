@@ -57,9 +57,14 @@ public class Yanel {
     private String revision = null;
     private String reservedPrefix = null;
     private String targetEnv = null;
+    private String truststoreSrc = null;
+    private String truststorePwd = null;
     private boolean schedulerEnabled;
 
     private String smtpUsername, smtpPassword;
+
+    // TODO: It would be good to have an administrative contact per Yanel instance
+    //private String adminName, adminEmail;
 
     private static Logger log = Logger.getLogger(Yanel.class);
 
@@ -82,8 +87,16 @@ public class Yanel {
        File configFile = new File(Yanel.class.getClassLoader().getResource(DEFAULT_CONFIGURATION_FILE_XML).getFile());
        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
        Configuration config = builder.buildFromFile(configFile);
+       
+       if (config.getChild("target-environment", false) != null) {
+           targetEnv = config.getChild("target-environment").getValue();
+       } else {
+           log.warn("Target environment not configured within configuration: " + configFile);
+           targetEnv = null;
+       }
 
        configureSMTP(config, configFile);
+       configureSSLTruststore(config, configFile);
        
        map = (Map) applicationContext.getBean("map");
        realmConfig = new RealmManager();
@@ -105,12 +118,16 @@ public class Yanel {
            schedulerEnabled = false;
        }
 
-       if (config.getChild("target-environment", false) != null) {
-           targetEnv = config.getChild("target-environment").getValue();
+/* TODO: It would be good to have an administrative contact per Yanel instance
+       if (config.getChild("administrator", false) != null) {
+           adminName = config.getChild("administrator").getValue();
+           adminEmail = config.getChild("administrator").getAttribute("email");
        } else {
-           log.warn("Target environment not configured within configuration: " + configFile);
-           targetEnv = null;
+           log.warn("Administrator not configured inside global yanel configuration: " + configFile);
+           adminName = null;
+           adminEmail = null;
        }
+*/
 
        isInitialized = true;
     }
@@ -121,12 +138,14 @@ public class Yanel {
     public void destroy() {
        Realm[] realms = realmConfig.getRealms();
        for (int i = 0; i < realms.length; i++) {
+           log.warn("Try to destroy realm: " + realms[i].getName() + " (" + (i + 1) + " of " + realms.length + ")");
            try {
                realms[i].destroy();
            } catch(Exception e) {
                log.error(e, e);
            }
        }
+       log.warn("All realms destroyed.");
     }
 
     /**
@@ -315,6 +334,27 @@ public class Yanel {
            log.info("Mailserver default session (available to all code executing in the same JVM): " + session.getProperty("mail.smtp.host") + ":" + session.getProperty("mail.smtp.port"));
        } else {
            log.warn("Mail server not configured within configuration: " + configFile);
+       }
+    }
+
+    /**
+     * Configure trust-store location and password
+     */
+    private void configureSSLTruststore(Configuration config, File configFile) throws Exception {
+       if (config.getChild("trust-store", false) != null) {
+
+           truststoreSrc = config.getChild("trust-store").getAttribute("src");
+           if (!new File(truststoreSrc).exists()) {
+               log.error("No such trust-store file: " + truststoreSrc);
+               return;
+           }
+           truststorePwd = config.getChild("trust-store").getAttribute("password");
+           // TODO: Validate password, e.g. null check
+
+           System.setProperty("javax.net.ssl.trustStore", truststoreSrc);
+           System.setProperty("javax.net.ssl.keyStorePassword", truststorePwd);
+       } else {
+           log.warn("SSL trust-store not configured within configuration: " + configFile);
        }
     }
 }

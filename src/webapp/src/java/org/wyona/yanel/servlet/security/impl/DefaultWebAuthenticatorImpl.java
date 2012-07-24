@@ -1,7 +1,10 @@
 package org.wyona.yanel.servlet.security.impl;
 
+import org.wyona.commons.io.MimeTypeUtil;
+
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.core.transformation.I18nTransformer3;
 import org.wyona.yanel.servlet.YanelServlet;
 import org.wyona.yanel.core.api.security.WebAuthenticator;
 
@@ -20,19 +23,19 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.util.ArrayList;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
-import java.net.URL;
-
 import org.w3c.dom.Element;
-
-import org.apache.log4j.Logger;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
+import org.apache.log4j.Logger;
+import org.apache.xml.resolver.tools.CatalogResolver;
 
 // JOID is an alternative openid impl
 /*
@@ -101,8 +104,8 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             if(loginUsername != null) {
                 try {
                     String loginPassword = request.getParameter("yanel.login.password");
-                    if (loginPassword != null && authenticate(loginUsername, loginPassword, realm, session)) {
-                        log.debug("Login was successful");
+                    if (loginPassword != null && authenticateUser(loginUsername, loginPassword, realm, session)) {
+                        log.debug("Login of user '" + loginUsername + "' was successful");
                         doAutoLogin(request, response, loginUsername, openID, realm);
                         return null;
                     }
@@ -115,12 +118,16 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                     }
                     return response;
                 } catch (ExpiredIdentityException e) {
-                    log.warn("Login failed: [" + loginUsername + "] " + e);
+                    log.warn("Login failed: [" + loginUsername + "], because the account has expired: " + e);
                     getXHTMLAuthenticationForm(request, response, realm, "The account has expired!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                     return response;
                 } catch (AccessManagementException e) {
-                    log.warn("Login failed: [" + loginUsername + "] " + e);
-                    getXHTMLAuthenticationForm(request, response, realm, "Login failed!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                    log.warn("Login failed: [" + loginUsername + "]: " + e);
+                    getXHTMLAuthenticationForm(request, response, realm, e.getMessage(), reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                    return response;
+                } catch (Exception e) {
+                    log.warn("Login failed: [" + loginUsername + "]: " + e);
+                    getXHTMLAuthenticationForm(request, response, realm, e.getMessage(), reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                     return response;
                 }
             } else if (openID != null) {
@@ -182,7 +189,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
-     * @see org.wyona.yanel.core.api.security.WebAuthenticator#doAuthenticate(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.wyona.yanel.core.map.Map, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     * Do Neutron authentication
      */
     private static HttpServletResponse handleNeutronAuthAuthenticationRequest(HttpServletRequest request, HttpServletResponse response, Map map, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort) throws Exception {
         Realm realm = map.getRealm(request.getServletPath());
@@ -371,75 +378,19 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
     /**
      * Custom XHTML Form for authentication
+     * @param xsltLoginScreenDefault Path of default XSLT
+     * @param message Information or error message
      */
     public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException {
 
+        // TODO: Enhance with global resource, which will make it more flexible
+
         if(log.isDebugEnabled()) log.debug("Default authentication form implementation!");
 
-        String pathRelativeToRealm = request.getServletPath().replaceFirst(realm.getMountPoint(),"/");
-        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(pathRelativeToRealm);
-        
         try {
-            org.w3c.dom.Document adoc = YanelServlet.getDocument(YanelServlet.NAMESPACE, "yanel-auth-screen");
-            
-            Element rootElement = adoc.getDocumentElement();
-            
-            if (message != null) {
-                Element messageElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "message"));
-                messageElement.appendChild(adoc.createTextNode(message)); 
-            }
-            
-            Element requestElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "request"));
-            requestElement.setAttributeNS(YanelServlet.NAMESPACE, "urlqs", getRequestURLQS(request, null, true, map));
+            org.w3c.dom.Document adoc = generateAuthenticationScreenXML(request, realm, message, sslPort, map);
 
-            if (request.getQueryString() != null) {
-                requestElement.setAttributeNS(YanelServlet.NAMESPACE, "qs", request.getQueryString().replaceAll("&", "&amp;"));
-            }
-            
-            Element realmElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "realm"));
-            realmElement.setAttributeNS(YanelServlet.NAMESPACE, "name", realm.getName());
-            realmElement.setAttributeNS(YanelServlet.NAMESPACE, "mount-point", realm.getMountPoint().toString());  
-
-            String currentUserId = null;
-            Identity identity = YanelServlet.getIdentity(request.getSession(true), realm);
-            if (identity != null) {
-                currentUserId = identity.getUsername();
-            }
-            //String currentUserId = getCurrentUserId(request.getSession(true), realm);
-            if (currentUserId != null) {
-                Element userElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "user"));
-                userElement.setAttributeNS(YanelServlet.NAMESPACE, "id", currentUserId);
-            }
-            
-            Element sslElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "ssl"));            
-            if(sslPort != null) {
-                sslElement.setAttributeNS(YanelServlet.NAMESPACE, "status", "ON");   
-            } else {
-                sslElement.setAttributeNS(YanelServlet.NAMESPACE, "status", "OFF");
-            }
-
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) { // INFO: Check cookies if login name was set to be remembered
-                for (int i = 0; i < cookies.length; i++) {
-                    log.debug("Cookie: " + cookies[i].getName() + ", " + cookies[i].getValue());
-                    // TODO: Parse realm and login name (see method doRememberMyLoginName())
-                    if (cookies[i].getName().equals(LOGIN_DEFAULT_COOKIE_NAME)) {
-                        Element loginDefaultElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-default"));            
-                        loginDefaultElement.setAttributeNS(YanelServlet.NAMESPACE, "username", cookies[i].getValue());
-                    } else if (cookies[i].getName().equals(LOGIN_OPENID_COOKIE_NAME)) {
-                        Element loginOpenIDElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-openid"));            
-                        loginOpenIDElement.setAttributeNS(YanelServlet.NAMESPACE, "openid", cookies[i].getValue());
-                    }
-                }
-            }
-
-            String loginUsername = request.getParameter(LOGIN_USER_REQUEST_PARAM_NAME); // INFO: Check request parameter for login name
-            if (loginUsername != null) {
-                Element presetLoginElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-preset"));
-                presetLoginElement.setAttributeNS(YanelServlet.NAMESPACE, "username", loginUsername);
-            }
-            
-            String yanelFormat = request.getParameter("yanel.format");
+            String yanelFormat = request.getParameter("yanel.login.format");
             if(yanelFormat != null && yanelFormat.equals("xml")) {
                 response.setContentType("application/xml; charset=" + YanelServlet.DEFAULT_ENCODING);
                 //OutputStream out = response.getOutputStream();
@@ -456,12 +407,47 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 if (!xsltLoginScreen.isFile()) xsltLoginScreen = org.wyona.commons.io.FileUtil.file(servletContextRealPath, xsltLoginScreenDefault);
 
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltLoginScreen));
-                transformer.setParameter("yanel.back2realm", backToRealm);
-                transformer.setParameter("yanel.reservedPrefix", reservedPrefix);
-                transformer.transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
-            }
 
-            
+                String pathRelativeToRealm = request.getServletPath().replaceFirst(realm.getMountPoint(),"/"); // INFO: For example "/en/index.html"
+                transformer.setParameter("yanel.path", pathRelativeToRealm);
+
+                //log.debug("Path relative to realm: " + pathRelativeToRealm);
+                String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(pathRelativeToRealm);
+                transformer.setParameter("yanel.back2realm", backToRealm);
+
+                transformer.setParameter("yanel.reservedPrefix", reservedPrefix);
+
+                String browserLanguage = getBrowserLanguage(request);
+                if (browserLanguage != null) {
+                    transformer.setParameter("language", browserLanguage); // INFO: resource.getRequestedLanguage()
+                }
+                String contentLang = getContentLanguage(pathRelativeToRealm);
+                if (contentLang != null) {
+                    transformer.setParameter("content-language", contentLang); // INFO: resource.getContentLanguage()
+                }
+
+
+                if (contentLang != null || browserLanguage != null || realm.getDefaultLanguage() != null) {
+                    // INFO: Create i18n transformer:
+                    javax.xml.transform.URIResolver resolver = new org.wyona.yanel.core.source.YanelRepositoryResolver(realm);
+                    I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(realm), contentLang, browserLanguage, realm.getDefaultLanguage(), resolver);
+                    CatalogResolver catalogResolver = new CatalogResolver();
+                    i18nTransformer.setEntityResolver(catalogResolver);
+
+                    org.apache.xml.serializer.Serializer serializer;
+                    if (MimeTypeUtil.isHTML(mimeType) && ! MimeTypeUtil.isXML(mimeType)) {
+                        serializer = org.wyona.yanel.core.serialization.SerializerFactory.getSerializer(org.wyona.yanel.core.serialization.SerializerFactory.HTML_TRANSITIONAL);
+                    } else {
+                        serializer = org.wyona.yanel.core.serialization.SerializerFactory.getSerializer(org.wyona.yanel.core.serialization.SerializerFactory.XHTML_STRICT);
+                    }
+                    serializer.setOutputStream(response.getOutputStream());
+                    i18nTransformer.setResult(new javax.xml.transform.sax.SAXResult(serializer.asContentHandler()));
+                    transformer.transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.sax.SAXResult(i18nTransformer));
+                } else {
+                    log.warn("No content, nor browser, nor default language, hence do not use i18n...");
+                    transformer.transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.stream.StreamResult(response.getWriter()));
+                }
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServletException(e.getMessage());
@@ -654,7 +640,21 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
-     * Default authentication
+     * Default authentication. Overwrite this method in order to implement a custom user authentication.
+     *
+     * @param username Login username, which might be an alias
+     * @param password Plain text password
+     * @param realm Realm
+     * @param session HTTP session
+     *
+     * @return true if authentication was successful and else false
+     */
+    protected boolean authenticateUser(String username, String password, Realm realm, HttpSession session) throws Exception {
+        return authenticate(username, password, realm, session);
+    }
+
+    /**
+     * Default authentication. WARN: This method is used by realms/konakart-yanel-realm/res-types/shared/src/java/org/wyona/yanel/resources/konakart/shared/SharedResource.java, whereas it was probably a mistake to make this method public! Do not use it, but rather implement a custom web authenticator.
      *
      * @param username Login username, which might be an alias
      * @param password Plain text password
@@ -672,7 +672,130 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             log.warn("Authentication was successful for user: " + user.getID());
             log.warn("TODO: Add user to session listener!");
             return true;
+        } else {
+            log.warn("Authentication failed for user: " + username + " (Realm: " + realm.getName() + ")");
         }
         return false;
+    }
+
+    /**
+     * Generate XML of authentication/login screen
+     * @param request
+     * @param realm
+     * @param message Error message, e.g. "Login failed"
+     * @param sslPort
+     * @param map
+     */
+    protected org.w3c.dom.Document generateAuthenticationScreenXML(HttpServletRequest request, Realm realm, String message, String sslPort, Map map) throws Exception {
+        log.debug("Generate authentication screen XML...");
+        org.w3c.dom.Document adoc = YanelServlet.getDocument(YanelServlet.NAMESPACE, "yanel-auth-screen");
+        Element rootElement = adoc.getDocumentElement();
+            
+        if (message != null) {
+            Element messageElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "message"));
+            messageElement.appendChild(adoc.createTextNode(message)); 
+        }
+            
+        Element requestElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "request"));
+        requestElement.setAttributeNS(YanelServlet.NAMESPACE, "urlqs", getRequestURLQS(request, null, true, map));
+
+        if (request.getQueryString() != null) {
+            requestElement.setAttributeNS(YanelServlet.NAMESPACE, "qs", request.getQueryString().replaceAll("&", "&amp;"));
+        }
+            
+        Element realmElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "realm"));
+        realmElement.setAttributeNS(YanelServlet.NAMESPACE, "name", realm.getName());
+        realmElement.setAttributeNS(YanelServlet.NAMESPACE, "mount-point", realm.getMountPoint().toString());  
+
+        String currentUserId = null;
+        Identity identity = YanelServlet.getIdentity(request.getSession(true), realm);
+        if (identity != null) {
+            currentUserId = identity.getUsername();
+        }
+        //String currentUserId = getCurrentUserId(request.getSession(true), realm);
+        if (currentUserId != null) {
+            Element userElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "user"));
+            userElement.setAttributeNS(YanelServlet.NAMESPACE, "id", currentUserId);
+        }
+            
+        Element sslElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "ssl"));            
+        if(sslPort != null) {
+            sslElement.setAttributeNS(YanelServlet.NAMESPACE, "status", "ON");   
+        } else {
+            sslElement.setAttributeNS(YanelServlet.NAMESPACE, "status", "OFF");
+        }
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) { // INFO: Check cookies if login name was set to be remembered
+            for (int i = 0; i < cookies.length; i++) {
+                log.debug("Cookie: " + cookies[i].getName() + ", " + cookies[i].getValue());
+                // TODO: Parse realm and login name (see method doRememberMyLoginName())
+                if (cookies[i].getName().equals(LOGIN_DEFAULT_COOKIE_NAME)) {
+                    Element loginDefaultElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-default"));            
+                    loginDefaultElement.setAttributeNS(YanelServlet.NAMESPACE, "username", cookies[i].getValue());
+                } else if (cookies[i].getName().equals(LOGIN_OPENID_COOKIE_NAME)) {
+                    Element loginOpenIDElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-openid"));            
+                    loginOpenIDElement.setAttributeNS(YanelServlet.NAMESPACE, "openid", cookies[i].getValue());
+                }
+            }
+        }
+
+        String loginUsername = request.getParameter(LOGIN_USER_REQUEST_PARAM_NAME); // INFO: Check request parameter for login name
+        if (loginUsername != null) {
+            Element presetLoginElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "login-preset"));
+            presetLoginElement.setAttributeNS(YanelServlet.NAMESPACE, "username", loginUsername);
+        }
+
+        return adoc;
+    }
+
+    /**
+     * Get content language from path
+     * @param path Path such as for example "/en/index.html"
+     * @return two-letter language code, e.g. "en"
+     */
+    private String getContentLanguage(String path) {
+        if (path.length() >= 3 && path.charAt(0) == '/' && path.charAt(3) == '/') {
+            return path.substring(1,3);
+        } else {
+            log.warn("No two-letter language code detected inside: " + path);
+            return null;
+        }
+    }
+
+    /**
+     * Gets the names of the i18n message catalogues used for the i18n transformation.
+     * Uses the following priorization:
+     * 1. realm i18n-catalogue
+     * 2. 'global'
+     * @return i18n catalogue name
+     */
+    private String[] getI18NCatalogueNames(Realm realm) throws Exception {
+        ArrayList<String> catalogues = new ArrayList<String>();
+        String realmCatalogue = realm.getI18nCatalogue();
+        if (realmCatalogue != null) {
+            catalogues.add(realmCatalogue);
+        }
+        catalogues.add("global");
+        return catalogues.toArray(new String[catalogues.size()]);
+    }
+
+    /**
+     * Get language accepted by browser
+     */
+    private String getBrowserLanguage(HttpServletRequest request) {
+        String language = request.getHeader("Accept-Language");
+        if (language != null) {
+            if (language.indexOf(",") > 0) {
+                language = language.substring(0, language.indexOf(","));
+            }
+            int dashIndex = language.indexOf("-");
+            if (dashIndex > 0) {
+                language = language.substring(0, dashIndex);
+            }
+
+            return language;
+        }
+        return null;
     }
 }

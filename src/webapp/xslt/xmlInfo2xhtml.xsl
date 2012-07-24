@@ -68,10 +68,10 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
 
               <xsl:choose>
                 <xsl:when test="child::node()/yanel:exception">
-                  <p><a href="?yanel.format=xml">Show XML source</a> </p>
+                  <p><a href="?yanel.resource.meta.format=xml">Show XML source</a></p>
                 </xsl:when>
                 <xsl:otherwise>
-                  <p><a href="?yanel.resource.meta&amp;yanel.format=xml">Show XML source</a> </p>
+                  <p><a href="?yanel.resource.meta&amp;yanel.resource.meta.format=xml">Show XML source</a> (<a href="?yanel.resource.meta=annotations&amp;yanel.resource.meta.format=xml">Show annotations/tracking-information as XML</a>)</p>
                 </xsl:otherwise>
               </xsl:choose>
 
@@ -91,6 +91,15 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
 -->
             <xsl:apply-templates select="/yanel:yanel/resource"/>
             <xsl:apply-templates select="child::node()/revisions"/>
+            <xsl:apply-templates select="child::node()/no-revisions-yet"/>
+
+<h4>Annotations</h4>
+            <xsl:apply-templates select="/yanel:yanel/yanel:annotations"/>
+            <xsl:apply-templates select="/yanel:yanel/yanel:no-annotations-yet"/>
+
+<h4>Tracking Information (Interest, Page type, Custom fields)</h4>
+            <xsl:apply-templates select="/yanel:yanel/yanel:tracking-info"/>
+            <xsl:apply-templates select="/yanel:yanel/yanel:no-tracking-information"/>
             </div>
             </td>
             </tr>
@@ -172,6 +181,36 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
   
   <xsl:template match="last-modified">
     <li>Last modified: <xsl:apply-templates/></li>
+  </xsl:template>
+
+  <xsl:template match="yanel:annotations">
+    <ul>
+      <xsl:for-each select="yanel:annotation">
+      <li><xsl:value-of select="."/></li>
+      </xsl:for-each>
+    </ul>
+  </xsl:template>
+
+  <xsl:template match="yanel:no-annotations-yet">
+    <p>No annotations yet.</p>
+  </xsl:template>
+
+  <xsl:template match="yanel:tracking-info">
+    <ul>
+      <xsl:for-each select="yanel:interests/yanel:interest">
+      <li><xsl:value-of select="."/></li>
+      </xsl:for-each>
+    </ul>
+    <p>Page type: <xsl:value-of select="yanel:page-type"/></p>
+    <p>Custom fields: TODO</p>
+  </xsl:template>
+
+  <xsl:template match="yanel:no-tracking-information">
+    <p>No tracking information.</p>
+  </xsl:template>
+
+  <xsl:template match="no-revisions-yet">
+    <li>No revisions yet.</li>
   </xsl:template>
 
   <xsl:template match="revisions">

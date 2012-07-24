@@ -17,6 +17,10 @@ User registration
   <property name="email-confirmation" default-value="true"/> <!-- INFO: Set to false if no email confirmation/activation should re required. -->
   <property name="groups"/> <!-- INFO: Comma separated list of group IDs, to which user shall be added automatically during registration -->
   <property name="include-activation-link" default-value="false"/> <!-- WARN: Because of security reasons please do not enable this property for a productive environment, but only set to 'true' for development or a continuous integration environment! -->
+
   <property name="send-notification-emails" default-value="true"/> <!-- INFO: In the case of a continuous integration environment one might want to set this property to 'false' -->
+
+  <property name="min-password-length" default-value="5"/>
+  <property name="max-password-length" default-value="15"/>
 </rtd>
 </resource>

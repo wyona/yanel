@@ -27,12 +27,17 @@ import javax.xml.transform.sax.SAXSource;
 import org.wyona.yanel.core.source.SourceException;
 import org.wyona.yanel.core.source.YanelStreamSource;
 
+import org.apache.log4j.Logger;
+
 /**
  * A MessageProviderFactory creates MessageProviders. It supports two different
  * providers, ResourceBundleMessageProvider and XMLMessageProvider.
  * It supports caching of XMLMessageProviders.
  */
 public class MessageProviderFactory {
+
+    private static Logger log = Logger.getLogger(MessageProviderFactory.class);
+
     protected static HashMap cache = new HashMap();
 
     /**
@@ -50,8 +55,7 @@ public class MessageProviderFactory {
      * @return message provider
      * @throws SourceException
      */
-    public static synchronized MessageProvider getMessageProvider(String catalogue,
-            URIResolver resolver) throws SourceException {
+    public static synchronized MessageProvider getMessageProvider(String catalogue, URIResolver resolver) throws SourceException {
         MessageProvider messageProvider = null;
 
         if (catalogue.indexOf(":") == -1) {
@@ -67,8 +71,13 @@ public class MessageProviderFactory {
         return new ResourceBundleMessageProvider(catalogue);
     }
 
-    public static synchronized MessageProvider getXMLMessageProvider(String catalogue,
-            URIResolver resolver) throws SourceException {
+    /**
+     * Get XML message provider
+     * @param catalogue Catalogue name/path, e.g. 'yanelrepo:/app/i18n.xml'
+     * @param resolver Resolver to resolve catalogue path
+     */
+    public static synchronized MessageProvider getXMLMessageProvider(String catalogue, URIResolver resolver) throws SourceException {
+        if (log.isDebugEnabled()) log.debug("Try to resolve XML message provider with catalogue name/path: " + catalogue);
         try {
             Source source = resolver.resolve(catalogue, null);
             long sourceLastModified = -1;

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+ <!-- INFO: TODO use instead message key gc.login.password, see section login further below -->
+<message>
+  <message key="password">
+    <text language="de">Passwort</text>
+    <text language="en">Password</text>
+  </message>
+
+  <message key="forgot.password">
+    <text language="de">Passwort vergessen?</text>
+    <text language="en">I forgot my password!</text>
+  </message>
+</message>

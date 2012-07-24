@@ -26,7 +26,7 @@
             <td colspan="2" valign="top" width="100%">
               <div id="content">
                 <p>
-                  <a href="?yanel.format=xml">Show XML source</a>
+                  <a href="?yanel.resource.viewid=xml">Show XML source</a>
                 </p> 
                 <p>
                   The server is currently unable to handle your request. Please

@@ -23,6 +23,15 @@
             <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:requestnewpw"/>
             <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:show-message"/>
 
+<!-- TODO: Implement new elements, which are less ambigious than show-message
+                                        <xsl:if test="/yanel:yanel-forgotpw/yanel:requestemail">
+                                          <xsl:call-template name="requestemail"/>
+                                        </xsl:if>
+                                        <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:change-password-email"/>
+                                        <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:requestnewpw"/>
+                                        <xsl:apply-templates select="/yanel:yanel-forgotpw/yanel:password-update"/>
+-->
+
           </body>
     </html>
   </xsl:template>

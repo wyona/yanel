@@ -5,14 +5,18 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:yanel="http://www.wyona.org/yanel/1.0"
+  xmlns:i18n="http://www.wyona.org/yanel/i18n/1.0"
 >
 
 <!--
   <xsl:output method="xhtml" encoding="UTF-8"/>
 -->
 
+  <xsl:param name="yanel.path" select="'PATH_IS_NULL'"/>
   <xsl:param name="yanel.back2realm" select="'BACK2REALM_IS_NULL'"/>
   <xsl:param name="yanel.reservedPrefix" select="'RESERVEDPREFIX_IS_NULL'"/>
+  <xsl:param name="content-language" select="'CONTENT_LANGUAGE_IS_NULL'"/>
+  <xsl:param name="language" select="'LANGUAGE_IS_NULL'"/>
 
   <xsl:template match="/">
     <html>
@@ -38,7 +42,7 @@
         <xsl:apply-templates select="/yanel:yanel-auth-screen/yanel:message"/>
           <form method="POST">
             Username:<xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-default"><input type="text" name="yanel.login.username" value="{/yanel:yanel-auth-screen/yanel:login-default/@yanel:username}"/></xsl:when><xsl:when test="/yanel:yanel-auth-screen/yanel:login-preset"><input type="text" name="yanel.login.username" value="{/yanel:yanel-auth-screen/yanel:login-preset/@yanel:username}"/></xsl:when><xsl:otherwise><input type="text" name="yanel.login.username"/></xsl:otherwise></xsl:choose>
-            Password: <input type="password" name="yanel.login.password"/>(<a id="forgotpw" href="{$yanel.back2realm}{$yanel.reservedPrefix}/user-forgot-pw.html">I forgot my password!</a>)<br/>
+            <i18n:text key="password"/>: <input type="password" name="yanel.login.password"/>(<a id="forgotpw" href="{$yanel.back2realm}{$yanel.reservedPrefix}/user-forgot-pw.html"><i18n:text key="forgot.password"/></a>)<br/>
             <xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-default"><input type="checkbox" name="remember-my-login-name" checked="checked"/></xsl:when><xsl:otherwise><input type="checkbox" name="remember-my-login-name"/></xsl:otherwise></xsl:choose> Remember my login name (for 1 day (<a href="">More info</a>). Uncheck if on a shared computer!)
             <br/><input type="checkbox" name="auto-login"/> Keep me signed in (<a href="?yanel.usecase=logout">Logout</a> explicitely in order to remove auto login cookie and hence disable auto login)
             <input type="submit" value="Login" name="regular-login"/>
@@ -57,10 +61,10 @@
         <p>
         <xsl:choose>
           <xsl:when test="/yanel:yanel-auth-screen/yanel:request/@yanel:qs">
-            <a href="?{/yanel:yanel-auth-screen/yanel:request/@yanel:qs}&amp;yanel.format=xml">Show XML source</a>
+            <a href="?{/yanel:yanel-auth-screen/yanel:request/@yanel:qs}&amp;yanel.login.format=xml">Show XML source</a>
           </xsl:when>
           <xsl:otherwise>
-            <a href="?&amp;yanel.format=xml">Show XML source</a>
+            <a href="?&amp;yanel.login.format=xml">Show XML source</a>
           </xsl:otherwise>
         </xsl:choose>
         </p>
@@ -81,6 +85,12 @@
 
   <xsl:template match="yanel:request">
     Request: <xsl:value-of select="@yanel:urlqs"/>
+    <br/>
+    Path starting at realm: <xsl:value-of select="$yanel.path"/>
+    <br/>
+    Content language: <xsl:value-of select="$content-language"/>
+    <br/>
+    User language: <xsl:value-of select="$language"/>
   </xsl:template>
 
   <xsl:template match="yanel:ssl">

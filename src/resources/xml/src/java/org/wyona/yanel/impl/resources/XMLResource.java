@@ -782,12 +782,8 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         if (yanelPath != null) {
             log.warn("Read annotations for parameter yanel-path '" + yanelPath + "' not implemented yet!");
         } else {
-            if (getRealm().getRepository().getNode(getPath()).hasProperty("annotations")) {
-                String aString = getRealm().getRepository().getNode(getPath()).getProperty("annotations").getString();
-                String[] aArray = aString.split(", ");
-                for(int i = 0; i < aArray.length; i++) {
-                    annotations.add(aArray[i]);
-                }
+            annotations = org.wyona.yanel.core.attributes.annotatable.Util.readAnnotations(getRealm().getRepository(), getPath());
+            if (annotations != null) {
                 annotationRead = true;
                 return;
             } else {
@@ -800,15 +796,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * Save annotations
      */
     private void saveAnnotations() throws Exception{
-        String[] aArray = annotations.toArray(new String[0]);
-        StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < aArray.length; i++) {
-            sb.append(aArray[i]);
-            if (i < aArray.length - 1) {
-                sb.append(", ");
-            }
-        }
-        getRealm().getRepository().getNode(getPath()).setProperty("annotations", sb.toString());
+        org.wyona.yanel.core.attributes.annotatable.Util.saveAnnotations(annotations, getRealm().getRepository(), getPath());
     }
 
     /**

@@ -119,8 +119,14 @@ public interface Realm {
      */
     public void setWebAuthenticator(WebAuthenticator wa);
 
+    /**
+     *
+     */
     public IdentityManager getIdentityManager();
 
+    /**
+     *
+     */
     public void setIdentityManager(IdentityManager identityManager);
 
     /**
@@ -188,4 +194,15 @@ public interface Realm {
      * @return i18n catalogue
      */
     public String getI18nCatalogue();
+
+    /**
+     * Set optional user tracking domain
+     * @param domain Domain ID, e.g. 'boost-0123456789'
+     */
+    public void setUserTrackingDomain(String domain);
+
+    /**
+     * Get optional user tracking domain
+     */
+    public String getUserTrackingDomain();
 }

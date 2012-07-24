@@ -21,6 +21,7 @@
       <xsl:copy-of select="/yanel:yanel/yanel:scheduler"/>
       <xsl:copy-of select="/yanel:yanel/yanel:smtp"/>
       <xsl:copy-of select="/yanel:yanel/yanel:target-environment"/>
+      <xsl:copy-of select="/yanel:yanel/yanel:trust-store"/>
     </yanel>
   </xsl:template>
 

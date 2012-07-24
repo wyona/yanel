@@ -119,8 +119,11 @@ public class I18nTransformer3 extends AbstractTransformer {
     }
 
     /**
+     * @param catalogues i18n catalogue names
      * @param language Localization or content language
      * @param userLanguage Localization of user (normally based on user profile setting)
+     * @param defaultLanguage
+     * @param resolver
      */
     public I18nTransformer3(String[] catalogues, String language, String userLanguage, String defaultLanguage, URIResolver resolver) {
         this(catalogues, language, defaultLanguage, resolver);
@@ -138,8 +141,15 @@ public class I18nTransformer3 extends AbstractTransformer {
      */
     public I18nTransformer3(String[] catalogues, String language, String defaultLanguage, URIResolver resolver) {
         this.resolver = resolver;
-        //log.debug("Language: " + language);
-        this.locale = new Locale(language);
+
+        if (language != null) {
+            //log.debug("Language: " + language);
+            this.locale = new Locale(language);
+        } else {
+            log.warn("No language, hence use default language as locale...");
+            this.locale = new Locale(defaultLanguage);
+        }
+
         //log.debug("Default language: " + defaultLanguage);
         Locale defaultLocale = new Locale(defaultLanguage);
         this.messageManager = new MessageManager(defaultLocale);
@@ -149,7 +159,10 @@ public class I18nTransformer3 extends AbstractTransformer {
             this.messageManager.addMessageProvider("catalogue-" + i, messageProvider);
         }
     }
-    
+
+    /**
+     * Get message provider
+     */
     protected MessageProvider getMessageProvider(String catalogue) {
         try {
             return MessageProviderFactory.getMessageProvider(catalogue, resolver);

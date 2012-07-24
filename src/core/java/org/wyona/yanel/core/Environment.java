@@ -38,7 +38,9 @@ public class Environment {
     private ToolbarState toolbarState;
 
     /**
-     *
+     * @param identity
+     * @param stateOfView
+     * @param resourceContainerPath
      */
     public Environment(HttpServletRequest request, HttpServletResponse response, Identity identity, String stateOfView, String resourceContainerPath) {
         setRequest(request);
@@ -48,8 +50,19 @@ public class Environment {
         setResourceContainerPath(resourceContainerPath);
     }
 
+    /**
+     * Get identity
+     */
     public Identity getIdentity() {
         return identity;
+    }
+
+    /**
+     * Set identity
+     * @param identity Identity of user
+     */
+    public void setIdentity(Identity identity) {
+        this.identity = identity;
     }
 
     public HttpServletRequest getRequest() {
@@ -101,10 +114,6 @@ public class Environment {
      */
     public ToolbarState getToolbarState() {
         return toolbarState;
-    }
-
-    public void setIdentity(Identity identity) {
-        this.identity = identity;
     }
 
     public void setRequest(HttpServletRequest request) {

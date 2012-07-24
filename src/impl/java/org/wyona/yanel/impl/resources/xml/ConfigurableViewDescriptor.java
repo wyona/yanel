@@ -23,6 +23,24 @@ import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
+/* INFO: Example of a configurable view
+  <yanel:custom-config>
+    <views xmlns="http://www.wyona.org/yanel/rti/1.0">
+      <view id="default">
+        <xslt>/app/xslt/element.xsl</xslt>
+        <mime-type>text/html</mime-type>
+        <serializer key="HTML_TRANSITIONAL">
+          <indent>no</indent>
+          <omit-doctype>true</omit-doctype>
+        </serializer>
+      </view>
+    </views>
+  </yanel:custom-config>
+*/
+
+/**
+ * Reads the various elements and attributes of a configurable view of a resource configuration
+ */
 public class ConfigurableViewDescriptor extends ViewDescriptor {
     
     public static final String TYPE_XML = "xml";
@@ -71,6 +89,10 @@ public class ConfigurableViewDescriptor extends ViewDescriptor {
             Configuration propertyConfig = serializerConfig.getChild("omit-xml-declaration", false);
             if (propertyConfig != null) {
                 serializerProperties.setProperty("omit-xml-declaration", propertyConfig.getValue());
+            }
+            propertyConfig = serializerConfig.getChild("omit-doctype", false);
+            if (propertyConfig != null) {
+                serializerProperties.setProperty("omit-doctype", propertyConfig.getValue());
             }
             propertyConfig = serializerConfig.getChild("doctype-public", false);
             if (propertyConfig != null) {

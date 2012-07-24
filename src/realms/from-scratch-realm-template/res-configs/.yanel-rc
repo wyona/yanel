@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
-  <yanel:rti name="redirect" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+  <yanel:rti name="redirect" namespace="http://www.wyona.org/yanel/resource/1.0.1"/>
 
   <yanel:property name="href" value="en/index.html"/>
 
   <yanel:custom-config xmlns:rd="http://www.wyona.org/yanel/resource/redirect-resource/1.0">
+    <rd:language code="de" device="web.xml:mobile-devices" href="en/index.html"/> <!-- TODO: Introduce a mobile optimized page, e.g. mobile/de/index.html -->
     <rd:language code="de" href="de/index.html"/>
   </yanel:custom-config>
 </yanel:resource-config>

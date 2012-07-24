@@ -47,11 +47,13 @@ public class ViewGroupResource extends ExecutableUsecaseResource {
             throw new UsecaseException(e.getMessage(), e);
         }
     }
-    
+
+    /**
+     * Get group based on ID passed by query string, whereas this method is used by view-group.jelly
+     */
     public Group getGroup() throws AccessManagementException {
         String id = getParameterAsString(PARAM_GROUP_ID);
         GroupManager groupManager = getRealm().getIdentityManager().getGroupManager();
-        Group group = groupManager.getGroup(id);
-        return group;
+        return groupManager.getGroup(id);
     }
 }

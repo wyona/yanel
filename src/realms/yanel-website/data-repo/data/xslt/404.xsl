@@ -58,10 +58,10 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
 
               <xsl:choose>
                 <xsl:when test="child::node()/yanel:exception">
-                  <p><a href="?yanel.format=xml">Show XML source</a> </p>
+                  <p><a href="?yanel.resource.viewid=xml">Show XML source</a> </p>
                 </xsl:when>
                 <xsl:otherwise>
-                  <p><a href="?yanel.resource.meta&amp;yanel.format=xml">Show XML source</a> </p>
+                  <p><a href="?yanel.resource.meta&amp;yanel.resource.viewid=xml">Show XML source</a> </p>
                 </xsl:otherwise>
               </xsl:choose>
 
@@ -106,10 +106,10 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
 
               <xsl:choose>
                 <xsl:when test="child::node()/yanel:exception">
-                  <p><a href="?yanel.format=xml">Show XML source</a> </p>
+                  <p><a href="?yanel.resource.viewid=xml">Show XML source</a> </p>
                 </xsl:when>
                 <xsl:otherwise>
-                  <p><a href="?yanel.resource.meta&amp;yanel.format=xml">Show XML source</a> </p>
+                  <p><a href="?yanel.resource.meta&amp;yanel.resource.viewid=xml">Show XML source</a> </p>
                 </xsl:otherwise>
               </xsl:choose>
               </div>
