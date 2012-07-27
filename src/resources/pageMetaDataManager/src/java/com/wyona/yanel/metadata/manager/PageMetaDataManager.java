@@ -135,7 +135,7 @@ public class PageMetaDataManager extends ExecutableUsecaseResource {
                         anno.setAnnotation(t.trim());
                     }
                     String msg = "The following annotations have been saved: " + metadata;
-                    log.warn("DEBUG: Message: " + msg);
+                    log.debug("Message: " + msg);
                     addInfoMessage(msg);
                 } catch (Exception e) {
                     log.error(e, e);

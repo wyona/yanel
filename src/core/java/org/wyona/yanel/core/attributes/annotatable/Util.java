@@ -62,7 +62,7 @@ public class Util {
                 sb.append(", ");
             }
         }
-        log.warn("DEBUG: Save annotations: " + sb);
+        log.debug("Save annotations: " + sb);
         repo.getNode(path).setProperty(ANNOTATIONS_PROP_NAME, sb.toString());
     }
 }

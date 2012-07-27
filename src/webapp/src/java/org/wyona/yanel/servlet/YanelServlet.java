@@ -243,7 +243,7 @@ public class YanelServlet extends HttpServlet {
 
             if (yanelInstance.isSchedulerEnabled()) {
                 try {
-                    log.warn("DEBUG: Startup scheduler ...");
+                    log.debug("Startup scheduler ...");
                     scheduler = StdSchedulerFactory.getDefaultScheduler();
       
                     Realm[] realms = yanelInstance.getRealmConfiguration().getRealms();
@@ -299,7 +299,7 @@ public class YanelServlet extends HttpServlet {
             String yanelUsecase = request.getParameter(YANEL_USECASE);
             if(yanelUsecase != null && yanelUsecase.equals("logout")) {
                 try {
-                    log.warn("DEBUG: Disable auto login..."); // TODO: The cookie is not always deleted!
+                    log.debug("Disable auto login..."); // TODO: The cookie is not always deleted!
                     AutoLogin.disableAutoLogin(request, response, getRealm(request).getRepository());
                 } catch (Exception e) {
                     log.error("Exception while disabling auto login: " + e.getMessage(), e);

@@ -60,7 +60,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
                 for (int k = 0; k < userInterests.length; k++) {
                     //String queryInclModDate = userInterests[k] + " AND mod_date:[" + df.format(lastAccess) + " TO " + df.format(new Date()) + "]"; // INFO: See http://lucene.apache.org/java/2_3_2/queryparsersyntax.html#Range%20Searches
                     String queryInclModDate = userInterests[k] + " AND yarep_lastModified:[" + lastAccess.getTime() + " TO " + new Date().getTime() + "]"; // INFO: See http://lucene.apache.org/java/2_3_2/queryparsersyntax.html#Range%20Searches
-                    log.warn("DEBUG: Query: " + queryInclModDate);
+                    log.debug("Query: " + queryInclModDate);
 
                     org.wyona.yarep.core.Node[] nodesInclModDate = getRealm().getRepository().getSearcher().search(queryInclModDate);
 

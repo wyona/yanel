@@ -44,12 +44,12 @@ public class WorkflowDashboardResource extends BasicXMLResource {
 
 /*
         if (org.wyona.commons.clazz.ClazzUtil.implementsInterface(getRealm().getRepository(), "org.wyona.yarep.core.attributes.LuceneSearchableV1")) {
-            log.warn("DEBUG: Repo is lucene searchable ...");
+            log.debug("Repo is lucene searchable ...");
             org.apache.lucene.search.Searcher searcher = ((org.wyona.yarep.core.attributes.LuceneSearchableV1)getRealm().getRepository()).getLuceneSearcher();
 
             String defaultField = "_FULLTEXT";
             org.apache.lucene.queryParser.QueryParser queryParser = new org.apache.lucene.queryParser.QueryParser(defaultField, new org.apache.lucene.analysis.standard.StandardAnalyzer());
-            log.warn("DEBUG: Default field: " + defaultField);
+            log.debug("Default field: " + defaultField);
             org.apache.lucene.search.Query query = queryParser.parse(queryText);
 
             // How to use StandardAnalyzer with TermQuery? http://stackoverflow.com/questions/1390088/how-do-i-use-standardanalyzer-with-termquery, http://today.java.net/pub/a/today/2003/07/30/LuceneIntro.html
@@ -61,10 +61,10 @@ public class WorkflowDashboardResource extends BasicXMLResource {
 
             //org.apache.lucene.search.Query query = new org.apache.lucene.queryParser.QueryParser("_FULLTEXT", (org.apache.lucene.analysis.Analyzer) Class.forName("org.apache.lucene.analysis.standard.StandardAnalyzer").newInstance()).parse("Sugus");
 
-            log.warn("DEBUG: Query: " + query);
+            log.debug("Query: " + query);
             org.apache.lucene.search.Hits hits = searcher.search(query);
             for (int i = 0; i < hits.length(); i++) {
-                log.warn("DEBUG: Hit _PATH: " + hits.doc(i).getField("_PATH").stringValue());
+                log.debug("Hit _PATH: " + hits.doc(i).getField("_PATH").stringValue());
             }
         }
 */
