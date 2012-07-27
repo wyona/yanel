@@ -79,6 +79,7 @@ import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yanel.core.source.YanelStreamSource;
 import org.wyona.yanel.core.transformation.I18nTransformer2;
+import org.wyona.yanel.core.util.ConfigurationUtil;
 import org.wyona.yanel.core.util.DateUtil;
 import org.wyona.yanel.core.util.HttpServletRequestHelper;
 import org.wyona.yanel.core.workflow.Workflow;
@@ -104,8 +105,14 @@ import org.apache.xalan.transformer.TransformerIdentityImpl;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 
+import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.DefaultConfiguration;
+import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
+import org.apache.avalon.framework.configuration.DefaultConfigurationSerializer;
+import org.apache.avalon.framework.configuration.MutableConfiguration;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -256,7 +263,19 @@ public class YanelServlet extends HttpServlet {
                         if (realms[i].getRepository().existsNode(schedulerJobsPath)) {
                             log.debug("Scheduler jobs config found for realm: " + realms[i].getRepository().getID());
                             try {
-                                org.wyona.yanel.impl.scheduler.QuartzSchedulerUtil.schedule(scheduler, XMLHelper.readDocument(realms[i].getRepository().getNode(schedulerJobsPath).getInputStream()), realms[i]);
+                            	// Get and filter scheduler config
+                            	InputStream istream = realms[i].getRepository().getNode(schedulerJobsPath).getInputStream();
+                            	DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+                            	Configuration sched_config = builder.build(istream);
+                            	MutableConfiguration mutable_config = new DefaultConfiguration(sched_config);
+                            	Configuration sched_config_filtered = ConfigurationUtil.filterEnvironment(mutable_config, yanelInstance.getTargetEnvironment());
+                            	DefaultConfigurationSerializer serializer = new DefaultConfigurationSerializer(); 
+                            	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            	serializer.serialize(baos, sched_config_filtered);
+                            	                            	
+                            	// Run scheduler util
+                            	istream = new ByteArrayInputStream(baos.toByteArray());
+                                org.wyona.yanel.impl.scheduler.QuartzSchedulerUtil.schedule(scheduler, XMLHelper.readDocument(istream), realms[i]);
                             } catch(Exception e) {
                                 log.error(e, e); // INFO: Log error, but otherwise ignore and keep going ...
                             }
