@@ -25,6 +25,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.wyona.yanel.core.util.ConfigurationUtil;
 import org.wyona.yanel.core.workflow.impl.TransitionImpl;
 import org.wyona.yanel.core.workflow.impl.WorkflowImpl;
 
@@ -37,8 +38,9 @@ public class WorkflowBuilder {
      * Build workflow from an input stream containing a workflow definition as XML
      * @param stream Input stream containing workflow as XML
      */
-    public Workflow buildWorkflow(InputStream stream) throws WorkflowException {
+    public Workflow buildWorkflow(InputStream stream, String targetEnvironment) throws WorkflowException {
         try {
+        	stream = ConfigurationUtil.filterEnvironment(stream, targetEnvironment);
             Document document = org.wyona.commons.xml.XMLHelper.readDocument(stream);
             Workflow workflow = buildWorkflow(document);
             return workflow;
@@ -54,15 +56,6 @@ public class WorkflowBuilder {
      */
     protected DocumentBuilder createBuilder() throws ParserConfigurationException {
         return org.wyona.commons.xml.XMLHelper.createBuilder();
-/* NOTE: Obsolete, XMLHelper above instead
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-
-        CatalogResolver cr = new CatalogResolver();
-        builder.setEntityResolver(cr);
-        return builder;
-*/
     }
 
     /**

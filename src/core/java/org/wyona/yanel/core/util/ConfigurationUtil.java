@@ -20,12 +20,19 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.avalon.framework.configuration.DefaultConfiguration;
+import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
+import org.apache.avalon.framework.configuration.DefaultConfigurationSerializer;
 import org.apache.avalon.framework.configuration.MutableConfiguration;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Queue;
@@ -40,6 +47,22 @@ public class ConfigurationUtil {
      * The log category instance
      */
     private static final Logger log = Logger.getLogger(ConfigurationUtil.class);
+    
+    /**
+     * Filter elements by target environment.
+     * @throws IOException 
+     * @throws SAXException 
+     */
+    public static InputStream filterEnvironment(InputStream istream, String targetEnvironment) throws ConfigurationException, SAXException, IOException {
+    	DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+    	Configuration sched_config = builder.build(istream);
+    	MutableConfiguration mutable_config = new DefaultConfiguration(sched_config);
+    	Configuration sched_config_filtered = ConfigurationUtil.filterEnvironment(mutable_config, targetEnvironment);
+    	DefaultConfigurationSerializer serializer = new DefaultConfigurationSerializer(); 
+    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    	serializer.serialize(baos, sched_config_filtered);
+    	return new ByteArrayInputStream(baos.toByteArray());
+    }
     
     /**
      * Filter elements by target environment
