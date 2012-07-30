@@ -2,6 +2,8 @@
 
 <!-- Everything common to resource types using Google Web Toolkit. -->
 
+<!-- INFO: If you only want to compile regular java classes, but no GWT classes, then run './build.sh -Dgwt.compile.skip=true' (Also see http://www.yanel.org/en/documentation/best-practices/rapid-development-of-components.html) -->
+
 <project name="yanel-GWT-resource-type"
  xmlns:artifact="antlib:org.apache.maven.artifact.ant"
 >
@@ -134,9 +136,6 @@ module.build.dir.includes: ${module.build.dir.includes}
 
   <!-- @Override resource-type.build.xml#compile -->
   <target name="compile" depends="yanel-resource-type.compile, gwt:compile" description="Compile Java classes and GWT files"/>
-<!-- INFO: Only compile regular java classes, but no gwt-classes
-  <target name="compile" depends="yanel-resource-type.compile" description="Compile only Java classes and no GWT files"/>
--->
 
   <target name="gwt:compile" depends="gwt:clean" description="Compile GWT files" unless="gwt.compile.skip">
 
