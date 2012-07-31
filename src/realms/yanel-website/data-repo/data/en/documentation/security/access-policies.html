@@ -52,5 +52,10 @@
 <p>Similarly, you can now allow access to the whole site for a group of registered users by setting</p>
 <pre>  &lt;usecase id="view"&gt;<br />    &lt;group id="editors" permission="true"/&gt;<br />  &lt;/usecase&gt;</pre>
 <p>for the previously closed parts of the realm.</p>
+
+<h2>Policy Map</h2>
+<p>
+The "From Scratch Realm" contains an example of a policy map <code><a href="https://github.com/wyona/yanel/blob/master/src/realms/from-scratch-realm-template/ac-policies/policy-map.xml">src/realms/from-scratch-realm-template/ac-policies/policy-map.xml</a></code> which allows to define more complex rules to match requested resources with access policies. Please note that policy maps are currently only supported by <code>org.wyona.security.impl.PolicyManagerImplVersion2</code>.
+</p>
 </body>
 </html>
