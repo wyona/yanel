@@ -1,8 +1,10 @@
 package org.wyona.yanel.servlet.security.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.Cookie;
@@ -13,7 +15,6 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.wyona.commons.xml.XMLHelper;
-import org.wyona.yanel.core.Environment;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.util.YarepUtil;
 import org.wyona.yarep.core.Node;
@@ -40,22 +41,31 @@ public class AutoLogin {
     // However: this expiry date is only verified and maybe replaced if the user starts a new session.
     // Means: if the session timeout is 4h and you configure here 30min, the cookie token won't be replaced within the session.
     private static final int TOKEN_EXPIRY_UNIT = Calendar.MINUTE;
-    private static final int TOKEN_EXPIRY_AMOUNT = 30;
+    private static final int TOKEN_EXPIRY_AMOUNT = 480;
 
     /**
      * Disable Auto Login feature (deletes cookie)
      */
     public static void disableAutoLogin(HttpServletRequest request, HttpServletResponse response, Repository repo) {
-        Cookie currentCookie = getCookie(request);
-        if (currentCookie != null) {
-            deleteToken(repo, getYarepPath(getUsername(currentCookie), getToken(currentCookie)));
-
-            log.warn("DEBUG: Remove auto login cookie...");
-            Cookie newCookie = new Cookie(COOKIE_NAME, null);
-            newCookie.setMaxAge(0); // INFO: A zero value tells the browser to delete the cookie immediately.
-            response.addCookie(newCookie);
+        Cookie[] currentCookies = getCookies(request);
+        if (currentCookies.length > 0) {
+            for (Cookie cookie: currentCookies) {
+                deleteToken(repo, getYarepPath(getUsername(cookie), getToken(cookie)));
+                log.warn("Remove auto login cookie for user '"+getUsername(cookie)+"', path = '"+cookie.getPath()+
+                        "' and domain = '"+cookie.getDomain()+"' and cookie token '"+getToken(cookie)+"'");
+                // for each cookie we found in the request (there might be more than one!) we delete it
+                Cookie newCookie = new Cookie(COOKIE_NAME, null);
+                newCookie.setMaxAge(0); // INFO: A zero value tells the browser to delete the cookie immediately.
+                if (cookie.getPath() != null) {
+                    newCookie.setPath(cookie.getPath());
+                }
+                if (cookie.getDomain() != null) {
+                    newCookie.setDomain(cookie.getDomain());
+                }
+                response.addCookie(newCookie);
+            }
         } else {
-            log.warn("No auto login cookie to delete!");
+            log.warn("No auto login cookie to delete in Yarep!");
         }
     }
  
@@ -77,7 +87,12 @@ public class AutoLogin {
     }
     
     public static String getUsername(HttpServletRequest request) {
-        return getUsername(getCookie(request));
+        String result = null;
+        Cookie[] cookies = getCookies(request);
+        if (cookies.length > 0) {
+            result = getUsername(cookies[0]);
+        }
+        return result;
     }
 
     /**
@@ -87,8 +102,8 @@ public class AutoLogin {
      */
     public static boolean existsAutoLoginCookie(HttpServletRequest request) {
         try {
-            Cookie cookie = getCookie(request);
-            if (cookie != null) {
+            Cookie[] cookies = getCookies(request);
+            if (cookies.length > 0) {
                 return true;
             } else {
                 //log.debug("No auto login cookie exists yet.");
@@ -108,60 +123,57 @@ public class AutoLogin {
      * @return true means that this user can be logged in automatically.
      */
     public static boolean tryAutoLogin(HttpServletRequest request, HttpServletResponse response, Realm realm) {
+        boolean result = false;
         try {
-            Cookie cookie = getCookie(request);
-            if (cookie != null) {
-                log.debug("Checking Autologin Cookie");
-                String username = getUsername(cookie);
-                String token = getToken(cookie);
-                if (username != null && token != null) {
-                    String yarepPath = getYarepPath(username, token);
-                    log.debug("Checking node "+yarepPath);
-                    Node node = null;
-                    try {
-                        node = realm.getRepository().getNode(yarepPath);
-                    } catch (Exception e) {
-                        // TODO ...
-                        //log.warn("Node '" + yarepPath + "' does not exist. We did not login the user automatically although auto login cookie seems to exist!");
-                        return false;
-                    }
+            Cookie[] cookies = getCookies(request);
+            if (cookies.length > 0) {
+                for (Cookie cookie: cookies) {
+                    log.debug("Checking Autologin Cookie");
+                    String username = getUsername(cookie);
+                    String token = getToken(cookie);
+                    if (username != null && token != null) {
+                        String yarepPath = getYarepPath(username, token);
+                        log.debug("Checking node "+yarepPath);
+                        Node node = null;
+                        try {
+                            node = realm.getRepository().getNode(yarepPath);
+                        } catch (Exception e) {
+                        }
 
-                    if (node != null) {
-                        Document doc = XMLHelper.readDocument(node.getInputStream());
-                        Element el = (Element)doc.getElementsByTagNameNS(NAMESPACE, XML_ATTR_TOKEN).item(0);
-                        String savedUsername = el.getAttribute(XML_ATTR_USERNAME);
-                        String savedToken = el.getAttribute("value");
-                        String expiryString = el.getAttribute(XML_ATTR_EXPIRES);
-                        log.debug("Retrieved username '"+username+"' and token '"+savedToken+"' from saved Token");
-                        if (username.equals(savedUsername) && token.equals(savedToken)) {
-                            log.debug("retrieved cookie matches for user '"+username+"'");
-                            if (hasTokenExpired(expiryString)) {
-                                Cookie newCookie = setNewCookie(username, request, response);
-                                saveToken(newCookie, realm.getRepository());
-                                deleteToken(realm.getRepository(), yarepPath);
-                                log.debug("Token was expired and has been renewed now.");
+                        if (node != null) {
+                            Document doc = XMLHelper.readDocument(node.getInputStream());
+                            Element el = (Element)doc.getElementsByTagNameNS(NAMESPACE, XML_ATTR_TOKEN).item(0);
+                            String savedUsername = el.getAttribute(XML_ATTR_USERNAME);
+                            String savedToken = el.getAttribute("value");
+                            String expiryString = el.getAttribute(XML_ATTR_EXPIRES);
+                            log.debug("Retrieved username '"+username+"' and token '"+savedToken+"' from saved Token");
+                            if (username.equals(savedUsername) && token.equals(savedToken)) {
+                                log.debug("retrieved cookie matches for user '"+username+"'");
+                                if (hasTokenExpired(expiryString)) {
+                                    Cookie newCookie = setNewCookie(username, request, response);
+                                    saveToken(newCookie, realm.getRepository());
+                                    deleteToken(realm.getRepository(), yarepPath);
+                                    log.debug("Token was expired and has been renewed now.");
+                                }
+                                result = true;
+                                break; // we do not process the remaining autologin cookies in the request
+                            } else {
+                                log.warn("Username/Token did no match (" + username + ", " + token + "), hence about auto login");
                             }
-                            return true;
                         } else {
-                            log.warn("Username/Token did no match (" + username + ", " + token + "), hence about auto login");
-                            return false;
+                            log.warn("No persistent yarep node with path '"+yarepPath+"' containing username/token!");
                         }
                     } else {
-                        log.warn("No persistent yarep node containing username/token!");
-                        return false;
+                        log.warn("No username/token inside auto login cookie!");
                     }
-                } else {
-                    log.warn("No username/token inside auto login cookie!");
-                    return false;
                 }
             } else {
-                //log.debug("No auto login cookie exists yet.");
-                return false;
+                log.debug("No auto login cookie exists yet.");
             }
         } catch (Exception e) {
             log.error("Can not find out whether to perform auto login or not! Exception message: " + e.getMessage(), e);
-            return false;
         }
+        return result;
     }
 
     /**
@@ -174,7 +186,7 @@ public class AutoLogin {
             String token = UUID.randomUUID().toString();
             Cookie cookie = new Cookie(COOKIE_NAME,token+SEP+username);
             cookie.setMaxAge(Integer.MAX_VALUE);
-            cookie.setPath(request.getContextPath());
+            cookie.setPath("/");
             response.addCookie(cookie);
             result = cookie;
         }
@@ -182,17 +194,17 @@ public class AutoLogin {
     }
 
     /**
-     * Get specific auto login cookie
+     * Returns all AUTOLOGIN cookies that are available in the request
+     * @return never null, but can be empty
      */
-    private static Cookie getCookie(HttpServletRequest request) {
-        Cookie result = null;
+    private static Cookie[] getCookies(HttpServletRequest request) {
+        List<Cookie> result = new ArrayList<Cookie>();
         try {
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (Cookie c : request.getCookies()) {
                     if (c.getName().equals(COOKIE_NAME)) {
-                        result = c;
-                        break;
+                        result.add(c);
                     }
                 }
             }
@@ -202,7 +214,7 @@ public class AutoLogin {
             log.error(e,e);
         }
         
-        return result;
+        return result.toArray(new Cookie[0]);
     }
  
     /**
