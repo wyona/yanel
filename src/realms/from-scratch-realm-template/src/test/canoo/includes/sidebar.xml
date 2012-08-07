@@ -1,0 +1,47 @@
+<!--
+
+    NB: This file is not stand-alone. Include it in another file if you
+    want to use it. In order to specify which page should be checked,
+    set the page_name property.
+
+    Checks that the sidebar on the left exists and contains the
+    expected standard items.
+
+-->
+
+&config;
+
+<invoke description="Get the page: " url="/${outlet.realm.path}/${page_name}.html"/>
+
+<verifyElement
+   description="the links etc. should be in a div which is hopefully on the left hand side"
+   type="DIV"
+   text="sectionNav" />
+
+<!-- Check the standard navigation links -->
+<verifyLinks
+   description="Check all links on page lead somewhere"
+   onsiteonly="true" />
+
+<clickLink description="Checks for the existence of Aktuelle Angebot link"
+           label="Aktuelle Angebot" />
+<invoke description="Get the page: " url="/${outlet.realm.path}/${page_name}.html"/>
+
+<clickLink description="Checks for the existence of Newsletter link"
+           label="Newsletter" />
+<invoke description="Get the page: " url="/${outlet.realm.path}/${page_name}.html"/>
+
+<clickLink description="Checks for the existence of Anfahrtsplan link"
+           label="Anfahrtsplan" />
+<invoke description="Get the page: " url="/${outlet.realm.path}/${page_name}.html"/>
+
+<clickLink description="Checks for the existence of Kontakt link"
+           label="Kontakt" />
+<invoke description="Get the page: " url="/${outlet.realm.path}/${page_name}.html"/>
+
+ 
+<!-- Check that opening times content exists -->
+<verifyText description="Checks for the existence of opening times" text="Öffnungszeiten" />
+
+<!-- Check that address content exists -->
+<verifyText description="Checks for the existence of address" text="Adresse" />
