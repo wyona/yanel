@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!-- IMPORTANT: The order of the tests matters because some tests depend on others -->
+
+<project name="From-scratch-realm--all-tests" default="all-tests">
+
+  <target name="all-tests" description="Runs all the tests">
+    <ant antfile="homepage.xml"/>
+  </target>
+
+</project>

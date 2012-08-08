@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!ENTITY % webtest  SYSTEM "./WebTest.dtd" >
+<!ENTITY % project  SYSTEM "./Project.dtd">
+%webtest;
+%project;
