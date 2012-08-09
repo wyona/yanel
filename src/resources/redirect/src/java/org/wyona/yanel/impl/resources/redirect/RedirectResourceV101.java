@@ -25,6 +25,7 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.wyona.security.core.api.Identity;
+import java.lang.Integer;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -80,6 +81,14 @@ public class RedirectResourceV101 extends Resource implements ViewableV2, Creata
         response.setStatus(307);
         response.setHeader("Location", defaultHref);
 
+        // Username
+        String currentUser = null;
+        Identity identity = getIdentity(getRequest());
+        if (identity != null) {
+            currentUser = identity.getUsername();
+        }
+        boolean isLoggedIn = currentUser != null;
+
         ResourceConfiguration rc = getConfiguration();
         Document customConfigDoc = rc.getCustomConfiguration();
         if (customConfigDoc != null) {
@@ -94,10 +103,16 @@ public class RedirectResourceV101 extends Resource implements ViewableV2, Creata
             log.debug("Localization: " + localizationLanguage);
             for (int i = 0; i < languageRedirectConfigs.length; i++) {
                 try {
-                    if (languageRedirectConfigs[i].getAttribute("code").equals(localizationLanguage)) {
+                    String lang = languageRedirectConfigs[i].getAttribute("code");
+                    if (lang.equals(localizationLanguage) || lang.equals("*")) {
                         response.setStatus(307);
                         String href = languageRedirectConfigs[i].getAttribute("href");
                         response.setHeader("Location", href);
+
+                        String if_logged_in = languageRedirectConfigs[i].getAttribute("if-logged-in", "false");
+                        if("true".equals(if_logged_in) && !isLoggedIn) {
+                            continue;
+                        }
 
                         String device = languageRedirectConfigs[i].getAttribute("device", null);
                         if (device != null) {
@@ -125,13 +140,6 @@ public class RedirectResourceV101 extends Resource implements ViewableV2, Creata
                 }
             }
         
-
-            // Username
-            String currentUser = null;
-            Identity identity = getIdentity(getRequest());
-            if (identity != null) {
-                currentUser = identity.getUsername();
-            }
             if (currentUser != null) {
                 Configuration[] userRedirectConfigs = config.getChildren("user");
                 for (int i = 0; i < userRedirectConfigs.length; i++) {

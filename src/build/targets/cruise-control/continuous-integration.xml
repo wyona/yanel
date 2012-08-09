@@ -56,7 +56,7 @@
   </target>
 
   <target name="startup-tomcat-unix" if="isUnix">
-    <fail message="No Tomcat is set within local.build.properties!">
+    <fail message="No Tomcat is set inside local.build.properties! Please note that if you build Yanel from scratch, then you should use the 'quick-start' target (https://github.com/wyona/yanel).">
      <condition>
        <and>
          <not>

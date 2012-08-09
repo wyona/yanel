@@ -1,0 +1,21 @@
+<!-- 
+  Like all files of this folder, this content will be executed in target wt.defineMacros
+  and therefore made be available for the tests (here the macro <fillParticipantData .../>)
+-->
+<macrodef name="login" description="Login">
+  <sequential>
+    <invoke description="Load the toolbar to procede with the login"
+      url="${realm.path}de/index.html?yanel.toolbar=on" />
+    <ifStep>
+      <condition>
+        <verifyXPath description="Check if login available"
+          xpath="count(//input[@name='yanel.login.username']) &gt; 0" />
+      </condition>
+      <!-- Log in -->
+      <setInputField name="yanel.login.username" value="lenya" />
+      <setInputField name="yanel.login.password" value="levi" />
+      <clickButton label="Login" fieldIndex="0"/>
+    </ifStep>
+    <!-- Assume logged in -->
+  </sequential>
+</macrodef>
