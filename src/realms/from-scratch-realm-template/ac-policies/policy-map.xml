@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+
+<policy-map>
+  <matcher pattern="*.tinymce-edit.html" path="/tinymce-policy.xml"/>
+  <matcher pattern="/**/create-new-page.html" path="/create-new-page.html.policy"/>
+</policy-map>

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project SYSTEM "../../dtd/MyWebTest.dtd">
+
+<project name="homepage.exists" default="homepage.exists">
+
+  <import file="../../definitions.xml" />
+
+  <target name="homepage.exists" depends="wt.defineMacros">
+    <webtest name="Check whether german version of homepage exists">
+      &config;
+<!--
+      <login/>
+-->
+      <invoke description="Request root of realm: " url="/${realm.path}"/>
+      <verifyText description="Verify text contained by this page" text="Willkommen bei Wyona"/>
+      <verifyText description="Verify text contained by this page" text="Dieser Realm zeigt Dir wie man mit Yanel"/>
+    </webtest>
+
+    <webtest name="Check whether english version of homepage exists">
+      &configfrench;
+<!--
+      <login/>
+-->
+      <invoke description="Request root of realm (with browser language set to french): " url="/${realm.path}"/>
+      <verifyText description="Verify text contained by this page" text="Welcome to the"/>
+      <verifyText description="Verify text contained by this page" text="This realm allows you to start a website from scratch"/>
+    </webtest>
+
+    <webtest name="Check whether browser configured as italian will be redirected to english homepage">
+      &configitalian;
+<!--
+      <login/>
+-->
+      <invoke description="Request root of realm: " url="/${realm.path}"/>
+      <verifyText description="Verify text contained by this page" text="Welcome to the"/>
+      <verifyText description="Verify text contained by this page" text="This realm allows you to start a website from scratch"/>
+    </webtest>
+  </target>
+
+</project>

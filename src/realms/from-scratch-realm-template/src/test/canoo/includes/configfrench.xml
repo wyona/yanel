@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- INFO: Browser is set to Firefox3, because otherwise the outlet pages do not get parsed correctly (with IE6 as default), because the webtest codes stumbles over the expression "LT IE 7" inside outlet/data-repo/data/app/xslt/global.xsl (also see http://markmail.org/message/sxpnx654czphx7j7) -->
+
+<config host="${webtest.config.host}"
+        port="${webtest.config.port}"
+        protocol="${webtest.config.protocol}"
+        browser="Firefox3"
+        basepath="${webtest.config.basepath}">
+  <header name="Accept-Language" value="fr"/>
+
+  <!-- Also test javascript -->
+  <option name="JavaScriptEnabled" value="true"/>
+  <option name="ThrowExceptionOnScriptError" value="false"/>
+  <option name="ThrowExceptionOnFailingStatusCode" value="false"/> 
+</config>
