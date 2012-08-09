@@ -1,0 +1,12 @@
+<!-- 
+Like all files of this folder, this content will be executed in target wt.defineMacros
+and therefore made be available for the tests (here the macro <fillParticipantData .../>)
+-->
+<macrodef name="logout" description="Logout">
+  <sequential>
+    <invoke description="Logout" 
+        url="${realm.path}de/index.html?yanel.usecase=logout"/>
+  </sequential>
+</macrodef>
+
+
