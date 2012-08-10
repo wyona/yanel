@@ -16,16 +16,22 @@
         <xsl:value-of select="s:number-of-sessions"/>
 
         <h2>All "logged-in" sessions</h2>
-        <!-- Show all logged-in sessions first -->
+        <!-- INFO: Show all logged-in sessions first -->
         <xsl:if test="not(s:session[s:identities])">
           <p>No "logged-in" sessions yet.</p>
         </xsl:if>
         <ol>
-          <xsl:apply-templates select="s:session[s:identities]"/>
+          <xsl:for-each select="s:session[s:identities]">
+            <xsl:sort select="@last-accessed-time" order="descending"/>
+            <xsl:apply-templates select="."/>
+          </xsl:for-each>
         </ol>
 
         <h2>All anonymous sessions</h2>
-        <!-- Show all anonymous sessions later -->
+        <!-- INFO: Show all anonymous sessions later -->
+        <xsl:if test="not(s:session[s:no-identity-yet])">
+          <p>No "anonymous" sessions yet.</p>
+        </xsl:if>
         <ol>
           <xsl:apply-templates select="s:session[s:no-identity-yet]"/>
         </ol>
