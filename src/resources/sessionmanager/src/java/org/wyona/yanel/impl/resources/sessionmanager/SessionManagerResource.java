@@ -10,9 +10,14 @@ import org.wyona.yanel.servlet.IdentityMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import org.apache.log4j.Logger;
+import org.apache.commons.codec.binary.Hex;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -83,7 +88,18 @@ public class SessionManagerResource extends BasicXMLResource {
      * @param id Real session ID
      */
     private String hashSessionID(String id) {
-        log.warn("TODO: Hash session ID...");
-        return id; // TODO: Hash session ID
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            byte[] digest = md.digest(id.getBytes("UTF-8"));
+            return Hex.encodeHexString(digest);
+        } catch(UnsupportedEncodingException e) {
+            // The spec guarantees us that UTF-8 is available.
+            log.error(e, e);
+        } catch(NoSuchAlgorithmException e) {
+            // The spec guarantees us that SHA-1 is available.
+            log.error(e, e);
+        }
+
+        return "(err)";
     }
 }
