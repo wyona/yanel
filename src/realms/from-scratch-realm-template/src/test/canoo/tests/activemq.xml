@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project SYSTEM "../dtd/MyWebTest.dtd">
+
+<project name="activemq.queues" default="activemq.queues">
+
+  <import file="../definitions.xml" />
+
+  <target name="activemq.queues" depends="wt.defineMacros">
+    <webtest name="Check whether ActiveMQ has been triggered">
+      &config;
+      <invoke description="Request root of realm: " url="http://0.0.0.0:8161/admin/queues.jsp"/>
+      <verifyText description="Verify that we are on the 'Queues' page" text="Queues"/>
+      <verifyText description="Verify number of homepage pageviews" text="&lt;td&gt;3"/>
+    </webtest>
+  </target>
+
+</project>

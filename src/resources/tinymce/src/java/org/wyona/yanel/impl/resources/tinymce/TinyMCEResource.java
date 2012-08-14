@@ -121,10 +121,10 @@ public class TinyMCEResource extends ExecutableUsecaseResource {
     protected View processUsecase(String viewID) throws UsecaseException {
         log.debug("Edit path: " + getEditPath());
         try {
-        if (!getRealm().getPolicyManager().authorize(getEditPath(), getEnvironment().getIdentity(), new org.wyona.security.core.api.Usecase("write"))) {
-            log.warn("Not authorized: " + getPath() + ", " + getEditPath());
-            return null; // TODO: Fix the security issue, but not very nice ...
-        }
+            if (!getRealm().getPolicyManager().authorize(getEditPath(), getEnvironment().getIdentity(), new org.wyona.security.core.api.Usecase("write"))) {
+                log.warn("User '" + getEnvironment().getIdentity().getUsername() + "' is not authorized: " + getPath() + ", " + getEditPath());
+                return null; // TODO: Fix the security issue, but not very nice ...
+            }
         } catch(Exception e) {
             throw new UsecaseException(e);
         }

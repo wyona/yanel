@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project SYSTEM "../dtd/MyWebTest.dtd">
+
+<project name="homepage" default="all.homepage">
+
+  <import file="../definitions.xml" />
+
+  <target name="all.homepage">
+    <ant antfile="homepage/homepage-redirect.xml"/>
+  </target>
+
+</project>

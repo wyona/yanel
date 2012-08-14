@@ -10,6 +10,9 @@
   <transitions>
     <transition id="submit" from="draft" to="review">
       <condition class="org.wyona.yanel.impl.workflow.RoleCondition">write</condition>
+<!--
+      <action class="org.imstat.yanel.impl.resources.meetingpage.EmailAction" target-environment="dev">michael.wechner@wyona.com, michi@wyona.com</action>
+-->
       <description xml:lang="en">Submit for Review</description>
       <description xml:lang="de">Zum gegenlesen einreichen</description>
     </transition>

@@ -12,7 +12,7 @@
  <content type="xhtml">
    <div xmlns="http://www.w3.org/1999/xhtml">
       One can use Yanel to read from and write to Subversion.
-      A sample configuration can be found within the <a href="http://svn.wyona.com/repos/public/yarep/trunk/src/test/repository/svn-example/config/repository.xml">Yarep examples</a>.
+      A sample configuration can be found within the <a href="http://raw.github.com/wyona/yarep/src/test/repository/svn-example/config/repository.xml">Yarep examples</a>.
    </div>
  </content>
 </entry>
