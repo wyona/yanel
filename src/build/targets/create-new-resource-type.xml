@@ -4,7 +4,7 @@
   <taskdef resource="net/sf/antcontrib/antlib.xml"/>
   <description>Create new resource-type</description>
 
-  <property name="new-resource-types.home" location="${yanel.source.home}/src/contributions/resources"/>
+  <property name="new-resource-types.home" location="${yanel.source.home}/src/resources"/>
 
   <target name="new-resource-type" description="Create a new resource-type" depends="init">
     <echo>Create new resource-type from scratch ${yanel.source.home}/src/build/targets/create-new-resource-type/from-scratch-resource-template</echo>
