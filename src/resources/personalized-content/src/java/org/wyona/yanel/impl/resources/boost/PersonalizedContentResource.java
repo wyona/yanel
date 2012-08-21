@@ -35,7 +35,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
     private static Logger log = Logger.getLogger(PersonalizedContentResource.class);
 
     private static final String NAMESPACE = "http://www.wyona.org/yanel/boost/1.0";
-    private String boostServiceUrl = "http://localhost:9080/boost/reasoner";
+    private String boostServiceUrl = "http://localhost:9080/boost/api";
 
     /**
      * Get the XML content of this resource.
@@ -58,9 +58,13 @@ public class PersonalizedContentResource extends BasicXMLResource {
         }
 
         String realm = getRealm().getID();
+        String boost_domain = getRealm().getUserTrackingDomain();
         Element realmEl = doc.createElementNS(NAMESPACE, "yanel-realm-id");
         realmEl.appendChild(doc.createTextNode(realm));
         root.appendChild(realmEl);
+        Element domainEl = doc.createElementNS(NAMESPACE, "boost-domain-id");
+        domainEl.appendChild(doc.createTextNode(boost_domain));
+        root.appendChild(domainEl);
 
         // Get the cookie
         HttpServletRequest req = getEnvironment().getRequest();
@@ -78,7 +82,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
 
         Iterable<String> userInterests;
         try {
-            userInterests = getUserInterests(cookie.getValue(), realm);
+            userInterests = getUserInterests(cookie.getValue(), boost_domain);
         } catch(ServiceException e) {
             // No interests
             Element errEl = doc.createElementNS(NAMESPACE, "no-profile");
