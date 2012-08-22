@@ -84,6 +84,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
         try {
             userInterests = getUserInterests(cookie.getValue(), boost_domain);
         } catch(ServiceException e) {
+            log.error(e, e);
             // No interests
             Element errEl = doc.createElementNS(NAMESPACE, "no-profile");
             root.appendChild(errEl);
