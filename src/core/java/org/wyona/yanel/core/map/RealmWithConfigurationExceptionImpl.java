@@ -20,8 +20,6 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.wyona.commons.io.FileUtil;
-import org.wyona.security.core.IdentityManagerFactory;
-import org.wyona.security.core.PolicyManagerFactory;
 import org.wyona.security.core.api.IdentityManager;
 import org.wyona.security.core.api.PolicyManager;
 import org.wyona.yanel.core.LanguageHandler;
