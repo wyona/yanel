@@ -16,13 +16,30 @@
 
 package org.wyona.yanel.impl.resources.showrealms;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
+
+import java.net.URLEncoder;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import org.wyona.yanel.core.map.RealmManager;
 
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceTypeDefinition;
@@ -32,194 +49,144 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.util.PathUtil;
+
+import org.wyona.yanel.core.Yanel;
 import org.wyona.yarep.core.Repository;
+import org.wyona.yanel.core.map.RealmWithConfigurationExceptionImpl;
+
+import org.wyona.yanel.impl.resources.BasicXMLResource;
 
 /**
- * Show all realms registered within Yanel instance
+ * Show all realms registered within this Yanel instance.
  */
-public class ShowRealms extends Resource implements ViewableV2 {
+public class ShowRealms extends BasicXMLResource {
 
     private static Logger log = Logger.getLogger(ShowRealms.class);
 
     /**
-     * 
+     * Get the source XML with all realms.
+     * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
      */
-    public ShowRealms() {
-    }
+    protected InputStream getContentXML(String viewId) throws Exception {
+        Yanel yanel = getYanel();
 
-    /**
-     * 
-     */
-    public ViewDescriptor[] getViewDescriptors() {
-        return null;
-    }
-    
-    /**
-     * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(String)
-     */
-    public View getView(String viewId) throws Exception {
-        StringBuilder sb = getXML();
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.newDocument();
 
-        if (viewId != null && viewId.equals("source-xml")) {
-            View xmlView = new View();
-            xmlView.setMimeType("application/xml");
-            xmlView.setInputStream(new java.io.StringBufferInputStream(sb.toString()));
-            return xmlView;
-        }
+        Element root = doc.createElement("yanel-info");
+        doc.appendChild(root);
 
-        // INFO: Init XSLT
-        Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(getPath(), getRealm().getRepository()));
-        transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
-        transformer.setParameter("servlet.context", request.getContextPath());
-        transformer.setParameter("yanel.path", getPath());
-        transformer.setParameter("yanel.back2context", backToRoot(getPath(), ""));
-        transformer.setParameter("yarep.back2realm", backToRoot(getPath(), ""));
+        RealmManager realms_config = yanel.getRealmConfiguration();
+        String realms_file = realms_config.getRealmsConfigurationFile();
 
-        // TODO: Is this the best way to generate an InputStream from an
-        // OutputStream?
-        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-        transformer.transform(new StreamSource(new java.io.StringBufferInputStream(sb.toString())), new StreamResult(baos));
+        Element realmsEl = doc.createElement("realms");
+        realmsEl.setAttribute("config", realms_file);
+        root.appendChild(realmsEl);
 
+        Realm[] realms = realms_config.getRealms();
+        for (Realm realm : realms) {
 
-        View defaultView = new View();
-        defaultView.setMimeType(getMimeType(getPath()));
-        defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+            String realm_id = realm.getID();
+            Element realmEl = doc.createElement("realm");
+            Element nameEl = doc.createElement("name");
+            nameEl.appendChild(doc.createTextNode(realm.getName()));
+            Element idEl = doc.createElement("id");
+            idEl.appendChild(doc.createTextNode(realm_id));
+            Element mountEl = doc.createElement("mountpoint");
+            mountEl.appendChild(doc.createTextNode(realm.getMountPoint()));
 
-        return defaultView;
-    }
+            realmEl.appendChild(nameEl);
+            realmEl.appendChild(idEl);
+            realmEl.appendChild(mountEl);
 
-    /**
-     * Generate XML
-     */
-    private StringBuilder getXML() {
-        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
-        
-        sb.append("<yanel-info>");
-        sb.append("<realms config=\"" + yanel.getRealmConfiguration().getRealmsConfigurationFile() + " \">");
-        
-        Realm[] realms = yanel.getRealmConfiguration().getRealms();
-        for (int i = 0; i < realms.length; i++) {
-            if (realms[i] instanceof org.wyona.yanel.core.map.RealmWithConfigurationExceptionImpl) {
-                String eMessage = ((org.wyona.yanel.core.map.RealmWithConfigurationExceptionImpl) realms[i]).getConfigurationException().getMessage();
-                log.error("Realm '" + realms[i].getID() + "' has thrown a configuration exception: " + eMessage);
-                sb.append("<realm>");
-                sb.append("  <name>" + "WARNING: Configuration Exception '" + eMessage + "' for realm " + realms[i].getID() + "</name>");
-                sb.append("  <id>" + realms[i].getID() + "</id>");
-                sb.append("  <mountpoint>" + realms[i].getMountPoint() + "</mountpoint>");
-                sb.append("</realm>");
-            } else {
-                sb.append("<realm>");
-                sb.append("  <name>" + realms[i].getName() + "</name>");
-                sb.append("  <id>" + realms[i].getID() + "</id>");
-                sb.append("  <mountpoint>" + realms[i].getMountPoint() + "</mountpoint>");
-                //sb.append("<description>" + realms[i].getDescription() + "</description>");
-                sb.append("</realm>");
+            if (realm instanceof RealmWithConfigurationExceptionImpl) {
+                // This realm threw a configuration exception!
+                RealmWithConfigurationExceptionImpl rwce;
+                rwce = (RealmWithConfigurationExceptionImpl) realm;
+                String message = rwce.getConfigurationException().getMessage();
+
+                // Log the configuration exception error
+                log.error(String.format(
+                    "Realm '%s' has thrown a configuration exception: %s",
+                    realm_id, message));
+
+                // Append exception to XML output
+                Element exEl = doc.createElement("exception");
+                exEl.appendChild(doc.createTextNode(message));
+                realmEl.appendChild(exEl);
             }
-        }
-        
-        sb.append("</realms>");
 
-        // INFO: List all resource/controller types
-        sb.append("<resourcetypes>");
-        
+            // Append realm to output
+            realmsEl.appendChild(realmEl);
+        }
+
+        Element rtsEl = doc.createElement("resourcetypes");
+        root.appendChild(rtsEl);
+
         ResourceTypeRegistry rtr = new ResourceTypeRegistry();
         ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
-        for (int i = 0; i < rtds.length; i++) {
-            sb.append("<resourcetype>");
-            try {
-                sb.append("<localname>" + rtds[i].getResourceTypeLocalName() + "</localname>");
-                sb.append("<namespace>" + rtds[i].getResourceTypeNamespace() + "</namespace>");
-                sb.append("<description>" + rtds[i].getResourceTypeDescription() + "</description>");
+        for (ResourceTypeDefinition rt : rtds) {
 
+            // Get local name, namespace, description
+            String namespace = rt.getResourceTypeNamespace();
+            String localname = rt.getResourceTypeLocalName();
 
-                StringBuilder rtYanelHtdocPath = new StringBuilder(PathUtil.getGlobalHtdocsPath(this) + "resource-types/");
-                rtYanelHtdocPath.append(rtds[i].getResourceTypeNamespace().replaceAll("/", "%2f").replaceAll(":", "%3a") + "%3a%3a" + rtds[i].getResourceTypeLocalName());
-                rtYanelHtdocPath.append("/" + yanel.getReservedPrefix() + "/");
-                //log.debug("Encoded resource path: " + rtYanelHtdocPath);
-/*
-                // TODO: Use utility class
-                String rtYanelHtdocPath = PathUtil.getResourcesHtdocsPathURLencoded(getYanel().getResourceManager().getResource(rtds[i]));
-                rtYanelHtdocPath = rtYanelHtdocPath + "/" + yanel.getReservedPrefix() + "/";
-*/
+            Element rtEl = doc.createElement("resourcetype");
+            Element localnameEl = doc.createElement("localname");
+            localnameEl.appendChild(doc.createTextNode(localname));
 
-                sb.append("<icon alt=\"" + rtds[i].getResourceTypeLocalName() + " resource-type\">" + rtYanelHtdocPath + "icons/32x32/rt-icon.png" + "</icon>");
-                sb.append("<docu>" + rtYanelHtdocPath + "doc/index.html" + "</docu>");
-            } catch(Exception e) {
-                log.error(e);
-            }
-            sb.append("</resourcetype>");
+            Element namespaceEl = doc.createElement("namespace");
+            namespaceEl.appendChild(doc.createTextNode(namespace));
+
+            Element descriptionEl = doc.createElement("description");
+            descriptionEl.appendChild(doc.createTextNode(
+                rt.getResourceTypeDescription()));
+
+            rtEl.appendChild(localnameEl);
+            rtEl.appendChild(namespaceEl);
+            rtEl.appendChild(descriptionEl);
+
+            // Get document and icon paths
+            String raw_path = String.format("%s::%s", namespace, localname);
+            String enc_path = URLEncoder.encode(raw_path, "UTF-8");
+
+            String htdocPath = String.format(
+                "%s/resource-types/%s/%s/",
+                PathUtil.getGlobalHtdocsPath(this),
+                enc_path, yanel.getReservedPrefix());
+
+            String docuPath = String.format(
+                "%s/doc/index.html", htdocPath);
+
+            String iconPath = String.format(
+                "%s/icons/32x32/rt-icon.png", htdocPath);
+
+            Element iconEl = doc.createElement("icon");
+            iconEl.setAttribute("alt", localname);
+            iconEl.appendChild(doc.createTextNode(iconPath));
+
+            Element docuEl = doc.createElement("docu");
+            docuEl.appendChild(doc.createTextNode(docuPath));
+
+            rtEl.appendChild(iconEl);
+            rtEl.appendChild(docuEl);
+            rtsEl.appendChild(rtEl);
         }
-        
-        sb.append("</resourcetypes>");
-        sb.append("</yanel-info>");
-        return sb;
+
+        // Transform the DOM to actual output
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Source source = new DOMSource(doc);
+        Result target = new StreamResult(baos);
+        TransformerFactory tf = TransformerFactory.newInstance();
+        Transformer trans = tf.newTransformer();
+        trans.transform(source, target);
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        return is;
     }
 
-    /**
-     * 
-     */
-    private StreamSource getXSLTStreamSource(String path, Repository repo) throws Exception {
-        String xsltPath = getXSLTPath();
-        if (xsltPath != null) {
-            return new StreamSource(repo.getInputStream(new org.wyona.yarep.core.Path(getXSLTPath())));
-        }
-
-        log.warn("No XSLT property configured inside resource configuration, hence use default XSLT of resource itself: " + "xslt/info2xhtml.xsl");
-
-        File xsltFile = org.wyona.commons.io.FileUtil.file(rtd
-                .getConfigFile().getParentFile().getAbsolutePath(), "xslt"
-                + File.separator + "info2xhtml.xsl");
-        log.debug("XSLT file: " + xsltFile);
-        return new StreamSource(xsltFile);
-    }
-
-    /**
-     * Get xslt path from resource configuration
-     */
-    private String getXSLTPath() throws Exception {
-        return getConfiguration().getProperty("xslt");
-        //return getRTI().getProperty("xslt");
-    }
-
-     /**
-      * Get mime type
-      */
-    public String getMimeType(String path) throws Exception {
-        String mimeType = getConfiguration().getProperty("mime-type");
-        //String mimeType = getRTI().getProperty("mime-type");
-        if (mimeType == null) {
-            mimeType = "application/xhtml+xml";
-            log.warn("No mime type configured, hence return '" + mimeType + "'");
-        }
-        return mimeType;
-    }
-    
-   /**
-    *
-    */
-   private String backToRoot(String path, String backToRoot) {
-       String parent = org.wyona.commons.io.PathUtil.getParent(path);
-       if (parent != null && !isRoot(parent)) {
-           return backToRoot(parent, backToRoot + "../");
-       }
-       return backToRoot;
-   }
-   
-    /**
-     *
-     */
-    private boolean isRoot(String path) {
-        if (path.equals(File.separator)) return true;
-        return false;
-    } 
-  
-    public boolean exists() throws Exception {
+    public boolean exists() {
         return true;
     }
-    
-    public long getSize() throws Exception {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-  
 }

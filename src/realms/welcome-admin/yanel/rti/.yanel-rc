@@ -3,10 +3,15 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="show-realms" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
-<!--
-  <yanel:property name="mime-type" value="text/html"/>
--->
-  <yanel:property name="mime-type" value="application/xhtml+xml"/>
-
-  <yanel:property name="xslt" value="/xslt/welcome.xsl"/>
+  <yanel:custom-config>
+    <views xmlns="http://www.wyona.org/yanel/rti/1.0">
+      <view id="default">
+        <xslt>/xslt/welcome.xsl</xslt>
+        <mime-type>text/html</mime-type>
+      </view>
+      <view id="xml">
+        <mime-type>application/xml</mime-type>
+      </view>
+    </views>
+  </yanel:custom-config>
 </yanel:resource-config>
