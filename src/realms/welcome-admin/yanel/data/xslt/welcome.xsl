@@ -136,6 +136,15 @@
   <li>
     <a href=".{mountpoint}">
       <xsl:value-of select="name"/>
+      <xsl:if test="exception">
+        <br/>
+        <strong>
+          <span style="color:red;">
+            Configuration Exception:
+            <xsl:value-of select="exception"/>
+          </span>
+        </strong>
+      </xsl:if>
     </a>
   </li>
 </xsl:template>
