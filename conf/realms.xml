@@ -33,7 +33,7 @@
 <!--
   NOTE: Please be aware that the from-scratch-realm-template is needed by the welcome realm to create new realms.
 -->
-<realm id="from-scratch-realm-template" mount-point="/from-scratch-realm/">
+<realm id="from-scratch-realm-template" mount-point="/from-scratch-realm/" user-tracking-domain-id="yanel-src-1111111111" authkey="eWFuZWwtc3JjLTExMTExMTExMTEK">
   <config src="@REALMS_DIR@/from-scratch-realm-template/"/>
 <!--
   <config src="@REALMS_DIR@/from-scratch-realm-template/realm-jcr-cnode1.xml"/>
@@ -43,10 +43,8 @@
 -->
 </realm>
 
-<realm id="yanel-website" mount-point="/yanel-website/" user-tracking-domain-id="boost-0123456789">
-<!-- INFO: One can specify for each realm an authentication key to sign java messages which are sent to for example ActiveMQ
-<realm id="yanel-website" mount-point="/yanel-website/" user-tracking-domain-id="boost-0123456789" authkey="d3lvbmEK">
--->
+<!-- INFO: One can specify for each realm an authentication key to sign java messages which are sent to for example ActiveMQ -->
+<realm id="yanel-website" mount-point="/yanel-website/" user-tracking-domain-id="yanel-src-2222222222" authkey="eWFuZWwtc3JjLTIyMjIyMjIyMjIK">
   <config src="@REALMS_DIR@/yanel-website/"/>
 
 <!--
