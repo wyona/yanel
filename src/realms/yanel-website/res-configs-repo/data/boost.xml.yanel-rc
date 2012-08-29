@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="personalized-content" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="mime-type" value="application/xml"/>
+  <yanel:property name="boost-service-base-url" value="http://localhost:9080/boost/"/>
+</yanel:resource-config>
