@@ -58,4 +58,13 @@ a:visited:hover  {
   color:#777777
 } 
 
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
 
+table tr td {
+    width: 100%;
+    border: solid 1px gray;
+    padding: 0.5em;
+}

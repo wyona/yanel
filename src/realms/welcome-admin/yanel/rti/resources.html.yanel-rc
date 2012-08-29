@@ -6,7 +6,7 @@
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
       <view id="default">
-        <xslt>/xslt/welcome.xsl</xslt>
+        <xslt>/xslt/resources.xsl</xslt>
         <mime-type>text/html</mime-type>
       </view>
       <view id="xml">
