@@ -139,7 +139,7 @@
       <dependency groupId="wyona-org-yanel" artifactId="yanel-resource-creatable-modifiable-deletable-v3" version="0.1-dev-re534f851072e373b86624d7d6710fa7f1c81f240"/>
 
       <!-- INFO: Log into ActiveMQ Java Messaging System -->
-      <dependency groupId="wyona-com-boost" artifactId="Log4JAppender" version="3.0.2-r9b71ca3c7de"/>
+      <dependency groupId="wyona-com-boost" artifactId="Log4JAppender" version="3.0.3-r503908d159c"/>
       <dependency groupId="wyona-com-boost" artifactId="Log4JParsingUtils" version="2.0.1-r5914d669ada"/>
       <dependency groupId="wyona-com-boost" artifactId="MessageUtils" version="2.0.1-r5914d669ada"/>
     </artifact:dependencies>
