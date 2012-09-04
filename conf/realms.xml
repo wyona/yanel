@@ -5,6 +5,7 @@
 <realms xmlns="http://www.wyona.org/yanel/1.0" version="2009042800">
 
 <changes>
+  <change version="2012081600">Optional 'authkey' attribute added (but has no impact on version attribute)</change>
   <change version="2012022200">Optional 'user-tracking-domain-id' attribute added (but has no impact on version attribute)</change>
   <change version="2010022100">Downloads realm containing update.rdf added (but has no impact on version attribute)</change>
   <change version="2010020400">Order changed (but has no impact on version attribute)</change>
@@ -32,7 +33,7 @@
 <!--
   NOTE: Please be aware that the from-scratch-realm-template is needed by the welcome realm to create new realms.
 -->
-<realm id="from-scratch-realm-template" mount-point="/from-scratch-realm/">
+<realm id="from-scratch-realm-template" mount-point="/from-scratch-realm/" user-tracking-domain-id="yanel-src-1111111111" authkey="eWFuZWwtc3JjLTExMTExMTExMTEK">
   <config src="@REALMS_DIR@/from-scratch-realm-template/"/>
 <!--
   <config src="@REALMS_DIR@/from-scratch-realm-template/realm-jcr-cnode1.xml"/>
@@ -42,7 +43,8 @@
 -->
 </realm>
 
-<realm id="yanel-website" mount-point="/yanel-website/" user-tracking-domain-id="boost-0123456789">
+<!-- INFO: One can specify for each realm an authentication key to sign java messages which are sent to for example ActiveMQ -->
+<realm id="yanel-website" mount-point="/yanel-website/" user-tracking-domain-id="yanel-src-2222222222" authkey="eWFuZWwtc3JjLTIyMjIyMjIyMjIK">
   <config src="@REALMS_DIR@/yanel-website/"/>
 
 <!--

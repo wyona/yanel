@@ -50,7 +50,7 @@ public class AutoLogin {
         if (currentCookie != null) {
             deleteToken(repo, getYarepPath(getUsername(currentCookie), getToken(currentCookie)));
 
-            log.warn("DEBUG: Remove auto login cookie...");
+            log.debug("Remove auto login cookie...");
             Cookie newCookie = new Cookie(COOKIE_NAME, null);
             newCookie.setMaxAge(0); // INFO: A zero value tells the browser to delete the cookie immediately.
             response.addCookie(newCookie);

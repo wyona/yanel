@@ -64,9 +64,9 @@ public class SchedulerResource extends BasicXMLResource {
                 java.util.Iterator triggerKeysIt = triggerKeys.iterator();
                 while(triggerKeysIt.hasNext()) {
                     TriggerKey triggerKey = (TriggerKey) triggerKeysIt.next();
-                    //log.warn("DEBUG: Check whether trigger's job key '" + scheduler.getTrigger(triggerKey).getJobKey() + "' and job key '" + jobKey + "' match...");
+                    //log.debug("Check whether trigger's job key '" + scheduler.getTrigger(triggerKey).getJobKey() + "' and job key '" + jobKey + "' match...");
                     if (scheduler.getTrigger(triggerKey).getJobKey().toString().equals(jobKey.toString())) {
-                        log.warn("DEBUG: Trigger and job '" + jd.getDescription() + "' matched: " + scheduler.getTrigger(triggerKey).getNextFireTime());
+                        log.debug("Trigger and job '" + jd.getDescription() + "' matched: " + scheduler.getTrigger(triggerKey).getNextFireTime());
                         jobEl.setAttribute("next-fire-time", "" + scheduler.getTrigger(triggerKey).getNextFireTime());
                     }
                 }
