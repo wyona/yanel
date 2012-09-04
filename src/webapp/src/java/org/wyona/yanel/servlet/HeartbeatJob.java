@@ -16,7 +16,7 @@ public class HeartbeatJob implements Job {
     private static Logger log = Logger.getLogger(HeartbeatJob.class);
 
     /**
-     *
+     * @see org.quartz.Job#execute(JobExecutionContext)
      */
     public void execute(JobExecutionContext context) throws JobExecutionException {
         Realm realm = (Realm) context.getJobDetail().getJobDataMap().get("realm");
@@ -24,7 +24,7 @@ public class HeartbeatJob implements Job {
         if (realm != null) {
             realmName = realm.getName();
         }
-        log.info("Heartbeat: " + new java.util.Date() + " (Realm: " + realmName + ")"); // TODO: Show statistics, e.g. uptime, etc.
-        //log.debug("Heartbeat: " + new java.util.Date() + " (Realm: " + realmName + ")");
+        String description = context.getJobDetail().getDescription();
+        log.info("Heartbeat: " + new java.util.Date() + " (Realm: " + realmName + ", Description: " + description + ")"); // TODO: Show statistics, e.g. uptime, etc.
     }
 }
