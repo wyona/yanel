@@ -561,7 +561,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                 }
                 for (int i = 0; i < groupIDs.length; i++) {
                     if (getRealm().getIdentityManager().getGroupManager().existsGroup(groupIDs[i])) {
-                        log.warn("DEBUG: Add user '" + user.getEmail() + "' to group: " + groupIDs[i]);
+                        log.debug("Add user '" + user.getEmail() + "' to group: " + groupIDs[i]);
                         getRealm().getIdentityManager().getGroupManager().getGroup(groupIDs[i]).addMember(user);
                     } else {
                         log.warn("No such group: " + groupIDs[i]);
@@ -706,10 +706,10 @@ public class UserRegistrationResource extends BasicXMLResource {
             Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
             inputsValid = false;
         } else {
-            log.warn("DEBUG: Submitted ZIP: " + zip);
+            log.debug("Submitted ZIP: " + zip);
             String formattedZip = isZipValid(zip);
             if (formattedZip != null) {
-                log.warn("DEBUG: Formatted ZIP: " + formattedZip);
+                log.debug("Formatted ZIP: " + formattedZip);
                 if (!zip.equals(formattedZip)) {
                     log.warn("Submitted zip code '" + zip + "' has been modified: " + formattedZip);
                 }

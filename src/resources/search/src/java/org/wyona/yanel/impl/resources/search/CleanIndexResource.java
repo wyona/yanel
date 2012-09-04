@@ -95,7 +95,7 @@ public class CleanIndexResource extends BasicXMLResource {
             YarepUtil yu = new YarepUtil();
 
             try {
-                log.warn("DEBUG: Check for nodes which still exist inside the search index, but do not exist anymore inside the repository: " + repo.getName());
+                log.debug("Check for nodes which still exist inside the search index, but do not exist anymore inside the repository: " + repo.getName());
                 LuceneSearcher luceneSearcher = (LuceneSearcher) repo.getSearcher();
                 boolean delete = false;
                 if (getEnvironment().getRequest().getParameter("delete") != null) {

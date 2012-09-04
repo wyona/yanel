@@ -141,7 +141,7 @@ public class ContactResource extends Resource implements ViewableV1, TrackableV1
                     String[] tags = new String[1];
                     tags[0] = "contact";
                     if (trackInfo != null) {
-                        log.warn("DEBUG: Message: " + message);
+                        log.debug("Message: " + message);
                         if (message != null) {
                             trackInfo.addTag(message);
                         }
