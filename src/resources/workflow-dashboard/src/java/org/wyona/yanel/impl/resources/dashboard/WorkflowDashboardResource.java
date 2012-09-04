@@ -16,9 +16,9 @@ import org.apache.log4j.Logger;
  * A resource in order to find resources by their workflow state
  */
 public class WorkflowDashboardResource extends BasicXMLResource {
-    
+
     private static Logger log = Logger.getLogger(WorkflowDashboardResource.class);
-    
+
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
      */
@@ -137,7 +137,7 @@ public class WorkflowDashboardResource extends BasicXMLResource {
     private Workflow getWorkflow() throws Exception {
         String workflowPath = getResourceConfigProperty("one-particular-workflow-path");
         if (workflowPath != null && getRealm().getRepository().existsNode(workflowPath)) {
-            return new org.wyona.yanel.core.workflow.WorkflowBuilder().buildWorkflow(getRealm().getRepository().getNode(workflowPath).getInputStream());
+            return new org.wyona.yanel.core.workflow.WorkflowBuilder().buildWorkflow(getRealm().getRepository().getNode(workflowPath).getInputStream(), getYanel().getTargetEnvironment());
         }
         return null;
     }
