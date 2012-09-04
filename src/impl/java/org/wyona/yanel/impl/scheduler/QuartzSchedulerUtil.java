@@ -45,7 +45,7 @@ public class QuartzSchedulerUtil {
         for (int i = 0; i < jobElements.getLength(); i++) {
             Element jobE = (Element) jobElements.item(i);
             log.info("Add job with class: " + jobE.getAttribute("class"));
-            String jobName = jobE.getAttribute("name");
+            String jobName = jobE.getAttribute("name"); // TODO: Maybe it's better to set the name automatically!
 
             String jobDesc = jobE.getAttribute("description");
             if (jobDesc != null && jobDesc.length() > 0) {
