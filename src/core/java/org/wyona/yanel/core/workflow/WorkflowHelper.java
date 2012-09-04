@@ -234,7 +234,10 @@ public class WorkflowHelper {
             }
             WorkflowBuilder builder = new WorkflowBuilder();
             if (resource.getRealm().getRepository().existsNode(workflowSchema)) {
-                return builder.buildWorkflow(resource.getRealm().getRepository().getNode(workflowSchema).getInputStream()); // TODO: Cache result of workflow builder for performance reasons
+                String targetEnv = resource.getYanel().getTargetEnvironment();
+                InputStream stream = resource.getRealm().getRepository().getNode(workflowSchema).getInputStream();
+                // TODO: Cache result of workflow builder for performance reasons
+                return builder.buildWorkflow(stream, targetEnv);
             } else {
                 throw new WorkflowException("No such workflow instance '" + workflowSchema + "' within repository: " + resource.getRealm().getRepository() + " (configured within resource config with request path: " + resource.getPath() + ")");
             }
