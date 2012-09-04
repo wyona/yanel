@@ -6,18 +6,6 @@ conf/local
 local
 logs
 
-# Yanel build directory
-/build
-
-# Index files
-*.cfs
-*.gen
-segments_*
-
-# Yarep meta files
-*.yarep
-yarep-meta/
-
 # local Yanel build configuration
 src/build/local.build.properties
 
