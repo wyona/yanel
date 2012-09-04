@@ -50,6 +50,8 @@ public class ConfigurationUtil {
     
     /**
      * Filter elements by target environment.
+     * @param istream The configuration as input stream.
+     * @param targetEnvironment The target environment.
      * @throws IOException 
      * @throws SAXException 
      */
