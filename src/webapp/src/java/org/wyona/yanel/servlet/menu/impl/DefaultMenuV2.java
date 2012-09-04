@@ -54,6 +54,9 @@ public class DefaultMenuV2 extends DefaultMenu {
         sb.append("</ul>");
         sb.append("</li>");
         sb.append("<li>Source editor</li>");
+        if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Annotatable", "1")) {
+            sb.append("<li><a href=\"" + backToRealm + "usecases/pageMetadataManager.html?edit-path=" + resource.getPath() + "\">Meta data editor</a></li>");
+        }
         sb.append("</ul>");
         sb.append("</li>");
 

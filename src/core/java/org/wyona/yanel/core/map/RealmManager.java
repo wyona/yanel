@@ -235,7 +235,7 @@ public class RealmManager {
     }
 
     /**
-     * Read realms configuration
+     * Read realm configurations
      * @param realmsConfigFile Realms configuration file
      */
     public void readRealms(File realmsConfigFile) throws ConfigurationException {
@@ -299,7 +299,7 @@ public class RealmManager {
                         log.error("Class not found: " + e.getMessage() + ". Fallback to default realm implementation!");
                         realm = new RealmDefaultImpl(realmLabel, realmId, mountPoint, realmConfigFile);
                     } catch(Exception e) {
-                        log.info("Default realm implementation will be used.");
+                        log.info("Default realm implementation will be used, because no custom realm implementation configured for realm '" + realmId + "'.");
                         realm = new RealmDefaultImpl(realmLabel, realmId, mountPoint, realmConfigFile);
                     }
                     
@@ -334,6 +334,7 @@ public class RealmManager {
                     }
                 }
             }
+            log.info("All realm configurations have been read.");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ConfigurationException("Error setting up realms from file " + 

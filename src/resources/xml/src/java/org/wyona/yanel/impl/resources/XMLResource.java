@@ -160,13 +160,13 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                 // TODO: Differentiate between users who have access to all comments and only public comments
                 //java.util.List comments = cMan.getPublicComments(realm, getPath()).getComments();
                 java.util.List comments = cMan.getAllComments(realm, getPath()).getComments();
-                log.warn("DEBUG: Resource '" + getPath() + "' has comments: " + comments.size());
+                log.debug("Resource '" + getPath() + "' has comments: " + comments.size());
                 // TODO: Add comments to XML root element using a namespace
                 Document mainDoc = XMLHelper.readDocument(node.getInputStream());
                 String aggregateComments = getResourceConfigProperty("aggregate-comments");
                 if (aggregateComments != null && aggregateComments.equals("true")) {
                     Document commentsDoc = org.wyona.yarep.util.YarepXMLBindingUtil.getDocFromJAXBDataObject(cMan.getAllComments(realm, getPath()));
-                    log.warn("DEBUG: Aggregate comments ...");
+                    log.debug("Aggregate comments ...");
                     //org.w3c.dom.Node importedNode = mainDoc.getDocumentElement().getOwnerDocument().importNode(commentsDoc.getDocumentElement(), true);
                     //mainDoc.getDocumentElement().appendChild(importedNode);
                     //org.w3c.dom.Node importedNode = mainDoc.importNode(commentsDoc.getDocumentElement(), true);

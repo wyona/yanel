@@ -30,7 +30,7 @@
       <fileset dir="${yanel.source.home}/src/resources"/>
     </copy>
     <copy todir="${update.dir}/${servlet.context.prefix}/resources">
-      <fileset dir="${yanel.source.home}/src/contributions/resources"/>
+      <fileset dir="${yanel.source.home}/src/resources"/>
     </copy>
     <copy todir="${update.dir}/${servlet.context.prefix}/resources">
       <fileset dir="${yanel.source.home}/src/realms/welcome-admin/yanel/resources"/>
@@ -42,7 +42,7 @@
       <replacetoken>../src/resources</replacetoken>
     </replace>
     <replace file="${update.dir}/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="../../resources">
-      <replacetoken>../src/contributions/resources</replacetoken>
+      <replacetoken>../src/resources</replacetoken>
     </replace>
     <replace file="${update.dir}/${servlet.context.prefix}/WEB-INF/classes/yanel.properties" value="../../resources">
       <replacetoken>../src/realms/welcome-admin/yanel/resources</replacetoken>

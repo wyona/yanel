@@ -64,7 +64,7 @@
 -->
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="1.3.0-rf23d2fea13dec0d3ccc536e67decfdbd1f07f50c"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="1.4.0-r371596de3c510604aadb5718fc7b92296f48c3ba"/>
 
       <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
@@ -87,8 +87,8 @@
 <!-- IMPORTANT: Please also see src/build/targets/webapp/webapp.xml re ambiguous libs -->
       <dependency groupId="xalan" artifactId="xalan" version="2.7.0"/>
 
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="1.3.0-rf23d2fea13dec0d3ccc536e67decfdbd1f07f50c"/>
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="1.3.0-rf23d2fea13dec0d3ccc536e67decfdbd1f07f50c"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="1.4.0-r371596de3c510604aadb5718fc7b92296f48c3ba"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="1.4.0-r371596de3c510604aadb5718fc7b92296f48c3ba"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="yarep" artifactId="yarep-impl" version="1.0-dev-rad19798901b2280b7236e915ae96746ab630fcc1"/>
       <dependency groupId="spring" artifactId="spring"
@@ -139,12 +139,9 @@
       <dependency groupId="wyona-org-yanel" artifactId="yanel-resource-creatable-modifiable-deletable-v3" version="0.1-dev-re534f851072e373b86624d7d6710fa7f1c81f240"/>
 
       <!-- INFO: Log into ActiveMQ Java Messaging System -->
-      <dependency groupId="wyona-com-boost" artifactId="Log4JAppender" version="2.0.1-rfca959b5e5fc053f7a9d0b144369950a9f801a98"/>
-      <dependency groupId="wyona-com-boost" artifactId="Log4JParsingUtils" version="2.0.1-rfca959b5e5fc053f7a9d0b144369950a9f801a98"/>
-      <dependency groupId="org.apache.activemq" artifactId="activemq-core" version="5.4.2"/>
-      <dependency groupId="org.apache.geronimo.specs" artifactId="geronimo-j2ee-management_1.1_spec" version="1.0.1"/>
-      <dependency groupId="org.apache.geronimo.specs" artifactId="geronimo-jms_1.1_spec" version="1.1.1"/>
-
+      <dependency groupId="wyona-com-boost" artifactId="Log4JAppender" version="3.0.3-r503908d159c"/>
+      <dependency groupId="wyona-com-boost" artifactId="Log4JParsingUtils" version="2.0.1-r5914d669ada"/>
+      <dependency groupId="wyona-com-boost" artifactId="MessageUtils" version="2.0.1-r5914d669ada"/>
     </artifact:dependencies>
     
     <!--     get ext by maven -->    

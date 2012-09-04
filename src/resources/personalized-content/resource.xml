@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="personalized-content"
+  namespace="http://www.wyona.org/yanel/resource/1.0"
+  class="org.wyona.yanel.impl.resources.boost.PersonalizedContentResource"
+  >
+<description>
+Generates personalized content based on the interests of a user (see for example http://127.0.0.1:8080/yanel/from-scratch-realm/boost.xml or http://127.0.0.1:8080/yanel/yanel-website/boost.xml)
+</description>
+
+<rtd>
+  <property name="boost-service-base-url"/> <!-- For example: http://localhost:9080/boost/ -->
+</rtd>
+</resource>
