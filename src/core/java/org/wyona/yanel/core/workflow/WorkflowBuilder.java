@@ -37,10 +37,11 @@ public class WorkflowBuilder {
     /**
      * Build workflow from an input stream containing a workflow definition as XML
      * @param stream Input stream containing workflow as XML
+     * @param targetEnnvironment Target environment of Yanel, which is applied/used to filter elements of workflow definition
      */
     public Workflow buildWorkflow(InputStream stream, String targetEnvironment) throws WorkflowException {
         try {
-        	stream = ConfigurationUtil.filterEnvironment(stream, targetEnvironment);
+            stream = ConfigurationUtil.filterEnvironment(stream, targetEnvironment);
             Document document = org.wyona.commons.xml.XMLHelper.readDocument(stream);
             Workflow workflow = buildWorkflow(document);
             return workflow;
