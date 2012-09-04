@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <user xmlns="http://www.wyona.org/security/1.0" id="lenya">
-  <name>Bob</name>
-  <email>lenya@wyona.org</email>
-  <language>en</language>
-
-  <password algorithm="SHA-256">4e34cef21c84eb8f6825477f7528540ee8259dce2d86770f7f4c4bd299461027</password>
-  <salt>849606beb9a4c159</salt>
-
-  <description>Test User</description>
-  <expire>2069-02-16T00:00:00</expire>
-  <aliases>
-    <alias id="bob@wyona.org"/>
-  </aliases>
-  <groups>
-    <group id="example-group"/>
-    <group id="example-subgroup"/>
-  </groups>
+<name>Bob</name>
+<email>lenya@wyona.org</email>
+<language>en</language>
+<password algorithm="bcrypt">$2a$12$Wttn.ptj6Q8JU5ogY3hhcu8W8jquK9gx/.0a.AaR/xWVjTkg3.JUS</password>
+<description>Test User</description>
+<expire>2069-02-16T00:00:00</expire>
+<salt>849606beb9a4c159</salt>
+<aliases>
+<alias id="bob@wyona.org"/>
+</aliases>
+<groups>
+<group id="example-group"/>
+<group id="example-subgroup"/>
+</groups>
 </user>
