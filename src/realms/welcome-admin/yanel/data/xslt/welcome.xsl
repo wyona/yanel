@@ -48,6 +48,11 @@
 
       </p>
 
+      <p>
+        The currently configured target environment is
+        <code><em><xsl:value-of select="/yanel-info/target-env"/></em></code>.
+      </p>
+
       <h2>Getting Started</h2>
       <p>
         <ul>
