@@ -103,6 +103,20 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
 </realm>
 -->
 
+<!-- BOOST example: If you want a realm to log to Boost, you must set the
+     jms_user, jms_password and auth_key attributes for your realm.
+
+<realm
+    id="example" mount-point="/example"
+    jms_user="7b3a5091993e1393f804cd28ad501067efc45accd443230714c267f7adcd09e6"
+    jms_password="HXcQzx5VUVFqC4RGEINjwUDD8yg/bdI4PQ4YEQB+ISCVRTS+UuD9YHkzRXgau6yigPJEOxZ1F7X7IYHfAZOEcQ=="
+    authkey="eWFuZWwtc3JjLTIyMjIyMjIyMjIK">
+
+  <config src="@REALMS_DIR@/welcome-admin/"/>
+</realm>
+-->
+
+
 <!-- ROOT realm (The mount point is '/'. TBD: Is the 'root' attribute actually needed?!) -->
 <realm id="welcome" mount-point="/" root="true">
   <config src="@REALMS_DIR@/welcome-admin/"/>
