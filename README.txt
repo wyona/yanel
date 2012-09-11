@@ -60,6 +60,14 @@
     5.2) Run continuous integration: "./src/build/targets/continuous-integration/reCI"
 
 
+    Building Yanel without GWT
+    --------------------------
+
+    Building GWT can take quite a while, hence one can build Yanel without GWT by using the option '-Dgwt.compile.skip=true', e.g on Linux/UNIX run
+
+    ./build.sh quick-start -Dgwt.compile.skip=true
+
+
     More Information
     ----------------
 
