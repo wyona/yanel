@@ -80,6 +80,10 @@ public class ShowRealms extends BasicXMLResource {
         RealmManager realms_config = yanel.getRealmConfiguration();
         String realms_file = realms_config.getRealmsConfigurationFile();
 
+        Element envEl = doc.createElement("target-env");
+        envEl.appendChild(doc.createTextNode(getYanel().getTargetEnvironment()));
+        root.appendChild(envEl);
+
         Element realmsEl = doc.createElement("realms");
         realmsEl.setAttribute("config", realms_file);
         root.appendChild(realmsEl);
@@ -127,6 +131,8 @@ public class ShowRealms extends BasicXMLResource {
         ResourceTypeRegistry rtr = new ResourceTypeRegistry();
         ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
         for (ResourceTypeDefinition rt : rtds) {
+
+            if(rt == null) continue;
 
             // Get local name, namespace, description
             String namespace = rt.getResourceTypeNamespace();
