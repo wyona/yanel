@@ -132,6 +132,8 @@ public class ShowRealms extends BasicXMLResource {
         ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
         for (ResourceTypeDefinition rt : rtds) {
 
+            if(rt == null) continue;
+
             // Get local name, namespace, description
             String namespace = rt.getResourceTypeNamespace();
             String localname = rt.getResourceTypeLocalName();
