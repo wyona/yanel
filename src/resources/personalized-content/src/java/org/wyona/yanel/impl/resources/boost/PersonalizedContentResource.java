@@ -17,9 +17,9 @@ import org.wyona.commons.xml.XMLHelper;
 
 import org.apache.log4j.Logger;
 
-import org.wyona.boost.client.BoostService;
-import org.wyona.boost.client.ServiceException;
-import org.wyona.boost.client.BoostServiceConfig;
+import com.wyona.boost.client.BoostService;
+import com.wyona.boost.client.ServiceException;
+import com.wyona.boost.client.BoostServiceConfig;
 
 import org.wyona.yarep.core.Node;
 
@@ -46,6 +46,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
         Element root = doc.getDocumentElement();
 
         String service = getResourceConfigProperty("boost-service-url");
+        String api_key = getResourceConfigProperty("boost-api-key");
         if(service != null && !"".equals(service)) {
             boostServiceUrl = service;
         }
@@ -82,7 +83,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
 
         Iterable<String> userInterests;
         try {
-            userInterests = getUserInterests(cookie.getValue(), boost_domain);
+            userInterests = getUserInterests(cookie.getValue(), boost_domain, api_key);
         } catch(ServiceException e) {
             // No interests
             log.error(e, e);
@@ -140,10 +141,10 @@ public class PersonalizedContentResource extends BasicXMLResource {
      * Get the user profile given a cookie.
      * @param cookie Unique cookie id
      */
-    protected Iterable<String> getUserInterests(String cookie, String realm)
+    protected Iterable<String> getUserInterests(String cookie, String realm, String apiKey)
     throws Exception {
 
-        BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, realm);
+        BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, realm, apiKey);
         BoostService boost = new BoostService(bsc);
         return boost.getUserProfile(cookie);
     }
