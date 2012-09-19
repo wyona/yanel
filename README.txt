@@ -51,7 +51,7 @@
     3) Start using Yanel with one of the following options
     3.1) Run within Tomcat: "yanel start/stop" to start or stop Tomcat
     3.2) Run within Jetty: "yanel start-jetty" to start Jetty
-    3.3) Run from the Command Line: "yanel /hello/world.html"
+    3.3) Run from the Command Line: "yanel cmdl /from-scratch-realm/de/index.html"
 
     4) Browse to http://127.0.0.1:8080/yanel/
 
