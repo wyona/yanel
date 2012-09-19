@@ -54,8 +54,8 @@
     </condition>
     <antcall target="copy-catalina-script"/>
     
-    <!-- NOTE: Assume that SSL will be enabled (see targets/webapp/cluster.xml), and if not, then the target comment-local-tomcat1-ports will disable them again! -->
-    <propertyfile file="${yanel.source.home}/src/build/local.build.properties" comment="Default Tomcat">
+    <!-- NOTE: Assume that SSL will be enabled (see targets/webapp/cluster.xml), and if not, then the target 'comment-local-tomcat1-ports' inside 'targets/webapp/cluster.xml' will disable them again! -->
+    <propertyfile file="${yanel.source.home}/src/build/local.build.properties" comment=" Local Yanel Build Properties">
       <entry key="tomcat1.home.dir" value="${default.tomcat.home.dir.forward.slashes}"/>
       <entry key="tomcat1.http.port" value="8080"/>
       <entry key="tomcat1.ssl.port" value="8443"/>
