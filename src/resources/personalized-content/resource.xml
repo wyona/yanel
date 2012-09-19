@@ -11,5 +11,6 @@ Generates personalized content based on the interests of a user (see for example
 
 <rtd>
   <property name="boost-service-base-url"/> <!-- For example: http://localhost:9080/boost/ -->
+  <property name="boost-api-key"/>
 </rtd>
 </resource>

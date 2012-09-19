@@ -5,4 +5,5 @@
 
   <yanel:property name="mime-type" value="application/xml"/>
   <yanel:property name="boost-service-base-url" value="http://localhost:9080/boost/"/>
+  <yanel:property name="boost-api-key" value="123121212yourkeyhere18918"/>
 </yanel:resource-config>
