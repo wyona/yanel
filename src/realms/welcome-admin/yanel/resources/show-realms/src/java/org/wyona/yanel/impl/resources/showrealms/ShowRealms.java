@@ -80,8 +80,14 @@ public class ShowRealms extends BasicXMLResource {
         RealmManager realms_config = yanel.getRealmConfiguration();
         String realms_file = realms_config.getRealmsConfigurationFile();
 
+        String targetEnv = getYanel().getTargetEnvironment();
+
+        if(targetEnv == null) {
+            targetEnv = "none";
+        }
+
         Element envEl = doc.createElement("target-env");
-        envEl.appendChild(doc.createTextNode(getYanel().getTargetEnvironment()));
+        envEl.appendChild(doc.createTextNode(targetEnv));
         root.appendChild(envEl);
 
         Element realmsEl = doc.createElement("realms");

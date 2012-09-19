@@ -49,8 +49,15 @@
       </p>
 
       <p>
-        The currently configured target environment is
-        <code><em><xsl:value-of select="/yanel-info/target-env"/></em></code>.
+<xsl:choose>
+  <xsl:when test="/yanel-info/target-env">
+        The currently configured <a href="yanel-website/en/documentation/target-environment.html">target environment</a> is
+        '<code><em><xsl:value-of select="/yanel-info/target-env"/></em></code>'.
+  </xsl:when>
+  <xsl:otherwise>
+        No <a href="yanel-website/en/documentation/target-environment.html">target environment</a> has been configured.
+  </xsl:otherwise>
+</xsl:choose>
       </p>
 
       <h2>Getting Started</h2>
