@@ -219,7 +219,7 @@
     <antcall target="comment-local-tomcat1-ports"/>
   </target>
   
-  <target name="comment-local-tomcat1-ports" if="doNotReconfigureTomcat1" description="Comment ports of Tomcat Cluster Node 1 within local.build.properties">
+  <target name="comment-local-tomcat1-ports" if="doNotReconfigureTomcat1" description="Comment ports of Tomcat Cluster Node 1 inside local.build.properties">
     <replace file="${yanel.source.home}/src/build/local.build.properties" value="#tomcat1.ssl.port=${tomcat1.ssl.port}">
       <replacetoken>tomcat1.ssl.port=8443</replacetoken>
 <!--TODO: why is this commented 
