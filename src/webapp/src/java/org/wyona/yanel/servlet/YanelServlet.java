@@ -639,10 +639,10 @@ public class YanelServlet extends HttpServlet {
                                 // TODO: Make this configurable per resource (or rather workflowable interface) or per realm?!
                                 if (displayMostRecentVersion) {
                                     // INFO: Because of backwards compatibility the default should display the most recent version
-                                    log.warn("Instead the live version, the most recent version will be displayed!");
+                                    log.warn("Instead a live/published version, the most recent version will be displayed!");
                                     view = ((ViewableV2) res).getView(viewId);
                                 } else {
-                                    log.warn("Instead the live version, a 404 will be displayed!");
+                                    log.warn("Instead a live/published version, a 404 will be displayed!");
                                     // TODO: Instead a 404 one might want to show a different kind of screen
                                     do404(request, response, doc, message);
                                     return;
