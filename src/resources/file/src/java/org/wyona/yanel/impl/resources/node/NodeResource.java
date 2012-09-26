@@ -65,7 +65,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#getViewDescriptors()
      */
     public ViewDescriptor[] getViewDescriptors() {
         return null;
@@ -86,7 +86,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     /**
-     * @see org.wyona.yanel.core.api.attributes/ViewableV2#getView(String)
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(String)
      */
     public View getView(String viewId) throws Exception {
         if (!exists()) {
@@ -282,7 +282,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#getSize()
      */
     public long getSize() throws Exception {
         Node node = getNode();
