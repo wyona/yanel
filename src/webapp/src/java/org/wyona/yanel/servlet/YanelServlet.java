@@ -130,6 +130,7 @@ public class YanelServlet extends HttpServlet {
 
     private static Logger log = Logger.getLogger(YanelServlet.class);
     private static Logger logAccess = Logger.getLogger(AccessLog.CATEGORY);
+    private static Logger logDoNotTrack = Logger.getLogger("DoNotTrack"); // INFO: For debugging only!
     private static Logger log404 = Logger.getLogger("404");
 
     private Map map;
@@ -2684,8 +2685,8 @@ public class YanelServlet extends HttpServlet {
 
 
         if ("1".equals(request.getHeader("DNT"))) { // INFO: See http://donottrack.us/
-            if (log.isDebugEnabled()) {
-                log.debug("Do not track: " + request.getRemoteAddr());
+            if (logDoNotTrack.isDebugEnabled()) {
+                logDoNotTrack.debug("Do not track: " + request.getRemoteAddr());
             }
             return;
         }
@@ -3056,16 +3057,20 @@ public class YanelServlet extends HttpServlet {
      */
     private boolean logAccessIsApplicable(String mimeType, Resource resource) {
         if(logAccessEnabled) {
-            // TODO: Check whether resource is trackable
             if (isTrackable(resource) || (mimeType != null && isMimeTypeOk(mimeType))) {
                 return true;
             } else {
-                //log.debug("Neither trackable nor a mime type which makes sense, hence do not track.");
+                if (logDoNotTrack.isDebugEnabled()) {
+                    logDoNotTrack.debug("Resource '" + resource.getPath() + "' is neither trackable nor a mime type '" + mimeType + "' which makes sense, hence do not track.");
+                }
+                return false;
             }
         } else {
-            //log.debug("Tracking disabled globally.");
+            if (logDoNotTrack.isDebugEnabled()) {
+                logDoNotTrack.debug("Tracking disabled globally.");
+            }
+            return false;
         }
-        return false;
     }
 
     /**
