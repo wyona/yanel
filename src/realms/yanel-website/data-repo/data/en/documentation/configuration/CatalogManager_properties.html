@@ -7,7 +7,23 @@
   </head>
   <body>
     <h1>Configuration of CatalogManager.properties</h1>
-    <h2>Examples</h2>
+<p>
+XML documents typically refer to external entities, for example the public and/or system ID for the Document Type Definition. These external relationships are expressed using URIs, typically as URLs.
+</p>
+
+<p>
+However, if they are absolute URLs, they only work when your network can reach them. Relying on remote resources makes XML processing susceptible to both planned and unplanned network downtime.
+</p>
+
+<p>
+One way to avoid these problems is to use an entity resolver or a URI resolver. Yanel is currently using <code>org.apache.xml.resolver.tools.CatalogResolver</code>, whereas see for example <code>src/impl/java/org/wyona/yanel/impl/resources/BasicXMLResource.java</code>.
+</p>
+
+<p>
+The catalog manager/resolver configuration is located at <code>YANEL_HOME/conf/CatalogManager.properties</code> or rather <code>TOMCAT/webapps/yanel/WEB-INF/classes/CatalogManager.properties</code>.
+</p>
+
+    <h2>Example</h2>
     <pre>
 catalogs=catalog.xml
 
@@ -17,7 +33,12 @@ relative-catalogs=false
 # The higher the number, the more messages.
 #verbosity=100
 verbosity=1
-    
     </pre>
+
+<h2>Misc</h2>
+
+<ul>
+  <li><a href="http://en.wikipedia.org/wiki/XML_Catalog">http://en.wikipedia.org/wiki/XML_Catalog</a></li>
+</ul>
   </body>
 </html>
