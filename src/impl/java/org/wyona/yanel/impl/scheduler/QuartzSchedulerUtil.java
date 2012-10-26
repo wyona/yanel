@@ -63,16 +63,26 @@ public class QuartzSchedulerUtil {
 
             Element triggerElement = (Element) jobE.getElementsByTagName("trigger").item(0);
 
+            Date currentDate = new Date();
+
             Date startDate = new Date();
+            boolean startDateOlderThanCurrentDate = false;
             String startDateA = triggerElement.getAttribute("startDate");
             if (startDateA != null && startDateA.length() > 0) {
                 if (startDateA.equals("NOW")) {
-                    startDate = new Date();
+                    startDate = new Date(); // TODO: What about a margin to make sure that startDate is not older than current date once trigger is actually checking start date
+                    log.debug("Use current date '" + startDate + "' as start date.");
                 } else {
                     try {
                         startDate = new java.text.SimpleDateFormat("yyyy.MM.dd'T'HH:mm:ss").parse(startDateA);
+                        if (startDate.before(currentDate)) { // INFO: Also see http://www.javacodegeeks.com/2012/04/quartz-scheduler-misfire-instructions.html
+                            log.warn("Configured start date '" + startDate + "' (Realm: " + realm.getID() + ") is older than current date '" + currentDate + "'!");
+                            startDateOlderThanCurrentDate = true;
+                        } else {
+                            log.debug("Configured start date '" + startDate + "' is younger than current date '" + currentDate + "'!");
+                        }
                     } catch(java.text.ParseException e) {
-                        log.error("Could not parse startDate: " + e.getMessage() + " (Use NOW as start date)");
+                        log.error("Could not parse startDate: " + e.getMessage() + " (Use current date '" + startDate + "' as start date)");
                     }
                 }
             }
@@ -90,7 +100,7 @@ public class QuartzSchedulerUtil {
             // TODO: Implement repeat count and interval
             Element repeatElement = (Element) triggerElement.getElementsByTagName("repeat").item(0);
 
-            int count = SimpleTrigger.REPEAT_INDEFINITELY;
+            int count = 1;
             long interval = 60000; // INFO: 60 seconds
             if (repeatElement != null) {
                 String countA = repeatElement.getAttribute("count");
@@ -100,8 +110,8 @@ public class QuartzSchedulerUtil {
                     try {
                         count = Integer.parseInt(countA);
                     } catch(NumberFormatException e) {
-                        log.error("Could not parse count: " + e.getMessage() + " (repeat indefinitely)");
-                        count = SimpleTrigger.REPEAT_INDEFINITELY;
+                        log.error("Could not parse count: " + e.getMessage() + " (hence set counter to zero)");
+                        count = 0;
                     }
                 }
 
@@ -114,8 +124,49 @@ public class QuartzSchedulerUtil {
                 }
             }
 
-            Trigger trigger = new org.quartz.impl.triggers.SimpleTriggerImpl(jobName + "Trigger", groupName, startDate, endDate, count, interval);
-            scheduler.scheduleJob(jobDetail, trigger);
+            if (startDateOlderThanCurrentDate && count == 1) {
+                log.warn("Configured start date '" + startDate + "' is older than current date '" + currentDate + "' and the count is one, hence do not trigger this job (Realm: " + realm.getID() + ")!");
+                return;
+            }
+            if (count == 0) {
+                log.warn("Count is zero, hence do not trigger this job (Realm: " + realm.getID() + ")!");
+                return;
+            }
+            if (startDateOlderThanCurrentDate && count > 1) {
+                startDate = getNextPossibleStartDate(startDate, count, interval, currentDate);
+                if (startDate.before(currentDate)) {
+                    log.warn("Next possible start date '" + startDate + "' is also older than current date '" + currentDate + "', hence do not trigger this job (Realm: " + realm.getID() + ")!");
+                    return;
+                }
+            }
+
+            String triggerKey = jobName + "Trigger";
+            Trigger trigger = new org.quartz.impl.triggers.SimpleTriggerImpl(triggerKey, groupName, startDate, endDate, count, interval);
+            Date nextFireTime = scheduler.scheduleJob(jobDetail, trigger);
+
+            if (startDateOlderThanCurrentDate && count == SimpleTrigger.REPEAT_INDEFINITELY) {
+                log.warn("Configured start date '" + startDate + "' is older than current date '" + currentDate + "', but counter is set to 'REPEAT_INDEFINITELY', hence trigger this job (Realm: '" + realm.getID() + "', Job Description: '" + jobDesc+ "') for the first time at '" + trigger.getFireTimeAfter(currentDate) + "'!");
+            }
+
         }
+    }
+
+    /**
+     * Calculate next possible start date
+     * @param startDate Original start date (which is supposed to be older than current date)
+     * @param count How many times the interval will be applied
+     * @param interval Time in between
+     * @param currentDate Current date
+     */
+    private static Date getNextPossibleStartDate(Date startDate, int count, long interval, Date currentDate) {
+        Date nextStartDate = startDate;
+        for (int i = 0; i < count; i++) {
+            nextStartDate = new Date(nextStartDate.getTime() + count*interval);
+            log.debug("Next start date: " + nextStartDate);
+            if (nextStartDate.after(currentDate)) {
+                return nextStartDate;
+            }
+        }
+        return nextStartDate;
     }
 }
