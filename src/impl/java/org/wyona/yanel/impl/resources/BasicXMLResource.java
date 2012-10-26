@@ -141,7 +141,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             log.warn("No view descriptor found for view id (Resource path: " + getPath() + "): " + viewId);
             return null;
         } else {
-            log.warn("No view descriptors set within resource configuration (Resource path: " + getPath() + ")!");
+            log.warn("No view descriptors set inside resource configuration (Resource path: " + getPath() + ")!");
             return null;
         }
     }
@@ -170,7 +170,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 return this.viewDescriptors.values().toArray(new ViewDescriptor[this.viewDescriptors.size()]);
             }
 
-            log.warn("No custom view descriptors set within resource configuration (Resource path: " + getPath() + "), hence use default ones: " + DEFAULT_VIEW_ID + ", " + SOURCE_VIEW_ID);
+            log.warn("No custom view descriptors set inside resource configuration (Resource path: " + getPath() + "), hence use default ones: " + DEFAULT_VIEW_ID + ", " + SOURCE_VIEW_ID);
             // no custom config
             ConfigurableViewDescriptor[] vd = new ConfigurableViewDescriptor[2];
             vd[0] = new ConfigurableViewDescriptor(DEFAULT_VIEW_ID);
@@ -301,7 +301,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
         // create reader:
         XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-        CatalogResolver catalogResolver = new CatalogResolver();
+        CatalogResolver catalogResolver = new CatalogResolver(); // TODO: Make CatalogResolver configurable...
         xmlReader.setEntityResolver(catalogResolver);
         xmlReader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
 
@@ -389,7 +389,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     /**
      * Creates an html or xml serializer for the given view descriptor
-     * @param viewdDescriptor
+     * @param viewDescriptor
      * @return serializer
      * @throws Exception
      */
@@ -397,11 +397,12 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         Serializer serializer = null;
         String serializerKey = viewDescriptor.getSerializerKey();
         if (serializerKey != null) {
+            //log.debug("Configured serializer key: " + serializerKey);
             serializer = SerializerFactory.getSerializer(serializerKey);
             if (serializer == null) {
-                throw new Exception("could not create serializer for key: " + serializerKey);
+                throw new Exception("Could not create serializer for key: " + serializerKey);
             }
-        } else {
+        } else { // INFO: Fallback to mime type if no serializer key has been set
             String mimeType = getMimeType(viewDescriptor.getId());
 
             if (MimeTypeUtil.isHTML(mimeType) && !MimeTypeUtil.isXML(mimeType)) {

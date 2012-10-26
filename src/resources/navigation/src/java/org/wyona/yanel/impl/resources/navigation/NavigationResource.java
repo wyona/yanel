@@ -115,7 +115,7 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
             log.warn("No current path set, hence use request path: " + currentPath);
         }
         if (activePath == null) {
-            log.warn("No active path set explicitely, hence use current path: " + currentPath);
+            log.info("No active path set explicitely, hence use current path: " + currentPath);
             activePath = currentPath;
         }
 

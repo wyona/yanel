@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 
 <!--
-See http://xml.apache.org/commons/components/resolver/resolver-article.html
+See
+  - http://xerces.apache.org/xml-commons/components/resolver/resolver-article.html#s.catalog.files
+  - http://en.wikipedia.org/wiki/XML_Catalog
 -->
 
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">

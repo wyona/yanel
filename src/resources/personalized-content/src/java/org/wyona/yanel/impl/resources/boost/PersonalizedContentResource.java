@@ -35,7 +35,8 @@ public class PersonalizedContentResource extends BasicXMLResource {
     private static Logger log = Logger.getLogger(PersonalizedContentResource.class);
 
     private static final String NAMESPACE = "http://www.wyona.org/yanel/boost/1.0";
-    private String boostServiceUrl = "http://localhost:9080/boost/api";
+
+    private static final String BOOST_SERVICE_URL_PARAM = "boost-service-url";
 
     /**
      * Get the XML content of this resource.
@@ -45,10 +46,12 @@ public class PersonalizedContentResource extends BasicXMLResource {
         Document doc = XMLHelper.createDocument(NAMESPACE, "personalized-content");
         Element root = doc.getDocumentElement();
 
-        String service = getResourceConfigProperty("boost-service-url");
+        String service = getResourceConfigProperty(BOOST_SERVICE_URL_PARAM);
         String api_key = getResourceConfigProperty("boost-api-key");
         if(service != null && !"".equals(service)) {
-            boostServiceUrl = service;
+            log.warn("DEBUG: Boost service URL: " + service);
+        } else {
+            log.error("No boost service URL '" + BOOST_SERVICE_URL_PARAM + "' configured!");
         }
 
         // Is the user logged into Yanel?
@@ -83,7 +86,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
 
         Iterable<String> userInterests;
         try {
-            userInterests = getUserInterests(cookie.getValue(), boost_domain, api_key);
+            userInterests = getUserInterests(service, cookie.getValue(), boost_domain, api_key);
         } catch(ServiceException e) {
             // No interests
             log.error(e, e);
@@ -139,9 +142,10 @@ public class PersonalizedContentResource extends BasicXMLResource {
 
     /**
      * Get the user profile given a cookie.
+     * @param boostServiceUrl Boost service URL
      * @param cookie Unique cookie id
      */
-    protected Iterable<String> getUserInterests(String cookie, String realm, String apiKey)
+    protected Iterable<String> getUserInterests(String boostServiceUrl, String cookie, String realm, String apiKey)
     throws Exception {
 
         BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, realm, apiKey);
