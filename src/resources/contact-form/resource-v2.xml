@@ -16,8 +16,6 @@ Contact form for sending email
 
   <!-- Optional properties -->
   <property name="subject"/>
-  <property name="xslt"/> <!-- Global XSLT -->
-  <property name="xslt-body"/> <!-- XSLT to render body (actual form) -->
   <property name="mime-type"/>
   <property name="from"/> <!-- INFO: If not configured then the email address specified of the form is used as from address -->
   <property name="email-validation-regex"/>
