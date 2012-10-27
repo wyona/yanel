@@ -73,9 +73,9 @@ import org.xml.sax.helpers.XMLReaderFactory;
 /**
  * Simple contact form resource.
  */
-public class ContactResourceV2 extends BasicXMLResource {
+public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
 
-    private static Logger log = Logger.getLogger(ContactResource.class);
+    private static Logger log = Logger.getLogger(ContactResourceV2.class);
 
     // Constants
     private static final String SMTP_HOST = "smtpHost";
