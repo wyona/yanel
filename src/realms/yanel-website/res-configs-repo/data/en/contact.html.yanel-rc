@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.1">
+<!-- IMPORTANT: Also please make sure to uncomment the custom-config below and comment the global xslt property below
+  <yanel:rti name="contact-form-v2" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+-->
   <yanel:rti name="contact-form" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
   <yanel:property name="xslt" value="/xslt/global.xsl"/>
@@ -14,5 +17,22 @@
 <!--
   <yanel:property name="smtpHost" value="mail.wyona.com"/>
   <yanel:property name="smtpPort" value="25"/>
+-->
+
+<!--
+  <yanel:custom-config>
+    <views xmlns="http://www.wyona.org/yanel/rti/1.0">
+      <view id="default">
+        <xslt>rthtdocs:/xslt/contact-form.xsl</xslt>
+        <xslt>/xslt/global.xsl</xslt>
+        <mime-type>text/html</mime-type>
+        <serializer key="HTML_TRANSITIONAL">
+        </serializer>
+      </view>
+      <view id="xml">
+        <mime-type>application/xml</mime-type>
+      </view>
+    </views>
+  </yanel:custom-config>
 -->
 </yanel:resource-config>
