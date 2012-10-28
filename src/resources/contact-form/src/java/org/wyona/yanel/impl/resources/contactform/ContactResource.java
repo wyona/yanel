@@ -110,7 +110,7 @@ public class ContactResource extends Resource implements ViewableV1, TrackableV1
 
         path = new Path(request.getServletPath());
 
-        // TODO: Please note that this does not work necessarily of this resource is extended!
+        // TODO: Please note that this does not work necessarily when this resource is extended!
         File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "contact-form.xml");
 
             // create reader:
