@@ -88,7 +88,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
     private int smtpPort = 25;
     private String to = "";
     private ContactBean contact = null;
-    private Path path = null;
+    //private Path path = null;
 
     // Email validation
     private String defaultEmailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
@@ -112,7 +112,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             log.warn("Tracking information bean is null! Check life cycle of resource!");
         }
 
-        path = new Path(request.getServletPath());
+        //path = new Path(request.getServletPath());
 
         String email = request.getParameter("email");
         // Checking if form was submitted
@@ -135,7 +135,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             }
 
             // Abort
-            return new ByteArrayInputStream("<root/>".getBytes());
+            return getXMLDocument();
         }
 
         // Checking if spamblock is implemented
@@ -149,7 +149,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
         if(!request.getParameter("spamblock_hidden").equals("TRyAg41n") ||
            !request.getParameter("spamblock_input").equals("8989890")) {
             // Spamblock does not match - abort.
-            return new ByteArrayInputStream("<root/>".getBytes());
+            return getXMLDocument();
         }
 
         // Spamblock is verified, process form.
@@ -204,7 +204,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             setParameter("message", message);
         }
 
-        return new ByteArrayInputStream("<root/>".getBytes());
+        return getXMLDocument();
     }
 
     /**
@@ -376,5 +376,15 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
         content.append("Yanel-analytics-cookie: ");
         content.append(cookieValue);
         return content.toString();
+    }
+
+    /**
+     * Get XML to start with
+     * @return XML as InputStream
+     */
+    private InputStream getXMLDocument() throws Exception {
+        File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "contact-form.xml");
+        return new java.io.FileInputStream(xmlFile.getAbsolutePath());
+        //return new ByteArrayInputStream("<root/>".getBytes());
     }
 }
