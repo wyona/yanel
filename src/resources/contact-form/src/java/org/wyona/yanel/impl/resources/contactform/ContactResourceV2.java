@@ -54,8 +54,6 @@ import org.wyona.yanel.core.attributes.tracking.TrackingInformationV1;
 import org.wyona.yanel.core.serialization.SerializerFactory;
 import org.wyona.yanel.core.source.ResourceResolver;
 import org.wyona.yanel.core.source.SourceResolver;
-import org.wyona.yanel.core.transformation.I18nTransformer2;
-import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.MailUtil;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
