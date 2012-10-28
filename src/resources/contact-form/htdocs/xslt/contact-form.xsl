@@ -45,7 +45,7 @@
       </head>
       
       <body>
-        <h3><i18n:message key="contact"/></h3>
+        <h3><i18n:text key="contact"/></h3>
 <!--
         <p><i18n:message key="generalInquiriesPleaseContact"/><a href="mailto:contact@wyona.com">contact@wyona.com</a>.</p>
 -->
