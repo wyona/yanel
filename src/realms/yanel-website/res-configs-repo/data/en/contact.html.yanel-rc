@@ -3,6 +3,7 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.1">
 <!-- IMPORTANT: Also please make sure to uncomment the custom-config below and comment the global xslt property below
   <yanel:rti name="contact-form-v2" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+  <yanel:property name="i18n-catalogue" value="contact-form"/>
 -->
   <yanel:rti name="contact-form" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
