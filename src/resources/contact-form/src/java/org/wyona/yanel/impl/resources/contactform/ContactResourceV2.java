@@ -383,7 +383,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
      * @return XML as InputStream
      */
     private InputStream getXMLDocument() throws Exception {
-        File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "contact-form.xml");
+        File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "htdocs" + File.separator + "xml" + File.separator + "contact-form.xml");
         return new java.io.FileInputStream(xmlFile.getAbsolutePath());
         //return new ByteArrayInputStream("<root/>".getBytes());
     }

@@ -111,7 +111,7 @@ public class ContactResource extends Resource implements ViewableV1, TrackableV1
         path = new Path(request.getServletPath());
 
         // TODO: Please note that this does not work necessarily when this resource is extended!
-        File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xml" + File.separator + "contact-form.xml");
+        File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "htdocs" + File.separator + "xml" + File.separator + "contact-form.xml");
 
             // create reader:
             XMLReader xmlReader = XMLReaderFactory.createXMLReader();
@@ -344,7 +344,7 @@ public class ContactResource extends Resource implements ViewableV1, TrackableV1
         if (xsltPath != null) {
             return new StreamSource(getRealm().getRepository().getNode(xsltPath).getInputStream());
         }
-        return new StreamSource(org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "contact-form.xsl"));
+        return new StreamSource(org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "htdocs" + File.separator + "xslt" + File.separator + "contact-form.xsl"));
     }
 
     /**
