@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Untitled document</title>
+<title>How i18n works in Yanel</title>
 </head>
 <body>
 <h2>How i18n works in Yanel</h2>
@@ -29,8 +29,24 @@
 </li>
 </ol>
 <h3>How it works</h3>
-<p>There is a transformer (I18nTransformer) which transforms the &lt;i18n:text&gt; elements  into the text messages from the catalogue. If no message is found for a given key and a given language, fallback to the default language is applied. If still no message is found, the transformer inserts the message key.<br /><br />As of today there are three different versions of this transformer in yanel: I18nTransformer, I18nTransformer2, and I18nTransformer3. The first two versions are deprecated. They use a different syntax and they support only plain-text property files as catalogues (ResourceBundles).<br />I18nTransformer3 still supports the old syntax and also allows to use ResourceBundle catalogues, so it's the recommended choice.</p>
+<p>There is a transformer (I18nTransformer) which transforms the &lt;i18n:text&gt; elements  into the text messages from the catalogue. If no message is found for a given key and a given language, fallback to the default language is applied. If still no message is found, the transformer inserts the message key.<br /><br />As of today there are three different versions of this transformer in yanel: I18nTransformer, I18nTransformer2, and I18nTransformer3. The first two versions are deprecated. They use a different syntax and they support only plain-text property files as catalogues (ResourceBundles, which means the catalogues are loaded from the classpath).<br />I18nTransformer3 still supports the old syntax and also allows to use ResourceBundle catalogues, so it's the recommended choice.</p>
 <h3>Multiple Catalogues</h3>
 <p>It is possible to have more than one catalogue. <br />A resource configuration can have several catalogues, the realm can have one, and Yanel has a global message catalogue. Yanel will look for a message with a given key first in the resource catalogues, then in the realm catalogue, and eventually in the global catalogue.<br /><br /></p>
+
+<h3>Catalogues of a resource</h3>
+<p>
+One can also configure a resource specific catalogue. See for example:
+<pre>
+src/realms/yanel-website/res-configs-repo/data/en/contact.html.yanel-rc
+</pre>
+and in particular
+<pre>
+&lt;yanel:property name="i18n-catalogue" value="contact-form"/&gt;
+</pre>
+which is the resource configuration of <a href="../contact.html">http://127.0.0.1:8080/yanel/yanel-website/en/contact.html</a>.
+<br/><br/>
+The i18n properties files of the contact resource are located inside the directory <code>src/resources/contact-form/conf</code>, which are copied during the
+build process to <code>local/TOMCAT/webapps/yanel/WEB-INF/classes</code>, from where the I18nTransformers will read them.
+</p>
 </body>
 </html>
