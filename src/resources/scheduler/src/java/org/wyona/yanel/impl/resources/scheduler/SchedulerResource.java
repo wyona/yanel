@@ -42,6 +42,7 @@ public class SchedulerResource extends BasicXMLResource {
 
         Document doc = XMLHelper.createDocument("http://www.wyona.org/yanel/scheduler/1.0.0", "scheduler");
         Element rootEl = doc.getDocumentElement();
+        rootEl.setAttribute("current-time", "" + new java.util.Date());
 
         if (schedulers == null || schedulers.isEmpty()) {
             rootEl.appendChild(doc.createElement("no-schedulers-running"));
