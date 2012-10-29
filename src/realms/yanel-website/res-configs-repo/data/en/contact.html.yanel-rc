@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
 
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.1">
-<!-- IMPORTANT: Also please make sure to uncomment the custom-config below and comment the global xslt property below
   <yanel:rti name="contact-form-v2" namespace="http://www.wyona.org/yanel/resource/1.0"/>
   <yanel:property name="i18n-catalogue" value="contact-form"/>
--->
-  <yanel:rti name="contact-form" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
+<!-- INFO: Resource configuration of version 1
+  <yanel:rti name="contact-form" namespace="http://www.wyona.org/yanel/resource/1.0"/>
   <yanel:property name="xslt" value="/xslt/global.xsl"/>
   <yanel:property name="mime-type" value="application/xhtml+xml"/>
+-->
+
   <yanel:property name="subject" value="Yanel Website (yanel.org): I am interested in Yanel, please get in touch with me"/>
 
   <yanel:property name="to" value="contact@wyona.com"/>
@@ -20,7 +21,6 @@
   <yanel:property name="smtpPort" value="25"/>
 -->
 
-<!--
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
       <view id="default">
@@ -35,5 +35,4 @@
       </view>
     </views>
   </yanel:custom-config>
--->
 </yanel:resource-config>
