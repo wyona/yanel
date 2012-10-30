@@ -167,10 +167,42 @@ public class AccessLog {
      */
     private static String getURLInclQueryString(HttpServletRequest request) {
         String qs = request.getQueryString();
-        if (qs != null) {
-            return request.getRequestURL().toString() + "?" + qs;
-        } else {
+        try {
+            ForwardedURL url = new ForwardedURL(request);
+            if (qs != null) {
+                return url.toString() + "?" + qs;
+            } else {
+                return url.toString();
+            }
+        } catch(Exception e) {
+            log.error(e, e);
             return request.getRequestURL().toString();
         }
+    }
+}
+
+/**
+ * Utility class to replace hostname by forwarded hostname if available
+ */
+class ForwardedURL {
+
+    private java.net.URL url;
+
+    /**
+     * @param request HTTP request containing requested URL and if there was a reverse proxy in between also the forwarded host name
+     */
+    public ForwardedURL(HttpServletRequest request) throws java.net.MalformedURLException {
+        url = new java.net.URL(request.getRequestURL().toString());
+        String originalHost = request.getHeader("X-FORWARDED-HOST");
+        if (originalHost != null) {
+            url = new java.net.URL(url.getProtocol(), originalHost, url.getPort(), url.getFile());
+        }
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        return url.toString();
     }
 }
