@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 
+<!-- INFO: Traditional Tracking Code (https://support.google.com/analytics/bin/answer.py?hl=en&answer=1012283&topic=1008082&ctx=topic) -->
+
 <xsl:transform version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:yanel-xsl="http://www.wyona.org/yanel/xsl/1.0"
  xmlns:xhtml="http://www.w3.org/1999/xhtml"
