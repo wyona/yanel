@@ -449,11 +449,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         String[] rcCatalogues = getResourceConfigProperties("i18n-catalogue");
         if (rcCatalogues != null) {
             for (int i = 0; i < rcCatalogues.length; i++) {
+                //log.debug("i18n catalogue of resource: " + rcCatalogues[i]);
                 catalogues.add(rcCatalogues[i]);
             }
         }
         String realmCatalogue = getRealm().getI18nCatalogue();
         if (realmCatalogue != null) {
+            //log.debug("i18n catalogue of realm: " + realmCatalogue);
             catalogues.add(realmCatalogue);
         }
         catalogues.add("global");
