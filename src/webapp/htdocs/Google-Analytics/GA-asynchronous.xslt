@@ -99,6 +99,21 @@
 
 
 <xsl:template name="yanel-xsl:insert-new-GA-code">
+<script type="text/javascript"><xsl:text>
+<!-- INFO: Remove http:// or https:// and hostname from asset URLs -->
+<!--TODO?(performance) move that into a separate JS file: -->
+function Yanel_requestURIFromFQURL(HTMLAelement) {
+  var FQURL = HTMLAelement.href<!--alert('FQURL: ' + FQURL);-->;
+  var i = FQURL.indexOf('://');<!--alert('i: ' + i);-->
+  i = FQURL.indexOf('/', i + 3);<!--alert('i: ' + i);-->
+  var filename = FQURL.substring(i);
+<!-- DEBUG: In oder to see this alert, make sure to comment/uncomment the code line where this function Yanel_requestURIFromFQURL is used
+  alert('DEBUG: filename: ' + filename); return false;
+-->
+  return filename;
+}
+</xsl:text></script>
+
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -120,26 +135,13 @@
 
   <xsl:copy>
     <xsl:apply-templates select="@*[name() != 'onclick']"/>
-    <xsl:attribute name="onclick">
-
-      <!-- DEBUG: Uncomment the following call and comment the call with the pageTracker in order to debug the function Yanel_requestURIFromFQURL
-      <xsl:call-template name="yanel-xsl:GA-asset-filename-JSexpr-from-URL">
-        <xsl:with-param name="URL" select="$URL"/>
-      </xsl:call-template>
-      -->
-      <xsl:text>javascript: pageTracker._trackPageview(</xsl:text>
-      <xsl:call-template name="yanel-xsl:GA-asset-filename-JSexpr-from-URL">
-        <xsl:with-param name="URL" select="$URL"/>
-      </xsl:call-template>
-      <xsl:text>);</xsl:text>
-
-      <xsl:value-of select="@onclick"/>
-    </xsl:attribute>
+    <xsl:attribute name="onclick">_gaq.push(['_trackEvent', '', '', '']);<xsl:value-of select="@onclick"/></xsl:attribute>
     <xsl:apply-templates select="node()"/>
   </xsl:copy>
 </xsl:template>
 
 
+<!-- TBD: Is still necessary?! -->
 <xsl:template name="yanel-xsl:GA-asset-filename-JSexpr-from-URL">
   <xsl:param name="URL"/>
   <xsl:text>Yanel_requestURIFromFQURL(this<!--, '</xsl:text><xsl:value-of select="$URL"/><xsl:text>'-->)</xsl:text>
