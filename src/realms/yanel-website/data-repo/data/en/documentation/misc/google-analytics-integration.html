@@ -1,6 +1,14 @@
 <?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Google Analytics integration</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>
 <h1>Google Analytics integration</h1>
-<p>src/realms/yanel-website/content/xslt/apply-google-analytics.xsl</p>
-<p>src/realms/yanel-website/content/google-analytics-key-config.xml</p>
-<p>src/realms/yanel-website/res-configs-repo/data/english-yanel-rc.xml</p>
+See for example the Yanel website/realm how the Google analytics tracking code can be easily implemented for all pages, whereas the relevant files are:
+<p><code>src/realms/yanel-website/content/xslt/apply-google-analytics.xsl</code></p>
+<p><code>src/realms/yanel-website/content/google-analytics-key-config.xml</code></p>
+<p><code>src/realms/yanel-website/res-configs-repo/data/english-yanel-rc.xml</code></p>
+
+<p>
+Yanel is supporting both the traditional and asynchronous tracking code:
+</p>
+
+<p><code>src/webapp/htdocs/Google-Analytics/GA.xslt</code></p>
+<p><code>src/webapp/htdocs/Google-Analytics/GA-asynchronous.xslt</code></p>
 </body></html>
