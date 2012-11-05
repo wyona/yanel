@@ -3,6 +3,9 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="xml" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
+  <!-- TBD: Maybe we should rather redirect to index.html?! -->
+
   <yanel:property name="mime-type" value="application/xhtml+xml"/>
   <yanel:property name="xslt" value="/xslt/homepage.xsl"/>
+  <yanel:property name="xslt" value="/xslt/apply-google-analytics.xsl"/>
 </yanel:resource-config>
