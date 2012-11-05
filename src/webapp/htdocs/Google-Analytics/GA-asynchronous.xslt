@@ -14,11 +14,11 @@
 
 <xsl:variable name="non-asset-URL-suffix" select="'.html'"/>
 
-<xsl:template match="xhtml:body">
+<xsl:template match="xhtml:head">
   <xsl:copy>
     <xsl:apply-templates select="@*"/>
-    <xsl:call-template name="yanel-xsl:insert-GA-code"/>
     <xsl:apply-templates select="node()"/>
+    <xsl:call-template name="yanel-xsl:insert-GA-code"/>
   </xsl:copy>
 </xsl:template>
 
@@ -99,30 +99,19 @@
 
 
 <xsl:template name="yanel-xsl:insert-new-GA-code">
-<script type="text/javascript"><xsl:text>
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</xsl:text></script>
+<script type="text/javascript">
 
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', '<xsl:value-of select="$GA-key"/>']);
+  _gaq.push(['_trackPageview']);
 
-<script type="text/javascript"><xsl:text>
-  var pageTracker = _gat._getTracker("</xsl:text><xsl:value-of select="$GA-key"/><xsl:text>");
-  pageTracker._trackPageview();
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
 
-<!-- INFO: Remove http:// or https:// and hostname from asset URLs -->
-<!--TODO?(performance) move that into a separate JS file: -->
-function Yanel_requestURIFromFQURL(HTMLAelement) {
-  var FQURL = HTMLAelement.href<!--alert('FQURL: ' + FQURL);-->;
-  var i = FQURL.indexOf('://');<!--alert('i: ' + i);-->
-  i = FQURL.indexOf('/', i + 3);<!--alert('i: ' + i);-->
-  var filename = FQURL.substring(i);
-<!-- DEBUG: In oder to see this alert, make sure to comment/uncomment the code line where this function Yanel_requestURIFromFQURL is used
-  alert('DEBUG: filename: ' + filename); return false;
--->
-  return filename;
-}
-</xsl:text></script>
-
+</script>
 </xsl:template>
 
 
