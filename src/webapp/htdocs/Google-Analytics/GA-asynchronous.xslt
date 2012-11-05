@@ -135,7 +135,7 @@ function Yanel_requestURIFromFQURL(HTMLAelement) {
 
   <xsl:copy>
     <xsl:apply-templates select="@*[name() != 'onclick']"/>
-    <xsl:attribute name="onclick">_gaq.push(['_trackEvent', 'Asset', 'Download', '<xsl:value-of select="@tag"/>']);<xsl:value-of select="@onclick"/></xsl:attribute>
+    <xsl:attribute name="onclick">_gaq.push(['_trackEvent', 'File', 'Download', '<xsl:value-of select="$URL"/>']);<xsl:value-of select="@onclick"/></xsl:attribute>
     <xsl:apply-templates select="node()"/>
   </xsl:copy>
 </xsl:template>
