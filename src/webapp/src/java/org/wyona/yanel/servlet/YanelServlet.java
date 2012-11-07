@@ -465,7 +465,7 @@ public class YanelServlet extends HttpServlet {
                 }
             } else if (value != null && value.equals("roll-back")) {
                 log.debug("Roll back ...");
-                org.wyona.yanel.core.util.VersioningUtil.rollBack(resource, request.getParameter(YANEL_RESOURCE_REVISION), getIdentity(request, map).getUsername());
+                org.wyona.yanel.core.util.VersioningUtil.rollBack(resource, request.getParameter(YANEL_RESOURCE_REVISION), getIdentity(request, map.getRealm(request.getServletPath())).getUsername());
                 // TODO: Send confirmation screen
                 getContent(request, response);
                 return;
@@ -1046,8 +1046,8 @@ public class YanelServlet extends HttpServlet {
     private Environment getEnvironment(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         Identity identity;
         try {
-            identity = getIdentity(request, map);
             Realm realm = map.getRealm(request.getServletPath());
+            identity = getIdentity(request, realm);
             String stateOfView = StateOfView.AUTHORING;
             if (yanelUI.isToolbarEnabled(request)) { // TODO: Is this the only criteria?
                 stateOfView = StateOfView.AUTHORING;
@@ -1168,14 +1168,14 @@ public class YanelServlet extends HttpServlet {
      * @return Null if access is granted and an authentication response if access is denied
      */
     private HttpServletResponse doAccessControl(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         // INFO: Get identity, realm, path
         Identity identity;
         Realm realm;
         String path;
         try {
-            identity = getIdentity(request, map);
             realm = map.getRealm(request.getServletPath());
+            identity = getIdentity(request, realm);
+            log.warn("DEBUG: Identity retrieved: " + identity);
             path = map.getPath(realm, request.getServletPath());
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);
@@ -1285,7 +1285,8 @@ public class YanelServlet extends HttpServlet {
                 return response;
             } else {
                 try {
-                    log.warn("Authentication was successful for user: " + getIdentity(request, map).getUsername());
+                    log.warn("DEBUG: Authentication was successful for user: " + identity.getUsername());
+                    //log.warn("Authentication was successful for user: " + getIdentity(request, map).getUsername());
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
                 }
@@ -1762,16 +1763,6 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Get the identity from the given request (associated with a realm) or via the 'Authorization' HTTP header in the case of BASIC or DIGEST
-     * @param request Client/Servlet request
-     * @param map Map in order to determine realm
-     * @return Identity if one exist, or otherwise an empty identity
-     */
-    private static Identity getIdentity(HttpServletRequest request, Map map) throws Exception {
-        return getIdentity(request, map.getRealm(request.getServletPath()));
-    }
-
-    /**
      * @deprecated Use {@link #getIdentity(HttpSession, String)} instead
      * Get the identity from the HTTP session (associated with the given request) for a specific realm
      * @param session HTTP session of client
@@ -1780,18 +1771,6 @@ public class YanelServlet extends HttpServlet {
      */
     public static Identity getIdentity(HttpSession session, Realm realm) throws Exception {
         return getIdentity(session, realm.getID());
-/*
-        if (session != null) {
-            IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
-            if (identityMap != null) {
-                Identity identity = (Identity)identityMap.get(realm.getID());
-                if (identity != null && !identity.isWorld()) {
-                    return identity;
-                }
-            }
-        }
-        return null; 
-*/
     }
 
     /**
@@ -1841,6 +1820,7 @@ public class YanelServlet extends HttpServlet {
     private static Identity getIdentity(HttpServletRequest request, Realm realm) throws Exception {
         Identity identity = getIdentity(request.getSession(false), realm);
         if (identity != null) {
+            log.warn("DEBUG: Identity from session: " + identity);
             return identity;
         }
 
@@ -2185,8 +2165,8 @@ public class YanelServlet extends HttpServlet {
                             OutputStream os = response.getOutputStream();
                             try {
                                 Usecase usecase = new Usecase(TOOLBAR_USECASE);
-                                Identity identity = getIdentity(request, map);
                                 Realm realm = map.getRealm(request.getServletPath());
+                                Identity identity = getIdentity(request, realm);
                                 String path = map.getPath(realm, request.getServletPath());
                                 // NOTE: This extra authorization check is necessary within a multi-realm environment, because after activating the toolbar with a query string, the toolbar flag attached to the session will be ignored by doAccessControl(). One could possibly do this check within doAccessControl(), but could be a peformance issue! Or as an alternative one could refactor the code, such that the toolbar session flag is realm aware.
                                 if(realm.getPolicyManager().authorize(path, identity, usecase)) {
@@ -2726,7 +2706,7 @@ public class YanelServlet extends HttpServlet {
             }
             
             // TBD/TODO: What if user has logged out, but still has a persistent cookie?!
-            Identity identity = getIdentity(request, map);
+            Identity identity = getIdentity(request, realm);
             if (identity != null && identity.getUsername() != null) {
                 accessLogMessage = accessLogMessage + AccessLog.encodeLogField("u", identity.getUsername());
 
