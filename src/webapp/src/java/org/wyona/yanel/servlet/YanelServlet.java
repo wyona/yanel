@@ -1175,7 +1175,7 @@ public class YanelServlet extends HttpServlet {
         try {
             realm = map.getRealm(request.getServletPath());
             identity = getIdentity(request, realm);
-            log.warn("DEBUG: Identity retrieved: " + identity);
+            //log.debug("Identity retrieved from request (for realm '" + realm.getID() + "'): " + identity);
             path = map.getPath(realm, request.getServletPath());
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);
@@ -1815,12 +1815,12 @@ public class YanelServlet extends HttpServlet {
      * Get the identity from the given request/session (for a specific realm) or via the 'Authorization' HTTP header in the case of BASIC or DIGEST
      * @param request Client/Servlet request
      * @param realm Realm
-     * @return Identity if one exist, or otherwise an empty identity
+     * @return Identity if one exist, or otherwise an empty identity (which is considered to be WORLD)
      */
     private static Identity getIdentity(HttpServletRequest request, Realm realm) throws Exception {
         Identity identity = getIdentity(request.getSession(false), realm);
-        if (identity != null) {
-            log.warn("DEBUG: Identity from session: " + identity);
+        if (identity != null) { // INFO: Please note that the WORLD identity (or rather an empty identity) is not added to the session (please see further down)
+            //log.debug("Identity from session: " + identity);
             return identity;
         }
 
