@@ -4,10 +4,10 @@
 
 <configuration>
   <!--WARNING: Do not commit a real, non-test key, or else statistics will be spoiled! -->
-<!--
-  <Google-Analytics key="UA-Yanel***-*"/>
--->
+  <Google-Analytics key="UA-Yanel***-*" target-environment="dev"/>
 
   <!-- LIVE Key for www.yanel.org -->
+<!--
   <Google-Analytics key="UA-10408304-1"/>
+-->
 </configuration>
