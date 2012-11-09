@@ -109,8 +109,8 @@ public class PersonalizedContentResource extends BasicXMLResource {
         }
         root.appendChild(interestsEl);
 
-        // Search for related content in data repository
-        Element resultsEl = doc.createElementNS(NAMESPACE, "results");
+        // INFO: Search for related content in data repository of this realm
+        Element resultsEl = doc.createElementNS(NAMESPACE, "search-results");
         Searcher search = getRealm().getRepository().getSearcher();
         for(String interest : userInterests) {
             Node[] nodes;
@@ -124,6 +124,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
             for(int i = nodes.length - 1; i >= 0; i--) {
                 Node node = nodes[i];
                 Element res_node = doc.createElementNS(NAMESPACE, "result");
+                res_node.setAttribute("interest", interest);
                 resultsEl.appendChild(res_node);
 
                 Element res_path = doc.createElementNS(NAMESPACE, "path");
