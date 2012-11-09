@@ -54,7 +54,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
             log.error("No boost service URL '" + BOOST_SERVICE_URL_PARAM + "' configured!");
         }
 
-        // Is the user logged into Yanel?
+        // INFO: Check whether the user is logged into Yanel?
         String username = getEnvironment().getIdentity().getUsername();
         if(username != null) {
             Element uid = doc.createElement("yanel-user-id");
@@ -70,7 +70,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
         domainEl.appendChild(doc.createTextNode(boost_domain));
         root.appendChild(domainEl);
 
-        // Get the cookie
+        // INFO: Get the cookie
         HttpServletRequest req = getEnvironment().getRequest();
         Cookie cookie = AccessLog.getYanelAnalyticsCookie(req);
 
@@ -84,11 +84,14 @@ public class PersonalizedContentResource extends BasicXMLResource {
         cookieEl.appendChild(doc.createTextNode(cookie.getValue()));
         root.appendChild(cookieEl);
 
+        // INFO: Get user interests and clickstream
         Iterable<String> userInterests;
+        Iterable<String> clickStream;
         try {
             userInterests = getUserInterests(service, cookie.getValue(), boost_domain, api_key);
+            clickStream = getClickstream(service, cookie.getValue(), boost_domain, api_key);
         } catch(ServiceException e) {
-            // No interests
+            // No interests or clickstream
             log.error(e, e);
 
             Element exceptionEl = doc.createElementNS(NAMESPACE, "exception");
@@ -100,7 +103,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
             return XMLHelper.getInputStream(doc, false, false, null);
         }
 
-        // Add all interests to user profile
+        // INFO: Add all interests to user profile
         Element interestsEl = doc.createElementNS(NAMESPACE, "interests");
         for(String interest : userInterests) {
             Element interestEl = doc.createElementNS(NAMESPACE, "interest");
@@ -121,6 +124,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
                 break;
             }
 
+            //for(int i = 0; i < nodes.length; i++) {
             for(int i = nodes.length - 1; i >= 0; i--) {
                 Node node = nodes[i];
                 Element res_node = doc.createElementNS(NAMESPACE, "result");
@@ -143,7 +147,46 @@ public class PersonalizedContentResource extends BasicXMLResource {
         }
         root.appendChild(resultsEl);
 
+        // INFO: Add clickstream to user profile
+        Element clickstreamEl = doc.createElementNS(NAMESPACE, "clickstream");
+        for(String url : clickStream) {
+            Element urlEl = doc.createElementNS(NAMESPACE, "url");
+            urlEl.appendChild(doc.createTextNode(url));
+            if (clickstreamEl.hasChildNodes()) {
+                clickstreamEl.insertBefore(urlEl, clickstreamEl.getFirstChild());
+            } else {
+                clickstreamEl.appendChild(urlEl);
+            }
+        }
+        root.appendChild(clickstreamEl);
+
         return XMLHelper.getInputStream(doc, false, false, null);
+    }
+
+    /**
+     * Get clickstream for a given cookie (also see http://en.wikipedia.org/wiki/Clickstream)
+     * @param boostServiceUrl Boost service URL
+     * @param cookie Unique cookie id
+     * @param realm Domain name
+     * @param apiKey Key to access Boost API
+     * @return list of URLs which were requested by user with a given cookie
+     */
+    private Iterable<String> getClickstream(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
+        String domain = realm;
+        if (getResourceConfigProperty("domain") != null) {
+            log.warn("Try to get user profile for third party domain: " + getResourceConfigProperty("domain"));
+            domain = getResourceConfigProperty("domain");
+        }
+
+        String c = cookie;
+        if (getResourceConfigProperty("cookie") != null) {
+            log.warn("Try to get user profile for third party cookie: " + getResourceConfigProperty("cookie"));
+            c = getResourceConfigProperty("cookie");
+        }
+
+        BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, domain, apiKey);
+        BoostService boost = new BoostService(bsc);
+        return boost.getClickStream(c);
     }
 
     /**
@@ -152,9 +195,9 @@ public class PersonalizedContentResource extends BasicXMLResource {
      * @param cookie Unique cookie id
      * @param realm Domain name
      * @param apiKey Key to access Boost API
+     * @return list of interests
      */
-    protected Iterable<String> getUserInterests(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
-
+    private Iterable<String> getUserInterests(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
         String domain = realm;
         if (getResourceConfigProperty("domain") != null) {
             log.warn("Try to get user profile for third party domain: " + getResourceConfigProperty("domain"));
