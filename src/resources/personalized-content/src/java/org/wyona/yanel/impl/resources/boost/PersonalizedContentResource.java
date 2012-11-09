@@ -121,7 +121,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
                 break;
             }
 
-            for(int i = nodes.length - 1; i >= 0; i++) {
+            for(int i = nodes.length - 1; i >= 0; i--) {
                 Node node = nodes[i];
                 Element res_node = doc.createElementNS(NAMESPACE, "result");
                 resultsEl.appendChild(res_node);
