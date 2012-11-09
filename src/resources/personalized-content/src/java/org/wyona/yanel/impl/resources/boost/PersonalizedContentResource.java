@@ -121,7 +121,8 @@ public class PersonalizedContentResource extends BasicXMLResource {
                 break;
             }
 
-            for(Node node : nodes) {
+            for(int i = nodes.length - 1; i >= 0; i++) {
+                Node node = nodes[i];
                 Element res_node = doc.createElementNS(NAMESPACE, "result");
                 resultsEl.appendChild(res_node);
 
@@ -134,7 +135,8 @@ public class PersonalizedContentResource extends BasicXMLResource {
                 res_node.appendChild(res_name);
 
                 Element res_time = doc.createElementNS(NAMESPACE, "last-modified");
-                res_time.appendChild(doc.createTextNode(Long.toString(node.getLastModified())));
+                res_time.setAttribute("epoch", Long.toString(node.getLastModified()));
+                res_time.appendChild(doc.createTextNode(new java.util.Date(node.getLastModified()).toString()));
                 res_node.appendChild(res_time);
             }
         }
