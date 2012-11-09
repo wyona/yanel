@@ -86,9 +86,10 @@ public class AccessLog {
 
     /**
      * Get log message, whereas set Yanel analytics cookie if it does not exist yet as persistent cookie
+     * @param response HTTP response in order to set persistent Yanel analytics cookie in case it does not exist yet
      * @param TAG_SEPARATOR Tag delimiter
      */
-    public static String getLogMessage(HttpServletRequest request, HttpServletResponse response, String realmID, String[] tags, String TAG_SEPARATOR) {
+    static String getLogMessage(HttpServletRequest request, HttpServletResponse response, String realmID, String[] tags, String TAG_SEPARATOR) {
         Cookie cookie = getSetYanelAnalyticsCookie(request, response);
         try {
             org.wyona.security.core.api.Identity identity = YanelServlet.getIdentity(request.getSession(true), realmID);
@@ -103,22 +104,13 @@ public class AccessLog {
      * Get log message
      * @param TAG_SEPARATOR Tag delimiter
      */
-    public static String getLogMessage(HttpServletRequest request, String realmID, String[] tags, String TAG_SEPARATOR) {
+    private static String getLogMessage(HttpServletRequest request, String realmID, String[] tags, String TAG_SEPARATOR) {
         Cookie cookie = getYanelAnalyticsCookie(request);
         String cookieValue = null;
         if (cookie != null) {
             cookieValue = cookie.getValue();
         }
         return getLogMessage(getURLInclQueryString(request), realmID, cookieValue, request.getHeader("referer"), request.getHeader("User-Agent"), tags, TAG_SEPARATOR);
-    }
-
-    /**
-     * Get log message
-     * @deprecated Please use getLogMessage(HttpServletRequest, String, String[]) instead
-     */
-    public static String getLogMessage(HttpServletRequest request, String realmID) {
-        log.warn("DEPRECATED");
-        return getLogMessage(request, realmID, null, null);
     }
 
     /**
