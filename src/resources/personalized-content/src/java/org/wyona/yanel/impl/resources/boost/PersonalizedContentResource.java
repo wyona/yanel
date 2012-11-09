@@ -123,16 +123,19 @@ public class PersonalizedContentResource extends BasicXMLResource {
 
             for(Node node : nodes) {
                 Element res_node = doc.createElementNS(NAMESPACE, "result");
-                Element res_path = doc.createElementNS(NAMESPACE, "path");
-                Element res_name = doc.createElementNS(NAMESPACE, "name");
-                Element res_time = doc.createElementNS(NAMESPACE, "last-modified");
+                resultsEl.appendChild(res_node);
 
+                Element res_path = doc.createElementNS(NAMESPACE, "path");
                 res_path.appendChild(doc.createTextNode(node.getPath()));
-                res_name.appendChild(doc.createTextNode(node.getName()));
-                res_time.appendChild(doc.createTextNode(Long.toString(node.getLastModified())));
                 res_node.appendChild(res_path);
 
-                resultsEl.appendChild(res_node);
+                Element res_name = doc.createElementNS(NAMESPACE, "name");
+                res_name.appendChild(doc.createTextNode(node.getName()));
+                res_node.appendChild(res_name);
+
+                Element res_time = doc.createElementNS(NAMESPACE, "last-modified");
+                res_time.appendChild(doc.createTextNode(Long.toString(node.getLastModified())));
+                res_node.appendChild(res_time);
             }
         }
         root.appendChild(resultsEl);
@@ -144,13 +147,26 @@ public class PersonalizedContentResource extends BasicXMLResource {
      * Get the user profile given a cookie.
      * @param boostServiceUrl Boost service URL
      * @param cookie Unique cookie id
+     * @param realm Domain name
+     * @param apiKey Key to access Boost API
      */
-    protected Iterable<String> getUserInterests(String boostServiceUrl, String cookie, String realm, String apiKey)
-    throws Exception {
+    protected Iterable<String> getUserInterests(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
 
-        BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, realm, apiKey);
+        String domain = realm;
+        if (getResourceConfigProperty("domain") != null) {
+            log.warn("Try to get user profile for third party domain: " + getResourceConfigProperty("domain"));
+            domain = getResourceConfigProperty("domain");
+        }
+
+        BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, domain, apiKey);
         BoostService boost = new BoostService(bsc);
-        return boost.getUserProfile(cookie);
+
+        if (getResourceConfigProperty("cookie") != null) {
+            log.warn("Try to get user profile for third party cookie: " + getResourceConfigProperty("cookie"));
+            return boost.getUserProfile(getResourceConfigProperty("cookie"));
+        } else {
+            return boost.getUserProfile(cookie);
+        }
     }
 
     /**
