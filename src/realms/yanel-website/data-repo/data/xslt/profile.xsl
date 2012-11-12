@@ -6,6 +6,7 @@
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:yanel="http://www.wyona.org/yanel/1.0"
   xmlns:i18n="http://www.wyona.org/yanel/i18n/1.0"
+  xmlns:boost="http://www.wyona.org/yanel/boost/1.0"
 >
 
 <!-- NOTE: This XSLT is copied during the build process into the jar file! -->
@@ -35,8 +36,28 @@ Yanel reserved prefix: <xsl:value-of select="$yanel.reservedPrefix"/>
               <p><a href="?yanel.resource.viewid=xml">Show XML source</a> </p>
 
 <p>
-The DNT header parameter (see <a href="http://donottrack.us/" target="_blank">http://donottrack.us/</a>) is currently set to: <code><xsl:value-of select="$do.not.track"/></code>
+Your <a href="http://donottrack.us/" target="_blank">DNT header parameter</a> is currently set to '<code><xsl:value-of select="$do.not.track"/></code>', which means that <xsl:choose><xsl:when test="$do.not.track = 'true'">you are currently not being tracked.</xsl:when><xsl:otherwise>you are currently being tracked!</xsl:otherwise></xsl:choose>
 </p>
+
+<p>Depending on your browser you can disable or enable the DNT header parameter. For more details see <a href="http://donottrack.us/" target="_blank">http://donottrack.us/</a>.</p>
+
+              <h2>Interests</h2>
+<p>Based on your clickstream which we have tracked so far we have detected the following interests:</p>
+
+<ul>
+<xsl:for-each select="/boost:personalized-content/boost:interests/boost:interest">
+  <li><xsl:value-of select="."/></li>
+</xsl:for-each>
+</ul>
+
+              <h2>Clickstream</h2>
+<p>TODO</p>
+
+<ul>
+<xsl:for-each select="/boost:personalized-content/boost:clickstream/boost:url">
+  <li><xsl:value-of select="."/></li>
+</xsl:for-each>
+</ul>
 
           </body>
         </html>
