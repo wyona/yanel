@@ -41,26 +41,39 @@ Your <a href="http://donottrack.us/" target="_blank">DNT header parameter</a> is
 
 <p>Depending on your browser you can disable or enable the DNT header parameter. For more details see <a href="http://donottrack.us/" target="_blank">http://donottrack.us/</a>.</p>
 
+<xsl:apply-templates select="/boost:personalized-content/boost:exception"/>
+
+<xsl:apply-templates select="/boost:personalized-content/boost:interests"/>
+<xsl:apply-templates select="/boost:personalized-content/boost:clickstream"/>
+
+          </body>
+        </html>
+  </xsl:template>
+
+  <xsl:template match="boost:exception">
+    <p><span style="color: red;">Exception:</span>&#160;<xsl:value-of select="."/></p>
+  </xsl:template>
+
+  <xsl:template match="boost:interests">
               <h2>Interests</h2>
-<p>Based on your clickstream which we have tracked so far we have detected the following interests:</p>
+<p>Based on your clickstream, which we have tracked so far, we have detected the following interests:</p>
 
 <ul>
 <xsl:for-each select="/boost:personalized-content/boost:interests/boost:interest">
   <li><xsl:value-of select="."/></li>
 </xsl:for-each>
 </ul>
+  </xsl:template>
 
+  <xsl:template match="boost:clickstream">
               <h2>Clickstream</h2>
-<p>TODO</p>
+<p>Your clickstream contains the following URLs:</p>
 
 <ul>
 <xsl:for-each select="/boost:personalized-content/boost:clickstream/boost:url">
   <li><xsl:value-of select="."/></li>
 </xsl:for-each>
 </ul>
-
-          </body>
-        </html>
   </xsl:template>
   
 </xsl:stylesheet>
