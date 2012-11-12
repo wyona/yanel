@@ -56,24 +56,38 @@ Your <a href="http://donottrack.us/" target="_blank">DNT header parameter</a> is
 
   <xsl:template match="boost:interests">
               <h2>Interests</h2>
+<xsl:choose>
+  <xsl:when test="boost:interest">
 <p>Based on your clickstream, which we have tracked so far, we have detected the following interests:</p>
 
 <ul>
-<xsl:for-each select="/boost:personalized-content/boost:interests/boost:interest">
+<xsl:for-each select="boost:interest">
   <li><xsl:value-of select="."/></li>
 </xsl:for-each>
 </ul>
+  </xsl:when>
+  <xsl:otherwise>
+    <p>No interests detected yet.</p>
+  </xsl:otherwise>
+</xsl:choose>
   </xsl:template>
 
   <xsl:template match="boost:clickstream">
               <h2>Clickstream</h2>
+<xsl:choose>
+  <xsl:when test="boost:url">
 <p>Your clickstream contains the following URLs:</p>
 
 <ul>
-<xsl:for-each select="/boost:personalized-content/boost:clickstream/boost:url">
+<xsl:for-each select="boost:url">
   <li><xsl:value-of select="."/></li>
 </xsl:for-each>
 </ul>
+  </xsl:when>
+  <xsl:otherwise>
+    <p>No interests detected yet.</p>
+  </xsl:otherwise>
+</xsl:choose>
   </xsl:template>
   
 </xsl:stylesheet>
