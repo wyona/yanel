@@ -10,12 +10,12 @@
       <dependency groupId="wyona-org-yanel" artifactId="yanel-core" version="${yanel.source.version}"/>
       <dependency groupId="wyona-org-yanel" artifactId="yanel-impl" version="${yanel.source.version}"/>
       <dependency groupId="wyona-org-yanel" artifactId="yanel-webapp" version="${yanel.source.version}"/>
-      <dependency groupId="wyona-com-boost" artifactId="BoostClient" version="0.2.0-r3c0b3414590"/>
+      <dependency groupId="wyona-com-boost" artifactId="BoostClient" version="0.3.0-r0ea1a8c7a99"/>
     </artifact:dependencies>
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
-      <dependency groupId="wyona-com-boost" artifactId="BoostClient" version="0.2.0-r3c0b3414590"/>
+      <dependency groupId="wyona-com-boost" artifactId="BoostClient" version="0.3.0-r0ea1a8c7a99"/>
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
