@@ -1309,6 +1309,10 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Patch request with proxy settings re realm configuration
+     * @param request Request which Yanel received
+     * @param addQS Additonal query string
+     * @param xml Flag whether returned URL should be XML compatible, e.g. re ampersands
+     * @return URL which was received by reverse proxy, e.g. http://www.yanel.org/en/download/index.html instead http://127.0.0.1:8080/yanel/yanel-website/en/download/index.html
      */
     private String getRequestURLQS(HttpServletRequest request, String addQS, boolean xml) {
         try {
@@ -1321,20 +1325,23 @@ public class YanelServlet extends HttpServlet {
             int proxyPort = realm.getProxyPort();
             String proxyPrefix = realm.getProxyPrefix();
     
-            URL url = null;
-        
-            url = new URL(request.getRequestURL().toString());
+            URL url = new URL(request.getRequestURL().toString());
 
-            //if(proxyHostName != null || proxyPort >= null || proxyPrefix != null) {
             if(realm.isProxySet()) {
+                String forwardedHost = request.getHeader("X-FORWARDED-HOST");
+                if (forwardedHost != null) {
+                    url = new java.net.URL(url.getProtocol(), forwardedHost, url.getFile());
+                }
                 if (proxyHostName != null) {
-                    url = new URL(url.getProtocol(), proxyHostName, url.getPort(), url.getFile());
+                    url = new URL(url.getProtocol(), proxyHostName, url.getFile());
                 }
 
                 if (proxyPort >= 0) {
+                    //log.debug("Configured proxy port: " + proxyPort);
                     url = new URL(url.getProtocol(), url.getHost(), proxyPort, url.getFile());
                 } else {
-                    url = new URL(url.getProtocol(), url.getHost(), url.getDefaultPort(), url.getFile());
+                    //log.debug("No proxy port configured, hence use default port: " + url.getDefaultPort());
+                    url = new URL(url.getProtocol(), url.getHost(), url.getFile()); // INFO: Please note that if one does not set the port explicitely, then toString() won't add the port to the returned string.
                 }
 
                 if (proxyPrefix != null) {
@@ -1353,7 +1360,9 @@ public class YanelServlet extends HttpServlet {
                 if (addQS != null) urlQS = urlQS + "?" + addQS;
             }
     
-            if (xml) urlQS = urlQS.replaceAll("&", "&amp;");
+            if (xml) {
+                urlQS = urlQS.replaceAll("&", "&amp;");
+            }
     
             if(log.isDebugEnabled()) log.debug("Request: " + urlQS);
 
@@ -2698,10 +2707,10 @@ public class YanelServlet extends HttpServlet {
             if (trackInfo != null) {
                 String[] trackingTags = trackInfo.getTags();
                 if (trackingTags != null && trackingTags.length > 0) { // INFO: Either/Or, but not both. If you want both, then make sure that that your resource adds its annotations to the tracking information.
-                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getUserTrackingDomain(), trackingTags, ACCESS_LOG_TAG_SEPARATOR);
+                    accessLogMessage = AccessLog.getLogMessage(getRequestURLQS(request, null, false), request, response, realm.getUserTrackingDomain(), trackingTags, ACCESS_LOG_TAG_SEPARATOR);
                 } else {
                     String[] tags = getTagsFromAnnotatableResource(resource, request.getServletPath());
-                    accessLogMessage = AccessLog.getLogMessage(request, response, realm.getUserTrackingDomain(), tags, ACCESS_LOG_TAG_SEPARATOR);
+                    accessLogMessage = AccessLog.getLogMessage(getRequestURLQS(request, null, false), request, response, realm.getUserTrackingDomain(), tags, ACCESS_LOG_TAG_SEPARATOR);
                 }
 
                 String pageType = trackInfo.getPageType();
@@ -2722,7 +2731,7 @@ public class YanelServlet extends HttpServlet {
                 }
             } else {
                 String[] tags = getTagsFromAnnotatableResource(resource, request.getServletPath());
-                accessLogMessage = AccessLog.getLogMessage(request, response, realm.getUserTrackingDomain(), tags, ACCESS_LOG_TAG_SEPARATOR);
+                accessLogMessage = AccessLog.getLogMessage(getRequestURLQS(request, null, false), request, response, realm.getUserTrackingDomain(), tags, ACCESS_LOG_TAG_SEPARATOR);
             }
             
             // TBD/TODO: What if user has logged out, but still has a persistent cookie?!

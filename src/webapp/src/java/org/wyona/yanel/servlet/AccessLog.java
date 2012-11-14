@@ -86,10 +86,14 @@ public class AccessLog {
 
     /**
      * Get log message, whereas set Yanel analytics cookie if it does not exist yet as persistent cookie
+     * @param url URL which was requested from reverse proxy
+     * @param request Request which Yanel received
      * @param response HTTP response in order to set persistent Yanel analytics cookie in case it does not exist yet
+     * @param realmID Domain ID
+     * @param tags Tags associated with request/response
      * @param TAG_SEPARATOR Tag delimiter
      */
-    static String getLogMessage(HttpServletRequest request, HttpServletResponse response, String realmID, String[] tags, String TAG_SEPARATOR) {
+    static String getLogMessage(String url, HttpServletRequest request, HttpServletResponse response, String realmID, String[] tags, String TAG_SEPARATOR) {
         Cookie cookie = getSetYanelAnalyticsCookie(request, response);
         try {
             org.wyona.security.core.api.Identity identity = YanelServlet.getIdentity(request.getSession(true), realmID);
@@ -97,20 +101,7 @@ public class AccessLog {
         } catch(Exception e) {
             log.error(e, e);
         }
-        return getLogMessage(getURLInclQueryString(request), realmID, cookie.getValue(), request.getHeader("referer"), request.getHeader("User-Agent"),tags, TAG_SEPARATOR);
-    }
-
-    /**
-     * Get log message
-     * @param TAG_SEPARATOR Tag delimiter
-     */
-    private static String getLogMessage(HttpServletRequest request, String realmID, String[] tags, String TAG_SEPARATOR) {
-        Cookie cookie = getYanelAnalyticsCookie(request);
-        String cookieValue = null;
-        if (cookie != null) {
-            cookieValue = cookie.getValue();
-        }
-        return getLogMessage(getURLInclQueryString(request), realmID, cookieValue, request.getHeader("referer"), request.getHeader("User-Agent"), tags, TAG_SEPARATOR);
+        return getLogMessage(url, realmID, cookie.getValue(), request.getHeader("referer"), request.getHeader("User-Agent"),tags, TAG_SEPARATOR);
     }
 
     /**
@@ -152,49 +143,5 @@ public class AccessLog {
         analyticsCookie.setPath(contextPath);
         response.addCookie(analyticsCookie);
         return analyticsCookie;
-    }
-
-    /**
-     * Get request URL including query string
-     */
-    private static String getURLInclQueryString(HttpServletRequest request) {
-        String qs = request.getQueryString();
-        try {
-            ForwardedURL url = new ForwardedURL(request);
-            if (qs != null) {
-                return url.toString() + "?" + qs;
-            } else {
-                return url.toString();
-            }
-        } catch(Exception e) {
-            log.error(e, e);
-            return request.getRequestURL().toString();
-        }
-    }
-}
-
-/**
- * Utility class to replace hostname by forwarded hostname if available
- */
-class ForwardedURL {
-
-    private java.net.URL url;
-
-    /**
-     * @param request HTTP request containing requested URL and if there was a reverse proxy in between also the forwarded host name
-     */
-    public ForwardedURL(HttpServletRequest request) throws java.net.MalformedURLException {
-        url = new java.net.URL(request.getRequestURL().toString());
-        String originalHost = request.getHeader("X-FORWARDED-HOST");
-        if (originalHost != null) {
-            url = new java.net.URL(url.getProtocol(), originalHost, url.getPort(), url.getFile());
-        }
-    }
-
-    /**
-     * @see java.lang.Object#toString()
-     */
-    public String toString() {
-        return url.toString();
     }
 }
