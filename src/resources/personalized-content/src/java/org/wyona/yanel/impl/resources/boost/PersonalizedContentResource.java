@@ -80,16 +80,22 @@ public class PersonalizedContentResource extends BasicXMLResource {
             return XMLHelper.getInputStream(doc, false, false, null);
         }
 
+        String cookieVal = cookie.getValue();
+        if (getResourceConfigProperty("cookie") != null) {
+            log.warn("Try to get user profile for third party cookie: " + getResourceConfigProperty("cookie"));
+            cookieVal = getResourceConfigProperty("cookie");
+        }
+
         Element cookieEl = doc.createElementNS(NAMESPACE, "yanel-cookie-id");
-        cookieEl.appendChild(doc.createTextNode(cookie.getValue()));
+        cookieEl.appendChild(doc.createTextNode(cookieVal));
         root.appendChild(cookieEl);
 
         // INFO: Get user interests and clickstream
         Iterable<String> userInterests;
         Iterable<String> clickStream;
         try {
-            userInterests = getUserInterests(service, cookie.getValue(), boost_domain, api_key);
-            clickStream = getClickstream(service, cookie.getValue(), boost_domain, api_key);
+            userInterests = getUserInterests(service, cookieVal, boost_domain, api_key);
+            clickStream = getClickstream(service, cookieVal, boost_domain, api_key);
         } catch(ServiceException e) {
             // No interests or clickstream
             log.error(e, e);
@@ -178,15 +184,9 @@ public class PersonalizedContentResource extends BasicXMLResource {
             domain = getResourceConfigProperty("domain");
         }
 
-        String c = cookie;
-        if (getResourceConfigProperty("cookie") != null) {
-            log.warn("Try to get user profile for third party cookie: " + getResourceConfigProperty("cookie"));
-            c = getResourceConfigProperty("cookie");
-        }
-
         BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, domain, apiKey);
         BoostService boost = new BoostService(bsc);
-        return boost.getClickStream(c);
+        return boost.getClickStream(cookie);
     }
 
     /**
@@ -207,12 +207,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
         BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, domain, apiKey);
         BoostService boost = new BoostService(bsc);
 
-        if (getResourceConfigProperty("cookie") != null) {
-            log.warn("Try to get user profile for third party cookie: " + getResourceConfigProperty("cookie"));
-            return boost.getUserProfile(getResourceConfigProperty("cookie"));
-        } else {
-            return boost.getUserProfile(cookie);
-        }
+        return boost.getUserProfile(cookie);
     }
 
     /**
