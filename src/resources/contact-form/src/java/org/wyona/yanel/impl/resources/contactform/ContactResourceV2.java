@@ -24,6 +24,7 @@ import java.io.InputStream;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -68,12 +69,19 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import org.wyona.commons.xml.XMLHelper;
+
 /**
- * Simple contact form resource.
+ * Simple contact form resource, such that a user can send a message/email to an 'administrator'
  */
 public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
 
     private static Logger log = Logger.getLogger(ContactResourceV2.class);
+
+    private static final String NAMESPACE = "http://www.wyona.org/yanel/contact-message/1.0.0";
 
     // Constants
     private static final String SMTP_HOST = "smtpHost";
@@ -169,10 +177,14 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             log.warn("No Yanel analytics cookie set yet!");
         }
 
-        // Now send email
+        // INFO: Save message on server
+        String messageID = saveMessage(cookieValue);
+
+        // INFO: Now send email
         if (getResourceConfigProperty(TO) != null) {
-            sendMail(cookieValue);
+            sendMail(messageID);
         } else {
+            setParameter("error", "couldNotSendMail");
             log.warn("No email has been sent, because no 'TO' address configured!");
         }
 
@@ -223,9 +235,27 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
 
     /**
      * Send e-mail to administrator of this contact form
-     * @param cookieValue Yanel analytics cookie value (in order to connect clickstream with this e-mail).
+     * @param cookieValue Yanel analytics cookie value (in order to connect clickstream with this message).
      */
-    private void sendMail(String cookieValue) throws Exception {
+    private String saveMessage(String cookieValue) throws Exception {
+        String uuid = UUID.randomUUID().toString();
+        Document doc = getMessageDocument(uuid, cookieValue);
+        String messagesBasePath = "/contact-messages"; // TODO: Make base path configurable
+        String messagePath = messagesBasePath + "/" + uuid + ".xml";
+        if (!getRealm().getRepository().existsNode(messagePath)) {
+            org.wyona.yarep.core.Node messageNode = org.wyona.yarep.util.YarepUtil.addNodes(getRealm().getRepository(), messagePath, org.wyona.yarep.core.NodeType.RESOURCE);
+            XMLHelper.writeDocument(doc, messageNode.getOutputStream());
+        } else {
+            log.error("Node '" + messagePath + "' already exists!");
+        }
+        return uuid;
+    }
+
+    /**
+     * Send e-mail to administrator of this contact form
+     * @param messageID Message ID in order to link back from email to message enriched with additional information
+     */
+    private void sendMail(String messageID) throws Exception {
         String email = getEnvironment().getRequest().getParameter("email");
 
         if(email == null || "".equals(email)) {
@@ -255,7 +285,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             from = email;
         }
 
-        String content = getBody(contact, cookieValue);
+        String content = getBody(contact, messageID);
 
         String to = getResourceConfigProperty(TO);
         if(to == null) {
@@ -328,10 +358,10 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
     /**
      * Get email body. Please overwrite this method in order to customize email body.
      * @param contact Contact information
-     * @param cookieValue Yanel analytics cookie value
+     * @param messageID Message ID
      */
-    protected String getBody(ContactBean contact, String cookieValue){
-        StringBuffer content = new StringBuffer("");
+    protected String getBody(ContactBean contact, String messageID){
+        StringBuilder content = new StringBuilder("");
         if(contact.getCompany() != null) {
             content.append("Company: ");
             content.append(contact.getCompany());
@@ -367,8 +397,8 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             content.append(contact.getMessage());
             content.append("\n\n");
         }
-        content.append("Yanel-analytics-cookie: ");
-        content.append(cookieValue);
+        content.append("Message ID: " + messageID);
+
         return content.toString();
     }
 
@@ -380,5 +410,22 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
         File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "htdocs" + File.separator + "xml" + File.separator + "contact-form.xml");
         return new java.io.FileInputStream(xmlFile.getAbsolutePath());
         //return new ByteArrayInputStream("<root/>".getBytes());
+    }
+
+    /**
+     * Generate message as XML document
+     * @param messageID Message ID
+     * @param cookieValue Cookie which helps to associate clickstream of user with this message
+     * @return message as XML document
+     */
+    private Document getMessageDocument(String messageID, String cookieValue) {
+        Document doc = XMLHelper.createDocument(NAMESPACE, "message");
+        Element rootEl = doc.getDocumentElement();
+
+        Element cookieEl = doc.createElementNS(NAMESPACE, "yanel-analytics-cookie");
+        rootEl.appendChild(cookieEl);
+        cookieEl.appendChild(doc.createTextNode(cookieValue));
+
+        return doc;
     }
 }
