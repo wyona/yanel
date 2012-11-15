@@ -81,13 +81,6 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
     private static final String TO = "to";
     private static final String SUBJECT = "subject";
 
-    // Values for sending email
-    private String smtpHost = "";
-    private int smtpPort = 25;
-    private String to = "";
-    private ContactBean contact = null;
-    //private Path path = null;
-
     // Email validation
     private String defaultEmailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
 
@@ -177,7 +170,11 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
         }
 
         // Now send email
-        sendMail(cookieValue);
+        if (getResourceConfigProperty(TO) != null) {
+            sendMail(cookieValue);
+        } else {
+            log.warn("No email has been sent, because no 'TO' address configured!");
+        }
 
         // Pass transformer paramters for output
         if(request.getParameter("company") != null) {
@@ -226,8 +223,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
 
     /**
      * Send e-mail to administrator of this contact form
-     * @param cookieValue Yanel analytics cookie value (in order to connect
-     * history with this e-mail).
+     * @param cookieValue Yanel analytics cookie value (in order to connect clickstream with this e-mail).
      */
     private void sendMail(String cookieValue) throws Exception {
         String email = getEnvironment().getRequest().getParameter("email");
@@ -246,13 +242,13 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             return;
         }
 
-        contact = new ContactBean(request);
+        ContactBean contact = new ContactBean(request);
 
         String subject = getResourceConfigProperty(SUBJECT);
         if (subject == null) {
             subject = "Yanel Contact Resource: No subject specified";
         }
-        to = getResourceConfigProperty(TO);
+
 
         String from = getResourceConfigProperty("from");
         if (from == null) {
@@ -261,18 +257,19 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
 
         String content = getBody(contact, cookieValue);
 
+        String to = getResourceConfigProperty(TO);
         if(to == null) {
             // INFO: Also see conf/contact-form_en.properties
             setParameter("error", "smtpConfigError");
             return;
         }
 
-        smtpHost = getResourceConfigProperty(SMTP_HOST);
+        String smtpHost = getResourceConfigProperty(SMTP_HOST);
         String smtpPortAsString = getResourceConfigProperty(SMTP_PORT);
 
         try {
             if(smtpHost != null && smtpPortAsString != null) {
-                smtpPort = Integer.parseInt(smtpPortAsString);
+                int smtpPort = Integer.parseInt(smtpPortAsString);
                 MailUtil.send(smtpHost, smtpPort, from, to, subject, content);
                 setParameter("sent", "true");
             } else {
@@ -300,7 +297,6 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
         } catch(NumberFormatException nfe) {
             log.error(nfe);
             setParameter("error", "smtpPortNotCorrect");
-            smtpPort = 0;
         }
     }
 
