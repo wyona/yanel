@@ -30,6 +30,9 @@
         <serializer key="HTML_TRANSITIONAL">
         </serializer>
       </view>
+      <view id="message">
+        <mime-type>application/xml</mime-type>
+      </view>
       <view id="xml">
         <mime-type>application/xml</mime-type>
       </view>
