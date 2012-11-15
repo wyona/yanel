@@ -17,12 +17,24 @@
       </head>
       
       <body>
-        <h3>Contact Message</h3>
+        <h3>Contact Message: <xsl:value-of select="/msg:message/@uuid"/></h3>
 
         Company: <xsl:value-of select="/msg:message/msg:company"/>
-<!--
-<message uuid="0e308c63-8abe-486a-a3be-df402979a833" yanel-analytics-cookie="YA-0b4c4553-63e4-401c-abe8-1544d5803513"><company>Hugo</company><firstname>Michi</firstname><lastname>Wechner</lastname><address>Test</address><city>Test</city><e-mail>michi@wyona.com</e-mail><body>Test öüä><&'éèà </body></message>
--->
+<br/>
+        Firstname: <xsl:value-of select="/msg:message/msg:firstname"/>
+<br/>
+        Lastname: <xsl:value-of select="/msg:message/msg:lastname"/>
+<br/>
+        Address: <xsl:value-of select="/msg:message/msg:address"/>
+<br/>
+        City: <xsl:value-of select="/msg:message/msg:city"/>
+<br/>
+        E-Mail: <xsl:value-of select="/msg:message/msg:e-mail"/>
+<br/><br/>
+        Message:<p><xsl:value-of select="/msg:message/msg:body"/></p>
+<br/>
+<!-- TODO: Use back2realm -->
+        User Profile (Clickstream, etc.): <a href="../my-profile.html?cookie-id={/msg:message/@yanel-analytics-cookie}"><xsl:value-of select="/msg:message/@yanel-analytics-cookie"/></a>
       </body>
     </html>
   </xsl:template>
