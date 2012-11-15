@@ -473,8 +473,23 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
      * @param messageID Message ID
      */
     private String getBackLink(String messageID) {
-        // TODO: Protocol, Host, Port (also make sure to consider reverse proxy). TBD: Make base URL configurable...
-        return "<a href=\"" + getPath() + "?" + MESSAGE_PARAM_NAME + "=" + messageID + "&yanel.resource.viewid=message\">" + messageID + "</a>";
+        String baseURL = "http://www.yanel.org";
+        try {
+            if (getResourceConfigProperty("back-link-base-url") != null) {
+                baseURL = getResourceConfigProperty("back-link-base-url");
+            } else {
+                log.warn("No base URL parameter 'back-link-base-url' configured! Use '" + baseURL + "' as default.");
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+        }
+        String url = baseURL + getPath() + "?" + MESSAGE_PARAM_NAME + "=" + messageID + "&yanel.resource.viewid=message";
+
+
+        // TODO: Differentiate between email as HTML and plain text
+        //return "<a href=\"" + url + "\">" + messageID + "</a>";
+
+        return url;
     }
 
     /**
