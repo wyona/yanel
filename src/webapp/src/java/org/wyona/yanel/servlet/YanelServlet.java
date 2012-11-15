@@ -182,7 +182,6 @@ public class YanelServlet extends HttpServlet {
     
     private static final String CONTENT_TYPE_XHTML = "xhtml";
 
-    private static String ANALYTICS_COOKIE_NAME = "_yanel-analytics";
     public static final String YANEL_LAST_ACCESS_ATTR = "_yanel-last-access";
 
     private Scheduler scheduler;
