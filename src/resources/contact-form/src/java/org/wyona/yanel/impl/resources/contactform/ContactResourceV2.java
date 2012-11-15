@@ -184,7 +184,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
 
         // INFO: Save message on server
         String messageID = saveMessage(cookieValue);
-        log.warn("DEBUG: Back link: " + getBackLink(messageID));
+        log.debug("Back link: " + getBackLink(messageID));
 
         // INFO: Now send email
         if (getResourceConfigProperty(TO) != null) {
