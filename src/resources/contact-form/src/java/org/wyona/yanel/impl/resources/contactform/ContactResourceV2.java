@@ -472,7 +472,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
      * Get back link to Yanel
      * @param messageID Message ID
      */
-    private String getBackLink(String messageID) {
+    protected String getBackLink(String messageID) {
         String baseURL = "http://www.yanel.org";
         try {
             if (getResourceConfigProperty("back-link-base-url") != null) {
