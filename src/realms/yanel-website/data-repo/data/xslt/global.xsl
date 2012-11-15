@@ -38,7 +38,10 @@ WARNING: This content has been generated dynamically. All changes will be lost.
 <head>
 <xsl:comment>Name: <xsl:value-of select="$yanel.path.name"/> (without suffix: <xsl:value-of select="$name-without-suffix"/>), Path: <xsl:value-of select="$yanel.path"/>, Back 2 Realm: <xsl:value-of select="$yarep.back2realm"/>, Back 2 Context: <xsl:value-of select="$yanel.back2context"/></xsl:comment>
 
+<!-- INFO: Since the title is inserted via i18n inside src/resources/contact-form/htdocs/xslt/contact-form.xsl, we need to copy the tags (instead using the value), because the i18n transformer is only applied at the very end of the pipeline!
   <title><xsl:value-of select="/xhtml:html/xhtml:head/xhtml:title"/> - Yanel</title>
+-->
+  <title><xsl:copy-of select="/xhtml:html/xhtml:head/xhtml:title/node()"/> - Yanel</title>
 
   <!-- This is needed such that Microsoft Internet Explorer displays characters such as &nbsp; correctly (also see xsl:output, whereas I (Michi) am not sure if the encoding is really needed there) -->
   <meta content="application/xhtml+xml; charset=UTF-8" http-equiv="Content-Type"/>
