@@ -111,39 +111,40 @@ public class PersonalizedContentResource extends BasicXMLResource {
             }
             root.appendChild(interestsEl);
 
-        // INFO: Search for related content in data repository of this realm
-        Element resultsEl = doc.createElementNS(NAMESPACE, "search-results");
-        Searcher search = getRealm().getRepository().getSearcher();
-        for(String interest : userInterests) {
-            Node[] nodes;
+            // INFO: Search for related content in data repository of this realm
+            Element resultsEl = doc.createElementNS(NAMESPACE, "search-results");
+            Searcher search = getRealm().getRepository().getSearcher();
+            for(String interest : userInterests) {
+                Node[] nodes;
 
-            try {
-                nodes = search.search(interest);
-            } catch(Exception e) {
-                break;
+                try {
+                    nodes = search.search(interest);
+                } catch(Exception e) {
+                    log.error(e, e);
+                    break;
+                }
+
+                //for(int i = 0; i < nodes.length; i++) {
+                for(int i = nodes.length - 1; i >= 0; i--) {
+                    Node node = nodes[i];
+                    Element res_node = doc.createElementNS(NAMESPACE, "result");
+                    res_node.setAttribute("interest", interest);
+                    resultsEl.appendChild(res_node);
+
+                    Element res_path = doc.createElementNS(NAMESPACE, "path");
+                    res_path.appendChild(doc.createTextNode(node.getPath()));
+                    res_node.appendChild(res_path);
+
+                    Element res_name = doc.createElementNS(NAMESPACE, "name");
+                    res_name.appendChild(doc.createTextNode(node.getName()));
+                    res_node.appendChild(res_name);
+
+                    Element res_time = doc.createElementNS(NAMESPACE, "last-modified");
+                    res_time.setAttribute("epoch", Long.toString(node.getLastModified()));
+                    res_time.appendChild(doc.createTextNode(new java.util.Date(node.getLastModified()).toString()));
+                    res_node.appendChild(res_time);
+                }
             }
-
-            //for(int i = 0; i < nodes.length; i++) {
-            for(int i = nodes.length - 1; i >= 0; i--) {
-                Node node = nodes[i];
-                Element res_node = doc.createElementNS(NAMESPACE, "result");
-                res_node.setAttribute("interest", interest);
-                resultsEl.appendChild(res_node);
-
-                Element res_path = doc.createElementNS(NAMESPACE, "path");
-                res_path.appendChild(doc.createTextNode(node.getPath()));
-                res_node.appendChild(res_path);
-
-                Element res_name = doc.createElementNS(NAMESPACE, "name");
-                res_name.appendChild(doc.createTextNode(node.getName()));
-                res_node.appendChild(res_name);
-
-                Element res_time = doc.createElementNS(NAMESPACE, "last-modified");
-                res_time.setAttribute("epoch", Long.toString(node.getLastModified()));
-                res_time.appendChild(doc.createTextNode(new java.util.Date(node.getLastModified()).toString()));
-                res_node.appendChild(res_time);
-            }
-        }
             root.appendChild(resultsEl);
         } catch(ServiceException e) {
             // Something wrong with retrieving interests...
