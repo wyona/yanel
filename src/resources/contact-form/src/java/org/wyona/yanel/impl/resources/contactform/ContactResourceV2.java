@@ -421,11 +421,45 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
     private Document getMessageDocument(String messageID, String cookieValue) {
         Document doc = XMLHelper.createDocument(NAMESPACE, "message");
         Element rootEl = doc.getDocumentElement();
+        rootEl.setAttributeNS(NAMESPACE, "yanel-analytics-cookie", cookieValue);
+        rootEl.setAttributeNS(NAMESPACE, "uuid", messageID);
 
-        Element cookieEl = doc.createElementNS(NAMESPACE, "yanel-analytics-cookie");
-        rootEl.appendChild(cookieEl);
-        cookieEl.appendChild(doc.createTextNode(cookieValue));
+        ContactBean contact = new ContactBean(getEnvironment().getRequest());
+
+        if(contact.getCompany() != null) {
+            appendChild(rootEl, "company", contact.getCompany());
+        }
+        if(contact.getFirstName() != null) {
+            appendChild(rootEl, "firstname", contact.getFirstName());
+        }
+        if(contact.getLastName() != null) {
+            appendChild(rootEl, "lastname", contact.getLastName());
+        }
+        if(contact.getAddress() != null) {
+            appendChild(rootEl, "address", contact.getAddress());
+        }
+        if(contact.getCity() != null) {
+            appendChild(rootEl, "city", contact.getCity());
+        }
+        if(contact.getEmail() != null) {
+            appendChild(rootEl, "e-mail", contact.getEmail());
+        }
+        if(contact.getMessage() != null) {
+            appendChild(rootEl, "body", contact.getMessage());
+        }
 
         return doc;
+    }
+
+    /**
+     * Append element with text node to another element
+     * @param parent Parent element to which element will be appended
+     * @param name Element name
+     * @param value String value of element
+     */
+    private void appendChild(Element parent, String name, String value) {
+        Element companyEl = parent.getOwnerDocument().createElementNS(NAMESPACE, name);
+        parent.appendChild(companyEl);
+        companyEl.appendChild(parent.getOwnerDocument().createTextNode(value));
     }
 }
