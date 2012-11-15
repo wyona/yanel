@@ -113,7 +113,10 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             log.warn("Tracking information bean is null! Check life cycle of resource!");
         }
 
-        //path = new Path(request.getServletPath());
+        String requestedMsgID = getEnvironment().getRequest().getParameter(MESSAGE_PARAM_NAME);
+        if (requestedMsgID != null && viewId.equals("message")) {
+            return getRealm().getRepository().getNode(getMessagePath(requestedMsgID)).getInputStream();
+        }
 
         String email = request.getParameter("email");
         // Checking if form was submitted
@@ -243,8 +246,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
     private String saveMessage(String cookieValue) throws Exception {
         String uuid = UUID.randomUUID().toString();
         Document doc = getMessageDocument(uuid, cookieValue);
-        String messagesBasePath = "/contact-messages"; // TODO: Make base path configurable
-        String messagePath = messagesBasePath + "/" + uuid + ".xml";
+        String messagePath = getMessagePath(uuid);
         if (!getRealm().getRepository().existsNode(messagePath)) {
             org.wyona.yarep.core.Node messageNode = org.wyona.yarep.util.YarepUtil.addNodes(getRealm().getRepository(), messagePath, org.wyona.yarep.core.NodeType.RESOURCE);
             XMLHelper.writeDocument(doc, messageNode.getOutputStream());
@@ -472,6 +474,15 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
      */
     private String getBackLink(String messageID) {
         // TODO: Protocol, Host, Port (also make sure to consider reverse proxy). TBD: Make base URL configurable...
-        return "<a href=\"" + getPath() + "?" + MESSAGE_PARAM_NAME + "=" + messageID + "\">" + messageID + "</a>";
+        return "<a href=\"" + getPath() + "?" + MESSAGE_PARAM_NAME + "=" + messageID + "&yanel.resource.viewid=message\">" + messageID + "</a>";
+    }
+
+    /**
+     * Get message path
+     * @param uuid Message ID
+     */
+    private String getMessagePath(String uuid) {
+        String messagesBasePath = "/contact-messages"; // TODO: Make base path configurable
+        return messagesBasePath + "/" + uuid + ".xml";
     }
 }
