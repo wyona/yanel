@@ -99,32 +99,17 @@ public class PersonalizedContentResource extends BasicXMLResource {
         root.appendChild(cookieEl);
 
         // INFO: Get user interests and clickstream
-        Iterable<String> userInterests;
-        Iterable<String> clickStream;
         try {
-            userInterests = getUserInterests(service, cookieVal, boost_domain, api_key);
-            clickStream = getClickstream(service, cookieVal, boost_domain, api_key);
-        } catch(ServiceException e) {
-            // No interests or clickstream
-            log.error(e, e);
+            Iterable<String> userInterests = getUserInterests(service, cookieVal, boost_domain, api_key);
 
-            Element exceptionEl = doc.createElementNS(NAMESPACE, "exception");
-            exceptionEl.appendChild(doc.createTextNode(e.getMessage()));
-            root.appendChild(exceptionEl);
-
-            Element errEl = doc.createElementNS(NAMESPACE, "no-profile");
-            root.appendChild(errEl);
-            return XMLHelper.getInputStream(doc, false, false, null);
-        }
-
-        // INFO: Add all interests to user profile
-        Element interestsEl = doc.createElementNS(NAMESPACE, "interests");
-        for(String interest : userInterests) {
-            Element interestEl = doc.createElementNS(NAMESPACE, "interest");
-            interestEl.appendChild(doc.createTextNode(interest));
-            interestsEl.appendChild(interestEl);
-        }
-        root.appendChild(interestsEl);
+            // INFO: Add all interests to user profile
+            Element interestsEl = doc.createElementNS(NAMESPACE, "interests");
+            for(String interest : userInterests) {
+                Element interestEl = doc.createElementNS(NAMESPACE, "interest");
+                interestEl.appendChild(doc.createTextNode(interest));
+                interestsEl.appendChild(interestEl);
+            }
+            root.appendChild(interestsEl);
 
         // INFO: Search for related content in data repository of this realm
         Element resultsEl = doc.createElementNS(NAMESPACE, "search-results");
@@ -159,20 +144,48 @@ public class PersonalizedContentResource extends BasicXMLResource {
                 res_node.appendChild(res_time);
             }
         }
-        root.appendChild(resultsEl);
+            root.appendChild(resultsEl);
+        } catch(ServiceException e) {
+            // Something wrong with retrieving interests...
+            log.error(e, e);
 
-        // INFO: Add clickstream to user profile
-        Element clickstreamEl = doc.createElementNS(NAMESPACE, "clickstream");
-        for(String url : clickStream) {
-            Element urlEl = doc.createElementNS(NAMESPACE, "url");
-            urlEl.appendChild(doc.createTextNode(url));
-            if (clickstreamEl.hasChildNodes()) {
-                clickstreamEl.insertBefore(urlEl, clickstreamEl.getFirstChild());
-            } else {
-                clickstreamEl.appendChild(urlEl);
-            }
+            Element exceptionEl = doc.createElementNS(NAMESPACE, "exception");
+            exceptionEl.appendChild(doc.createTextNode(e.getMessage()));
+            root.appendChild(exceptionEl);
+
+            Element errEl = doc.createElementNS(NAMESPACE, "no-profile");
+            root.appendChild(errEl);
+            //return XMLHelper.getInputStream(doc, false, false, null);
         }
-        root.appendChild(clickstreamEl);
+
+        try {
+            Iterable<String> clickStream = getClickstream(service, cookieVal, boost_domain, api_key);
+
+            // INFO: Add clickstream to user profile
+            Element clickstreamEl = doc.createElementNS(NAMESPACE, "clickstream");
+            for(String url : clickStream) {
+                Element urlEl = doc.createElementNS(NAMESPACE, "url");
+                urlEl.appendChild(doc.createTextNode(url));
+                if (clickstreamEl.hasChildNodes()) {
+                    clickstreamEl.insertBefore(urlEl, clickstreamEl.getFirstChild());
+                } else {
+                    clickstreamEl.appendChild(urlEl);
+                }
+            }
+            root.appendChild(clickstreamEl);
+        } catch(ServiceException e) {
+            // Something wrong with retrieving clickstream...
+            log.error(e, e);
+
+            Element exceptionEl = doc.createElementNS(NAMESPACE, "exception");
+            exceptionEl.appendChild(doc.createTextNode(e.getMessage()));
+            root.appendChild(exceptionEl);
+
+            Element errEl = doc.createElementNS(NAMESPACE, "no-clickstream");
+            root.appendChild(errEl);
+            //return XMLHelper.getInputStream(doc, false, false, null);
+        }
+
 
         return XMLHelper.getInputStream(doc, false, false, null);
     }
