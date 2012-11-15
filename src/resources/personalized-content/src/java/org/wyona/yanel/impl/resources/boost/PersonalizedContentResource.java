@@ -86,8 +86,12 @@ public class PersonalizedContentResource extends BasicXMLResource {
 
         String cookieVal = cookie.getValue();
         if (getResourceConfigProperty("cookie") != null) {
-            log.warn("Try to get user profile for third party cookie: " + getResourceConfigProperty("cookie"));
+            log.warn("Try to get user profile for third party cookie from resource configuration: " + getResourceConfigProperty("cookie"));
             cookieVal = getResourceConfigProperty("cookie");
+        }
+        if (getEnvironment().getRequest().getParameter("cookie-id") != null) {
+            log.warn("Try to get user profile for third party cookie from query string: " + getEnvironment().getRequest().getParameter("cookie-id"));
+            cookieVal = getEnvironment().getRequest().getParameter("cookie-id");
         }
 
         Element cookieEl = doc.createElementNS(NAMESPACE, "yanel-cookie-id");
