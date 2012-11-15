@@ -17,9 +17,9 @@ Contact form for sending email
   <!-- Optional properties -->
   <property name="subject"/>
   <property name="mime-type"/>
-  <property name="from"/> <!-- INFO: If not configured then the email address specified of the form is used as from address -->
+  <property name="from"/> <!-- INFO: If not configured, then the email address specified of the form is used as from address -->
   <property name="email-validation-regex"/>
-  <!-- NOTE: Please note that one needs to reload/restart Yanel in order to activate changes of host and port! -->
+  <!-- NOTE: If not configured, then the global configuration from 'yanel.xml' will be used. Please note that one needs to reload/restart Yanel in order to activate changes of host and port! -->
   <property name="smtpHost"/>
   <property name="smtpPort"/>
 </rtd>
