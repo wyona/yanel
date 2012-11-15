@@ -98,7 +98,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
         cookieEl.appendChild(doc.createTextNode(cookieVal));
         root.appendChild(cookieEl);
 
-        // INFO: Get user interests and clickstream
+        // INFO: Get user interests
         try {
             Iterable<String> userInterests = getUserInterests(service, cookieVal, boost_domain, api_key);
 
@@ -155,9 +155,9 @@ public class PersonalizedContentResource extends BasicXMLResource {
 
             Element errEl = doc.createElementNS(NAMESPACE, "no-profile");
             root.appendChild(errEl);
-            //return XMLHelper.getInputStream(doc, false, false, null);
         }
 
+        // INFO: Get clickstream
         try {
             Iterable<String> clickStream = getClickstream(service, cookieVal, boost_domain, api_key);
 
@@ -183,7 +183,6 @@ public class PersonalizedContentResource extends BasicXMLResource {
 
             Element errEl = doc.createElementNS(NAMESPACE, "no-clickstream");
             root.appendChild(errEl);
-            //return XMLHelper.getInputStream(doc, false, false, null);
         }
 
 
