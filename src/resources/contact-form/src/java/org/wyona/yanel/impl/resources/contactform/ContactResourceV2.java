@@ -83,6 +83,8 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
 
     private static final String NAMESPACE = "http://www.wyona.org/yanel/contact-message/1.0.0";
 
+    private static final String MESSAGE_PARAM_NAME = "message-id";
+
     // Constants
     private static final String SMTP_HOST = "smtpHost";
     private static final String SMTP_PORT = "smtpPort";
@@ -179,6 +181,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
 
         // INFO: Save message on server
         String messageID = saveMessage(cookieValue);
+        log.warn("DEBUG: Back link: " + getBackLink(messageID));
 
         // INFO: Now send email
         if (getResourceConfigProperty(TO) != null) {
@@ -397,7 +400,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             content.append(contact.getMessage());
             content.append("\n\n");
         }
-        content.append("Message ID: " + messageID);
+        content.append("Message ID: " + getBackLink(messageID));
 
         return content.toString();
     }
@@ -461,5 +464,14 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
         Element companyEl = parent.getOwnerDocument().createElementNS(NAMESPACE, name);
         parent.appendChild(companyEl);
         companyEl.appendChild(parent.getOwnerDocument().createTextNode(value));
+    }
+
+    /**
+     * Get back link to Yanel
+     * @param messageID Message ID
+     */
+    private String getBackLink(String messageID) {
+        // TODO: Protocol, Host, Port (also make sure to consider reverse proxy). TBD: Make base URL configurable...
+        return "<a href=\"" + getPath() + "?" + MESSAGE_PARAM_NAME + "=" + messageID + "\">" + messageID + "</a>";
     }
 }
