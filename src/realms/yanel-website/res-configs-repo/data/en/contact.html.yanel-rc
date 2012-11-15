@@ -31,7 +31,13 @@
         </serializer>
       </view>
       <view id="message">
+<!-- DEBUG
         <mime-type>application/xml</mime-type>
+-->
+        <xslt>rthtdocs:/xslt/message.xsl</xslt>
+        <xslt>/xslt/global.xsl</xslt>
+        <mime-type>text/html</mime-type>
+        <serializer key="HTML_TRANSITIONAL"/>
       </view>
       <view id="xml">
         <mime-type>application/xml</mime-type>
