@@ -54,7 +54,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
             log.error("No boost service URL '" + BOOST_SERVICE_URL_PARAM + "' configured!");
         }
 
-        // Is the user logged into Yanel?
+        // INFO: Check whether the user is logged into Yanel?
         String username = getEnvironment().getIdentity().getUsername();
         if(username != null) {
             Element uid = doc.createElement("yanel-user-id");
@@ -63,6 +63,10 @@ public class PersonalizedContentResource extends BasicXMLResource {
 
         String realm = getRealm().getID();
         String boost_domain = getRealm().getUserTrackingDomain();
+        if (getResourceConfigProperty("domain") != null) {
+            log.warn("Try to get user profile for third party domain: " + getResourceConfigProperty("domain"));
+            boost_domain = getResourceConfigProperty("domain");
+        }
         Element realmEl = doc.createElementNS(NAMESPACE, "yanel-realm-id");
         realmEl.appendChild(doc.createTextNode(realm));
         root.appendChild(realmEl);
@@ -70,7 +74,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
         domainEl.appendChild(doc.createTextNode(boost_domain));
         root.appendChild(domainEl);
 
-        // Get the cookie
+        // INFO: Get the cookie
         HttpServletRequest req = getEnvironment().getRequest();
         Cookie cookie = AccessLog.getYanelAnalyticsCookie(req);
 
@@ -80,15 +84,70 @@ public class PersonalizedContentResource extends BasicXMLResource {
             return XMLHelper.getInputStream(doc, false, false, null);
         }
 
+        String cookieVal = cookie.getValue();
+        if (getResourceConfigProperty("cookie") != null) {
+            log.warn("Try to get user profile for third party cookie from resource configuration: " + getResourceConfigProperty("cookie"));
+            cookieVal = getResourceConfigProperty("cookie");
+        }
+        if (getEnvironment().getRequest().getParameter("cookie-id") != null) {
+            log.warn("Try to get user profile for third party cookie from query string: " + getEnvironment().getRequest().getParameter("cookie-id"));
+            cookieVal = getEnvironment().getRequest().getParameter("cookie-id");
+        }
+
         Element cookieEl = doc.createElementNS(NAMESPACE, "yanel-cookie-id");
-        cookieEl.appendChild(doc.createTextNode(cookie.getValue()));
+        cookieEl.appendChild(doc.createTextNode(cookieVal));
         root.appendChild(cookieEl);
 
-        Iterable<String> userInterests;
+        // INFO: Get user interests
         try {
-            userInterests = getUserInterests(service, cookie.getValue(), boost_domain, api_key);
+            Iterable<String> userInterests = getUserInterests(service, cookieVal, boost_domain, api_key);
+
+            // INFO: Add all interests to user profile
+            Element interestsEl = doc.createElementNS(NAMESPACE, "interests");
+            for(String interest : userInterests) {
+                Element interestEl = doc.createElementNS(NAMESPACE, "interest");
+                interestEl.appendChild(doc.createTextNode(interest));
+                interestsEl.appendChild(interestEl);
+            }
+            root.appendChild(interestsEl);
+
+            // INFO: Search for related content in data repository of this realm
+            Element resultsEl = doc.createElementNS(NAMESPACE, "search-results");
+            Searcher search = getRealm().getRepository().getSearcher();
+            for(String interest : userInterests) {
+                Node[] nodes;
+
+                try {
+                    nodes = search.search(interest);
+                } catch(Exception e) {
+                    log.error(e, e);
+                    break;
+                }
+
+                //for(int i = 0; i < nodes.length; i++) {
+                for(int i = nodes.length - 1; i >= 0; i--) {
+                    Node node = nodes[i];
+                    Element res_node = doc.createElementNS(NAMESPACE, "result");
+                    res_node.setAttribute("interest", interest);
+                    resultsEl.appendChild(res_node);
+
+                    Element res_path = doc.createElementNS(NAMESPACE, "path");
+                    res_path.appendChild(doc.createTextNode(node.getPath()));
+                    res_node.appendChild(res_path);
+
+                    Element res_name = doc.createElementNS(NAMESPACE, "name");
+                    res_name.appendChild(doc.createTextNode(node.getName()));
+                    res_node.appendChild(res_name);
+
+                    Element res_time = doc.createElementNS(NAMESPACE, "last-modified");
+                    res_time.setAttribute("epoch", Long.toString(node.getLastModified()));
+                    res_time.appendChild(doc.createTextNode(new java.util.Date(node.getLastModified()).toString()));
+                    res_node.appendChild(res_time);
+                }
+            }
+            root.appendChild(resultsEl);
         } catch(ServiceException e) {
-            // No interests
+            // Something wrong with retrieving interests...
             log.error(e, e);
 
             Element exceptionEl = doc.createElementNS(NAMESPACE, "exception");
@@ -97,57 +156,63 @@ public class PersonalizedContentResource extends BasicXMLResource {
 
             Element errEl = doc.createElementNS(NAMESPACE, "no-profile");
             root.appendChild(errEl);
-            return XMLHelper.getInputStream(doc, false, false, null);
         }
 
-        // Add all interests to user profile
-        Element interestsEl = doc.createElementNS(NAMESPACE, "interests");
-        for(String interest : userInterests) {
-            Element interestEl = doc.createElementNS(NAMESPACE, "interest");
-            interestEl.appendChild(doc.createTextNode(interest));
-            interestsEl.appendChild(interestEl);
-        }
-        root.appendChild(interestsEl);
+        // INFO: Get clickstream
+        try {
+            Iterable<String> clickStream = getClickstream(service, cookieVal, boost_domain, api_key);
 
-        // Search for related content in data repository
-        Element resultsEl = doc.createElementNS(NAMESPACE, "results");
-        Searcher search = getRealm().getRepository().getSearcher();
-        for(String interest : userInterests) {
-            Node[] nodes;
-
-            try {
-                nodes = search.search(interest);
-            } catch(Exception e) {
-                break;
+            // INFO: Add clickstream to user profile
+            Element clickstreamEl = doc.createElementNS(NAMESPACE, "clickstream");
+            for(String url : clickStream) {
+                Element urlEl = doc.createElementNS(NAMESPACE, "url");
+                urlEl.appendChild(doc.createTextNode(url));
+                if (clickstreamEl.hasChildNodes()) {
+                    clickstreamEl.insertBefore(urlEl, clickstreamEl.getFirstChild());
+                } else {
+                    clickstreamEl.appendChild(urlEl);
+                }
             }
+            root.appendChild(clickstreamEl);
+        } catch(ServiceException e) {
+            // Something wrong with retrieving clickstream...
+            log.error(e, e);
 
-            for(Node node : nodes) {
-                Element res_node = doc.createElementNS(NAMESPACE, "result");
-                Element res_path = doc.createElementNS(NAMESPACE, "path");
-                Element res_name = doc.createElementNS(NAMESPACE, "name");
-                Element res_time = doc.createElementNS(NAMESPACE, "last-modified");
+            Element exceptionEl = doc.createElementNS(NAMESPACE, "exception");
+            exceptionEl.appendChild(doc.createTextNode(e.getMessage()));
+            root.appendChild(exceptionEl);
 
-                res_path.appendChild(doc.createTextNode(node.getPath()));
-                res_name.appendChild(doc.createTextNode(node.getName()));
-                res_time.appendChild(doc.createTextNode(Long.toString(node.getLastModified())));
-                res_node.appendChild(res_path);
-
-                resultsEl.appendChild(res_node);
-            }
+            Element errEl = doc.createElementNS(NAMESPACE, "no-clickstream");
+            root.appendChild(errEl);
         }
-        root.appendChild(resultsEl);
+
 
         return XMLHelper.getInputStream(doc, false, false, null);
+    }
+
+    /**
+     * Get clickstream for a given cookie (also see http://en.wikipedia.org/wiki/Clickstream)
+     * @param boostServiceUrl Boost service URL
+     * @param cookie Unique cookie id
+     * @param realm Domain name
+     * @param apiKey Key to access Boost API
+     * @return list of URLs which were requested by user with a given cookie
+     */
+    private Iterable<String> getClickstream(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
+        BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, realm, apiKey);
+        BoostService boost = new BoostService(bsc);
+        return boost.getClickStream(cookie);
     }
 
     /**
      * Get the user profile given a cookie.
      * @param boostServiceUrl Boost service URL
      * @param cookie Unique cookie id
+     * @param realm Domain name
+     * @param apiKey Key to access Boost API
+     * @return list of interests
      */
-    protected Iterable<String> getUserInterests(String boostServiceUrl, String cookie, String realm, String apiKey)
-    throws Exception {
-
+    private Iterable<String> getUserInterests(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
         BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, realm, apiKey);
         BoostService boost = new BoostService(bsc);
         return boost.getUserProfile(cookie);

@@ -15,6 +15,9 @@
   <yanel:property name="to" value="contact@wyona.com"/>
   <yanel:property name="to" value="michael.wechner@wyona.com" target-environment="dev"/>
 
+  <yanel:property name="back-link-base-url" value="http://www.yanel.org"/>
+  <yanel:property name="back-link-base-url" value="http://127.0.0.1:8080/yanel/yanel-website" target-environment="dev"/>
+
   <!-- Alternative SMTP configuration. If the below is commented, then the default settings of Yanel will be used which are configured within WEB-INF/classes/yanel.xml (also see the source configuration at conf/yanel.xml or rather make a copy at conf/local/local.yanel.xml) -->
 <!--
   <yanel:property name="smtpHost" value="mail.wyona.com"/>
@@ -29,6 +32,15 @@
         <mime-type>text/html</mime-type>
         <serializer key="HTML_TRANSITIONAL">
         </serializer>
+      </view>
+      <view id="message">
+<!-- DEBUG
+        <mime-type>application/xml</mime-type>
+-->
+        <xslt>rthtdocs:/xslt/message.xsl</xslt>
+        <xslt>/xslt/global.xsl</xslt>
+        <mime-type>text/html</mime-type>
+        <serializer key="HTML_TRANSITIONAL"/>
       </view>
       <view id="xml">
         <mime-type>application/xml</mime-type>

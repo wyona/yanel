@@ -1,5 +1,7 @@
+yarep_vfs-meta-file-version<string>:1.0
 yarep_type<string>:resource
-yarep_checkoutUserID<string>:lenya
-yarep_checkoutDate<date>:2007-05-12T21:50:54:000+0200
-yarep_isCheckedOut<boolean>:false
 yarep_mimeType<string>:application/xhtml+xml
+yarep_checkoutUserID<string>:lenya
+annotations<string>:Getting started on Windows
+yarep_checkoutDate<date>:2007-05-12T15\:50\:54\:000-0400
+yarep_isCheckedOut<boolean>:false

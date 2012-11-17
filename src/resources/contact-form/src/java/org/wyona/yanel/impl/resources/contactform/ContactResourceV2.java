@@ -24,6 +24,7 @@ import java.io.InputStream;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -68,25 +69,27 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import org.wyona.commons.xml.XMLHelper;
+
 /**
- * Simple contact form resource.
+ * Simple contact form resource, such that a user can send a message/email to an 'administrator'
  */
 public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
 
     private static Logger log = Logger.getLogger(ContactResourceV2.class);
+
+    private static final String NAMESPACE = "http://www.wyona.org/yanel/contact-message/1.0.0";
+
+    private static final String MESSAGE_PARAM_NAME = "message-id";
 
     // Constants
     private static final String SMTP_HOST = "smtpHost";
     private static final String SMTP_PORT = "smtpPort";
     private static final String TO = "to";
     private static final String SUBJECT = "subject";
-
-    // Values for sending email
-    private String smtpHost = "";
-    private int smtpPort = 25;
-    private String to = "";
-    private ContactBean contact = null;
-    //private Path path = null;
 
     // Email validation
     private String defaultEmailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
@@ -110,7 +113,10 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             log.warn("Tracking information bean is null! Check life cycle of resource!");
         }
 
-        //path = new Path(request.getServletPath());
+        String requestedMsgID = getEnvironment().getRequest().getParameter(MESSAGE_PARAM_NAME);
+        if (requestedMsgID != null && viewId.equals("message")) {
+            return getRealm().getRepository().getNode(getMessagePath(requestedMsgID)).getInputStream();
+        }
 
         String email = request.getParameter("email");
         // Checking if form was submitted
@@ -176,8 +182,17 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             log.warn("No Yanel analytics cookie set yet!");
         }
 
-        // Now send email
-        sendMail(cookieValue);
+        // INFO: Save message on server
+        String messageID = saveMessage(cookieValue);
+        log.debug("Back link: " + getBackLink(messageID));
+
+        // INFO: Now send email
+        if (getResourceConfigProperty(TO) != null) {
+            sendMail(messageID);
+        } else {
+            setParameter("error", "couldNotSendMail");
+            log.warn("No email has been sent, because no 'TO' address configured!");
+        }
 
         // Pass transformer paramters for output
         if(request.getParameter("company") != null) {
@@ -226,10 +241,26 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
 
     /**
      * Send e-mail to administrator of this contact form
-     * @param cookieValue Yanel analytics cookie value (in order to connect
-     * history with this e-mail).
+     * @param cookieValue Yanel analytics cookie value (in order to connect clickstream with this message).
      */
-    private void sendMail(String cookieValue) throws Exception {
+    private String saveMessage(String cookieValue) throws Exception {
+        String uuid = UUID.randomUUID().toString();
+        Document doc = getMessageDocument(uuid, cookieValue);
+        String messagePath = getMessagePath(uuid);
+        if (!getRealm().getRepository().existsNode(messagePath)) {
+            org.wyona.yarep.core.Node messageNode = org.wyona.yarep.util.YarepUtil.addNodes(getRealm().getRepository(), messagePath, org.wyona.yarep.core.NodeType.RESOURCE);
+            XMLHelper.writeDocument(doc, messageNode.getOutputStream());
+        } else {
+            log.error("Node '" + messagePath + "' already exists!");
+        }
+        return uuid;
+    }
+
+    /**
+     * Send e-mail to administrator of this contact form
+     * @param messageID Message ID in order to link back from email to message enriched with additional information
+     */
+    private void sendMail(String messageID) throws Exception {
         String email = getEnvironment().getRequest().getParameter("email");
 
         if(email == null || "".equals(email)) {
@@ -246,33 +277,34 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             return;
         }
 
-        contact = new ContactBean(request);
+        ContactBean contact = new ContactBean(request);
 
         String subject = getResourceConfigProperty(SUBJECT);
         if (subject == null) {
             subject = "Yanel Contact Resource: No subject specified";
         }
-        to = getResourceConfigProperty(TO);
+
 
         String from = getResourceConfigProperty("from");
         if (from == null) {
             from = email;
         }
 
-        String content = getBody(contact, cookieValue);
+        String content = getBody(contact, messageID);
 
+        String to = getResourceConfigProperty(TO);
         if(to == null) {
             // INFO: Also see conf/contact-form_en.properties
             setParameter("error", "smtpConfigError");
             return;
         }
 
-        smtpHost = getResourceConfigProperty(SMTP_HOST);
+        String smtpHost = getResourceConfigProperty(SMTP_HOST);
         String smtpPortAsString = getResourceConfigProperty(SMTP_PORT);
 
         try {
             if(smtpHost != null && smtpPortAsString != null) {
-                smtpPort = Integer.parseInt(smtpPortAsString);
+                int smtpPort = Integer.parseInt(smtpPortAsString);
                 MailUtil.send(smtpHost, smtpPort, from, to, subject, content);
                 setParameter("sent", "true");
             } else {
@@ -300,7 +332,6 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
         } catch(NumberFormatException nfe) {
             log.error(nfe);
             setParameter("error", "smtpPortNotCorrect");
-            smtpPort = 0;
         }
     }
 
@@ -332,10 +363,10 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
     /**
      * Get email body. Please overwrite this method in order to customize email body.
      * @param contact Contact information
-     * @param cookieValue Yanel analytics cookie value
+     * @param messageID Message ID
      */
-    protected String getBody(ContactBean contact, String cookieValue){
-        StringBuffer content = new StringBuffer("");
+    protected String getBody(ContactBean contact, String messageID){
+        StringBuilder content = new StringBuilder("");
         if(contact.getCompany() != null) {
             content.append("Company: ");
             content.append(contact.getCompany());
@@ -371,8 +402,8 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             content.append(contact.getMessage());
             content.append("\n\n");
         }
-        content.append("Yanel-analytics-cookie: ");
-        content.append(cookieValue);
+        content.append("Message ID: " + getBackLink(messageID));
+
         return content.toString();
     }
 
@@ -384,5 +415,89 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
         File xmlFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "htdocs" + File.separator + "xml" + File.separator + "contact-form.xml");
         return new java.io.FileInputStream(xmlFile.getAbsolutePath());
         //return new ByteArrayInputStream("<root/>".getBytes());
+    }
+
+    /**
+     * Generate message as XML document
+     * @param messageID Message ID
+     * @param cookieValue Cookie which helps to associate clickstream of user with this message
+     * @return message as XML document
+     */
+    private Document getMessageDocument(String messageID, String cookieValue) {
+        Document doc = XMLHelper.createDocument(NAMESPACE, "message");
+        Element rootEl = doc.getDocumentElement();
+        rootEl.setAttributeNS(NAMESPACE, "yanel-analytics-cookie", cookieValue);
+        rootEl.setAttributeNS(NAMESPACE, "uuid", messageID);
+
+        ContactBean contact = new ContactBean(getEnvironment().getRequest());
+
+        if(contact.getCompany() != null) {
+            appendChild(rootEl, "company", contact.getCompany());
+        }
+        if(contact.getFirstName() != null) {
+            appendChild(rootEl, "firstname", contact.getFirstName());
+        }
+        if(contact.getLastName() != null) {
+            appendChild(rootEl, "lastname", contact.getLastName());
+        }
+        if(contact.getAddress() != null) {
+            appendChild(rootEl, "address", contact.getAddress());
+        }
+        if(contact.getCity() != null) {
+            appendChild(rootEl, "city", contact.getCity());
+        }
+        if(contact.getEmail() != null) {
+            appendChild(rootEl, "e-mail", contact.getEmail());
+        }
+        if(contact.getMessage() != null) {
+            appendChild(rootEl, "body", contact.getMessage());
+        }
+
+        return doc;
+    }
+
+    /**
+     * Append element with text node to another element
+     * @param parent Parent element to which element will be appended
+     * @param name Element name
+     * @param value String value of element
+     */
+    private void appendChild(Element parent, String name, String value) {
+        Element companyEl = parent.getOwnerDocument().createElementNS(NAMESPACE, name);
+        parent.appendChild(companyEl);
+        companyEl.appendChild(parent.getOwnerDocument().createTextNode(value));
+    }
+
+    /**
+     * Get back link to Yanel
+     * @param messageID Message ID
+     */
+    protected String getBackLink(String messageID) {
+        String baseURL = "http://www.yanel.org";
+        try {
+            if (getResourceConfigProperty("back-link-base-url") != null) {
+                baseURL = getResourceConfigProperty("back-link-base-url");
+            } else {
+                log.warn("No base URL parameter 'back-link-base-url' configured! Use '" + baseURL + "' as default.");
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+        }
+        String url = baseURL + getPath() + "?" + MESSAGE_PARAM_NAME + "=" + messageID + "&yanel.resource.viewid=message";
+
+
+        // TODO: Differentiate between email as HTML and plain text
+        //return "<a href=\"" + url + "\">" + messageID + "</a>";
+
+        return url;
+    }
+
+    /**
+     * Get message path
+     * @param uuid Message ID
+     */
+    private String getMessagePath(String uuid) {
+        String messagesBasePath = "/contact-messages"; // TODO: Make base path configurable
+        return messagesBasePath + "/" + uuid + ".xml";
     }
 }
