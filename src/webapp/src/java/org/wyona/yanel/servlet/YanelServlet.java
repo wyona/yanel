@@ -1284,8 +1284,7 @@ public class YanelServlet extends HttpServlet {
                 return response;
             } else {
                 try {
-                    log.warn("DEBUG: Authentication was successful for user: " + identity.getUsername());
-                    //log.warn("Authentication was successful for user: " + getIdentity(request, map).getUsername());
+                    //log.debug("Authentication was successful for user: " + getIdentity(request, map).getUsername());
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
                 }
@@ -1788,6 +1787,7 @@ public class YanelServlet extends HttpServlet {
      * @return Identity if one exist, or otherwise null
      */
     public static Identity getIdentity(HttpSession session, String realmID) throws Exception {
+        //log.debug("Get identity from session for realm '" + realmID + "'.");
         if (session != null) {
             IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
             if (identityMap != null) {
@@ -1826,6 +1826,7 @@ public class YanelServlet extends HttpServlet {
      * @return Identity if one exist, or otherwise an empty identity (which is considered to be WORLD)
      */
     private static Identity getIdentity(HttpServletRequest request, Realm realm) throws Exception {
+        //log.debug("Get identity for request '" + request.getServletPath() + "'.");
         Identity identity = getIdentity(request.getSession(false), realm);
         if (identity != null) { // INFO: Please note that the WORLD identity (or rather an empty identity) is not added to the session (please see further down)
             //log.debug("Identity from session: " + identity);
@@ -1852,6 +1853,7 @@ public class YanelServlet extends HttpServlet {
                     String trueID = realm.getIdentityManager().getUserManager().getTrueId(username);
                     User user = realm.getIdentityManager().getUserManager().getUser(trueID);
                     if (user != null && user.authenticate(password)) {
+                        log.debug("User '" + user.getID() + "' successfully authenticated via BASIC authentication.");
                         return new Identity(user, username);
                     } else {
                         log.warn("HTTP BASIC Authentication failed for " + username + " (True ID: '" + trueID + "') and request '" + request.getServletPath() + "', hence set identity to WORLD!");
