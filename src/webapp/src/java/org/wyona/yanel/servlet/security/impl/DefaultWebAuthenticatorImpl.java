@@ -400,6 +400,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 String mimeType = YanelServlet.patchMimeType("application/xhtml+xml", request);
                 response.setContentType(mimeType + "; charset=" + YanelServlet.DEFAULT_ENCODING);
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
 
                 File realmDir = realm.getRootDir();
                 if (realmDir == null) realmDir = new File(realm.getConfigFile().getParent());
@@ -711,8 +712,10 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
         Identity identity = YanelServlet.getIdentity(request.getSession(true), realm);
         if (identity != null) {
             currentUserId = identity.getUsername();
+            //log.debug("Identity from session: " + identity);
+        } else {
+            //log.debug("Session contains no identity yet.");
         }
-        //String currentUserId = getCurrentUserId(request.getSession(true), realm);
         if (currentUserId != null) {
             Element userElement = (Element) rootElement.appendChild(adoc.createElementNS(YanelServlet.NAMESPACE, "user"));
             userElement.setAttributeNS(YanelServlet.NAMESPACE, "id", currentUserId);
