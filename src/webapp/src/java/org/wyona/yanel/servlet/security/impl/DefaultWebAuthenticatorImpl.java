@@ -401,6 +401,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 response.setContentType(mimeType + "; charset=" + YanelServlet.DEFAULT_ENCODING);
 
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+                //response.setHeader("Optional-WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\""); // INFO: See http://tools.ietf.org/html/draft-oiwa-http-auth-extension-02
 /* INFO: Since we want to do HTML-form/session/cookie based authentication/authorization, we just return a 200, because otherwise browsers do not display the text/html response body of a HTTP 401 response, instead, they just pop up a modal authentication dialog (until "cancel" is pressed). (See http://www.w3.org/html/wg/tracker/issues/13)
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                 response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
