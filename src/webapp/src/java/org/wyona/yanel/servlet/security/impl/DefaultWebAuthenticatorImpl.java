@@ -362,7 +362,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             // Also see e-mail about recognizing a WebDAV request: http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
             if (challengeUsingNeutronAuth(request, response, realm, sslPort)) {
             } else if (request.getRequestURI().endsWith(".ics")) {
-                log.warn("Somebody seems to ask for a Calendar (ICS) ...");
+                log.warn("DEBUG: Somebody seems to ask for a Calendar (ICS) ...");
                 response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             } else {
@@ -399,8 +399,12 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             } else {
                 String mimeType = YanelServlet.patchMimeType("application/xhtml+xml", request);
                 response.setContentType(mimeType + "; charset=" + YanelServlet.DEFAULT_ENCODING);
+
+                response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+/* INFO: Since we want to do HTML-form/session/cookie based authentication/authorization, we just return a 200, because otherwise browsers do not display the text/html response body of a HTTP 401 response, instead, they just pop up a modal authentication dialog (until "cancel" is pressed). (See http://www.w3.org/html/wg/tracker/issues/13)
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                 response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
+*/
 
                 File realmDir = realm.getRootDir();
                 if (realmDir == null) realmDir = new File(realm.getConfigFile().getParent());
