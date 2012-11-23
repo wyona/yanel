@@ -45,8 +45,11 @@
   <xsl:template match="s:session">
     <li>
       <strong>Session: </strong>
-      <xsl:value-of select="@id"/>
       <ul>
+        <li>
+          <strong>Hashed ID: </strong>
+          <xsl:value-of select="@id"/>
+        </li>
         <li>
           <strong>Creation time: </strong>
           <xsl:value-of select="@creation-time"/>
@@ -57,7 +60,7 @@
         </li>
         <xsl:if test="s:identities">
           <li>
-            <strong>Identities: </strong>
+            <strong>Associated identities (username and realm): </strong>
             <xsl:value-of select="s:identities"/>
           </li>
         </xsl:if>
