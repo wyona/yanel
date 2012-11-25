@@ -54,11 +54,17 @@ public class QuartzSchedulerUtil {
                 jobDesc = jobName;
             }
 
-            Class<? extends org.quartz.Job> jobClass = Class.forName(jobE.getAttribute("class")).asSubclass(org.quartz.Job.class);
+            Class<? extends org.quartz.Job> jobClass;
+            try {
+                jobClass = Class.forName(jobE.getAttribute("class")).asSubclass(org.quartz.Job.class);
+            } catch(java.lang.ClassNotFoundException e) {
+                log.error("Job class '" + jobE.getAttribute("class") + "' not found, which has been scheduled/configured within realm '" + realm.getID() + "'");
+                log.error(e, e);
+                continue;
+            }
             //JobDetailImpl jobDetail = new org.quartz.impl.JobDetailImpl(jobName, groupName, jobClass);
             //jobDetail.setDescription(jobDesc);
             JobDetail jobDetail = org.quartz.JobBuilder.newJob(jobClass).withIdentity(jobName, groupName).withDescription(jobDesc).build();
-
             jobDetail.getJobDataMap().put("realm", realm);
 
             Element triggerElement = (Element) jobE.getElementsByTagName("trigger").item(0);
