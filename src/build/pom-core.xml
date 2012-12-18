@@ -40,7 +40,7 @@
       <groupId>wyona-org-commons</groupId>
       <artifactId>wyona-org-commons</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>1.0.0-r565cd3885372038f6076df65376a1ccd17b07c5e</version>
+      <version>1.0.1-ra3ed69f0eb9bb2f50b605beb4b8297403403dd28</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
