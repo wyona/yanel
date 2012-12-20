@@ -202,7 +202,7 @@ public class TranslationResource extends Resource implements ViewableV2 {
      */
     public InputStream getTranslationXML(Resource resource, String currentLanguage) throws Exception {
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
-        sb.append("<translations xmlns=\"" + NS_URI + "\" selected-language=\"" + currentLanguage + "\">");
+        sb.append("<translations xmlns=\"" + NS_URI + "\" selected-language=\"" + currentLanguage + "\" selected-path=\"" + resource.getPath() + "\">");
         
         String[] realmLanguages = resource.getRealm().getLanguages();
         
@@ -246,8 +246,8 @@ public class TranslationResource extends Resource implements ViewableV2 {
                                 translation.getPath() + "\" " + current + " exists=\"true\"/>");
                     }
                 } else {
-                    sb.append("<translation language=\"" + realmLanguages[i] + "\" " + current + 
-                            " exists=\"false\"/>");
+                    log.warn("No translation found for resource '" + resource.getPath() + "' and language '" + realmLanguages[i] + "' by translation manager '" + translationMgr.getClass().getName() + "'.");
+                    sb.append("<translation language=\"" + realmLanguages[i] + "\" " + current + " exists=\"false\"/>");
                 }
             }
         }
